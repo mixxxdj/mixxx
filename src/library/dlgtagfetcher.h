@@ -5,7 +5,7 @@
 #include <QTreeWidget>
 
 #include "library/ui_dlgtagfetcher.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "musicbrainz/tagfetcher.h"
 
 class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
@@ -25,7 +25,7 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
 
   public slots:
     void loadTrack(const TrackPointer track);
-    void updateTrackMetadata(TrackInfoObject* pTIO);
+    void updateTrackMetadata(Track* pTIO);
 
   signals:
     void next();

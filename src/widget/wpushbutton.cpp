@@ -26,12 +26,12 @@
 #include <QPaintEvent>
 #include <QApplication>
 
-#include "widget/wpixmapstore.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
 #include "control/controlbehavior.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "util/debug.h"
 #include "util/math.h"
+#include "widget/wpixmapstore.h"
 
 WPushButton::WPushButton(QWidget* pParent)
         : WWidget(pParent),
@@ -46,9 +46,6 @@ WPushButton::WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftBut
           m_leftButtonMode(leftButtonMode),
           m_rightButtonMode(rightButtonMode) {
     setStates(0);
-}
-
-WPushButton::~WPushButton() {
 }
 
 void WPushButton::setup(QDomNode node, const SkinContext& context) {
@@ -114,7 +111,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         state = state.nextSibling();
     }
 
-    ControlParameterWidgetConnection* leftConnection = NULL;
+    ControlParameterWidgetConnection* leftConnection = nullptr;
     if (m_leftConnections.isEmpty()) {
         if (!m_connections.isEmpty()) {
             // If no left connection is set, the this is the left connection

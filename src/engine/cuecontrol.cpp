@@ -5,10 +5,9 @@
 
 #include "engine/cuecontrol.h"
 
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlindicator.h"
-#include "cachingreader.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlindicator.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 // TODO: Convert these doubles to a standard enum
@@ -20,8 +19,8 @@ static const double CUE_MODE_NUMARK = 3.0;
 static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 
 CueControl::CueControl(QString group,
-                       UserSettingsPointer _config) :
-        EngineControl(group, _config),
+                       UserSettingsPointer pConfig) :
+        EngineControl(group, pConfig),
         m_bPreviewing(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(group, "play"))),
         m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
@@ -92,8 +91,8 @@ CueControl::CueControl(QString group,
     m_pCueIndicator = new ControlIndicator(ConfigKey(group, "cue_indicator"));
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
 
-    m_pVinylControlEnabled = new ControlObjectSlave(group, "vinylcontrol_enabled");
-    m_pVinylControlMode = new ControlObjectSlave(group, "vinylcontrol_mode");
+    m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
+    m_pVinylControlMode = new ControlProxy(group, "vinylcontrol_mode");
 }
 
 CueControl::~CueControl() {

@@ -4,8 +4,8 @@
  * @date April 15, 2011
  */
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
 #include "util/timer.h"
@@ -43,7 +43,7 @@ VinylControlManager::~VinylControlManager() {
     // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_pConfig->set(ConfigKey(group, "vinylcontrol_enabled"), false);
+        m_pConfig->setValue(ConfigKey(group, "vinylcontrol_enabled"), false);
         m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
             ConfigValue(static_cast<int>(ControlObject::get(
                 ConfigKey(group, "vinylcontrol_cueing")))));
@@ -54,7 +54,7 @@ VinylControlManager::~VinylControlManager() {
 }
 
 void VinylControlManager::init() {
-    m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
     slotNumDecksChanged(m_pNumDecks->get());
 }
@@ -64,7 +64,7 @@ void VinylControlManager::toggleVinylControl(int deck) {
         return;
     }
 
-    ControlObjectSlave* pEnabled = m_pVcEnabled[deck];
+    ControlProxy* pEnabled = m_pVcEnabled[deck];
     pEnabled->set(!pEnabled->toBool());
 }
 
@@ -86,7 +86,7 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        ControlObjectSlave* pEnabled = new ControlObjectSlave(group, "vinylcontrol_enabled", this);
+        ControlProxy* pEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
         m_pVcEnabled.push_back(pEnabled);
         pEnabled->connectValueChanged(&m_vinylControlEnabledMapper, SLOT(map()));
         m_vinylControlEnabledMapper.setMapping(pEnabled, i);
@@ -112,7 +112,7 @@ void VinylControlManager::slotVinylControlEnabledChanged(int deck) {
         return;
     }
 
-    ControlObjectSlave* pEnabled = m_pVcEnabled.at(deck);
+    ControlProxy* pEnabled = m_pVcEnabled.at(deck);
     emit(vinylControlDeckEnabled(deck, pEnabled->toBool()));
 }
 

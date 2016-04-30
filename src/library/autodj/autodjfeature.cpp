@@ -18,8 +18,8 @@
 #include "library/autodj/dlgautodj.h"
 #include "library/treeitem.h"
 #include "widget/wlibrary.h"
-#include "mixxxkeyboard.h"
-#include "soundsourceproxy.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
@@ -106,7 +106,7 @@ QIcon AutoDJFeature::getIcon() {
 }
 
 void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
-                               MixxxKeyboard* keyboard) {
+                               KeyboardEventFilter* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                   m_pConfig,
                                   m_pLibrary,

@@ -16,8 +16,8 @@
 
 #include "enginedelay.h"
 
-#include "controlobjectslave.h"
-#include "controlpotmeter.h"
+#include "control/controlproxy.h"
+#include "control/controlpotmeter.h"
 #include "util/assert.h"
 #include "util/sample.h"
 
@@ -34,7 +34,7 @@ EngineDelay::EngineDelay(const char* group, ConfigKey delayControl)
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
             SLOT(slotDelayChanged()), Qt::DirectConnection);
 
-    m_pSampleRate = new ControlObjectSlave(group, "samplerate", this);
+    m_pSampleRate = new ControlProxy(group, "samplerate", this);
     m_pSampleRate->connectValueChanged(SLOT(slotDelayChanged()), Qt::DirectConnection);
 }
 

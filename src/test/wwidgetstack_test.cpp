@@ -6,9 +6,9 @@
 #include <QScopedPointer>
 
 #include "mixxxtest.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlproxy.h"
 
 class WWidgetStackTest : public MixxxTest {
   public:
@@ -209,4 +209,3 @@ TEST_F(WWidgetStackTest, HiddenStackNoChanges) {
     m_pStack->show();
     ExpectPageSelected(2);
 }
-

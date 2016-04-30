@@ -119,7 +119,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="builtInFormats">
         <property name="text">
-         <string></string>
+         <string/>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -258,7 +258,7 @@
       <item row="2" column="0">
        <widget class="QRadioButton" name="radioButton_dbclick_top">
         <property name="text">
-         <string>Add track to Auto-DJ Queue (top)</string>
+         <string>Add track to Auto DJ Queue (top)</string>
         </property>
        </widget>
       </item>
@@ -275,7 +275,7 @@
       <item row="1" column="0">
        <widget class="QRadioButton" name="radioButton_dbclick_bottom">
         <property name="text">
-         <string>Add track to Auto-DJ Queue (bottom)</string>
+         <string>Add track to Auto DJ Queue (bottom)</string>
         </property>
        </widget>
       </item>

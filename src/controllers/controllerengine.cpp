@@ -10,8 +10,8 @@
 
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
-#include "controlobject.h"
-#include "controlobjectscript.h"
+#include "control/controlobject.h"
+#include "control/controlobjectscript.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 // to tell the msvs compiler about `isnan`
@@ -98,30 +98,38 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
     }
 }
 
-/* -------- ------------------------------------------------------
-Purpose: Resolves a function name to a QScriptValue including
-            OBJECT.Function calls
-Input:   -
-Output:  -
--------- ------------------------------------------------------ */
-QScriptValue ControllerEngine::resolveFunction(const QString& function) const {
+/* ------------------------------------------------------------------
+Purpose: Turn a snippet of JS into a QScriptValue function.
+         Wrapping it in an anonymous function allows any JS that
+         evaluates to a function to be used in MIDI mapping XML files
+         and ensures the function is executed with the correct
+         'this' object.
+Input:   QString snippet of JS that evaluates to a function,
+         int number of arguments that the function takes
+Output:  QScriptValue of JS snippet wrapped in an anonymous function
+------------------------------------------------------------------- */
+QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
+                                                int numberOfArgs) {
+    QScriptValue wrappedFunction;
+
     QHash<QString, QScriptValue>::const_iterator i =
-            m_scriptValueCache.find(function);
-    if (i != m_scriptValueCache.end()) {
-        return i.value();
-    }
+            m_scriptWrappedFunctionCache.find(codeSnippet);
 
-    QScriptValue object = m_pEngine->globalObject();
-    QStringList parts = function.split(".");
-
-    for (int i = 0; i < parts.size(); i++) {
-        object = object.property(parts.at(i));
-        if (!object.isValid()) {
-            break;
+    if (i != m_scriptWrappedFunctionCache.end()) {
+        wrappedFunction = i.value();
+    } else {
+        QStringList wrapperArgList;
+        for (int i = 1; i <= numberOfArgs; i++) {
+            wrapperArgList << QString("arg%1").arg(i);
         }
+        QString wrapperArgs = wrapperArgList.join(",");
+        QString wrappedCode = "(function (" + wrapperArgs + ") { (" +
+                                codeSnippet + ")(" + wrapperArgs + "); })";
+        wrappedFunction = m_pEngine->evaluate(wrappedCode);
+        checkException();
+        m_scriptWrappedFunctionCache[codeSnippet] = wrappedFunction;
     }
-    m_scriptValueCache[function] = object;
-    return object;
+    return wrappedFunction;
 }
 
 /* -------- ------------------------------------------------------
@@ -158,8 +166,8 @@ void ControllerEngine::gracefulShutdown() {
         }
     }
 
-    // Clear the Script Value cache
-    m_scriptValueCache.clear();
+    // Clear the cache of function wrappers
+    m_scriptWrappedFunctionCache.clear();
 
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
@@ -297,19 +305,11 @@ bool ControllerEngine::evaluate(const QString& filepath) {
     return ret;
 }
 
-/* -------- ------------------------------------------------------
-Purpose: Evaluate & run script code
-Input:   'this' object if applicable, Code string
-Output:  false if an exception
--------- ------------------------------------------------------ */
-bool ControllerEngine::internalExecute(QScriptValue thisObject,
-                                       const QString& scriptCode) {
-    // A special version of safeExecute since we're evaluating strings, not actual functions
-    //  (execute() would print an error that it's not a function every time a timer fires.)
-    if (m_pEngine == nullptr)
+bool ControllerEngine::syntaxIsValid(const QString& scriptCode) {
+    if (m_pEngine == nullptr) {
         return false;
+    }
 
-    // Check syntax
     QScriptSyntaxCheckResult result = m_pEngine->checkSyntax(scriptCode);
     QString error = "";
     switch (result.state()) {
@@ -330,6 +330,25 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject,
                      scriptCode);
 
         scriptErrorDialog(error);
+        return false;
+    }
+    return true;
+}
+
+/* -------- ------------------------------------------------------
+Purpose: Evaluate & run script code
+Input:   'this' object if applicable, Code string
+Output:  false if an exception
+-------- ------------------------------------------------------ */
+bool ControllerEngine::internalExecute(QScriptValue thisObject,
+                                       const QString& scriptCode) {
+    // A special version of safeExecute since we're evaluating strings, not actual functions
+    //  (execute() would print an error that it's not a function every time a timer fires.)
+    if (m_pEngine == nullptr) {
+        return false;
+    }
+
+    if (!syntaxIsValid(scriptCode)) {
         return false;
     }
 
@@ -360,10 +379,16 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject, QScriptValue fun
         return false;
     }
 
+    if (functionObject.isError()) {
+        qDebug() << "ControllerEngine::internalExecute:"
+                 << functionObject.toString();
+        return false;
+    }
+
     // If it's not a function, we're done.
     if (!functionObject.isFunction()) {
-        qDebug() << "ControllerEngine::internalExecute:" 
-                 << functionObject.toVariant() 
+        qDebug() << "ControllerEngine::internalExecute:"
+                 << functionObject.toVariant()
                  << "Not a function";
         return false;
     }
@@ -441,6 +466,8 @@ bool ControllerEngine::checkException() {
         scriptErrorDialog(ControllerDebug::enabled() ?
                 QString("%1\nBacktrace:\n%2")
                 .arg(errorText, backtrace.join("\n")) : errorText);
+
+        m_pEngine->clearExceptions();
         return true;
     }
     return false;

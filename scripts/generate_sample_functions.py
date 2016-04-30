@@ -150,8 +150,8 @@ def copy_with_gain(output, base_indent_depth, num_channels):
         output.append(' ' * (BASIC_INDENT * (depth + base_indent_depth)) + data)
 
     header = "static inline void %s(" % copy_with_gain_method_name(num_channels)
-    arg_groups = ['CSAMPLE* _RESTRICT pDest'] + [
-        "const CSAMPLE* _RESTRICT pSrc%(i)d, CSAMPLE_GAIN gain%(i)d" % {'i': i}
+    arg_groups = ['CSAMPLE* M_RESTRICT pDest'] + [
+        "const CSAMPLE* M_RESTRICT pSrc%(i)d, CSAMPLE_GAIN gain%(i)d" % {'i': i}
         for i in xrange(num_channels)] + ['int iNumSamples']
 
     output.extend(hanging_indent(header, arg_groups, ',', ') {',
@@ -183,8 +183,8 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
         output.append(' ' * (BASIC_INDENT * (depth + base_indent_depth)) + data)
 
     header = "static inline void %s(" % copy_with_ramping_gain_method_name(num_channels)
-    arg_groups = ['CSAMPLE* _RESTRICT pDest'] + [
-        "const CSAMPLE* _RESTRICT pSrc%(i)d, CSAMPLE_GAIN gain%(i)din, CSAMPLE_GAIN gain%(i)dout" % {'i': i}
+    arg_groups = ['CSAMPLE* M_RESTRICT pDest'] + [
+        "const CSAMPLE* M_RESTRICT pSrc%(i)d, CSAMPLE_GAIN gain%(i)din, CSAMPLE_GAIN gain%(i)dout" % {'i': i}
         for i in xrange(num_channels)] + ['int iNumSamples']
 
     output.extend(hanging_indent(header, arg_groups, ',', ') {',
@@ -230,10 +230,10 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
 
 def main(args):
     sampleutil_output_lines = []
-    write_sampleutil_autogen(sampleutil_output_lines, args.max_channels)
+    write_sample_autogen(sampleutil_output_lines, args.max_channels)
 
-    output = (open(args.sampleutil_autogen_h, 'w')
-              if args.sampleutil_autogen_h else sys.stdout)
+    output = (open(args.sample_autogen_h, 'w')
+              if args.sample_autogen_h else sys.stdout)
     output.write('\n'.join(sampleutil_output_lines) + '\n')
 
     channelmixer_output_lines = []

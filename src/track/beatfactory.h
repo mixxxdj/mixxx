@@ -11,7 +11,7 @@ class BeatFactory {
                                                QString beatsVersion,
                                                QString beatsSubVersion,
                                                QByteArray* beatsSerialized);
-    static BeatsPointer makeBeatGrid(TrackInfoObject* pTrack,
+    static BeatsPointer makeBeatGrid(Track* pTrack,
                                      double dBpm, double dFirstBeatSample);
 
     static QString getPreferredVersion(const bool bEnableFixedTempoCorrection);

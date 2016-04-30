@@ -8,7 +8,7 @@
 
 #include "waveform/waveformwidgetfactory.h"
 
-#include "controlpotmeter.h"
+#include "control/controlpotmeter.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"

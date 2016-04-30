@@ -29,7 +29,7 @@
 #define DECAY_SMOOTHING .1  //.16//.4
 
 class ControlPotmeter;
-class ControlObjectSlave;
+class ControlProxy;
 
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
@@ -61,7 +61,7 @@ class EngineVuMeter : public EngineObject {
     int m_peakDurationL;
     int m_peakDurationR;
 
-    ControlObjectSlave* m_pSampleRate;
+    ControlProxy* m_pSampleRate;
 };
 
 #endif

@@ -8,7 +8,7 @@
 
 #include <QCompleter>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"

@@ -3,10 +3,10 @@
 #include <QtDebug>
 
 #include "preferences/usersettings.h"
-#include "controlaudiotaperpot.h"
-#include "controlobject.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlaudiotaperpot.h"
+#include "control/controlobject.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "util/math.h"
 #include "util/sample.h"
 

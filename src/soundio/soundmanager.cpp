@@ -24,7 +24,7 @@
 #include <portaudio.h>
 #endif // ifdef __PORTAUDIO__
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"

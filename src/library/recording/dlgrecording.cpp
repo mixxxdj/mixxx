@@ -1,6 +1,6 @@
 #include <QDesktopServices>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "library/recording/dlgrecording.h"
 #include "library/trackcollection.h"
 #include "widget/wwidget.h"
@@ -10,7 +10,7 @@
 
 DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
                            Library* pLibrary, TrackCollection* pTrackCollection,
-                           RecordingManager* pRecordingManager, MixxxKeyboard* pKeyboard)
+                           RecordingManager* pRecordingManager, KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),

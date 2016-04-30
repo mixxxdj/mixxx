@@ -7,7 +7,7 @@
 #include <QMap>
 #include <QSqlDatabase>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/dao/dao.h"
 
 #define CUE_TABLE "cues"
@@ -30,7 +30,7 @@ class CueDAO : public DAO {
     bool deleteCue(Cue* cue);
     // TODO(XXX) once we refer to all tracks by their id and TIO has a getId()
     // method the first parameter here won't be necessary.
-    void saveTrackCues(TrackId trackId, TrackInfoObject*);
+    void saveTrackCues(TrackId trackId, Track*);
   private:
     CuePointer cueFromRow(const QSqlQuery& query) const;
 

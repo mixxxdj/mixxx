@@ -29,9 +29,6 @@ WLabel::WLabel(QWidget* pParent)
           m_elideMode(Qt::ElideNone) {
 }
 
-WLabel::~WLabel() {
-}
-
 void WLabel::setup(QDomNode node, const SkinContext& context) {
     // Colors
     QPalette pal = palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)

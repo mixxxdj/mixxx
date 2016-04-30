@@ -21,8 +21,8 @@
 
 #include "preferences/dialog/dlgprefeq.h"
 #include "engine/enginefilterbessel4.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "util/math.h"
 #include "mixer/playermanager.h"
 #include "effects/effectrack.h"
@@ -75,7 +75,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
-    m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
     slotNumDecksChanged(m_pNumDecks->get());
 
@@ -601,7 +601,7 @@ void DlgPrefEQ::slotBypass(int state) {
         // Enable effect processing for all decks by setting the appropriate
         // controls to 1 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
         int deck = 0;
-        ControlObjectSlave enableControl;
+        ControlProxy enableControl;
         foreach(QComboBox* box, m_deckEqEffectSelectors) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 1);

@@ -4,7 +4,7 @@
 #include <QMutex>
 #include <QObject>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
 #include "proto/beats.pb.h"
 
@@ -20,7 +20,7 @@ class BeatGrid : public QObject, public virtual Beats {
     // Construct a BeatGrid. If a more accurate sample rate is known, provide it
     // in the iSampleRate parameter -- otherwise pass 0. If pByteArray is
     // non-NULL, the BeatGrid will be deserialized from the byte array.
-    BeatGrid(TrackInfoObject* pTrack, int iSampleRate,
+    BeatGrid(Track* pTrack, int iSampleRate,
              const QByteArray* pByteArray = nullptr);
     virtual ~BeatGrid();
 

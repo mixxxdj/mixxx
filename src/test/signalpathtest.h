@@ -8,7 +8,7 @@
 #include <QTest>
 
 #include "preferences/usersettings.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "mixer/deck.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginebuffer.h"
@@ -98,7 +98,7 @@ class SignalPathTest : public MixxxTest {
 
     void loadTrack(EngineDeck* pDeck, QString path) {
         const QString kTrackLocationTest(path);
-        TrackPointer pTrack(TrackInfoObject::newTemporary(kTrackLocationTest));
+        TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
         pDeck->getEngineBuffer()->loadTrack(pTrack, true);
 
         // Wait for the track to load.

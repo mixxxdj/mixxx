@@ -7,24 +7,24 @@ import SCons.Script as SCons
 import depends
 
 class OpenGLES(Feature):
-	def description(self):
-		return "OpenGL-ES >= 2.0 support [Experimental]"
+    def description(self):
+        return "OpenGL-ES >= 2.0 support [Experimental]"
 
-	def enabled(self, build):
-		build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
-		return int(build.flags['opengles'])
+    def enabled(self, build):
+        build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
+	return int(build.flags['opengles'])
 
-	def add_options(self, build, vars):
-		vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
+    def add_options(self, build, vars):
+        vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
 
-	def configure(self, build, conf):
-		if not self.enabled(build):
-          		return
-		if build.flags['opengles']:
-			build.env.Append(CPPDEFINES='__OPENGLES__')
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+	if build.flags['opengles']:
+	    build.env.Append(CPPDEFINES='__OPENGLES__')
 
-	def sources(self, build):
-		return []
+    def sources(self, build):
+        return []
 
 class HSS1394(Feature):
     def description(self):
@@ -82,7 +82,7 @@ class HID(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
- 
+
         if build.platform_is_linux:
             # Try using system lib
             if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
@@ -371,7 +371,7 @@ class VinylControl(Feature):
 
 class Vamp(Feature):
     INTERNAL_LINK = False
-    INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
+    INTERNAL_VAMP_PATH = '#lib/vamp-2.6'
 
     def description(self):
         return "Vamp Analyzer support"
@@ -422,7 +422,8 @@ class Vamp(Feature):
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
             sources.extend(path % hostsdk_src_path for path in
-                           ['%s/PluginBufferingAdapter.cpp',
+                           ['%s/Files.cpp',
+                            '%s/PluginBufferingAdapter.cpp',
                             '%s/PluginChannelAdapter.cpp',
                             '%s/PluginHostAdapter.cpp',
                             '%s/PluginInputDomainAdapter.cpp',
@@ -808,9 +809,9 @@ class TestSuite(Feature):
         return []
 
 
-class Shoutcast(Feature):
+class LiveBroadcasting(Feature):
     def description(self):
-        return "Shoutcast Broadcasting (OGG/MP3)"
+        return "Live Broadcasting Support"
 
     def enabled(self, build):
         build.flags['shoutcast'] = util.get_flags(build.env, 'shoutcast', 1)
@@ -819,14 +820,14 @@ class Shoutcast(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 1)
+        vars.Add('shoutcast', 'Set to 1 to enable live broadcasting support', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
         libshout_found = conf.CheckLib(['libshout', 'shout'])
-        build.env.Append(CPPDEFINES='__SHOUTCAST__')
+        build.env.Append(CPPDEFINES='__BROADCAST__')
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
@@ -836,10 +837,10 @@ class Shoutcast(Feature):
             conf.CheckLib('ws2_32')
 
     def sources(self, build):
-        depends.Qt.uic(build)('preferences/dialog/dlgprefshoutcastdlg.ui')
-        return ['preferences/dialog/dlgprefshoutcast.cpp',
-                'shoutcast/shoutcastmanager.cpp',
-                'engine/sidechain/engineshoutcast.cpp']
+        depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')
+        return ['preferences/dialog/dlgprefbroadcast.cpp',
+                'broadcast/broadcastmanager.cpp',
+                'engine/sidechain/enginebroadcast.cpp']
 
 
 class Opus(Feature):
@@ -1105,7 +1106,9 @@ class Optimize(Feature):
 
             # the following optimisation flags makes the engine code ~3 times
             # faster, measured on a Atom CPU.
-            build.env.Append(CCFLAGS='-O3 -ffast-math -funroll-loops')
+            build.env.Append(CCFLAGS='-O3')
+            build.env.Append(CCFLAGS='-ffast-math')
+            build.env.Append(CCFLAGS='-funroll-loops')
 
             # set -fomit-frame-pointer when we don't profile.
             # Note: It is only included in -O on machines where it does not
@@ -1249,3 +1252,36 @@ class LocaleCompare(Feature):
         if not conf.CheckLib(['sqlite3']):
             raise Exception('Missing libsqlite3 -- exiting!')
         build.env.Append(CPPDEFINES='__SQLITE3__')
+
+class Battery(Feature):
+    def description(self):
+        return "Battery meter support."
+
+    def enabled(self, build):
+        build.flags['battery'] = util.get_flags(build.env, 'battery', 1)
+        if int(build.flags['battery']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('battery',
+                 'Set to 1 to enable battery meter support.')
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.Append(CPPDEFINES='__BATTERY__')
+
+    def sources(self, build):
+        if build.platform_is_windows:
+            return ["util/battery/batterywindows.cpp"]
+        elif build.platform_is_osx:
+            return ["util/battery/batterymac.cpp"]
+        elif build.platform_is_linux:
+            return ["util/battery/batterylinux.cpp"]
+        else:
+            raise Exception('Battery support is not implemented for the target platform.')
+
+    def depends(self, build):
+        return [depends.IOKit, depends.UPower]

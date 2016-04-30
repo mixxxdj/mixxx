@@ -2,8 +2,8 @@
 
 #include <QDebug>
 
-#include "controlpushbutton.h"
-#include "controlobjectslave.h"
+#include "control/controlpushbutton.h"
+#include "control/controlproxy.h"
 
 // The maximum number of effect parameters we're going to support.
 const unsigned int kDefaultMaxParameters = 16;

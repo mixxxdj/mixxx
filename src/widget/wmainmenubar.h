@@ -8,8 +8,8 @@
 #include <QScopedPointer>
 #include <QSignalMapper>
 
-#include "configobject.h"
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 
 class VisibilityControlConnection : public QObject {
@@ -17,7 +17,6 @@ class VisibilityControlConnection : public QObject {
   public:
     VisibilityControlConnection(QObject* pParent, QAction* pAction,
                                 const ConfigKey& key);
-    virtual ~VisibilityControlConnection();
 
   private slots:
     void slotClearControl();
@@ -27,16 +26,15 @@ class VisibilityControlConnection : public QObject {
 
   private:
     ConfigKey m_key;
-    QScopedPointer<ControlObjectSlave> m_pControl;
+    QScopedPointer<ControlProxy> m_pControl;
     QAction* m_pAction;
 };
 
 class WMainMenuBar : public QMenuBar {
     Q_OBJECT
   public:
-    WMainMenuBar(QWidget* pParent, UserSettingsPointer pSettings,
+    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
                  ConfigObject<ConfigValueKbd>* pKbdConfig);
-    virtual ~WMainMenuBar();
 
   public slots:
     void onLibraryScanStarted();
@@ -79,7 +77,7 @@ class WMainMenuBar : public QMenuBar {
   private slots:
     void slotDeveloperStatsExperiment(bool enable);
     void slotDeveloperStatsBase(bool enable);
-    void slotDeveloperDebugger(bool enable);
+    void slotDeveloperDebugger(bool toggle);
     void slotVisitUrl(const QString& url);
 
   private:

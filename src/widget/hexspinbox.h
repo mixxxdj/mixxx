@@ -6,13 +6,12 @@
 
 class HexSpinBox : public QSpinBox {
   public:
-    HexSpinBox(QWidget *parent);
-    virtual ~HexSpinBox();
+    explicit HexSpinBox(QWidget *pParent);
 
   protected:
-    QString textFromValue(int value) const;
-    int valueFromText(const QString& text) const;
-    QValidator::State validate(QString& input, int& pos) const;
+    QString textFromValue(int value) const override;
+    int valueFromText(const QString& text) const override;
+    QValidator::State validate(QString& input, int& pos) const override;
 };
 
 #endif /* HEXSPINBOX_H */

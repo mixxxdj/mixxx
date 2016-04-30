@@ -9,7 +9,7 @@
 #include "library/browse/browsethread.h"
 #include "library/previewbuttondelegate.h"
 #include "mixer/playerinfo.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "library/dao/trackdao.h"
 #include "track/trackmetadatataglib.h"
 #include "util/dnd.h"
@@ -39,7 +39,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     header_data.insert(COLUMN_KEY, tr("Key"));
     header_data.insert(COLUMN_TYPE, tr("Type"));
     header_data.insert(COLUMN_BITRATE, tr("Bitrate"));
-    header_data.insert(COLUMN_REPLAYGAIN, tr("Replay Gain"));
+    header_data.insert(COLUMN_REPLAYGAIN, tr("ReplayGain"));
     header_data.insert(COLUMN_LOCATION, tr("Location"));
     header_data.insert(COLUMN_ALBUMARTIST, tr("Album Artist"));
     header_data.insert(COLUMN_GROUPING, tr("Grouping"));

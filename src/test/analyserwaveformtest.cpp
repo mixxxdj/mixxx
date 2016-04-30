@@ -2,7 +2,7 @@
 #include <QtDebug>
 #include <QDir>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "analyzer/analyzerwaveform.h"
 #include "test/mixxxtest.h"
 
@@ -17,7 +17,7 @@ class AnalyzerWaveformTest: public MixxxTest {
   protected:
     virtual void SetUp() {
         aw = new AnalyzerWaveform(config());
-        tio = TrackInfoObject::newTemporary();
+        tio = Track::newTemporary();
         tio->setSampleRate(44100);
 
         bigbuf = new CSAMPLE[BIGBUF_SIZE];

@@ -3,14 +3,14 @@
 
 #include <QObject>
 
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 
 class ControlObject;
 class ControlPushButton;
 class Library;
 class WLibrary;
 class WLibrarySidebar;
-class MixxxKeyboard;
+class KeyboardEventFilter;
 
 class LoadToGroupController : public QObject {
     Q_OBJECT
@@ -37,7 +37,7 @@ class LibraryControl : public QObject {
     LibraryControl(Library* pLibrary);
     virtual ~LibraryControl();
 
-    void bindWidget(WLibrary* pLibrary, MixxxKeyboard* pKeyboard);
+    void bindWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
 
   private slots:
@@ -86,9 +86,9 @@ class LibraryControl : public QObject {
 
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
-    ControlObjectSlave m_numDecks;
-    ControlObjectSlave m_numSamplers;
-    ControlObjectSlave m_numPreviewDecks;
+    ControlProxy m_numDecks;
+    ControlProxy m_numSamplers;
+    ControlProxy m_numPreviewDecks;
     QMap<QString, LoadToGroupController*> m_loadToGroupControllers;
 };
 

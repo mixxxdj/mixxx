@@ -3,7 +3,7 @@
 
 #include "waveformmarkset.h"
 #include "engine/cuecontrol.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 
 WaveformMarkSet::WaveformMarkSet() {
 }
