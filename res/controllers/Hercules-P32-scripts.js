@@ -407,13 +407,23 @@ var LayerContainer = function (initialLayer) {
             return;
         }
         if (recursive === undefined) { recursive = true; }
+
+        var that = this;
+        var applyOperationTo = function (obj) {
+            if (obj instanceof Control) {
+                operation.call(that, obj);
+            } else if (recursive && obj instanceof LayerContainer) {
+                obj.forEachControl(op);
+            } else if (Array.isArray(obj)) {
+                obj.forEach(function (element) {
+                    applyOperationTo(element);
+                });
+            }
+        };
+
         for (var memberName in this) {
             if (this.hasOwnProperty(memberName)) {
-                if (this[memberName] instanceof Control) {
-                    operation.call(this, this[memberName]);
-                } else if (recursive && this[memberName] instanceof LayerContainer) {
-                    this[memberName].forEachControl(iterative);
-                }
+                applyOperationTo(this[memberName]);
             }
         }
     };
