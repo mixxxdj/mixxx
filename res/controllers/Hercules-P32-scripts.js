@@ -119,66 +119,67 @@ var Control = function (signals, group, inOptions, outOptions) {
 }
 
 // for buttons that toggle a binary CO
-ToggleButton = function (signals, deck, co, onlyOnPress, on, off) {
+var ToggleButton = function (signals, group, co, onlyOnPress, on, off) {
+    var that = this; // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
-    Control.call(this, signals, deck,
-                [co, function () { return ! engine.getValue(this.group, this.inCo) }, onlyOnPress],
-                [co, function () { return (engine.getValue(this.group, this.outCo)) ? on : off }]);
+    Control.call(this, signals, group,
+                [co, function () { return ! that.getValue(); }, onlyOnPress],
+                [co, function () { return (that.getValue()) ? on : off } ]);
 }
 ToggleButton.prototype = Object.create(Control.prototype);
 ToggleButton.prototype.constructor = ToggleButton;
 
-// for buttons that toggle a binary CO but their LEDs respond to a different CO, that is,
-ToggleButtonAsymmetic = function (signals, deck, inCo, outCo, onlyOnPress, on, off) {
+// for buttons that toggle a binary CO but their LEDs respond to a different CO
+var ToggleButtonAsymmetic = function (signals, group, inCo, outCo, onlyOnPress, on, off) {
+    var that = this; // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
-    Control.call(this, signals, deck,
-                [inCo, function () { return ! engine.getValue(this.group, this.inCo) }, onlyOnPress],
-                [outCo, function (value) { return (value) ? on : off }]);
+    Control.call(this, signals, group,
+                [inCo, function () { return ! that.getValue(); }, onlyOnPress],
+                [outCo, function (value) { return (value) ? on : off } ]);
 }
 ToggleButtonAsymmetic.prototype = Object.create(Control.prototype);
 ToggleButtonAsymmetic.prototype.constructor = ToggleButtonAsymmetic;
 
-CueButton = function (signals, deck, on, off) {
+var CueButton = function (signals, group, on, off) {
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
-    ToggleButtonAsymmetic.call(this, signals, deck, 'cue_default', 'cue_indicator', false, on, off);
+    ToggleButtonAsymmetic.call(this, signals, group, 'cue_default', 'cue_indicator', false, on, off);
 }
 CueButton.prototype = Object.create(ToggleButtonAsymmetic.prototype);
 CueButton.prototype.constructor = CueButton;
 
-PlayButton = function (signals, deck, on, off) {
+var PlayButton = function (signals, group, on, off) {
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
-    ToggleButtonAsymmetic.call(this, signals, deck,
+    ToggleButtonAsymmetic.call(this, signals, group,
                                'play', 'play_indicator', true, on, off);
 }
 PlayButton.prototype = Object.create(ToggleButtonAsymmetic.prototype);
 PlayButton.prototype.constructor = PlayButton;
 
-HotcueButton = function (signals, deck, hotcueNumber, on, off) {
+var HotcueButton = function (signals, group, hotcueNumber, on, off) {
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
-    ToggleButtonAsymmetic.call(this, signals, deck,
+    ToggleButtonAsymmetic.call(this, signals, group,
                                'hotcue_'+hotcueNumber+'_activate', 'hotcue_'+hotcueNumber+'_enabled', false, on, off);
 }
 HotcueButton.prototype = Object.create(ToggleButtonAsymmetic.prototype);
 HotcueButton.prototype.constructor = HotcueButton;
 
-HotcueClearButton = function (signals, deck, hotcueNumber, on, off) {
+var HotcueClearButton = function (signals, group, hotcueNumber, on, off) {
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
-    Control.call(this, signals, deck,
-                 ['hotcue_'+hotcueNumber+'_clear', function () {return 1;}],
-                 ['hotcue_'+hotcueNumber+'_enabled', function (value) { return (value) ? on : off; }]);
+    HotcueButton.call(this, signals, group, hotcueNumber, on, off);
+    this.inSetup(['hotcue_'+hotcueNumber+'_clear', function () {return 1;} ]);
 }
-HotcueClearButton.prototype = Object.create(Control.prototype);
+HotcueClearButton.prototype = Object.create(HotcueButton.prototype);
 HotcueClearButton.prototype.constructor = HotcueClearButton;
 
 // for COs that only get set to 1
-ActionButton = function (signals, deck, inCo, onlyOnPress) {
-    Control.call(this, signals, deck,
+var ActionButton = function (signals, group, inCo, onlyOnPress) {
+    Control.call(this, signals, group,
                 [inCo, function () { return 1; }, onlyOnPress],
                 null);
 }
@@ -186,7 +187,7 @@ ActionButton.prototype = Object.create(Control.prototype);
 ActionButton.prototype.constructor = ActionButton;
 
 // Continuous Control, for faders and knobs with finite ranges
-CC = function (signals, deck, co, softTakeoverInit, max) {
+var CC = function (signals, group, co, softTakeoverInit, max) {
     // Some controllers (like the P32) can be sent a message to tell it to send
     // signals back with the positions of all the controls. It is helpful to
     // send the message in the script's init function, but it requires that
@@ -195,7 +196,7 @@ CC = function (signals, deck, co, softTakeoverInit, max) {
     var that = this;
     if (softTakeoverInit === undefined) { softTakeoverInit = true; }
     if (max === undefined) { max = 127; };
-    Control.call(this, signals, deck,
+    Control.call(this, signals, group,
                  [co, null],
                  null);
 
@@ -221,9 +222,9 @@ CC.prototype = Object.create(Control.prototype);
 CC.prototype.constructor = CC;
 
 // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
-CCLin = function (signals, deck, co, softTakeoverInit, low, high, min, max) {
+var CCLin = function (signals, group, co, softTakeoverInit, low, high, min, max) {
     var that = this;
-    CC.call(this, signals, deck, co, softTakeoverInit);
+    CC.call(this, signals, group, co, softTakeoverInit);
     this.input = function (channel, control, value, status, group) {
         engine.setValue(that.group, that.inCo, script.absoluteLin(value, low, high, min, max));
     }
@@ -232,9 +233,9 @@ CCLin.prototype = Object.create(CC.prototype);
 CCLin.prototype.constructor = CCLin;
 
 // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
-CCNonLin = function (signals, deck, co, softTakeoverInit, low, mid, high, min, max) {
+var CCNonLin = function (signals, group, co, softTakeoverInit, low, mid, high, min, max) {
     var that = this;
-    CC.call(this, signals, deck, co, softTakeoverInit);
+    CC.call(this, signals, group, co, softTakeoverInit);
     this.input = function (channel, control, value, status, group) {
         engine.setValue(that.group, that.inCo, script.absoluteNonLin(value, low, mid, high, min, max));
     }
