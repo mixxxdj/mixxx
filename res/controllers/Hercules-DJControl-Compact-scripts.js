@@ -1,9 +1,9 @@
 // Mode button does give out midi, but the selection itself is done inside the
 // controller -- no control over which mode is selected for instance.
 
-HercDJCompact = new function() {
+HercDJCompact = function() {
    this.group = "[Master]";
-}
+};
 
 HercDJCompact.init = function(id) {
     scratch = false;
@@ -49,7 +49,7 @@ HercDJCompact.jog_wheel = function (group, control, value, status) {
         value = value - 0x80;
     }
     if (scratch) {
-        if (value != 0) {
+        if (value !== 0) {
             if (scratch_timer_on[input.channel]) {
                 engine.stopTimer(scratch_timer[input.channel]);
                 scratch_timer_on[input.channel] = false;
@@ -69,7 +69,7 @@ HercDJCompact.jog_wheel = function (group, control, value, status) {
             scratch_timer_on[input.channel] = true;
         }
     } else {
-        if (value != 0) {
+        if (value !== 0) {
             if (!engine.getValue(input.group, "play")) {
                 engine.setValue(input.group, "jog", value);
             }
@@ -80,8 +80,9 @@ HercDJCompact.jog_wheel = function (group, control, value, status) {
 HercDJCompact.jog_wheelhelper = function(n) {
     engine.scratchDisable(n);
     scratch_timer_on[n] = false;
-}
+};
 
+// Pitch is adjusted by holding down shift and turning the jog wheel.
 HercDJCompact.pitch = function (group, control, value, status) {
     var input = HercDJCompact.controls.inputs[control];
     if (value & 0x40) {
