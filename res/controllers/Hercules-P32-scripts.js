@@ -32,6 +32,25 @@ var loopEnabledDot = false;
 **/
 
 var Control = function (signals, group, inOptions, outOptions) {
+    /**
+    signals, two member array: first two bytes of the MIDI message (status and note numbers)
+    group, string: the group this belongs to, for example '[Channel1]'
+    inOptions, null or array with up to 3 members: If null, you need to set the input property yourself (as well as inCo if you want to use that).
+        1st member of array, string: Mixxx CO that this affects when receiving MIDI input, for example, 'play'
+        2nd member of array, function or null: function to execute upon receiving MIDI input. The function should return
+                                                the value to set the 1st member of the array to. If null, you need to set
+                                                the input property yourself.
+        3rd member of array, boolean, optional: whether to react only when a button is pressed, or on both press & release.
+                                                Default to true if ommitted.
+    outOptions, null or array with up to 4 members: If null, you need to set up the output yourself.
+        1st member of array, string: send signals back to the controller when this Mixxx CO changes, for example, 'play_indicator'
+        2nd member of array, function: function to execute when Mixxx CO specified by 1st member of array changes.
+                                       The function should return a value to send back as the 3rd byte of a MIDI message
+                                       (with the first 2 bytes of the MIDI message being those specified in the first argument).
+        3rd member of array, boolean, optional: whether to connect the Mixxx CO (1st member) to the function (2nd member) immediately.
+                                                Default to true if ommitted.
+        4th member of array, boolean, optional: whether to execute the function (2nd member) immediately. Default to true if ommitted.
+    **/
     var that = this;
     this.midi = {status: signals[0], note: signals[1]};
     this.group = group;
@@ -117,29 +136,58 @@ var Control = function (signals, group, inOptions, outOptions) {
 
 // for buttons that toggle a binary CO
 var ToggleButton = function (signals, group, co, onlyOnPress, on, off) {
-    var that = this; // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
+    /**
+    signals: two member array, first two bytes of the MIDI message (status and note numbers)
+    group: string, the group this belongs to, for example '[Channel1]'
+    co, string: the Mixxx CO to toggle
+    onlyOnPress, boolean, optional: whether to toggle the CO only when the button is pressed,
+                                    or on both press and release. Defaults to true if ommited.
+    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when the Mixxx CO is on
+                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
+    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when the Mixxx CO is off
+                           Defaults to 0 if ommitted.
+    **/
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
     Control.call(this, signals, group,
-                [co, function () { return ! that.getValue(); }, onlyOnPress],
-                [co, function () { return (that.getValue()) ? on : off } ]);
+                [co, function () { return ! this.getValue(); }, onlyOnPress],
+                [co, function () { return (this.getValue()) ? on : off } ]);
 }
 ToggleButton.prototype = Object.create(Control.prototype);
 ToggleButton.prototype.constructor = ToggleButton;
 
 // for buttons that toggle a binary CO but their LEDs respond to a different CO
 var ToggleButtonAsymmetric = function (signals, group, inCo, outCo, onlyOnPress, on, off) {
-    var that = this; // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
+    /**
+    signals: two member array, first two bytes of the MIDI message (status and note numbers)
+    group: string, the group this belongs to, for example '[Channel1]'
+    inCo, string: the Mixxx CO to toggle when receiving MIDI input
+    outCo, string: send signals back to the controller when this Mixxx CO changes
+    onlyOnPress, boolean, optional: whether to toggle inCO only when the button is pressed,
+                                    or on both press and release. Defaults to true if ommited.
+    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when outCo on
+                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
+    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when outCo is off
+                           Defaults to 0 if ommitted.
+    **/
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
     Control.call(this, signals, group,
-                [inCo, function () { return ! that.getValue(); }, onlyOnPress],
+                [inCo, function () { return ! this.getValue(); }, onlyOnPress],
                 [outCo, function (value) { return (value) ? on : off } ]);
 }
 ToggleButtonAsymmetric.prototype = Object.create(Control.prototype);
 ToggleButtonAsymmetric.prototype.constructor = ToggleButtonAsymmetric;
 
 var CueButton = function (signals, group, on, off) {
+    /**
+    signals: two member array, first two bytes of the MIDI message (status and note numbers)
+    group: string, the group this belongs to, for example '[Channel1]'
+    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when cue_indicator is 1
+                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
+    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when cue_indicator is 0
+                           Defaults to 0 if ommitted.
+    **/
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
     ToggleButtonAsymmetric.call(this, signals, group, 'cue_default', 'cue_indicator', false, on, off);
@@ -148,6 +196,14 @@ CueButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
 CueButton.prototype.constructor = CueButton;
 
 var PlayButton = function (signals, group, on, off) {
+    /**
+    signals: two member array, first two bytes of the MIDI message (status and note numbers)
+    group: string, the group this belongs to, for example '[Channel1]'
+    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when play_indicator is 1
+                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
+    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when play_indicator is 0
+                           Defaults to 0 if ommitted.
+    **/
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
     ToggleButtonAsymmetric.call(this, signals, group,
@@ -157,6 +213,15 @@ PlayButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
 PlayButton.prototype.constructor = PlayButton;
 
 var HotcueButton = function (signals, group, hotcueNumber, on, off) {
+    /**
+    signals: two member array, first two bytes of the MIDI message (status and note numbers)
+    group: string, the group this belongs to, for example '[Channel1]'
+    hotcueNumber, number: the number of the hotcue
+    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when cue_indicator is 1
+                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
+    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when cue_indicator is 0
+                           Defaults to 0 if ommitted.
+    **/
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
     ToggleButtonAsymmetric.call(this, signals, group,
@@ -166,6 +231,15 @@ HotcueButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
 HotcueButton.prototype.constructor = HotcueButton;
 
 var HotcueClearButton = function (signals, group, hotcueNumber, on, off) {
+    /**
+    signals: two member array, first two bytes of the MIDI message (status and note numbers)
+    group: string, the group this belongs to, for example '[Channel1]'
+    hotcueNumber, number: the number of the hotcue
+    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when cue_indicator is 1
+                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
+    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when cue_indicator is 0
+                           Defaults to 0 if ommitted.
+    **/
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
     HotcueButton.call(this, signals, group, hotcueNumber, on, off);
@@ -176,6 +250,13 @@ HotcueClearButton.prototype.constructor = HotcueClearButton;
 
 // for COs that only get set to 1
 var ActionButton = function (signals, group, inCo, onlyOnPress) {
+    /**
+    signals: two member array, first two bytes of the MIDI message (status and note numbers)
+    group: string, the group this belongs to, for example '[Channel1]'
+    co, string: the Mixxx CO to activate
+    onlyOnPress, boolean, optional: whether to toggle the CO only when the button is pressed,
+                                    or on both press and release. Defaults to true if ommited.
+    **/
     Control.call(this, signals, group,
                 [inCo, function () { return 1; }, onlyOnPress],
                 null);
@@ -185,11 +266,17 @@ ActionButton.prototype.constructor = ActionButton;
 
 // Continuous Control, for faders and knobs with finite ranges
 var CC = function (signals, group, co, softTakeoverInit, max) {
-    // Some controllers (like the P32) can be sent a message to tell it to send
-    // signals back with the positions of all the controls. It is helpful to
-    // send the message in the script's init function, but it requires that
-    // soft takeover isn't enabled to work. So, for these controllers, call
-    // this constructor function with softTakeoverInit as false.
+    /**
+    signals: two member array, first two bytes of the MIDI message (status and note numbers)
+    group: string, the group this belongs to, for example '[Channel1]'
+    co, string: the Mixxx CO to change
+    softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults to true if ommitted.
+                                         Some controllers (like the Hercules P32) can be sent a message to tell it to send
+                                         signals back with the positions of all the controls. It is helpful to send the message
+                                         in the script's init function, but it requires that soft takeover isn't enabled to work.
+                                         So, for these controllers, call this constructor function with softTakeoverInit as false.
+    max, number, optional: the maximum value received from the controller. Defaults to 127 if ommitted.
+    **/
     var that = this;
     if (softTakeoverInit === undefined) { softTakeoverInit = true; }
     if (max === undefined) { max = 127; };
@@ -220,6 +307,17 @@ CC.prototype.constructor = CC;
 
 // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
 var CCLin = function (signals, group, co, softTakeoverInit, low, high, min, max) {
+    /**
+    signals: two member array, first two bytes of the MIDI message (status and note numbers)
+    group: string, the group this belongs to, for example '[Channel1]'
+    co, string: the Mixxx CO to change
+    softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults to true if ommitted.
+                                         Some controllers (like the Hercules P32) can be sent a message to tell it to send
+                                         signals back with the positions of all the controls. It is helpful to send the message
+                                         in the script's init function, but it requires that soft takeover isn't enabled to work.
+                                         So, for these controllers, call this constructor function with softTakeoverInit as false.
+    low, high, min, max: arguments for script.absoluteLin()
+    **/
     var that = this;
     CC.call(this, signals, group, co, softTakeoverInit);
     this.input = function (channel, control, value, status, group) {
@@ -231,6 +329,17 @@ CCLin.prototype.constructor = CCLin;
 
 // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
 var CCNonLin = function (signals, group, co, softTakeoverInit, low, mid, high, min, max) {
+    /**
+    signals: two member array, first two bytes of the MIDI message (status and note numbers)
+    group: string, the group this belongs to, for example '[Channel1]'
+    co, string: the Mixxx CO to change
+    softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults to true if ommitted.
+                                         Some controllers (like the Hercules P32) can be sent a message to tell it to send
+                                         signals back with the positions of all the controls. It is helpful to send the message
+                                         in the script's init function, but it requires that soft takeover isn't enabled to work.
+                                         So, for these controllers, call this constructor function with softTakeoverInit as false.
+    low, mid, high, min, max: arguments for script.absoluteNonLin()
+    **/
     var that = this;
     CC.call(this, signals, group, co, softTakeoverInit);
     this.input = function (channel, control, value, status, group) {
@@ -241,7 +350,19 @@ CCNonLin.prototype = Object.create(CC.prototype);
 CCNonLin.prototype.constructor = CCNonLin;
 
 var LayerContainer = function (initialLayer) {
+    /**
+    initialLayer, object, optional: the layer to activate upon initialization
+    **/
     this.forEachControl = function (operation, recursive) {
+        /**
+        Iterate over each Control in this LayerContainer and execute a function.
+        The function is passed each Control as its first argument.
+
+        operation, function that takes 0-1 arguments: the function to call for each Control
+        recursive, boolean, optional: whether to call forEachControl recursively
+                                      for each LayerContainer within this LayerContainer.
+                                      Defaults to true if ommitted.
+        **/
         if (typeof operation !== 'function') {
             print('ERROR: LayerContainer.forEachContainer requires a function argument');
             return;
@@ -259,6 +380,11 @@ var LayerContainer = function (initialLayer) {
     }
     
     this.reconnectControls = function (operation) {
+        /**
+        operation, function that takes one argument, optional: a function to call for each Control in this LayerContainer
+                                                               before reconnecting the output callback.
+                                                               The Control is passed as the first argument.
+        **/
         this.forEachControl(function (control) {
             control.disconnect();
             if (typeof operation === 'function') {
@@ -271,9 +397,15 @@ var LayerContainer = function (initialLayer) {
     
     this.applyLayer = function (newLayer, operation) {
         //FIXME: What is the best way to implement script.extend?
-        script.extend(true, this, newLayer);
+        //There is a pure JS port of jQuery's extend method at https://github.com/justmoon/node-extend under the MIT License
+        //Copy that into common-controller-scripts.js? Make it a separate file to include in the XML?
+        script.extend(true, this, newLayer); // Recursively merge newLayer with this LayerContainer
         this.reconnectControls(operation);
     };
+
+    if (typeof initialLayer === 'object') {
+        this.applyLayer(initialLayer);
+    }
 }
 
 script.samplerRegEx = /\[Sampler(\d+)\]/
@@ -282,6 +414,10 @@ script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/
 script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/
 
 var Deck = function (deckNumbers) {
+    /**
+    deckNumbers, array of numbers, size arbitrary: which deck numbers this can cycle through with the toggle() method
+                                                   Typically [1, 3] or [2, 4]
+    **/
     LayerContainer.call(this);
     this.currentDeck = '[Channel' + deckNumbers[0] + ']';
     
