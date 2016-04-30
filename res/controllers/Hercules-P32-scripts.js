@@ -131,7 +131,7 @@ ToggleButton.prototype = Object.create(Control.prototype);
 ToggleButton.prototype.constructor = ToggleButton;
 
 // for buttons that toggle a binary CO but their LEDs respond to a different CO
-var ToggleButtonAsymmetic = function (signals, group, inCo, outCo, onlyOnPress, on, off) {
+var ToggleButtonAsymmetric = function (signals, group, inCo, outCo, onlyOnPress, on, off) {
     var that = this; // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
@@ -139,33 +139,33 @@ var ToggleButtonAsymmetic = function (signals, group, inCo, outCo, onlyOnPress, 
                 [inCo, function () { return ! that.getValue(); }, onlyOnPress],
                 [outCo, function (value) { return (value) ? on : off } ]);
 }
-ToggleButtonAsymmetic.prototype = Object.create(Control.prototype);
-ToggleButtonAsymmetic.prototype.constructor = ToggleButtonAsymmetic;
+ToggleButtonAsymmetric.prototype = Object.create(Control.prototype);
+ToggleButtonAsymmetric.prototype.constructor = ToggleButtonAsymmetric;
 
 var CueButton = function (signals, group, on, off) {
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
-    ToggleButtonAsymmetic.call(this, signals, group, 'cue_default', 'cue_indicator', false, on, off);
+    ToggleButtonAsymmetric.call(this, signals, group, 'cue_default', 'cue_indicator', false, on, off);
 }
-CueButton.prototype = Object.create(ToggleButtonAsymmetic.prototype);
+CueButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
 CueButton.prototype.constructor = CueButton;
 
 var PlayButton = function (signals, group, on, off) {
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
-    ToggleButtonAsymmetic.call(this, signals, group,
+    ToggleButtonAsymmetric.call(this, signals, group,
                                'play', 'play_indicator', true, on, off);
 }
-PlayButton.prototype = Object.create(ToggleButtonAsymmetic.prototype);
+PlayButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
 PlayButton.prototype.constructor = PlayButton;
 
 var HotcueButton = function (signals, group, hotcueNumber, on, off) {
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
-    ToggleButtonAsymmetic.call(this, signals, group,
+    ToggleButtonAsymmetric.call(this, signals, group,
                                'hotcue_'+hotcueNumber+'_activate', 'hotcue_'+hotcueNumber+'_enabled', false, on, off);
 }
-HotcueButton.prototype = Object.create(ToggleButtonAsymmetic.prototype);
+HotcueButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
 HotcueButton.prototype.constructor = HotcueButton;
 
 var HotcueClearButton = function (signals, group, hotcueNumber, on, off) {
@@ -447,6 +447,7 @@ P32.Deck = function (deckNumbers, channel) {
                                                     i, P32.padColors.red, P32.padColors.off);
         this['hotcueButtonShift' + i] = new HotcueClearButton([0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i)], this.currentDeck,
                                                               i, P32.padColors.red, P32.padColors.off);
+        this['samplerButton' + i] = new ToggleButtonAsymmetric([0x90
     }
     
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
