@@ -35,18 +35,22 @@ var Control = function (signals, group, inOptions, outOptions) {
     /**
     signals, two member array: first two bytes of the MIDI message (status and note numbers)
     group, string: the group this belongs to, for example '[Channel1]'
-    inOptions, null or array with up to 3 members: If null, you need to set the input property yourself (as well as inCo if you want to use that).
+    inOptions, array with up to 3 members, optional: If null or ommitted, you need to set the input property yourself (as well as inCo if you want to use that),
+                                                     which is helpful if you want to define a long, custom input function.
         1st member of array, string: Mixxx CO that this affects when receiving MIDI input, for example, 'play'
         2nd member of array, function or null: function to execute upon receiving MIDI input. The function should return
-                                                the value to set the 1st member of the array to. If null, you need to set
-                                                the input property yourself.
+                                                the value to set the 1st member of the array to. The function's 'this' object
+                                                is set to the Control. If null, you need to set the input property yourself,
+                                                which is helpful if you want to define a long, custom input function.
         3rd member of array, boolean, optional: whether to react only when a button is pressed, or on both press & release.
                                                 Default to true if ommitted.
-    outOptions, null or array with up to 4 members: If null, you need to set up the output yourself.
+    outOptions, null or array with up to 4 members, optional: If null or ommitted, you need to set up the output yourself.
         1st member of array, string: send signals back to the controller when this Mixxx CO changes, for example, 'play_indicator'
         2nd member of array, function: function to execute when Mixxx CO specified by 1st member of array changes.
                                        The function should return a value to send back as the 3rd byte of a MIDI message
                                        (with the first 2 bytes of the MIDI message being those specified in the first argument).
+                                       The function's 'this' object is set to the Control. If null, you need to set the input property yourself,
+                                       which is helpful if you want to define a long, custom input function.
         3rd member of array, boolean, optional: whether to connect the Mixxx CO (1st member) to the function (2nd member) immediately.
                                                 Default to true if ommitted.
         4th member of array, boolean, optional: whether to execute the function (2nd member) immediately. Default to true if ommitted.
@@ -68,27 +72,22 @@ var Control = function (signals, group, inOptions, outOptions) {
     };
     
     this.inSetup = function (inOptions) {
-        if (inOptions === null) {
-            print("Control.inSetup() called with null argument.");
+        if (inOptions === null || inOptions === undefined) {
             return;
         }
         this.inCo = inOptions[0];
         this.inFunc = inOptions[1];
         if (this.inFunc === undefined) {this.inFunc = function (value) {return value;}};
         this.onlyOnPress = inOptions[2];
-        if (this.inFunc === null) {
-            this.input = null;
-        } else {
-            if (this.onlyOnPress === undefined) {this.onlyOnPress = true};
-            this.input = function (channel, control, value, status, group) {
-                // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
-                if (that.onlyOnPress) {
-                    if (value > 0) {
-                        that.setValue(that.inFunc.call(that, value));
-                    }
-                } else {
+        if (this.onlyOnPress === undefined) {this.onlyOnPress = true};
+        this.input = function (channel, control, value, status, group) {
+            // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
+            if (that.onlyOnPress) {
+                if (value > 0) {
                     that.setValue(that.inFunc.call(that, value));
                 }
+            } else {
+                that.setValue(that.inFunc.call(that, value));
             }
         }
     }
@@ -109,8 +108,7 @@ var Control = function (signals, group, inOptions, outOptions) {
     this.send = function (value) { midi.sendShortMsg(this.midi.status, this.midi.note, value) };
 
     this.outSetup = function (outOptions) {
-        if (outOptions === null) {
-            print("Control.outSetup() called with null argument.");
+        if (outOptions === null || outOptions === undefined) {
             return;
         }
         this.outCo = outOptions[0];
@@ -487,17 +485,13 @@ P32.headMix = function (channel, control, value, status, group) {
 P32.record = new Control([0x90, 0x02], '[Recording]',
                          ['toggle_recording', null],
                          ['status', function (val) {return val * 127}]);
-P32.record.input = function (channel, control, value, status, group) {
-    if (value === 127) {
-        if (P32.leftDeck.shift) {
-            P32.leftDeck.toggle();
-        } else if (P32.rightDeck.shift) {
-            P32.rightDeck.toggle();
-        } else {
-            // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
-            // change to this.setValue(1)
-            engine.setValue('[Recording]', 'toggle_recording', 1);
-        }
+P32.record.inFunc = function (channel, control, value, status, group) {
+    if (P32.leftDeck.shift) {
+        P32.leftDeck.toggle();
+    } else if (P32.rightDeck.shift) {
+        P32.rightDeck.toggle();
+    } else {
+        return 1;
     }
 }
 
