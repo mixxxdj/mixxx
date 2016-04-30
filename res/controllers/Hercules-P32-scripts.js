@@ -35,8 +35,18 @@ var Control = function (signals, group, inOptions, outOptions) {
     var that = this;
     this.midi = {status: signals[0], note: signals[1]};
     this.group = group;
+
+    this.setValue = function (value) {
+        engine.setValue(this.group, this.inCo, value);
+    };
     
-    this.setup = function (inOptions, outOptions) { that.inSetup(inOptions); that.outSetup(outOptions) };
+    this.getValue = function () {
+        return engine.getValue(this.group, this.inCo);
+    };
+    
+    this.toggle = function () {
+        this.setValue( ! this.getValue());
+    };
     
     this.inSetup = function (inOptions) {
         if (inOptions === null) {
