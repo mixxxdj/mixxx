@@ -11,7 +11,7 @@ var loopEnabledDot = false;
 
 /**
  * Hercules P32 DJ controller script for Mixxx 2.0
- * Thanks to Hercules by supporting the development of this mapping by providing a controller
+ * Thanks to Hercules for supporting the development of this mapping by providing a controller
  * See http://mixxx.org/wiki/doku.php/hercules_p32_dj for instructions on how to use this mapping
  * 
  * Copyright (C) 2016 Be <be.0@gmx.com>
@@ -68,7 +68,7 @@ var Control = function (signals, group, inOptions, outOptions) {
 
     var that = this;
 
-    if (typeof signals === 'array') {
+    if (Array.isArray(signals)) {
         this.midi = {status: signals[0], note: signals[1]};
     }
     if (typeof group === 'string') {
