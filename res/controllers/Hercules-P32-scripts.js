@@ -54,59 +54,61 @@ var Control = function (signals, group, inOptions, outOptions) {
             return;
         }
         this.inCo = inOptions[0];
-        var inFunc = inOptions[1];
-        if (inFunc === undefined) {inFunc = function (value) {return value}};
+        this.inFunc = inOptions[1];
+        if (this.inFunc === undefined) {this.inFunc = function (value) {return value;}};
         var onlyOnPress = inOptions[2];
-        if (inFunc === null) {
+        if (this.inFunc === null) {
             this.input = null;
         } else {
             if (onlyOnPress === undefined) {onlyOnPress = true};
             if (onlyOnPress) {
                 this.input = function (channel, control, value, status, group) {
-                    if (value) {
-                        engine.setValue(that.group, that.inCo, inFunc.call(that, value));
+                    if (value > 0) {
+                        // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
+                        that.setValue(that.inFunc.call(that, value));
                     }
                 }
             } else {
                 this.input = function (channel, control, value, status, group) {
-                    engine.setValue(that.group, that.inCo, inFunc.call(that, value));
+                    // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
+                    that.setValue(that.inFunc.call(that, value));
                 }
             }
         }
     }
     this.inSetup(inOptions);
     this.previousInput = null;
-    
-   var connection;
-   this.connect = function () {
-      connection = engine.connectControl(this.group, this.outCo, this.output);
-   };
-   this.disconnect = function () { connection.disconnect(); };
-//  this.trigger = function() { outConnection.trigger(); };
-//     this.outConnect = function () { engine.connectControl(that.group, that.outCo, that.output); };
-//     this.disconnect = function () {
-//         print('disconnecting: ' + that.group + ' , ' + that.outCo + ' , ' + that.output);
-//         engine.connectControl(that.group, that.outCo, that.output, true);};
+
+    var connection;
+    this.connect = function () {
+        connection = engine.connectControl(this.group, this.outCo, this.output);
+    };
+    this.disconnect = function () { connection.disconnect(); };
+    //  this.trigger = function() { outConnection.trigger(); };
+    //     this.outConnect = function () { engine.connectControl(that.group, that.outCo, that.output); };
+    //     this.disconnect = function () {
+    //         print('disconnecting: ' + that.group + ' , ' + that.outCo + ' , ' + that.output);
+    //         engine.connectControl(that.group, that.outCo, that.output, true);};
     this.trigger = function() { engine.trigger(this.group, this.outCo); };
     this.send = function (value) { midi.sendShortMsg(this.midi.status, this.midi.note, value) };
-    
+
     this.outSetup = function (outOptions) {
         if (outOptions === null) {
             print("Control.outSetup() called with null argument.");
             return;
         }
         this.outCo = outOptions[0];
-        var outFunc = outOptions[1];
+        this.outFunc = outOptions[1];
         var connect = outOptions[2];
         var trigger = outOptions[3];
-        if (outFunc === undefined) {outFunc = function (value) {return value}};
+        if (this.outFunc === undefined) {this.outFunc = function (value) {return value;}};
         if (connect === undefined) {connect = true};
         if (trigger === undefined) {trigger = true};
-        if (outFunc === null) {
+        if (this.outFunc === null) {
             this.output = null;
         } else {
             this.output = function (value, group, control) {
-                this.send(outFunc.call(this, value));
+                this.send(this.outFunc.call(this, value));
             }
         }
         if (connect) { this.connect() };
