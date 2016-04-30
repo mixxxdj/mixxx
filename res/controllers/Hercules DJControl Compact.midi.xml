@@ -3,7 +3,9 @@
     <info>
         <name>Hercules DJControl Compact</name>
         <author>Owen Williams</author>
-        <description>Controller mapping for Hercules DJControl Compact</description>
+        <description>Controller mapping for Hercules DJControl Compact.  Users
+who want the labelled "mid" knob may want to use the midi wizard to remap it, or
+edit the controller xml file directly to change this setting.</description>
         <wiki>http://mixxx.org/wiki/doku.php/djcontrol_compact</wiki>
     </info>
     <controller id="DJControl">
@@ -11,6 +13,28 @@
             <file functionprefix="HercDJCompact" filename="Hercules-DJControl-Compact-scripts.js"/>
         </scriptfiles>
         <controls>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <!-- Set the key on the next line to "parameter3" to make the
+                mid knob for Deck A adjust the high eq instead. -->
+                <key>parameter2</key>
+                <status>0xB0</status>
+                <midino>0x3B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <!-- Set the key on the next line to "parameter3" to make the
+                mid knob for Deck B adjust the high eq instead. -->
+                <key>parameter2</key>
+                <status>0xB0</status>
+                <midino>0x3F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <control>
                 <group>[Channel2]</group>
                 <key>beatlooproll_0.5_activate</key>
@@ -56,16 +80,6 @@
                 <description>MIDI Learned from 18 messages.</description>
                 <status>0x90</status>
                 <midino>0x22</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter2</key>
-                <description>MIDI Learned from 549 messages.</description>
-                <status>0xB0</status>
-                <midino>0x3B</midino>
                 <options>
                     <normal/>
                 </options>
@@ -201,16 +215,6 @@
                 <description>MIDI Learned from 8 messages.</description>
                 <status>0x90</status>
                 <midino>0x42</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter2</key>
-                <description>MIDI Learned from 2250 messages.</description>
-                <status>0xB0</status>
-                <midino>0x3F</midino>
                 <options>
                     <normal/>
                 </options>
