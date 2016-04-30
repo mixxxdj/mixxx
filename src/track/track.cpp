@@ -5,8 +5,6 @@
 
 #include "track/track.h"
 
-#include "library/coverartutils.h"
-#include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
@@ -14,7 +12,6 @@
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/time.h"
-#include "util/xml.h"
 
 
 namespace {
