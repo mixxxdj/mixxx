@@ -8,7 +8,7 @@
     </info>
     <controller id="DJControl">
         <scriptfiles>
-            <file functionprefix="HercDJCompact" filename="DJControl-Compact-scripts.js"/>
+            <file functionprefix="HercDJCompact" filename="Hercules-DJControl-Compact-scripts.js"/>
         </scriptfiles>
         <controls>
             <control>
@@ -340,15 +340,6 @@
                 <midino>0x09</midino>
                 <options>
                     <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>HercDJCompact.mode_button</key>
-                <status>0x90</status>
-                <midino>0x30</midino>
-                <options>
-                    <script-binding/>
                 </options>
             </control>
             <control>
