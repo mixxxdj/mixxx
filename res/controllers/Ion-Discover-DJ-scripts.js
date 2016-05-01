@@ -37,6 +37,15 @@ IonDiscoverDJ.init = function (id) {    // called when the MIDI device is opened
         IonDiscoverDJ.sendMidi(0x80, IonDiscoverDJ.leds[LED], IonDiscoverDJ.ledOff, timeToWait);
         timeToWait += 5;
     }
+    
+    engine.connectControl("[Channel1]", "play_indicator", "IonDiscoverDJ.PlayLED");
+    engine.connectControl("[Channel2]", "play_indicator", "IonDiscoverDJ.PlayLED");
+    engine.connectControl("[Channel1]", "cue_indicator", "IonDiscoverDJ.CueLED");
+    engine.connectControl("[Channel2]", "cue_indicator", "IonDiscoverDJ.CueLED");
+    engine.connectControl("[Channel1]", "beat_active", "IonDiscoverDJ.SyncLED");
+    engine.connectControl("[Channel2]", "beat_active", "IonDiscoverDJ.SyncLED");
+    engine.connectControl("[Channel1]", "reverse", "IonDiscoverDJ.RevLED");
+    engine.connectControl("[Channel2]", "reverse", "IonDiscoverDJ.RevLED");
 };
 
 IonDiscoverDJ.sendMidi = function(status, control, value, timeToWait) {
@@ -63,7 +72,7 @@ IonDiscoverDJ.Deck.prototype.jogMove = function(jogValue) {
    } else if(this.scratching) {
       engine.scratchTick(this.deckNumber, jogValue);
    } else {
-      jogValue = jogValue * 10;
+      jogValue = jogValue *10;
       engine.setValue(this.group,"jog", jogValue);
    }
 };
@@ -184,7 +193,7 @@ IonDiscoverDJ.pflCh2Off = function (group, control, value, status) {}
 
 IonDiscoverDJ.LoadSelectedTrackCh1 = function (group, control, value, status) 
 {
-   //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel1] play"], IonDiscoverDJ.ledOn);
+   midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel1] play"], IonDiscoverDJ.ledOn);
    engine.setValue("[Channel1]","LoadSelectedTrack", true);
    
    //IonDiscoverDJ.pauseScript(5000);
@@ -192,7 +201,6 @@ IonDiscoverDJ.LoadSelectedTrackCh1 = function (group, control, value, status)
    //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel1] play"], IonDiscoverDJ.ledOff);
    
    //IonDiscoverDJ.pauseScript(5000);
-   //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel1] sync"], IonDiscoverDJ.ledOn);
    //IonDiscoverDJ.pauseScript(200);
    //engine.setValue("[Channel1]","beatsync", true);
    //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel1] sync"], IonDiscoverDJ.ledOff);
@@ -200,7 +208,7 @@ IonDiscoverDJ.LoadSelectedTrackCh1 = function (group, control, value, status)
 
 IonDiscoverDJ.LoadSelectedTrackCh2 = function (group, control, value, status) 
 {
-   //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] play"], IonDiscoverDJ.ledOn);
+   midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] play"], IonDiscoverDJ.ledOn);
    engine.setValue("[Channel2]","LoadSelectedTrack", true);
    
    //IonDiscoverDJ.pauseScript(5000);
@@ -208,9 +216,44 @@ IonDiscoverDJ.LoadSelectedTrackCh2 = function (group, control, value, status)
    //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] play"], IonDiscoverDJ.ledOff);
    
    //IonDiscoverDJ.pauseScript(5000);
-   //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] sync"], IonDiscoverDJ.ledOn);
    //IonDiscoverDJ.pauseScript(200);
    //engine.setValue("[Channel2]","beatsync", true);
    //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] sync"], IonDiscoverDJ.ledOff);
+}
+
+IonDiscoverDJ.PlayLED = function (value, group, control) {
+	var deck = IonDiscoverDJ.GetDeck(group);
+	if(value) {
+		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] play"], IonDiscoverDJ.ledOn);
+	} else {
+		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] play"], IonDiscoverDJ.ledOff);
+	}
+}
+
+IonDiscoverDJ.CueLED = function (value, group, control) {
+	var deck = IonDiscoverDJ.GetDeck(group);
+	if(value) {
+		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] cue"], IonDiscoverDJ.ledOn);
+	} else {
+		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] cue"], IonDiscoverDJ.ledOff);
+	}
+}
+
+IonDiscoverDJ.SyncLED = function (value, group, control) {
+	var deck = IonDiscoverDJ.GetDeck(group);
+	if(value) {
+		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] sync"], IonDiscoverDJ.ledOn);
+	} else {
+		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] sync"], IonDiscoverDJ.ledOff);
+	}
+}
+
+IonDiscoverDJ.RevLED = function (value, group, control) {
+	var deck = IonDiscoverDJ.GetDeck(group);
+	if(value) {
+		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] rev"], IonDiscoverDJ.ledOn);
+	} else {
+		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] rev"], IonDiscoverDJ.ledOff);
+	}
 }
 
