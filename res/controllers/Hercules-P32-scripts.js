@@ -8,8 +8,6 @@ var defaultBeatJumpSize = 4;
 // may be helpful if you never use loops less than 2 beats long.
 // Otherwise the dot indicates a loop size equal to 1/(# on the LED display).
 var loopEnabledDot = false;
-// Set to "true" to make samplers play only while their pad is heldo down.
-var holdSamplePads = true;
 
 /**
  * Hercules P32 DJ controller script for Mixxx 2.0
@@ -284,13 +282,11 @@ HotcueClearButton.prototype.constructor = HotcueClearButton;
 
 /**
 A Control for sampler buttons. Press the button to load the track selected in
-the library into a sampler. Press a loaded sampler to play it. Press a playing
-sampler again to stop it.
+the library into an empty sampler. Press a loaded sampler to play it from
+its cue point. Press again while playing to jump back to the cue point.
 
 @param {Array} signals: first two bytes of the MIDI message (status and note numbers)
 @param {Integer} samplerNumber: number of the sampler
-@param {boolean} holdDownButton (optional): whether to require the button to be held down to
-                                            keep the sampler playing. Defaults to false.
 @param {Number} on (optional): MIDI value to send back to button LED when sampler
                                is loaded. Defaults to 127. Use this to for multicolor LEDs.
 @param {Number} off (optional): MIDI value to send back to button LED when sampler
@@ -301,29 +297,20 @@ sampler again to stop it.
                                     the "on" parameter is sent when the sampler
                                     is loaded, regardless of whether it is playing.
 **/
-var SamplerButton = function (signals, samplerNumber, holdDownButton, on, off, playing) {
+var SamplerButton = function (signals, samplerNumber, on, off, playing) {
     if (on === undefined) {on = 127;}
     if (off === undefined) {off = 0;}
-    if (holdDownButton === undefined) {holdDownButton = false;}
     // track_samples is 0 when the sampler is empty and > 0 when a sample is loaded
     Control.call(this, signals, '[Sampler' + samplerNumber + ']', null,
                  null);
     var that = this; // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
 
     this.input = function (channel, control, value, status, group) {
-        if (engine.getValue(that.group, 'track_samples') === 0) {
-            if (value > 0) {
+        if (value > 0) {
+            if (engine.getValue(that.group, 'track_samples') === 0) {
                 engine.setValue(that.group, 'LoadSelectedTrack', 1);
-            }
-        } else {
-            if (value > 0) {
-                if (engine.getValue(that.group, 'play')) {
-                    engine.setValue(that.group, 'play', 0);
-                } else {
-                    engine.setValue(that.group, 'cue_gotoandplay', 1);
-                }
-            } else if (holdDownButton) {
-                engine.setValue(that.group, 'play', 0);
+            } else {
+                engine.setValue(that.group, 'cue_gotoandplay', 1);
             }
         }
     };
@@ -358,8 +345,9 @@ SamplerButton.prototype = Object.create(Control.prototype);
 SamplerButton.prototype.constructor = SamplerButton;
 
 /**
-A Control for buttons to clear samplers. Typically, these are the same buttons
-as SamplerButtons but active with shift held down.
+A Control for buttons to stop samplers. Typically, these are the same buttons
+as SamplerButtons but active with shift held down. If the sampler is stopped,
+eject the loaded sample.
 
 @param {Array} signals: first two bytes of the MIDI message (status and note numbers)
 @param {Integer} samplerNumber: number of the sampler
@@ -373,12 +361,23 @@ as SamplerButtons but active with shift held down.
                                     the "on" parameter is sent when the sampler
                                     is loaded, regardless of whether it is playing.
 **/
-var SamplerClearButton = function (signals, samplerNumber, on, off, playing) {
-    SamplerButton.call(this, signals, samplerNumber, null, on, off, playing);
-    this.inSetup(['eject', function () { return 1; } ]);
+var SamplerStopButton = function (signals, samplerNumber, on, off, playing) {
+    SamplerButton.call(this, signals, samplerNumber, on, off, playing);
+
+    var that = this; // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
+
+    this.input = function (channel, control, value, status, group) {
+        if (value > 0) {
+            if (engine.getValue(that.group, 'play') === 1) {
+                engine.setValue(that.group, 'play', 0);
+            } else {
+                engine.setValue(that.group, 'eject', 1);
+            }
+        }
+    };
 }
-SamplerClearButton.prototype = Object.create(SamplerButton);
-SamplerClearButton.prototype.constructor = SamplerClearButton;
+SamplerStopButton.prototype = Object.create(SamplerButton);
+SamplerStopButton.prototype.constructor = SamplerStopButton;
 
 var CC = function (signals, group, co, softTakeoverInit, max) {
     /**
@@ -602,8 +601,8 @@ P32.init = function () {
             var samplerNumber = s + (channel - 1) * 16;
             this['sampler' + samplerNumber] = new SamplerButton(
                 [0x90 + channel, P32.PadNumToMIDIControl(s, 0)], samplerNumber,
-                holdSamplePads, P32.padColors.red, P32.padColors.off, P32.padColors.blue);
-            this['samplerClear' + samplerNumber] = new SamplerClearButton(
+                P32.padColors.red, P32.padColors.off, P32.padColors.blue);
+            this['samplerClear' + samplerNumber] = new SamplerStopButton(
                 [0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(s, 0)], samplerNumber,
                 P32.padColors.red, P32.padColors.off, P32.padColors.blue);
         }
