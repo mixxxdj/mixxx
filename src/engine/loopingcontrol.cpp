@@ -889,6 +889,7 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
             qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;
+            break;
         }
     }
     while (adjusted_position < new_loop_in) {
@@ -897,6 +898,7 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
             qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;
+            break;
         }
     }
     if (adjusted_position != m_iCurrentSample) {
