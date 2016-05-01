@@ -14,7 +14,7 @@
             <control>
                 <group>[Master]</group>
                 <key>maximize_library</key>
-                <status>0x90</status>1
+                <status>0x90</status>
                 <midino>0x01</midino>
                 <options>
                     <normal/>
@@ -23,7 +23,7 @@
             <control>
                 <group>[Master]</group>
                 <key>headSplit</key>
-                <status>0x93</status>1
+                <status>0x93</status>
                 <midino>0x01</midino>
                 <options>
                     <normal/>
@@ -32,7 +32,7 @@
             <control>
                 <group>[Master]</group>
                 <key>P32.headMix</key>
-                <status>0xB3</status>1
+                <status>0xB3</status>
                 <midino>0x02</midino>
                 <options>
                     <script-binding/>
@@ -41,7 +41,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton1.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x60</midino>
                 <options>
                     <script-binding/>
@@ -50,7 +50,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton2.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x61</midino>
                 <options>
                     <script-binding/>
@@ -59,7 +59,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton3.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x62</midino>
                 <options>
                     <script-binding/>
@@ -68,7 +68,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton4.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x63</midino>
                 <options>
                     <script-binding/>
@@ -77,7 +77,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton5.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x5C</midino>
                 <options>
                     <script-binding/>
@@ -86,7 +86,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton6.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x5D</midino>
                 <options>
                     <script-binding/>
@@ -95,7 +95,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton7.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x5E</midino>
                 <options>
                     <script-binding/>
@@ -104,7 +104,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton8.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x5F</midino>
                 <options>
                     <script-binding/>
@@ -113,7 +113,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton9.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x58</midino>
                 <options>
                     <script-binding/>
@@ -122,7 +122,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton10.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x59</midino>
                 <options>
                     <script-binding/>
@@ -131,7 +131,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton11.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x5A</midino>
                 <options>
                     <script-binding/>
@@ -140,7 +140,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton12.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x5B</midino>
                 <options>
                     <script-binding/>
@@ -149,7 +149,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton13.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x54</midino>
                 <options>
                     <script-binding/>
@@ -158,7 +158,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton14.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x55</midino>
                 <options>
                     <script-binding/>
@@ -167,7 +167,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton15.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x56</midino>
                 <options>
                     <script-binding/>
@@ -176,7 +176,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton16.input</key>
-                <status>0x91</status>1
+                <status>0x91</status>
                 <midino>0x57</midino>
                 <options>
                     <script-binding/>
@@ -185,7 +185,7 @@
                         <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift1.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x60</midino>
                 <options>
                     <script-binding/>
@@ -194,7 +194,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift2.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x61</midino>
                 <options>
                     <script-binding/>
@@ -203,7 +203,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift3.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x62</midino>
                 <options>
                     <script-binding/>
@@ -212,7 +212,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift4.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x63</midino>
                 <options>
                     <script-binding/>
@@ -221,7 +221,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift5.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x5C</midino>
                 <options>
                     <script-binding/>
@@ -230,7 +230,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift6.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x5D</midino>
                 <options>
                     <script-binding/>
@@ -239,7 +239,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift7.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x5E</midino>
                 <options>
                     <script-binding/>
@@ -248,7 +248,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift8.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x5F</midino>
                 <options>
                     <script-binding/>
@@ -257,7 +257,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift9.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x58</midino>
                 <options>
                     <script-binding/>
@@ -266,7 +266,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift10.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x59</midino>
                 <options>
                     <script-binding/>
@@ -275,7 +275,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift11.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x5A</midino>
                 <options>
                     <script-binding/>
@@ -284,7 +284,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift12.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x5B</midino>
                 <options>
                     <script-binding/>
@@ -293,7 +293,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift13.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x54</midino>
                 <options>
                     <script-binding/>
@@ -302,7 +302,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift14.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x55</midino>
                 <options>
                     <script-binding/>
@@ -311,7 +311,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift15.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x56</midino>
                 <options>
                     <script-binding/>
@@ -320,7 +320,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButtonShift16.input</key>
-                <status>0x94</status>1
+                <status>0x94</status>
                 <midino>0x57</midino>
                 <options>
                     <script-binding/>
@@ -978,7 +978,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton1.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x60</midino>
                 <options>
                     <script-binding/>
@@ -987,7 +987,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton2.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x61</midino>
                 <options>
                     <script-binding/>
@@ -996,7 +996,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton3.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x62</midino>
                 <options>
                     <script-binding/>
@@ -1005,7 +1005,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton4.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x63</midino>
                 <options>
                     <script-binding/>
@@ -1014,7 +1014,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton5.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x5C</midino>
                 <options>
                     <script-binding/>
@@ -1041,7 +1041,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton8.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x5F</midino>
                 <options>
                     <script-binding/>
@@ -1059,7 +1059,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton10.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x59</midino>
                 <options>
                     <script-binding/>
@@ -1068,7 +1068,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton11.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x5A</midino>
                 <options>
                     <script-binding/>
@@ -1077,7 +1077,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton12.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x5B</midino>
                 <options>
                     <script-binding/>
@@ -1086,7 +1086,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton13.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x54</midino>
                 <options>
                     <script-binding/>
@@ -1095,7 +1095,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton14.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x55</midino>
                 <options>
                     <script-binding/>
@@ -1104,7 +1104,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton15.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x56</midino>
                 <options>
                     <script-binding/>
@@ -1113,7 +1113,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButton16.input</key>
-                <status>0x92</status>1
+                <status>0x92</status>
                 <midino>0x57</midino>
                 <options>
                     <script-binding/>
@@ -1122,7 +1122,7 @@
                         <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift1.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x60</midino>
                 <options>
                     <script-binding/>
@@ -1131,7 +1131,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift2.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x61</midino>
                 <options>
                     <script-binding/>
@@ -1140,7 +1140,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift3.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x62</midino>
                 <options>
                     <script-binding/>
@@ -1149,7 +1149,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift4.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x63</midino>
                 <options>
                     <script-binding/>
@@ -1158,7 +1158,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift5.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x5C</midino>
                 <options>
                     <script-binding/>
@@ -1167,7 +1167,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift6.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x5D</midino>
                 <options>
                     <script-binding/>
@@ -1176,7 +1176,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift7.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x5E</midino>
                 <options>
                     <script-binding/>
@@ -1185,7 +1185,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift8.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x5F</midino>
                 <options>
                     <script-binding/>
@@ -1194,7 +1194,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift9.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x58</midino>
                 <options>
                     <script-binding/>
@@ -1203,7 +1203,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift10.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x59</midino>
                 <options>
                     <script-binding/>
@@ -1212,7 +1212,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift11.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x5A</midino>
                 <options>
                     <script-binding/>
@@ -1221,7 +1221,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift12.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x5B</midino>
                 <options>
                     <script-binding/>
@@ -1230,7 +1230,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift13.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x54</midino>
                 <options>
                     <script-binding/>
@@ -1239,7 +1239,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift14.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x55</midino>
                 <options>
                     <script-binding/>
@@ -1248,7 +1248,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift15.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x56</midino>
                 <options>
                     <script-binding/>
@@ -1257,7 +1257,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.hotcueButtonShift16.input</key>
-                <status>0x95</status>1
+                <status>0x95</status>
                 <midino>0x57</midino>
                 <options>
                     <script-binding/>
@@ -1404,6 +1404,584 @@
                 <key>P32.rightDeck.effectUnit.switchEffect4</key>
                 <status>0x95</status>
                 <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            
+            
+                        <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler1.input</key>
+                <status>0x91</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler2.input</key>
+                <status>0x91</status>
+                <midino>0x31</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler3.input</key>
+                <status>0x91</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler4.input</key>
+                <status>0x91</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler5.input</key>
+                <status>0x91</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler6.input</key>
+                <status>0x91</status>
+                <midino>0x2D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler7.input</key>
+                <status>0x91</status>
+                <midino>0x2E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler8.input</key>
+                <status>0x91</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler9.input</key>
+                <status>0x91</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler10.input</key>
+                <status>0x91</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler11.input</key>
+                <status>0x91</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler12.input</key>
+                <status>0x91</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler13.input</key>
+                <status>0x91</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler14.input</key>
+                <status>0x91</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler15.input</key>
+                <status>0x91</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler16.input</key>
+                <status>0x91</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear1.input</key>
+                <status>0x94</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear2.input</key>
+                <status>0x94</status>
+                <midino>0x31</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear3.input</key>
+                <status>0x94</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear4.input</key>
+                <status>0x94</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear5.input</key>
+                <status>0x94</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear6.input</key>
+                <status>0x94</status>
+                <midino>0x2D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear7.input</key>
+                <status>0x94</status>
+                <midino>0x2E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear8.input</key>
+                <status>0x94</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear9.input</key>
+                <status>0x94</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear10.input</key>
+                <status>0x94</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear11.input</key>
+                <status>0x94</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear12.input</key>
+                <status>0x94</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear13.input</key>
+                <status>0x94</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear14.input</key>
+                <status>0x94</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear15.input</key>
+                <status>0x94</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear16.input</key>
+                <status>0x94</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler17.input</key>
+                <status>0x92</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler18.input</key>
+                <status>0x92</status>
+                <midino>0x31</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler19.input</key>
+                <status>0x92</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler20.input</key>
+                <status>0x92</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler21.input</key>
+                <status>0x92</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler22.input</key>
+                <status>0x92</status>
+                <midino>0x2D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler23.input</key>
+                <status>0x92</status>
+                <midino>0x2E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler24.input</key>
+                <status>0x92</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler25.input</key>
+                <status>0x92</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler26.input</key>
+                <status>0x92</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler27.input</key>
+                <status>0x92</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler28.input</key>
+                <status>0x92</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler29.input</key>
+                <status>0x92</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler30.input</key>
+                <status>0x92</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler31.input</key>
+                <status>0x92</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.sampler32.input</key>
+                <status>0x92</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear17.input</key>
+                <status>0x95</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear18.input</key>
+                <status>0x95</status>
+                <midino>0x31</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear19.input</key>
+                <status>0x95</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear20.input</key>
+                <status>0x95</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear21.input</key>
+                <status>0x95</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear22.input</key>
+                <status>0x95</status>
+                <midino>0x2D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear23.input</key>
+                <status>0x95</status>
+                <midino>0x2E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear24.input</key>
+                <status>0x95</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear25.input</key>
+                <status>0x95</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear26.input</key>
+                <status>0x95</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear27.input</key>
+                <status>0x95</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear28.input</key>
+                <status>0x95</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear29.input</key>
+                <status>0x95</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear30.input</key>
+                <status>0x95</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear31.input</key>
+                <status>0x95</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.samplerClear32.input</key>
+                <status>0x95</status>
+                <midino>0x27</midino>
                 <options>
                     <script-binding/>
                 </options>

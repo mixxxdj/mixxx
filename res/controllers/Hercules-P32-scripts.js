@@ -8,6 +8,8 @@ var defaultBeatJumpSize = 4;
 // may be helpful if you never use loops less than 2 beats long.
 // Otherwise the dot indicates a loop size equal to 1/(# on the LED display).
 var loopEnabledDot = false;
+// Set to "true" to make samplers play only while their pad is heldo down.
+var holdSamplePads = true;
 
 /**
  * Hercules P32 DJ controller script for Mixxx 2.0
@@ -110,16 +112,23 @@ var Control = function (signals, group, inOptions, outOptions) {
     this.inSetup(inOptions);
     this.previousInput = null;
 
-    var connection;
+    this.connections = [];
     this.connect = function () {
-        connection = engine.connectControl(this.group, this.outCo, this.output);
+        /**
+        Override this method with a custom one to connect multiple Mixxx COs
+        for a single Control. Add the connection objects to the this.connections array so
+        they all get disconnected just by calling this.disconnect().
+        This can be helpful for multicolor LEDs that show a different color depending
+        on the state of different Mixxx COs. See SamplerButton.connect()
+        and SamplerButton.output() for an example.
+        **/
+        this.connections[0] = engine.connectControl(this.group, this.outCo, this.output);
     };
-    this.disconnect = function () { connection.disconnect(); };
-    //  this.trigger = function() { outConnection.trigger(); };
-    //     this.outConnect = function () { engine.connectControl(that.group, that.outCo, that.output); };
-    //     this.disconnect = function () {
-    //         print('disconnecting: ' + that.group + ' , ' + that.outCo + ' , ' + that.output);
-    //         engine.connectControl(that.group, that.outCo, that.output, true);};
+    this.disconnect = function () {
+        this.connections.forEach(function (connection) {
+            connection.disconnect();
+        });
+    };
     this.trigger = function() { engine.trigger(this.group, this.outCo); };
     this.send = function (value) { midi.sendShortMsg(this.midi.status, this.midi.note, value); };
 
@@ -273,22 +282,103 @@ var HotcueClearButton = function (signals, group, hotcueNumber, on, off) {
 HotcueClearButton.prototype = Object.create(HotcueButton.prototype);
 HotcueClearButton.prototype.constructor = HotcueClearButton;
 
-var ActionButton = function (signals, group, inCo, onlyOnPress) {
-    /**
-    A Control for Mixxx COs that only get set to 1
+/**
+A Control for sampler buttons. Press the button to load the track selected in
+the library into a sampler. Press a loaded sampler to play it. Press a playing
+sampler again to stop it.
 
-    signals: two member array, first two bytes of the MIDI message (status and note numbers)
-    group: string, the group this belongs to, for example '[Channel1]'
-    co, string: the Mixxx CO to activate
-    onlyOnPress, boolean, optional: whether to toggle the CO only when the button is pressed,
-                                    or on both press and release. Defaults to true if ommited.
-    **/
-    Control.call(this, signals, group,
-                [inCo, function () { return 1; }, onlyOnPress],
-                null);
-};
-ActionButton.prototype = Object.create(Control.prototype);
-ActionButton.prototype.constructor = ActionButton;
+@param {Array} signals: first two bytes of the MIDI message (status and note numbers)
+@param {Integer} samplerNumber: number of the sampler
+@param {boolean} holdDownButton (optional): whether to require the button to be held down to
+                                            keep the sampler playing. Defaults to false.
+@param {Number} on (optional): MIDI value to send back to button LED when sampler
+                               is loaded. Defaults to 127. Use this to for multicolor LEDs.
+@param {Number} off (optional): MIDI value to send back to button LED when sampler
+                                is empty. Defaults to 0.
+@param {Number} playing (optional): MIDI value to send back to button LED when sampler
+                                    is playing. Useful for buttons with multicolor LEDs.
+                                    If ommitted, only the MIDI message specified by
+                                    the "on" parameter is sent when the sampler
+                                    is loaded, regardless of whether it is playing.
+**/
+var SamplerButton = function (signals, samplerNumber, holdDownButton, on, off, playing) {
+    if (on === undefined) {on = 127;}
+    if (off === undefined) {off = 0;}
+    if (holdDownButton === undefined) {holdDownButton = false;}
+    // track_samples is 0 when the sampler is empty and > 0 when a sample is loaded
+    Control.call(this, signals, '[Sampler' + samplerNumber + ']', null,
+                 null);
+    var that = this; // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
+
+    this.input = function (channel, control, value, status, group) {
+        if (engine.getValue(that.group, 'track_samples') === 0) {
+            if (value > 0) {
+                engine.setValue(that.group, 'LoadSelectedTrack', 1);
+            }
+        } else {
+            if (value > 0) {
+                if (engine.getValue(that.group, 'play')) {
+                    engine.setValue(that.group, 'play', 0);
+                } else {
+                    engine.setValue(that.group, 'cue_gotoandplay', 1);
+                }
+            } else if (holdDownButton) {
+                engine.setValue(that.group, 'play', 0);
+            }
+        }
+    };
+
+    this.output = function (value, group, control) {
+        if (engine.getValue(that.group, 'track_samples') > 0) {
+            if (playing === undefined) {
+                that.send(on);
+            } else {
+                if (engine.getValue(that.group, 'play') === 1) {
+                    that.send(on);
+                } else {
+                    that.send(playing);
+                }
+            }
+        } else {
+            that.send(off);
+        }
+    };
+
+    this.connect = function() {
+        this.connections[0] = engine.connectControl(this.group, 'track_samples', this.output);
+        if (playing !== undefined) {
+            this.connections[1] = engine.connectControl(this.group, 'play', this.output);
+        }
+    };
+
+    this.connect();
+    this.trigger();
+}
+SamplerButton.prototype = Object.create(Control.prototype);
+SamplerButton.prototype.constructor = SamplerButton;
+
+/**
+A Control for buttons to clear samplers. Typically, these are the same buttons
+as SamplerButtons but active with shift held down.
+
+@param {Array} signals: first two bytes of the MIDI message (status and note numbers)
+@param {Integer} samplerNumber: number of the sampler
+@param {Number} on (optional): MIDI value to send back to button LED when sampler
+                               is loaded. Defaults to 127. Use this to for multicolor LEDs.
+@param {Number} off (optional): MIDI value to send back to button LED when sampler
+                                is empty. Defaults to 0.
+@param {Number} playing (optional): MIDI value to send back to button LED when sampler
+                                    is playing. Useful for buttons with multicolor LEDs.
+                                    If ommitted, only the MIDI message specified by
+                                    the "on" parameter is sent when the sampler
+                                    is loaded, regardless of whether it is playing.
+**/
+var SamplerClearButton = function (signals, samplerNumber, on, off, playing) {
+    SamplerButton.call(this, signals, samplerNumber, null, on, off, playing);
+    this.inSetup(['eject', function () { return 1; } ]);
+}
+SamplerClearButton.prototype = Object.create(SamplerButton);
+SamplerClearButton.prototype.constructor = SamplerClearButton;
 
 var CC = function (signals, group, co, softTakeoverInit, max) {
     /**
@@ -503,6 +593,22 @@ var P32 = {};
 P32.init = function () {
     P32.leftDeck = new P32.Deck([1,3], 1);
     P32.rightDeck = new P32.Deck([2,4], 2);
+
+    if (engine.getValue('[Master]', 'num_samplers') < 32) {
+        engine.setValue('[Master]', 'num_samplers', 32);
+    }
+    for (var channel = 1; channel <= 2; channel++) {
+        for (var s = 1; s <= 16; s++) {
+            var samplerNumber = s + (channel - 1) * 16;
+            this['sampler' + samplerNumber] = new SamplerButton(
+                [0x90 + channel, P32.PadNumToMIDIControl(s, 0)], samplerNumber,
+                holdSamplePads, P32.padColors.red, P32.padColors.off, P32.padColors.blue);
+            this['samplerClear' + samplerNumber] = new SamplerClearButton(
+                [0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(s, 0)], samplerNumber,
+                P32.padColors.red, P32.padColors.off, P32.padColors.blue);
+        }
+    }
+
     // tell controller to send MIDI messages with positions of faders and knobs
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
 };
@@ -517,12 +623,13 @@ P32.padColors = {
     purple: 127
 };
 
-P32.PadNumToMIDIControl = function (PadNum) {
+P32.PadNumToMIDIControl = function (PadNum, layer) {
     // The MIDI control numbers for the pad grid are numbered bottom to top, so
     // this returns the MIDI control numbers for the pads numbered top to bottom
+    // layer argument is the 0-indexed pad mode, from bottom (sampler) to top (hotcue)
     PadNum -= 1;
     var midiRow = 3 - Math.floor(PadNum/4);
-    return 0x54 + midiRow*4 + PadNum%4;
+    return 0x24 + 16 * layer + midiRow*4 + PadNum%4;
 };
 
 P32.browse = function (channel, control, value, status, group) {
@@ -558,22 +665,24 @@ P32.EffectUnit = function (unitNumber) {
     // deck enable buttons
     for (var d = 1; d <= 4; d++) {
         // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
-        this['deckButton' + d] = new ToggleButton([0x90 + unitNumber, 0x02 + d], this.group, 'group_[Channel' + d + ']_enable');
+        this['deckButton' + d] = new ToggleButton(
+            [0x90 + unitNumber, 0x02 + d], this.group, 'group_[Channel' + d + ']_enable');
     }
     this.pflToggle = function () {
         script.toggleControl(this.group, 'group_[Headphone]_enable');
     };
 
-    this.dryWet = new CCLin([0xB0 + unitNumber, 0x09],
-                         this.group, 'mix', false, 0, 1);
-    this.superKnob = new CCLin([0xB0 + unitNumber, 0x09],
-                         this.group, 'super1', true, 0, 1);
+    this.dryWet = new CCLin(
+        [0xB0 + unitNumber, 0x09], this.group, 'mix', false, 0, 1);
+    this.superKnob = new CCLin(
+        [0xB0 + unitNumber, 0x09], this.group, 'super1', true, 0, 1);
 
     this.activeEffect = new LayerContainer();
     for (var p = 1; p <= 3; p++) {
         // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
-        this.activeEffect['parameterKnob' + p] = new CC([0xB0 + unitNumber, 0x06],
-                                           '[EffectRack1_EffectUnit' + unitNumber + '_Effect1]', 'parameter' + p, false);
+        this.activeEffect['parameterKnob' + p] = new CC(
+            [0xB0 + unitNumber, 0x06],
+            '[EffectRack1_EffectUnit' + unitNumber + '_Effect1]', 'parameter' + p, false);
     }
 
     // buttons to select the effect that the knobs control
@@ -618,19 +727,23 @@ P32.Deck = function (deckNumbers, channel) {
     this.cue = new CueButton([0x90 + channel, 0x09], this.currentDeck);
     this.play = new PlayButton([0x90 + channel, 0x0A], this.currentDeck);
     
-    this.quantize = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'quantize'); // sync shifted
-    this.keylock = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'keylock'); // cue shifted
-    this.goToStart = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck, // play shifted
-                            ['start_stop', function () { return 1; }],
-                            ['play_indicator', function (val) { return val * 127; } ]);
+    this.quantize = new ToggleButton(
+        [0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'quantize'); // sync shifted
+    this.keylock = new ToggleButton(
+        [0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'keylock'); // cue shifted
+    this.goToStart = new Control(
+        [0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck, // play shifted
+        ['start_stop', function () { return 1; }],
+        ['play_indicator', function (val) { return val * 127; } ]);
 
     for (var i = 1; i <= 16; i++) {
         // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
-        this['hotcueButton' + i] = new HotcueButton([0x90 + channel, P32.PadNumToMIDIControl(i)], this.currentDeck,
-                                                    i, P32.padColors.red, P32.padColors.off);
-        this['hotcueButtonShift' + i] = new HotcueClearButton([0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i)], this.currentDeck,
-                                                              i, P32.padColors.red, P32.padColors.off);
-//         this['samplerButton' + i] = new ToggleButtonAsymmetric([0x90
+        this['hotcueButton' + i] = new HotcueButton(
+            [0x90 + channel, P32.PadNumToMIDIControl(i, 3)], this.currentDeck,
+            i, P32.padColors.red, P32.padColors.off);
+        this['hotcueButtonShift' + i] = new HotcueClearButton(
+            [0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i, 3)], this.currentDeck,
+            i, P32.padColors.red, P32.padColors.off);
     }
 
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
@@ -645,18 +758,20 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     for (var k = 1; k <= 3; k++) {
-        this['eqKnob' + k] = new CCNonLin([0xB0 + channel, 0x02 + k],
-                                    '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
-                                    'parameter' + k,
-                                    false,
-                                    0, 1, 4);
+        this['eqKnob' + k] = new CCNonLin(
+            [0xB0 + channel, 0x02 + k],
+            '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
+            'parameter' + k,
+            false,
+            0, 1, 4);
     }
 
-    this.volume = new CCNonLin([0xB0 + channel, 0x01], this.currentDeck, 'volume', false, 0, 0.25, 1);
+    this.volume = new CCNonLin(
+        [0xB0 + channel, 0x01], this.currentDeck, 'volume', false, 0, 0.25, 1);
 
-    this.loopSize = new Control([0xB0 + channel, 0x1B], this.currentDeck,
-                                null,
-                                ['loop_enabled', null]);
+    this.loopSize = new Control(
+        [0xB0 + channel, 0x1B], this.currentDeck,
+        null, ['loop_enabled', null]);
     this.loopSize.input = function (channel, control, value, status, group) {
         if (loopEnabledDot) {
             if (value === 127 && loopSize > 2) { // turn left
