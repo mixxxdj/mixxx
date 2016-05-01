@@ -121,7 +121,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
     ControlObject* m_pTrackSamples;
-    BeatLoopingControl* m_pActiveBeatLoop;
+    QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;

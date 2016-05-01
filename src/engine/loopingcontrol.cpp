@@ -253,8 +253,9 @@ void LoopingControl::slotLoopHalve(double v) {
 
     // If a beatloop is active then halve should deactive the current
     // beatloop and activate the previous one.
-    if (m_pActiveBeatLoop != NULL) {
-        int active_index = m_beatLoops.indexOf(m_pActiveBeatLoop);
+    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop;
+    if (pActiveBeatLoop != nullptr) {
+        int active_index = m_beatLoops.indexOf(pActiveBeatLoop);
         if (active_index - 1 >= 0) {
             if (m_bLoopingEnabled) {
                 // If the current position is outside the range of the new loop,
@@ -288,8 +289,9 @@ void LoopingControl::slotLoopDouble(double v) {
 
     // If a beatloop is active then double should deactive the current
     // beatloop and activate the next one.
-    if (m_pActiveBeatLoop != NULL) {
-        int active_index = m_beatLoops.indexOf(m_pActiveBeatLoop);
+    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop;
+    if (pActiveBeatLoop != NULL) {
+        int active_index = m_beatLoops.indexOf(pActiveBeatLoop);
         if (active_index + 1 < m_beatLoops.size()) {
             if (m_bLoopingEnabled) {
                 slotBeatLoopActivate(m_beatLoops[active_index + 1]);
@@ -630,11 +632,12 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
 void LoopingControl::setLoopingEnabled(bool enabled) {
     m_bLoopingEnabled = enabled;
     m_pCOLoopEnabled->set(enabled);
-    if (m_pActiveBeatLoop != NULL) {
+    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop;
+    if (pActiveBeatLoop != nullptr) {
         if (enabled) {
-            m_pActiveBeatLoop->activate();
+            pActiveBeatLoop->activate();
         } else {
-            m_pActiveBeatLoop->deactivate();
+            pActiveBeatLoop->deactivate();
         }
     }
 }
@@ -702,9 +705,9 @@ void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopCon
 }
 
 void LoopingControl::clearActiveBeatLoop() {
-    if (m_pActiveBeatLoop != NULL) {
+    BeatLoopingControl* pOldBeatLoop = m_pActiveBeatLoop.fetchAndStoreAcquire(nullptr);
+    if (pOldBeatLoop != nullptr) {
         m_pActiveBeatLoop->deactivate();
-        m_pActiveBeatLoop = NULL;
     }
 }
 
@@ -728,15 +731,14 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
 
     // O(n) search, but there are only ~10-ish beatloop controls so this is
     // fine.
-    foreach (BeatLoopingControl* pBeatLoopControl, m_beatLoops) {
+    for (BeatLoopingControl* pBeatLoopControl: m_beatLoops) {
         if (pBeatLoopControl->getSize() == beats) {
-            if (m_pActiveBeatLoop != pBeatLoopControl) {
-                if (m_pActiveBeatLoop) {
-                    m_pActiveBeatLoop->deactivate();
-                }
-                m_pActiveBeatLoop = pBeatLoopControl;
-            }
             pBeatLoopControl->activate();
+            BeatLoopingControl* pOldBeatLoop =
+                    m_pActiveBeatLoop.fetchAndStoreRelease(pBeatLoopControl);
+            if (pOldBeatLoop != nullptr && pOldBeatLoop != pBeatLoopControl) {
+                pOldBeatLoop->deactivate();
+            }
             break;
         }
     }
