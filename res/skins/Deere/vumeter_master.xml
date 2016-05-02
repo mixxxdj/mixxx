@@ -1,0 +1,30 @@
+<!DOCTYPE template>
+<!-- Master level meter -->
+<Template>
+  <WidgetGroup>
+    <Size>22min,-1me</Size>
+    <MaximumSize>-1,me</MaximumSize>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>master_VuMeter_Group</ObjectName>
+        <Layout>horizontal</Layout>
+        <MaximumSize>22,141</MaximumSize>
+        <Children>
+          <Template src="skin:vumeter_v.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="side">L</SetVariable>
+            <SetVariable name="tooltip_meter">master_VuMeterL</SetVariable>
+            <SetVariable name="tooltip_clip">master_PeakIndicatorL</SetVariable>
+          </Template>
+          <Template src="skin:vumeter_v.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="side">R</SetVariable>
+            <SetVariable name="tooltip_meter">master_VuMeterR</SetVariable>
+            <SetVariable name="tooltip_clip">master_PeakIndicatorR</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>
