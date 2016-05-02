@@ -20,8 +20,8 @@
             <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">Vinyl OFF</SetVariable>
-            <SetVariable name="state_1_text">Vinyl ON</SetVariable>
+            <SetVariable name="state_0_text">Vinyl</SetVariable>
+            <SetVariable name="state_1_text">Vinyl</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
           </Template>
 
@@ -31,8 +31,8 @@
             <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">PASS OFF</SetVariable>
-            <SetVariable name="state_1_text">PASS ON</SetVariable>
+            <SetVariable name="state_0_text">PASS</SetVariable>
+            <SetVariable name="state_1_text">PASS</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,passthrough</SetVariable>
           </Template>
 
@@ -61,8 +61,8 @@
             <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">CUE OFF</SetVariable>
-            <SetVariable name="state_1_text">CUE ON</SetVariable>
+            <SetVariable name="state_0_text">CUE</SetVariable>
+            <SetVariable name="state_1_text">CUE</SetVariable>
             <SetVariable name="state_2_text">HOTCUE</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
           </Template>
