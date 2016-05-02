@@ -279,16 +279,16 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show Deck Controls</Text>
+              <Text>&#9744; Show Minimal Controls</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show Deck Controls</Text>
+              <Text>&#9745; Show Minimal Controls</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_deck_controls</ConfigKey>
+              <ConfigKey persist="true">[Deere],show_minimal_deck_controls</ConfigKey>
             </Connection>
           </PushButton>
         </Children>
