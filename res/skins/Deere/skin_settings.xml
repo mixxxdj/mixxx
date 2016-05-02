@@ -50,45 +50,21 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <PushButton>
-            <TooltipId>show_mixer</TooltipId>
+            <TooltipId>toggle_waveforms_stacked</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show Mixer</Text>
+              <Text>&#9744; Show Stacked Waveforms</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show Mixer</Text>
+              <Text>&#9745; Show Stacked Waveforms</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Master],hide_mixer</ConfigKey>
-              <Transform>
-                <Not/>
-              </Transform>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Crossfader</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Crossfader</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Deere],hide_crossfader</ConfigKey>
-              <Transform>
-                <Not/>
-              </Transform>
+              <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -127,26 +103,6 @@
             </State>
             <Connection>
               <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>toggle_4decks</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show 4 Decks</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show 4 Decks</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
             </Connection>
           </PushButton>
 
@@ -202,6 +158,26 @@
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+          <PushButton>
+            <TooltipId>toggle_4decks</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9744; Show 4 Decks</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show 4 Decks</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            </Connection>
+          </PushButton>
+
           <PushButton>
             <Size>80me,20f</Size>
             <NumberStates>3</NumberStates>
@@ -298,21 +274,95 @@
           </PushButton>
 
           <PushButton>
-            <TooltipId>toggle_waveforms_stacked</TooltipId>
+            <TooltipId>toggle_deck_controls</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show Stacked Waveforms</Text>
+              <Text>&#9744; Show Deck Controls</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show Stacked Waveforms</Text>
+              <Text>&#9745; Show Deck Controls</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+              <ConfigKey persist="true">[Deere],show_deck_controls</ConfigKey>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+
+      <Label>
+        <ObjectName>h2</ObjectName>
+        <Text>Mixer</Text>
+      </Label>
+
+      <WidgetGroup>
+        <ObjectName>h3</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <PushButton>
+            <TooltipId>show_mixer</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9744; Show Mixer</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show Mixer</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Master],hide_mixer</ConfigKey>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9744; Show Crossfader</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show Crossfader</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Deere],hide_crossfader</ConfigKey>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId>show_eqs</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9744; Show EQs</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show EQs</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
             </Connection>
           </PushButton>
 
