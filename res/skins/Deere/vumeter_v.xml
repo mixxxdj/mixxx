@@ -16,8 +16,7 @@
           <StatusLight>
             <ObjectName>PeakIndicator</ObjectName>
             <TooltipId><Variable name="tooltip_clip"/></TooltipId>
-            <Size>3me,3min</Size>
-            <MaximumSize>8,8</MaximumSize>
+            <Size>8,8</Size>
             <PathStatusLight scalemode="STRETCH">vumeter_clip.svg</PathStatusLight>
             <Connection>
                 <ConfigKey><Variable name="group"/>,PeakIndicator<Variable name="side"/></ConfigKey>
@@ -25,8 +24,8 @@
           </StatusLight>
           <VuMeter>
             <TooltipId><Variable name="tooltip_meter"/></TooltipId>
-            <Size>3me,9me</Size>
-            <MaximumSize>8,80</MaximumSize>
+            <Size>3me,me</Size>
+            <MinimumSize>8,40</MinimumSize>
             <PathVu scalemode="STRETCH">vumeter_v.svg</PathVu>
             <Horizontal>false</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
