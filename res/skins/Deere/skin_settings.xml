@@ -85,7 +85,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Vinylcontrol],show_vinylcontrol</ConfigKey>
+              <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
             </Connection>
           </PushButton>
 

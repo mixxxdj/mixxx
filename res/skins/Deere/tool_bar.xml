@@ -101,55 +101,55 @@
           </Template>
 
           <Template src="skin:statuslight_3state.xml">
-           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
            <SetVariable name="Tooltip">Vinyl Control 1 active</SetVariable>
             <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="left_connection_control">[Channel1],vinylcontrol_enabled</SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_1_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_2_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_3_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel1],vinylcontrol_status</SetVariable>
           </Template>
 
           <Template src="skin:statuslight_3state.xml">
-           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
            <SetVariable name="Tooltip">Vinyl Control 2 active</SetVariable>
             <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="left_connection_control">[Channel2],vinylcontrol_enabled</SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_1_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_2_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_3_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel2],vinylcontrol_status</SetVariable>
           </Template>
 
           <Template src="skin:statuslight_3state.xml">
-           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
            <SetVariable name="Tooltip">Vinyl Control 3 active</SetVariable>
             <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="left_connection_control">[Channel3],vinylcontrol_enabled</SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_1_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_2_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_3_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel3],vinylcontrol_status</SetVariable>
           </Template>
 
           <Template src="skin:statuslight_3state.xml">
-           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
            <SetVariable name="Tooltip">Vinyl Control 4 active</SetVariable>
             <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
-            <SetVariable name="left_connection_control">[Channel4],vinylcontrol_enabled</SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_1_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_2_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_3_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel4],vinylcontrol_status</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
