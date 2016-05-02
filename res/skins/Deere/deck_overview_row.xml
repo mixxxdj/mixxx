@@ -10,8 +10,8 @@
     <ObjectName>OverviewRow</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
-    <MinimumSize>-1,40</MinimumSize>
-    <MaximumSize>-1,60</MaximumSize>
+    <MinimumSize>-1,60</MinimumSize>
+    <MaximumSize>-1,80</MaximumSize>
     <Children>
       <Overview>
         <TooltipId>waveform_overview</TooltipId>
@@ -163,6 +163,13 @@
             </Children>
           </WidgetGroup>
         </Children>
+        <Connection>
+          <ConfigKey persist="true">[Deere],show_minimal_deck_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
       </WidgetGroup>
     </Children>
   </WidgetGroup>
