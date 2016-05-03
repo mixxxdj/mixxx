@@ -1146,6 +1146,9 @@ class MixxxCore(Feature):
                 # keyword until Qt fixes qt_metacall.
                 build.env.Append(CCFLAGS='-Wno-inconsistent-missing-override')
 
+                # Warn about implicit fallthrough.
+                build.env.Append(CCFLAGS='-Wimplicit-fallthrough')
+
                 # Enable thread-safety analysis.
                 # http://clang.llvm.org/docs/ThreadSafetyAnalysis.html
                 build.env.Append(CCFLAGS='-Wthread-safety')

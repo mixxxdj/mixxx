@@ -19,4 +19,16 @@
 #error We do not support your compiler. Please email mixxx-devel@lists.sourceforge.net and tell us about your use case.
 #endif
 
+#if defined(__clang__) && defined(__has_warning)
+#if __has_feature(cxx_attributes) && __has_warning("-Wimplicit-fallthrough")
+#define M_FALLTHROUGH_INTENDED [[clang::fallthrough]]
+#endif
+#endif
+
+#ifndef M_FALLTHROUGH_INTENDED
+#define M_FALLTHROUGH_INTENDED \
+  do {                         \
+  } while (0)
+#endif
+
 #endif /* MIXXX_UTIL_PLATFORM_H */

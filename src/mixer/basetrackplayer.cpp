@@ -13,6 +13,7 @@
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "analyzer/analyzerqueue.h"
+#include "util/platform.h"
 #include "util/sandbox.h"
 #include "effects/effectsmanager.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -285,7 +286,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             if (m_pRateSlider != NULL) {
                 m_pRateSlider->set(0.0);
             }
-            // Fallthrough intended
+            M_FALLTHROUGH_INTENDED;
           case RESET_PITCH:
             if (m_pPitchAdjust != NULL) {
                 m_pPitchAdjust->set(0.0);
