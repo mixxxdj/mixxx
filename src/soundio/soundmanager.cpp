@@ -621,7 +621,11 @@ void SoundManager::setJACKName() const {
             reinterpret_cast<SetJackClientName>(
                 portaudio.resolve("PaJack_SetClientName")));
         if (func) {
-            if (!func(Version::applicationName().toLocal8Bit().constData())) qDebug() << "JACK client name set";
+            // PortAudio does not make a copy of the string we provide it so we
+            // need to make sure it will last forever so we intentionally leak
+            // this string.
+            char* jackNameCopy = strdup(Version::applicationName().toLocal8Bit().constData());
+            if (!func(jackNameCopy)) qDebug() << "JACK client name set";
         } else {
             qWarning() << "failed to resolve JACK name method";
         }
