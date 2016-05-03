@@ -128,19 +128,19 @@
                         <ObjectName>DeckControlsStackedWaveforms4DecksWithEQs</ObjectName>
                         <Layout>horizontal</Layout>
                         <Children>
-                          <Template src="skin:deck_mixer_controls_condensed.xml">
+                          <Template src="skin:deck_mixer_controls_condensed_left.xml">
                             <SetVariable name="i">3</SetVariable>
                           </Template>
-                          <Template src="skin:deck_mixer_controls_condensed.xml">
+                          <Template src="skin:deck_mixer_controls_condensed_left.xml">
                             <SetVariable name="i">1</SetVariable>
                           </Template>
 
                           <Template src="skin:vumeter_master.xml"/>
 
-                          <Template src="skin:deck_mixer_controls_condensed.xml">
+                          <Template src="skin:deck_mixer_controls_condensed_right.xml">
                             <SetVariable name="i">2</SetVariable>
                           </Template>
-                          <Template src="skin:deck_mixer_controls_condensed.xml">
+                          <Template src="skin:deck_mixer_controls_condensed_right.xml">
                             <SetVariable name="i">4</SetVariable>
                           </Template>
                         </Children>

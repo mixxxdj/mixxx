@@ -9,7 +9,7 @@
       <WidgetGroup>
         <ObjectName>master_VuMeter_Group</ObjectName>
         <Layout>horizontal</Layout>
-        <MaximumSize>22,141</MaximumSize>
+        <MaximumSize>32,120</MaximumSize>
         <Children>
           <Template src="skin:vumeter_v.xml">
             <SetVariable name="group">[Master]</SetVariable>

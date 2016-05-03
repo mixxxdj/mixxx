@@ -10,12 +10,54 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-      <Template src="skin:knob_with_label.xml">
-        <SetVariable name="TooltipId">pregain</SetVariable>
-        <SetVariable name="control">pregain</SetVariable>
-        <SetVariable name="color">red</SetVariable>
-        <SetVariable name="label">Gain</SetVariable>
-      </Template>
+      <!--In 4 deck mode with EQs showing, hide the gain knob here and show it above the EQs.-->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:knob_with_label.xml">
+                <SetVariable name="TooltipId">pregain</SetVariable>
+                <SetVariable name="control">pregain</SetVariable>
+                <SetVariable name="color">red</SetVariable>
+                <SetVariable name="label">Gain</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <!--In 2 deck mode, show the gain knob above the channel level meters.-->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:knob_with_label.xml">
+            <SetVariable name="TooltipId">pregain</SetVariable>
+            <SetVariable name="control">pregain</SetVariable>
+            <SetVariable name="color">red</SetVariable>
+            <SetVariable name="label">Gain</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
 
       <WidgetGroup>
         <Size>22min,-1me</Size>
