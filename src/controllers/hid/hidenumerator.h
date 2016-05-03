@@ -8,6 +8,8 @@
 #ifndef HIDENUMERATOR_H
 #define HIDENUMERATOR_H
 
+#include <hidapi.h>
+
 #include "controllers/controllerenumerator.h"
 
 class HidEnumerator : public ControllerEnumerator {
@@ -19,6 +21,7 @@ class HidEnumerator : public ControllerEnumerator {
 
   private:
     QList<Controller*> m_devices;
+    bool isDuplicate(hid_device_info *dev);
 };
 
 #endif
