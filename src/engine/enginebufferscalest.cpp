@@ -157,7 +157,6 @@ double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
         read += received_frames * kNumChannels;
 
         if (remaining_frames > 0) {
-            unsigned int iLenFrames = kiSoundTouchReadAheadLength;
             unsigned int iAvailSamples = m_pReadAheadManager->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
