@@ -942,13 +942,41 @@ WWidget, WLabel {
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 
-#4DecksMixerCol2Container {
+#DeckMixer1_ColumnCondensed, #DeckMixer2_ColumnCondensed, #DeckMixer3_ColumnCondensed,
+#DeckMixer4_ColumnCondensed {
+  qproperty-layoutSpacing: 7;
+  padding: 5;
+  qproperty-layoutAlignment: 'AlignHCenter';
+}
+
+#4DecksMixerCol2ContainerLeft {
   padding-left: 14px;
+}
+
+#4DecksMixerCol2ContainerRight {
+  padding-right: 14px;
+}
+
+#4DecksMixerCondensedMonoMeterLeft {
+  padding-left: 2px;
+  padding-right: 4px;
+}
+
+#4DecksMixerCondensedMonoMeterRight {
+  padding-left: 4px;
+  padding-right: 2px;
 }
 
 #channel_VuMeter_Group {
   qproperty-layoutSpacing: 3;
   qproperty-layoutAlignment: 'AlignHCenter';
+}
+
+#master_VuMeter_Group {
+  qproperty-layoutSpacing: 3;
+  qproperty-layoutAlignment: 'AlignHCenter';
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 #MasterVumeter {

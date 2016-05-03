@@ -26,19 +26,25 @@
         <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
       </Template>
 
-      <SliderComposed>
-        <TooltipId>channel_volume</TooltipId>
-        <SizePolicy>min,me</SizePolicy>
-        <MinimumSize>40,100</MinimumSize>
-        <MaximumSize>40,-1</MaximumSize>
-        <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-        <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
-        <Horizontal>false</Horizontal>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,volume</ConfigKey>
-          <EmitOnDownPress>false</EmitOnDownPress>
-        </Connection>
-      </SliderComposed>
+      <WidgetGroup>
+        <ObjectName>Channel<Variable name="i"/>Volume</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <SliderComposed>
+            <TooltipId>channel_volume</TooltipId>
+            <SizePolicy>min,me</SizePolicy>
+            <MinimumSize>40,100</MinimumSize>
+            <MaximumSize>40,-1</MaximumSize>
+            <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+            <Horizontal>false</Horizontal>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+              <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
+          </SliderComposed>
+        </Children>
+      </WidgetGroup>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
