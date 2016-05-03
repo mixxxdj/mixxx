@@ -668,7 +668,7 @@ class QDebug(Feature):
         return "Debugging message output"
 
     def enabled(self, build):
-        build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 0)
+        build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 1)
         if build.platform_is_windows:
             if build.build_is_debug:
                 # Turn general debugging flag on too if debug build is specified
