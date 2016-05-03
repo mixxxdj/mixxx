@@ -30,6 +30,7 @@
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
+        <ObjectName>MinimalControlsContainer</ObjectName>
         <Children>
 <!--          <WidgetGroup>
             <Layout>horizontal</Layout>
