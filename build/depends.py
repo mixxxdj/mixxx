@@ -1146,6 +1146,10 @@ class MixxxCore(Feature):
                 # keyword until Qt fixes qt_metacall.
                 build.env.Append(CCFLAGS='-Wno-inconsistent-missing-override')
 
+                # Do not warn about use of the deprecated 'register' keyword
+                # since it produces noise from libraries we depend on using it.
+                build.env.Append(CCFLAGS='-Wno-deprecated-register')
+
                 # Warn about implicit fallthrough.
                 build.env.Append(CCFLAGS='-Wimplicit-fallthrough')
 
