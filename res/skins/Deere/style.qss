@@ -648,7 +648,7 @@ WWidget, QLabel {
 #HotcueGrid WPushButton, #HotcueGridExtended WPushButton {
 }
 
-#LoopingContainer, #BeatLoopContainer, #TransportContainer {
+#LoopingContainer, #BeatLoopContainer, #TransportContainer, #MinimalControlsContainer {
   background-color: #333333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
