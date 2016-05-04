@@ -311,17 +311,17 @@ bool EngineRecord::openFile() {
             // Set meta data
             int ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_baTitle.constData());
             if (ret != 0) {
-                qDebug("libsndfile error: %s", sf_error_number(ret));
+                qWarning("libsndfile error: %s", sf_error_number(ret));
             }
 
             ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_baAuthor.constData());
             if (ret != 0) {
-                qDebug("libsndfile error: %s", sf_error_number(ret));
+                qWarning("libsndfile error: %s", sf_error_number(ret));
             }
 
             ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_baAlbum.constData());
             if (ret != 0) {
-                qDebug("libsndfile error: %s", sf_error_number(ret));
+                qWarning("libsndfile error: %s", sf_error_number(ret));
             }
         }
     } else {

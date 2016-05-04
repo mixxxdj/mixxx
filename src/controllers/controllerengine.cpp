@@ -228,7 +228,7 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
         }
 
         if (m_scriptErrors.contains(script.name)) {
-            qDebug() << "Errors occurred while loading" << script.name;
+            qWarning() << "Errors occurred while loading" << script.name;
         }
     }
 

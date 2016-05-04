@@ -53,7 +53,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     QString logFileName = QDir(CmdlineArgs::Instance().getSettingsPath()).filePath("mixxx.log");
     m_logFile.setFileName(logFileName);
     if (!m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "ERROR: Could not open log file";
+        qWarning() << "ERROR: Could not open log file:" << logFileName;
     }
 
     // Connect search box signals to the library

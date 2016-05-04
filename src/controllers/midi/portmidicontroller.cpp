@@ -67,7 +67,7 @@ int PortMidiController::open() {
         PmError err = m_pInputDevice->openInput(MIXXX_PORTMIDI_BUFFER_LEN);
 
         if (err != pmNoError) {
-            qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
+            qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
             return -2;
         }
     }
@@ -78,7 +78,7 @@ int PortMidiController::open() {
 
         PmError err = m_pOutputDevice->openOutput();
         if (err != pmNoError) {
-            qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
+            qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
             return -2;
         }
     }
@@ -102,7 +102,7 @@ int PortMidiController::close() {
     if (m_pInputDevice && m_pInputDevice->isOpen()) {
         PmError err = m_pInputDevice->close();
         if (err != pmNoError) {
-            qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
+            qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
             result = -1;
         }
     }
@@ -110,7 +110,7 @@ int PortMidiController::close() {
     if (m_pOutputDevice && m_pOutputDevice->isOpen()) {
         PmError err = m_pOutputDevice->close();
         if (err != pmNoError) {
-            qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
+            qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
             result = -1;
         }
     }
@@ -210,7 +210,7 @@ void PortMidiController::sendWord(unsigned int word) {
 
     PmError err = m_pOutputDevice->writeShort(word);
     if (err != pmNoError) {
-        qDebug() << "PortMidi sendShortMsg error:" << Pm_GetErrorText(err);
+        qWarning() << "PortMidi sendShortMsg error:" << Pm_GetErrorText(err);
     }
 }
 
@@ -230,7 +230,7 @@ void PortMidiController::send(QByteArray data) {
 
     PmError err = m_pOutputDevice->writeSysEx((unsigned char*)data.constData());
     if (err != pmNoError) {
-        qDebug() << "PortMidi sendSysexMsg error:"
-                 << Pm_GetErrorText(err);
+        qWarning() << "PortMidi sendSysexMsg error:"
+                   << Pm_GetErrorText(err);
     }
 }

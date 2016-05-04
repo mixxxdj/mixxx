@@ -271,7 +271,7 @@ void EngineBroadcast::updateFromPreferences() {
     } else if (m_format_is_ov) {
         format = SHOUT_FORMAT_OGG;
     } else {
-        qDebug() << "Error: unknown format:" << baFormat.constData();
+        qWarning() << "Error: unknown format:" << baFormat.constData();
         return;
     }
 
@@ -284,7 +284,7 @@ void EngineBroadcast::updateFromPreferences() {
     int iBitrate = baBitrate.toInt(&bitrate_is_int);
 
     if (!bitrate_is_int) {
-        qDebug() << "Error: unknown bitrate:" << baBitrate.constData();
+        qWarning() << "Error: unknown bitrate:" << baBitrate.constData();
     }
 
     int iMasterSamplerate = m_pMasterSamplerate->get();
@@ -405,8 +405,8 @@ bool EngineBroadcast::processConnect() {
             m_iShoutStatus == SHOUTERR_NOLOGIN ||
             m_iShoutStatus == SHOUTERR_MALLOC) {
             m_lastErrorStr = shout_get_error(m_pShout);
-            qDebug() << "Streaming server made fatal error. Can't continue connecting:"
-                     << m_lastErrorStr;
+            qWarning() << "Streaming server made fatal error. Can't continue connecting:"
+                       << m_lastErrorStr;
             break;
         }
 
@@ -435,7 +435,7 @@ bool EngineBroadcast::processConnect() {
             if (m_iShoutStatus != SHOUTERR_BUSY &&
                     m_iShoutStatus != SHOUTERR_SUCCESS &&
                     m_iShoutStatus != SHOUTERR_CONNECTED) {
-                qDebug() << "Streaming server made error:" << m_iShoutStatus;
+                qWarning() << "Streaming server made error:" << m_iShoutStatus;
             }
 
             // If socket is busy then we wait half second
