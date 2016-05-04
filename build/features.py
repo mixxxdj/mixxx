@@ -1180,29 +1180,6 @@ class Optimize(Feature):
             # -fstrict-aliasing -fno-schedule-insns -ffast-math
 
 
-class AutoDjCrates(Feature):
-    def description(self):
-        return "Auto-DJ crates (for random tracks)"
-
-    def enabled(self, build):
-        build.flags['autodjcrates'] = \
-            util.get_flags(build.env, 'autodjcrates', 1)
-        if int(build.flags['autodjcrates']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('autodjcrates',
-                 'Set to 1 to enable crates as a source for random Auto-DJ tracks.', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPDEFINES='__AUTODJCRATES__')
-
-    def sources(self, build):
-        return ['library/dao/autodjcratesdao.cpp']
-
 class MacAppStoreException(Feature):
     def description(self):
         return "Build for Mac App Store"

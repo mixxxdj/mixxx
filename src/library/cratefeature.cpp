@@ -73,14 +73,10 @@ CrateFeature::CrateFeature(Library* pLibrary,
     connect(m_pAnalyzeCrateAction, SIGNAL(triggered()),
             this, SLOT(slotAnalyzeCrate()));
 
-#ifdef __AUTODJCRATES__
-
     m_pAutoDjTrackSource = new QAction(tr("Auto DJ Track Source"),this);
     m_pAutoDjTrackSource->setCheckable(true);
     connect(m_pAutoDjTrackSource, SIGNAL(changed()),
             this, SLOT(slotAutoDjTrackSourceChanged()));
-
-#endif // __AUTODJCRATES__
 
     connect(&m_crateDao, SIGNAL(added(int)),
             this, SLOT(slotCrateTableChanged(int)));
@@ -118,9 +114,7 @@ CrateFeature::~CrateFeature() {
     delete m_pLockCrateAction;
     delete m_pImportPlaylistAction;
     delete m_pAnalyzeCrateAction;
-#ifdef __AUTODJCRATES__
     delete m_pAutoDjTrackSource;
-#endif // __AUTODJCRATES__
 }
 
 QVariant CrateFeature::title() {
@@ -253,10 +247,8 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     m_pDeleteCrateAction->setEnabled(!locked);
     m_pRenameCrateAction->setEnabled(!locked);
 
-#ifdef __AUTODJCRATES__
     bool bAutoDj = m_crateDao.isCrateInAutoDj(crateId);
     m_pAutoDjTrackSource->setChecked(bAutoDj);
-#endif // __AUTODJCRATES__
 
     m_pLockCrateAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
@@ -268,10 +260,8 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pDeleteCrateAction);
     menu.addAction(m_pLockCrateAction);
     menu.addSeparator();
-#ifdef __AUTODJCRATES__
     menu.addAction(m_pAutoDjTrackSource);
     menu.addSeparator();
-#endif // __AUTODJCRATES__
     menu.addAction(m_pAnalyzeCrateAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
@@ -457,12 +447,10 @@ void CrateFeature::slotToggleCrateLock() {
 }
 
 void CrateFeature::slotAutoDjTrackSourceChanged() {
-#ifdef __AUTODJCRATES__
     int crateId = crateIdFromIndex(m_lastRightClickedIndex);
     if (crateId != -1) {
         m_crateDao.setCrateInAutoDj(crateId, m_pAutoDjTrackSource->isChecked());
     }
-#endif // __AUTODJCRATES__
 }
 
 void CrateFeature::buildCrateList() {

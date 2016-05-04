@@ -91,9 +91,7 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pRenameCrateAction;
     QAction *m_pLockCrateAction;
     QAction *m_pDuplicateCrateAction;
-#ifdef __AUTODJCRATES__
     QAction *m_pAutoDjTrackSource;
-#endif // __AUTODJCRATES__
     QAction *m_pImportPlaylistAction;
     QAction *m_pCreateImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
