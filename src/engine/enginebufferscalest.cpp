@@ -45,7 +45,7 @@ const int kNumChannels = 2;
 
 const int kBackBufferSize = kSeekOffsetFrames * kNumChannels;
 
-} // anonymous
+}  // namespace
 
 EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
@@ -64,7 +64,7 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     // to preallocate buffers large enough to (almost certainly)
     // avoid memory reallocations during playback.
     m_pSoundTouch->setTempo(0.1);
-    m_pSoundTouch->putSamples(buffer_back, kiSoundTouchReadAheadLength);
+    m_pSoundTouch->putSamples(buffer_back, kSeekOffsetFrames);
     m_pSoundTouch->clear();
     m_pSoundTouch->setTempo(m_dTempoRatio);
 }
