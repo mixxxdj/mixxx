@@ -40,6 +40,33 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>P32.leftDeck.loopIn.input</key>
+                <status>0x91</status>
+                <midino>0x50</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.loopOut.input</key>
+                <status>0x91</status>
+                <midino>0x51</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.loopTogglePad.input</key>
+                <status>0x91</status>
+                <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton1.input</key>
                 <status>0x91</status>
                 <midino>0x60</midino>
@@ -1298,7 +1325,15 @@
                 <midino>0x06</midino>
                 <options>
                     <script-binding/>
+                </options>            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.loopToggle.input</key>
+                <status>0x92</status>
+                <midino>0x52</midino>
+                <options>
+                    <script-binding/>
                 </options>
+            </control>
             </control>
             <control>
                 <group>[Channel1]</group>
@@ -1982,6 +2017,33 @@
                 <key>P32.samplerClear32.input</key>
                 <status>0x95</status>
                 <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.loopIn.input</key>
+                <status>0x92</status>
+                <midino>0x50</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.loopOut.input</key>
+                <status>0x92</status>
+                <midino>0x51</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.loopTogglePad.input</key>
+                <status>0x92</status>
+                <midino>0x52</midino>
                 <options>
                     <script-binding/>
                 </options>

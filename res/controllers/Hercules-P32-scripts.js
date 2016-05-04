@@ -92,18 +92,18 @@ var Control = function (signals, group, inOptions, outOptions) {
             return;
         }
         this.inCo = inOptions[0];
-        this.inFunc = inOptions[1];
-        if (this.inFunc === undefined) {this.inFunc = function (value) {return value;};}
+        var inFunc = inOptions[1];
+        if (inFunc === undefined) {inFunc = function (value) {return value;};}
         this.onlyOnPress = inOptions[2];
         if (this.onlyOnPress === undefined) {this.onlyOnPress = true;}
         this.input = function (channel, control, value, status, group) {
             // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
             if (that.onlyOnPress) {
                 if (value > 0) {
-                    that.setValue(that.inFunc.call(that, value));
+                    that.setValue(inFunc.call(that, value));
                 }
             } else {
-                that.setValue(that.inFunc.call(that, value));
+                that.setValue(inFunc.call(that, value));
             }
         };
     };
@@ -238,6 +238,29 @@ var PlayButton = function (signals, group, on, off) {
 };
 PlayButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
 PlayButton.prototype.constructor = PlayButton;
+
+
+var ActionButton = function (signals, group, inCo, on) {
+    Control.call(this,
+                 signals, group,
+                 [inCo, function () { return 1; }],
+                 null);
+
+   if (on !== undefined) {
+       this.send(on);
+   }
+}
+
+var LoopToggleButton = function (signals, group, on, off) {
+    if (on === undefined) {on = 127;}
+    if (off === undefined) {off = 0;}
+    Control.call(this,
+        signals, group,
+        ['reloop_exit', function () { return 1; }],
+        ['loop_enabled', function (value) { return (value) ? on : off; } ]);
+}
+LoopToggleButton.prototype = Object.create(Control.prototype);
+LoopToggleButton.prototype.constructor = LoopToggleButton;
 
 var HotcueButton = function (signals, group, hotcueNumber, on, off) {
     /**
@@ -645,15 +668,17 @@ P32.headMix = function (channel, control, value, status, group) {
 };
 
 P32.record = new Control([0x90, 0x02], '[Recording]',
-                         ['toggle_recording', null],
+                         null,
                          ['status', function (val) {return val * 127;} ]);
-P32.record.inFunc = function (channel, control, value, status, group) {
-    if (P32.leftDeck.shift) {
-        P32.leftDeck.toggle();
-    } else if (P32.rightDeck.shift) {
-        P32.rightDeck.toggle();
-    } else {
-        return 1;
+P32.record.input = function (channel, control, value, status, group) {
+    if (value === 127) {
+        if (P32.leftDeck.shift) {
+            P32.leftDeck.toggle();
+        } else if (P32.rightDeck.shift) {
+            P32.rightDeck.toggle();
+        } else {
+            script.toggleControl('[Recording]', 'toggle_recording');
+        }
     }
 };
 
@@ -700,6 +725,8 @@ P32.EffectUnit = function (unitNumber) {
     this.switchEffect2 = function (channel, control, value, status, group) { that.switchEffect(2); };
     this.switchEffect3 = function (channel, control, value, status, group) { that.switchEffect(3); };
     this.switchEffect4 = function (channel, control, value, status, group) { that.switchEffect(4); };
+    
+    
 };
 
 P32.Deck = function (deckNumbers, channel) {
@@ -730,8 +757,8 @@ P32.Deck = function (deckNumbers, channel) {
         [0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'quantize'); // sync shifted
     this.keylock = new ToggleButton(
         [0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'keylock'); // cue shifted
-    this.goToStart = new Control(
-        [0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck, // play shifted
+    this.goToStart = new Control( // play shifted
+        [0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck, 
         ['start_stop', function () { return 1; }],
         ['play_indicator', function (val) { return val * 127; } ]);
 
@@ -744,6 +771,16 @@ P32.Deck = function (deckNumbers, channel) {
             [0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i, 3)], this.currentDeck,
             i, P32.padColors.red, P32.padColors.off);
     }
+    
+    this.loopIn = new ActionButton(
+        [0x90 + channel, 0x50], this.currentDeck,
+        'loop_in', P32.padColors.purple);
+    this.loopOut = new ActionButton(
+        [0x90 + channel, 0x51], this.currentDeck,
+        'loop_out', P32.padColors.purple);
+    this.loopTogglePad = new LoopToggleButton(
+        [0x90 + channel, 0x52], this.currentDeck,
+        P32.padColors.red, P32.padColors.blue);
 
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
     this.pfl.input = function (channel, control, value, status, group) {
