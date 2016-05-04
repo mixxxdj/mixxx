@@ -46,7 +46,7 @@ VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pCon
     m_pControlVinylSignalEnabled->set(1);
     m_pControlVinylSignalEnabled->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pPlayEnabled = new ControlObjectSlave(group, "play", this);
+    m_pPlayEnabled = new ControlProxy(group, "play", this);
 }
 
 VinylControlControl::~VinylControlControl() {
@@ -62,13 +62,9 @@ VinylControlControl::~VinylControlControl() {
     delete m_pControlVinylStatus;
 }
 
-void VinylControlControl::trackLoaded(TrackPointer pTrack) {
-    m_pCurrentTrack = pTrack;
-}
-
-void VinylControlControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
-    m_pCurrentTrack.clear();
+void VinylControlControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
+    m_pCurrentTrack = pNewTrack;
 }
 
 void VinylControlControl::notifySeekQueued() {

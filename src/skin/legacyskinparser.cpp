@@ -13,10 +13,10 @@
 #include <QtDebug>
 #include <QtGlobal>
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
 #include "library/library.h"
@@ -71,6 +71,7 @@
 #include "widget/wsizeawarestack.h"
 #include "widget/wwidgetgroup.h"
 #include "widget/wkey.h"
+#include "widget/wbattery.h"
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
 #include "widget/wsingletoncontainer.h"
@@ -145,7 +146,7 @@ LegacySkinParser::LegacySkinParser()
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
-                                   MixxxKeyboard* pKeyboard,
+                                   KeyboardEventFilter* pKeyboard,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,
@@ -555,6 +556,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
         result = wrapWidget(parseEngineKey(node));
+    } else if (nodeName == "Battery") {
+        result = wrapWidget(parseBattery(node));
     } else if (nodeName == "SetVariable") {
         m_pContext->updateVariable(node);
     } else if (nodeName == "Template") {
@@ -904,17 +907,14 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     overviewWidget->Init();
 
     // Connect the player's load and unload signals to the overview widget.
-    connect(pPlayer, SIGNAL(loadTrack(TrackPointer)),
-            overviewWidget, SLOT(slotLoadNewTrack(TrackPointer)));
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             overviewWidget, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(pPlayer, SIGNAL(loadTrackFailed(TrackPointer)),
-            overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
-    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-            overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
+    connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+            overviewWidget, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
 
-    //just in case track already loaded
-    overviewWidget->slotLoadNewTrack(pPlayer->getLoadedTrack());
+    // just in case track already loaded
+    overviewWidget->slotLoadingTrack(pPlayer->getLoadedTrack(), TrackPointer());
+    overviewWidget->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return overviewWidget;
 }
@@ -943,15 +943,15 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     // connect display with loading/unloading of tracks
     QObject::connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                     viewer, SLOT(onTrackLoaded(TrackPointer)));
-    QObject::connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-                     viewer, SLOT(onTrackUnloaded(TrackPointer)));
+                     viewer, SLOT(slotTrackLoaded(TrackPointer)));
+    QObject::connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+                     viewer, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
 
     connect(viewer, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
     // if any already loaded
-    viewer->onTrackLoaded(pPlayer->getLoadedTrack());
+    viewer->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return viewer;
 }
@@ -970,8 +970,8 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-            p, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+            p, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
     connect(p, SIGNAL(trackDropped(QString,QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
 
@@ -997,8 +997,8 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-            p, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+            p, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
     connect(p, SIGNAL(trackDropped(QString,QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
 
@@ -1025,8 +1025,8 @@ QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-            p, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+            p, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -1080,6 +1080,17 @@ QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
     return pEngineKey;
 }
 
+QWidget* LegacySkinParser::parseBattery(QDomElement node) {
+    WBattery *p = new WBattery(m_pParent);
+    setupBaseWidget(node, p);
+    setupWidget(node, p);
+    p->setup(node, *m_pContext);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     if (CmdlineArgs::Instance().getSafeMode()) {
@@ -1107,8 +1118,8 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     if (pPlayer != NULL) {
         connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
                 spinny, SLOT(slotLoadTrack(TrackPointer)));
-        connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-                spinny, SLOT(slotReset()));
+        connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+                spinny, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
         // just in case a track is already loaded
         spinny->slotLoadTrack(pPlayer->getLoadedTrack());
     }
@@ -1158,8 +1169,8 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
     } else if (pPlayer != NULL) {
         connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
                 pCoverArt, SLOT(slotLoadTrack(TrackPointer)));
-        connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-                pCoverArt, SLOT(slotReset()));
+        connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+                pCoverArt, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
         connect(pCoverArt, SIGNAL(trackDropped(QString, QString)),
                 m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 

@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QUrl>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "widget/wtrackproperty.h"
 #include "util/dnd.h"
 
@@ -15,9 +15,6 @@ WTrackProperty::WTrackProperty(const char* group,
     setAcceptDrops(true);
 }
 
-WTrackProperty::~WTrackProperty() {
-}
-
 void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
     WLabel::setup(node, context);
 
@@ -27,22 +24,23 @@ void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
 void WTrackProperty::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
-        connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-                this, SLOT(updateLabel(TrackInfoObject*)));
+        connect(track.data(), SIGNAL(changed(Track*)),
+                this, SLOT(updateLabel(Track*)));
         updateLabel(track.data());
     }
 }
 
-void WTrackProperty::slotTrackUnloaded(TrackPointer track) {
-    Q_UNUSED(track);
+void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
     if (m_pCurrentTrack) {
-        disconnect(m_pCurrentTrack.data(), 0, this, 0);
+        disconnect(m_pCurrentTrack.data(), nullptr, this, nullptr);
     }
     m_pCurrentTrack.clear();
     setText("");
 }
 
-void WTrackProperty::updateLabel(TrackInfoObject*) {
+void WTrackProperty::updateLabel(Track* /*unused*/) {
     if (m_pCurrentTrack) {
         QVariant property = m_pCurrentTrack->property(m_property.toAscii().constData());
         if (property.isValid() && qVariantCanConvert<QString>(property)) {

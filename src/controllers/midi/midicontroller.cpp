@@ -11,18 +11,18 @@
 #include "controllers/midi/midiutils.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerdebug.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "util/math.h"
 
 MidiController::MidiController(UserSettingsPointer config)
         : Controller(), m_pConfig(config) {
-    m_pClockBpm = new ControlObjectSlave("[MidiSourceClock]", "bpm", this);
-    m_pClockLastBeat = new ControlObjectSlave("[MidiSourceClock]",
+    m_pClockBpm = new ControlProxy("[MidiSourceClock]", "bpm", this);
+    m_pClockLastBeat = new ControlProxy("[MidiSourceClock]",
                                               "last_beat_time", this);
-    m_pClockRunning = new ControlObjectSlave("[MidiSourceClock]", "run", this);
+    m_pClockRunning = new ControlProxy("[MidiSourceClock]", "run", this);
     setDeviceCategory(tr("MIDI Controller"));
 }
 
@@ -318,7 +318,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
             return;
         }
 
-        QScriptValue function = pEngine->resolveFunction(mapping.control.item);
+        QScriptValue function = pEngine->wrapFunctionCode(mapping.control.item, 5);
         if (!pEngine->execute(function, channel, control, value, status,
                               mapping.control.group, timestamp)) {
             qDebug() << "MidiController: Invalid script function"
@@ -577,7 +577,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         if (pEngine == NULL) {
             return;
         }
-        QScriptValue function = pEngine->resolveFunction(mapping.control.item);
+        QScriptValue function = pEngine->wrapFunctionCode(mapping.control.item, 2);
         if (!pEngine->execute(function, data, timestamp)) {
             qDebug() << "MidiController: Invalid script function"
                      << mapping.control.item;

@@ -9,7 +9,7 @@
 #include "util/performancetimer.h"
 #include "control/controlvalue.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 class VSyncThread;
 
 // This class is for synchronizing the sound device DAC time with the waveforms, displayed on the
@@ -64,7 +64,7 @@ class VisualPlayPosition : public QObject {
 
   private:
     ControlValueAtomic<VisualPlayPositionData> m_data;
-    ControlObjectSlave* m_audioBufferSize;
+    ControlProxy* m_audioBufferSize;
     double m_dAudioBufferSize; // Audio buffer size in ms
     bool m_valid;
     QString m_key;

@@ -5,7 +5,7 @@
 #include <QVariant>
 #include <QString>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "effects/effect.h"
 #include "util/class.h"
 

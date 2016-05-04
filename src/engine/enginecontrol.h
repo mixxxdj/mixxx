@@ -8,10 +8,10 @@
 #include <QList>
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "control/controlvalue.h"
 #include "engine/effects/groupfeaturestate.h"
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 
 class EngineMaster;
 class EngineBuffer;
@@ -35,7 +35,7 @@ class EngineControl : public QObject {
     Q_OBJECT
   public:
     EngineControl(QString group,
-                  UserSettingsPointer _config);
+                  UserSettingsPointer pConfig);
     virtual ~EngineControl();
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -81,8 +81,7 @@ class EngineControl : public QObject {
     virtual void notifySeek(double dNewPlaypo);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   protected:
     void seek(double fractionalPosition);

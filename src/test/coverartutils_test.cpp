@@ -2,7 +2,7 @@
 #include <QStringBuilder>
 #include <QFileInfo>
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/trackcollection.h"
@@ -45,10 +45,10 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     QImage cover;
     QImage referencePNGImage = QImage(kReferencePNGLocationTest);
     QImage referenceJPGImage = QImage(kReferenceJPGLocationTest);
-    
+
     // We never need to acquire security tokens for tests since we don't run
     // them in a sandboxed environment.
-	
+
     SecurityTokenPointer pToken;
     // aiff
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.aiff",
@@ -96,7 +96,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     ASSERT_FALSE(QDir().exists(trackdir)); // it must start empty
     ASSERT_TRUE(QDir().mkpath(trackdir));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary(kTrackLocationTest));
+    TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
     SoundSourceProxy(pTrack).loadTrackMetadata();
     QLinkedList<QFileInfo> covers;
     CoverArt res;
@@ -107,7 +107,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     EXPECT_EQ(expected, res);
 
     // Looking for a track with embedded cover.
-    pTrack = TrackPointer(TrackInfoObject::newTemporary(kTrackLocationTest));
+    pTrack = TrackPointer(Track::newTemporary(kTrackLocationTest));
     SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
     expected = CoverArt();
     expected.image = pTrack->getCoverArt().image;

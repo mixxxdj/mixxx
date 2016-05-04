@@ -5,9 +5,9 @@
 #include <QPushButton>
 #include <QTableView>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 
 class PreviewButtonDelegate : public QStyledItemDelegate {
   Q_OBJECT
@@ -41,8 +41,8 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
 
   private:
     QTableView* m_pTableView;
-    ControlObjectSlave* m_pPreviewDeckPlay;
-    ControlObjectSlave* m_pCueGotoAndPlay;
+    ControlProxy* m_pPreviewDeckPlay;
+    ControlProxy* m_pCueGotoAndPlay;
     QPushButton* m_pButton;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;

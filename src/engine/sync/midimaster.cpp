@@ -4,10 +4,10 @@
 
 #include "engine/sync/enginesync.h"
 #include "controllers/midi/midisourceclock.h"
-#include "controllinpotmeter.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "configobject.h"
+#include "control/controllinpotmeter.h"
+#include "control/control.h"
+#include "control/controlpushbutton.h"
+#include "preferences/configobject.h"
 #include "util/time.h"
 
 MidiMasterClock::MidiMasterClock(const char* pGroup, SyncableListener* pEngineSync)
@@ -134,4 +134,3 @@ void MidiMasterClock::onCallbackEnd(int sampleRate, int bufferSize) {
     m_pMidiSourceClockBeatDistance->set(beat_distance);
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
 }
-

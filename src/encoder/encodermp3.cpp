@@ -3,7 +3,7 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 2009 by Phillip Whelan (rewritten for mp3)
-                           (C) 2010 by Tobias Rafreider (fixes for shoutcast, dynamic loading of lame_enc.dll, etc)
+                           (C) 2010 by Tobias Rafreider (fixes for broadcast, dynamic loading of lame_enc.dll, etc)
  ***************************************************************************/
 
 /***************************************************************************
@@ -42,7 +42,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
      * m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
      * m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
      *
-     * This has solved many segfaults when using and even closing shoutcast
+     * This has solved many segfaults when using and even closing broadcast
      * along with LAME.  This bug was detected by using Valgrind memory analyzer
      *
      */
@@ -269,7 +269,7 @@ int EncoderMp3::bufferInGrow(int size) {
 }
 
 //Using this method requires to call method 'write()' or 'sendPackages()'
-//depending on which context you use the class (shoutcast or recording to HDD)
+//depending on which context you use the class (broadcast or recording to HDD)
 void EncoderMp3::flush() {
     if (m_library == NULL || !m_library->isLoaded())
         return;
@@ -279,7 +279,7 @@ void EncoderMp3::flush() {
     if (rc < 0) {
         return;
     }
-    //end encoded audio to shoutcast or file
+    //end encoded audio to broadcast or file
     m_pCallback->write(NULL, m_bufferOut, 0, rc);
 }
 
@@ -306,7 +306,7 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
     if (rc < 0) {
         return;
     }
-    //write encoded audio to shoutcast stream or file
+    //write encoded audio to broadcast stream or file
     m_pCallback->write(NULL, m_bufferOut, 0, rc);
 }
 

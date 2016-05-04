@@ -10,7 +10,7 @@
 #include <QMutex>
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class AnalyzerQueue;
 class Auxiliary;
@@ -161,9 +161,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     static QString groupForAuxiliary(int i) {
         return QString("[Auxiliary%1]").arg(i + 1);
     }
-
-    // Used to determine if the user has configured an input for the given vinyl deck.
-    bool hasVinylInput(int inputnum) const;
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck

@@ -6,10 +6,10 @@
 #include <QModelIndexList>
 
 #include "preferences/usersettings.h"
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "engine/enginechannel.h"
 #include "library/playlisttablemodel.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/class.h"
 
 class ControlPushButton;
@@ -64,18 +64,18 @@ class DeckAttributes : public QObject {
     TrackPointer getLoadedTrack() const;
 
   signals:
-    void playChanged(DeckAttributes* deck, bool playing);
-    void playPositionChanged(DeckAttributes* deck, double playPosition);
-    void trackLoaded(DeckAttributes* deck, TrackPointer pTrack);
-    void trackLoadFailed(DeckAttributes* deck, TrackPointer pTrack);
-    void trackUnloaded(DeckAttributes* deck, TrackPointer pTrack);
+    void playChanged(DeckAttributes* pDeck, bool playing);
+    void playPositionChanged(DeckAttributes* pDeck, double playPosition);
+    void trackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
+    void loadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void playerEmpty(DeckAttributes* pDeck);
 
   private slots:
     void slotPlayPosChanged(double v);
     void slotPlayChanged(double v);
     void slotTrackLoaded(TrackPointer pTrack);
-    void slotTrackLoadFailed(TrackPointer pTrack);
-    void slotTrackUnloaded(TrackPointer pTrack);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void slotPlayerEmpty();
 
   public:
     int index;
@@ -85,9 +85,9 @@ class DeckAttributes : public QObject {
 
   private:
     EngineChannel::ChannelOrientation m_orientation;
-    ControlObjectSlave m_playPos;
-    ControlObjectSlave m_play;
-    ControlObjectSlave m_repeat;
+    ControlProxy m_playPos;
+    ControlProxy m_play;
+    ControlProxy m_repeat;
     BaseTrackPlayer* m_pPlayer;
 };
 
@@ -159,8 +159,8 @@ class AutoDJProcessor : public QObject {
     void playerPositionChanged(DeckAttributes* pDeck, double position);
     void playerPlayChanged(DeckAttributes* pDeck, bool playing);
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
-    void playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer pTrack);
-    void playerTrackUnloaded(DeckAttributes* pDeck, TrackPointer pTrack);
+    void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void playerEmpty(DeckAttributes* pDeck);
 
     void controlEnable(double value);
     void controlFadeNow(double value);
@@ -200,8 +200,8 @@ class AutoDJProcessor : public QObject {
 
     QList<DeckAttributes*> m_decks;
 
-    ControlObjectSlave* m_pCOCrossfader;
-    ControlObjectSlave* m_pCOCrossfaderReverse;
+    ControlProxy* m_pCOCrossfader;
+    ControlProxy* m_pCOCrossfaderReverse;
 
     ControlPushButton* m_pSkipNext;
     ControlPushButton* m_pFadeNow;

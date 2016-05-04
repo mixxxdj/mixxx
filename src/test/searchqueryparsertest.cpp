@@ -33,7 +33,7 @@ TEST_F(SearchQueryParserTest, EmptySearch) {
         m_parser.parseQuery("", QStringList(), ""));
 
     // An empty query matches all tracks.
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(qPrintable(QString("")),
@@ -47,7 +47,7 @@ TEST_F(SearchQueryParserTest, OneTermOneColumn) {
     auto pQuery(
         m_parser.parseQuery("asdf", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setTitle("testASDFtest");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("testASDFtest");
@@ -66,7 +66,7 @@ TEST_F(SearchQueryParserTest, OneTermMultipleColumns) {
     auto pQuery(
         m_parser.parseQuery("asdf", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setTitle("testASDFtest");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setAlbum("testASDFtest");
@@ -85,7 +85,7 @@ TEST_F(SearchQueryParserTest, OneTermMultipleColumnsNegation) {
     auto pQuery(
         m_parser.parseQuery("-asdf", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setTitle("testASDFtest");
     EXPECT_TRUE(pQuery->match(pTrack));
     pTrack->setAlbum("testASDFtest");
@@ -103,7 +103,7 @@ TEST_F(SearchQueryParserTest, MultipleTermsOneColumn) {
     auto pQuery(
         m_parser.parseQuery("asdf zxcv", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setTitle("test zXcV test");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("test zXcV test asDf");
@@ -122,7 +122,7 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumns) {
     auto pQuery(
         m_parser.parseQuery("asdf zxcv", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setTitle("asdf zxcv");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("zXcV");
@@ -147,7 +147,7 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumnsNegation) {
     auto pQuery(
         m_parser.parseQuery("asdf -zxcv", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setTitle("asdf zxcv");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setAlbum("asDF");
@@ -173,7 +173,7 @@ TEST_F(SearchQueryParserTest, TextFilter) {
     auto pQuery(
         m_parser.parseQuery("comment:asdf", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setArtist("asdf");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setComment("test ASDF test");
@@ -193,7 +193,7 @@ TEST_F(SearchQueryParserTest, TextFilterEmpty) {
     auto pQuery(
         m_parser.parseQuery("comment:", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setComment("test ASDF test");
     EXPECT_TRUE(pQuery->match(pTrack));
 
@@ -210,7 +210,7 @@ TEST_F(SearchQueryParserTest, TextFilterQuote) {
     auto pQuery(
         m_parser.parseQuery("comment:\"asdf zxcv\"", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setArtist("asdf zxcv");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setComment("test ASDF zxcv test");
@@ -229,7 +229,7 @@ TEST_F(SearchQueryParserTest, TextFilterQuote_NoEndQuoteTakesWholeQuery) {
     auto pQuery(
         m_parser.parseQuery("comment:\"asdf zxcv qwer", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setArtist("asdf zxcv qwer");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setComment("test ASDF zxcv qwer test");
@@ -248,7 +248,7 @@ TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
     auto pQuery(
         m_parser.parseQuery("comment: asdf", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setArtist("asdf");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setComment("test ASDF test");
@@ -267,7 +267,7 @@ TEST_F(SearchQueryParserTest, TextFilterNegation) {
     auto pQuery(
         m_parser.parseQuery("-comment: asdf", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setArtist("asdf");
     EXPECT_TRUE(pQuery->match(pTrack));
     pTrack->setComment("test ASDF test");
@@ -286,7 +286,7 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
     auto pQuery(
         m_parser.parseQuery("bpm:127.12", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     pTrack->setBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -306,7 +306,7 @@ TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
     auto pQuery(
         m_parser.parseQuery("bpm:", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     pTrack->setBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
@@ -324,7 +324,7 @@ TEST_F(SearchQueryParserTest, NumericFilterNegation) {
     auto pQuery(
         m_parser.parseQuery("-bpm:127.12", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     pTrack->setBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
@@ -344,7 +344,7 @@ TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
     auto pQuery(
         m_parser.parseQuery("bpm: 127.12", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     pTrack->setBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -364,7 +364,7 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     auto pQuery(
         m_parser.parseQuery("bpm:>127.12", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     pTrack->setBpm(127.12);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -411,7 +411,7 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
     auto pQuery(
         m_parser.parseQuery("bpm:127.12-129", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     pTrack->setBpm(125);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -434,7 +434,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
         m_parser.parseQuery("bpm:127.12-129 artist:\"com truise\" Colorvision",
                             searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     pTrack->setBpm(128);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -457,7 +457,7 @@ TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     auto pQuery(
         m_parser.parseQuery("asdf", searchColumns, "1 > 2"));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setArtist("zxcv");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("asdf");
@@ -476,7 +476,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
     auto pQuery(
         m_parser.parseQuery("duration:1:30", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     pTrack->setDuration(91);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -516,7 +516,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchWithOperators) {
     auto pQuery(
         m_parser.parseQuery("duration:>1:30", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     pTrack->setDuration(89);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -616,7 +616,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     auto pQuery(
         m_parser.parseQuery("duration:2:30-3:20", searchColumns, ""));
 
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     pTrack->setDuration(80);
     EXPECT_FALSE(pQuery->match(pTrack));

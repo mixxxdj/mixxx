@@ -6,7 +6,7 @@
 #include "library/library.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 
 class WTrackTableView;
 class MissingTableModel;
@@ -16,7 +16,7 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
   public:
     DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
                Library* pLibrary, TrackCollection* pTrackCollection,
-               MixxxKeyboard* pKeyboard);
+               KeyboardEventFilter* pKeyboard);
     virtual ~DlgMissing();
 
     void onShow();

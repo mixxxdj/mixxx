@@ -26,7 +26,7 @@
 #include "preferences/dlgpreferencepage.h"
 
 class ControlObject;
-class ControlObjectSlave;
+class ControlProxy;
 
 class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
@@ -61,7 +61,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
-    ControlObjectSlave* m_pRecordControl;
+    ControlProxy* m_pRecordControl;
     bool m_bConfirmOverwrite;
     QString fileTypeExtension;
     QRadioButton* m_pRadioOgg;

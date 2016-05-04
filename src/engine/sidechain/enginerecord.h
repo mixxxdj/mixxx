@@ -31,16 +31,16 @@
 #include "preferences/usersettings.h"
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/sidechainworker.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class ConfigKey;
-class ControlObjectSlave;
+class ControlProxy;
 class Encoder;
 
 class EngineRecord : public QObject, public EncoderCallback, public SideChainWorker {
     Q_OBJECT
   public:
-    EngineRecord(UserSettingsPointer _config);
+    EngineRecord(UserSettingsPointer pConfig);
     virtual ~EngineRecord();
 
     void process(const CSAMPLE* pBuffer, const int iBufferSize);
@@ -59,9 +59,14 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
 
   signals:
     // emitted to notify RecordingManager
-    void bytesRecorded(int);
-    void isRecording(bool);
-    void durationRecorded(QString);
+    void bytesRecorded(int bytes);
+
+    // Emitted when recording state changes. 'recording' represents whether
+    // recording is active and 'error' is true if an error occurred. Currently
+    // only one error can occur: the specified file was unable to be opened for
+    // writing.
+    void isRecording(bool recording, bool error);
+    void durationRecorded(QString duration);
 
   private:
     int getActiveTracks();
@@ -89,8 +94,8 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     SNDFILE* m_pSndfile;
     SF_INFO m_sfInfo;
 
-    ControlObjectSlave* m_pRecReady;
-    ControlObjectSlave* m_pSamplerate;
+    ControlProxy* m_pRecReady;
+    ControlProxy* m_pSamplerate;
     quint64 m_frames;
     quint64 m_sampleRate;
     quint64 m_recordedDuration;

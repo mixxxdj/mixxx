@@ -8,7 +8,7 @@ class WOverviewHSV : public WOverview {
     WOverviewHSV(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent);
 
   private:
-    virtual bool drawNextPixmapPart();
+    bool drawNextPixmapPart() override;
 };
 
 #endif // WOVERVIEWHSV_H

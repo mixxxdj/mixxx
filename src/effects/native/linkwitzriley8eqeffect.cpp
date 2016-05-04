@@ -139,8 +139,8 @@ LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect(EngineEffect* pEffect,
           m_pKillMid(pEffect->getParameterById("killMid")),
           m_pKillHigh(pEffect->getParameterById("killHigh")) {
     Q_UNUSED(manifest);
-    m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
+    m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
+    m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
 }
 
 LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {

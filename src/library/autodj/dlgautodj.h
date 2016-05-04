@@ -6,12 +6,12 @@
 
 #include "library/autodj/ui_dlgautodj.h"
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/libraryview.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/autodj/autodjprocessor.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 
 class PlaylistTableModel;
 class WTrackTableView;
@@ -22,7 +22,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     DlgAutoDJ(QWidget* parent, UserSettingsPointer pConfig,
               Library* pLibrary,
               AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
-              MixxxKeyboard* pKeyboard);
+              KeyboardEventFilter* pKeyboard);
     virtual ~DlgAutoDJ();
 
     void onShow();

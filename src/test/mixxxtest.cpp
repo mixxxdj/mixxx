@@ -1,6 +1,6 @@
 #include "test/mixxxtest.h"
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 
 #ifdef __FFMPEGFILE__
 extern "C" {

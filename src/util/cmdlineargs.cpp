@@ -3,7 +3,7 @@
 #include "util/cmdlineargs.h"
 #include "util/version.h"
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 
 
 CmdlineArgs::CmdlineArgs()

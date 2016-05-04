@@ -4,16 +4,15 @@
 
 #include <QtDebug>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "preferences/usersettings.h"
-#include "controlpushbutton.h"
-#include "cachingreader.h"
+#include "control/controlpushbutton.h"
 #include "engine/loopingcontrol.h"
 #include "engine/bpmcontrol.h"
 #include "engine/enginecontrol.h"
 #include "util/math.h"
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
@@ -38,8 +37,8 @@ QList<double> LoopingControl::getBeatSizes() {
 }
 
 LoopingControl::LoopingControl(QString group,
-                               UserSettingsPointer _config)
-        : EngineControl(group, _config) {
+                               UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig) {
     m_bLoopingEnabled = false;
     m_bLoopRollActive = false;
     m_iLoopStartSample = kNoTrigger;
@@ -607,30 +606,24 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
     }
 }
 
-void LoopingControl::trackLoaded(TrackPointer pTrack) {
-    if (m_pTrack) {
-        trackUnloaded(m_pTrack);
-    }
-
-    clearActiveBeatLoop();
-
-    if (pTrack) {
-        m_pTrack = pTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
-                this, SLOT(slotUpdatedTrackBeats()));
-    }
-}
-
-void LoopingControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
+void LoopingControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (m_pTrack) {
         disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));
     }
-    m_pTrack.clear();
-    m_pBeats.clear();
+
     clearActiveBeatLoop();
+
+    if (pNewTrack) {
+        m_pTrack = pNewTrack;
+        m_pBeats = m_pTrack->getBeats();
+        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                this, SLOT(slotUpdatedTrackBeats()));
+    } else {
+        m_pTrack.clear();
+        m_pBeats.clear();
+    }
 }
 
 void LoopingControl::slotUpdatedTrackBeats()
@@ -896,6 +889,7 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
             qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;
+            break;
         }
     }
     while (adjusted_position < new_loop_in) {
@@ -904,6 +898,7 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
             qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;
+            break;
         }
     }
     if (adjusted_position != m_iCurrentSample) {

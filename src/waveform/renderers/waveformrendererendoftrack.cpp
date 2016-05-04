@@ -5,8 +5,8 @@
 #include "waveformrendererendoftrack.h"
 #include "waveformwidgetrenderer.h"
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
@@ -36,16 +36,16 @@ WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
 bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
-    m_pEndOfTrackControl = new ControlObjectSlave(
+    m_pEndOfTrackControl = new ControlProxy(
             m_waveformRenderer->getGroup(), "end_of_track");
     m_pEndOfTrackControl->slotSet(0.);
     m_endOfTrackEnabled = false;
 
-    m_pTrackSampleRate = new ControlObjectSlave(
+    m_pTrackSampleRate = new ControlProxy(
             m_waveformRenderer->getGroup(), "track_samplerate");
-    m_pPlayControl = new ControlObjectSlave(
+    m_pPlayControl = new ControlProxy(
             m_waveformRenderer->getGroup(), "play");
-    m_pLoopControl = new ControlObjectSlave(
+    m_pLoopControl = new ControlProxy(
             m_waveformRenderer->getGroup(), "loop_enabled");
     return true;
 }

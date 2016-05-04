@@ -6,7 +6,7 @@
 #include <QSharedPointer>
 #include <QHash>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "engine/channelhandle.h"
 #include "effects/effectchainslot.h"
 

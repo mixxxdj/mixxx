@@ -8,7 +8,7 @@ class WOverviewLMH : public WOverview {
     WOverviewLMH(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent);
 
   private:
-    virtual bool drawNextPixmapPart();
+    bool drawNextPixmapPart() override;
 };
 
 #endif // WOVERVIEWLMH_H

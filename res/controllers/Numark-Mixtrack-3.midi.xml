@@ -1,0 +1,919 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Numark Mixtrack (Pro) 3 MIDI preset v1.3 -->
+<MixxxControllerPreset mixxxVersion="1.12.0+" schemaVersion="1">
+    <info>
+	<name>Numark Mixtrack (Pro) 3</name>
+	<author>Stéphane Morin</author>
+	<description>The Numark Mixtrack 3 and Numark Mixtrack Pro 3 are the same controller except that the Pro version has an integrated sound card.</description>
+        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=7286</forums>
+        <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro_3</wiki>
+    </info>
+    <controller id="Mixtrack3">
+        <scriptfiles>
+            <file functionprefix="NumarkMixtrack3" filename="Numark-Mixtrack-3-scripts.js"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>Crossfader</description>
+                <status>0xB0</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <description>Channel 1 line fader</description>
+                <status>0xB1</status>
+                <midino>0x05</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <description>Channel 2 line fader</description>
+                <status>0xB2</status>
+                <midino>0x05</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>gain</key>
+                <description>Master gain knob</description>
+                <status>0xB0</status>
+                <midino>0x0A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <description>Cue mix knob</description>
+                <status>0xB0</status>
+                <midino>0x09</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headGain</key>
+                <description>Cue gain knob</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>NumarkMixtrack3.BrowseButton</key>
+                <description>Browse button</description>
+                <status>0x90</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>NumarkMixtrack3.BrowseKnob</key>
+                <description>Browse knob</description>
+                <status>0xB0</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.LoadButton</key>
+                <description>Channel 1 load button</description>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.LoadButton</key>
+                <description>Channel 2 load button</description>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+			<control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PadModeButton</key>
+                <description>Channel 1 Pad Mode button</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PadModeButton</key>
+                <description>Channel 2 Pad Mode button</description>
+                <status>0x92</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.bpmTap</key>
+                <description>bpm_tap</description>
+                <status>0x91</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.bpmTap</key>
+                <description>bpm_tap</description>
+                <status>0x92</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+			<control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.FXButton</key>
+                <description>Channel 1 FX 1 button</description>
+                <status>0x91</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.FXButton</key>
+                <description>Channel 2 FX 1 button</description>
+                <status>0x92</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+			<control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.FXButton</key>
+                <description>Channel 1 FX 2 button</description>
+                <status>0x91</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.FXButton</key>
+                <description>Channel 2 FX 2 button</description>
+                <status>0x92</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+			<control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.FXButton</key>
+                <description>Channel 1 FX 3 button</description>
+                <status>0x91</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.FXButton</key>
+                <description>Channel 2 FX 3 button</description>
+                <status>0x92</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PFLButton</key>
+                <description>Channel 1 PFL button</description>
+                <status>0x90</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PFLButton</key>
+                <description>Channel 2 PFL button</description>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PlayButton</key>
+                <description>Channel 1 play/pause button</description>
+                <status>0x91</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PlayButton</key>
+                <description>Channel 2 play/pause button</description>
+                <status>0x92</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.CueButton</key>
+                <description>Channel 1 cue button</description>
+                <status>0x91</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.CueButton</key>
+                <description>Channel 2 cue button</description>
+                <status>0x92</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.SyncButton</key>
+                <description>Channel 1 sync button</description>
+                <status>0x91</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.SyncButton</key>
+                <description>Channel 2 sync button</description>
+                <status>0x92</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.ShiftButton</key>
+                <description>Channel 1 shift button</description>
+                <status>0x91</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.ShiftButton</key>
+                <description>Channel 2 shift button</description>
+                <status>0x92</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>filterLow</key>
+                <description>Channel 1 low EQ knob</description>
+                <status>0xB1</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterLow</key>
+                <description>Channel 2 low EQ knob</description>
+                <status>0xB2</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>			
+            <control>
+                <group>[Channel1]</group>
+                <key>filterMid</key>
+                <description>Channel 1 mid EQ knob</description>
+                <status>0xB1</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterMid</key>
+                <description>Channel 2 mid EQ knob</description>
+                <status>0xB2</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>filterHigh</key>
+                <description>Channel 1 high EQ knob</description>
+                <status>0xB1</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterHigh</key>
+                <description>Channel 2 high EQ knob</description>
+                <status>0xB2</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <description>Channel 1 filter knob</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <description>Channel 2 filter knob</description>
+                <status>0xB2</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_in</key>
+                <description>Channel 1 loop in button</description>
+                <status>0x91</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_in</key>
+                <description>Channel 1 loop in button</description>
+                <status>0x92</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_out</key>
+                <description>Channel 1 loop out button</description>
+                <status>0x91</status>
+                <midino>0x14</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_out</key>
+                <description>Channel 2 loop out button</description>
+                <status>0x92</status>
+                <midino>0x14</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>reloop_exit</key>
+                <description>Channel 1 loop on/off button</description>
+                <status>0x91</status>
+                <midino>0x15</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>reloop_exit</key>
+                <description>Channel 2 loop on/off button</description>
+                <status>0x92</status>
+                <midino>0x15</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.LoopHalveButton</key>
+                <description>Channel 1 halve loop button</description>
+                <status>0x91</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.LoopHalveButton</key>
+                <description>Channel 2 halve loop button</description>
+                <status>0x92</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+			<control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PADLoopButton</key>
+                <description>Channel 1 PAD loop button 1</description>
+                <status>0x91</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PADLoopButton</key>
+                <description>Channel 2 PAD loop button 1</description>
+                <status>0x92</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PADLoopButton</key>
+                <description>Channel 1 PAD loop button 2</description>
+                <status>0x91</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PADLoopButton</key>
+                <description>Channel 2 PAD loop button 2</description>
+                <status>0x92</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PADLoopButton</key>
+                <description>Channel 1 PAD loop button 3</description>
+                <status>0x91</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PADLoopButton</key>
+                <description>Channel 2 PAD loop button 3</description>
+                <status>0x92</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PADLoopButton</key>
+                <description>Channel 1 PAD loop button 4</description>
+                <status>0x91</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PADLoopButton</key>
+                <description>Channel 2 PAD loop button 4</description>
+                <status>0x92</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.HotCueButton</key>
+                <description>Channel 1 hotcue 1 button</description>
+                <status>0x91</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.HotCueButton</key>
+                <description>Channel 2 hotcue 1 button</description>
+                <status>0x92</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.HotCueButton</key>
+                <description>Channel 1 hotcue 2 button</description>
+                <status>0x91</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.HotCueButton</key>
+                <description>Channel 2 hotcue 2 button</description>
+                <status>0x92</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.HotCueButton</key>
+                <description>Channel 1 hotcue 3 button</description>
+                <status>0x91</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.HotCueButton</key>
+                <description>Channel 2 hotcue 3 button</description>
+                <status>0x92</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.HotCueButton</key>
+                <description>Channel 1 hotcue 4 button</description>
+                <status>0x91</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.HotCueButton</key>
+                <description>Channel 2 hotcue 4 button</description>
+                <status>0x92</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.WheelMove</key>
+                <description>Channel 1 jogwheel</description>
+                <status>0xB1</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.WheelMove</key>
+                <description>Channel 2 jogwheel</description>
+                <status>0xB2</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.WheelTouch</key>
+                <description>Channel 1 jogwheel capacitive sensor</description>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.WheelTouch</key>
+                <description>Channel 2 jogwheel capacitive sensor</description>
+                <status>0x92</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.toggleJogMode</key>
+                <description>Channel 1 wheel button</description>
+                <status>0x91</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.toggleJogMode</key>
+                <description>Channel 2 wheel button</description>
+                <status>0x92</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PitchFaderHighValue</key>
+                <description>Channel 1 pitch fader main bits</description>
+                <status>0xB1</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PitchFaderHighValue</key>
+                <description>Channel 2 pitch fader main bits</description>
+                <status>0xB2</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+			<control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PitchFaderLowValue</key>
+                <description>Channel 1 pitch fader precision bits</description>
+                <status>0xB1</status>
+                <midino>0x38</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PitchFaderLowValue</key>
+                <description>Channel 2 pitch fader precision bits</description>
+                <status>0xB2</status>
+                <midino>0x38</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>            
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PitchBendPlusButton</key>
+                <description>Channel 1 pitch bend up button</description>
+                <status>0x91</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PitchBendPlusButton</key>
+                <description>Channel 2 pitch bend up button</description>
+                <status>0x92</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.PitchBendMinusButton</key>
+                <description>Channel 1 pitch bend down button</description>
+                <status>0x91</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.PitchBendMinusButton</key>
+                <description>Channel 2 pitch bend down button</description>
+                <status>0x92</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>NumarkMixtrack3.SamplerButton</key>
+                <description>Channel 1 sampler 1 button</description>
+                <status>0x91</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>NumarkMixtrack3.SamplerButton</key>
+                <description>Channel 2 sampler 1 button</description>
+                <status>0x92</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>NumarkMixtrack3.SamplerButton</key>
+                <description>Channel 1 sampler 2 button</description>
+                <status>0x91</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>NumarkMixtrack3.SamplerButton</key>
+                <description>Channel 2 sampler 2 button</description>
+                <status>0x92</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler3]</group>
+                <key>NumarkMixtrack3.SamplerButton</key>
+                <description>Channel 1 sampler 3 button</description>
+                <status>0x91</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler3]</group>
+                <key>NumarkMixtrack3.SamplerButton</key>
+                <description>Channel 2 sampler 3 button</description>
+                <status>0x92</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler4]</group>
+                <key>NumarkMixtrack3.SamplerButton</key>
+                <description>Channel 1 sampler 4 button</description>
+                <status>0x91</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler4]</group>
+                <key>NumarkMixtrack3.SamplerButton</key>
+                <description>Channel 2 sampler 4 button</description>
+                <status>0x92</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+   			<control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.StripTouchEffect</key>
+				<description>Channel 1 strip</description>
+                <status>0xB1</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.StripTouchEffect</key>
+				<description>Channel 2 strip</description>
+                <status>0xB2</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.StripTouchSearch</key>
+				<description>Channel 1 SHIFT+strip</description>
+                <status>0xB1</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.StripTouchSearch</key>
+				<description>Channel 2 SHIFT+strip</description>
+                <status>0xB2</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+			<control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.BeatKnob</key>
+                <description>Channel 1 FX 3 Knob</description>
+                <status>0xB1</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.BeatKnob</key>
+                <description>Channel 2 Beat Knob</description>
+                <status>0xB2</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control> 
+        </controls>
+		<outputs/>
+    </controller>
+</MixxxControllerPreset>

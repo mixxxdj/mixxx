@@ -364,9 +364,9 @@ void Tooltips::addStandardTooltips() {
             << tr("Show/hide the spinning vinyl section.");
 
     add("keylock")
-            << tr("Key-Lock")
+            << tr("Keylock")
             << tr("Prevents the pitch from changing when the rate changes.")
-            << tr("Toggling key-lock during playback may result in a momentary audio glitch.");
+            << tr("Toggling keylock during playback may result in a momentary audio glitch.");
 
     // Used in cue/hotcue/loop tooltips below.
     QString quantizeSnap = tr("If quantize is enabled, snaps to the nearest beat.");
@@ -457,7 +457,7 @@ void Tooltips::addStandardTooltips() {
 
     add("rate")
             << tr("Speed Control")
-            << tr("Changes the track playback speed (affects both the tempo and the pitch). If key-lock is enabled, only the tempo is affected.")
+            << tr("Changes the track playback speed (affects both the tempo and the pitch). If keylock is enabled, only the tempo is affected.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("pitch")
@@ -507,11 +507,14 @@ void Tooltips::addStandardTooltips() {
             << tr("Record Mix")
             << tr("Toggle mix recording.");
 
-    add("shoutcast_enabled")
-            << tr("Enable Live Broadcasting")
-            << tr("Stream your mix over the Internet.")
-            << tr("Provides visual feedback for Live Broadcasting status:")
-            << tr("disabled, connecting, connected, failure.");
+    // For legacy reasons also add tooltips for "shoutcast_enabled".
+    for (const char* key : {"shoutcast_enabled", "broadcast_enabled"}) {
+        add(key)
+                << tr("Enable Live Broadcasting")
+                << tr("Stream your mix over the Internet.")
+                << tr("Provides visual feedback for Live Broadcasting status:")
+                << tr("disabled, connecting, connected, failure.");
+    }
 
     add("passthrough_enabled")
             << tr("Enable Passthrough")

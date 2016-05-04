@@ -22,7 +22,7 @@
 #undef FALSE
 #include <SoundTouch.h>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/readaheadmanager.h"
 #include "track/keyutils.h"
@@ -31,15 +31,21 @@
 
 using namespace soundtouch;
 
+namespace {
+
 // Due to filtering and oversampling, SoundTouch is some samples behind.
 // The value below was experimental identified using a saw signal and SoundTouch 1.8
 // at a speed of 1.0
 // 0.918 (upscaling 44.1 kHz to 48 kHz) will produce an additional offset of 3 Frames
 // 0.459 (upscaling 44.1 kHz to 96 kHz) will produce an additional offset of 18 Frames
 // (Rubberband does not suffer this issue)
-static const int kSeekOffsetFrames = 519;
+const int kSeekOffsetFrames = 519;
 
-static const int kNumChannels = 2;
+const int kNumChannels = 2;
+
+const int kBackBufferSize = kSeekOffsetFrames * kNumChannels;
+
+} // anonymous
 
 EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
@@ -52,7 +58,7 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
     m_pSoundTouch->setSampleRate(m_iSampleRate > 0 ? m_iSampleRate : 44100);
 
-    buffer_back = new CSAMPLE[kiSoundTouchReadAheadLength*2];
+    buffer_back = new CSAMPLE[kBackBufferSize];
 
     // Setting the tempo to a very low value will force SoundTouch
     // to preallocate buffers large enough to (almost certainly)
@@ -138,24 +144,26 @@ double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
     unsigned int total_received_frames = 0;
     unsigned int total_read_frames = 0;
 
+    DEBUG_ASSERT((buf_size % kNumChannels) == 0);
     unsigned int remaining_frames = buf_size / kNumChannels;
     CSAMPLE* read = pOutput;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
         unsigned int received_frames = m_pSoundTouch->receiveSamples(
-                (SAMPLETYPE*)read, remaining_frames);
+                read, remaining_frames);
+        DEBUG_ASSERT(remaining_frames >= received_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames * kNumChannels;
 
         if (remaining_frames > 0) {
-            unsigned int iLenFrames = kiSoundTouchReadAheadLength;
             unsigned int iAvailSamples = m_pReadAheadManager->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
                         (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
                         buffer_back,
-                        iLenFrames * kNumChannels);
+                        kBackBufferSize);
+            DEBUG_ASSERT((iAvailSamples % kNumChannels) == 0);
             unsigned int iAvailFrames = iAvailSamples / kNumChannels;
 
             if (iAvailFrames > 0) {
@@ -165,18 +173,13 @@ double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
             } else {
                 if (last_read_failed) {
                     m_pSoundTouch->flush();
-                    break;
+                    qWarning() << __FILE__ << "- only wrote" << total_received_frames
+                             << "frames instead of requested" << (buf_size / kNumChannels);
+                    break; // exit loop after failure
                 }
                 last_read_failed = true;
             }
         }
-    }
-
-    // qDebug() << "Fed ST" << total_read_frames*2
-    //          << "samples to get" << total_received_frames*2 << "samples";
-    if (total_received_frames != static_cast<unsigned int>(buf_size / kNumChannels)) {
-        qDebug() << __FILE__ << "- only wrote" << total_received_frames
-                 << "frames instead of requested" << buf_size;
     }
 
     // m_samplesRead is interpreted as the total number of virtual samples

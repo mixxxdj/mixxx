@@ -339,7 +339,7 @@ void ControllerManager::openController(Controller* pController) {
         pController->applyPreset(getPresetPaths(m_pConfig), true);
 
         // Update configuration to reflect controller is enabled.
-        m_pConfig->set(ConfigKey(
+        m_pConfig->setValue(ConfigKey(
             "[Controller]", presetFilenameFromName(pController->getName())), 1);
     }
 }
@@ -351,7 +351,7 @@ void ControllerManager::closeController(Controller* pController) {
     pController->close();
     maybeStartOrStopPolling();
     // Update configuration to reflect controller is disabled.
-    m_pConfig->set(ConfigKey(
+    m_pConfig->setValue(ConfigKey(
         "[Controller]", presetFilenameFromName(pController->getName())), 0);
 }
 

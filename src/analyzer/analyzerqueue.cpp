@@ -11,11 +11,12 @@
 #include "analyzer/vamp/vampanalyzer.h"
 #endif
 #include "analyzer/analyzergain.h"
+#include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzerwaveform.h"
 #include "library/trackcollection.h"
 #include "mixer/playerinfo.h"
-#include "soundsourceproxy.h"
-#include "trackinfoobject.h"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/event.h"
 #include "util/timer.h"
@@ -98,7 +99,7 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
             QListIterator<Analyzer*> ita(m_aq);
             bool processTrack = false;
             while (ita.hasNext()) {
-                if (!ita.next()->loadStored(pTrack)) {
+                if (!ita.next()->isDisabledOrLoadStoredSuccess(pTrack)) {
                     processTrack = true;
                 }
             }
@@ -440,6 +441,7 @@ AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
 
     ret->addAnalyzer(new AnalyzerWaveform(pConfig));
     ret->addAnalyzer(new AnalyzerGain(pConfig));
+    ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));
@@ -456,6 +458,7 @@ AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
     ret->addAnalyzer(new AnalyzerGain(pConfig));
+    ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));

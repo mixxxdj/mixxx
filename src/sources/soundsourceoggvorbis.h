@@ -2,6 +2,7 @@
 #define MIXXX_SOUNDSOURCEOGGVORBIS_H
 
 #include "sources/soundsourceprovider.h"
+#include "util/memory.h"
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
@@ -25,7 +26,7 @@ public:
             CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer, SINT sampleBufferSize,
@@ -38,10 +39,11 @@ private:
     static long TellCallback(void *datasource);
     static ov_callbacks s_callbacks;
 
+    std::unique_ptr<QFile> m_pFile;
+
     OggVorbis_File m_vf;
 
     SINT m_curFrameIndex;
-    QFile* m_pFile;
 };
 
 class SoundSourceProviderOggVorbis: public SoundSourceProvider {

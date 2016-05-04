@@ -14,10 +14,9 @@
 
 #include "TonalChangeDetect.h"
 
-#include "../dsp/Pitch.h"
-#include "../dsp/Chromagram.h"
-#include "../dsp/ChangeDetectionFunction.h"
-#include "../dsp/GetKeyMode.h"
+#include <base/Pitch.h>
+#include <dsp/chromagram/Chromagram.h>
+#include <dsp/tonal/ChangeDetectionFunction.h>
 
 TonalChangeDetect::TonalChangeDetect(float fInputSampleRate)	
     : Vamp::Plugin(fInputSampleRate),
@@ -231,8 +230,8 @@ TonalChangeDetect::reset()
         m_chromagram = new Chromagram(m_config);
     }
     while (!m_pending.empty()) m_pending.pop();
-	
     m_vaCurrentVector.clear();
+    m_TCSGram.clear();
 
     m_origin = Vamp::RealTime::zeroTime;
     m_haveOrigin = false;

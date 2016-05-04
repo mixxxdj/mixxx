@@ -22,7 +22,7 @@
 #include "controllers/softtakeover.h"
 #include "util/duration.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 
 class MidiController : public Controller {
     Q_OBJECT
@@ -112,9 +112,9 @@ class MidiController : public Controller {
     MidiSourceClock m_midiSourceClock;
 
     // Slaves are cleaned up by QT.
-    ControlObjectSlave* m_pClockBpm;
-    ControlObjectSlave* m_pClockLastBeat;
-    ControlObjectSlave* m_pClockRunning;
+    ControlProxy* m_pClockBpm;
+    ControlProxy* m_pClockLastBeat;
+    ControlProxy* m_pClockRunning;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;
