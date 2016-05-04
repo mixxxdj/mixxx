@@ -10,9 +10,6 @@
       <BindProperty>visible</BindProperty>
     </Connection>
     <Children>
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <Children>
 
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
@@ -36,14 +33,6 @@
             <SetVariable name="left_connection_control"><Variable name="group"/>,passthrough</SetVariable>
           </Template>
 
-        </Children>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-
           <Template src="skin:left_3state_button.xml">
             <SetVariable name="ObjectName">TristateButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
@@ -66,9 +55,6 @@
             <SetVariable name="state_2_text">HOTCUE</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
           </Template>
-
-        </Children>
-      </WidgetGroup>
 
     </Children>
   </WidgetGroup>
