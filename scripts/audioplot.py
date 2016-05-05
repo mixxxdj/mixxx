@@ -6,7 +6,7 @@ import sys
 
 
 def createSlice(columns):
-    """convert an input string into a numpy slice object"""
+    """convert an input string into a slice object"""
     if columns == 'all':
         return slice(None)
     else:
@@ -23,7 +23,7 @@ def combine_files(files):
     min_len = sys.maxsize  # max integer
     for fname in files:
         raw.append(np.genfromtxt(fname, delimiter=','))
-        min_len = len(raw[-1]) if len(raw[-1]) < min_len else min_len
+        min_len = min(len(raw[-1]), min_len)
     data = raw[0][:min_len]
     for d in raw[1:]:
         data = np.hstack((data, d[:min_len]))
@@ -37,9 +37,10 @@ def AudioPlot(files, slice):
 
 
 def parseArguments():
-    p = argparse.ArgumentParser(prog='AudioPlot',
-                                formatter_class=argparse.RawDescriptionHelpFormatter,
-                                description="""
+    p = argparse.ArgumentParser(
+        prog='AudioPlot',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="""
 Audioplot is a simple script for drawing graphs of values. It reads a simple
 csv text file where each line needs to contain the same number of
 comma-separated values, like so:
@@ -51,14 +52,15 @@ comma-separated values, like so:
 Each column will be plotted as a separate curve on the same time series.
 Matplotlib is used to display the result.
 
-This script is useful to compare the sample files produced by the engine test of
-mixxx-test with the golden sample files.
+This script is useful to compare the sample files produced by the engine test
+of mixxx-test with the golden sample files.
 
-"""
-                                )
-    p.add_argument('files', type=str, nargs='+',
-                   help='file to plot from')
-    p.add_argument('-c', '--columns', type=str, default='all',
+""")
+    p.add_argument('files', type=str, nargs='+', help='file to plot from')
+    p.add_argument('-c',
+                   '--columns',
+                   type=str,
+                   default='all',
                    help='lines to plot seperated by a comma, default "all"')
     return p.parse_args()
 
