@@ -25,8 +25,12 @@ def combine_files(files):
         raw.append(np.genfromtxt(fname, delimiter=','))
         min_len = min(len(raw[-1]), min_len)
     data = raw[0][:min_len]
+
     for d in raw[1:]:
         data = np.hstack((data, d[:min_len]))
+    # in case only one column is given
+    if data.ndim == 1:
+        data = data.reshape(len(data), 1)
     return data
 
 
