@@ -10,7 +10,8 @@ def createSlice(columns):
     if columns == 'all':
         return slice(None)
     else:
-        return [int(c) for c in columns.split(',')]
+        # creates a numpy array
+        return np.int64(columns.split(','))
 
 
 def combine_files(files):
