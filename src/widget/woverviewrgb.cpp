@@ -56,7 +56,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
     //         << "completionIncrement:" << completionIncrement;
 
     QPainter painter(m_pWaveformSourceImage);
-    painter.translate(0.0,(double)m_pWaveformSourceImage->height()/2.0);
+    painter.translate(0.0,static_cast<double>(m_pWaveformSourceImage->height())/2.0);
 
     QColor color;
 

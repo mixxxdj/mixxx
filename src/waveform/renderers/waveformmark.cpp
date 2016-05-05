@@ -3,8 +3,8 @@
 #include "waveformmark.h"
 
 #include "waveformwidgetrenderer.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "widget/wskincolor.h"
 
 WaveformMark::WaveformMark()
@@ -20,7 +20,7 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
                          const WaveformSignalColors& signalColors) {
     QString item = context.selectString(node, "Control");
     if (!item.isEmpty()) {
-        m_pPointCos = new ControlObjectSlave(group, item);
+        m_pPointCos = new ControlProxy(group, item);
     }
 
     m_color = context.selectString(node, "Color");
@@ -57,6 +57,6 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
 // TODO(XXX): subclass and override WaveformMark::setup
 void WaveformMark::setKeyAndIndex(const ConfigKey& key, int i) {
     DEBUG_ASSERT(m_pPointCos == NULL);
-    m_pPointCos = new ControlObjectSlave(key);
+    m_pPointCos = new ControlProxy(key);
     m_text = m_text.arg(i);
 }

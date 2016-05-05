@@ -10,8 +10,8 @@
 #include "mixxxapplication.h"
 
 #include "preferences/usersettings.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 
 #define EXPECT_QSTRING_EQ(expected, test) EXPECT_STREQ(qPrintable(expected), qPrintable(test))
 #define ASSERT_QSTRING_EQ(expected, test) ASSERT_STREQ(qPrintable(expected), qPrintable(test))
@@ -44,8 +44,8 @@ class MixxxTest : public testing::Test {
         return m_pConfig;
     }
 
-    ControlObjectSlave* getControlObjectSlave(const ConfigKey& key) {
-        return new ControlObjectSlave(key);
+    ControlProxy* getControlProxy(const ConfigKey& key) {
+        return new ControlProxy(key);
     }
 
     QTemporaryFile* makeTemporaryFile(const QString contents) {

@@ -13,10 +13,10 @@
 #include <QtDebug>
 #include <QtGlobal>
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
 #include "library/library.h"
@@ -71,6 +71,7 @@
 #include "widget/wsizeawarestack.h"
 #include "widget/wwidgetgroup.h"
 #include "widget/wkey.h"
+#include "widget/wbattery.h"
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
 #include "widget/wsingletoncontainer.h"
@@ -145,7 +146,7 @@ LegacySkinParser::LegacySkinParser()
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
-                                   MixxxKeyboard* pKeyboard,
+                                   KeyboardEventFilter* pKeyboard,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,
@@ -555,6 +556,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
         result = wrapWidget(parseEngineKey(node));
+    } else if (nodeName == "Battery") {
+        result = wrapWidget(parseBattery(node));
     } else if (nodeName == "SetVariable") {
         m_pContext->updateVariable(node);
     } else if (nodeName == "Template") {
@@ -1075,6 +1078,17 @@ QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
     WKey* pEngineKey = new WKey(pSafeChannelStr, m_pParent);
     setupLabelWidget(node, pEngineKey);
     return pEngineKey;
+}
+
+QWidget* LegacySkinParser::parseBattery(QDomElement node) {
+    WBattery *p = new WBattery(m_pParent);
+    setupBaseWidget(node, p);
+    setupWidget(node, p);
+    p->setup(node, *m_pContext);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
 }
 
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {

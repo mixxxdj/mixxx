@@ -15,7 +15,7 @@
 
 #include "library/dao/trackdao.h"
 #include "library/columncache.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/class.h"
 #include "util/memory.h"
 

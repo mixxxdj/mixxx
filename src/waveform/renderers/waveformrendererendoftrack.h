@@ -12,7 +12,7 @@
 #include "util/performancetimer.h"
 
 class ControlObject;
-class ControlObjectSlave;
+class ControlProxy;
 
 class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
   public:
@@ -27,11 +27,11 @@ class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:
-    ControlObjectSlave* m_pEndOfTrackControl;
+    ControlProxy* m_pEndOfTrackControl;
     bool m_endOfTrackEnabled;
-    ControlObjectSlave* m_pTrackSampleRate;
-    ControlObjectSlave* m_pPlayControl;
-    ControlObjectSlave* m_pLoopControl;
+    ControlProxy* m_pTrackSampleRate;
+    ControlProxy* m_pPlayControl;
+    ControlProxy* m_pLoopControl;
 
     QColor m_color;
     PerformanceTimer m_timer;

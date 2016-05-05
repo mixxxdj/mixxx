@@ -2,13 +2,13 @@
 
 #include <QtDebug>
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "preferences/usersettings.h"
-#include "controlindicator.h"
-#include "controllinpotmeter.h"
-#include "controlobjectslave.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlindicator.h"
+#include "control/controllinpotmeter.h"
+#include "control/controlproxy.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "engine/bpmcontrol.h"
 #include "engine/clockcontrol.h"
 #include "engine/cuecontrol.h"
@@ -28,7 +28,7 @@
 #include "engine/sync/synccontrol.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/defs.h"
@@ -44,10 +44,10 @@
 const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 const int kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
-EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
+EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
         : m_group(group),
-          m_pConfig(_config),
+          m_pConfig(pConfig),
           m_pLoopingControl(NULL),
           m_pSyncControl(NULL),
           m_pVinylControlControl(NULL),
@@ -88,7 +88,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
     // zero out crossfade buffer
     SampleUtil::clear(m_pCrossfadeBuffer, MAX_BUFFER_LEN);
 
-    m_pReader = new CachingReader(group, _config);
+    m_pReader = new CachingReader(group, pConfig);
     connect(m_pReader, SIGNAL(trackLoading()),
             this, SLOT(slotTrackLoading()),
             Qt::DirectConnection);
@@ -163,9 +163,9 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
 
     // Sample rate
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
 
-    m_pKeylockEngine = new ControlObjectSlave("[Master]", "keylock_engine", this);
+    m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
     m_pKeylockEngine->connectValueChanged(SLOT(slotKeylockEngineChanged(double)),
                                           Qt::DirectConnection);
 
@@ -183,10 +183,10 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
-    QuantizeControl* quantize_control = new QuantizeControl(group, _config);
+    QuantizeControl* quantize_control = new QuantizeControl(group, pConfig);
 
     // Create the Loop Controller
-    m_pLoopingControl = new LoopingControl(group, _config);
+    m_pLoopingControl = new LoopingControl(group, pConfig);
     addControl(m_pLoopingControl);
 
     addControl(quantize_control);
@@ -194,20 +194,20 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
 
     m_pEngineSync = pMixingEngine->getEngineSync();
 
-    m_pSyncControl = new SyncControl(group, _config, pChannel, m_pEngineSync);
+    m_pSyncControl = new SyncControl(group, pConfig, pChannel, m_pEngineSync);
     addControl(m_pSyncControl);
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlControl = new VinylControlControl(group, _config);
+    m_pVinylControlControl = new VinylControlControl(group, pConfig);
     addControl(m_pVinylControlControl);
 #endif
 
-    m_pRateControl = new RateControl(group, _config);
+    m_pRateControl = new RateControl(group, pConfig);
     // Add the Rate Controller
     addControl(m_pRateControl);
 
     // Create the BPM Controller
-    m_pBpmControl = new BpmControl(group, _config);
+    m_pBpmControl = new BpmControl(group, pConfig);
     addControl(m_pBpmControl);
 
     // TODO(rryan) remove this dependence?
@@ -218,15 +218,15 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
     m_fwdButton = ControlObject::getControl(ConfigKey(group, "fwd"));
     m_backButton = ControlObject::getControl(ConfigKey(group, "back"));
 
-    m_pKeyControl = new KeyControl(group, _config);
+    m_pKeyControl = new KeyControl(group, pConfig);
     addControl(m_pKeyControl);
 
     // Create the clock controller
-    m_pClockControl = new ClockControl(group, _config);
+    m_pClockControl = new ClockControl(group, pConfig);
     addControl(m_pClockControl);
 
     // Create the cue controller
-    m_pCueControl = new CueControl(group, _config);
+    m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
@@ -247,7 +247,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
     m_pScale->clear();
     m_bScalerChanged = true;
 
-    m_pPassthroughEnabled = new ControlObjectSlave(group, "passthrough", this);
+    m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
@@ -481,7 +481,7 @@ void EngineBuffer::slotTrackLoading() {
 }
 
 TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     // 10 seconds
     pTrack->setDuration(10);
@@ -1255,7 +1255,7 @@ void EngineBuffer::hintReader(const double dRate) {
 // WARNING: This method runs in the GUI thread
 void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
     if (pTrack.isNull()) {
-        // Loading a null track means "eject" 
+        // Loading a null track means "eject"
         ejectTrack();
     } else {
         // Signal to the reader to load the track. The reader will respond with

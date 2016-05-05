@@ -11,8 +11,8 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
-#include "controlobject.h"
-#include "soundsourceproxy.h"
+#include "control/controlobject.h"
+#include "sources/soundsourceproxy.h"
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"

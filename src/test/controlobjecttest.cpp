@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <QtDebug>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 
 namespace {
 

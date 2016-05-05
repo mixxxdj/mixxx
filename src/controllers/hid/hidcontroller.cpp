@@ -124,7 +124,7 @@ QString HidController::presetExtension() {
 void HidController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
-    qDebug() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
 }
 
 void HidController::visit(const HidControllerPreset* preset) {

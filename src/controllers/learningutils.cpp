@@ -4,7 +4,7 @@
 
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 
 typedef QPair<MidiKey, unsigned char> MidiKeyAndValue;
 

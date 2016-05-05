@@ -30,7 +30,7 @@ class RecordingFeature : public LibraryFeature {
     QIcon getIcon();
 
     void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+                    KeyboardEventFilter* keyboard);
 
     TreeItemModel* getChildModel();
 

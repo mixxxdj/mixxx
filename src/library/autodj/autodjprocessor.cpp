@@ -1,8 +1,8 @@
 #include "library/autodj/autodjprocessor.h"
 
 #include "library/trackcollection.h"
-#include "controlpushbutton.h"
-#include "controlobjectslave.h"
+#include "control/controlpushbutton.h"
+#include "control/controlproxy.h"
 #include "util/math.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
@@ -117,8 +117,8 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
     // Auto-DJ needs at least two decks
     DEBUG_ASSERT(m_decks.length() > 1);
 
-    m_pCOCrossfader = new ControlObjectSlave("[Master]", "crossfader");
-    m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
+    m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
+    m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
             ConfigKey(kConfigKey, kTransitionPreferenceName));
@@ -799,7 +799,7 @@ void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
         qDebug() << this << "playerEmpty()" << pDeck->group;
     }
 
-    // The Deck has ejected a track and no new one is loaded 
+    // The Deck has ejected a track and no new one is loaded
     // This happens if loading fails or the user manually ejected the track
     // and would normally stopp the AutoDJ flow, which is not desired.
     // It should be safe to load a load a new track from the queue. The only case where

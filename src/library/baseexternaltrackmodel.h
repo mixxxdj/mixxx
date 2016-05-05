@@ -7,7 +7,7 @@
 
 #include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class TrackCollection;
 

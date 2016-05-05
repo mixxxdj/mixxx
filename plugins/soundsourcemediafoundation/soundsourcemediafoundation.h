@@ -42,7 +42,7 @@ public:
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) override;
 
     bool configureAudioStream(const Mixxx::AudioSourceConfig& audioSrcCfg);
     bool readProperties();

@@ -133,7 +133,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     return OK;
 }
 
-Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     // From opus/opusfile.h
     // On Windows, this string must be UTF-8 (to allow access to
     // files whose names cannot be represented in the current
@@ -152,12 +152,15 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (!m_pOggOpusFile) {
         qWarning() << "Failed to open OggOpus file:" << getUrlString()
                 << "errorCode" << errorCode;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     if (!op_seekable(m_pOggOpusFile)) {
-        qWarning() << "OggOpus file is not seekable:" << getUrlString();
-        return ERR;
+        qWarning() << "SoundSourceOpus:"
+                << "Stream in"
+                << getUrlString()
+                << "is not seekable";
+        return OpenResult::UNSUPPORTED_FORMAT;
     }
 
     const int channelCount = op_channel_count(m_pOggOpusFile, kCurrentStreamLink);
@@ -165,7 +168,7 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         setChannelCount(channelCount);
     } else {
         qWarning() << "Failed to read channel configuration of OggOpus file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kEntireStreamLink);
@@ -173,7 +176,7 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         setFrameCount(pcmTotal);
     } else {
         qWarning() << "Failed to read total length of OggOpus file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     const opus_int32 bitrate = op_bitrate(m_pOggOpusFile, kEntireStreamLink);
@@ -181,14 +184,14 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         setBitrate(bitrate / 1000);
     } else {
         qWarning() << "Failed to determine bitrate of OggOpus file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     setSamplingRate(kSamplingRate);
 
     m_curFrameIndex = getMinFrameIndex();
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceOpus::close() {

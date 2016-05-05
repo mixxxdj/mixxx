@@ -24,7 +24,7 @@
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 class ControlPotmeter;
 class SkinLoader;
 class PlayerManager;
@@ -89,13 +89,13 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     UserSettingsPointer m_pConfig;
     ControlObject* m_pControlTrackTimeDisplay;
-    ControlObjectSlave* m_pNumDecks;
-    ControlObjectSlave* m_pNumSamplers;
-    QList<ControlObjectSlave*> m_cueControls;
-    QList<ControlObjectSlave*> m_rateControls;
-    QList<ControlObjectSlave*> m_rateDirControls;
-    QList<ControlObjectSlave*> m_rateRangeControls;
-    QList<ControlObjectSlave*> m_keylockModeControls;
+    ControlProxy* m_pNumDecks;
+    ControlProxy* m_pNumSamplers;
+    QList<ControlProxy*> m_cueControls;
+    QList<ControlProxy*> m_rateControls;
+    QList<ControlProxy*> m_rateDirControls;
+    QList<ControlProxy*> m_rateRangeControls;
+    QList<ControlProxy*> m_keylockModeControls;
     MixxxMainWindow *m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;

@@ -4,7 +4,7 @@
 
 #include <QtDebug>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "engine/readaheadmanager.h"
 #include "track/keyutils.h"
 #include "util/counter.h"

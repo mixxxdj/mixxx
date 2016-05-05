@@ -11,9 +11,6 @@ WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
     m_control.connectValueChanged(SLOT(slotValueChanged(double)));
 }
 
-WidgetStackControlListener::~WidgetStackControlListener() {
-}
-
 void WidgetStackControlListener::slotValueChanged(double v) {
     if (v > 0.0) {
         emit(switchToWidget());
@@ -62,9 +59,6 @@ void WWidgetStack::Init() {
             this, SLOT(onCurrentPageChanged(int)));
 }
 
-WWidgetStack::~WWidgetStack() {
-}
-
 QSize WWidgetStack::sizeHint() const {
     QWidget* pWidget = currentWidget();
     return pWidget ? pWidget->sizeHint() : QSize();
@@ -100,7 +94,7 @@ void WWidgetStack::hideIndex(int index) {
     }
 }
 
-void WWidgetStack::showEvent(QShowEvent*) {
+void WWidgetStack::showEvent(QShowEvent* /*unused*/) {
     int index = static_cast<int>(m_currentPageControl.get());
 
     // Set the page triggers to match the current index.
@@ -153,8 +147,7 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
                                         int on_hide_select) {
     int index = addWidget(pWidget);
     if (pControl) {
-        WidgetStackControlListener* pListener = new WidgetStackControlListener(
-            this, pControl, index);
+        auto pListener = new WidgetStackControlListener(this, pControl, index);
         m_showMapper.setMapping(pListener, index);
         m_hideMapper.setMapping(pListener, index);
         m_listeners[index] = pListener;

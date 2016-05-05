@@ -4,9 +4,9 @@
 #include <QScopedPointer>
 
 #include "mixxxtest.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlproxy.h"
 #include "engine/loopingcontrol.h"
 #include "test/mockedenginebackendtest.h"
 
@@ -19,44 +19,44 @@ class LoopingControlTest : public MockedEngineBackendTest {
   protected:
     virtual void SetUp() {
         MockedEngineBackendTest::SetUp();
-        m_pQuantizeEnabled.reset(getControlObjectSlave(
+        m_pQuantizeEnabled.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "quantize")));
         m_pQuantizeEnabled->set(1.0);
-        m_pNextBeat.reset(getControlObjectSlave(
+        m_pNextBeat.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "beat_next")));
         m_pNextBeat->set(-1);
-        m_pClosestBeat.reset(getControlObjectSlave(
+        m_pClosestBeat.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "beat_closest")));
         m_pClosestBeat->set(-1);
-        m_pTrackSamples.reset(getControlObjectSlave(
+        m_pTrackSamples.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "track_samples")));
         m_pTrackSamples->set(kTrackLengthSamples);
 
-        m_pButtonLoopIn.reset(getControlObjectSlave(
+        m_pButtonLoopIn.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "loop_in")));
-        m_pButtonLoopOut.reset(getControlObjectSlave(
+        m_pButtonLoopOut.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "loop_out")));
-        m_pButtonLoopExit.reset(getControlObjectSlave(
+        m_pButtonLoopExit.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "loop_exit")));
-        m_pButtonReloopExit.reset(getControlObjectSlave(
+        m_pButtonReloopExit.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "reloop_exit")));
-        m_pButtonLoopDouble.reset(getControlObjectSlave(
+        m_pButtonLoopDouble.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "loop_double")));
-        m_pButtonLoopHalve.reset(getControlObjectSlave(
+        m_pButtonLoopHalve.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "loop_halve")));
-        m_pLoopEnabled.reset(getControlObjectSlave(
+        m_pLoopEnabled.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "loop_enabled")));
-        m_pLoopStartPoint.reset(getControlObjectSlave(
+        m_pLoopStartPoint.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "loop_start_position")));
-        m_pLoopEndPoint.reset(getControlObjectSlave(
+        m_pLoopEndPoint.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "loop_end_position")));
-        m_pPlayPosition.reset(getControlObjectSlave(
+        m_pPlayPosition.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "playposition")));
-        m_pButtonBeatMoveForward.reset(getControlObjectSlave(
+        m_pButtonBeatMoveForward.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "loop_move_1_forward")));
-        m_pButtonBeatMoveBackward.reset(getControlObjectSlave(
+        m_pButtonBeatMoveBackward.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "loop_move_1_backward")));
-        m_pButtonBeatLoop2Activate.reset(getControlObjectSlave(
+        m_pButtonBeatLoop2Activate.reset(getControlProxy(
                 ConfigKey(m_sGroup1, "beatloop_2_activate")));
     }
 
@@ -70,23 +70,23 @@ class LoopingControlTest : public MockedEngineBackendTest {
     }
 
     const int kTrackLengthSamples;
-    QScopedPointer<ControlObjectSlave> m_pNextBeat;
-    QScopedPointer<ControlObjectSlave> m_pClosestBeat;
-    QScopedPointer<ControlObjectSlave> m_pQuantizeEnabled;
-    QScopedPointer<ControlObjectSlave> m_pTrackSamples;
-    QScopedPointer<ControlObjectSlave> m_pButtonLoopIn;
-    QScopedPointer<ControlObjectSlave> m_pButtonLoopOut;
-    QScopedPointer<ControlObjectSlave> m_pButtonLoopExit;
-    QScopedPointer<ControlObjectSlave> m_pButtonReloopExit;
-    QScopedPointer<ControlObjectSlave> m_pButtonLoopDouble;
-    QScopedPointer<ControlObjectSlave> m_pButtonLoopHalve;
-    QScopedPointer<ControlObjectSlave> m_pLoopEnabled;
-    QScopedPointer<ControlObjectSlave> m_pLoopStartPoint;
-    QScopedPointer<ControlObjectSlave> m_pLoopEndPoint;
-    QScopedPointer<ControlObjectSlave> m_pPlayPosition;
-    QScopedPointer<ControlObjectSlave> m_pButtonBeatMoveForward;
-    QScopedPointer<ControlObjectSlave> m_pButtonBeatMoveBackward;
-    QScopedPointer<ControlObjectSlave> m_pButtonBeatLoop2Activate;
+    QScopedPointer<ControlProxy> m_pNextBeat;
+    QScopedPointer<ControlProxy> m_pClosestBeat;
+    QScopedPointer<ControlProxy> m_pQuantizeEnabled;
+    QScopedPointer<ControlProxy> m_pTrackSamples;
+    QScopedPointer<ControlProxy> m_pButtonLoopIn;
+    QScopedPointer<ControlProxy> m_pButtonLoopOut;
+    QScopedPointer<ControlProxy> m_pButtonLoopExit;
+    QScopedPointer<ControlProxy> m_pButtonReloopExit;
+    QScopedPointer<ControlProxy> m_pButtonLoopDouble;
+    QScopedPointer<ControlProxy> m_pButtonLoopHalve;
+    QScopedPointer<ControlProxy> m_pLoopEnabled;
+    QScopedPointer<ControlProxy> m_pLoopStartPoint;
+    QScopedPointer<ControlProxy> m_pLoopEndPoint;
+    QScopedPointer<ControlProxy> m_pPlayPosition;
+    QScopedPointer<ControlProxy> m_pButtonBeatMoveForward;
+    QScopedPointer<ControlProxy> m_pButtonBeatMoveBackward;
+    QScopedPointer<ControlProxy> m_pButtonBeatLoop2Activate;
 };
 
 TEST_F(LoopingControlTest, LoopSet) {

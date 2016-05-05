@@ -5,7 +5,7 @@
 #include "waveform/waveformwidgetfactory.h"
 
 #include "widget/wwidget.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/math.h"
 
 #include <QLinearGradient>

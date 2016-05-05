@@ -251,19 +251,30 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
                 svgParser.parseSvgTree(svgNode, m_xmlPath));
             source.setSVG(rslt);
         } else {
-            // filename
-            QString pixmapName = nodeToString(pixmapNode);
-            if (!pixmapName.isEmpty()) {
-                source.setPath(getSkinPath(pixmapName));
-                if (source.isSVG()) {
-                    const QByteArray rslt = svgParser.saveToQByteArray(
-                            svgParser.parseSvgFile(source.getPath()));
-                    source.setSVG(rslt);
-                }
-            }
+            // filename.
+            source = getPixmapSourceInner(nodeToString(pixmapNode), svgParser);
         }
     }
 
+    return source;
+}
+
+PixmapSource SkinContext::getPixmapSource(const QString& filename) const {
+    const SvgParser svgParser(*this);
+    return getPixmapSourceInner(filename, svgParser);
+}
+
+PixmapSource SkinContext::getPixmapSourceInner(const QString& filename,
+                                               const SvgParser& svgParser) const {
+    PixmapSource source;
+    if (!filename.isEmpty()) {
+        source.setPath(getSkinPath(filename));
+        if (source.isSVG()) {
+            const QByteArray rslt = svgParser.saveToQByteArray(
+                svgParser.parseSvgFile(source.getPath()));
+            source.setSVG(rslt);
+        }
+    }
     return source;
 }
 

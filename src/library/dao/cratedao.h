@@ -44,12 +44,10 @@ class CrateDAO : public QObject, public virtual DAO {
     bool renameCrate(const int crateId, const QString& newName);
     bool setCrateLocked(const int crateId, const bool locked);
     bool isCrateLocked(const int crateId);
-    #ifdef __AUTODJCRATES__
     bool setCrateInAutoDj(int crateId, bool a_bIn);
     bool isCrateInAutoDj(int crateId);
     QList<int> getCrateTracks(int crateId);
     void getAutoDjCrates(bool trackSource, QMap<QString,int>* pCrateMap);
-    #endif // __AUTODJCRATES__
     int getCrateIdByName(const QString& name);
     int getCrateId(const int position);
     QString crateName(const int crateId);

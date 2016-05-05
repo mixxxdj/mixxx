@@ -9,7 +9,7 @@
 #include "mixxxtest.h"
 #include "test/baseeffecttest.h"
 #include "util/time.h"
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 
 class SuperLinkTest : public BaseEffectTest {
   protected:
@@ -63,12 +63,12 @@ class SuperLinkTest : public BaseEffectTest {
 
         QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
 
-        m_pControlValue.reset(new ControlObjectSlave(group, itemPrefix));
+        m_pControlValue.reset(new ControlProxy(group, itemPrefix));
 
-        m_pControlLinkType.reset(new ControlObjectSlave(group,
+        m_pControlLinkType.reset(new ControlProxy(group,
                 itemPrefix + QString("_link_type")));
 
-        m_pControlLinkInverse.reset(new ControlObjectSlave(group,
+        m_pControlLinkInverse.reset(new ControlProxy(group,
                 itemPrefix + QString("_link_inverse")));
     }
 
@@ -77,9 +77,9 @@ class SuperLinkTest : public BaseEffectTest {
     ChannelHandleAndGroup m_headphone;
 
     EffectSlotPointer m_pEffectSlot;
-    QScopedPointer<ControlObjectSlave> m_pControlValue;
-    QScopedPointer<ControlObjectSlave> m_pControlLinkType;
-    QScopedPointer<ControlObjectSlave> m_pControlLinkInverse;
+    QScopedPointer<ControlProxy> m_pControlValue;
+    QScopedPointer<ControlProxy> m_pControlLinkType;
+    QScopedPointer<ControlProxy> m_pControlLinkInverse;
 };
 
 TEST_F(SuperLinkTest, LinkDefault) {
@@ -155,10 +155,10 @@ TEST_F(SuperLinkTest, HalfLinkTakeover) {
     EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
     m_pEffectSlot->loadEffect(pEffect);
     QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
-    m_pControlValue.reset(new ControlObjectSlave(group, itemPrefix));
-    m_pControlLinkType.reset(new ControlObjectSlave(group,
+    m_pControlValue.reset(new ControlProxy(group, itemPrefix));
+    m_pControlLinkType.reset(new ControlProxy(group,
             itemPrefix + QString("_link_type")));
-    m_pControlLinkInverse.reset(new ControlObjectSlave(group,
+    m_pControlLinkInverse.reset(new ControlProxy(group,
             itemPrefix + QString("_link_inverse")));
 
     // OK now the actual test.

@@ -5,8 +5,8 @@
 #include <QFile>
 #include <QThread>
 
-#include "controlobject.h"
-#include "controlpotmeter.h"
+#include "control/controlobject.h"
+#include "control/controlpotmeter.h"
 #include "preferences/usersettings.h"
 #include "controllers/controllerengine.h"
 #include "controllers/controllerdebug.h"
@@ -30,7 +30,7 @@ class ControllerEngineTest : public MixxxTest {
     }
 
     bool execute(const QString& functionName) {
-        QScriptValue function = cEngine->resolveFunction(functionName);
+        QScriptValue function = cEngine->wrapFunctionCode(functionName, 0);
         return cEngine->internalExecute(QScriptValue(), function,
                                         QScriptValueList());
     }

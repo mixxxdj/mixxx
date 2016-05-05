@@ -95,6 +95,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
 
     QString m_previewDeckGroup;
     TrackId m_previewDeckTrackId;
+    QString m_tableOrderBy;
 
   private slots:
     virtual void tracksChanged(QSet<TrackId> trackIds);
@@ -157,7 +158,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant> > m_headerInfo;
     QString m_trackSourceOrderBy;
-    QString m_tableOrderBy;
     int m_trackSourceSortColumn;
     Qt::SortOrder m_trackSourceSortOrder;
 

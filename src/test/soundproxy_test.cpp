@@ -3,7 +3,7 @@
 #include <QtDebug>
 
 #include "track/trackmetadata.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "util/samplebuffer.h"
 
@@ -52,7 +52,7 @@ class SoundSourceProxyTest: public MixxxTest {
     }
 
     static Mixxx::AudioSourcePointer openAudioSource(const QString& filePath) {
-        TrackPointer pTrack(TrackInfoObject::newTemporary(filePath));
+        TrackPointer pTrack(Track::newTemporary(filePath));
         return SoundSourceProxy(pTrack).openAudioSource();
     }
 };
@@ -63,7 +63,13 @@ TEST_F(SoundSourceProxyTest, open) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
         Mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
-        ASSERT_TRUE(!pAudioSource.isNull());
+        // Obtaining an AudioSource may fail for unsupported file formats,
+        // even if the corresponding file extension is supported, e.g.
+        // AAC vs. ALAC in .m4a files
+        if (pAudioSource.isNull()) {
+            // skip test file
+            continue;
+        }
         EXPECT_LT(0, pAudioSource->getChannelCount());
         EXPECT_LT(0, pAudioSource->getSamplingRate());
         EXPECT_LT(0, pAudioSource->getFrameCount());
@@ -71,7 +77,7 @@ TEST_F(SoundSourceProxyTest, open) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    TrackPointer pTrack(TrackInfoObject::newTemporary(
+    TrackPointer pTrack(Track::newTemporary(
             QDir::currentPath().append("/src/test/id3-test-data/artist.mp3")));
     SoundSourceProxy proxy(pTrack);
     Mixxx::TrackMetadata trackMetadata;
@@ -80,7 +86,7 @@ TEST_F(SoundSourceProxyTest, readArtist) {
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    TrackPointer pTrack(TrackInfoObject::newTemporary(
+    TrackPointer pTrack(Track::newTemporary(
             QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3")));
     SoundSourceProxy proxy(pTrack);
     Mixxx::TrackMetadata trackMetadata;
@@ -110,7 +116,13 @@ TEST_F(SoundSourceProxyTest, seekForward) {
         qDebug() << "Seek forward test:" << filePath;
 
         Mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
-        ASSERT_FALSE(pContReadSource.isNull());
+        // Obtaining an AudioSource may fail for unsupported file formats,
+        // even if the corresponding file extension is supported, e.g.
+        // AAC vs. ALAC in .m4a files
+        if (pContReadSource.isNull()) {
+            // skip test file
+            continue;
+        }
         const SINT readSampleCount = pContReadSource->frames2samples(kReadFrameCount);
         SampleBuffer contReadData(readSampleCount);
         SampleBuffer seekReadData(readSampleCount);

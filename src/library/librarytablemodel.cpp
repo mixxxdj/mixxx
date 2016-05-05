@@ -46,6 +46,10 @@ void LibraryTableModel::setTableModel(int id) {
              m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+
+    // Set tooltip for random sorting
+    int fi = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    setHeaderData(fi, Qt::Horizontal, tr("Sort items randomly"), Qt::ToolTipRole);
 }
 
 

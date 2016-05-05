@@ -82,7 +82,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
     close();
 }
 
-Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     if (SUCCEEDED(m_hrCoInitialize)) {
         qWarning() << "Cannot reopen MediaFoundation file" << getUrlString();
         return ERR;
@@ -99,13 +99,13 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
             COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (FAILED(m_hrCoInitialize)) {
         qWarning() << "SSMF: failed to initialize COM";
-        return ERR;
+        return OpenResult::FAILED;
     }
     // Initialize the Media Foundation platform.
     m_hrMFStartup = MFStartup(MF_VERSION);
     if (FAILED(m_hrCoInitialize)) {
         qWarning() << "SSMF: failed to initialize Media Foundation";
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     // Create the source reader to read the input file.
@@ -120,17 +120,17 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
 
     if (FAILED(hr)) {
         qWarning() << "SSMF: Error opening input file:" << fileName;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     if (!configureAudioStream(audioSrcCfg)) {
         qWarning() << "SSMF: Error configuring audio stream.";
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     if (!readProperties()) {
         qWarning() << "SSMF::readProperties failed";
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     //Seek to position 0, which forces us to skip over all the header frames.
@@ -138,7 +138,7 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
     //get the number of samples it expects (ie. no header frames).
     seekSampleFrame(0);
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceMediaFoundation::close() {

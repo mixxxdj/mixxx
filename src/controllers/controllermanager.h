@@ -8,18 +8,18 @@
 #ifndef CONTROLLERMANAGER_H
 #define CONTROLLERMANAGER_H
 
-#include "preferences/usersettings.h"
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetinfoenumerator.h"
+#include "preferences/usersettings.h"
 
 //Forward declaration(s)
 class Controller;
 class ControllerLearningEventFilter;
 
 // Function to sort controllers by name
-bool controllerCompare(Controller *a,Controller *b);
+bool controllerCompare(Controller *a, Controller *b);
 
 /** Manages enumeration/operation/deletion of hardware controllers. */
 class ControllerManager : public QObject {

@@ -1,6 +1,6 @@
 #include "mixer/microphone.h"
 
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
 #include "soundio/soundmanager.h"
@@ -14,11 +14,11 @@ Microphone::Microphone(QObject* pParent, const QString& group, int index,
     EngineMicrophone* pMicrophone =
             new EngineMicrophone(channelGroup, pEffectsManager);
     pEngine->addChannel(pMicrophone);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, index);
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 2, index);
     pSoundManager->registerInput(micInput, pMicrophone);
 
-    m_pInputConfigured.reset(new ControlObjectSlave(group, "input_configured", this));
-    m_pTalkoverEnabled.reset(new ControlObjectSlave(group, "talkover", this));
+    m_pInputConfigured.reset(new ControlProxy(group, "input_configured", this));
+    m_pTalkoverEnabled.reset(new ControlProxy(group, "talkover", this));
     m_pTalkoverEnabled->connectValueChanged(SLOT(slotTalkoverEnabled(double)));
 }
 
