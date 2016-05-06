@@ -115,20 +115,6 @@ IonDiscoverDJ.toggle_scratch_mode_on = function (control, value, status) {
     }
 }
 
-IonDiscoverDJ.toggle_scratch_mode_off = function (control, value, status) {
-    //IonDiscoverDJ.scratchMode = false;
-    //midi.sendShortMsg(0x80, IonDiscoverDJ.leds["scratch"] , IonDiscoverDJ.ledOff);
-}
-
-IonDiscoverDJ.play = function (control, value, status) {
-   // Only send events when play is pushed, not when it comes back up.
-   // group = IonDiscoverDJ.getGroup(control);
-   // if (engine.getValue(group, "duration") == 0) { if (value) print("No song on " + group); return; }; 
-   //midi.sendShortMsg(0x90, IonDiscoverDJ.leds[IonDiscoverDJ.getGroup(control) + " play"], IonDiscoverDJ.ledOn);
-  // midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel1] play"], IonDiscoverDJ.ledOn);
-   // engine.setValue(group,"play", !engine.getValue(group,"play"));
-   // if (engine.getValue(group, "play") == 0) midi.sendShortMsg(0x80, IonDiscoverDJ.leds[group + " play"], IonDiscoverDJ.ledOFF); 
-}   
 
 IonDiscoverDJ.jog_touch = function (channel, control, value, status, group) {
    var deck = IonDiscoverDJ.GetDeck(group);
@@ -182,43 +168,23 @@ IonDiscoverDJ.pflCh1Off = function (group, control, value, status) {}
 IonDiscoverDJ.pflCh2On = function (group, control, value, status) {
    if(engine.getValue("[Channel2]", "pfl")){
       engine.setValue("[Channel2]","pfl", false);
-      midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] cue"], IonDiscoverDJ.ledOff);}
+      midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] cue"], IonDiscoverDJ.ledOff);
+   }
    else {
       engine.setValue("[Channel2]","pfl", true);
-      midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] cue"], IonDiscoverDJ.ledOn);}
-   }
-IonDiscoverDJ.pflCh2Off = function (group, control, value, status) {}
+      midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] cue"], IonDiscoverDJ.ledOn);
+   }}
 
 
 
-IonDiscoverDJ.LoadSelectedTrackCh1 = function (group, control, value, status) 
-{
+IonDiscoverDJ.LoadSelectedTrackCh1 = function (group, control, value, status) {
    midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel1] play"], IonDiscoverDJ.ledOn);
    engine.setValue("[Channel1]","LoadSelectedTrack", true);
-   
-   //IonDiscoverDJ.pauseScript(5000);
-   //engine.setValue("[Channel1]","play", true);
-   //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel1] play"], IonDiscoverDJ.ledOff);
-   
-   //IonDiscoverDJ.pauseScript(5000);
-   //IonDiscoverDJ.pauseScript(200);
-   //engine.setValue("[Channel1]","beatsync", true);
-   //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel1] sync"], IonDiscoverDJ.ledOff);
 }
 
-IonDiscoverDJ.LoadSelectedTrackCh2 = function (group, control, value, status) 
-{
+IonDiscoverDJ.LoadSelectedTrackCh2 = function (group, control, value, status) {
    midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] play"], IonDiscoverDJ.ledOn);
    engine.setValue("[Channel2]","LoadSelectedTrack", true);
-   
-   //IonDiscoverDJ.pauseScript(5000);
-   //engine.setValue("[Channel2]","play", true);
-   //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] play"], IonDiscoverDJ.ledOff);
-   
-   //IonDiscoverDJ.pauseScript(5000);
-   //IonDiscoverDJ.pauseScript(200);
-   //engine.setValue("[Channel2]","beatsync", true);
-   //midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel2] sync"], IonDiscoverDJ.ledOff);
 }
 
 IonDiscoverDJ.PlayLED = function (value, group, control) {
