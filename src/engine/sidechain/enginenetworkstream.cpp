@@ -27,7 +27,7 @@ const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
 // normally * 2 is sufficient.
 // We allow to buffer two extra chunks for a CPU overload case, when
-// the shoutcast thread is not scheduled in time.
+// the broadcast thread is not scheduled in time.
 
 EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
                                          int numInputChannels)

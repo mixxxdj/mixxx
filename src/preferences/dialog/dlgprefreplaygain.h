@@ -5,7 +5,7 @@
 
 #include "preferences/dialog/ui_dlgprefreplaygaindlg.h"
 #include "preferences/replaygainsettings.h"
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "preferences/dlgpreferencepage.h"
 
 class DlgPrefReplayGain: public DlgPreferencePage,
@@ -38,9 +38,9 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     int getReplayGainVersion() const;
 
     ReplayGainSettings m_rgSettings;
-    ControlObjectSlave m_replayGainBoost;
-    ControlObjectSlave m_defaultBoost;
-    ControlObjectSlave m_enabled;
+    ControlProxy m_replayGainBoost;
+    ControlProxy m_defaultBoost;
+    ControlProxy m_enabled;
 
     QButtonGroup m_analysisButtonGroup;
 };

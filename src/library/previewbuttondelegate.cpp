@@ -5,8 +5,8 @@
 #include "library/trackmodel.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "trackinfoobject.h"
-#include "controlobjectslave.h"
+#include "track/track.h"
+#include "control/controlproxy.h"
 
 PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
         : QStyledItemDelegate(parent),
@@ -14,11 +14,11 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
           m_pButton(NULL),
           m_isOneCellInEditMode(false),
           m_column(column) {
-    m_pPreviewDeckPlay = new ControlObjectSlave(
+    m_pPreviewDeckPlay = new ControlProxy(
             PlayerManager::groupForPreviewDeck(0), "play", this);
     m_pPreviewDeckPlay->connectValueChanged(SLOT(previewDeckPlayChanged(double)));
 
-    m_pCueGotoAndPlay = new ControlObjectSlave(
+    m_pCueGotoAndPlay = new ControlProxy(
             PlayerManager::groupForPreviewDeck(0), "cue_gotoandplay", this);
 
     // This assumes that the parent is wtracktableview

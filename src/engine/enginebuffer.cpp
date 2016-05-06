@@ -2,13 +2,13 @@
 
 #include <QtDebug>
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "preferences/usersettings.h"
-#include "controlindicator.h"
-#include "controllinpotmeter.h"
-#include "controlobjectslave.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlindicator.h"
+#include "control/controllinpotmeter.h"
+#include "control/controlproxy.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "engine/bpmcontrol.h"
 #include "engine/clockcontrol.h"
 #include "engine/cuecontrol.h"
@@ -28,7 +28,7 @@
 #include "engine/sync/synccontrol.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/defs.h"
@@ -180,9 +180,9 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
 
     // Sample rate
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
 
-    m_pKeylockEngine = new ControlObjectSlave("[Master]", "keylock_engine", this);
+    m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
     m_pKeylockEngine->connectValueChanged(SLOT(slotKeylockEngineChanged(double)),
                                           Qt::DirectConnection);
 
@@ -264,7 +264,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
     m_pScale->clear();
     m_bScalerChanged = true;
 
-    m_pPassthroughEnabled = new ControlObjectSlave(group, "passthrough", this);
+    m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
@@ -499,7 +499,7 @@ void EngineBuffer::slotTrackLoading() {
 }
 
 TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     // 10 seconds
     pTrack->setDuration(10);
@@ -1310,7 +1310,7 @@ void EngineBuffer::hintReader(const double dRate) {
 // WARNING: This method runs in the GUI thread
 void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
     if (pTrack.isNull()) {
-        // Loading a null track means "eject" 
+        // Loading a null track means "eject"
         ejectTrack();
     } else {
         // Signal to the reader to load the track. The reader will respond with

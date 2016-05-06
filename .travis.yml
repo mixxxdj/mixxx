@@ -56,11 +56,6 @@ install:
   #####
   # Ubuntu Trusty Build
 
-  # TODO(rryan): libupower-glib-dev is currently not whitelisted by travis so we cannot
-  # test building with battery support.
-  # https://github.com/travis-ci/apt-package-whitelist/issues/2806
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then scons $COMMON battery=0 ; fi
-
   ####
   # OS X Build
 
@@ -72,8 +67,13 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CXXFLAGS="-isystem /usr/local/include/opus" ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CFLAGS="-isystem /usr/local/include/opus" ; fi
 
-  # We support OS X 10.7 with libc++ by default.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then scons $COMMON stdlib=libc++ osx_sdk_version_min=10.7 ; fi
+  # We support OS X 10.7 by default and use asan to detect memory safety errors.
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS="osx_sdk_version_min=10.7 asan=1" ; fi
+
+  ####
+  # Common Build
+
+  - scons $COMMON $ARCH_FLAGS
 
 script:
   - ./mixxx-test

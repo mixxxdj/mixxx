@@ -17,7 +17,7 @@
 
 #include "engine/enginedeck.h"
 
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
@@ -59,7 +59,7 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
             this, SLOT(slotPassingToggle(double)),
             Qt::DirectConnection);
 
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate");
 
     // Set up additional engines
     m_pPregain = new EnginePregain(getGroup());

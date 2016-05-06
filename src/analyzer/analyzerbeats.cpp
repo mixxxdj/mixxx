@@ -16,7 +16,7 @@
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
 #include "track/beatutils.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 // static
 QList<AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {

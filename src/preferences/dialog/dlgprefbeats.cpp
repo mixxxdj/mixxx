@@ -1,7 +1,7 @@
 #include "preferences/dialog/dlgprefbeats.h"
 
 #include "analyzer/analyzerbeats.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),

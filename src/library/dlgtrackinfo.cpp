@@ -2,8 +2,8 @@
 #include <QtDebug>
 
 #include "library/dlgtrackinfo.h"
-#include "trackinfoobject.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dao/cue.h"
@@ -147,7 +147,7 @@ void DlgTrackInfo::cueDelete() {
     }
 }
 
-void DlgTrackInfo::populateFields(const TrackInfoObject& track) {
+void DlgTrackInfo::populateFields(const Track& track) {
     setWindowTitle(track.getArtist() % " - " % track.getTitle());
 
     // Editable fields
@@ -184,7 +184,7 @@ void DlgTrackInfo::populateFields(const TrackInfoObject& track) {
     }
 }
 
-void DlgTrackInfo::reloadTrackBeats(const TrackInfoObject& track) {
+void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     BeatsPointer pBeats = track.getBeats();
     if (pBeats) {
         spinBpm->setValue(pBeats->getBpm());
@@ -220,7 +220,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     // We already listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.
-    connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+    connect(pTrack.data(), SIGNAL(changed(Track*)),
             this, SLOT(updateTrackMetadata()));
 }
 
@@ -355,7 +355,7 @@ void DlgTrackInfo::saveTrack() {
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
-    disconnect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+    disconnect(m_pLoadedTrack.data(), SIGNAL(changed(Track*)),
                this, SLOT(updateTrackMetadata()));
 
     m_pLoadedTrack->setTitle(txtTrackName->text());
@@ -425,7 +425,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setCoverInfo(m_loadedCoverInfo);
 
     // Reconnect changed signals now.
-    connect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+    connect(m_pLoadedTrack.data(), SIGNAL(changed(Track*)),
             this, SLOT(updateTrackMetadata()));
 }
 
@@ -580,7 +580,7 @@ void DlgTrackInfo::reloadTrackMetadata() {
         // We cannot reuse m_pLoadedTrack, because it might already been
         // modified and we want to read fresh metadata directly from the
         // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack(TrackInfoObject::newTemporary(
+        TrackPointer pTrack(Track::newTemporary(
                 m_pLoadedTrack->getFileInfo(),
                 m_pLoadedTrack->getSecurityToken()));
         SoundSourceProxy(pTrack).loadTrackMetadata();

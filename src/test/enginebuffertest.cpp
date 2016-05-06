@@ -7,7 +7,7 @@
 
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"
 #include "test/signalpathtest.h"
@@ -250,6 +250,20 @@ TEST_F(EngineBufferE2ETest, ScratchTest) {
     ProcessBuffer();
     assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
                               kProcessBufferSize, "ScratchTestMaster");
+}
+
+TEST_F(EngineBufferE2ETest, ScratchTestStart) {
+    // Confirm that vinyl scratching smoothly transitions from zero speed
+    // to an the other speed above the 0.07 threshold.
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 0.5);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "ScratchTestStart");
 }
 
 TEST_F(EngineBufferE2ETest, ReverseTest) {

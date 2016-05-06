@@ -30,8 +30,8 @@
 #include "preferences/dialog/dlgprefnovinyl.h"
 #endif
 
-#ifdef __SHOUTCAST__
-#include "preferences/dialog/dlgprefshoutcast.h"
+#ifdef __BROADCAST__
+#include "preferences/dialog/dlgprefbroadcast.h"
 #endif
 
 #include "preferences/dialog/dlgprefbeats.h"
@@ -120,9 +120,9 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wreplaygain);
     m_wrecord = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_wrecord);
-#ifdef __SHOUTCAST__
-    m_wshoutcast = new DlgPrefShoutcast(this, m_pConfig);
-    addPageWidget(m_wshoutcast);
+#ifdef __BROADCAST__
+    m_wbroadcast = new DlgPrefBroadcast(this, m_pConfig);
+    addPageWidget(m_wbroadcast);
 #endif
 #ifdef __MODPLUG__
     m_wmodplug = new DlgPrefModplug(this, m_pConfig);
@@ -249,12 +249,12 @@ void DlgPreferences::createIcons() {
     m_pVinylControlButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
-#ifdef __SHOUTCAST__
-    m_pShoutcastButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pShoutcastButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_broadcast.png"));
-    m_pShoutcastButton->setText(0, tr("Live Broadcasting"));
-    m_pShoutcastButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pShoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#ifdef __BROADCAST__
+    m_pBroadcastButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pBroadcastButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_broadcast.png"));
+    m_pBroadcastButton->setText(0, tr("Live Broadcasting"));
+    m_pBroadcastButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pBroadcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
 #ifdef __MODPLUG__
@@ -306,9 +306,9 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
     } else if (current == m_pVinylControlButton) {
         switchToPage(m_wnovinylcontrol);
 #endif
-#ifdef __SHOUTCAST__
-    } else if (current == m_pShoutcastButton) {
-        switchToPage(m_wshoutcast);
+#ifdef __BROADCAST__
+    } else if (current == m_pBroadcastButton) {
+        switchToPage(m_wbroadcast);
 #endif
 #ifdef __MODPLUG__
     } else if (current == m_pModplugButton) {

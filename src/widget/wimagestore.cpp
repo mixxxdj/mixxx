@@ -21,7 +21,7 @@ QImage* WImageStore::getImage(const QString& fileName) {
 // static
 QImage* WImageStore::getImage(const PixmapSource& source) {
     // Search for Image in list
-    ImageInfoType* info = NULL;
+    ImageInfoType* info = nullptr;
 
     QHash<QString, ImageInfoType*>::iterator it = m_dictionary.find(source.getId());
     if (it != m_dictionary.end()) {
@@ -36,14 +36,14 @@ QImage* WImageStore::getImage(const PixmapSource& source) {
 
     QImage* loadedImage = getImageNoCache(source);
 
-    if (loadedImage == NULL) {
-        return NULL;
+    if (loadedImage == nullptr) {
+        return nullptr;
     }
 
     if (loadedImage->isNull()) {
-        qDebug() << "WImageStore couldn't load:" << source.getPath() << (loadedImage == NULL);
+        qDebug() << "WImageStore couldn't load:" << source.getPath() << (loadedImage == nullptr);
         delete loadedImage;
-        return NULL;
+        return nullptr;
     }
 
     info = new ImageInfoType;
@@ -82,7 +82,7 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source) {
 void WImageStore::deleteImage(QImage * p)
 {
     // Search for Image in list
-    ImageInfoType *info = NULL;
+    ImageInfoType *info = nullptr;
     QMutableHashIterator<QString, ImageInfoType*> it(m_dictionary);
 
     while (it.hasNext())

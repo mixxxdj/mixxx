@@ -507,11 +507,14 @@ void Tooltips::addStandardTooltips() {
             << tr("Record Mix")
             << tr("Toggle mix recording.");
 
-    add("shoutcast_enabled")
-            << tr("Enable Live Broadcasting")
-            << tr("Stream your mix over the Internet.")
-            << tr("Provides visual feedback for Live Broadcasting status:")
-            << tr("disabled, connecting, connected, failure.");
+    // For legacy reasons also add tooltips for "shoutcast_enabled".
+    for (const char* key : {"shoutcast_enabled", "broadcast_enabled"}) {
+        add(key)
+                << tr("Enable Live Broadcasting")
+                << tr("Stream your mix over the Internet.")
+                << tr("Provides visual feedback for Live Broadcasting status:")
+                << tr("disabled, connecting, connected, failure.");
+    }
 
     add("passthrough_enabled")
             << tr("Enable Passthrough")

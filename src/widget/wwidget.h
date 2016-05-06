@@ -25,7 +25,7 @@
 #include "preferences/usersettings.h"
 #include "widget/wbasewidget.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
@@ -40,19 +40,19 @@ class ControlObjectSlave;
 class WWidget : public QWidget, public WBaseWidget {
    Q_OBJECT
   public:
-    WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
-    virtual ~WWidget();
+    explicit WWidget(QWidget *parent=nullptr, Qt::WindowFlags flags=nullptr);
+    ~WWidget() override;
 
     Q_PROPERTY(double value READ getControlParameterDisplay);
 
   protected:
     bool touchIsRightButton();
-    bool event(QEvent* e);
+    bool event(QEvent* e) override;
 
     enum Qt::MouseButton m_activeTouchButton;
 
   private:
-    ControlObjectSlave* m_pTouchShift;
+    ControlProxy* m_pTouchShift;
 };
 
 #endif

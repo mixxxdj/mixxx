@@ -52,7 +52,7 @@ class SoundSourceFFmpeg : public SoundSource {
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
   private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     bool readFramesToCache(unsigned int count, SINT offset);
     bool getBytesFromCache(CSAMPLE* buffer, SINT offset, SINT size);

@@ -36,7 +36,7 @@ public:
             bool readStereoSamples);
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     QFile m_file;
     quint64 m_fileSize;

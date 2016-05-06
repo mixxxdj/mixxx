@@ -14,9 +14,6 @@ WBattery::WBattery(QWidget* parent)
     }
 }
 
-WBattery::~WBattery() {
-}
-
 void WBattery::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
@@ -58,7 +55,7 @@ void WBattery::setup(QDomNode node, const SkinContext& context) {
                         context.selectElement(node, "PixmapsCharging"),
                         "scalemode", "TILE"));
         for (int i = 0; i < m_chargingPixmaps.size(); ++i) {
-            PixmapSource source(chargingPath.arg(i));
+            PixmapSource source = context.getPixmapSource(chargingPath.arg(i));
             setPixmap(&m_chargingPixmaps[i], source, mode);
         }
     }
@@ -71,7 +68,7 @@ void WBattery::setup(QDomNode node, const SkinContext& context) {
                         context.selectElement(node, "PixmapsDischarging"),
                         "scalemode", "TILE"));
         for (int i = 0; i < m_dischargingPixmaps.size(); ++i) {
-            PixmapSource source(dischargingPath.arg(i));
+            PixmapSource source = context.getPixmapSource(dischargingPath.arg(i));
             setPixmap(&m_dischargingPixmaps[i], source, mode);
         }
     }
@@ -157,7 +154,7 @@ void WBattery::setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
     }
 }
 
-void WBattery::paintEvent(QPaintEvent*) {
+void WBattery::paintEvent(QPaintEvent* /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);

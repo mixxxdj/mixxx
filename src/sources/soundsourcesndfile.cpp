@@ -13,7 +13,7 @@ SoundSourceSndFile::~SoundSourceSndFile() {
     close();
 }
 
-Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_pSndFile);
     SF_INFO sfInfo;
     memset(&sfInfo, 0, sizeof(sfInfo));
@@ -34,20 +34,25 @@ Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (!m_pSndFile) {   // sf_format_check is only for writes
         qWarning() << "Error opening libsndfile file:" << getUrlString()
                 << sf_strerror(m_pSndFile);
-        return ERR;
+        return OpenResult::FAILED;
     }
 
-    if (sf_error(m_pSndFile) > 0) {
+    switch (sf_error(m_pSndFile)) {
+    case SF_ERR_NO_ERROR:
+        break; // continue
+    case SF_ERR_UNRECOGNISED_FORMAT:
+        return OpenResult::UNSUPPORTED_FORMAT;
+    default:
         qWarning() << "Error opening libsndfile file:" << getUrlString()
                 << sf_strerror(m_pSndFile);
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     setChannelCount(sfInfo.channels);
     setSamplingRate(sfInfo.samplerate);
     setFrameCount(sfInfo.frames);
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceSndFile::close() {
@@ -100,6 +105,10 @@ QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
     supportedFileExtensions.append("aif");
     supportedFileExtensions.append("wav");
     supportedFileExtensions.append("flac");
+    supportedFileExtensions.append("ogg");
+    // ALAC/CAF will be supported starting with version 1.0.26
+    supportedFileExtensions.append("m4a");
+    supportedFileExtensions.append("caf");
     return supportedFileExtensions;
 }
 

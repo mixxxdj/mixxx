@@ -7,37 +7,7 @@
 #include <QFlags>
 
 #include "util/types.h"
-
-// MSVC does this
-// __declspec(align(16))
-// while GCC does
-// __attribute__((aligned(16)))
-// IntelCC does
-// _MM_ALIGN_16
-// but I dont know how to test for ICC.
-
-#if !_ALIGN_16
-#define _ALIGN_16
-#define _ALIGN_STACK
-#elif (defined __GNUC__)
-#define _ALIGN_16 __attribute__((aligned(16)))
-#define _ALIGN_STACK __attribute__((force_align_arg_pointer, aligned(16)))
-#elif (defined _MSC_VER)
-#define _ALIGN_16 __declspec(align(16))
-#define _ALIGN_STACK
-#else
-#error Please email mixxx-devel@lists.sourceforge.net and tell us what is the equivalent of __attribute__((aligned(16))) for your compiler.
-#endif
-
-#if !_RESTRICT
-#define _RESTRICT
-#elif (defined __GNUC__)
-#define _RESTRICT __restrict__
-#elif (defined _MSC_VER)
-#define _RESTRICT __restrict
-#else
-#error Please email mixxx-devel@lists.sourceforge.net and tell us what is the equivalent of __restrict__ for your compiler.
-#endif
+#include "util/platform.h"
 
 // A group of utilities for working with samples.
 class SampleUtil {
@@ -76,7 +46,7 @@ class SampleUtil {
 
     // Copies every sample from pSrc to pDest
     inline
-    static void copy(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT pSrc,
+    static void copy(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
             int iNumSamples) {
         // Benchmark results on 32 bit SSE2 Atom Cpu (Linux)
         // memcpy 7263 ns
@@ -252,8 +222,8 @@ class SampleUtil {
     static void reverse(CSAMPLE* pBuffer, int iNumSamples);
 
     // copy pSrc to pDest and reverses stereo sample order (backward)
-    static void copyReverse(CSAMPLE* _RESTRICT pDest,
-            const CSAMPLE* _RESTRICT pSrc, int iNumSamples);
+    static void copyReverse(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc, int iNumSamples);
 
 
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,

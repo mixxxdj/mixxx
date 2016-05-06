@@ -12,7 +12,7 @@
 #include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/samplebuffer.h"
 
 class TrackCollection;

@@ -24,6 +24,9 @@ SettingsManager::SettingsManager(QObject* pParent,
         m_pSettings = UserSettingsPointer(new UserSettings(""));
     }
     m_bShouldRescanLibrary = upgrader.rescanLibrary();
+
+    initializeDefaults();
+
     ControlDoublePrivate::setUserConfig(m_pSettings);
 }
 

@@ -21,7 +21,7 @@
 #include <QMessageBox>
 
 #include "analyzer/analyzerkey.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "util/xml.h"
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)

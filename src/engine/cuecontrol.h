@@ -9,8 +9,8 @@
 
 #include "engine/enginecontrol.h"
 #include "preferences/usersettings.h"
-#include "controlobjectslave.h"
-#include "trackinfoobject.h"
+#include "control/controlproxy.h"
+#include "track/track.h"
 
 #define NUM_HOT_CUES 37
 
@@ -151,8 +151,8 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
-    ControlObjectSlave* m_pVinylControlEnabled;
-    ControlObjectSlave* m_pVinylControlMode;
+    ControlProxy* m_pVinylControlEnabled;
+    ControlProxy* m_pVinylControlMode;
 
     TrackPointer m_pLoadedTrack;
 

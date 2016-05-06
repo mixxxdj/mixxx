@@ -26,7 +26,7 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
     return BeatsPointer();
 }
 
-BeatsPointer BeatFactory::makeBeatGrid(TrackInfoObject* pTrack, double dBpm,
+BeatsPointer BeatFactory::makeBeatGrid(Track* pTrack, double dBpm,
                                        double dFirstBeatSample) {
     BeatGrid* pGrid = new BeatGrid(pTrack, 0);
     pGrid->setGrid(dBpm, dFirstBeatSample);

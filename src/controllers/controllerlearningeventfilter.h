@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QEvent>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "widget/controlwidgetconnection.h"
 
 struct ControlInfo {

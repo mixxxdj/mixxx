@@ -635,30 +635,28 @@ class MixxxCore(Feature):
         return True
 
     def sources(self, build):
-        sources = ["mixxxkeyboard.cpp",
-
-                   "configobject.cpp",
-                   "control/control.cpp",
+        sources = ["control/control.cpp",
+                   "control/controlaudiotaperpot.cpp",
                    "control/controlbehavior.cpp",
+                   "control/controleffectknob.cpp",
+                   "control/controlindicator.cpp",
+                   "control/controllinpotmeter.cpp",
+                   "control/controllogpotmeter.cpp",
                    "control/controlmodel.cpp",
-                   "controlobject.cpp",
-                   "controlobjectslave.cpp",
-                   "controlobjectscript.cpp",
-                   "controlaudiotaperpot.cpp",
-                   "controlpotmeter.cpp",
-                   "controllinpotmeter.cpp",
-                   "controllogpotmeter.cpp",
-                   "controleffectknob.cpp",
-                   "controlpushbutton.cpp",
-                   "controlindicator.cpp",
-                   "controlttrotary.cpp",
+                   "control/controlobject.cpp",
+                   "control/controlobjectscript.cpp",
+                   "control/controlpotmeter.cpp",
+                   "control/controlproxy.cpp",
+                   "control/controlpushbutton.cpp",
+                   "control/controlttrotary.cpp",
 
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontroller.cpp",
                    "controllers/dlgprefcontrollers.cpp",
-                   "dlgabout.cpp",
-                   "dlgdevelopertools.cpp",
+                   "dialog/dlgabout.cpp",
+                   "dialog/dlgdevelopertools.cpp",
 
+                   "preferences/configobject.cpp",
                    "preferences/dialog/dlgprefautodj.cpp",
                    "preferences/dialog/dlgprefcontrols.cpp",
                    "preferences/dialog/dlgprefcrossfader.cpp",
@@ -762,9 +760,9 @@ class MixxxCore(Feature):
                    "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "engine/enginetalkoverducking.cpp",
-                   "cachingreader.cpp",
-                   "cachingreaderchunk.cpp",
-                   "cachingreaderworker.cpp",
+                   "engine/cachingreader.cpp",
+                   "engine/cachingreaderchunk.cpp",
+                   "engine/cachingreaderworker.cpp",
 
                    "analyzer/analyzerqueue.cpp",
                    "analyzer/analyzerwaveform.cpp",
@@ -802,17 +800,19 @@ class MixxxCore(Feature):
                    "controllers/midi/midienumerator.cpp",
                    "controllers/midi/midioutputhandler.cpp",
                    "controllers/softtakeover.cpp",
+                   "controllers/keyboard/keyboardeventfilter.cpp",
 
                    "main.cpp",
                    "mixxx.cpp",
                    "mixxxapplication.cpp",
                    "errordialoghandler.cpp",
 
-                   "sources/soundsourceproviderregistry.cpp",
+                   "sources/audiosource.cpp",
+                   "sources/soundsource.cpp",
                    "sources/soundsourceplugin.cpp",
                    "sources/soundsourcepluginlibrary.cpp",
-                   "sources/soundsource.cpp",
-                   "sources/audiosource.cpp",
+                   "sources/soundsourceproviderregistry.cpp",
+                   "sources/soundsourceproxy.cpp",
 
                    "widget/controlwidgetconnection.cpp",
                    "widget/wbasewidget.cpp",
@@ -956,6 +956,7 @@ class MixxxCore(Feature):
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
                    "library/dao/analysisdao.cpp",
+                   "library/dao/autodjcratesdao.cpp",
 
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
@@ -974,8 +975,6 @@ class MixxxCore(Feature):
                    "library/parserpls.cpp",
                    "library/parserm3u.cpp",
                    "library/parsercsv.cpp",
-
-                   "soundsourceproxy.cpp",
 
                    "widget/wwaveformviewer.cpp",
 
@@ -1040,20 +1039,20 @@ class MixxxCore(Feature):
                    "skin/pixmapsource.cpp",
                    "skin/launchimage.cpp",
 
-                   "trackinfoobject.cpp",
+                   "track/beatfactory.cpp",
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
-                   "track/beatfactory.cpp",
                    "track/beatutils.cpp",
-                   "track/keys.cpp",
+                   "track/bpm.cpp",
                    "track/keyfactory.cpp",
+                   "track/keys.cpp",
                    "track/keyutils.cpp",
                    "track/playcounter.cpp",
                    "track/replaygain.cpp",
-                   "track/bpm.cpp",
-                   "track/tracknumbers.cpp",
+                   "track/track.cpp",
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
+                   "track/tracknumbers.cpp",
 
                    "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",
@@ -1129,8 +1128,8 @@ class MixxxCore(Feature):
             'controllers/dlgcontrollerlearning.ui',
             'controllers/dlgprefcontrollerdlg.ui',
             'controllers/dlgprefcontrollersdlg.ui',
-            'dlgaboutdlg.ui',
-            'dlgdevelopertoolsdlg.ui',
+            'dialog/dlgaboutdlg.ui',
+            'dialog/dlgdevelopertoolsdlg.ui',
             'library/autodj/dlgautodj.ui',
             'library/dlganalysis.ui',
             'library/dlgcoverartfullsize.ui',
@@ -1203,10 +1202,21 @@ class MixxxCore(Feature):
             # Default GNU Options
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
-            # Quiet down Clang warnings about inconsistent use of override
-            # keyword until Qt fixes qt_metacall.
             if build.compiler_is_clang:
+                # Quiet down Clang warnings about inconsistent use of override
+                # keyword until Qt fixes qt_metacall.
                 build.env.Append(CCFLAGS='-Wno-inconsistent-missing-override')
+
+                # Do not warn about use of the deprecated 'register' keyword
+                # since it produces noise from libraries we depend on using it.
+                build.env.Append(CCFLAGS='-Wno-deprecated-register')
+
+                # Warn about implicit fallthrough.
+                build.env.Append(CCFLAGS='-Wimplicit-fallthrough')
+
+                # Enable thread-safety analysis.
+                # http://clang.llvm.org/docs/ThreadSafetyAnalysis.html
+                build.env.Append(CCFLAGS='-Wthread-safety')
             build.env.Append(CCFLAGS='-Wextra')
 
             # Always generate debugging info.

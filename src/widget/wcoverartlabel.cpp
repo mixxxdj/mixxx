@@ -71,6 +71,6 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
     }
 }
 
-void WCoverArtLabel::leaveEvent(QEvent*) {
+void WCoverArtLabel::leaveEvent(QEvent* /*unused*/) {
     m_pDlgFullSize->close();
 }

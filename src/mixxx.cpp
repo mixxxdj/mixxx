@@ -25,10 +25,10 @@
 #include <QtDebug>
 
 #include "analyzer/analyzerqueue.h"
-#include "dlgabout.h"
+#include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"
-#include "dlgdevelopertools.h"
+#include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"
@@ -36,15 +36,15 @@
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "controllers/controllermanager.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
-#include "shoutcast/shoutcastmanager.h"
+#include "broadcast/broadcastmanager.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
-#include "soundsourceproxy.h"
-#include "trackinfoobject.h"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/sharedglcontext.h"
 #include "util/debug.h"
@@ -52,7 +52,7 @@
 #include "util/timer.h"
 #include "util/time.h"
 #include "util/version.h"
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "util/compatibility.h"
 #include "util/sandbox.h"
 #include "mixer/playerinfo.h"
@@ -88,8 +88,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pSoundManager(nullptr),
           m_pPlayerManager(nullptr),
           m_pRecordingManager(nullptr),
-#ifdef __SHOUTCAST__
-          m_pShoutcastManager(nullptr),
+#ifdef __BROADCAST__
+          m_pBroadcastManager(nullptr),
 #endif
           m_pControllerManager(nullptr),
           m_pGuiTick(nullptr),
@@ -208,8 +208,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
 
-#ifdef __SHOUTCAST__
-    m_pShoutcastManager = new ShoutcastManager(pConfig, m_pSoundManager);
+#ifdef __BROADCAST__
+    m_pBroadcastManager = new BroadcastManager(pConfig, m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -448,7 +448,7 @@ void MixxxMainWindow::finalize() {
 
     setCentralWidget(NULL);
 
-    // TODO(rryan): WMainMenuBar holds references to COs so we need to delete it
+    // TODO(rryan): WMainMenuBar holds references to controls so we need to delete it
     // before MixxxMainWindow is destroyed. QMainWindow calls deleteLater() in
     // setMenuBar() but we need to delete it now so we can ask for
     // DeferredDelete events to be processed for it. Once Mixxx shutdown lives
@@ -471,7 +471,7 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
 
-    // GUI depends on MixxxKeyboard, PlayerManager, Library
+    // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Skin";
     delete m_pWidgetParent;
 
@@ -503,10 +503,10 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
 
-#ifdef __SHOUTCAST__
-    // ShoutcastManager depends on config, engine
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ShoutcastManager";
-    delete m_pShoutcastManager;
+#ifdef __BROADCAST__
+    // BroadcastManager depends on config, engine
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting BroadcastManager";
+    delete m_pBroadcastManager;
 #endif
 
     // EngineMaster depends on Config and m_pEffectsManager.
@@ -640,12 +640,12 @@ void MixxxMainWindow::initializeKeyboard() {
         m_pKbdConfig = new ConfigObject<ConfigValueKbd>(defaultKeyboard);
     }
 
-    // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
-    // initialization into MixxxKeyboard
-    // Workaround for today: MixxxKeyboard calls delete
+    // TODO(XXX) leak pKbdConfig, KeyboardEventFilter owns it? Maybe roll all keyboard
+    // initialization into KeyboardEventFilter
+    // Workaround for today: KeyboardEventFilter calls delete
     bool keyboardShortcutsEnabled = pConfig->getValueString(
         ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new MixxxKeyboard(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
+    m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
 int MixxxMainWindow::noSoundDlg(void) {
@@ -827,13 +827,13 @@ void MixxxMainWindow::connectMenuBar() {
         m_pMenuBar->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
     }
 
-#ifdef __SHOUTCAST__
-    if (m_pShoutcastManager) {
-        connect(m_pShoutcastManager, SIGNAL(shoutcastEnabled(bool)),
+#ifdef __BROADCAST__
+    if (m_pBroadcastManager) {
+        connect(m_pBroadcastManager, SIGNAL(broadcastEnabled(bool)),
                 m_pMenuBar, SLOT(onBroadcastingStateChange(bool)));
         connect(m_pMenuBar, SIGNAL(toggleBroadcasting(bool)),
-                m_pShoutcastManager, SLOT(setEnabled(bool)));
-        m_pMenuBar->onBroadcastingStateChange(m_pShoutcastManager->isEnabled());
+                m_pBroadcastManager, SLOT(setEnabled(bool)));
+        m_pMenuBar->onBroadcastingStateChange(m_pBroadcastManager->isEnabled());
     }
 #endif
 

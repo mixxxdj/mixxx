@@ -10,8 +10,8 @@
 
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
-#include "controlobject.h"
-#include "controlobjectscript.h"
+#include "control/controlobject.h"
+#include "control/controlobjectscript.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 // to tell the msvs compiler about `isnan`
@@ -228,7 +228,7 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
         }
 
         if (m_scriptErrors.contains(script.name)) {
-            qDebug() << "Errors occurred while loading" << script.name;
+            qWarning() << "Errors occurred while loading" << script.name;
         }
     }
 
@@ -387,8 +387,8 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject, QScriptValue fun
 
     // If it's not a function, we're done.
     if (!functionObject.isFunction()) {
-        qDebug() << "ControllerEngine::internalExecute:" 
-                 << functionObject.toVariant() 
+        qDebug() << "ControllerEngine::internalExecute:"
+                 << functionObject.toVariant()
                  << "Not a function";
         return false;
     }

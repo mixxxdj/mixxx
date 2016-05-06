@@ -10,7 +10,7 @@
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class AnalyzerKey : public Analyzer {
   public:

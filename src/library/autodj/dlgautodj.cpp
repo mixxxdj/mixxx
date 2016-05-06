@@ -12,7 +12,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      Library* pLibrary,
                      AutoDJProcessor* pProcessor,
                      TrackCollection* pTrackCollection,
-                     MixxxKeyboard* pKeyboard)
+                     KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
           m_pAutoDJProcessor(pProcessor),
@@ -60,13 +60,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
             this, SLOT(skipNextButton(bool)));
 
-#ifdef __AUTODJCRATES__
     connect(pushButtonAddRandom, SIGNAL(clicked(bool)),
             this, SIGNAL(addRandomButton(bool)));
-#else // __AUTODJCRATES__
-    pushButtonAddRandom->setVisible(false);
-    horizontalLayout->removeWidget(pushButtonAddRandom);
-#endif // __AUTODJCRATES__
 
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
             this, SLOT(fadeNowButton(bool)));

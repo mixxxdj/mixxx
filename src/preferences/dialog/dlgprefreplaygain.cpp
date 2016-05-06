@@ -1,6 +1,6 @@
 #include "preferences/dialog/dlgprefreplaygain.h"
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "util/math.h"
 
 namespace {
@@ -169,4 +169,3 @@ void DlgPrefReplayGain::slotSetReanalyze() {
     m_rgSettings.setReplayGainReanalyze(checked);
     slotApply();
 }
-

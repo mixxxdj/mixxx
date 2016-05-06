@@ -242,7 +242,8 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     //int screwups_debug = 0;
 
     double rate_add = fabs(rate_old);
-    const double rate_delta_abs = rate_old > 0 ? rate_delta : -rate_delta;
+    const double rate_delta_abs =
+            rate_old < 0 || rate_new < 0 ? -rate_delta : rate_delta;
 
     // Hot frame loop
     while (i < buf_size) {
