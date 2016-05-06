@@ -21,7 +21,7 @@
 #include "util/assert.h"
 #include "util/performancetimer.h"
 
-static const bool sDebug = false;
+static const bool sDebug = true;
 
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
@@ -386,7 +386,7 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
 
 void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     if (sDebug) {
-        qDebug() << this << "setSort()" << column << order;
+        qDebug() << this << "setSort()" << column << order << m_tableColumns;
     }
 
     int trackSourceColumnCount = m_trackSource ? m_trackSource->columnCount() : 0;
@@ -448,6 +448,8 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_tableOrderBy = "ORDER BY RANDOM()";
         }
         
+        qDebug() << "Column: " << column;
+        
         m_sortColumns.clear();
     } else if (m_trackSource) {
         for (int i = 0; i < m_sortColumns.size(); ++i) {
@@ -483,6 +485,8 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             //qDebug() << m_trackSourceOrderBy;
         }
     }
+    
+    qDebug() << "Order by:  " << m_tableOrderBy;
 }
 
 void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
