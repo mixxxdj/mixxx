@@ -78,21 +78,21 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>IonDiscoverDJ.jog_wheel</key>
-                <status>0xB0</status>
-                <midino>0x19</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>rate_perm_down</key>
                 <description>MIDI Learned from 6 messages.</description>
                 <status>0x90</status>
                 <midino>0x43</midino>
                 <options>
                     <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>IonDiscoverDJ.jog_wheel</key>
+                <status>0xB0</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
