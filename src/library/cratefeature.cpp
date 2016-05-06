@@ -624,6 +624,7 @@ void CrateFeature::slotCreateImportPlaylist() {
     QStringList playlist_files = LibraryFeature::getPlaylistFiles();
     if (playlist_files.isEmpty()) return;
     
+    
     // Set last import directory
     QFileInfo fileName(playlist_files.first());
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
