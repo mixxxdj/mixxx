@@ -322,9 +322,11 @@ class Qt(Dependence):
             # appropriate.
             if qt5:
                 build.env.EnableQt5Modules(qt_modules,
+                                           staticdeps=build.static_dependencies,
                                            debug=build.build_is_debug)
             else:
                 build.env.EnableQt4Modules(qt_modules,
+                                           staticdeps=build.static_dependencies,
                                            debug=build.build_is_debug)
 
             # if build.static_dependencies:
@@ -495,7 +497,7 @@ class Chromaprint(Dependence):
             build.env.Append(CPPDEFINES='CHROMAPRINT_NODLL')
 
             # On Windows, we link chromaprint with FFTW3.
-            if not conf.CheckLib(['fftw', 'libfftw', 'fftw3', 'libfftw3']):
+            if not conf.CheckLib(['fftw', 'libfftw', 'fftw3', 'libfftw3', 'libfftw-3.3']):
                 raise Exception(
                     "Could not find fftw3 or its development headers.")
 
