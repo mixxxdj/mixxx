@@ -386,42 +386,52 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     if (!m_pPlaylistTableModel) return;
 
     // Get file to read
-    QString playlist_file = LibraryFeature::getPlaylistFile();
-    if (playlist_file.isEmpty()) return;
-
-    QFileInfo fileName(playlist_file);
+    QStringList playlist_files = LibraryFeature::getPlaylistFiles();
+    if (playlist_files.isEmpty()) return;
+    
+    // Set last import directory
+    QFileInfo fileName(playlist_files.first());
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
 
-    // Get a valid name
-    QString baseName = fileName.baseName();
-    QString name;
-    bool validNameGiven = false;
-    int i = 0;
-    while (!validNameGiven) {
-        name = baseName;
-        if (i != 0) name += QString::number(i);
-
-        // Check name
-        int existingId = m_playlistDao.getPlaylistIdFromName(name);
-
-        validNameGiven = (existingId == -1);
-        ++i;
+    // For each selected element create a different playlist.
+    for (QString &playlistFile : playlist_files) {
+    
+        fileName = QFileInfo(playlistFile);
+    
+        // Get a valid name
+        QString baseName = fileName.baseName();
+        QString name;
+        
+        bool validNameGiven = false;
+        int i = 0;
+        while (!validNameGiven) {
+            name = baseName;
+            if (i != 0) name += QString::number(i);
+    
+            // Check name
+            int existingId = m_playlistDao.getPlaylistIdFromName(name);
+    
+            validNameGiven = (existingId == -1);
+            ++i;
+        }
+    
+        int playlistId = m_playlistDao.createPlaylist(name);
+        if (playlistId != -1) {
+            activatePlaylist(playlistId);
+        }
+        else {
+                QMessageBox::warning(NULL,
+                                     tr("Playlist Creation Failed"),
+                                     tr("An unknown error occurred while creating playlist: ")
+                                      + name);
+                return;
+        }
+        
+        slotImportPlaylistFile(playlistFile);
     }
 
-    int playlistId = m_playlistDao.createPlaylist(name);
-    if (playlistId != -1) {
-        activatePlaylist(playlistId);
-    }
-    else {
-            QMessageBox::warning(NULL,
-                                 tr("Playlist Creation Failed"),
-                                 tr("An unknown error occurred while creating playlist: ")
-                                  + name);
-            return;
-    }
 
-    slotImportPlaylistFile(playlist_file);
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {

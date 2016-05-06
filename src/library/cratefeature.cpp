@@ -620,41 +620,49 @@ void CrateFeature::slotImportPlaylistFile(QString &playlist_file) {
 void CrateFeature::slotCreateImportPlaylist() {
 
     // Get file to read
-    QString playlist_file = getPlaylistFile();
-    if (playlist_file.isEmpty()) return;
-
-    QFileInfo fileName(playlist_file);
+    // Get file to read
+    QStringList playlist_files = LibraryFeature::getPlaylistFiles();
+    if (playlist_files.isEmpty()) return;
+    
+    // Set last import directory
+    QFileInfo fileName(playlist_files.first());
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
-                   ConfigValue(fileName.dir().absolutePath()));
+                ConfigValue(fileName.dir().absolutePath()));
+    
+    // For each selected file
+    for (QString &playlistFile : playlist_files) {
+        fileName = QFileInfo(playlistFile);
 
-    // Get a valid name
-    QString baseName = fileName.baseName();
-    QString name;
-    bool validNameGiven = false;
-    int i = 0;
-    while (!validNameGiven) {
-        name = baseName;
-        if (i != 0) name += QString::number(i);
-
-        // Check name
-        int existingId = m_crateDao.getCrateIdByName(name);
-
-        validNameGiven = (existingId == -1);
-        ++i;
+        // Get a valid name
+        QString baseName = fileName.baseName();
+        QString name;
+        bool validNameGiven = false;
+        int i = 0;
+        while (!validNameGiven) {
+            name = baseName;
+            if (i != 0) name += QString::number(i);
+    
+            // Check name
+            int existingId = m_crateDao.getCrateIdByName(name);
+    
+            validNameGiven = (existingId == -1);
+            ++i;
+        }
+    
+        int playlistId = m_crateDao.createCrate(name);
+    
+        if (playlistId != -1) activateCrate(playlistId);
+        else {
+                QMessageBox::warning(NULL,
+                                     tr("Playlist Creation Failed"),
+                                     tr("An unknown error occurred while creating playlist: ")
+                                      + name);
+                return;
+        }
+    
+        slotImportPlaylistFile(playlistFile);
     }
 
-    int playlistId = m_crateDao.createCrate(name);
-
-    if (playlistId != -1) activateCrate(playlistId);
-    else {
-            QMessageBox::warning(NULL,
-                                 tr("Playlist Creation Failed"),
-                                 tr("An unknown error occurred while creating playlist: ")
-                                  + name);
-            return;
-    }
-
-    slotImportPlaylistFile(playlist_file);
 }
 
 void CrateFeature::slotAnalyzeCrate() {
