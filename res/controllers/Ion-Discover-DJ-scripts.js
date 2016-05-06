@@ -70,7 +70,7 @@ IonDiscoverDJ.Deck.prototype.jogMove = function(jogValue) {
       var newRate = engine.getValue(this.group, "rate") + (jogValue/3000);
       engine.setValue(this.group, "rate", newRate);
    } else if(this.scratching) {
-      engine.scratchTick(this.deckNumber, jogValue);
+      engine.scratchTick(this.deckNumber, jogValue/3);
    } else {
       jogValue = jogValue *10;
       engine.setValue(this.group,"jog", jogValue);
@@ -256,4 +256,3 @@ IonDiscoverDJ.RevLED = function (value, group, control) {
 		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] rev"], IonDiscoverDJ.ledOff);
 	}
 }
-
