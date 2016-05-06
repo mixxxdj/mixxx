@@ -452,15 +452,12 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         
         m_sortColumns.clear();
     } else if (m_trackSource) {
-        for (int i = 0; i < m_sortColumns.size(); ++i) {
-            SortColumn sc = m_sortColumns.at(i);
-            // TrackSource Sorting, current sort + two from history
-            if (i == 0) {
-                m_trackSourceOrderBy.append("ORDER BY ");
-            } else {
-                // second cycle
-                m_trackSourceOrderBy.append(", ");
-            }
+        
+        bool first = true;
+        for (const SortColumn &sc : m_sortColumns) {
+            m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
+            
+            
             QString sort_field;
             if (sc.m_column == kIdColumn) {
                 sort_field = m_trackSource->columnSortForFieldIndex(kIdColumn);
@@ -468,7 +465,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                 // + 1 to skip id column
                 int ccColumn = sc.m_column - m_tableColumns.size() + 1;
                 sort_field = m_trackSource->columnSortForFieldIndex(ccColumn);
-                if (i == 0) {
+                if (first) {
                     // first cycle: main sort criteria
                     m_trackSourceSortColumn = ccColumn;
                     m_trackSourceSortOrder = sc.m_order;
@@ -483,10 +480,9 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
                     " ASC" : " DESC");
             //qDebug() << m_trackSourceOrderBy;
+            first = false;
         }
     }
-    
-    qDebug() << "Order by:  " << m_tableOrderBy;
 }
 
 void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
