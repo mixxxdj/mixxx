@@ -1271,10 +1271,16 @@ WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; background: #0f
 WCoverArt { background: transparent; color: #ACACAC; }
 
 /* splitter between treeview and library */
-QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background-color: #1e1e1e; }
-QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background-color: #1e1e1e; }
-QSplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
-QSplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
+#LibrarySplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background-color: #1e1e1e; }
+#LibrarySplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background-color: #1e1e1e; }
+#LibrarySplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
+#LibrarySplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
+
+/* splitter between treeview and coverart */
+#CoverArtSplitter::handle { image: url(skin:/style/style_handle_horizontal_unchecked.png); background-color: #1e1e1e; }
+#CoverArtSplitter::handle:pressed { image: url(skin:/style/style_handle_horizontal_checked.png); background-color: #1e1e1e; }
+#CoverArtSplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
+#CoverArtSplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
 
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
 QLabel, QRadioButton { background: transparent; color: #cfb32c; }

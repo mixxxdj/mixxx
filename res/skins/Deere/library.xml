@@ -151,6 +151,7 @@
                     <MinimumSize>30,30</MinimumSize>
                     <SplitSizesConfigKey>[Deere],LibraryCoverartSplitSize</SplitSizesConfigKey>
                     <SplitSizes>2,8</SplitSizes>
+                    <Collapsible>0,0</Collapsible>
                     <Children>
                       <LibrarySidebar>
                       </LibrarySidebar>

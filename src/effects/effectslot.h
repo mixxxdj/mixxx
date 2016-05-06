@@ -5,15 +5,15 @@
 #include <QSharedPointer>
 #include <QString>
 
-#include "controlobject.h"
-#include "controlpushbutton.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "effects/effect.h"
 #include "effects/effectparameterslot.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "util/class.h"
 
 class EffectSlot;
-class ControlObjectSlave;
+class ControlProxy;
 typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 
 class EffectSlot : public QObject {

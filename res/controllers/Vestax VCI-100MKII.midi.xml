@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2015-12-1</description>
+    <description>2016-4-1</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -54,8 +54,8 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>VCI102.shiftL</key>
+        <group>[Channel1]</group>
+        <key>VCI102.setShift</key>
         <status>0x94</status>
         <midino>0x24</midino>
         <options>
@@ -63,8 +63,8 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>VCI102.shiftR</key>
+        <group>[Channel2]</group>
+        <key>VCI102.setShift</key>
         <status>0x94</status>
         <midino>0x34</midino>
         <options>
@@ -72,8 +72,8 @@
         </options>
       </control>
       <control>
-        <group>[Playlist]</group>
-        <key>LoadSelectedIntoFirstStopped</key>
+        <group>[Master]</group>
+        <key>maximize_library</key>
         <status>0x94</status>
         <midino>0x36</midino>
       </control>
@@ -541,135 +541,147 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>parameter1</key>
+        <key>VCI102.parameter1</key>
         <status>0xB0</status>
         <midino>0x16</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>parameter1</key>
+        <key>VCI102.parameter1</key>
         <status>0xB1</status>
         <midino>0x17</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
-        <key>parameter1</key>
+        <key>VCI102.parameter1</key>
         <status>0xB2</status>
         <midino>0x16</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
-        <key>parameter1</key>
+        <key>VCI102.parameter1</key>
         <status>0xB3</status>
         <midino>0x17</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>parameter2</key>
+        <key>VCI102.parameter2</key>
         <status>0xB0</status>
         <midino>0x17</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>parameter2</key>
+        <key>VCI102.parameter2</key>
         <status>0xB1</status>
         <midino>0x18</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
-        <key>parameter2</key>
+        <key>VCI102.parameter2</key>
         <status>0xB2</status>
         <midino>0x17</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
-        <key>parameter2</key>
+        <key>VCI102.parameter2</key>
         <status>0xB3</status>
         <midino>0x18</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>parameter3</key>
+        <key>VCI102.parameter3</key>
         <status>0xB0</status>
         <midino>0x18</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>parameter3</key>
+        <key>VCI102.parameter3</key>
         <status>0xB1</status>
         <midino>0x19</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
-        <key>parameter3</key>
+        <key>VCI102.parameter3</key>
         <status>0xB2</status>
         <midino>0x18</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
-        <key>parameter3</key>
+        <key>VCI102.parameter3</key>
         <status>0xB3</status>
         <midino>0x19</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>mix</key>
+        <key>VCI102.super1</key>
         <status>0xB0</status>
         <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>mix</key>
+        <key>VCI102.super1</key>
         <status>0xB1</status>
         <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>mix</key>
+        <key>VCI102.super1</key>
         <status>0xB2</status>
         <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4]</group>
-        <key>mix</key>
+        <key>VCI102.super1</key>
         <status>0xB3</status>
         <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[QuickEffectRack1_[Channel1]_Effect1]</group>
@@ -769,25 +781,25 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>beats_translate_curpos</key>
+        <key>reverse</key>
         <status>0x90</status>
         <midino>0x42</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>beats_translate_curpos</key>
+        <key>reverse</key>
         <status>0x91</status>
         <midino>0x42</midino>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>beats_translate_curpos</key>
+        <key>reverse</key>
         <status>0x92</status>
         <midino>0x42</midino>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>beats_translate_curpos</key>
+        <key>reverse</key>
         <status>0x93</status>
         <midino>0x42</midino>
       </control>
@@ -817,25 +829,25 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>beats_translate_match_alignment</key>
+        <key>beats_translate_curpos</key>
         <status>0x90</status>
         <midino>0x43</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>beats_translate_match_alignment</key>
+        <key>beats_translate_curpos</key>
         <status>0x91</status>
         <midino>0x43</midino>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>beats_translate_match_alignment</key>
+        <key>beats_translate_curpos</key>
         <status>0x92</status>
         <midino>0x43</midino>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>beats_translate_match_alignment</key>
+        <key>beats_translate_curpos</key>
         <status>0x93</status>
         <midino>0x43</midino>
       </control>
@@ -961,25 +973,25 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>waveform_zoom_down</key>
+        <key>waveform_zoom_up</key>
         <status>0x90</status>
         <midino>0x44</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>waveform_zoom_down</key>
+        <key>waveform_zoom_up</key>
         <status>0x91</status>
         <midino>0x44</midino>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>waveform_zoom_down</key>
+        <key>waveform_zoom_up</key>
         <status>0x92</status>
         <midino>0x44</midino>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>waveform_zoom_down</key>
+        <key>waveform_zoom_up</key>
         <status>0x93</status>
         <midino>0x44</midino>
       </control>
@@ -1009,31 +1021,31 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>waveform_zoom_up</key>
+        <key>waveform_zoom_down</key>
         <status>0x90</status>
         <midino>0x4D</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>waveform_zoom_up</key>
+        <key>waveform_zoom_down</key>
         <status>0x91</status>
         <midino>0x4D</midino>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>waveform_zoom_up</key>
+        <key>waveform_zoom_down</key>
         <status>0x92</status>
         <midino>0x4D</midino>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>waveform_zoom_up</key>
+        <key>waveform_zoom_down</key>
         <status>0x93</status>
         <midino>0x4D</midino>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VCI102.beatloop_exit</key>
+        <key>VCI102.loop</key>
         <status>0x90</status>
         <midino>0x26</midino>
         <options>
@@ -1042,7 +1054,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VCI102.beatloop_exit</key>
+        <key>VCI102.loop</key>
         <status>0x91</status>
         <midino>0x33</midino>
         <options>
@@ -1051,7 +1063,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>VCI102.beatloop_exit</key>
+        <key>VCI102.loop</key>
         <status>0x92</status>
         <midino>0x26</midino>
         <options>
@@ -1060,7 +1072,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>VCI102.beatloop_exit</key>
+        <key>VCI102.loop</key>
         <status>0x93</status>
         <midino>0x33</midino>
         <options>
@@ -1069,7 +1081,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VCI102.reloop_out</key>
+        <key>VCI102.reloop</key>
         <status>0x90</status>
         <midino>0x46</midino>
         <options>
@@ -1078,7 +1090,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VCI102.reloop_out</key>
+        <key>VCI102.reloop</key>
         <status>0x91</status>
         <midino>0x53</midino>
         <options>
@@ -1087,7 +1099,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>VCI102.reloop_out</key>
+        <key>VCI102.reloop</key>
         <status>0x92</status>
         <midino>0x46</midino>
         <options>
@@ -1096,7 +1108,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>VCI102.reloop_out</key>
+        <key>VCI102.reloop</key>
         <status>0x93</status>
         <midino>0x53</midino>
         <options>
@@ -1141,27 +1153,39 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>loop_move_0.5_backward</key>
+        <key>VCI102.move_backward</key>
         <status>0x90</status>
         <midino>0x53</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>loop_move_0.5_backward</key>
+        <key>VCI102.move_backward</key>
         <status>0x91</status>
         <midino>0x49</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>loop_move_0.5_backward</key>
+        <key>VCI102.move_backward</key>
         <status>0x92</status>
         <midino>0x53</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>loop_move_0.5_backward</key>
+        <key>VCI102.move_backward</key>
         <status>0x93</status>
         <midino>0x49</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -1201,27 +1225,39 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>loop_move_0.5_forward</key>
+        <key>VCI102.move_forward</key>
         <status>0x90</status>
         <midino>0x49</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>loop_move_0.5_forward</key>
+        <key>VCI102.move_forward</key>
         <status>0x91</status>
         <midino>0x46</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>loop_move_0.5_forward</key>
+        <key>VCI102.move_forward</key>
         <status>0x92</status>
         <midino>0x49</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>loop_move_0.5_forward</key>
+        <key>VCI102.move_forward</key>
         <status>0x93</status>
         <midino>0x46</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel1]</group>

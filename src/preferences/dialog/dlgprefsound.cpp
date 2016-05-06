@@ -24,7 +24,7 @@
 #include "soundio/sounddevice.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
@@ -107,20 +107,20 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(loadSettings()));
 
     m_pMasterAudioLatencyOverloadCount =
-            new ControlObjectSlave("[Master]", "audio_latency_overload_count", this);
+            new ControlProxy("[Master]", "audio_latency_overload_count", this);
     m_pMasterAudioLatencyOverloadCount->connectValueChanged(SLOT(bufferUnderflow(double)));
 
-    m_pMasterLatency = new ControlObjectSlave("[Master]", "latency", this);
+    m_pMasterLatency = new ControlProxy("[Master]", "latency", this);
     m_pMasterLatency->connectValueChanged(SLOT(masterLatencyChanged(double)));
 
 
-    m_pHeadDelay = new ControlObjectSlave("[Master]", "headDelay", this);
-    m_pMasterDelay = new ControlObjectSlave("[Master]", "delay", this);
+    m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
+    m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
 
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
 
-    m_pMasterEnabled = new ControlObjectSlave("[Master]", "enabled", this);
+    m_pMasterEnabled = new ControlProxy("[Master]", "enabled", this);
     masterMixComboBox->addItem(tr("Disabled"));
     masterMixComboBox->addItem(tr("Enabled"));
     masterMixComboBox->setCurrentIndex(m_pMasterEnabled->get() ? 1 : 0);
@@ -128,7 +128,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterMixChanged(int)));
     m_pMasterEnabled->connectValueChanged(SLOT(masterEnabledChanged(double)));
 
-    m_pMasterMonoMixdown = new ControlObjectSlave("[Master]", "mono_mixdown", this);
+    m_pMasterMonoMixdown = new ControlProxy("[Master]", "mono_mixdown", this);
     masterOutputModeComboBox->addItem(tr("Stereo"));
     masterOutputModeComboBox->addItem(tr("Mono"));
     masterOutputModeComboBox->setCurrentIndex(m_pMasterMonoMixdown->get() ? 1 : 0);
@@ -136,7 +136,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterOutputModeComboBoxChanged(int)));
     m_pMasterMonoMixdown->connectValueChanged(SLOT(masterMonoMixdownChanged(double)));
 
-    m_pMasterTalkoverMix = new ControlObjectSlave("[Master]", "talkover_mix", this);
+    m_pMasterTalkoverMix = new ControlProxy("[Master]", "talkover_mix", this);
     micMixComboBox->addItem(tr("Master output"));
     micMixComboBox->addItem(tr("Broadcast and Recording only"));
     micMixComboBox->setCurrentIndex((int)m_pMasterTalkoverMix->get());
@@ -146,7 +146,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 
 
     m_pKeylockEngine =
-            new ControlObjectSlave("[Master]", "keylock_engine", this);
+            new ControlProxy("[Master]", "keylock_engine", this);
 
     connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(headDelayChanged(double)));

@@ -40,7 +40,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
     void bindWidget(WLibrary* pLibrary,
-                    MixxxKeyboard* pKeyboard);
+                    KeyboardEventFilter* pKeyboard);
 
   public slots:
     void activate();

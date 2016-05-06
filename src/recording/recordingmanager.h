@@ -6,7 +6,7 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "recording/defs_recording.h"
 
 //
@@ -22,7 +22,7 @@
 
 class EngineMaster;
 class ControlPushButton;
-class ControlObjectSlave;
+class ControlProxy;
 
 class RecordingManager : public QObject
 {
@@ -55,7 +55,7 @@ class RecordingManager : public QObject
     void durationRecorded(QString);
 
   public slots:
-    void slotIsRecording(bool);
+    void slotIsRecording(bool recording, bool error);
     void slotBytesRecorded(int);
     void slotDurationRecorded(QString);
 
@@ -65,7 +65,7 @@ class RecordingManager : public QObject
 
   private:
     QString formatDateTimeForFilename(QDateTime dateTime) const;
-    ControlObjectSlave* m_recReady;
+    ControlProxy* m_recReady;
     ControlObject* m_recReadyCO;
     ControlPushButton* m_pToggleRecording;
 

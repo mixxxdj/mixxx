@@ -11,7 +11,7 @@
 #include "track/trackid.h"
 
 class CueDAO;
-class TrackInfoObject;
+class Track;
 
 class Cue : public QObject {
   Q_OBJECT
@@ -68,7 +68,7 @@ class Cue : public QObject {
     int m_iHotCue;
     QString m_label;
 
-    friend class TrackInfoObject;
+    friend class Track;
     friend class CueDAO;
 };
 

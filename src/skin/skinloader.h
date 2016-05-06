@@ -7,7 +7,7 @@
 
 #include "preferences/usersettings.h"
 
-class MixxxKeyboard;
+class KeyboardEventFilter;
 class PlayerManager;
 class ControllerManager;
 class Library;
@@ -21,7 +21,7 @@ class SkinLoader {
     virtual ~SkinLoader();
 
     QWidget* loadDefaultSkin(QWidget* pParent,
-                             MixxxKeyboard* pKeyboard,
+                             KeyboardEventFilter* pKeyboard,
                              PlayerManager* pPlayerManager,
                              ControllerManager* pControllerManager,
                              Library* pLibrary,

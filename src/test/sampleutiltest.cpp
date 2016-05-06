@@ -621,7 +621,4 @@ static void BM_Copy2WithRampingGain(benchmark::State& state) {
 }
 BENCHMARK(BM_Copy2WithRampingGain)->Range(64, 4096);
 
-
-
-
-}
+}  // namespace

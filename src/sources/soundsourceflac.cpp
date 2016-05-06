@@ -76,17 +76,17 @@ SoundSourceFLAC::~SoundSourceFLAC() {
     close();
 }
 
-Result SoundSourceFLAC::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceFLAC::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open FLAC file:" << m_file.fileName();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     m_decoder = FLAC__stream_decoder_new();
     if (m_decoder == NULL) {
         qWarning() << "Failed to create FLAC decoder!";
-        return ERR;
+        return OpenResult::FAILED;
     }
     FLAC__stream_decoder_set_md5_checking(m_decoder, false);
     const FLAC__StreamDecoderInitStatus initStatus(
@@ -95,17 +95,17 @@ Result SoundSourceFLAC::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
                     FLAC_write_cb, FLAC_metadata_cb, FLAC_error_cb, this));
     if (initStatus != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
         qWarning() << "Failed to initialize FLAC decoder:" << initStatus;
-        return ERR;
+        return OpenResult::FAILED;
     }
     if (!FLAC__stream_decoder_process_until_end_of_metadata(m_decoder)) {
         qWarning() << "Failed to process FLAC metadata:"
                 << FLAC__stream_decoder_get_state(m_decoder);
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     m_curFrameIndex = getMinFrameIndex();
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceFLAC::close() {

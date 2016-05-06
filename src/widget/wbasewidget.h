@@ -10,7 +10,7 @@ class ControlParameterWidgetConnection;
 
 class WBaseWidget {
   public:
-    WBaseWidget(QWidget* pWidget);
+    explicit WBaseWidget(QWidget* pWidget);
     virtual ~WBaseWidget();
 
     virtual void Init();

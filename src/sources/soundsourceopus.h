@@ -29,7 +29,7 @@ public:
             CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     OggOpusFile *m_pOggOpusFile;
 

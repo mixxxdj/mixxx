@@ -15,7 +15,7 @@
 
 class WBaseWidget;
 class Library;
-class MixxxKeyboard;
+class KeyboardEventFilter;
 class PlayerManager;
 class EffectsManager;
 class ControllerManager;
@@ -29,7 +29,7 @@ class LegacySkinParser : public QObject, public SkinParser {
   public:
     LegacySkinParser();
     LegacySkinParser(UserSettingsPointer pConfig,
-                     MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
+                     KeyboardEventFilter* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
                      Library* pLibrary, VinylControlManager* pVCMan,
                      EffectsManager* pEffectsManager);
@@ -100,6 +100,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseSearchBox(QDomElement node);
     QWidget* parseLibrary(QDomElement node);
     QWidget* parseLibrarySidebar(QDomElement node);
+    QWidget* parseBattery(QDomElement node);
     QWidget* parseCoverArt(QDomElement node);
 
     // Renders a template.
@@ -126,7 +127,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QString parseLaunchImageStyle(QDomNode node);
 
     UserSettingsPointer m_pConfig;
-    MixxxKeyboard* m_pKeyboard;
+    KeyboardEventFilter* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     ControllerManager* m_pControllerManager;
     Library* m_pLibrary;

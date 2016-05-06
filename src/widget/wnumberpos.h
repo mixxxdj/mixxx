@@ -7,24 +7,23 @@
 
 #include "wnumber.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 
 class WNumberPos : public WNumber {
     Q_OBJECT
   public:
-    WNumberPos(const char *group, QWidget *parent=0);
-    virtual ~WNumberPos();
+    explicit WNumberPos(const char *group, QWidget *parent=nullptr);
 
     // Set if the display shows remaining time (true) or position (false)
     void setRemain(bool bRemain);
 
   protected:
-    void mousePressEvent(QMouseEvent* pEvent);
+    void mousePressEvent(QMouseEvent* pEvent) override;
 
   private slots:
-    void setValue(double dValue);
+    void setValue(double dValue) override;
     void slotSetValue(double);
-    void slotSetRemain(double dRemain);
+    void slotSetRemain(double remain);
     void slotSetTrackSampleRate(double dSampleRate);
     void slotSetTrackSamples(double dSamples);
 
@@ -35,11 +34,11 @@ class WNumberPos : public WNumber {
     double m_dTrackSampleRate;
     // True if remaining content is being shown
     bool m_bRemain;
-    ControlObjectSlave* m_pShowTrackTimeRemaining;
+    ControlProxy* m_pShowTrackTimeRemaining;
     // Pointer to control object for position, rate, and track info
-    ControlObjectSlave* m_pVisualPlaypos;
-    ControlObjectSlave* m_pTrackSamples;
-    ControlObjectSlave* m_pTrackSampleRate;
+    ControlProxy* m_pVisualPlaypos;
+    ControlProxy* m_pTrackSamples;
+    ControlProxy* m_pTrackSampleRate;
 };
 
 #endif

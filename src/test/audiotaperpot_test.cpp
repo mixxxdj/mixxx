@@ -4,7 +4,7 @@
 #include <QScopedPointer>
 
 #include "mixxxtest.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "util/math.h"
 
 class AudioTaperPotTest : public MixxxTest {
@@ -84,4 +84,3 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         delete catpb;
     }
 }
-

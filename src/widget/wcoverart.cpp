@@ -6,14 +6,14 @@
 #include <QStylePainter>
 #include <QStyleOption>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "widget/wcoverart.h"
 #include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
-#include "util/math.h"
 #include "util/dnd.h"
+#include "util/math.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      UserSettingsPointer pConfig,
@@ -29,7 +29,7 @@ WCoverArt::WCoverArt(QWidget* parent,
     setAcceptDrops(!m_group.isEmpty());
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
+    if (pCache != nullptr) {
         connect(pCache, SIGNAL(coverFound(const QObject*, const int,
                                           const CoverInfo&, QPixmap, bool)),
                 this, SLOT(slotCoverFound(const QObject*, const int,
@@ -149,7 +149,7 @@ void WCoverArt::slotTrackCoverArtUpdated() {
         m_lastRequestedCover = m_loadedTrack->getCoverInfo();
         m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
         CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache != NULL) {
+        if (pCache != nullptr) {
             // TODO(rryan): Don't use track id.
             pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId().toInt());
         }
@@ -184,7 +184,7 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
     return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
-void WCoverArt::paintEvent(QPaintEvent*) {
+void WCoverArt::paintEvent(QPaintEvent* /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
@@ -209,7 +209,7 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     }
 }
 
-void WCoverArt::resizeEvent(QResizeEvent*) {
+void WCoverArt::resizeEvent(QResizeEvent* /*unused*/) {
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
@@ -231,7 +231,7 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     }
 }
 
-void WCoverArt::leaveEvent(QEvent*) {
+void WCoverArt::leaveEvent(QEvent* /*unused*/) {
     m_pDlgFullSize->close();
 }
 

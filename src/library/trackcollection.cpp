@@ -9,7 +9,7 @@
 
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/xml.h"
 #include "util/assert.h"
 

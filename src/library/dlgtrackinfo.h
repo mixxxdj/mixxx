@@ -8,7 +8,7 @@
 #include <QScopedPointer>
 
 #include "library/ui_dlgtrackinfo.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/dlgtagfetcher.h"
 #include "library/coverart.h"
 #include "util/tapfilter.h"
@@ -47,7 +47,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmHalve();
     void slotBpmTwoThirds();
     void slotBpmThreeFourth();
+    void slotBpmClear();
+    void slotBpmConstChanged(int state);
     void slotBpmTap(double averageLength, int numSamples);
+    void slotSpinBpmValueChanged(double value);
 
     void reloadTrackMetadata();
     void updateTrackMetadata();
@@ -59,7 +62,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotReloadCoverArt();
 
   private:
-    void populateFields(const TrackInfoObject& track);
+    void populateFields(const Track& track);
+    void reloadTrackBeats(const Track& track);
     void populateCues(TrackPointer pTrack);
     void saveTrack();
     void unloadTrack(bool save);
@@ -67,9 +71,11 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void init();
     QHash<int, CuePointer> m_cueMap;
     TrackPointer m_pLoadedTrack;
+    BeatsPointer m_pBeatsClone;
+    bool m_trackHasBeatMap;
 
     QScopedPointer<TapFilter> m_pTapFilter;
-    double m_dLastBpm;
+    double m_dLastTapedBpm;
 
     DlgTagFetcher& m_DlgTagFetcher;
 

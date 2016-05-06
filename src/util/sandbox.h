@@ -8,7 +8,7 @@
 #include <QHash>
 #include <QMutex>
 
-#include "configobject.h"
+#include "preferences/configobject.h"
 
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CFURL.h>

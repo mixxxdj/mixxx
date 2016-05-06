@@ -2,11 +2,11 @@
 #define VINYLCONTROLCONTROL_H
 
 #include "engine/enginecontrol.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "preferences/usersettings.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
-#include "controlpushbutton.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 
 class VinylControlControl : public EngineControl {
     Q_OBJECT
@@ -34,7 +34,7 @@ class VinylControlControl : public EngineControl {
     ControlPushButton* m_pControlVinylWantEnabled;
     ControlPushButton* m_pControlVinylCueing;
     ControlPushButton* m_pControlVinylSignalEnabled;
-    ControlObjectSlave* m_pPlayEnabled;
+    ControlProxy* m_pPlayEnabled;
     TrackPointer m_pCurrentTrack;
     bool m_bSeekRequested;
 };

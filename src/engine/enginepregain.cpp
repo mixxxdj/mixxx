@@ -3,10 +3,10 @@
 #include <QtDebug>
 
 #include "preferences/usersettings.h"
-#include "controlaudiotaperpot.h"
-#include "controlobject.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlaudiotaperpot.h"
+#include "control/controlobject.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "util/math.h"
 #include "util/sample.h"
 
@@ -127,9 +127,9 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     } else if (totalGain != m_fPrevGain) {
         // Prevent sound wave discontinuities by interpolating from old to new gain.
         SampleUtil::applyRampingGain(pInOut, m_fPrevGain, totalGain, iBufferSize);
-        m_fPrevGain = totalGain;
     } else {
         // SampleUtil deals with aliased buffers and gains of 1 or 0.
         SampleUtil::applyGain(pInOut, totalGain, iBufferSize);
     }
+    m_fPrevGain = totalGain;
 }

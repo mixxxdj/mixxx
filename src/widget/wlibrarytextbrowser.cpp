@@ -6,6 +6,3 @@
 WLibraryTextBrowser::WLibraryTextBrowser(QWidget* parent)
         : QTextBrowser(parent) {
 }
-
-WLibraryTextBrowser::~WLibraryTextBrowser() {
-}

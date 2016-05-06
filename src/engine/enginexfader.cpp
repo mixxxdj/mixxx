@@ -4,8 +4,9 @@
 
 //static
 const char* EngineXfader::kXfaderConfigKey = "[Mixer Profile]";
+const double EngineXfader::kTransformDefault = 1.0;
 const double EngineXfader::kTransformMax = 1000.0;
-const double EngineXfader::kTransformMin = 1.0;
+const double EngineXfader::kTransformMin = 0.6;
 
 double EngineXfader::getPowerCalibration(double transform) {
     // get the transform_root of -3db (.5)
@@ -14,7 +15,7 @@ double EngineXfader::getPowerCalibration(double transform) {
 
 void EngineXfader::getXfadeGains(
         double xfadePosition, double transform, double powerCalibration,
-        bool constPower, bool reverse, double* gain1, double* gain2) {
+        double curve, bool reverse, double* gain1, double* gain2) {
     if (gain1 == NULL || gain2 == NULL) {
         return;
     }
@@ -23,7 +24,7 @@ void EngineXfader::getXfadeGains(
     double xfadePositionLeft = xfadePosition;
     double xfadePositionRight = xfadePosition;
 
-    if (constPower) {
+    if (curve == MIXXX_XFADER_CONSTPWR) {
         // Apply Calibration
         xfadePosition *= powerCalibration;
         xfadePositionLeft = xfadePosition - powerCalibration;
@@ -51,12 +52,24 @@ void EngineXfader::getXfadeGains(
         *gain2 = 0.0;
     }
 
-    if (constPower) {
+    if (curve == MIXXX_XFADER_CONSTPWR) {
         if (*gain1 > *gain2) {
             *gain2 = 1 - *gain1;
         } else {
             *gain1 = 1 - *gain2;
         }
+
+        // The resulting power at the crossover point depends on the correlation of the input signals
+        // In theory the gain ratio varies from 0.5 for two equal signals to sqrt(0.5) = 0.707 for totally
+        // uncorrelated signals.
+        // Since the underlying requirement for this curve is constant loudness, we did a test with 30 s
+        // snippets of various genres and ReplayGain 2.0 analysis. Allmost all results where near 0.707 
+        // with one exception of mixing two parts of the same track, which resulted in 0.66.
+        // Based on the testing, we normalize the gain as if the signals were uncorrelated. The
+        // correction on the following lines ensures that  gain1^2 + gain2^2 == 1.
+        double gain = sqrt(*gain1 * *gain1 + *gain2 * *gain2);
+        *gain1 = *gain1 / gain;
+        *gain2 = *gain2 / gain;
     }
 
     if (reverse) {
