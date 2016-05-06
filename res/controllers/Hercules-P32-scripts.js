@@ -8,6 +8,9 @@ var defaultBeatJumpSize = 4;
 // may be helpful if you never use loops less than 2 beats long.
 // Otherwise the dot indicates a loop size equal to 1/(# on the LED display).
 var loopEnabledDot = false;
+// Assign samplers on left side of the controller to left side of the crossfader
+// and samplers on right side of the controller to the right side of the crossfader
+var samplerCrossfaderAssign = true;
 
 /**
  * Hercules P32 DJ controller script for Mixxx 2.0
@@ -629,6 +632,14 @@ P32.init = function () {
                 [0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(s, 0)], samplerNumber,
                 P32.padColors.red, P32.padColors.off, P32.padColors.blue);
         }
+    }
+    if (samplerCrossfaderAssign) {
+      for (s = 1; s <= 16; s++) {
+        engine.setValue('[Sampler' + s + ']', 'orientation', 0);
+      }
+      for (s = 17; s <= 32; s++) {
+        engine.setValue('[Sampler' + s + ']', 'orientation', 2);
+      }
     }
 
     // tell controller to send MIDI messages with positions of faders and knobs
