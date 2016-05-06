@@ -127,9 +127,9 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     } else if (totalGain != m_fPrevGain) {
         // Prevent sound wave discontinuities by interpolating from old to new gain.
         SampleUtil::applyRampingGain(pInOut, m_fPrevGain, totalGain, iBufferSize);
-        m_fPrevGain = totalGain;
     } else {
         // SampleUtil deals with aliased buffers and gains of 1 or 0.
         SampleUtil::applyGain(pInOut, totalGain, iBufferSize);
     }
+    m_fPrevGain = totalGain;
 }
