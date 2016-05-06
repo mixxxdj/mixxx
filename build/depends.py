@@ -670,8 +670,8 @@ class MixxxCore(Feature):
                    "preferences/dialog/dlgprefsound.cpp",
                    "preferences/dialog/dlgprefsounditem.cpp",
                    "preferences/dialog/dlgprefwaveform.cpp",
-                   'preferences/dialog/dlgprefbeats.cpp',
-                   'preferences/dialog/dlgprefkey.cpp',
+                   "preferences/dialog/dlgprefbeats.cpp",
+                   "preferences/dialog/dlgprefkey.cpp",
                    "preferences/settingsmanager.cpp",
                    "preferences/replaygainsettings.cpp",
                    "preferences/upgrade.cpp",
@@ -767,8 +767,8 @@ class MixxxCore(Feature):
                    "analyzer/analyzerqueue.cpp",
                    "analyzer/analyzerwaveform.cpp",
                    "analyzer/analyzergain.cpp",
-                   'analyzer/analyzerbeats.cpp',
-                   'analyzer/analyzerkey.cpp',
+                   "analyzer/analyzerbeats.cpp",
+                   "analyzer/analyzerkey.cpp",
                    "analyzer/analyzerebur128.cpp",
                    "analyzer/plugins/analyzerplugin.cpp",
                    "analyzer/plugins/analyzersoundtouchbeats.cpp",
@@ -1107,7 +1107,7 @@ class MixxxCore(Feature):
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
 
-                   '#res/mixxx.qrc'
+                   "#res/mixxx.qrc"
                    ]
 
         proto_args = {
