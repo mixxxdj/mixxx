@@ -73,10 +73,7 @@ class MixxxMainWindow : public QMainWindow {
   public slots:
     void rebootMixxxView();
 
-    //void slotQuitFullScreen();
     void slotFileLoadSongPlayer(int deck);
-    // exits the application
-    void slotFileQuit();
     // toogle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
@@ -88,8 +85,6 @@ class MixxxMainWindow : public QMainWindow {
     // Open the developer tools dialog.
     void slotDeveloperTools(bool enable);
     void slotDeveloperToolsClosed();
-
-    void slotToCenterOfPrimaryScreen();
 
     void slotUpdateWindowTitle(TrackPointer pTrack);
 
