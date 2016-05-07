@@ -707,7 +707,7 @@ void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopCon
 void LoopingControl::clearActiveBeatLoop() {
     BeatLoopingControl* pOldBeatLoop = m_pActiveBeatLoop.fetchAndStoreAcquire(nullptr);
     if (pOldBeatLoop != nullptr) {
-        m_pActiveBeatLoop->deactivate();
+        pOldBeatLoop->deactivate();
     }
 }
 
