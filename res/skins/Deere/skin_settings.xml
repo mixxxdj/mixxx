@@ -315,6 +315,25 @@
               <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
             </Connection>
           </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9744; Show Vinyl Control Options</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show Vinyl Control Options</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+            </Connection>
+          </PushButton>
+
         </Children>
       </WidgetGroup>
 
