@@ -236,28 +236,30 @@ VCI102.loop_double = function(ch, midino, value, status, group) {
 };
 
 VCI102.move = function(ch, group, dir) {
-    if (dir) {
-        if (engine.getValue(group, "loop_enabled")) {
-            // move the loop by the current length
-            engine.setValue(
-                group, "loop_move", dir * (
-                    engine.getValue(group, "loop_end_position")
-                        - engine.getValue(group, "loop_start_position"))
-                    / engine.getValue(group, "track_samplerate")
-                    * engine.getValue(group, "file_bpm") / 120);
-        } else {
-            // jump by the default length
-            engine.setValue(group, "beatjump", dir * VCI102.loopLength[ch]);
-        }
+    if (engine.getValue(group, "loop_enabled")) {
+        // move the loop by the current length
+        engine.setValue(
+            group, "loop_move", dir * (
+                engine.getValue(group, "loop_end_position")
+                    - engine.getValue(group, "loop_start_position"))
+                / engine.getValue(group, "track_samplerate")
+                * engine.getValue(group, "file_bpm") / 120);
+    } else {
+        // jump by the default length
+        engine.setValue(group, "beatjump", dir * VCI102.loopLength[ch]);
     }
 };
 
 VCI102.move_backward = function(ch, midino, value, status, group) {
-    VCI102.move(ch, group, value / -127);
+    if (value) {
+        VCI102.move(ch, group, -1);
+    }
 };
 
 VCI102.move_forward = function(ch, midino, value, status, group) {
-    VCI102.move(ch, group, value / 127);
+    if (value) {
+        VCI102.move(ch, group, 1);
+    }
 };
 
 VCI102.Deck = ["[Channel1]", "[Channel2]"];
