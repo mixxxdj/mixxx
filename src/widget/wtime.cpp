@@ -16,7 +16,7 @@ WTime::~WTime() {
     delete m_pTimer;
 }
 
-void WTime::setup(QDomNode node, const SkinContext& context) {
+void WTime::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     setTimeFormat(node, context);
     m_pTimer->start(m_iInterval);

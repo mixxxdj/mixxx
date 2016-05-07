@@ -46,7 +46,7 @@ WCoverArt::~WCoverArt() {
     delete m_pDlgFullSize;
 }
 
-void WCoverArt::setup(QDomNode node, const SkinContext& context) {
+void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     setMouseTracking(true);
 

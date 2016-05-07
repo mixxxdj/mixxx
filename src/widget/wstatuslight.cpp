@@ -44,7 +44,7 @@ void WStatusLight::setNoPos(int iNoPos) {
     m_pixmaps.resize(iNoPos);
 }
 
-void WStatusLight::setup(QDomNode node, const SkinContext& context) {
+void WStatusLight::setup(const QDomNode& node, const SkinContext& context) {
     // Number of states. Add one to account for the background.
     setNoPos(context.selectInt(node, "NumberPos") + 1);
 

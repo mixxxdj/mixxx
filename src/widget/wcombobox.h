@@ -13,7 +13,7 @@ class WComboBox : public QComboBox, public WBaseWidget {
   public:
     explicit WComboBox(QWidget* pParent);
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
     void onConnectedControlChanged(double dParameter, double dValue) override;
 

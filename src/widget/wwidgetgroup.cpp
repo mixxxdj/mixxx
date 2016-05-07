@@ -76,7 +76,7 @@ void WWidgetGroup::setLayoutAlignment(int alignment) {
     }
 }
 
-void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
+void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
 
     // Set background pixmap if available

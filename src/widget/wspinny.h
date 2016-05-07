@@ -28,7 +28,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) override;
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
 

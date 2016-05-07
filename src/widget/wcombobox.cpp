@@ -10,7 +10,7 @@ WComboBox::WComboBox(QWidget* pParent)
             this, SLOT(slotCurrentIndexChanged(int)));
 }
 
-void WComboBox::setup(QDomNode node, const SkinContext& context) {
+void WComboBox::setup(const QDomNode& node, const SkinContext& context) {
     // Load pixmaps for associated states
     QDomNode state = context.selectNode(node, "State");
     while (!state.isNull()) {

@@ -77,6 +77,7 @@
 #include "widget/wsingletoncontainer.h"
 #include "util/valuetransformer.h"
 #include "util/cmdlineargs.h"
+#include "util/timer.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -167,7 +168,7 @@ LegacySkinParser::~LegacySkinParser() {
     delete m_pContext;
 }
 
-bool LegacySkinParser::canParse(QString skinPath) {
+bool LegacySkinParser::canParse(const QString& skinPath) {
     QDir skinDir(skinPath);
 
     if (!skinDir.exists()) {
@@ -183,7 +184,7 @@ bool LegacySkinParser::canParse(QString skinPath) {
 }
 
 // static
-QDomElement LegacySkinParser::openSkin(QString skinPath) {
+QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
     QDir skinDir(skinPath);
 
     if (!skinDir.exists()) {
@@ -218,7 +219,7 @@ QDomElement LegacySkinParser::openSkin(QString skinPath) {
 }
 
 // static
-QList<QString> LegacySkinParser::getSchemeList(QString qSkinPath) {
+QList<QString> LegacySkinParser::getSchemeList(const QString& qSkinPath) {
 
     QDomElement docElem = openSkin(qSkinPath);
     QList<QString> schlist;
@@ -247,7 +248,7 @@ void LegacySkinParser::freeChannelStrings() {
     }
 }
 
-SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
+SkinManifest LegacySkinParser::getSkinManifest(const QDomElement& skinDocument) {
     QDomNode manifest_node = skinDocument.namedItem("manifest");
     SkinManifest manifest;
     if (manifest_node.isNull() || !manifest_node.isElement()) {
@@ -281,7 +282,7 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
 }
 
 // static
-Qt::MouseButton LegacySkinParser::parseButtonState(QDomNode node,
+Qt::MouseButton LegacySkinParser::parseButtonState(const QDomNode& node,
                                                    const SkinContext& context) {
     if (context.hasNode(node, "ButtonState")) {
         if (context.selectString(node, "ButtonState")
@@ -295,7 +296,8 @@ Qt::MouseButton LegacySkinParser::parseButtonState(QDomNode node,
     return Qt::NoButton;
 }
 
-QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
+QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) {
+    ScopedTimer timer("SkinLoader::parseSkin");
     qDebug() << "LegacySkinParser loading skin:" << skinPath;
 
     if (m_pParent) {
@@ -374,7 +376,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     m_pParent = pParent;
     delete m_pContext;
     m_pContext = new SkinContext(m_pConfig, skinPath + "/skin.xml");
-    m_pContext->setSkinBasePath(skinPath.append("/"));
+    m_pContext->setSkinBasePath(skinPath + "/");
     QList<QWidget*> widgets = parseNode(skinDocument);
 
     if (widgets.empty()) {
@@ -392,7 +394,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     return widgets[0];
 }
 
-LaunchImage* LegacySkinParser::parseLaunchImage(QString skinPath, QWidget* pParent) {
+LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget* pParent) {
     QDomElement skinDocument = openSkin(skinPath);
     if (skinDocument.isNull()) {
         return NULL;
@@ -424,7 +426,7 @@ QList<QWidget*> wrapWidget(QWidget* pWidget) {
     return result;
 }
 
-QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
+QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     QList<QWidget*> result;
     QString nodeName = node.nodeName();
     //qDebug() << "parseNode" << node.nodeName();
@@ -577,7 +579,7 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
     return result;
 }
 
-QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
+QWidget* LegacySkinParser::parseSplitter(const QDomElement& node) {
     WSplitter* pSplitter = new WSplitter(m_pParent, m_pConfig);
     commonWidgetSetup(node, pSplitter);
 
@@ -609,7 +611,7 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
     return pSplitter;
 }
 
-QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
+QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
     commonWidgetSetup(node, pGroup);
     pGroup->setup(node, *m_pContext);
@@ -641,7 +643,7 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     return pGroup;
 }
 
-QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
+QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
     bool createdNext = false;
     ControlObject* pNextControl = controlFromConfigNode(
             node.toElement(), "NextControl", &createdNext);
@@ -747,7 +749,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     return pStack;
 }
 
-QWidget* LegacySkinParser::parseSizeAwareStack(QDomElement node) {
+QWidget* LegacySkinParser::parseSizeAwareStack(const QDomElement& node) {
     WSizeAwareStack* pStack = new WSizeAwareStack(m_pParent);
     pStack->setObjectName("SizeAwareStack");
     pStack->setContentsMargins(0, 0, 0, 0);
@@ -796,7 +798,7 @@ QWidget* LegacySkinParser::parseSizeAwareStack(QDomElement node) {
     return pStack;
 }
 
-QWidget* LegacySkinParser::parseBackground(QDomElement node,
+QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
                                            QWidget* pOuterWidget,
                                            QWidget* pInnerWidget) {
     QLabel* bg = new QLabel(pInnerWidget);
@@ -839,7 +841,7 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node,
 }
 
 template <class T>
-QWidget* LegacySkinParser::parseStandardWidget(QDomElement element,
+QWidget* LegacySkinParser::parseStandardWidget(const QDomElement& element,
                                                bool timerListener) {
     T* pWidget = new T(m_pParent);
     if (timerListener) {
@@ -855,13 +857,13 @@ QWidget* LegacySkinParser::parseStandardWidget(QDomElement element,
 }
 
 template <class T>
-QWidget* LegacySkinParser::parseLabelWidget(QDomElement element) {
+QWidget* LegacySkinParser::parseLabelWidget(const QDomElement& element) {
     T* pLabel = new T(m_pParent);
     setupLabelWidget(element, pLabel);
     return pLabel;
 }
 
-void LegacySkinParser::setupLabelWidget(QDomElement element, WLabel* pLabel) {
+void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLabel) {
     // NOTE(rryan): To support color schemes, the WWidget::setup() call must
     // come first. This is because WLabel derivatives change the palette based
     // on the node and setupWidget() will set the widget style. If the style is
@@ -875,7 +877,7 @@ void LegacySkinParser::setupLabelWidget(QDomElement element, WLabel* pLabel) {
     pLabel->Init();
 }
 
-QWidget* LegacySkinParser::parseOverview(QDomElement node) {
+QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
 
     const char* pSafeChannelStr = safeChannelString(channelStr);
@@ -919,7 +921,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     return overviewWidget;
 }
 
-QWidget* LegacySkinParser::parseVisual(QDomElement node) {
+QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
@@ -956,7 +958,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     return viewer;
 }
 
-QWidget* LegacySkinParser::parseText(QDomElement node) {
+QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
 
@@ -983,7 +985,7 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
     return p;
 }
 
-QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
+QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
 
@@ -1010,7 +1012,7 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
     return p;
 }
 
-QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
+QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
 
@@ -1038,7 +1040,7 @@ QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
 
 
 
-QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
+QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
 
     const char* pSafeChannelStr = safeChannelString(channelStr);
@@ -1062,7 +1064,7 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
     return p;
 }
 
-QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
+QWidget* LegacySkinParser::parseNumberPos(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
 
     const char* pSafeChannelStr = safeChannelString(channelStr);
@@ -1072,7 +1074,7 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     return p;
 }
 
-QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
+QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
     WKey* pEngineKey = new WKey(pSafeChannelStr, m_pParent);
@@ -1080,7 +1082,7 @@ QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
     return pEngineKey;
 }
 
-QWidget* LegacySkinParser::parseBattery(QDomElement node) {
+QWidget* LegacySkinParser::parseBattery(const QDomElement& node) {
     WBattery *p = new WBattery(m_pParent);
     setupBaseWidget(node, p);
     setupWidget(node, p);
@@ -1091,7 +1093,7 @@ QWidget* LegacySkinParser::parseBattery(QDomElement node) {
     return p;
 }
 
-QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
+QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
@@ -1131,7 +1133,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     return spinny;
 }
 
-QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
+QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
     commonWidgetSetup(node, pLineEditSearch, false);
     pLineEditSearch->setup(node, *m_pContext);
@@ -1149,7 +1151,7 @@ QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
     return pLineEditSearch;
 }
 
-QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
+QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     QString channel = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
 
@@ -1181,7 +1183,7 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
     return pCoverArt;
 }
 
-void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
+void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
     QString objectName = m_pContext->selectString(node, "ObjectName");
     if (objectName.isEmpty()) {
         SKIN_WARNING(node, *m_pContext)
@@ -1234,7 +1236,7 @@ void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
     pChild->hide();
 }
 
-QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
+QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     WLibrary* pLibraryWidget = new WLibrary(m_pParent);
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -1252,7 +1254,7 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
     return pLibraryWidget;
 }
 
-QWidget* LegacySkinParser::parseLibrarySidebar(QDomElement node) {
+QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
     WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(m_pParent);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
     pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -1261,7 +1263,7 @@ QWidget* LegacySkinParser::parseLibrarySidebar(QDomElement node) {
     return pLibrarySidebar;
 }
 
-QWidget* LegacySkinParser::parseTableView(QDomElement node) {
+QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
     QStackedWidget* pTabWidget = new QStackedWidget(m_pParent);
 
     setupPosition(node, pTabWidget);
@@ -1326,7 +1328,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     return pTabWidget;
 }
 
-QString LegacySkinParser::getLibraryStyle(QDomNode node) {
+QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
     QString style = getStyleFromNode(node);
 
     // Workaround to support legacy color styling
@@ -1470,7 +1472,7 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
     return tmpl.documentElement();
 }
 
-QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
+QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
     if (!node.hasAttribute("src")) {
         SKIN_WARNING(node, *m_pContext)
                 << "Template instantiation without src attribute:"
@@ -1518,7 +1520,7 @@ QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
     return widgets;
 }
 
-QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
+QString LegacySkinParser::lookupNodeGroup(const QDomElement& node) {
     QString group = m_pContext->selectString(node, "Group");
 
     // If the group is not present, then check for a Channel, since legacy skins
@@ -1535,7 +1537,7 @@ QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
 }
 
 // static
-const char* LegacySkinParser::safeChannelString(QString channelStr) {
+const char* LegacySkinParser::safeChannelString(const QString& channelStr) {
     QMutexLocker lock(&s_safeStringMutex);
     foreach (const char *s, s_channelStrs) {
         if (channelStr == s) { // calls QString::operator==(const char*)
@@ -1551,19 +1553,19 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
     return safe;
 }
 
-QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
+QWidget* LegacySkinParser::parseEffectChainName(const QDomElement& node) {
     WEffectChain* pEffectChain = new WEffectChain(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectChain);
     return pEffectChain;
 }
 
-QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
+QWidget* LegacySkinParser::parseEffectName(const QDomElement& node) {
     WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffect);
     return pEffect;
 }
 
-QWidget* LegacySkinParser::parseEffectPushButton(QDomElement element) {
+QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {
     WEffectPushButton* pWidget = new WEffectPushButton(m_pParent, m_pEffectsManager);
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
@@ -1574,19 +1576,19 @@ QWidget* LegacySkinParser::parseEffectPushButton(QDomElement element) {
     return pWidget;
 }
 
-QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {
+QWidget* LegacySkinParser::parseEffectParameterName(const QDomElement& node) {
     WEffectParameterBase* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectParameter);
     return pEffectParameter;
 }
 
-QWidget* LegacySkinParser::parseEffectButtonParameterName(QDomElement node) {
+QWidget* LegacySkinParser::parseEffectButtonParameterName(const QDomElement& node) {
     WEffectParameterBase* pEffectButtonParameter = new WEffectButtonParameter(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectButtonParameter);
     return pEffectButtonParameter;
 }
 
-void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {
+void LegacySkinParser::setupPosition(const QDomNode& node, QWidget* pWidget) {
     if (m_pContext->hasNode(node, "Pos")) {
         QString pos = m_pContext->selectString(node, "Pos");
         int x = pos.left(pos.indexOf(",")).toInt();
@@ -1623,7 +1625,7 @@ bool parseSizePolicy(QString* input, QSizePolicy::Policy* policy) {
     return true;
 }
 
-void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
+void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
     if (m_pContext->hasNode(node, "MinimumSize")) {
         QString size = m_pContext->selectString(node, "MinimumSize");
         int comma = size.indexOf(",");
@@ -1757,7 +1759,7 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
     }
 }
 
-QString LegacySkinParser::getStyleFromNode(QDomNode node) {
+QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
     QDomElement styleElement = m_pContext->selectElement(node, "Style");
 
     if (styleElement.isNull()) {
@@ -1790,7 +1792,7 @@ QString LegacySkinParser::getStyleFromNode(QDomNode node) {
     return style;
 }
 
-void LegacySkinParser::commonWidgetSetup(QDomNode node,
+void LegacySkinParser::commonWidgetSetup(const QDomNode& node,
                                          WBaseWidget* pBaseWidget,
                                          bool allowConnections) {
     setupBaseWidget(node, pBaseWidget);
@@ -1805,7 +1807,7 @@ void LegacySkinParser::commonWidgetSetup(QDomNode node,
     }
 }
 
-void LegacySkinParser::setupBaseWidget(QDomNode node,
+void LegacySkinParser::setupBaseWidget(const QDomNode& node,
                                        WBaseWidget* pBaseWidget) {
     // Tooltip
     if (m_pContext->hasNode(node, "Tooltip")) {
@@ -1826,7 +1828,7 @@ void LegacySkinParser::setupBaseWidget(QDomNode node,
     }
 }
 
-void LegacySkinParser::setupWidget(QDomNode node,
+void LegacySkinParser::setupWidget(const QDomNode& node,
                                    QWidget* pWidget,
                                    bool setPosition) {
     // Override the widget object name.
@@ -1850,7 +1852,7 @@ void LegacySkinParser::setupWidget(QDomNode node,
     }
 }
 
-void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
+void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidget) {
     // For each connection
     QDomNode con = m_pContext->selectNode(node, "Connection");
 
@@ -2071,7 +2073,8 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
     }
 }
 
-void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut, const QString& cmd) {
+void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
+                                            const QString& shortcut, const QString& cmd) {
     if (shortcut.isEmpty()) {
         return;
     }
@@ -2097,6 +2100,6 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget, const QString&
     pWidget->appendBaseTooltip(tooltip);
 }
 
-QString LegacySkinParser::parseLaunchImageStyle(QDomNode node) {
+QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {
     return m_pContext->selectString(node, "LaunchImageStyle");
 }

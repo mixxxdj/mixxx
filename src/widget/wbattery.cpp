@@ -14,7 +14,7 @@ WBattery::WBattery(QWidget* parent)
     }
 }
 
-void WBattery::setup(QDomNode node, const SkinContext& context) {
+void WBattery::setup(const QDomNode& node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");

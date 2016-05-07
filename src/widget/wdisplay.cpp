@@ -37,7 +37,7 @@ WDisplay::~WDisplay() {
     resetPositions();
 }
 
-void WDisplay::setup(QDomNode node, const SkinContext& context) {
+void WDisplay::setup(const QDomNode& node, const SkinContext& context) {
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
         QDomElement backPathNode = context.selectElement(node, "BackPath");

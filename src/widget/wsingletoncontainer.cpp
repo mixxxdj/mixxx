@@ -10,7 +10,7 @@
 WSingletonContainer::WSingletonContainer(QWidget* pParent)
         : WWidgetGroup(pParent), m_pWidget(nullptr), m_pLayout(nullptr) { }
 
-void WSingletonContainer::setup(QDomNode node, const SkinContext& context) {
+void WSingletonContainer::setup(const QDomNode& node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
     m_pLayout = new QVBoxLayout();
     m_pLayout->setSpacing(0);

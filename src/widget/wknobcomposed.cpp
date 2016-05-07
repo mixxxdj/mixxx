@@ -13,7 +13,7 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dKnobCenterYOffset(0) {
 }
 
-void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
+void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     clear();
 
     // Set background pixmap if available

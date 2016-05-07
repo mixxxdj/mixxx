@@ -40,7 +40,7 @@ WSliderComposed::~WSliderComposed() {
     unsetPixmaps();
 }
 
-void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
+void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     // Setup pixmaps
     unsetPixmaps();
 
