@@ -6,9 +6,9 @@
 #include <QScopedPointer>
 #include <QSharedPointer>
 
+#include "pa_ringbuffer.h"
 #include "util/class.h"
 #include "util/math.h"
-#include "util/pa_ringbuffer.h"
 #include "util/reference.h"
 
 template <class DataType>
