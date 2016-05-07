@@ -65,7 +65,7 @@ class LibraryFeature : public QObject {
                             KeyboardEventFilter* /* keyboard */) {}
     virtual TreeItemModel* getChildModel() = 0;
 
-protected:
+  protected:
     inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
     inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
     UserSettingsPointer m_pConfig;
@@ -108,7 +108,7 @@ protected:
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
 
-private: 
+  private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);
 
 };

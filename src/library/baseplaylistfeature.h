@@ -59,7 +59,7 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
-    void slotImportPlaylistFile(QString &playlist_file);
+    void slotImportPlaylistFile(const QString &playlist_file);
     void slotCreateImportPlaylist();
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.

@@ -584,7 +584,7 @@ void CrateFeature::slotImportPlaylist() {
     slotImportPlaylistFile(playlist_file);
 }
 
-void CrateFeature::slotImportPlaylistFile(QString &playlist_file) {
+void CrateFeature::slotImportPlaylistFile(const QString &playlist_file) {
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
@@ -620,9 +620,10 @@ void CrateFeature::slotImportPlaylistFile(QString &playlist_file) {
 void CrateFeature::slotCreateImportPlaylist() {
 
     // Get file to read
-    // Get file to read
     QStringList playlist_files = LibraryFeature::getPlaylistFiles();
-    if (playlist_files.isEmpty()) return;
+    if (playlist_files.isEmpty()) {
+        return;
+    }
     
     
     // Set last import directory
@@ -631,7 +632,7 @@ void CrateFeature::slotCreateImportPlaylist() {
                 ConfigValue(fileName.dir().absolutePath()));
     
     // For each selected file
-    for (QString &playlistFile : playlist_files) {
+    for (const QString &playlistFile : playlist_files) {
         fileName = QFileInfo(playlistFile);
 
         // Get a valid name
@@ -641,7 +642,9 @@ void CrateFeature::slotCreateImportPlaylist() {
         int i = 0;
         while (!validNameGiven) {
             name = baseName;
-            if (i != 0) name += QString::number(i);
+            if (i != 0) {
+                name += QString::number(i);
+            }
     
             // Check name
             int existingId = m_crateDao.getCrateIdByName(name);
@@ -655,8 +658,8 @@ void CrateFeature::slotCreateImportPlaylist() {
         if (playlistId != -1) activateCrate(playlistId);
         else {
                 QMessageBox::warning(NULL,
-                                     tr("Playlist Creation Failed"),
-                                     tr("An unknown error occurred while creating playlist: ")
+                                     tr("Crate Creation Failed"),
+                                     tr("An unknown error occurred while creating crate: ")
                                       + name);
                 return;
         }
