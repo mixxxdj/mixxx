@@ -30,12 +30,12 @@ class SkinContext {
 
     // Gets a path relative to the skin path.
     QString getSkinPath(const QString& relativePath) const {
-        return QDir(m_skinBasePath).filePath(relativePath);
+        return m_skinBasePath.filePath(relativePath);
     }
 
     // Sets the base path used by getSkinPath.
     void setSkinBasePath(const QString& skinBasePath) {
-        m_skinBasePath = skinBasePath;
+        m_skinBasePath = QDir(skinBasePath);
     }
 
     // Variable lookup and modification methods.
@@ -102,7 +102,7 @@ class SkinContext {
     QString variableNodeToText(const QDomElement& element) const;
 
     QString m_xmlPath;
-    QString m_skinBasePath;
+    QDir m_skinBasePath;
     UserSettingsPointer m_pConfig;
 
     QHash<QString, QString> m_variables;
