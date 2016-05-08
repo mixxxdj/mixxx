@@ -34,7 +34,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_DlgTagFetcher(nullptr),
           m_sorting(sorting),
           m_iCoverSourceColumn(-1),
           m_iCoverTypeColumn(-1),
@@ -45,14 +44,18 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_loadCachedOnly(false) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
-    m_pTrackInfo = new DlgTrackInfo(nullptr, m_DlgTagFetcher);
-    connect(m_pTrackInfo, SIGNAL(next()),
+    m_pTrackInfo.reset(new DlgTrackInfo(nullptr));
+    connect(m_pTrackInfo.data(), SIGNAL(next()),
             this, SLOT(slotNextTrackInfo()));
-    connect(m_pTrackInfo, SIGNAL(previous()),
+    connect(m_pTrackInfo.data(), SIGNAL(previous()),
             this, SLOT(slotPrevTrackInfo()));
-    connect(&m_DlgTagFetcher, SIGNAL(next()),
+        connect(m_pTrackInfo.data(), SIGNAL(showTagFetcher(TrackPointer)),
+            this, SLOT(slotShowTrackInTagFetcher(TrackPointer)));
+
+    m_pTagFetcher.reset(new DlgTagFetcher(nullptr));
+    connect(m_pTagFetcher.data(), SIGNAL(next()),
             this, SLOT(slotNextDlgTagFetcher()));
-    connect(&m_DlgTagFetcher, SIGNAL(previous()),
+    connect(m_pTagFetcher.data(), SIGNAL(previous()),
             this, SLOT(slotPrevDlgTagFetcher()));
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
@@ -124,7 +127,6 @@ WTrackTableView::~WTrackTableView() {
     if (pHeader) {
         pHeader->saveHeaderState();
     }
-    delete m_pTrackInfo;
 
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
@@ -598,7 +600,7 @@ void WTrackTableView::slotNextTrackInfo() {
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
     if (nextRow.isValid()) {
         showTrackInfo(nextRow);
-        if (m_DlgTagFetcher.isVisible()) {
+        if (m_pTagFetcher->isVisible()) {
             showDlgTagFetcher(nextRow);
         }
     }
@@ -609,7 +611,7 @@ void WTrackTableView::slotPrevTrackInfo() {
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
     if (prevRow.isValid()) {
         showTrackInfo(prevRow);
-        if (m_DlgTagFetcher.isVisible()) {
+        if (m_pTagFetcher->isVisible()) {
             showDlgTagFetcher(prevRow);
         }
     }
@@ -660,9 +662,14 @@ void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine
-    m_DlgTagFetcher.loadTrack(pTrack);
+    m_pTagFetcher->loadTrack(pTrack);
     currentTrackInfoIndex = index;
-    m_DlgTagFetcher.show();
+    m_pTagFetcher->show();
+}
+
+void WTrackTableView::slotShowTrackInTagFetcher(TrackPointer pTrack) {
+    m_pTagFetcher->loadTrack(pTrack);
+    m_pTagFetcher->show();
 }
 
 void WTrackTableView::slotShowDlgTagFetcher() {
