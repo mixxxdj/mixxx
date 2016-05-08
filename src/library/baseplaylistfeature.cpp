@@ -349,6 +349,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
                 ConfigValue(fileName.dir().absolutePath()));
 
     slotImportPlaylistFile(playlist_file);
+    activateChild(m_lastRightClickedIndex);
 }
 
 void BasePlaylistFeature::slotImportPlaylistFile(const QString &playlist_file) {
@@ -375,7 +376,6 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString &playlist_file) {
 
       // Iterate over the List that holds URLs of playlist entires
       m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
-      activateChild(m_lastRightClickedIndex);
 
       // delete the parser object
       delete playlist_parser;
@@ -398,7 +398,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
     
-    int playlistId = -1;
+    int lastPlaylistId = -1;
     
     // For each selected element create a different playlist.
     for (const QString &playlistFile : playlist_files) {
@@ -423,10 +423,9 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
             ++i;
         }
     
-        playlistId = m_playlistDao.createPlaylist(name);
-        if (playlistId != -1) {
-            //m_pPlaylistTableModel->setTableModel(playlistId);
-            activatePlaylist(playlistId);
+        lastPlaylistId = m_playlistDao.createPlaylist(name);
+        if (lastPlaylistId != -1 && m_pPlaylistTableModel) {
+            m_pPlaylistTableModel->setTableModel(lastPlaylistId);
         }
         else {
                 QMessageBox::warning(NULL,
@@ -438,6 +437,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
         
         slotImportPlaylistFile(playlistFile);
     }
+    activatePlaylist(lastPlaylistId);
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {

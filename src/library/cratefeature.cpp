@@ -55,7 +55,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
 
     m_pCreateImportPlaylistAction = new QAction(tr("Import Crate"), this);
     connect(m_pCreateImportPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotCreateImportPlaylist()));
+            this, SLOT(slotCreateImportCrate()));
 
     m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
@@ -582,6 +582,7 @@ void CrateFeature::slotImportPlaylist() {
                    ConfigValue(fileName.dir().absolutePath()));
 
     slotImportPlaylistFile(playlist_file);
+    activateChild(m_lastRightClickedIndex);
 }
 
 void CrateFeature::slotImportPlaylistFile(const QString &playlist_file) {
@@ -610,14 +611,13 @@ void CrateFeature::slotImportPlaylistFile(const QString &playlist_file) {
 
       //Iterate over the List that holds URLs of playlist entires
       m_crateTableModel.addTracks(QModelIndex(), entries);
-      activateChild(m_lastRightClickedIndex);
 
       //delete the parser object
       delete playlist_parser;
     }
 }
 
-void CrateFeature::slotCreateImportPlaylist() {
+void CrateFeature::slotCreateImportCrate() {
 
     // Get file to read
     QStringList playlist_files = LibraryFeature::getPlaylistFiles();
@@ -630,6 +630,8 @@ void CrateFeature::slotCreateImportPlaylist() {
     QFileInfo fileName(playlist_files.first());
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
+    
+    int lastCrateId = -1;
     
     // For each selected file
     for (const QString &playlistFile : playlist_files) {
@@ -653,9 +655,11 @@ void CrateFeature::slotCreateImportPlaylist() {
             ++i;
         }
     
-        int playlistId = m_crateDao.createCrate(name);
+        lastCrateId = m_crateDao.createCrate(name);
     
-        if (playlistId != -1) activateCrate(playlistId);
+        if (lastCrateId != -1) {
+            m_crateTableModel.setTableModel(lastCrateId);
+        }
         else {
                 QMessageBox::warning(NULL,
                                      tr("Crate Creation Failed"),
@@ -666,7 +670,7 @@ void CrateFeature::slotCreateImportPlaylist() {
     
         slotImportPlaylistFile(playlistFile);
     }
-
+    activateCrate(lastCrateId);
 }
 
 void CrateFeature::slotAnalyzeCrate() {
