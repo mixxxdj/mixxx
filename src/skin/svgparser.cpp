@@ -11,22 +11,6 @@ SvgParser::SvgParser(const SkinContext& parent)
 SvgParser::~SvgParser() {
 }
 
-QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
-    m_currentFile = svgFileName;
-    QFile file(svgFileName);
-    QDomNode svgNode;
-    if (file.open(QIODevice::ReadOnly|QIODevice::Text)) {
-        QDomDocument document;
-        if (!document.setContent(&file)) {
-            qDebug() << "ERROR: Failed to set content on QDomDocument";
-        }
-        svgNode = document.elementsByTagName("svg").item(0);
-        scanTree(&svgNode);
-        file.close();
-    }
-    return svgNode;
-}
-
 QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode,
                                  const QString& sourcePath) const {
     m_currentFile = sourcePath;

@@ -14,6 +14,7 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_pScriptEngine(new QScriptEngine()),
           m_pScriptDebugger(new QScriptEngineDebugger()),
+          m_pSvgCache(new QHash<QString, QDomElement>()),
           m_pSingletons(new SingletonMap()) {
     enableDebugger(true);
     // the extensions are imported once and will be passed to the children
@@ -31,6 +32,7 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_pScriptEngine(parent.m_pScriptEngine),
           m_pScriptDebugger(parent.m_pScriptDebugger),
           m_parentGlobal(m_pScriptEngine->globalObject()),
+          m_pSvgCache(parent.m_pSvgCache),
           m_pSingletons(parent.m_pSingletons) {
     // we generate a new global object to preserve the scope between
     // a context and its children
@@ -264,14 +266,31 @@ PixmapSource SkinContext::getPixmapSource(const QString& filename) const {
     return getPixmapSourceInner(filename, svgParser);
 }
 
+QDomElement SkinContext::loadSvg(const QString& filename) const {
+    QDomElement& cachedSvg = (*m_pSvgCache)[filename];
+    if (cachedSvg.isNull()) {
+        QFile file(filename);
+        if (file.open(QIODevice::ReadOnly|QIODevice::Text)) {
+            QDomDocument document;
+            if (!document.setContent(&file)) {
+                qDebug() << "ERROR: Failed to set content on QDomDocument";
+            }
+            cachedSvg = document.elementsByTagName("svg").item(0).toElement();
+            file.close();
+        }
+    }
+    return cachedSvg;
+}
+
 PixmapSource SkinContext::getPixmapSourceInner(const QString& filename,
                                                const SvgParser& svgParser) const {
     PixmapSource source;
     if (!filename.isEmpty()) {
         source.setPath(getSkinPath(filename));
         if (source.isSVG()) {
+            QDomElement svgElement = loadSvg(filename);
             const QByteArray rslt = svgParser.saveToQByteArray(
-                svgParser.parseSvgFile(source.getPath()));
+                svgParser.parseSvgTree(svgElement, filename));
             source.setSVG(rslt);
         }
     }

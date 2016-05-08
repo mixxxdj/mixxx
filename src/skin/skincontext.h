@@ -95,6 +95,8 @@ class SkinContext {
     PixmapSource getPixmapSourceInner(const QString& filename,
                                       const SvgParser& svgParser) const;
 
+    QDomElement loadSvg(const QString& filename) const;
+
     // If our parent global isValid() then we were constructed with a
     // parent. Otherwise we are a root SkinContext.
     bool isRoot() const { return !m_parentGlobal.isValid(); }
@@ -109,6 +111,8 @@ class SkinContext {
     QSharedPointer<QScriptEngine> m_pScriptEngine;
     QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;
     QScriptValue m_parentGlobal;
+
+    QSharedPointer<QHash<QString, QDomElement>> m_pSvgCache;
 
     // The SingletonContainer map is passed to child SkinContexts, so that all
     // templates in the tree can share a single map.
