@@ -114,7 +114,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
         hookRx.setPattern(hooksPattern.toString());
 
     // expr-attribute_name="var_name";
-    QRegExp nameRx("^expr-([^=\\s]+)$");
+    static QRegExp nameRx("^expr-([^=\\s]+)$");
     // TODO (jclaveau) : move this pattern definition to the script extension?
     for (int i = 0; i < attributes.count(); i++) {
         QDomAttr attribute = attributes.item(i).toAttr();
