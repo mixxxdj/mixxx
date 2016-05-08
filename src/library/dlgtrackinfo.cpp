@@ -1,5 +1,6 @@
 #include <QDesktopServices>
 #include <QtDebug>
+#include <QStringBuilder>
 
 #include "library/dlgtrackinfo.h"
 #include "sources/soundsourceproxy.h"
@@ -15,13 +16,11 @@ const int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
-DlgTrackInfo::DlgTrackInfo(QWidget* parent,
-                           DlgTagFetcher& DlgTagFetcher)
+DlgTrackInfo::DlgTrackInfo(QWidget* parent)
             : QDialog(parent),
               m_pLoadedTrack(NULL),
               m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
               m_dLastTapedBpm(-1.),
-              m_DlgTagFetcher(DlgTagFetcher),
               m_pWCoverArtLabel(new WCoverArtLabel(this)) {
     init();
 }
@@ -597,6 +596,5 @@ void DlgTrackInfo::updateTrackMetadata() {
 }
 
 void DlgTrackInfo::fetchTag() {
-    m_DlgTagFetcher.loadTrack(m_pLoadedTrack);
-    m_DlgTagFetcher.show();
+    emit(showTagFetcher(m_pLoadedTrack));
 }
