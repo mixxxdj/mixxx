@@ -113,6 +113,19 @@ QList<QDir> getSoundSourcePluginDirectories() {
     return pluginDirs;
 }
 
+QUrl getUrlForTrack(const Track* pTrack) {
+    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
+        // missing track
+        return QUrl();
+    }
+    const QString canonicalLocation(pTrack->getCanonicalLocation());
+    if (canonicalLocation.isEmpty()) {
+        // file might be missing
+        return QUrl();
+    }
+    return QUrl::fromLocalFile(canonicalLocation);
+}
+
 } // anonymous namespace
 
 // static
@@ -249,6 +262,10 @@ bool SoundSourceProxy::isFileExtensionSupported(const QString& fileExtension) {
 QList<Mixxx::SoundSourceProviderRegistration>
 SoundSourceProxy::findSoundSourceProviderRegistrations(
         const QUrl& url) {
+    if (url.isEmpty()) {
+        // silently ignore empty URLs
+        return QList<Mixxx::SoundSourceProviderRegistration>();
+    }
     QString fileExtension(Mixxx::SoundSource::getFileExtensionFromUrl(url));
     if (fileExtension.isEmpty()) {
         qWarning() << "Unknown file type:" << url.toString();
@@ -299,14 +316,14 @@ SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
 
 SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
     : m_pTrack(pTrack),
-      m_url(QUrl::fromLocalFile(pTrack->getCanonicalLocation())),
+      m_url(getUrlForTrack(pTrack.data())),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
 }
 
 SoundSourceProxy::SoundSourceProxy(const Track* pTrack)
-    : m_url(QUrl::fromLocalFile(pTrack->getCanonicalLocation())),
+    : m_url(getUrlForTrack(pTrack)),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
@@ -336,8 +353,10 @@ void SoundSourceProxy::initSoundSource() {
     while (m_pSoundSource.isNull()) {
         Mixxx::SoundSourceProviderPointer pProvider(getSoundSourceProvider());
         if (pProvider.isNull()) {
-            qWarning() << "No SoundSourceProvider for file"
-                       << getUrl().toString();
+            if (!getUrl().isEmpty()) {
+                qWarning() << "No SoundSourceProvider for file"
+                           << getUrl().toString();
+            }
             // Failure
             return;
         }
