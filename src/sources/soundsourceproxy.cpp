@@ -114,8 +114,8 @@ QList<QDir> getSoundSourcePluginDirectories() {
 }
 
 QUrl getCanonicalUrlForTrack(const Track* pTrack) {
-    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
-        // Track argument is missing
+    if (pTrack == nullptr) {
+        // No track
         return QUrl();
     }
     const QString canonicalLocation(pTrack->getCanonicalLocation());
