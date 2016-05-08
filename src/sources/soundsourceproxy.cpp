@@ -113,7 +113,7 @@ QList<QDir> getSoundSourcePluginDirectories() {
     return pluginDirs;
 }
 
-QUrl getUrlForTrack(const Track* pTrack) {
+QUrl getCanonicalUrlForTrack(const Track* pTrack) {
     DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
         // missing track
         return QUrl();
@@ -316,14 +316,14 @@ SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
 
 SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
     : m_pTrack(pTrack),
-      m_url(getUrlForTrack(pTrack.data())),
+      m_url(getCanonicalUrlForTrack(pTrack.data())),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
 }
 
 SoundSourceProxy::SoundSourceProxy(const Track* pTrack)
-    : m_url(getUrlForTrack(pTrack)),
+    : m_url(getCanonicalUrlForTrack(pTrack)),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
