@@ -73,6 +73,17 @@ void SkinContext::setXmlPath(const QString& xmlPath) {
     m_xmlPath = xmlPath;
 }
 
+bool SkinContext::hasVariableUpdates(const QDomNode& node) const {
+    QDomNode child = node.firstChild();
+    while (!child.isNull()) {
+        if (child.isElement() && child.nodeName() == "SetVariable") {
+            return true;
+        }
+        child = child.nextSibling();
+    }
+    return false;
+}
+
 void SkinContext::updateVariables(const QDomNode& node) {
     QDomNode child = node.firstChild();
     while (!child.isNull()) {

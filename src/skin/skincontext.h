@@ -46,6 +46,8 @@ class SkinContext {
     void setVariable(const QString& name, const QString& value);
     void setXmlPath(const QString& xmlPath);
 
+    // Returns whether the node has a <SetVariable> node.
+    bool hasVariableUpdates(const QDomNode& node) const;
     // Updates the SkinContext with all the <SetVariable> children of node.
     void updateVariables(const QDomNode& node);
     // Updates the SkinContext with 'element', a <SetVariable> node.
