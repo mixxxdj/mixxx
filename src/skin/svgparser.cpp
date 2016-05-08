@@ -144,9 +144,8 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
                 attributeValue.replace(pos, match.length(), replacement);
                 pos += replacement.length();
             }
+            attribute.setValue(attributeValue);
         }
-
-        attribute.setValue(attributeValue);
     }
 }
 
