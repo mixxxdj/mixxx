@@ -233,7 +233,7 @@ QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
 }
 
 QString SkinContext::nodeToString(const QDomNode& node) const {
-    QStringList result;
+    QString result;
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.isElement()) {
@@ -248,7 +248,7 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
         // Ignore all other node types.
         child = child.nextSibling();
     }
-    return result.join("");
+    return result;
 }
 
 PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
