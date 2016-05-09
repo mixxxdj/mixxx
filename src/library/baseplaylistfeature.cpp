@@ -401,7 +401,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     int lastPlaylistId = -1;
     
     // For each selected element create a different playlist.
-    for (const QString &playlistFile : playlist_files) {
+    for (const QString& playlistFile : playlist_files) {
         fileName = QFileInfo(playlistFile);
     
         // Get a valid name

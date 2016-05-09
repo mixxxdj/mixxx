@@ -634,7 +634,7 @@ void CrateFeature::slotCreateImportCrate() {
     int lastCrateId = -1;
     
     // For each selected file
-    for (const QString &playlistFile : playlist_files) {
+    for (const QString& playlistFile : playlist_files) {
         fileName = QFileInfo(playlistFile);
 
         // Get a valid name
