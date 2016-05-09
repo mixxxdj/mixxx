@@ -70,6 +70,14 @@ class SkinContext {
     QString selectAttributeString(const QDomElement& element,
                                   const QString& attributeName,
                                   QString defaultValue) const;
+
+    inline bool hasAttributeSelectString(const QDomElement& element,
+                                         const QString& attributeName,
+                                         QString* result) const {
+        *result = element.attribute(attributeName);
+        return !result->isNull();
+    }
+
     QString nodeToString(const QDomNode& node) const;
     PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
     PixmapSource getPixmapSource(const QString& filename) const;
