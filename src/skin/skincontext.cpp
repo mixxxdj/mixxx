@@ -43,12 +43,12 @@ SkinContext::SkinContext(const SkinContext& parent)
         it.next();
         newGlobal.setProperty(it.name(), it.value());
     }
-    m_pScriptEngine->setGlobalObject(newGlobal);
 
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
-        m_pScriptEngine->globalObject().setProperty(it.key(), it.value());
+        newGlobal.setProperty(it.key(), it.value());
     }
+    m_pScriptEngine->setGlobalObject(newGlobal);
 }
 
 SkinContext::~SkinContext() {
