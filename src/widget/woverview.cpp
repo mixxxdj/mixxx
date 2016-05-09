@@ -74,7 +74,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     // Clear the background pixmap, if it exists.
     m_backgroundPixmap = QPixmap();
     m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
-    if (m_backgroundPixmapPath != "") {
+    if (!m_backgroundPixmapPath.isEmpty()) {
         m_backgroundPixmap = QPixmap(context.getSkinPath(m_backgroundPixmapPath));
     }
 

@@ -44,8 +44,8 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     // Setup pixmaps
     unsetPixmaps();
 
-    if (context.hasNode(node, "Slider")) {
-        QDomElement slider = context.selectElement(node, "Slider");
+    QDomElement slider = context.selectElement(node, "Slider");
+    if (!slider.isNull()) {
         // The implicit default in <1.12.0 was FIXED so we keep it for backwards
         // compatibility.
         PixmapSource sourceSlider = context.getPixmapSource(slider);
@@ -63,8 +63,9 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     setHandlePixmap(h, sourceHandle,
                     context.selectScaleMode(handle, Paintable::FIXED));
 
-    if (context.hasNode(node, "EventWhileDrag")) {
-        if (context.selectString(node, "EventWhileDrag").contains("no")) {
+    QString eventWhileDrag;
+    if (context.hasNodeSelectString(node, "EventWhileDrag", &eventWhileDrag)) {
+        if (eventWhileDrag.contains("no")) {
             m_handler.setEventWhileDrag(false);
         }
     }

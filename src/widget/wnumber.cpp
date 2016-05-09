@@ -26,9 +26,8 @@ void WNumber::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 
     // Number of digits after the decimal.
-    if (context.hasNode(node, "NumberOfDigits")) {
-        m_iNoDigits = context.selectInt(node, "NumberOfDigits");
-    }
+    context.hasNodeSelectInt(node, "NumberOfDigits", &m_iNoDigits);
+
     setValue(0.);
 }
 
