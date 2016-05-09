@@ -71,6 +71,16 @@ class SkinContext {
                                   const QString& attributeName,
                                   QString defaultValue) const;
 
+    inline bool hasNodeSelectElement(const QDomNode& node, const QString& nodeName,
+                                     QDomElement* value) const {
+        QDomElement child = selectElement(node, nodeName);
+        if (!child.isNull()) {
+            *value = child;
+            return true;
+        }
+        return false;
+    }
+
     inline bool hasAttributeSelectString(const QDomElement& element,
                                          const QString& attributeName,
                                          QString* result) const {
