@@ -210,15 +210,17 @@ QString SkinContext::selectAttributeString(const QDomElement& element,
 }
 
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
-    if (variableNode.hasAttribute("expression")) {
+    QString expression = variableNode.attribute("expression");
+    if (!expression.isNull()) {
         QScriptValue result = m_pScriptEngine->evaluate(
-            variableNode.attribute("expression"), m_xmlPath,
-            variableNode.lineNumber());
+            expression, m_xmlPath, variableNode.lineNumber());
         return result.toString();
-    } else if (variableNode.hasAttribute("name")) {
-        QString variableName = variableNode.attribute("name");
-        if (variableNode.hasAttribute("format")) {
-            QString formatString = variableNode.attribute("format");
+    }
+
+    QString variableName = variableNode.attribute("name");
+    if (!variableName.isNull()) {
+        QString formatString = variableNode.attribute("format");
+        if (!formatString.isNull()) {
             return formatString.arg(variable(variableName));
         } else if (variableNode.nodeName() == "SetVariable") {
             // If we are setting the variable name and we didn't get a format
