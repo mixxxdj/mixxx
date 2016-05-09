@@ -58,8 +58,8 @@ class CrateFeature : public LibraryFeature {
     void slotAutoDjTrackSourceChanged();
     void slotToggleCrateLock();
     void slotImportPlaylist();
-    void slotImportPlaylistFile(QString &playlist_file);
-    void slotCreateImportPlaylist();
+    void slotImportPlaylistFile(const QString &playlist_file);
+    void slotCreateImportCrate();
     void slotExportPlaylist();
     // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
     void slotExportTrackFiles();
