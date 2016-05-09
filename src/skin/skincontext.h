@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QScriptEngineDebugger>
 #include <QtDebug>
+#include <QSharedPointer>
 
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
@@ -53,22 +54,58 @@ class SkinContext {
     // Updates the SkinContext with 'element', a <SetVariable> node.
     void updateVariable(const QDomElement& element);
 
-    // Methods for evaluating nodes given the context.
-    QDomNode selectNode(const QDomNode& node, const QString& nodeName) const;
-    QDomElement selectElement(const QDomNode& node, const QString& nodeName) const;
-    QString selectString(const QDomNode& node, const QString& nodeName) const;
-    float selectFloat(const QDomNode& node, const QString& nodeName) const;
-    double selectDouble(const QDomNode& node, const QString& nodeName) const;
-    int selectInt(const QDomNode& node, const QString& nodeName, bool* pOk=NULL) const;
-    bool selectBool(const QDomNode& node, const QString& nodeName, bool defaultValue) const;
-    bool hasNodeSelectString(const QDomNode& node, const QString& nodeName, QString *value) const;
-    bool hasNodeSelectBool(const QDomNode& node, const QString& nodeName, bool *value) const;
-    bool selectAttributeBool(const QDomElement& element,
-                             const QString& attributeName,
-                             bool defaultValue) const;
-    QString selectAttributeString(const QDomElement& element,
-                                  const QString& attributeName,
-                                  QString defaultValue) const;
+    inline QDomNode selectNode(const QDomNode& node, const QString& nodeName) const {
+        QDomNode child = node.firstChild();
+        while (!child.isNull()) {
+            if (child.nodeName() == nodeName) {
+                return child;
+            }
+            child = child.nextSibling();
+        }
+        return QDomNode();
+    }
+
+    inline QDomElement selectElement(const QDomNode& node, const QString& nodeName) const {
+        QDomNode child = selectNode(node, nodeName);
+        return child.toElement();
+    }
+
+    inline QString selectString(const QDomNode& node, const QString& nodeName) const {
+        QDomElement child = selectElement(node, nodeName);
+        return nodeToString(child);
+    }
+
+    inline float selectFloat(const QDomNode& node, const QString& nodeName) const {
+        bool ok = false;
+        float conv = nodeToString(selectElement(node, nodeName)).toFloat(&ok);
+        return ok ? conv : 0.0f;
+    }
+
+    inline double selectDouble(const QDomNode& node, const QString& nodeName) const {
+        bool ok = false;
+        double conv = nodeToString(selectElement(node, nodeName)).toDouble(&ok);
+        return ok ? conv : 0.0;
+    }
+
+    inline int selectInt(const QDomNode& node, const QString& nodeName,
+                         bool* pOk = nullptr) const {
+            bool ok = false;
+            int conv = nodeToString(selectElement(node, nodeName)).toInt(&ok);
+            if (pOk != nullptr) {
+                *pOk = ok;
+            }
+            return ok ? conv : 0;
+    }
+
+    inline bool selectBool(const QDomNode& node, const QString& nodeName,
+                           bool defaultValue) const {
+        QDomNode child = selectNode(node, nodeName);
+        if (!child.isNull()) {
+            QString stringValue = nodeToString(child);
+            return stringValue.contains("true", Qt::CaseInsensitive);
+        }
+        return defaultValue;
+    }
 
     inline bool hasNodeSelectElement(const QDomNode& node, const QString& nodeName,
                                      QDomElement* value) const {
@@ -78,6 +115,65 @@ class SkinContext {
             return true;
         }
         return false;
+    }
+
+    inline bool hasNodeSelectString(const QDomNode& node, const QString& nodeName,
+                                    QString *value) const {
+        QDomNode child = selectNode(node, nodeName);
+        if (!child.isNull()) {
+            *value = nodeToString(child);
+            return true;
+        }
+        return false;
+    }
+
+    inline bool hasNodeSelectBool(const QDomNode& node, const QString& nodeName,
+                                  bool* value) const {
+        QDomNode child = selectNode(node, nodeName);
+        if (!child.isNull()) {
+            QString stringValue = nodeToString(child);
+            *value = stringValue.contains("true", Qt::CaseInsensitive);
+            return true;
+        }
+        return false;
+    }
+
+    inline bool hasNodeSelectInt(const QDomNode& node, const QString& nodeName,
+                                 int* value) const {
+        QDomNode child = selectNode(node, nodeName);
+        if (!child.isNull()) {
+            bool ok = false;
+            double result = nodeToString(child).toInt(&ok);
+            if (ok) {
+                *value = result;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    inline bool hasNodeSelectDouble(const QDomNode& node, const QString& nodeName,
+                                    double* value) const {
+        QDomNode child = selectNode(node, nodeName);
+        if (!child.isNull()) {
+            bool ok = false;
+            double result = nodeToString(child).toDouble(&ok);
+            if (ok) {
+                *value = result;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    inline bool selectAttributeBool(const QDomElement& element,
+                                    const QString& attributeName,
+                                    bool defaultValue) const {
+        QString stringValue;
+        if (hasAttributeSelectString(element, attributeName, &stringValue)) {
+            return stringValue.contains("true", Qt::CaseInsensitive);
+        }
+        return defaultValue;
     }
 
     inline bool hasAttributeSelectString(const QDomElement& element,
