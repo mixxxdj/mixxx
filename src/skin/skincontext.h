@@ -91,8 +91,15 @@ class SkinContext {
     QString nodeToString(const QDomNode& node) const;
     PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
     PixmapSource getPixmapSource(const QString& filename) const;
-    Paintable::DrawMode selectScaleMode(const QDomElement& element,
-                                        Paintable::DrawMode defaultDrawMode) const;
+
+    inline Paintable::DrawMode selectScaleMode(const QDomElement& element,
+                                               Paintable::DrawMode defaultDrawMode) const {
+        QString drawModeStr;
+        if (hasAttributeSelectString(element, "scalemode", &drawModeStr)) {
+            return Paintable::DrawModeFromString(drawModeStr);
+        }
+        return defaultDrawMode;
+    }
 
     QScriptValue evaluateScript(const QString& expression,
                                 const QString& filename=QString(),

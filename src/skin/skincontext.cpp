@@ -308,14 +308,6 @@ PixmapSource SkinContext::getPixmapSourceInner(const QString& filename,
     return source;
 }
 
-Paintable::DrawMode SkinContext::selectScaleMode(
-        const QDomElement& element,
-        Paintable::DrawMode defaultDrawMode) const {
-    QString drawModeStr = selectAttributeString(
-            element, "scalemode", Paintable::DrawModeToString(defaultDrawMode));
-    return Paintable::DrawModeFromString(drawModeStr);
-}
-
 /**
  * All the methods below exist to access some of the scriptEngine features
  * from the svgParser.
