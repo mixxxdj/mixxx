@@ -121,11 +121,11 @@ ControlObject* controlFromConfigKey(const ConfigKey& key, bool bPersist,
 ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& element,
                                                        const QString& nodeName,
                                                        bool* created) {
-    if (element.isNull() || !m_pContext->hasNode(element, nodeName)) {
-        return NULL;
+    QDomElement keyElement = m_pContext->selectElement(element, nodeName);
+    if (keyElement.isNull()) {
+        return nullptr;
     }
 
-    QDomElement keyElement = m_pContext->selectElement(element, nodeName);
     QString name = m_pContext->nodeToString(keyElement);
     ConfigKey key = ConfigKey::parseCommaSeparated(name);
 
@@ -284,12 +284,11 @@ SkinManifest LegacySkinParser::getSkinManifest(const QDomElement& skinDocument) 
 // static
 Qt::MouseButton LegacySkinParser::parseButtonState(const QDomNode& node,
                                                    const SkinContext& context) {
-    if (context.hasNode(node, "ButtonState")) {
-        if (context.selectString(node, "ButtonState")
-                .contains("LeftButton", Qt::CaseInsensitive)) {
+    QString buttonState;
+    if (context.hasNodeSelectString(node, "ButtonState", &buttonState)) {
+        if (buttonState.contains("LeftButton", Qt::CaseInsensitive)) {
             return Qt::LeftButton;
-        } else if (context.selectString(node, "ButtonState")
-                       .contains("RightButton", Qt::CaseInsensitive)) {
+        } else if (buttonState.contains("RightButton", Qt::CaseInsensitive)) {
             return Qt::RightButton;
         }
     }
@@ -823,8 +822,9 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     // Default background color is now black, if people want to do <invert/>
     // filters they'll have to figure something out for this.
     QColor c(0,0,0);
-    if (m_pContext->hasNode(node, "BgColor")) {
-        c.setNamedColor(m_pContext->selectString(node, "BgColor"));
+    QString cStr;
+    if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
+        c.setNamedColor(cStr);
     }
 
     QPalette palette;
@@ -1046,15 +1046,16 @@ QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     const char* pSafeChannelStr = safeChannelString(channelStr);
 
     QColor c(255,255,255);
-    if (m_pContext->hasNode(node, "BgColor")) {
-        c.setNamedColor(m_pContext->selectString(node, "BgColor"));
+    QString cStr;
+    if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
+        c.setNamedColor(cStr);
     }
 
     QPalette palette;
     //palette.setBrush(QPalette::Background, WSkinColor::getCorrectColor(c));
     palette.setBrush(QPalette::Button, Qt::NoBrush);
 
-    WNumberRate * p = new WNumberRate(pSafeChannelStr, m_pParent);
+    WNumberRate* p = new WNumberRate(pSafeChannelStr, m_pParent);
     setupLabelWidget(node, p);
 
     // TODO(rryan): Let's look at removing this palette change in 1.12.0. I
@@ -1362,8 +1363,9 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         "QPushButton#LibraryBPMButton:checked {image: url(:/images/library/ic_library_checked.png);}"
         "QPushButton#LibraryBPMButton:!checked {image: url(:/images/library/ic_library_unchecked.png);}"));
 
-    if (m_pContext->hasNode(node, "FgColor")) {
-        color.setNamedColor(m_pContext->selectString(node, "FgColor"));
+    QString fgColor;
+    if (m_pContext->hasNodeSelectString(node, "FgColor", &fgColor)) {
+        color.setNamedColor(fgColor);
         color = WSkinColor::getCorrectColor(color);
 
         if (hasQtKickedUsInTheNuts) {
@@ -1382,8 +1384,9 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         styleHack.append(QString("QSpinBox { color: %1; }\n ").arg(color.name()));
     }
 
-    if (m_pContext->hasNode(node, "BgColor")) {
-        color.setNamedColor(m_pContext->selectString(node, "BgColor"));
+    QString bgColor;
+    if (m_pContext->hasNodeSelectString(node, "BgColor", &bgColor)) {
+        color.setNamedColor(bgColor);
         color = WSkinColor::getCorrectColor(color);
         if (hasQtKickedUsInTheNuts) {
             styleHack.append(QString("QTreeView {  background-color: %1; }\n ").arg(color.name()));
@@ -1413,8 +1416,9 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         styleHack.append(QString("QSpinBox {  background-color: %1; }\n ").arg(color.name()));
     }
 
-    if (m_pContext->hasNode(node, "BgColorRowEven")) {
-        color.setNamedColor(m_pContext->selectString(node, "BgColorRowEven"));
+    QString bgColorRowEven;
+    if (m_pContext->hasNodeSelectString(node, "BgColorRowEven", &bgColorRowEven)) {
+        color.setNamedColor(bgColorRowEven);
         color = WSkinColor::getCorrectColor(color);
 
         if (hasQtKickedUsInTheNuts) {
@@ -1424,8 +1428,9 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         }
     }
 
-    if (m_pContext->hasNode(node, "BgColorRowUneven")) {
-        color.setNamedColor(m_pContext->selectString(node, "BgColorRowUneven"));
+    QString bgColorRowUneven;
+    if (m_pContext->hasNodeSelectString(node, "BgColorRowUneven", &bgColorRowUneven)) {
+        color.setNamedColor(bgColorRowUneven);
         color = WSkinColor::getCorrectColor(color);
 
         if (hasQtKickedUsInTheNuts) {
@@ -1589,8 +1594,8 @@ QWidget* LegacySkinParser::parseEffectButtonParameterName(const QDomElement& nod
 }
 
 void LegacySkinParser::setupPosition(const QDomNode& node, QWidget* pWidget) {
-    if (m_pContext->hasNode(node, "Pos")) {
-        QString pos = m_pContext->selectString(node, "Pos");
+    QString pos;
+    if (m_pContext->hasNodeSelectString(node, "Pos", &pos)) {
         int x = pos.left(pos.indexOf(",")).toInt();
         int y = pos.mid(pos.indexOf(",")+1).toInt();
         pWidget->move(x,y);
@@ -1626,8 +1631,8 @@ bool parseSizePolicy(QString* input, QSizePolicy::Policy* policy) {
 }
 
 void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
-    if (m_pContext->hasNode(node, "MinimumSize")) {
-        QString size = m_pContext->selectString(node, "MinimumSize");
+    QString size;
+    if (m_pContext->hasNodeSelectString(node, "MinimumSize", &size)) {
         int comma = size.indexOf(",");
         QString xs = size.left(comma);
         QString ys = size.mid(comma+1);
@@ -1651,8 +1656,8 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         }
     }
 
-    if (m_pContext->hasNode(node, "MaximumSize")) {
-        QString size = m_pContext->selectString(node, "MaximumSize");
+
+    if (m_pContext->hasNodeSelectString(node, "MaximumSize", &size)) {
         int comma = size.indexOf(",");
         QString xs = size.left(comma);
         QString ys = size.mid(comma+1);
@@ -1677,8 +1682,7 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
     }
 
     bool hasSizePolicyNode = false;
-    if (m_pContext->hasNode(node, "SizePolicy")) {
-        QString size = m_pContext->selectString(node, "SizePolicy");
+    if (m_pContext->hasNodeSelectString(node, "SizePolicy", &size)) {
         int comma = size.indexOf(",");
         QString xs = size.left(comma);
         QString ys = size.mid(comma+1);
@@ -1705,8 +1709,7 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         pWidget->setSizePolicy(sizePolicy);
     }
 
-    if (m_pContext->hasNode(node, "Size")) {
-        QString size = m_pContext->selectString(node, "Size");
+    if (m_pContext->hasNodeSelectString(node, "Size", &size)) {
         int comma = size.indexOf(",");
         QString xs = size.left(comma);
         QString ys = size.mid(comma+1);
@@ -1810,13 +1813,12 @@ void LegacySkinParser::commonWidgetSetup(const QDomNode& node,
 void LegacySkinParser::setupBaseWidget(const QDomNode& node,
                                        WBaseWidget* pBaseWidget) {
     // Tooltip
-    if (m_pContext->hasNode(node, "Tooltip")) {
-        QString toolTip = m_pContext->selectString(node, "Tooltip");
+    QString toolTip;
+    QString toolTipId;
+    if (m_pContext->hasNodeSelectString(node, "Tooltip", &toolTip)) {
         pBaseWidget->prependBaseTooltip(toolTip);
-    } else if (m_pContext->hasNode(node, "TooltipId")) {
-        QString toolTipId = m_pContext->selectString(node, "TooltipId");
-        QString toolTip = m_tooltips.tooltipForId(toolTipId);
-
+    } else if (m_pContext->hasNodeSelectString(node, "TooltipId", &toolTipId)) {
+        toolTip = m_tooltips.tooltipForId(toolTipId);
         if (!toolTip.isEmpty()) {
             pBaseWidget->prependBaseTooltip(toolTip);
         } else if (!toolTipId.isEmpty()) {
@@ -1871,13 +1873,13 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
         }
 
         ValueTransformer* pTransformer = NULL;
-        if (m_pContext->hasNode(con, "Transform")) {
-            QDomElement element = m_pContext->selectElement(con, "Transform");
-            pTransformer = ValueTransformer::parseFromXml(element, *m_pContext);
+        QDomElement transform = m_pContext->selectElement(con, "Transform");
+        if (!transform.isNull()) {
+            pTransformer = ValueTransformer::parseFromXml(transform, *m_pContext);
         }
 
-        if (m_pContext->hasNode(con, "BindProperty")) {
-            QString property = m_pContext->selectString(con, "BindProperty");
+        QString property;
+        if (m_pContext->hasNodeSelectString(con, "BindProperty", &property)) {
             //qDebug() << "Making property connection for" << property;
 
             ControlWidgetPropertyConnection* pConnection =

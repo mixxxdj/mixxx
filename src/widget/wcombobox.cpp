@@ -15,13 +15,12 @@ void WComboBox::setup(const QDomNode& node, const SkinContext& context) {
     QDomNode state = context.selectNode(node, "State");
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
-            if (!context.hasNode(state, "Number")) {
+            int iState;
+            if (!context.hasNodeSelectInt(state, "Number", &iState)) {
                 SKIN_WARNING(state, context)
                         << "WComboBox ignoring <State> without <Number> node.";
                 continue;
             }
-
-            int iState = context.selectInt(state, "Number");
             QString text = context.selectString(state, "Text");
             QString icon = context.selectString(state, "Icon");
             addItem(QIcon(icon), text, QVariant(iState));

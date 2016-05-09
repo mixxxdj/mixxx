@@ -18,12 +18,12 @@ void WSingletonContainer::setup(const QDomNode& node, const SkinContext& context
     setLayout(m_pLayout);
 
     QDomElement containerNode = node.toElement();
-    if (!context.hasNode(node, "ObjectName")) {
+    QString objectName;
+    if (!context.hasNodeSelectString(node, "ObjectName", &objectName)) {
         SKIN_WARNING(node, context)
                 << "Need objectName attribute for Singleton tag";
         return;
     }
-    QString objectName = context.selectString(node, "ObjectName");
     if (objectName.isEmpty()) {
         SKIN_WARNING(node, context)
                 << "Singleton tag's ObjectName is empty";

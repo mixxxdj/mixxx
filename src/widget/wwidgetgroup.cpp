@@ -76,19 +76,36 @@ void WWidgetGroup::setLayoutAlignment(int alignment) {
     }
 }
 
+QLayout::SizeConstraint sizeConstraintFromString(const QString& constraint) {
+    if (constraint.compare("SetDefaultConstraint", Qt::CaseInsensitive) == 0) {
+        return QLayout::SetDefaultConstraint;
+    } else if (constraint.compare("SetFixedSize", Qt::CaseInsensitive) == 0) {
+        return QLayout::SetFixedSize;
+    } else if (constraint.compare("SetMinimumSize", Qt::CaseInsensitive) == 0) {
+        return QLayout::SetMinimumSize;
+    } else if (constraint.compare("SetMaximumSize", Qt::CaseInsensitive) == 0) {
+        return QLayout::SetMaximumSize;
+    } else if (constraint.compare("SetMinAndMaxSize", Qt::CaseInsensitive) == 0) {
+        return QLayout::SetMinAndMaxSize;
+    } else if (constraint.compare("SetNoConstraint", Qt::CaseInsensitive) == 0) {
+        return QLayout::SetNoConstraint;
+    }
+    return QLayout::SetDefaultConstraint;
+}
+
 void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
 
     // Set background pixmap if available
-    if (context.hasNode(node, "BackPath")) {
-        QDomElement backPathNode = context.selectElement(node, "BackPath");
+    QDomElement backPathNode = context.selectElement(node, "BackPath");
+    if (!backPathNode.isNull()) {
         setPixmapBackground(context.getPixmapSource(backPathNode),
                             context.selectScaleMode(backPathNode, Paintable::TILE));
     }
 
     QLayout* pLayout = nullptr;
-    if (context.hasNode(node, "Layout")) {
-        QString layout = context.selectString(node, "Layout");
+    QString layout;
+    if (context.hasNodeSelectString(node, "Layout", &layout)) {
         if (layout == "vertical") {
             pLayout = new QVBoxLayout();
         } else if (layout == "horizontal") {
@@ -107,21 +124,9 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    if (pLayout && context.hasNode(node, "SizeConstraint")) {
-        QMap<QString, QLayout::SizeConstraint> constraints;
-        constraints["SetDefaultConstraint"] = QLayout::SetDefaultConstraint;
-        constraints["SetFixedSize"] = QLayout::SetFixedSize;
-        constraints["SetMinimumSize"] = QLayout::SetMinimumSize;
-        constraints["SetMaximumSize"] = QLayout::SetMaximumSize;
-        constraints["SetMinAndMaxSize"] = QLayout::SetMinAndMaxSize;
-        constraints["SetNoConstraint"] = QLayout::SetNoConstraint;
-
-        QString sizeConstraintStr = context.selectString(node, "SizeConstraint");
-        if (constraints.contains(sizeConstraintStr)) {
-            pLayout->setSizeConstraint(constraints[sizeConstraintStr]);
-        } else {
-            qDebug() << "Could not parse SizeConstraint:" << sizeConstraintStr;
-        }
+    QString sizeConstraintStr;
+    if (pLayout && context.hasNodeSelectString(node, "SizeConstraint", &sizeConstraintStr)) {
+        pLayout->setSizeConstraint(sizeConstraintFromString(sizeConstraintStr));
     }
 
     if (pLayout) {

@@ -74,6 +74,9 @@ class WTrackTableView : public WLibraryTableView {
     void slotCoverArtSelected(const CoverArt& art);
     void slotReloadCoverArt();
 
+    void slotTrackInfoClosed();
+    void slotTagFetcherClosed();
+
   private:
     void sendToAutoDJ(bool bTop);
     void showTrackInfo(QModelIndex index);
