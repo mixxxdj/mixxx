@@ -397,6 +397,18 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;
     }
+    
+    // There's no item to sort already, load from Settings last sort
+    if (m_sortColumns.size() == 0) {
+        QString val = getModelSetting("ColumnsSorting");
+        QTextStream in(&val);
+        
+        SortColumn sc(-1, Qt::AscendingOrder);
+        while (! in.atEnd()) {
+            in >> sc;
+            m_sortColumns << sc;
+        }
+    }
 
     if (m_sortColumns.size() > 0 &&
             m_sortColumns.at(0).m_column == column) {
@@ -456,7 +468,6 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         bool first = true;
         for (const SortColumn &sc : m_sortColumns) {
             m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
-            
             
             QString sort_field;
             if (sc.m_column == kIdColumn) {
