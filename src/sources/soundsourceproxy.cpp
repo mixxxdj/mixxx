@@ -115,7 +115,7 @@ QList<QDir> getSoundSourcePluginDirectories() {
 
 QUrl getCanonicalUrlForTrack(const Track* pTrack) {
     if (pTrack == nullptr) {
-        // No track
+        // Missing track
         return QUrl();
     }
     const QString canonicalLocation(pTrack->getCanonicalLocation());
@@ -123,7 +123,7 @@ QUrl getCanonicalUrlForTrack(const Track* pTrack) {
         // Corresponding file is missing or inaccessible
         //
         // NOTE(uklotzde): Special case handling is required for Qt 4.8!
-        // Creating an URL from an empty local in Qt 4.8 file will result
+        // Creating an URL from an empty local file in Qt 4.8 will result
         // in an URL with the string "file:" instead of an empty URL.
         //
         // TODO(XXX): This is no longer required for Qt 5.x
