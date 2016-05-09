@@ -54,7 +54,6 @@ class SkinContext {
     void updateVariable(const QDomElement& element);
 
     // Methods for evaluating nodes given the context.
-    bool hasNode(const QDomNode& node, const QString& nodeName) const;
     QDomNode selectNode(const QDomNode& node, const QString& nodeName) const;
     QDomElement selectElement(const QDomNode& node, const QString& nodeName) const;
     QString selectString(const QDomNode& node, const QString& nodeName) const;

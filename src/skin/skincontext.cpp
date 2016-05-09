@@ -104,10 +104,6 @@ void SkinContext::updateVariable(const QDomElement& element) {
     setVariable(name, value);
 }
 
-bool SkinContext::hasNode(const QDomNode& node, const QString& nodeName) const {
-    return !selectNode(node, nodeName).isNull();
-}
-
 QDomNode SkinContext::selectNode(const QDomNode& node,
                                  const QString& nodeName) const {
     QDomNode child = node.firstChild();
