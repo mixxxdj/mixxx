@@ -399,8 +399,10 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     }
     
     // There's no item to sort already, load from Settings last sort
+
+    
     if (m_sortColumns.size() == 0) {
-        QString val = getModelSetting("ColumnsSorting");
+        QString val = getModelSetting(COLUMNS_SORTING);
         QTextStream in(&val);
         
         SortColumn sc(-1, Qt::AscendingOrder);
@@ -409,12 +411,11 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_sortColumns << sc;
         }
     }
-
-    if (m_sortColumns.size() > 0 &&
-            m_sortColumns.at(0).m_column == column) {
-        // Only the order has changed
-        m_sortColumns.replace(0, SortColumn(column, order));
-    } else {
+    if (m_sortColumns.size() > 0 && m_sortColumns.at(0).m_column == column) {
+         // Only the order has changed
+         m_sortColumns.replace(0, SortColumn(column, order));
+    } 
+    else {
         // Remove column if already in history
         // As reverse loop to not skip an entry when removing the previous
         for (int i = m_sortColumns.size() - 1; i >= 0; --i) {
@@ -431,6 +432,14 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_sortColumns.removeLast();
         }
     }
+    
+    // Write new sortColumns order to user settings
+    QString val;
+    QTextStream out(&val);
+    for (SortColumn& sc : m_sortColumns) out << sc;
+    out.flush();
+    qDebug() << "Sorting" << val << m_sortColumns.size();
+    
 
     // we have two selects for sorting, since keeping the select history
     // across the two selects is hard, we do this only for the trackSource
