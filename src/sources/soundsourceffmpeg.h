@@ -1,13 +1,6 @@
 #ifndef MIXXX_SOUNDSOURCEFFMPEG_H
 #define MIXXX_SOUNDSOURCEFFMPEG_H
 
-// Needed to ensure that macros in <stdint.h> get defined.
-#ifndef __STDC_CONSTANT_MACROS
-#if __cplusplus < 201103L
-#define __STDC_CONSTANT_MACROS
-#endif
-#endif
-
 extern "C" {
 
 #include <libavcodec/avcodec.h>
@@ -18,7 +11,7 @@ extern "C" {
 #include <libavutil/opt.h>
 #endif
 
-// Compability
+// Compatibility
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
 
