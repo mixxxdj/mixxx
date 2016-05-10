@@ -88,7 +88,6 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
 }
 
 SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    unsigned int i;
     AVDictionary *l_iFormatOpts = nullptr;
 
     const QString localFileName(getLocalFileName());
@@ -144,7 +143,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     // Find the first audio stream
     m_iAudioStream = -1;
 
-    for (i = 0; i < m_pFormatCtx->nb_streams; i++)
+    for (unsigned int i = 0; i < m_pFormatCtx->nb_streams; i++)
         if (m_pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
             m_iAudioStream = i;
             break;
@@ -224,9 +223,11 @@ void SoundSourceFFmpeg::clearCache() {
 }
 
 bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
-    unsigned int l_iCount = 0;
+    unsigned int l_iCount = count;
     qint32 l_iRet = 0;
     AVPacket l_SPacket;
+    l_SPacket.data = nullptr;
+    l_SPacket.size = 0;
     AVFrame *l_pFrame = nullptr;
     bool l_iStop = false;
     int l_iFrameFinished = 0;
@@ -235,12 +236,6 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     qint64 l_lLastPacketPos = -1;
     int l_iError = 0;
     int l_iFrameCount = 0;
-
-    l_iCount = count;
-
-    l_SPacket.data = nullptr;
-    l_SPacket.size = 0;
-
 
     while (l_iCount > 0) {
         if (l_pFrame != nullptr) {
