@@ -3,7 +3,7 @@
 
 #include "sources/soundsourceprovider.h"
 
-#include <encoder/encoderffmpegresample.h>
+#include "encoder/encoderffmpegresample.h"
 
 // Needed to ensure that macros in <stdint.h> get defined.
 #ifndef __STDC_CONSTANT_MACROS
