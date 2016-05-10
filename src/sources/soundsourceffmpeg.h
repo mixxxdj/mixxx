@@ -21,6 +21,8 @@ extern "C" {
 
 #include "sources/soundsourceprovider.h"
 
+#include "util/memory.h" // std::unique_ptr<> + std::make_unique()
+
 // forward declaration
 class EncoderFfmpegResample;
 
@@ -64,7 +66,7 @@ class SoundSourceFFmpeg : public SoundSource {
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
 
-    EncoderFfmpegResample *m_pResample;
+    std::unique_ptr<EncoderFfmpegResample> m_pResample;
 
     SINT m_currentMixxxFrameIndex;
 

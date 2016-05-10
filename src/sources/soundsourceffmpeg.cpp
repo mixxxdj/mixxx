@@ -169,7 +169,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         return OpenResult::FAILED;
     }
 
-    m_pResample = new EncoderFfmpegResample(m_pCodecCtx);
+    m_pResample = std::make_unique<EncoderFfmpegResample>(m_pCodecCtx);
     m_pResample->openMixxx(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_FLT);
 
     setChannelCount(m_pCodecCtx->channels);
@@ -200,8 +200,7 @@ void SoundSourceFFmpeg::close() {
 
     if (m_pResample != nullptr) {
         qDebug() << "~SoundSourceFFmpeg(): Delete FFMPEG Resampler";
-        delete m_pResample;
-        m_pResample = nullptr;
+        m_pResample.reset();
     }
 
     while (m_SJumpPoints.size() > 0) {
