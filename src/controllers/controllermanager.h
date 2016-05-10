@@ -8,6 +8,8 @@
 #ifndef CONTROLLERMANAGER_H
 #define CONTROLLERMANAGER_H
 
+#include <QSharedPointer>
+
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
@@ -31,7 +33,9 @@ class ControllerManager : public QObject {
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
-    PresetInfoEnumerator* getMainThreadPresetEnumerator();
+    QSharedPointer<PresetInfoEnumerator> getMainThreadPresetEnumerator() {
+        return m_pMainThreadPresetEnumerator;
+    }
 
     // Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() { emit(requestSetUpDevices()); };
@@ -93,7 +97,7 @@ class ControllerManager : public QObject {
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
     QThread* m_pThread;
-    PresetInfoEnumerator* m_pMainThreadPresetEnumerator;
+    QSharedPointer<PresetInfoEnumerator> m_pMainThreadPresetEnumerator;
     bool m_skipPoll;
 };
 

@@ -75,13 +75,6 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
         QDir().mkpath(userPresets);
     }
 
-    // Initialize preset info parsers. This object is only for use in the main
-    // thread. Do not touch it from within ControllerManager.
-    QStringList presetSearchPaths;
-    presetSearchPaths << userPresetsPath(m_pConfig)
-                      << resourcePresetsPath(m_pConfig);
-    m_pMainThreadPresetEnumerator = new PresetInfoEnumerator(presetSearchPaths);
-
     m_pollTimer.setInterval(kPollIntervalMillis);
     connect(&m_pollTimer, SIGNAL(timeout()),
             this, SLOT(pollDevices()));
@@ -115,7 +108,6 @@ ControllerManager::~ControllerManager() {
     m_pThread->wait();
     delete m_pThread;
     delete m_pControllerLearningEventFilter;
-    delete m_pMainThreadPresetEnumerator;
 }
 
 ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
@@ -124,6 +116,14 @@ ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilt
 
 void ControllerManager::slotInitialize() {
     qDebug() << "ControllerManager:slotInitialize";
+
+    // Initialize preset info parsers. This object is only for use in the main
+    // thread. Do not touch it from within ControllerManager.
+    QStringList presetSearchPaths;
+    presetSearchPaths << userPresetsPath(m_pConfig)
+                      << resourcePresetsPath(m_pConfig);
+    m_pMainThreadPresetEnumerator = QSharedPointer<PresetInfoEnumerator>(
+        new PresetInfoEnumerator(presetSearchPaths));
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
@@ -379,10 +379,6 @@ bool ControllerManager::loadPreset(Controller* pController,
                   presetFilenameFromName(pController->getName())),
         preset->filePath());
     return true;
-}
-
-PresetInfoEnumerator* ControllerManager::getMainThreadPresetEnumerator() {
-    return m_pMainThreadPresetEnumerator;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {

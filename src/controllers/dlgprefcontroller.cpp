@@ -101,8 +101,6 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
             this, SLOT(removeScript()));
     connect(m_ui.btnOpenScript, SIGNAL(clicked()),
             this, SLOT(openScript()));
-
-    slotUpdate();
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -252,7 +250,15 @@ void DlgPrefController::enumeratePresets() {
 
     m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
     // Ask the controller manager for a list of applicable presets
-    PresetInfoEnumerator* pie =  m_pControllerManager->getMainThreadPresetEnumerator();
+    QSharedPointer<PresetInfoEnumerator> pie =
+            m_pControllerManager->getMainThreadPresetEnumerator();
+
+    // Not ready yet. Should be rare. We will re-enumerate on the next open of
+    // the preferences.
+    if (pie.isNull()) {
+        return;
+    }
+
     const QList<PresetInfo> presets = pie->getPresetsByExtension(
         m_pController->presetExtension());
 
