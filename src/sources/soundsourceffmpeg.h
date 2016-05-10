@@ -1,10 +1,6 @@
 #ifndef MIXXX_SOUNDSOURCEFFMPEG_H
 #define MIXXX_SOUNDSOURCEFFMPEG_H
 
-#include "sources/soundsourceprovider.h"
-
-#include "encoder/encoderffmpegresample.h"
-
 // Needed to ensure that macros in <stdint.h> get defined.
 #ifndef __STDC_CONSTANT_MACROS
 #if __cplusplus < 201103L
@@ -25,6 +21,10 @@
 #include <libavutil/opt.h>
 
 #include <QVector>
+
+#include "sources/soundsourceprovider.h"
+
+#include "encoder/encoderffmpegresample.h"
 
 namespace Mixxx {
 
