@@ -16,7 +16,7 @@ extern "C" {
 
 class EncoderFfmpegResample {
   public:
-    EncoderFfmpegResample(AVCodecContext *codecCtx);
+    explicit EncoderFfmpegResample(AVCodecContext *codecCtx);
     ~EncoderFfmpegResample();
     int openMixxx(AVSampleFormat inSampleFmt, AVSampleFormat outSampleFmt);
 
