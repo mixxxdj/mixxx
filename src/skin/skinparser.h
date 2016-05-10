@@ -9,8 +9,8 @@ class SkinParser {
     SkinParser() { }
     virtual ~SkinParser() { }
 
-    virtual bool canParse(QString skinPath) = 0;
-    virtual QWidget* parseSkin(QString skinPath, QWidget* pParent) = 0;
+    virtual bool canParse(const QString& skinPath) = 0;
+    virtual QWidget* parseSkin(const QString& skinPath, QWidget* pParent) = 0;
 };
 
 #endif /* SKINPARSER_H */

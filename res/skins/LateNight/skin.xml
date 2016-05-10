@@ -47,7 +47,7 @@
       <attribute persist="true" config_key="[MicrophoneRack],show">0</attribute>
       <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
-      <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>

@@ -22,7 +22,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
               const QString& group);
     ~WCoverArt() override;
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   public slots:
     void slotLoadTrack(TrackPointer);

@@ -36,7 +36,7 @@ class WOverview : public WWidget {
     WOverview(const char* pGroup, UserSettingsPointer pConfig, QWidget* parent=nullptr);
     ~WOverview() override;
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
