@@ -61,7 +61,7 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     return list;
 }
 
-SoundSourceFFmpeg::SoundSourceFFmpeg(QUrl url)
+SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
     : SoundSource(url),
       m_pFormatCtx(NULL),
       m_iAudioStream(-1),
