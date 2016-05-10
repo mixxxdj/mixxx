@@ -1,5 +1,7 @@
 #include "sources/soundsourceffmpeg.h"
 
+#include "encoder/encoderffmpegresample.h"
+
 #include <mutex>
 #include <vector>
 

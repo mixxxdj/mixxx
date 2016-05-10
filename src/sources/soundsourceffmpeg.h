@@ -8,6 +8,8 @@
 #endif
 #endif
 
+extern "C" {
+
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 
@@ -20,11 +22,14 @@
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
 
+} // extern "C"
+
 #include <QVector>
 
 #include "sources/soundsourceprovider.h"
 
-#include "encoder/encoderffmpegresample.h"
+// forward declaration
+class EncoderFfmpegResample;
 
 namespace Mixxx {
 
