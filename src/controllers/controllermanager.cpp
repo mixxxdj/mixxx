@@ -82,18 +82,6 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
                       << resourcePresetsPath(m_pConfig);
     m_pMainThreadPresetEnumerator = new PresetInfoEnumerator(presetSearchPaths);
 
-    // Instantiate all enumerators
-    m_enumerators.append(new PortMidiEnumerator());
-#ifdef __HSS1394__
-    m_enumerators.append(new Hss1394Enumerator());
-#endif
-#ifdef __BULK__
-    m_enumerators.append(new BulkEnumerator());
-#endif
-#ifdef __HID__
-    m_enumerators.append(new HidEnumerator());
-#endif
-
     m_pollTimer.setInterval(kPollIntervalMillis);
     connect(&m_pollTimer, SIGNAL(timeout()),
             this, SLOT(pollDevices()));
@@ -108,12 +96,18 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
     // audio directly, like when scratching
     m_pThread->start(QThread::HighPriority);
 
+    connect(this, SIGNAL(requestInitialize()),
+            this, SLOT(slotInitialize()));
     connect(this, SIGNAL(requestSetUpDevices()),
             this, SLOT(slotSetUpDevices()));
     connect(this, SIGNAL(requestShutdown()),
             this, SLOT(slotShutdown()));
     connect(this, SIGNAL(requestSave(bool)),
             this, SLOT(slotSavePresets(bool)));
+
+    // Signal that we should run slotInitialize once our event loop has started
+    // up.
+    emit(requestInitialize());
 }
 
 ControllerManager::~ControllerManager() {
@@ -126,6 +120,23 @@ ControllerManager::~ControllerManager() {
 
 ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
     return m_pControllerLearningEventFilter;
+}
+
+void ControllerManager::slotInitialize() {
+    qDebug() << "ControllerManager:slotInitialize";
+
+    // Instantiate all enumerators. Enumerators can take a long time to
+    // construct since they interact with host MIDI APIs.
+    m_enumerators.append(new PortMidiEnumerator());
+#ifdef __HSS1394__
+    m_enumerators.append(new Hss1394Enumerator());
+#endif
+#ifdef __BULK__
+    m_enumerators.append(new BulkEnumerator());
+#endif
+#ifdef __HID__
+    m_enumerators.append(new HidEnumerator());
+#endif
 }
 
 void ControllerManager::slotShutdown() {

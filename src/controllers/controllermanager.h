@@ -53,6 +53,7 @@ class ControllerManager : public QObject {
     void requestSetUpDevices();
     void requestShutdown();
     void requestSave(bool onlyActive);
+    void requestInitialize();
 
   public slots:
     void updateControllerList();
@@ -64,6 +65,9 @@ class ControllerManager : public QObject {
     void slotSavePresets(bool onlyActive=false);
 
   private slots:
+    // Perform initialization that should be delayed until the ControllerManager
+    // thread is started.
+    void slotInitialize();
     // Open whatever controllers are selected in the preferences. This currently
     // only runs on start-up but maybe should instead be signaled by the
     // preferences dialog on apply, and only open/close changed devices
