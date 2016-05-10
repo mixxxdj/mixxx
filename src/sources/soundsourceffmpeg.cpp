@@ -13,13 +13,15 @@
 namespace Mixxx {
 
 namespace {
-    std::once_flag initFFmpegLibFlag;
 
-    // This function must be called once during startup.
-    void initFFmpegLib() {
-        av_register_all();
-        avcodec_register_all();
-    }
+std::once_flag initFFmpegLibFlag;
+
+// This function must be called once during startup.
+void initFFmpegLib() {
+    av_register_all();
+    avcodec_register_all();
+}
+
 } // anonymous namespace
 
 SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
