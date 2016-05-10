@@ -253,10 +253,11 @@ void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
     // Ask the controller manager for a list of applicable presets
     PresetInfoEnumerator* pie =  m_pControllerManager->getMainThreadPresetEnumerator();
-    QList<PresetInfo> presets = pie->getPresets(m_pController->presetExtension());
+    const QList<PresetInfo> presets = pie->getPresetsByExtension(
+        m_pController->presetExtension());
 
     PresetInfo match;
-    foreach (const PresetInfo& preset, presets) {
+    for (const PresetInfo& preset : presets) {
         m_ui.comboBoxPreset->addItem(nameForPreset(preset), preset.getPath());
         if (m_pController->matchPreset(preset)) {
             match = preset;
