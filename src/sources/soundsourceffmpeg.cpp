@@ -242,7 +242,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     while (l_iCount > 0) {
         if (l_pFrame != nullptr) {
             l_iFrameCount--;
-// FFMPEG 2.2 3561060 anb beyond
+// FFMPEG 2.2 3561060 and beyond
 #if LIBAVCODEC_VERSION_INT >= 3561060
             av_frame_free(&l_pFrame);
 // FFMPEG 0.11 and below
@@ -353,7 +353,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                         // So why number 32? Sorry I just made that up from the hat there is no
                         // math behind it. Number 32 it's not too big nor jumps points are not
                         // too close each other. Mainly it's ugly compromise with MP3,MP4,OGG and WMA
-                        // diffrent codec frame sizes
+                        // different codec frame sizes
                         if (m_lStoreCount == 32) {
                             struct ffmpegLocationObject *l_STestObj = nullptr;
 
@@ -616,7 +616,7 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
     if (frameIndex < 0 || frameIndex < m_lCacheStartFrame) {
         // Seek to set (start of the stream which is FFmpeg frame 0)
         // because we are dealing with compressed audio FFmpeg takes
-        // best of to seek that point (in this case 0 Is allways there)
+        // best of to seek that point (in this case 0 Is always there)
         // in every other case we should provide MIN and MAX tolerance
         // which we can take.
         // FFmpeg just just can't take zero as MAX tolerance so we try to
@@ -667,7 +667,7 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         }
 
         if (frameIndex == 0) {
-            // Because we are in the begining just read cache full
+            // Because we are in the beginning just read cache full
             // but leave 50 of just in case
             // -1 one means we are seeking from current position and
             // filling the cache
@@ -695,7 +695,7 @@ SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         CSAMPLE* sampleBuffer) {
 
     if (m_SCache.size() == 0) {
-        // Make sure we allways start at begining and cache have some
+        // Make sure we always start at beginning and cache have some
         // material that we can consume.
         seekSampleFrame(0);
         m_bIsSeeked = false;
