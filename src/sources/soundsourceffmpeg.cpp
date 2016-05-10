@@ -194,8 +194,9 @@ void SoundSourceFFmpeg::close() {
     if (m_pCodecCtx != nullptr) {
         qDebug() << "~SoundSourceFFmpeg(): Clear FFMPEG stuff";
         avcodec_close(m_pCodecCtx);
+        m_pCodecCtx = nullptr;
         avformat_close_input(&m_pFormatCtx);
-        m_pFormatCtx = nullptr;
+        DEBUG_ASSERT(m_pFormatCtx == nullptr);
     }
 
     if (m_pResample != nullptr) {
