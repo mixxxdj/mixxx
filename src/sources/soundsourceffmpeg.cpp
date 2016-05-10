@@ -6,7 +6,8 @@
 #include <vector>
 
 #define AUDIOSOURCEFFMPEG_CACHESIZE 1000
-#define AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET (sizeof(CSAMPLE) * getChannelCount())
+#define AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET(numFrames) (frames2samples(numFrames) * sizeof(CSAMPLE))
+#define AUDIOSOURCEFFMPEG_BYTEOFFSET_TO_MIXXXFRAME(byteOffset) (samples2frames(byteOffset / sizeof(CSAMPLE)))
 #define AUDIOSOURCEFFMPEG_FILL_FROM_CURRENTPOS -1
 
 namespace Mixxx {
@@ -338,7 +339,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                         m_SCache.append(l_SObj);
                         l_SObj->startFrame = m_lCacheFramePos;
                         l_SObj->length = l_iRet;
-                        m_lCacheFramePos += l_iRet / AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET;
+                        m_lCacheFramePos += AUDIOSOURCEFFMPEG_BYTEOFFSET_TO_MIXXXFRAME(l_iRet);
 
                         // Ogg/Opus have packages pos that have many
                         // audio frames so seek next unique pos..
@@ -450,7 +451,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
         SINT size) {
     struct ffmpegCacheObject *l_SObj = nullptr;
     qint32 l_lPos = 0;
-    quint32 l_lLeft = size * AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET;
+    quint32 l_lLeft = AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET(size);
     quint32 l_lOffset = 0;
     quint32 l_lBytesToCopy = 0;
     bool l_bEndOfFile = false;
@@ -481,7 +482,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
             l_SObj = m_SCache[l_lPos];
 
             // Because length is in byte we have to convert it to Frames
-            l_lTmpLen = l_SObj->length / AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET;
+            l_lTmpLen = AUDIOSOURCEFFMPEG_BYTEOFFSET_TO_MIXXXFRAME(l_SObj->length);
 
             if ((l_SObj->startFrame + l_lTmpLen) < offset) {
                 break;
@@ -547,8 +548,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
             // If Cache object ain't correct then calculate offset
             if (l_SObj->startFrame <= offset) {
                 // We have to convert again it to bytes
-                l_lOffset = (offset - l_SObj->startFrame) *
-                            AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET;
+                l_lOffset = AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET(offset - l_SObj->startFrame);
             }
 
             // Okay somehow offset is bigger than our Cache object have bytes
