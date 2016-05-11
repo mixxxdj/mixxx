@@ -4,6 +4,9 @@ namespace Mixxx {
 
 namespace {
 
+// Decoded output of opusfile has a fixed sample rate of 48 kHz
+const SINT kSamplingRate = 48000;
+
 // Parameter for op_channel_count()
 // See also: https://mf4.xiph.org/jenkins/view/opus/job/opusfile-unix/ws/doc/html/group__stream__info.html
 const int kCurrentStreamLink = -1; // get ... of the current (stream) link
@@ -30,8 +33,6 @@ private:
 
 } // anonymous namespace
 
-// Decoded output of opusfile has a fixed sample rate of 48 kHz
-const SINT SoundSourceOpus::kSamplingRate = 48000;
 
 SoundSourceOpus::SoundSourceOpus(const QUrl& url)
         : SoundSource(url, "opus"),
