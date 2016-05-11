@@ -24,7 +24,7 @@ ov_callbacks SoundSourceOggVorbis::s_callbacks = {
     SoundSourceOggVorbis::TellCallback
 };
 
-SoundSourceOggVorbis::SoundSourceOggVorbis(QUrl url)
+SoundSourceOggVorbis::SoundSourceOggVorbis(const QUrl& url)
         : SoundSource(url, "ogg"),
           m_curFrameIndex(0) {
     memset(&m_vf, 0, sizeof(m_vf));

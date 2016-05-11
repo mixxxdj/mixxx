@@ -12,7 +12,7 @@ class SoundSourceOpus: public Mixxx::SoundSource {
 public:
     static const SINT kSamplingRate;
 
-    explicit SoundSourceOpus(QUrl url);
+    explicit SoundSourceOpus(const QUrl& url);
     ~SoundSourceOpus() override;
 
     Result parseTrackMetadataAndCoverArt(

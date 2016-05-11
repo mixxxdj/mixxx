@@ -33,7 +33,7 @@ private:
 // Decoded output of opusfile has a fixed sample rate of 48 kHz
 const SINT SoundSourceOpus::kSamplingRate = 48000;
 
-SoundSourceOpus::SoundSourceOpus(QUrl url)
+SoundSourceOpus::SoundSourceOpus(const QUrl& url)
         : SoundSource(url, "opus"),
           m_pOggOpusFile(NULL),
           m_curFrameIndex(getMinFrameIndex()) {

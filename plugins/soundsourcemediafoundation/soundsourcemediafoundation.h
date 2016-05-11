@@ -32,7 +32,7 @@ namespace Mixxx {
 
 class SoundSourceMediaFoundation : public Mixxx::SoundSourcePlugin {
 public:
-    explicit SoundSourceMediaFoundation(QUrl url);
+    explicit SoundSourceMediaFoundation(const QUrl& url);
     ~SoundSourceMediaFoundation() override;
 
     void close() override;

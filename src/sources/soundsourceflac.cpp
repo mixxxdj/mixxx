@@ -62,7 +62,7 @@ const unsigned kBitsPerSampleDefault = 0;
 
 }
 
-SoundSourceFLAC::SoundSourceFLAC(QUrl url)
+SoundSourceFLAC::SoundSourceFLAC(const QUrl& url)
         : SoundSource(url, "flac"),
           m_file(getLocalFileName()),
           m_decoder(NULL),

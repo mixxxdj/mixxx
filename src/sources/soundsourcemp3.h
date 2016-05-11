@@ -19,7 +19,7 @@ namespace Mixxx {
 
 class SoundSourceMp3: public SoundSource {
 public:
-    explicit SoundSourceMp3(QUrl url);
+    explicit SoundSourceMp3(const QUrl& url);
     ~SoundSourceMp3() override;
 
     void close() override;

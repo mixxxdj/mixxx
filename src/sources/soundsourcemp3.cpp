@@ -154,7 +154,7 @@ bool decodeFrameHeader(
 
 } // anonymous namespace
 
-SoundSourceMp3::SoundSourceMp3(QUrl url)
+SoundSourceMp3::SoundSourceMp3(const QUrl& url)
         : SoundSource(url, "mp3"),
           m_file(getLocalFileName()),
           m_fileSize(0),

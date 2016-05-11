@@ -52,7 +52,7 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
     ModPlug::ModPlug_SetSettings(&settings);
 }
 
-SoundSourceModPlug::SoundSourceModPlug(QUrl url)
+SoundSourceModPlug::SoundSourceModPlug(const QUrl& url)
         : SoundSource(url, getModPlugTypeFromUrl(url)),
           m_pModFile(NULL),
           m_seekPos(0) {

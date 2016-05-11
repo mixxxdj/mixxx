@@ -62,7 +62,7 @@ template<class T> static void safeRelease(T **ppT) {
 
 namespace Mixxx {
 
-SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
+SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
           m_hrCoInitialize(E_FAIL),
           m_hrMFStartup(E_FAIL),

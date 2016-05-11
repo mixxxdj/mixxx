@@ -4,7 +4,7 @@
 
 namespace Mixxx {
 
-SoundSourceSndFile::SoundSourceSndFile(QUrl url)
+SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
         : SoundSource(url),
           m_pSndFile(NULL) {
 }
