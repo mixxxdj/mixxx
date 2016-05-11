@@ -21,13 +21,16 @@
 #include "util/assert.h"
 #include "util/performancetimer.h"
 
-static const bool sDebug = true;
+static const bool sDebug = false;
 
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
 // Column 0 is skipped when calculating the the columns of the view table
 static const int kIdColumn = 0;
 static const int kMaxSortColumns = 3;
+
+// Constant for getModelSetting(name) 
+static const char* COLUMNS_SORTING = "ColumnsSorting";
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
@@ -405,10 +408,17 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         QString val = getModelSetting(COLUMNS_SORTING);
         QTextStream in(&val);
         
-        SortColumn sc(-1, Qt::AscendingOrder);
         while (! in.atEnd()) {
-            in >> sc;
-            m_sortColumns << sc;
+            int ordI = -1;
+            QString name;
+            
+            in >> name >> ordI;
+            int col = this->fieldIndex(name) + m_tableColumns.size() - 1;
+            
+            Qt::SortOrder ord;
+            ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
+            
+            m_sortColumns << SortColumn(col, ord);
         }
     }
     if (m_sortColumns.size() > 0 && m_sortColumns.at(0).m_column == column) {
@@ -436,9 +446,17 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     // Write new sortColumns order to user settings
     QString val;
     QTextStream out(&val);
-    for (SortColumn& sc : m_sortColumns) out << sc;
+    for (SortColumn& sc : m_sortColumns) {
+        int ccColumn = sc.m_column - m_tableColumns.size() + 1;
+        out << m_trackSource->columnNameForFieldIndex(ccColumn) << " ";
+        out << (sc.m_order == Qt::AscendingOrder ? 1 : -1) << " ";
+    }
     out.flush();
     setModelSetting(COLUMNS_SORTING, val);
+    
+    if (sDebug) {
+        qDebug() << "setSort() sortColumns:" << val;
+    }
     
 
     // we have two selects for sorting, since keeping the select history

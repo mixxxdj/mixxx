@@ -140,22 +140,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
         int m_column;
         Qt::SortOrder m_order;
         
-        friend QTextStream& operator >> (QTextStream &in, SortColumn &sc) {
-            int ord;
-            in >> sc.m_column >> ord;
-            
-            if (ord > 0) sc.m_order = Qt::AscendingOrder;
-            else sc.m_order = Qt::DescendingOrder;
-            return in;
-        }
-        
-        friend QTextStream & operator << (QTextStream &out, SortColumn &sc) {
-            out << sc.m_column << " ";
-            if (sc.m_order == Qt::AscendingOrder) out << 1;
-            else out << -1;
-            out << " ";
-            return out;
-        }
     };
 
     QVector<RowInfo> m_rowInfo;
@@ -177,9 +161,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QString m_trackSourceOrderBy;
     int m_trackSourceSortColumn;
     Qt::SortOrder m_trackSourceSortOrder;
-    
-    // Constant for getModelSetting(name) 
-    const QString COLUMNS_SORTING = "ColumnsSorting";
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };
