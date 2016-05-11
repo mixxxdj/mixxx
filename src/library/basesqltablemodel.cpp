@@ -438,7 +438,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     QTextStream out(&val);
     for (SortColumn& sc : m_sortColumns) out << sc;
     out.flush();
-    qDebug() << "Sorting" << val << m_sortColumns.size();
+    setModelSetting(COLUMNS_SORTING, val);
     
 
     // we have two selects for sorting, since keeping the select history
@@ -468,8 +468,6 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
             m_tableOrderBy = "ORDER BY RANDOM()";
         }
-        
-        qDebug() << "Column: " << column;
         
         m_sortColumns.clear();
     } else if (m_trackSource) {
