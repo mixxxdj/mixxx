@@ -31,21 +31,25 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*a
     m_pSndFile = sf_open(getLocalFileName().toLocal8Bit(), SFM_READ, &sfInfo);
 #endif
 
-    if (!m_pSndFile) {   // sf_format_check is only for writes
-        qWarning() << "Error opening libsndfile file:" << getUrlString()
-                << sf_strerror(m_pSndFile);
-        return OpenResult::FAILED;
-    }
-
     switch (sf_error(m_pSndFile)) {
     case SF_ERR_NO_ERROR:
+        DEBUG_ASSERT(m_pSndFile != nullptr);
         break; // continue
     case SF_ERR_UNRECOGNISED_FORMAT:
         return OpenResult::UNSUPPORTED_FORMAT;
     default:
-        qWarning() << "Error opening libsndfile file:" << getUrlString()
-                << sf_strerror(m_pSndFile);
-        return OpenResult::FAILED;
+        const QString errorMsg(sf_strerror(m_pSndFile));
+        if (errorMsg.toLower().indexOf("unknown format") != -1) {
+            // NOTE(uklotzde 2016-05-11): This actually happens when
+            // trying to open a file with a supported file extension
+            // that contains data in an unsupported format!
+            // Example: m4a + MPEG4/AAC
+            return OpenResult::UNSUPPORTED_FORMAT;
+        } else {
+            qWarning() << "Error opening libsndfile file:" << getUrlString()
+                    << sf_strerror(m_pSndFile);
+            return OpenResult::FAILED;
+        }
     }
 
     setChannelCount(sfInfo.channels);
