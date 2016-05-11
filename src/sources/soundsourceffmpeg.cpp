@@ -229,7 +229,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     l_SPacket.data = nullptr;
     l_SPacket.size = 0;
     AVFrame *l_pFrame = nullptr;
-    bool l_iStop = false;
+    bool l_bStop = false;
     int l_iFrameFinished = 0;
     struct ffmpegCacheObject *l_SObj = nullptr;
     struct ffmpegCacheObject *l_SRmObj = nullptr;
@@ -254,7 +254,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 
         }
 
-        if (l_iStop == true) {
+        if (l_bStop) {
             break;
         }
         l_iFrameCount++;
@@ -307,14 +307,14 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                     // An error or EOF occurred,index break out and return what
                     // we have so far.
                     qDebug() << "EOF!";
-                    l_iStop = true;
+                    l_bStop = true;
                     continue;
                 } else {
                     l_iRet = 0;
                     l_SObj = (struct ffmpegCacheObject *)malloc(sizeof(struct ffmpegCacheObject));
                     if (l_SObj == nullptr) {
                         qDebug() << "SoundSourceFFmpeg::readFramesToCache: Not enough memory!";
-                        l_iStop = true;
+                        l_bStop = true;
                         continue;
                     }
                     memset(l_SObj, 0x00, sizeof(struct ffmpegCacheObject));
@@ -392,14 +392,14 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                 l_iError++;
                 if (l_iError == 5) {
                     // Stream end and we couldn't read enough frames
-                    l_iStop = true;
+                    l_bStop = true;
                 }
             }
 
 
         } else {
             qDebug() << "SoundSourceFFmpeg::readFramesToCache: Packet too big or File end";
-            l_iStop = true;
+            l_bStop = true;
         }
 
     }
