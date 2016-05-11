@@ -158,7 +158,7 @@ SoundSourceMp3::SoundSourceMp3(const QUrl& url)
         : SoundSource(url, "mp3"),
           m_file(getLocalFileName()),
           m_fileSize(0),
-          m_pFileData(NULL),
+          m_pFileData(nullptr),
           m_avgSeekFrameCount(0),
           m_curFrameIndex(getMinFrameIndex()),
           m_madSynthCount(0) {
@@ -371,7 +371,7 @@ void SoundSourceMp3::close() {
 
     if (m_pFileData) {
         m_file.unmap(m_pFileData);
-        m_pFileData = NULL;
+        m_pFileData = nullptr;
     }
 
     m_file.close();
@@ -431,7 +431,7 @@ void SoundSourceMp3::addSeekFrame(
     DEBUG_ASSERT(m_seekFrameList.empty() ||
             (m_seekFrameList.back().frameIndex < frameIndex));
     DEBUG_ASSERT(m_seekFrameList.empty() ||
-            (NULL == pInputData) ||
+            (nullptr == pInputData) ||
             (0 < (pInputData - m_seekFrameList.back().pInputData)));
     SeekFrameType seekFrame;
     seekFrame.pInputData = pInputData;

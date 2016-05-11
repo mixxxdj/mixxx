@@ -33,10 +33,9 @@ private:
 
 } // anonymous namespace
 
-
 SoundSourceOpus::SoundSourceOpus(const QUrl& url)
         : SoundSource(url, "opus"),
-          m_pOggOpusFile(NULL),
+          m_pOggOpusFile(nullptr),
           m_curFrameIndex(getMinFrameIndex()) {
 }
 
@@ -198,7 +197,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audi
 void SoundSourceOpus::close() {
     if (m_pOggOpusFile) {
         op_free(m_pOggOpusFile);
-        m_pOggOpusFile = NULL;
+        m_pOggOpusFile = nullptr;
     }
 }
 
@@ -236,7 +235,7 @@ SINT SoundSourceOpus::readSampleFrames(
     while (0 < numberOfFramesRemaining) {
         int readResult = op_read_float(m_pOggOpusFile,
                 pSampleBuffer,
-                frames2samples(numberOfFramesRemaining), NULL);
+                frames2samples(numberOfFramesRemaining), nullptr);
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             pSampleBuffer += frames2samples(readResult);

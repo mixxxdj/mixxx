@@ -54,7 +54,7 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
 
 SoundSourceModPlug::SoundSourceModPlug(const QUrl& url)
         : SoundSource(url, getModPlugTypeFromUrl(url)),
-          m_pModFile(NULL),
+          m_pModFile(nullptr),
           m_seekPos(0) {
 }
 
@@ -74,7 +74,7 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
 
     ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
             fileBuf.length());
-    if (NULL != pModFile) {
+    if (nullptr != pModFile) {
         pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
         pTrackMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000);
@@ -99,7 +99,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
     // get ModPlugFile descriptor for later access
     m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(),
             m_fileBuf.length());
-    if (m_pModFile == NULL) {
+    if (m_pModFile == nullptr) {
         // an error occurred
         t.cancel();
         qDebug() << "[ModPlug] Could not load module file: " << fileName;
@@ -161,7 +161,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
 void SoundSourceModPlug::close() {
     if (m_pModFile) {
         ModPlug::ModPlug_Unload(m_pModFile);
-        m_pModFile = NULL;
+        m_pModFile = nullptr;
     }
 }
 

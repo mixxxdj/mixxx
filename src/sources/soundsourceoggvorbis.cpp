@@ -43,7 +43,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
         return OpenResult::FAILED;
     }
 
-    const int initDecoderResult = ov_open_callbacks(m_pFile.get(), &m_vf, NULL, 0, s_callbacks);
+    const int initDecoderResult = ov_open_callbacks(m_pFile.get(), &m_vf, nullptr, 0, s_callbacks);
     switch (initDecoderResult) {
     case 0:
         // success -> continue

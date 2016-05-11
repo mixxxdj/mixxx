@@ -82,7 +82,7 @@ TrackPointer Track::newDummy(
 
 // static
 void Track::onTrackReferenceExpired(Track* pTrack) {
-    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
+    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
         return;
     }
     //qDebug() << "Track::onTrackReferenceExpired"
