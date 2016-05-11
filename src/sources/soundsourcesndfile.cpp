@@ -46,8 +46,9 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*a
             // Example: m4a + MPEG4/AAC
             return OpenResult::UNSUPPORTED_FORMAT;
         } else {
-            qWarning() << "Error opening libsndfile file:" << getUrlString()
-                    << sf_strerror(m_pSndFile);
+            qWarning() << "Error opening libsndfile file:"
+                    << getUrlString()
+                    << errorMsg;
             return OpenResult::FAILED;
         }
     }
