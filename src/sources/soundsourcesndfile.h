@@ -16,7 +16,7 @@ namespace Mixxx {
 class SoundSourceSndFile: public Mixxx::SoundSource {
 public:
     explicit SoundSourceSndFile(QUrl url);
-    ~SoundSourceSndFile();
+    ~SoundSourceSndFile() override;
 
     void close() override;
 

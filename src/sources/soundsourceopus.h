@@ -13,7 +13,7 @@ public:
     static const SINT kSamplingRate;
 
     explicit SoundSourceOpus(QUrl url);
-    ~SoundSourceOpus();
+    ~SoundSourceOpus() override;
 
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,

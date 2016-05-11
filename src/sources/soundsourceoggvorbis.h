@@ -14,7 +14,7 @@ namespace Mixxx {
 class SoundSourceOggVorbis: public SoundSource {
 public:
     explicit SoundSourceOggVorbis(QUrl url);
-    ~SoundSourceOggVorbis();
+    ~SoundSourceOggVorbis() override;
 
     void close() override;
 

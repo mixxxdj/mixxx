@@ -43,7 +43,7 @@ struct ffmpegCacheObject {
 class SoundSourceFFmpeg : public SoundSource {
   public:
     explicit SoundSourceFFmpeg(const QUrl& url);
-    ~SoundSourceFFmpeg();
+    ~SoundSourceFFmpeg() override;
 
     void close() override;
 

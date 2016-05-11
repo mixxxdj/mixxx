@@ -25,7 +25,7 @@ public:
             const ModPlug::ModPlug_Settings &settings);
 
     explicit SoundSourceModPlug(QUrl url);
-    ~SoundSourceModPlug();
+    ~SoundSourceModPlug() override;
 
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,
