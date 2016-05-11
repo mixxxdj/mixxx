@@ -404,7 +404,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     // There's no item to sort already, load from Settings last sort
 
     
-    if (m_sortColumns.size() == 0) {
+    if (m_sortColumns.isEmpty()) {
         QString val = getModelSetting(COLUMNS_SORTING);
         QTextStream in(&val);
         
