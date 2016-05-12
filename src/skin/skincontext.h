@@ -10,6 +10,7 @@
 #include <QScriptEngineDebugger>
 #include <QtDebug>
 #include <QSharedPointer>
+#include <QRegExp>
 
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
@@ -213,6 +214,10 @@ class SkinContext {
         return m_pSingletons->getSingletonWidget(objectName);
     }
 
+    const QRegExp& getHookRegex() const {
+        return m_hookRx;
+    }
+
   private:
     PixmapSource getPixmapSourceInner(const QString& filename,
                                       const SvgParser& svgParser) const;
@@ -233,6 +238,7 @@ class SkinContext {
     QSharedPointer<QScriptEngine> m_pScriptEngine;
     QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;
     QScriptValue m_parentGlobal;
+    QRegExp m_hookRx;
 
     QSharedPointer<QHash<QString, QDomElement>> m_pSvgCache;
 

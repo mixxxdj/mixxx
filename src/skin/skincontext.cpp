@@ -22,6 +22,14 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
     importScriptExtension("console");
     importScriptExtension("svg");
     m_pScriptEngine->installTranslatorFunctions();
+
+    // Retrieving hooks pattern from script extension
+    QScriptValue global = m_pScriptEngine->globalObject();
+    QScriptValue svg = global.property("svg");
+    QScriptValue hooksPattern = svg.property("getHooksPattern").call(svg);
+    if (!hooksPattern.isNull()) {
+        m_hookRx.setPattern(hooksPattern.toString());
+    }
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
@@ -32,6 +40,7 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_pScriptEngine(parent.m_pScriptEngine),
           m_pScriptDebugger(parent.m_pScriptDebugger),
           m_parentGlobal(m_pScriptEngine->globalObject()),
+          m_hookRx(parent.m_hookRx),
           m_pSvgCache(parent.m_pSvgCache),
           m_pSingletons(parent.m_pSingletons) {
     // we generate a new global object to preserve the scope between

@@ -6,13 +6,6 @@
 
 SvgParser::SvgParser(const SkinContext& parent)
         : m_parentContext(parent) {
-    // Retrieving hooks pattern from script extension
-    QScriptValue global = m_parentContext.getScriptEngine()->globalObject();
-    QScriptValue hooksPattern = global.property("svg")
-        .property("getHooksPattern").call(global.property("svg"));
-    if (!hooksPattern.isNull()) {
-        m_hookRx.setPattern(hooksPattern.toString());
-    }
 }
 
 SvgParser::~SvgParser() {
@@ -133,12 +126,13 @@ void SvgParser::parseAttributes(QDomElement* element) const {
             continue;
         }
 
-        if (!m_hookRx.isEmpty()) {
+        const QRegExp& hookRx = m_parentContext.getHookRegex();
+        if (!hookRx.isEmpty()) {
             // searching hooks in the attribute value
             int pos = 0;
-            while ((pos = m_hookRx.indexIn(attributeValue, pos)) != -1) {
-                QStringList captured = m_hookRx.capturedTexts();
-                QString match = m_hookRx.cap(0);
+            while ((pos = hookRx.indexIn(attributeValue, pos)) != -1) {
+                QStringList captured = hookRx.capturedTexts();
+                QString match = hookRx.cap(0);
                 QString tmp = "svg.templateHooks." + match;
                 QString replacement = evaluateTemplateExpression(
                     tmp, element->lineNumber()).toString();
