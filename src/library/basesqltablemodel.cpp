@@ -413,7 +413,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             QString name;
             
             in >> name >> ordI;
-            int col = this->fieldIndex(name) + m_tableColumns.size() - 1;
+            int col = fieldIndex(name) + m_tableColumns.size() - 1;
             
             Qt::SortOrder ord;
             ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
@@ -446,13 +446,21 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     QString val;
     QTextStream out(&val);
     for (SortColumn& sc : m_sortColumns) {
-        int ccColumn = sc.m_column - m_tableColumns.size() + 1;
-        out << m_trackSource->columnNameForFieldIndex(ccColumn) << " ";
+
+        QString name;
+        if (sc.m_column > 0 && sc.m_column < m_tableColumns.size()) {
+            name = m_tableColumns[column];
+        } else {
+            int ccColumn = sc.m_column - m_tableColumns.size() + 1;
+            name = m_trackSource->columnNameForFieldIndex(ccColumn);
+        }
+
+        out << name << " ";
         out << (sc.m_order == Qt::AscendingOrder ? 1 : -1) << " ";
     }
     out.flush();
     setModelSetting(COLUMNS_SORTING, val);
-    
+
     if (sDebug) {
         qDebug() << "setSort() sortColumns:" << val;
     }
