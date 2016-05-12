@@ -408,7 +408,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         QString val = getModelSetting(COLUMNS_SORTING);
         QTextStream in(&val);
         
-        while (! in.atEnd()) {
+        while (!in.atEnd()) {
             int ordI = -1;
             QString name;
             
@@ -424,8 +424,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     if (m_sortColumns.size() > 0 && m_sortColumns.at(0).m_column == column) {
          // Only the order has changed
          m_sortColumns.replace(0, SortColumn(column, order));
-    } 
-    else {
+    } else {
         // Remove column if already in history
         // As reverse loop to not skip an entry when removing the previous
         for (int i = m_sortColumns.size() - 1; i >= 0; --i) {
