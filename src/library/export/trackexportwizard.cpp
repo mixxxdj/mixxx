@@ -28,7 +28,7 @@ bool TrackExportWizard::selectDestinationDirectory() {
     m_pConfig->set(ConfigKey("[Library]", "LastTrackCopyDirectory"),
                    ConfigValue(destDir));
 
-    m_worker.reset(new TrackExportWorker(destDir, m_tracks));
+    m_worker.reset(new TrackExportWorker(m_pConfig, destDir, m_tracks));
     m_dialog.reset(new TrackExportDlg(m_parent, m_pConfig, m_worker.data()));
     return true;
 }

@@ -1,4 +1,5 @@
 #include "library/export/trackexportworker.h"
+#include "sources/soundsourceproxy.h"
 #include "util/compatibility.h"
 
 #include <QFileInfo>
@@ -69,6 +70,24 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
 }  // namespace
 
 void TrackExportWorker::run() {
+    // First sync tags if the global preference is set.
+    if (m_pConfig && m_pConfig->getValueString(
+            ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+        int i = 0;
+        for (auto pTrack : m_tracks) {
+            emit(progress(tr("Syncing Tags: %1").arg(pTrack->getFileName()), i,
+                          m_tracks.size()));
+            SoundSourceProxy::saveTrackMetadata(pTrack.data(), false);
+            if (load_atomic(m_bStop)) {
+                emit(canceled());
+                return;
+            }
+            ++i;
+            emit(progress(tr("Syncing Tags: %1").arg(pTrack->getFileName()), i,
+                          m_tracks.size()));
+        }
+    }
+    // Next, do the actual copy.
     int i = 0;
     QMap<QString, QFileInfo> copy_list = createCopylist(m_tracks);
     for (auto it = copy_list.constBegin(); it != copy_list.constEnd(); ++it) {
@@ -76,15 +95,16 @@ void TrackExportWorker::run() {
         // guarantees that we emit a sane progress before we start and after
         // we end.  In between, each filename will get its own visible tick
         // on the bar, which looks really nice.
-        emit(progress(it->fileName(), i, copy_list.size()));
+        emit(progress(tr("Exporting %1").arg(it->fileName()), i, copy_list.size()));
         copyFile(*it, it.key());
         if (load_atomic(m_bStop)) {
             emit(canceled());
             return;
         }
         ++i;
-        emit(progress(it->fileName(), i, copy_list.size()));
+        emit(progress(tr("Exporting %1").arg(it->fileName()), i, copy_list.size()));
     }
+    emit(finished());
 }
 
 void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,

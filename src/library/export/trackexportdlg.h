@@ -31,6 +31,7 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
 
   public slots:
     void slotProgress(QString filename, int progress, int count);
+    void slotFinished();
     void slotAskOverwriteMode(
             QString filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);

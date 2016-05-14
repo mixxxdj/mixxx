@@ -23,6 +23,7 @@ TrackExportDlg::TrackExportDlg(QWidget *parent,
 
     connect(m_worker, SIGNAL(progress(QString, int, int)), this,
             SLOT(slotProgress(QString, int, int)));
+    connect(m_worker, SIGNAL(finished()), this, SLOT(slotFinished()));
     connect(m_worker,
             SIGNAL(askOverwriteMode(QString, std::promise<TrackExportWorker::OverwriteAnswer>*)),
             this,
@@ -42,13 +43,8 @@ void TrackExportDlg::showEvent(QShowEvent* event) {
     m_worker->start();
 }
 
-void TrackExportDlg::slotProgress(QString filename, int progress, int count) {
-    if (progress == count) {
-        statusLabel->setText(tr("Export finished"));
-        finish();
-    } else {
-        statusLabel->setText(tr("Exporting %1").arg(filename));
-    }
+void TrackExportDlg::slotProgress(QString message, int progress, int count) {
+    statusLabel->setText(message);
     exportProgress->setMinimum(0);
     exportProgress->setMaximum(count);
     exportProgress->setValue(progress);
@@ -89,6 +85,12 @@ void TrackExportDlg::slotAskOverwriteMode(
 }
 
 void TrackExportDlg::cancelButtonClicked() {
+    statusLabel->setText(tr("Export canceled"));
+    finish();
+}
+
+void TrackExportDlg::slotFinished() {
+    statusLabel->setText(tr("Export finished"));
     finish();
 }
 

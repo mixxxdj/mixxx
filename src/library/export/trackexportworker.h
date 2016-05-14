@@ -7,6 +7,7 @@
 #include <QThread>
 #include <future>
 
+#include "preferences/usersettings.h"
 #include "track/track.h"
 
 // A QThread class for copying a list of files to a single destination directory.
@@ -34,8 +35,9 @@ class TrackExportWorker : public QThread {
 
     // Constructor does not validate the destination directory.  Calling classes
     // should do that.
-    TrackExportWorker(QString destDir, QList<TrackPointer> tracks)
-            : m_destDir(destDir), m_tracks(tracks) { }
+    TrackExportWorker(UserSettingsPointer pConfig, QString destDir,
+                      QList<TrackPointer> tracks)
+            : m_pConfig(pConfig), m_destDir(destDir), m_tracks(tracks) { }
     virtual ~TrackExportWorker() { };
 
     // exports ALL the tracks.  Thread joins on success or failure.
@@ -60,7 +62,11 @@ class TrackExportWorker : public QThread {
     void askOverwriteMode(
             QString filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
-    void progress(QString filename, int progress, int count);
+    // Outgoing messages should already be i18n.
+    void progress(QString message, int progress, int count);
+    // The finished signal indicates a successful copy.
+    void finished();
+    // The canceled signal indicates a canceled (non-error) copy.
     void canceled();
 
   private:
@@ -80,6 +86,7 @@ class TrackExportWorker : public QThread {
     QString m_errorMessage;
 
     OverwriteMode m_overwriteMode = OverwriteMode::ASK;
+    UserSettingsPointer m_pConfig;
     const QString m_destDir;
     const QList<TrackPointer> m_tracks;
 };

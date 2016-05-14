@@ -39,7 +39,7 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
           m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
     slotUpdate();
-    checkbox_ID3_sync->setVisible(false);
+    checkbox_ID3_sync->setVisible(true);
 
     connect(this, SIGNAL(requestAddDir(QString)),
             m_pLibrary, SLOT(slotRequestAddDir(QString)));
