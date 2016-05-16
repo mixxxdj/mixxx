@@ -8,6 +8,32 @@
 #include "library/trackcollection.h"
 #include "test/mixxxtest.h"
 
+namespace {
+
+const QString kCoverLocationTest("res/images/library/cover_default.png");
+const QString kTrackLocationTest(QDir::currentPath() %
+                                 "/src/test/id3-test-data/cover-test-png.mp3");
+const QString kReferencePNGLocationTest(QDir::currentPath() %
+                                 "/src/test/id3-test-data/reference_cover.png");
+const QString kReferenceJPGLocationTest(QDir::currentPath() %
+                                 "/src/test/id3-test-data/cover_test.jpg");
+
+bool isSupportedFileExtension(const QString& fileExtension) {
+    return 0 < SoundSourceProxy::getSupportedFileExtensions().count(fileExtension);
+}
+
+void extractEmbeddedCover(
+        const QString& trackLocation,
+        const SecurityTokenPointer& pToken,
+        const QImage& expectedImage) {
+    const QImage actualImage(
+            CoverArtUtils::extractEmbeddedCover(trackLocation, pToken));
+    EXPECT_FALSE(actualImage.isNull());
+    EXPECT_EQ(expectedImage, actualImage);
+}
+
+} // anonymous namespace
+
 // first inherit from MixxxTest to construct a QApplication to be able to
 // construct the default QPixmap in CoverArtCache
 class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
@@ -32,14 +58,6 @@ class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
     TrackCollection* m_pTrackCollection;
 };
 
-const QString kCoverLocationTest("res/images/library/cover_default.png");
-const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test-png.mp3");
-const QString kReferencePNGLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/reference_cover.png");
-const QString kReferenceJPGLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover_test.jpg");
-
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     const QString kTestPath(QDir::currentPath() % "/src/test/id3-test-data/");
     QImage cover;
@@ -50,44 +68,51 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     // them in a sandboxed environment.
 
     SecurityTokenPointer pToken;
-    // aiff
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.aiff",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
-    // flac
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.flac",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
-    // mp3 - PNG
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test-png.mp3",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
-    // mp3 - JPEG
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test-jpg.mp3",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referenceJPGImage, cover);
-    // ogg
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.ogg",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
-    // wav
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.wav",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
 
-#ifdef __OPUS__
-    // opus
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.opus",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
-#endif
+    if (isSupportedFileExtension("aiff")) {
+        extractEmbeddedCover(
+                kTestPath + "cover-test.aiff", pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("flac")) {
+        extractEmbeddedCover(
+                kTestPath + "cover-test.flac", pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("m4a")) {
+        extractEmbeddedCover(
+                kTestPath + "cover-test.m4a", pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("mp3")) {
+        // PNG
+        extractEmbeddedCover(
+                kTestPath + "cover-test-png.mp3", pToken, referencePNGImage);
+        // JPEG
+        extractEmbeddedCover(
+                kTestPath + "cover-test-jpg.mp3", pToken, referenceJPGImage);
+    }
+
+    if (isSupportedFileExtension("ogg")) {
+        extractEmbeddedCover(
+                kTestPath + "cover-test.ogg", pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("opus")) {
+        // opus
+        extractEmbeddedCover(
+                kTestPath + "cover-test.opus", pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("wav")) {
+        extractEmbeddedCover(
+                kTestPath + "cover-test.wav", pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("wv")) {
+        extractEmbeddedCover(
+                kTestPath + "cover-test.wv", pToken, referencePNGImage);
+    }
 }
 
 TEST_F(CoverArtUtilTest, searchImage) {
