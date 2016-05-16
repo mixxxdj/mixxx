@@ -5,7 +5,6 @@
 #include <taglib/id3v2tag.h>
 #include <taglib/xiphcomment.h>
 #include <taglib/mp4tag.h>
-
 #include <QImage>
 
 #include "track/trackmetadata.h"
@@ -32,7 +31,6 @@ bool writeTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& t
 bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
         const TrackMetadata& trackMetadata);
 bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata);
-
 } //namespace Mixxx
 
 #endif

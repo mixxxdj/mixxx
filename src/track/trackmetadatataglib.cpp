@@ -49,6 +49,7 @@ static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size th
 #include <taglib/textidentificationframe.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
+#include "controlobject.h"
 
 namespace Mixxx {
 
@@ -840,7 +841,10 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
     }
     TagLib::ID3v2::FrameList ratingFrame = tag.frameListMap()["POPM"];
     int rating = 0;
-    if(!ratingFrame.isEmpty()) {
+
+// const int ratingbool = ControlObject::getControl(ConfigKey("[Library]","ID3RatingSync"));    
+//qDebug() << "ID3 " << ratingbool;
+if(!ratingFrame.isEmpty()) {
         // RatingString "traktor@native-instruments.de rating=255 counter=2"
 
         QString sRating = TStringToQString(ratingFrame.front()->toString());

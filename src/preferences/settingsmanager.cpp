@@ -45,6 +45,8 @@ void SettingsManager::initializeDefaults() {
     // For safety reasons, we deactivate this feature.
     m_pSettings->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
 
+    m_pSettings->set(ConfigKey("[Library]","ID3RatingSync"),ConfigValue(0));;
+
     // Intialize default BPM system values.
     // NOTE(rryan): These should be in a better place but they've always been in
     // MixxxMainWindow.

@@ -149,6 +149,7 @@ void DlgPrefLibrary::slotExtraPlugins() {
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
     checkbox_ID3_sync->setChecked(false);
+    checkBox_ID3_rating_sync->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -167,6 +168,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","RescanOnStartup")).toInt());
     checkbox_ID3_sync->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","WriteAudioTags")).toInt());
+    checkBox_ID3_rating_sync->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Library]","ID3RatingSync")).toInt());
     checkBox_use_relative_path->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","UseRelativePathOnExport")).toInt());
     checkBox_show_rhythmbox->setChecked((bool)m_pconfig->getValueString(
@@ -300,6 +303,8 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","WriteAudioTags"),
                 ConfigValue((int)checkbox_ID3_sync->isChecked()));
+    m_pconfig->set(ConfigKey("[Library]","ID3RatingSync"),
+                ConfigValue((int)checkBox_ID3_rating_sync->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
