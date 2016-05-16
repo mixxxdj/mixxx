@@ -10,13 +10,9 @@
 
 namespace {
 
-const QString kCoverLocationTest("res/images/library/cover_default.png");
-const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test-png.mp3");
-const QString kReferencePNGLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/reference_cover.png");
-const QString kReferenceJPGLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover_test.jpg");
+const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
+const QString kReferencePNGLocationTest(kTestDir.absoluteFilePath("reference_cover.png"));
+const QString kReferenceJPGLocationTest(kTestDir.absoluteFilePath("cover_test.jpg"));
 
 bool isSupportedFileExtension(const QString& fileExtension) {
     return 0 < SoundSourceProxy::getSupportedFileExtensions().count(fileExtension);
@@ -59,7 +55,6 @@ class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
 };
 
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
-    const QString kTestPath(QDir::currentPath() % "/src/test/id3-test-data/");
     QImage cover;
     QImage referencePNGImage = QImage(kReferencePNGLocationTest);
     QImage referenceJPGImage = QImage(kReferenceJPGLocationTest);
@@ -71,47 +66,47 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
 
     if (isSupportedFileExtension("aiff")) {
         extractEmbeddedCover(
-                kTestPath + "cover-test.aiff", pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.aiff"), pToken, referencePNGImage);
     }
 
     if (isSupportedFileExtension("flac")) {
         extractEmbeddedCover(
-                kTestPath + "cover-test.flac", pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.flac"), pToken, referencePNGImage);
     }
 
     if (isSupportedFileExtension("m4a")) {
         extractEmbeddedCover(
-                kTestPath + "cover-test.m4a", pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.m4a"), pToken, referencePNGImage);
     }
 
     if (isSupportedFileExtension("mp3")) {
         // PNG
         extractEmbeddedCover(
-                kTestPath + "cover-test-png.mp3", pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test-png.mp3"), pToken, referencePNGImage);
         // JPEG
         extractEmbeddedCover(
-                kTestPath + "cover-test-jpg.mp3", pToken, referenceJPGImage);
+                kTestDir.absoluteFilePath("cover-test-jpg.mp3"), pToken, referenceJPGImage);
     }
 
     if (isSupportedFileExtension("ogg")) {
         extractEmbeddedCover(
-                kTestPath + "cover-test.ogg", pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.ogg"), pToken, referencePNGImage);
     }
 
     if (isSupportedFileExtension("opus")) {
         // opus
         extractEmbeddedCover(
-                kTestPath + "cover-test.opus", pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.opus"), pToken, referencePNGImage);
     }
 
     if (isSupportedFileExtension("wav")) {
         extractEmbeddedCover(
-                kTestPath + "cover-test.wav", pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.wav"), pToken, referencePNGImage);
     }
 
     if (isSupportedFileExtension("wv")) {
         extractEmbeddedCover(
-                kTestPath + "cover-test.wv", pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.wv"), pToken, referencePNGImage);
     }
 }
 
@@ -120,6 +115,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
     QString trackdir(QDir::tempPath() % "/TrackDir");
     ASSERT_FALSE(QDir().exists(trackdir)); // it must start empty
     ASSERT_TRUE(QDir().mkpath(trackdir));
+
+    const QString kTrackLocationTest(kTestDir.absoluteFilePath("cover-test-png.mp3"));
 
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
     SoundSourceProxy(pTrack).loadTrackMetadata();
@@ -145,7 +142,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     const char* format("jpg");
     const QString qFormat(format);
 
-    // Since we already parsed this image from the matadata in
+    // Since we already parsed this image from the metadata in
     // kTrackLocationTest, hang on to it since we use it as a template for
     // stuff below.
     const QImage img = expected.image;
