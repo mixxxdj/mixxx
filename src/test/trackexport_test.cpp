@@ -103,7 +103,7 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     // one written.
     QFileInfo newfile1(m_exportDir.filePath("cover-test.ogg"));
     EXPECT_TRUE(newfile1.exists());
-    EXPECT_EQ(110106, newfile1.size());
+    EXPECT_EQ(95593, newfile1.size());
 
     QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
     EXPECT_TRUE(newfile2.exists());
