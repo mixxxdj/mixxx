@@ -12,8 +12,9 @@
         </scriptfiles>
         <controls>
             <control>
-                <group>[Playlist]</group>
-                <key>LoadSelectedIntoFirstStopped</key>
+                <group>[Master]</group>
+                <key>maximize_library</key>
+                <description>MIDI Learned from 2 messages.</description>
                 <status>0x90</status>
                 <midino>0x4F</midino>
                 <options>
@@ -329,6 +330,16 @@
                 <key>filterHigh</key>
                 <status>0xB0</status>
                 <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>maximize_library</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x80</status>
+                <midino>0x4F</midino>
                 <options>
                     <normal/>
                 </options>
