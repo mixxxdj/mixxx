@@ -400,10 +400,8 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;
     }
-    
+        
     // There's no item to sort already, load from Settings last sort
-
-    
     if (m_sortColumns.isEmpty()) {
         QString val = getModelSetting(COLUMNS_SORTING);
         QTextStream in(&val);
@@ -413,7 +411,9 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             QString name;
             
             in >> name >> ordI;
-            int col = fieldIndex(name) + m_tableColumns.size() - 1;
+            
+            int col = fieldIndex(name);
+            if (col < 0) continue;
             
             Qt::SortOrder ord;
             ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
@@ -445,12 +445,14 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     // Write new sortColumns order to user settings
     QString val;
     QTextStream out(&val);
+    qDebug() << m_tableColumns;
     for (SortColumn& sc : m_sortColumns) {
 
-        QString name;
+        QString name;        
         if (sc.m_column > 0 && sc.m_column < m_tableColumns.size()) {
-            name = m_tableColumns[column];
+            name = m_tableColumns[sc.m_column];
         } else {
+            // ccColumn between 1..x to skip the id column
             int ccColumn = sc.m_column - m_tableColumns.size() + 1;
             name = m_trackSource->columnNameForFieldIndex(ccColumn);
         }
