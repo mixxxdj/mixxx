@@ -8,6 +8,28 @@
 #include "library/trackcollection.h"
 #include "test/mixxxtest.h"
 
+namespace {
+
+const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
+const QString kReferencePNGLocationTest(kTestDir.absoluteFilePath("reference_cover.png"));
+const QString kReferenceJPGLocationTest(kTestDir.absoluteFilePath("cover_test.jpg"));
+
+bool isSupportedFileExtension(const QString& fileExtension) {
+    return 0 < SoundSourceProxy::getSupportedFileExtensions().count(fileExtension);
+}
+
+void extractEmbeddedCover(
+        const QString& trackLocation,
+        const SecurityTokenPointer& pToken,
+        const QImage& expectedImage) {
+    const QImage actualImage(
+            CoverArtUtils::extractEmbeddedCover(trackLocation, pToken));
+    EXPECT_FALSE(actualImage.isNull());
+    EXPECT_EQ(expectedImage, actualImage);
+}
+
+} // anonymous namespace
+
 // first inherit from MixxxTest to construct a QApplication to be able to
 // construct the default QPixmap in CoverArtCache
 class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
@@ -32,16 +54,7 @@ class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
     TrackCollection* m_pTrackCollection;
 };
 
-const QString kCoverLocationTest("res/images/library/cover_default.png");
-const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test-png.mp3");
-const QString kReferencePNGLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/reference_cover.png");
-const QString kReferenceJPGLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover_test.jpg");
-
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
-    const QString kTestPath(QDir::currentPath() % "/src/test/id3-test-data/");
     QImage cover;
     QImage referencePNGImage = QImage(kReferencePNGLocationTest);
     QImage referenceJPGImage = QImage(kReferenceJPGLocationTest);
@@ -50,44 +63,51 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     // them in a sandboxed environment.
 
     SecurityTokenPointer pToken;
-    // aiff
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.aiff",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
-    // flac
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.flac",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
-    // mp3 - PNG
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test-png.mp3",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
-    // mp3 - JPEG
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test-jpg.mp3",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referenceJPGImage, cover);
-    // ogg
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.ogg",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
-    // wav
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.wav",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
 
-#ifdef __OPUS__
-    // opus
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.opus",
-                                                pToken);
-    EXPECT_FALSE(cover.isNull());
-    EXPECT_EQ(referencePNGImage, cover);
-#endif
+    if (isSupportedFileExtension("aiff")) {
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test.aiff"), pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("flac")) {
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test.flac"), pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("m4a")) {
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test.m4a"), pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("mp3")) {
+        // PNG
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test-png.mp3"), pToken, referencePNGImage);
+        // JPEG
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test-jpg.mp3"), pToken, referenceJPGImage);
+    }
+
+    if (isSupportedFileExtension("ogg")) {
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test.ogg"), pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("opus")) {
+        // opus
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test.opus"), pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("wav")) {
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test.wav"), pToken, referencePNGImage);
+    }
+
+    if (isSupportedFileExtension("wv")) {
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test.wv"), pToken, referencePNGImage);
+    }
 }
 
 TEST_F(CoverArtUtilTest, searchImage) {
@@ -95,6 +115,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
     QString trackdir(QDir::tempPath() % "/TrackDir");
     ASSERT_FALSE(QDir().exists(trackdir)); // it must start empty
     ASSERT_TRUE(QDir().mkpath(trackdir));
+
+    const QString kTrackLocationTest(kTestDir.absoluteFilePath("cover-test-png.mp3"));
 
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
     SoundSourceProxy(pTrack).loadTrackMetadata();
@@ -120,7 +142,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     const char* format("jpg");
     const QString qFormat(format);
 
-    // Since we already parsed this image from the matadata in
+    // Since we already parsed this image from the metadata in
     // kTrackLocationTest, hang on to it since we use it as a template for
     // stuff below.
     const QImage img = expected.image;
