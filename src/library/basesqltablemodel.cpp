@@ -445,7 +445,6 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     // Write new sortColumns order to user settings
     QString val;
     QTextStream out(&val);
-    qDebug() << m_tableColumns;
     for (SortColumn& sc : m_sortColumns) {
 
         QString name;        
