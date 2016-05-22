@@ -21,6 +21,7 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     virtual ~DlgHidden();
 
     void onShow();
+    bool hasFocus() const;
     void onSearch(const QString& text);
 
   public slots:

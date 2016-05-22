@@ -20,6 +20,7 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     virtual ~DlgMissing();
 
     void onShow();
+    bool hasFocus() const;
     void onSearch(const QString& text);
 
   public slots:

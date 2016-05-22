@@ -26,6 +26,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
     virtual void onSearch(const QString& text);
     virtual void onShow();
+    virtual bool hasFocus() const;
     virtual void loadSelectedTrack();
     virtual void slotSendToAutoDJ();
     virtual void slotSendToAutoDJTop();

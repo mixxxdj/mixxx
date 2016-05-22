@@ -78,6 +78,11 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pSelectTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectTrack(double)));
 
+    // Ignoring no-ops is important since this is for +/- tickers.
+    m_pSelectItem = new ControlObject(ConfigKey("[Playlist]","SelectItemKnob"), false);
+    connect(m_pSelectItem, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSelectItem(double)));
+
     m_pSelectNextSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextPlaylist"));
     connect(m_pSelectNextSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectNextSidebarItem(double)));
@@ -290,6 +295,17 @@ void LibraryControl::slotSelectTrack(double v) {
         return;
     }
     activeView->moveSelection(i);
+}
+
+void LibraryControl::slotSelectItem(double v) {
+    if (m_pLibraryWidget == NULL || m_pSidebarWidget == NULL) {
+        return;
+    }
+    // Select track if a LibraryView object has focus, otherwise select sidebar item
+    if (m_pLibraryWidget->getActiveView()->hasFocus()) {
+        return slotSelectTrack(v);
+    }
+    slotSelectSidebarItem(v);
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {

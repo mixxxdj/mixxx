@@ -48,6 +48,7 @@ class LibraryControl : public QObject {
     void slotSelectPrevTrack(double v);
     void slotSelectTrack(double v);
     void slotSelectSidebarItem(double v);
+    void slotSelectItem(double v);
     void slotSelectNextSidebarItem(double v);
     void slotSelectPrevSidebarItem(double v);
     void slotToggleSelectedSidebarItem(double v);
@@ -72,6 +73,7 @@ class LibraryControl : public QObject {
     ControlObject* m_pSelectTrack;
 
     ControlObject* m_pSelectSidebarItem;
+    ControlObject* m_pSelectItem;
     ControlObject* m_pSelectPrevSidebarItem;
     ControlObject* m_pSelectNextSidebarItem;
 

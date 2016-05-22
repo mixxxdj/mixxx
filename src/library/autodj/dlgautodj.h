@@ -26,6 +26,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     virtual ~DlgAutoDJ();
 
     void onShow();
+    bool hasFocus() const;
     void onSearch(const QString& text);
     void loadSelectedTrack();
     void loadSelectedTrackToGroup(QString group, bool play);

@@ -22,6 +22,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
 
     virtual void onSearch(const QString& text);
     virtual void onShow();
+    virtual bool hasFocus() const;
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
     virtual void slotSendToAutoDJ();

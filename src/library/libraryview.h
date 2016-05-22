@@ -14,6 +14,7 @@ class LibraryView {
     virtual ~LibraryView() {};
 
     virtual void onShow() = 0;
+    virtual bool hasFocus() const = 0;
     // reimplement if LibraryView should be able to search
     virtual void onSearch(const QString& text) {Q_UNUSED(text);}
 
