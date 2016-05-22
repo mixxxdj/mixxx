@@ -96,6 +96,9 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pSelectSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectSidebarItem(double)));
 
+    m_pToggleFocusWidget = new ControlPushButton(ConfigKey("[Playlist]", "ToggleFocusWidget"));
+    connect(m_pToggleFocusWidget, SIGNAL(valueChanged(double)),this, SLOT(slotToggleFocusWidget(double)));
+
     m_pToggleSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
     connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleSelectedSidebarItem(double)));
@@ -339,6 +342,14 @@ void LibraryControl::slotSelectPrevSidebarItem(double v) {
     if (v > 0) {
         slotSelectSidebarItem(-1);
     }
+}
+
+void LibraryControl::slotToggleFocusWidget(double v) {
+    if (v <= 0 || m_pSidebarWidget == NULL) {
+        return;
+    }
+    QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
+        QEvent::KeyPress, (int)Qt::Key_Tab, Qt::NoModifier, QString(), true));
 }
 
 void LibraryControl::slotToggleSelectedSidebarItem(double v) {
