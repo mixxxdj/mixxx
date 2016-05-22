@@ -103,6 +103,9 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleSelectedSidebarItem(double)));
 
+    m_pChooseItem = new ControlPushButton(ConfigKey("[Playlist]", "ChooseItem"));
+    connect(m_pChooseItem, SIGNAL(valueChanged(double)), this, SLOT(slotChooseItem(double)));
+
     m_pLoadSelectedIntoFirstStopped = new ControlPushButton(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
     connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
@@ -356,6 +359,18 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
     if (m_pSidebarWidget != NULL && v > 0) {
         m_pSidebarWidget->toggleSelectedItem();
     }
+}
+
+void LibraryControl::slotChooseItem(double v) {
+    if (m_pLibraryWidget == NULL) {
+        return;
+    }
+    // Load current track if a LibraryView object has focus
+    if (m_pLibraryWidget->getActiveView()->hasFocus()) {
+        return slotLoadSelectedIntoFirstStopped(v);
+    }
+    // Otherwise toggle the sidebar item expanded state (like a double-click)
+    slotToggleSelectedSidebarItem(v);
 }
 
 void LibraryControl::slotFontSize(double v) {

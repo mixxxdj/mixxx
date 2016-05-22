@@ -53,6 +53,7 @@ class LibraryControl : public QObject {
     void slotSelectPrevSidebarItem(double v);
     void slotToggleSelectedSidebarItem(double v);
     void slotToggleFocusWidget(double v);
+    void slotChooseItem(double v);
     void slotLoadSelectedIntoFirstStopped(double v);
     void slotAutoDjAddTop(double v);
     void slotAutoDjAddBottom(double v);
@@ -80,6 +81,7 @@ class LibraryControl : public QObject {
     ControlObject* m_pSelectNextSidebarItem;
 
     ControlObject* m_pToggleSidebarItem;
+    ControlObject* m_pChooseItem;
     ControlObject* m_pLoadSelectedIntoFirstStopped;
     ControlObject* m_pAutoDjAddTop;
     ControlObject* m_pAutoDjAddBottom;
