@@ -50,8 +50,8 @@ void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
 LibraryControl::LibraryControl(Library* pLibrary)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
-          m_pLibraryWidget(NULL),
-          m_pSidebarWidget(NULL),
+          m_pLibraryWidget(nullptr),
+          m_pSidebarWidget(nullptr),
           m_numDecks("[Master]", "num_decks", this),
           m_numSamplers("[Master]", "num_samplers", this),
           m_numPreviewDecks("[Master]", "num_preview_decks", this) {
@@ -153,8 +153,8 @@ LibraryControl::~LibraryControl() {
 }
 
 void LibraryControl::maybeCreateGroupController(const QString& group) {
-    LoadToGroupController* pGroup = m_loadToGroupControllers.value(group, NULL);
-    if (pGroup == NULL) {
+    LoadToGroupController* pGroup = m_loadToGroupControllers.value(group, nullptr);
+    if (pGroup == nullptr) {
         pGroup = new LoadToGroupController(this, group);
         m_loadToGroupControllers[group] = pGroup;
     }
@@ -197,7 +197,7 @@ void LibraryControl::slotNumPreviewDecksChanged(double v) {
 }
 
 void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    if (m_pSidebarWidget != NULL) {
+    if (m_pSidebarWidget != nullptr) {
         disconnect(m_pSidebarWidget, 0, this, 0);
     }
     m_pSidebarWidget = pSidebarWidget;
@@ -207,7 +207,7 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
 void LibraryControl::bindWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
     Q_UNUSED(pKeyboard);
-    if (m_pLibraryWidget != NULL) {
+    if (m_pLibraryWidget != nullptr) {
         disconnect(m_pLibraryWidget, 0, this, 0);
     }
     m_pLibraryWidget = pLibraryWidget;
@@ -216,15 +216,15 @@ void LibraryControl::bindWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* p
 }
 
 void LibraryControl::libraryWidgetDeleted() {
-    m_pLibraryWidget = NULL;
+    m_pLibraryWidget = nullptr;
 }
 
 void LibraryControl::sidebarWidgetDeleted() {
-    m_pSidebarWidget = NULL;
+    m_pSidebarWidget = nullptr;
 }
 
 void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
-    if (m_pLibraryWidget == NULL) {
+    if (m_pLibraryWidget == nullptr) {
         return;
     }
 
@@ -236,7 +236,7 @@ void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
-    if (m_pLibraryWidget == NULL) {
+    if (m_pLibraryWidget == nullptr) {
         return;
     }
 
@@ -250,7 +250,7 @@ void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
 }
 
 void LibraryControl::slotAutoDjAddTop(double v) {
-    if (m_pLibraryWidget == NULL) {
+    if (m_pLibraryWidget == nullptr) {
         return;
     }
 
@@ -264,7 +264,7 @@ void LibraryControl::slotAutoDjAddTop(double v) {
 }
 
 void LibraryControl::slotAutoDjAddBottom(double v) {
-    if (m_pLibraryWidget == NULL) {
+    if (m_pLibraryWidget == nullptr) {
         return;
     }
 
@@ -290,7 +290,7 @@ void LibraryControl::slotSelectPrevTrack(double v) {
 }
 
 void LibraryControl::slotSelectTrack(double v) {
-    if (m_pLibraryWidget == NULL) {
+    if (m_pLibraryWidget == nullptr) {
         return;
     }
 
@@ -304,7 +304,7 @@ void LibraryControl::slotSelectTrack(double v) {
 }
 
 void LibraryControl::slotSelectItem(double v) {
-    if (m_pLibraryWidget == NULL || m_pSidebarWidget == NULL) {
+    if (m_pLibraryWidget == nullptr || m_pSidebarWidget == nullptr) {
         return;
     }
     // Select track if a LibraryView object has focus, otherwise select sidebar item
@@ -315,7 +315,7 @@ void LibraryControl::slotSelectItem(double v) {
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
-    if (m_pSidebarWidget == NULL) {
+    if (m_pSidebarWidget == nullptr) {
         return;
     }
     if (v > 0) {
@@ -348,7 +348,7 @@ void LibraryControl::slotSelectPrevSidebarItem(double v) {
 }
 
 void LibraryControl::slotToggleFocusWidget(double v) {
-    if (v <= 0 || m_pSidebarWidget == NULL) {
+    if (v <= 0 || m_pSidebarWidget == nullptr) {
         return;
     }
     QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
@@ -356,13 +356,13 @@ void LibraryControl::slotToggleFocusWidget(double v) {
 }
 
 void LibraryControl::slotToggleSelectedSidebarItem(double v) {
-    if (m_pSidebarWidget != NULL && v > 0) {
+    if (m_pSidebarWidget != nullptr && v > 0) {
         m_pSidebarWidget->toggleSelectedItem();
     }
 }
 
 void LibraryControl::slotChooseItem(double v) {
-    if (m_pLibraryWidget == NULL) {
+    if (m_pLibraryWidget == nullptr) {
         return;
     }
     // Load current track if a LibraryView object has focus
