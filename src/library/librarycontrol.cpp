@@ -308,7 +308,8 @@ void LibraryControl::slotSelectItem(double v) {
         return;
     }
     // Select track if a LibraryView object has focus, otherwise select sidebar item
-    if (m_pLibraryWidget->getActiveView()->hasFocus()) {
+    LibraryView* activeView = m_pLibraryWidget->getActiveView();
+    if (activeView != nullptr && activeView->hasFocus()) {
         return slotSelectTrack(v);
     }
     slotSelectSidebarItem(v);
@@ -366,7 +367,8 @@ void LibraryControl::slotChooseItem(double v) {
         return;
     }
     // Load current track if a LibraryView object has focus
-    if (m_pLibraryWidget->getActiveView()->hasFocus()) {
+    LibraryView* activeView = m_pLibraryWidget->getActiveView();
+    if (activeView != nullptr && activeView->hasFocus()) {
         return slotLoadSelectedIntoFirstStopped(v);
     }
     // Otherwise toggle the sidebar item expanded state (like a double-click)
