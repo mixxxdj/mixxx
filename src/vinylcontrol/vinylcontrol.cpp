@@ -1,6 +1,6 @@
 #include "vinylcontrol/vinylcontrol.h"
-#include "controlobjectslave.h"
-#include "controlobject.h"
+#include "control/controlproxy.h"
+#include "control/controlobject.h"
 
 VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
         : m_pConfig(pConfig),
@@ -10,7 +10,7 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
           m_dVinylPosition(0.0),
           m_fTimecodeQuality(0.0f) {
     // Get Control objects
-    m_pVinylControlInputGain = new ControlObjectSlave(VINYL_PREF_KEY, "gain", this);
+    m_pVinylControlInputGain = new ControlProxy(VINYL_PREF_KEY, "gain", this);
 
     bool gainOk = false;
     double gain = m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "gain"))
@@ -18,27 +18,27 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
     m_pVinylControlInputGain->set(gainOk ? gain : 1.0);
 
     // Range: 0 to 1.0
-    playPos = new ControlObjectSlave(group, "playposition", this);
-    trackSamples = new ControlObjectSlave(group, "track_samples", this);
-    trackSampleRate = new ControlObjectSlave(group, "track_samplerate", this);
-    vinylSeek = new ControlObjectSlave(group, "vinylcontrol_seek", this);
-    m_pVCRate = new ControlObjectSlave(group, "vinylcontrol_rate", this);
-    m_pRateSlider = new ControlObjectSlave(group, "rate", this);
-    playButton = new ControlObjectSlave(group, "play", this);
-    duration = new ControlObjectSlave(group, "duration", this);
-    mode = new ControlObjectSlave(group, "vinylcontrol_mode", this);
-    enabled = new ControlObjectSlave(group, "vinylcontrol_enabled", this);
-    wantenabled = new ControlObjectSlave(
+    playPos = new ControlProxy(group, "playposition", this);
+    trackSamples = new ControlProxy(group, "track_samples", this);
+    trackSampleRate = new ControlProxy(group, "track_samplerate", this);
+    vinylSeek = new ControlProxy(group, "vinylcontrol_seek", this);
+    m_pVCRate = new ControlProxy(group, "vinylcontrol_rate", this);
+    m_pRateSlider = new ControlProxy(group, "rate", this);
+    playButton = new ControlProxy(group, "play", this);
+    duration = new ControlProxy(group, "duration", this);
+    mode = new ControlProxy(group, "vinylcontrol_mode", this);
+    enabled = new ControlProxy(group, "vinylcontrol_enabled", this);
+    wantenabled = new ControlProxy(
             group, "vinylcontrol_wantenabled", this);
-    cueing = new ControlObjectSlave(group, "vinylcontrol_cueing", this);
-    scratching = new ControlObjectSlave(group, "vinylcontrol_scratching", this);
-    m_pRateRange = new ControlObjectSlave(group, "rateRange", this);
-    vinylStatus = new ControlObjectSlave(group, "vinylcontrol_status", this);
-    m_pRateDir = new ControlObjectSlave(group, "rate_dir", this);
-    loopEnabled = new ControlObjectSlave(group, "loop_enabled", this);
-    signalenabled = new ControlObjectSlave(
+    cueing = new ControlProxy(group, "vinylcontrol_cueing", this);
+    scratching = new ControlProxy(group, "vinylcontrol_scratching", this);
+    m_pRateRange = new ControlProxy(group, "rateRange", this);
+    vinylStatus = new ControlProxy(group, "vinylcontrol_status", this);
+    m_pRateDir = new ControlProxy(group, "rate_dir", this);
+    loopEnabled = new ControlProxy(group, "loop_enabled", this);
+    signalenabled = new ControlProxy(
             group, "vinylcontrol_signal_enabled", this);
-    reverseButton = new ControlObjectSlave(group, "reverse", this);
+    reverseButton = new ControlProxy(group, "reverse", this);
 
     //Enabled or not -- load from saved value in case vinyl control is restarting
     m_bIsEnabled = wantenabled->get() > 0.0;

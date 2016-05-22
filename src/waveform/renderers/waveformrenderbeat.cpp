@@ -4,9 +4,9 @@
 
 #include "waveform/renderers/waveformrenderbeat.h"
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "track/beats.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
@@ -73,7 +73,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
 
         xBeatPoint = qRound(xBeatPoint);
-        
+
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
             m_beats.resize(m_beats.size() * 2);

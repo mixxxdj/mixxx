@@ -668,7 +668,7 @@ class QDebug(Feature):
         return "Debugging message output"
 
     def enabled(self, build):
-        build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 0)
+        build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 1)
         if build.platform_is_windows:
             if build.build_is_debug:
                 # Turn general debugging flag on too if debug build is specified
@@ -725,7 +725,7 @@ class Verbose(Feature):
 
 class Profiling(Feature):
     def description(self):
-        return "gprof/Saturn profiling support"
+        return "profiling (e.g. gprof) support"
 
     def enabled(self, build):
         build.flags['profiling'] = util.get_flags(build.env, 'profiling', 0)
@@ -737,7 +737,7 @@ class Profiling(Feature):
     def add_options(self, build, vars):
         if not build.platform_is_windows:
             vars.Add('profiling',
-                     '(DEVELOPER) Set to 1 to enable profiling using gprof (Linux) or Saturn (OS X)', 0)
+                     '(DEVELOPER) Set to 1 to enable profiling using gprof (Linux). Disables -fomit-frame-pointer.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -745,9 +745,6 @@ class Profiling(Feature):
         if build.platform_is_linux or build.platform_is_bsd:
             build.env.Append(CCFLAGS='-pg')
             build.env.Append(LINKFLAGS='-pg')
-        elif build.platform_is_osx:
-            build.env.Append(CCFLAGS='-finstrument-functions')
-            build.env.Append(LINKFLAGS='-lSaturn')
 
 
 class TestSuite(Feature):
@@ -809,9 +806,9 @@ class TestSuite(Feature):
         return []
 
 
-class Shoutcast(Feature):
+class LiveBroadcasting(Feature):
     def description(self):
-        return "Shoutcast Broadcasting (OGG/MP3)"
+        return "Live Broadcasting Support"
 
     def enabled(self, build):
         build.flags['shoutcast'] = util.get_flags(build.env, 'shoutcast', 1)
@@ -820,14 +817,14 @@ class Shoutcast(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 1)
+        vars.Add('shoutcast', 'Set to 1 to enable live broadcasting support', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
         libshout_found = conf.CheckLib(['libshout', 'shout'])
-        build.env.Append(CPPDEFINES='__SHOUTCAST__')
+        build.env.Append(CPPDEFINES='__BROADCAST__')
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
@@ -837,10 +834,10 @@ class Shoutcast(Feature):
             conf.CheckLib('ws2_32')
 
     def sources(self, build):
-        depends.Qt.uic(build)('preferences/dialog/dlgprefshoutcastdlg.ui')
-        return ['preferences/dialog/dlgprefshoutcast.cpp',
-                'shoutcast/shoutcastmanager.cpp',
-                'engine/sidechain/engineshoutcast.cpp']
+        depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')
+        return ['preferences/dialog/dlgprefbroadcast.cpp',
+                'broadcast/broadcastmanager.cpp',
+                'engine/sidechain/enginebroadcast.cpp']
 
 
 class Opus(Feature):
@@ -1179,29 +1176,6 @@ class Optimize(Feature):
             # -O3 -fomit-frame-pointer -mtune=native -malign-double
             # -fstrict-aliasing -fno-schedule-insns -ffast-math
 
-
-class AutoDjCrates(Feature):
-    def description(self):
-        return "Auto-DJ crates (for random tracks)"
-
-    def enabled(self, build):
-        build.flags['autodjcrates'] = \
-            util.get_flags(build.env, 'autodjcrates', 1)
-        if int(build.flags['autodjcrates']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('autodjcrates',
-                 'Set to 1 to enable crates as a source for random Auto-DJ tracks.', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPDEFINES='__AUTODJCRATES__')
-
-    def sources(self, build):
-        return ['library/dao/autodjcratesdao.cpp']
 
 class MacAppStoreException(Feature):
     def description(self):

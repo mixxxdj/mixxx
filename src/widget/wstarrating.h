@@ -6,7 +6,7 @@
 #include <QStylePainter>
 
 #include "skin/skincontext.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 #include "library/starrating.h"
 #include "widget/wwidget.h"
@@ -15,23 +15,22 @@ class WStarRating : public WWidget {
     Q_OBJECT
   public:
     WStarRating(QString group, QWidget* pParent);
-    virtual ~WStarRating();
 
-    virtual void setup(QDomNode node, const SkinContext& context);
-    QSize sizeHint() const;
+    virtual void setup(const QDomNode& node, const SkinContext& context);
+    QSize sizeHint() const override;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
     void slotTrackUnloaded(TrackPointer track);
 
   private slots:
-    void updateRating(TrackInfoObject*);
+    void updateRating(Track*);
 
   protected:
     void paintEvent(QPaintEvent* e) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void leaveEvent(QEvent *) override;
+    void leaveEvent(QEvent * /*unused*/) override;
     void fillDebugTooltip(QStringList* debug) override;
 
     StarRating m_starRating;

@@ -16,16 +16,15 @@
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
-    WSearchLineEdit(QWidget* pParent);
-    virtual ~WSearchLineEdit();
+    explicit WSearchLineEdit(QWidget* pParent);
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   protected:
-    void resizeEvent(QResizeEvent*);
-    virtual void focusInEvent(QFocusEvent*);
-    virtual void focusOutEvent(QFocusEvent*);
-    bool event(QEvent* pEvent);
+    void resizeEvent(QResizeEvent* /*unused*/) override;
+    void focusInEvent(QFocusEvent* /*unused*/) override;
+    void focusOutEvent(QFocusEvent* /*unused*/) override;
+    bool event(QEvent* pEvent) override;
 
   signals:
     void search(const QString& text);

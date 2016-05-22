@@ -15,7 +15,7 @@
 #include <QtNetwork>
 
 #include "musicbrainz/network.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class QXmlStreamReader;
 

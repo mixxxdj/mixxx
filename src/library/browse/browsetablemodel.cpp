@@ -9,7 +9,7 @@
 #include "library/browse/browsethread.h"
 #include "library/previewbuttondelegate.h"
 #include "mixer/playerinfo.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "library/dao/trackdao.h"
 #include "track/trackmetadatataglib.h"
 #include "util/dnd.h"

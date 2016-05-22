@@ -21,12 +21,13 @@
 
 #include "preferences/dialog/dlgprefvinyl.h"
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "mixer/playermanager.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "defs_urls.h"
+#include "util/platform.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            UserSettingsPointer  _config)
@@ -34,7 +35,7 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
           m_pVCManager(pVCMan),
           config(_config),
           m_iConfiguredDecks(0) {
-    m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
 
     setupUi(this);
@@ -130,7 +131,7 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_iConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_COSpeeds.push_back(new ControlObjectSlave(group, "vinylcontrol_speed_type"));
+        m_COSpeeds.push_back(new ControlProxy(group, "vinylcontrol_speed_type"));
         setDeckWidgetsVisible(i, true);
     }
 }
@@ -349,21 +350,21 @@ void DlgPrefVinyl::VinylTypeSlotApply()
         } else if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_45) {
             m_COSpeeds[3]->set(MIXXX_VINYL_SPEED_45_NUM);
         }
-        // fallthrough intended
+        M_FALLTHROUGH_INTENDED;
     case 3:
         if (ComboBoxVinylSpeed3->currentText() == MIXXX_VINYL_SPEED_33) {
             m_COSpeeds[2]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
         } else if (ComboBoxVinylSpeed3->currentText() == MIXXX_VINYL_SPEED_45) {
             m_COSpeeds[2]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
         }
-        // fallthrough intended
+        M_FALLTHROUGH_INTENDED;
     case 2:
         if (ComboBoxVinylSpeed2->currentText() == MIXXX_VINYL_SPEED_33) {
             m_COSpeeds[1]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
         } else if (ComboBoxVinylSpeed2->currentText() == MIXXX_VINYL_SPEED_45) {
             m_COSpeeds[1]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
         }
-        // fallthrough intended
+        M_FALLTHROUGH_INTENDED;
     case 1:
         if (ComboBoxVinylSpeed1->currentText() == MIXXX_VINYL_SPEED_33) {
             m_COSpeeds[0]->slotSet(MIXXX_VINYL_SPEED_33_NUM);

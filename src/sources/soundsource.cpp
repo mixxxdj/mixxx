@@ -21,16 +21,16 @@ SoundSource::SoundSource(const QUrl& url, const QString& type)
     DEBUG_ASSERT(getUrl().isValid());
 }
 
-Result SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
     close(); // reopening is not supported
-    Result result;
+    OpenResult result;
     try {
         result = tryOpen(audioSrcCfg);
     } catch (...) {
         close();
         throw;
     }
-    if (OK != result) {
+    if (OpenResult::SUCCEEDED != result) {
         close();
     }
     return result;

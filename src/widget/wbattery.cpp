@@ -14,32 +14,26 @@ WBattery::WBattery(QWidget* parent)
     }
 }
 
-WBattery::~WBattery() {
-}
-
-void WBattery::setup(QDomNode node, const SkinContext& context) {
-    if (context.hasNode(node, "BackPath")) {
-        QString mode_str = context.selectAttributeString(
-                context.selectElement(node, "BackPath"), "scalemode", "TILE");
+void WBattery::setup(const QDomNode& node, const SkinContext& context) {
+    QDomElement backPath = context.selectElement(node, "BackPath");
+    if (!backPath.isNull()) {
         setPixmap(&m_pPixmapBack,
-                  context.getPixmapSource(context.selectNode(node, "BackPath")),
-                  Paintable::DrawModeFromString(mode_str));
+                  context.getPixmapSource(backPath),
+                  context.selectScaleMode(backPath, Paintable::TILE));
     }
 
-    if (context.hasNode(node, "PixmapUnknown")) {
-        QString mode_str = context.selectAttributeString(
-                context.selectElement(node, "PixmapUnknown"), "scalemode", "TILE");
+    QDomElement unknownPath = context.selectElement(node, "PixmapUnknown");
+    if (!unknownPath.isNull()) {
         setPixmap(&m_pPixmapUnknown,
-                  context.getPixmapSource(context.selectNode(node, "PixmapUnknown")),
-                  Paintable::DrawModeFromString(mode_str));
+                  context.getPixmapSource(unknownPath),
+                  context.selectScaleMode(unknownPath, Paintable::TILE));
     }
 
-    if (context.hasNode(node, "PixmapCharged")) {
-        QString mode_str = context.selectAttributeString(
-                context.selectElement(node, "PixmapCharged"), "scalemode", "TILE");
+    QDomElement chargedPath = context.selectElement(node, "PixmapCharged");
+    if (!chargedPath.isNull()) {
         setPixmap(&m_pPixmapCharged,
-                  context.getPixmapSource(context.selectNode(node, "PixmapCharged")),
-                  Paintable::DrawModeFromString(mode_str));
+                  context.getPixmapSource(chargedPath),
+                  context.selectScaleMode(chargedPath, Paintable::TILE));
     }
 
     int numberStates = context.selectInt(node, "NumberStates");
@@ -50,26 +44,24 @@ void WBattery::setup(QDomNode node, const SkinContext& context) {
     m_chargingPixmaps.resize(numberStates);
     m_dischargingPixmaps.resize(numberStates);
 
-    if (context.hasNode(node, "PixmapsCharging")) {
+    QDomElement pixmapsCharging = context.selectElement(node, "PixmapsCharging");
+    if (!pixmapsCharging.isNull()) {
         // TODO(XXX) inline SVG support via context.getPixmapSource.
-        QString chargingPath = context.selectString(node, "PixmapsCharging");
-        Paintable::DrawMode mode = Paintable::DrawModeFromString(
-                context.selectAttributeString(
-                        context.selectElement(node, "PixmapsCharging"),
-                        "scalemode", "TILE"));
+        QString chargingPath = context.nodeToString(pixmapsCharging);
+        Paintable::DrawMode mode = context.selectScaleMode(pixmapsCharging,
+                                                           Paintable::TILE);
         for (int i = 0; i < m_chargingPixmaps.size(); ++i) {
             PixmapSource source = context.getPixmapSource(chargingPath.arg(i));
             setPixmap(&m_chargingPixmaps[i], source, mode);
         }
     }
 
-    if (context.hasNode(node, "PixmapsDischarging")) {
+    QDomElement pixmapsDischarging = context.selectElement(node, "PixmapsDischarging");
+    if (!pixmapsDischarging.isNull()) {
         // TODO(XXX) inline SVG support via context.getPixmapSource.
-        QString dischargingPath = context.selectString(node, "PixmapsDischarging");
-        Paintable::DrawMode mode = Paintable::DrawModeFromString(
-                context.selectAttributeString(
-                        context.selectElement(node, "PixmapsDischarging"),
-                        "scalemode", "TILE"));
+        QString dischargingPath = context.nodeToString(pixmapsDischarging);
+        Paintable::DrawMode mode = context.selectScaleMode(pixmapsDischarging,
+                                                           Paintable::TILE);
         for (int i = 0; i < m_dischargingPixmaps.size(); ++i) {
             PixmapSource source = context.getPixmapSource(dischargingPath.arg(i));
             setPixmap(&m_dischargingPixmaps[i], source, mode);
@@ -157,7 +149,7 @@ void WBattery::setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
     }
 }
 
-void WBattery::paintEvent(QPaintEvent*) {
+void WBattery::paintEvent(QPaintEvent* /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);

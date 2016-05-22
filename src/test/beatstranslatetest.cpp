@@ -31,16 +31,16 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     ProcessBuffer();
     // Manually set the "bpm" control... I would like to figure out why this
     // doesn't get set naturally, but this will do for now.
-    QScopedPointer<ControlObjectSlave> pBpm1(getControlObjectSlave(
+    QScopedPointer<ControlProxy> pBpm1(getControlProxy(
             ConfigKey(m_sGroup1, "bpm")));
-    QScopedPointer<ControlObjectSlave> pBpm2(getControlObjectSlave(
+    QScopedPointer<ControlProxy> pBpm2(getControlProxy(
             ConfigKey(m_sGroup1, "bpm")));
     pBpm1->set(bpm);
     pBpm2->set(bpm);
     ProcessBuffer();
 
     // Push the button on deck 2.
-    QScopedPointer<ControlObjectSlave> (getControlObjectSlave(
+    QScopedPointer<ControlProxy> (getControlProxy(
             ConfigKey(m_sGroup2, "beats_translate_match_alignment")))->set(1.0);
     ProcessBuffer();
 

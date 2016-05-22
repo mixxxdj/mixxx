@@ -8,8 +8,7 @@
 #include <QScopedPointer>
 
 #include "library/ui_dlgtrackinfo.h"
-#include "trackinfoobject.h"
-#include "library/dlgtagfetcher.h"
+#include "track/track.h"
 #include "library/coverart.h"
 #include "util/tapfilter.h"
 #include "util/types.h"
@@ -19,7 +18,7 @@
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
-    DlgTrackInfo(QWidget* parent, DlgTagFetcher& DlgTagFetcher);
+    DlgTrackInfo(QWidget* parent);
     virtual ~DlgTrackInfo();
 
   public slots:
@@ -30,6 +29,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   signals:
     void next();
     void previous();
+    void showTagFetcher(TrackPointer pTrack);
 
   private slots:
     void slotNext();
@@ -62,8 +62,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotReloadCoverArt();
 
   private:
-    void populateFields(const TrackInfoObject& track);
-    void reloadTrackBeats(const TrackInfoObject& track);
+    void populateFields(const Track& track);
+    void reloadTrackBeats(const Track& track);
     void populateCues(TrackPointer pTrack);
     void saveTrack();
     void unloadTrack(bool save);
@@ -76,8 +76,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     QScopedPointer<TapFilter> m_pTapFilter;
     double m_dLastTapedBpm;
-
-    DlgTagFetcher& m_DlgTagFetcher;
 
     CoverInfo m_loadedCoverInfo;
     WCoverArtLabel* m_pWCoverArtLabel;

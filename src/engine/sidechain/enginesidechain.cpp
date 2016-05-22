@@ -15,7 +15,7 @@
 ***************************************************************************/
 
 // This class provides a way to do audio processing that does not need
-// to be executed in real-time. For example, shoutcast encoding/broadcasting
+// to be executed in real-time. For example, broadcast encoding
 // and recording encoding can be done here. This class uses double-buffering
 // to increase the amount of time the CPU has to do whatever work needs to
 // be done, and that work is executed in a separate thread. (Threading

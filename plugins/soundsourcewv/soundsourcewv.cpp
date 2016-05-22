@@ -18,17 +18,17 @@ WavpackStreamReader SoundSourceWV::s_streamReader = {
 
 SoundSourceWV::SoundSourceWV(const QUrl& url)
         : SoundSourcePlugin(url, "wv"),
-          m_wpc(NULL),
+          m_wpc(nullptr),
           m_sampleScaleFactor(CSAMPLE_ZERO), 
-          m_pWVFile(NULL),
-          m_pWVCFile(NULL) {
+          m_pWVFile(nullptr),
+          m_pWVCFile(nullptr) {
 }
 
 SoundSourceWV::~SoundSourceWV() {
     close();
 }
 
-Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
@@ -52,7 +52,7 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
             msg, openFlags, 0);
     if (!m_wpc) {
         qDebug() << "SSWV::open: failed to open file : " << msg;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     setChannelCount(WavpackGetReducedChannels(m_wpc));
@@ -68,23 +68,23 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
         m_sampleScaleFactor = CSAMPLE_PEAK / wavpackPeakSampleValue;
     }
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceWV::close() {
     if (m_wpc) {
         WavpackCloseFile(m_wpc);
-        m_wpc = NULL;
+        m_wpc = nullptr;
     }
     if (m_pWVFile) {
         m_pWVFile->close();
         delete m_pWVFile;
-        m_pWVFile = NULL;
+        m_pWVFile = nullptr;
     }
     if (m_pWVCFile) {
         m_pWVCFile->close();
         delete m_pWVCFile;
-        m_pWVCFile = NULL;
+        m_pWVCFile = nullptr;
     }
 }
 

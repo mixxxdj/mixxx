@@ -3,9 +3,9 @@
 #include "engine/sync/internalclock.h"
 
 #include "engine/sync/enginesync.h"
-#include "controlobject.h"
-#include "controllinpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlobject.h"
+#include "control/controllinpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "preferences/usersettings.h"
 
 InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)

@@ -19,14 +19,14 @@
 #include <QTouchEvent>
 
 #include "widget/wwidget.h"
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "util/assert.h"
 
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
           WBaseWidget(this),
           m_activeTouchButton(Qt::NoButton) {
-    m_pTouchShift = new ControlObjectSlave("[Controls]", "touch_shift");
+    m_pTouchShift = new ControlProxy("[Controls]", "touch_shift");
     setAttribute(Qt::WA_StaticContents);
     setAttribute(Qt::WA_AcceptTouchEvents);
     setFocusPolicy(Qt::ClickFocus);
@@ -49,7 +49,7 @@ bool WWidget::event(QEvent* e) {
         case QEvent::TouchUpdate:
         case QEvent::TouchEnd:
         {
-            QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
+            QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(e);
             if (touchEvent->deviceType() !=  QTouchEvent::TouchScreen) {
                 break;
             }

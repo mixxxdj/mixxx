@@ -33,7 +33,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
@@ -176,7 +176,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 }
 
 void Library::bindWidget(WLibrary* pLibraryWidget,
-                         MixxxKeyboard* pKeyboard) {
+                         KeyboardEventFilter* pKeyboard) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pTrackTableView->installEventFilter(pKeyboard);

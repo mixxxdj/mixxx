@@ -4,7 +4,7 @@
 #include <QTouchEvent>
 
 #include "mixxxapplication.h"
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "mixxx.h"
 
 extern void qt_translateRawTouchEvent(QWidget *window,
@@ -141,7 +141,7 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
 
 bool MixxxApplication::touchIsRightButton() {
     if (!m_pTouchShift) {
-        m_pTouchShift = new ControlObjectSlave(
+        m_pTouchShift = new ControlProxy(
                 "[Controls]", "touch_shift", this);
     }
     return (m_pTouchShift->get() != 0.0);

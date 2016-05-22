@@ -4,15 +4,15 @@
 
 #include <QtDebug>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "preferences/usersettings.h"
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "engine/loopingcontrol.h"
 #include "engine/bpmcontrol.h"
 #include "engine/enginecontrol.h"
 #include "util/math.h"
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
@@ -889,6 +889,7 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
             qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;
+            break;
         }
     }
     while (adjusted_position < new_loop_in) {
@@ -897,6 +898,7 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
             qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;
+            break;
         }
     }
     if (adjusted_position != m_iCurrentSample) {

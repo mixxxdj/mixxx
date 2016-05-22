@@ -12,9 +12,6 @@ WKey::WKey(const char* group, QWidget* pParent)
     m_engineKeyDistance.connectValueChanged(SLOT(setCents()));
 }
 
-WKey::~WKey() {
-}
-
 void WKey::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dParameter);
     // Enums are not currently represented using parameter space so it doesn't
@@ -22,7 +19,7 @@ void WKey::onConnectedControlChanged(double dParameter, double dValue) {
     setValue(dValue);
 }
 
-void WKey::setup(QDomNode node, const SkinContext& context) {
+void WKey::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     m_displayCents = context.selectBool(node, "DisplayCents", false);
 }

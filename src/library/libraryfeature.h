@@ -12,21 +12,27 @@
 #include <QVariant>
 #include <QAbstractItemModel>
 #include <QUrl>
+#include <QDesktopServices>
+#include <QFileDialog>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "treeitemmodel.h"
 #include "library/coverartcache.h"
+#include "library/dao/trackdao.h"
 
 class TrackModel;
 class WLibrarySidebar;
 class WLibrary;
-class MixxxKeyboard;
+class KeyboardEventFilter;
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {
   Q_OBJECT
   public:
     LibraryFeature(QObject* parent = NULL);
+
+    LibraryFeature(UserSettingsPointer pConfig,
+                   QObject* parent = NULL);
     virtual ~LibraryFeature();
 
     virtual QVariant title() = 0;
@@ -56,8 +62,13 @@ class LibraryFeature : public QObject {
 
     // Reimplement this to register custom views with the library widget.
     virtual void bindWidget(WLibrary* /* libraryWidget */,
-                            MixxxKeyboard* /* keyboard */) {}
+                            KeyboardEventFilter* /* keyboard */) {}
     virtual TreeItemModel* getChildModel() = 0;
+
+  protected:
+    inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
+    inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
+    UserSettingsPointer m_pConfig;
 
   public slots:
     // called when you single click on the root item
@@ -96,6 +107,10 @@ class LibraryFeature : public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
+
+  private: 
+    QStringList getPlaylistFiles(QFileDialog::FileMode mode);
+
 };
 
 #endif /* LIBRARYFEATURE_H */

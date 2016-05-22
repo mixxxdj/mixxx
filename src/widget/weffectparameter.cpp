@@ -8,10 +8,7 @@ WEffectParameter::WEffectParameter(QWidget* pParent, EffectsManager* pEffectsMan
         : WEffectParameterBase(pParent, pEffectsManager) {
 }
 
-WEffectParameter::~WEffectParameter() {
-}
-
-void WEffectParameter::setup(QDomNode node, const SkinContext& context) {
+void WEffectParameter::setup(const QDomNode& node, const SkinContext& context) {
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
             node, context, m_pEffectsManager);

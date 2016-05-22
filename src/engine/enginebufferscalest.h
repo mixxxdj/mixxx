@@ -27,9 +27,6 @@
 
 #include "engine/enginebufferscale.h"
 
-// Number of samples to read ahead. Setting this too high (10000) causes
-// stuttering.
-const int kiSoundTouchReadAheadLength = 1000;
 class ReadAheadManager;
 
 namespace soundtouch {

@@ -11,13 +11,13 @@
 #include <QMenu>
 #include <QPushButton>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/treeitem.h"
 #include "library/browse/browsefeature.h"
 #include "library/trackcollection.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrary.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "util/sandbox.h"
 
 const QString kQuickLinksSeparator = "-+-";
@@ -208,7 +208,7 @@ TreeItemModel* BrowseFeature::getChildModel() {
 }
 
 void BrowseFeature::bindWidget(WLibrary* libraryWidget,
-                               MixxxKeyboard* keyboard) {
+                               KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());

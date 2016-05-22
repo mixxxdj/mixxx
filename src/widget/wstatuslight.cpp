@@ -30,9 +30,6 @@ WStatusLight::WStatusLight(QWidget * parent)
     setNoPos(0);
 }
 
-WStatusLight::~WStatusLight() {
-}
-
 void WStatusLight::setNoPos(int iNoPos) {
     // If pixmap array is already allocated, delete it.
     if (!m_pixmaps.empty()) {
@@ -47,7 +44,7 @@ void WStatusLight::setNoPos(int iNoPos) {
     m_pixmaps.resize(iNoPos);
 }
 
-void WStatusLight::setup(QDomNode node, const SkinContext& context) {
+void WStatusLight::setup(const QDomNode& node, const SkinContext& context) {
     // Number of states. Add one to account for the background.
     setNoPos(context.selectInt(node, "NumberPos") + 1);
 
@@ -55,16 +52,11 @@ void WStatusLight::setup(QDomNode node, const SkinContext& context) {
     for (int i = 0; i < m_pixmaps.size(); ++i) {
         // Accept either PathStatusLight or PathStatusLight1 for value 1,
         QString nodeName = QString("PathStatusLight%1").arg(i);
-        if (context.hasNode(node, nodeName)) {
-            QDomElement statusLightNode = context.selectElement(node, nodeName);
-            setPixmap(i, context.getPixmapSource(statusLightNode),
-                      context.selectScaleMode(statusLightNode, Paintable::FIXED));
-        } else if (i == 0 && context.hasNode(node, "PathBack")) {
-            QDomElement statusLightNode = context.selectElement(node, "PathBack");
-            setPixmap(i, context.getPixmapSource(statusLightNode),
-                      context.selectScaleMode(statusLightNode, Paintable::FIXED));
-        } else if (i == 1 && context.hasNode(node, "PathStatusLight")) {
-            QDomElement statusLightNode = context.selectElement(node, "PathStatusLight");
+
+        QDomElement statusLightNode;
+        if (context.hasNodeSelectElement(node, nodeName, &statusLightNode) ||
+                (i == 0 && context.hasNodeSelectElement(node, "PathBack", &statusLightNode)) ||
+                (i == 1 && context.hasNodeSelectElement(node, "PathStatusLight", &statusLightNode))) {
             setPixmap(i, context.getPixmapSource(statusLightNode),
                       context.selectScaleMode(statusLightNode, Paintable::FIXED));
         } else {
@@ -114,7 +106,7 @@ void WStatusLight::onConnectedControlChanged(double dParameter, double dValue) {
     }
 }
 
-void WStatusLight::paintEvent(QPaintEvent *) {
+void WStatusLight::paintEvent(QPaintEvent * /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);

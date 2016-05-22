@@ -21,10 +21,10 @@
 #include <QMainWindow>
 #include <QString>
 
-#include "configobject.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "preferences/constants.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
@@ -37,11 +37,11 @@ class EngineMaster;
 class GuiTick;
 class LaunchImage;
 class Library;
-class MixxxKeyboard;
+class KeyboardEventFilter;
 class PlayerManager;
 class RecordingManager;
 class SettingsManager;
-class ShoutcastManager;
+class BroadcastManager;
 class SkinLoader;
 class SoundManager;
 class VinylControlManager;
@@ -73,10 +73,7 @@ class MixxxMainWindow : public QMainWindow {
   public slots:
     void rebootMixxxView();
 
-    //void slotQuitFullScreen();
     void slotFileLoadSongPlayer(int deck);
-    // exits the application
-    void slotFileQuit();
     // toogle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
@@ -88,8 +85,6 @@ class MixxxMainWindow : public QMainWindow {
     // Open the developer tools dialog.
     void slotDeveloperTools(bool enable);
     void slotDeveloperToolsClosed();
-
-    void slotToCenterOfPrimaryScreen();
 
     void slotUpdateWindowTitle(TrackPointer pTrack);
 
@@ -145,8 +140,8 @@ class MixxxMainWindow : public QMainWindow {
     PlayerManager* m_pPlayerManager;
     // RecordingManager
     RecordingManager* m_pRecordingManager;
-#ifdef __SHOUTCAST__
-    ShoutcastManager* m_pShoutcastManager;
+#ifdef __BROADCAST__
+    BroadcastManager* m_pBroadcastManager;
 #endif
     ControllerManager* m_pControllerManager;
 
@@ -154,7 +149,7 @@ class MixxxMainWindow : public QMainWindow {
 
     VinylControlManager* m_pVCManager;
 
-    MixxxKeyboard* m_pKeyboard;
+    KeyboardEventFilter* m_pKeyboard;
     // The library management object
     Library* m_pLibrary;
 

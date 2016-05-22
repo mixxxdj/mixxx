@@ -2,8 +2,8 @@
 #include <QFileInfo>
 
 #include "engine/cachingreader.h"
-#include "controlobject.h"
-#include "trackinfoobject.h"
+#include "control/controlobject.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/counter.h"
 #include "util/math.h"
@@ -43,7 +43,7 @@ CachingReader::CachingReader(QString group,
           m_maxReadableFrameIndex(Mixxx::AudioSource::getMinFrameIndex()),
           m_worker(group, &m_chunkReadRequestFIFO, &m_readerStatusFIFO) {
 
-    m_allocatedCachingReaderChunks.reserve(m_sampleBuffer.size());
+    m_allocatedCachingReaderChunks.reserve(maximumCachingReaderChunksInMemory);
 
     CSAMPLE* bufferStart = m_sampleBuffer.data();
 

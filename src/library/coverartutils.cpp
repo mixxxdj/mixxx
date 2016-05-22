@@ -3,7 +3,7 @@
 
 #include "library/coverartutils.h"
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "util/regex.h"
 
 
@@ -40,7 +40,7 @@ QImage CoverArtUtils::extractEmbeddedCover(
     // TODO(uklotzde): Resolve the TrackPointer from the track cache
     // to avoid accessing reading the file while it is written.
     TrackPointer pTrack(
-            TrackInfoObject::newTemporary(fileInfo, pToken));
+            Track::newTemporary(fileInfo, pToken));
     return SoundSourceProxy(pTrack).parseCoverImage();
 }
 
@@ -136,7 +136,7 @@ QLinkedList<QFileInfo> CoverArtUtils::findPossibleCoversInFolder(const QString& 
 
 //static
 CoverArt CoverArtUtils::selectCoverArtForTrack(
-        TrackInfoObject* pTrack,
+        Track* pTrack,
         const QLinkedList<QFileInfo>& covers) {
     if (pTrack == NULL || covers.isEmpty()) {
         CoverArt art;

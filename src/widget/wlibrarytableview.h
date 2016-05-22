@@ -10,7 +10,7 @@
 
 #include "preferences/usersettings.h"
 #include "library/libraryview.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/coverartcache.h"
 
 
@@ -21,8 +21,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     WLibraryTableView(QWidget* parent,
                       UserSettingsPointer pConfig,
                       ConfigKey vScrollBarPosKey);
-    virtual ~WLibraryTableView();
-    virtual void moveSelection(int delta);
+    ~WLibraryTableView() override;
+    void moveSelection(int delta) override;
 
   signals:
     void loadTrack(TrackPointer pTrack);

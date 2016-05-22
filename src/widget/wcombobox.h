@@ -11,15 +11,14 @@
 class WComboBox : public QComboBox, public WBaseWidget {
     Q_OBJECT
   public:
-    WComboBox(QWidget* pParent);
-    virtual ~WComboBox();
+    explicit WComboBox(QWidget* pParent);
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
-    void onConnectedControlChanged(double dParameter, double dValue);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected:
-    bool event(QEvent* pEvent);
+    bool event(QEvent* pEvent) override;
 
   private slots:
     void slotCurrentIndexChanged(int index);

@@ -11,7 +11,7 @@
 #include "controllers/midi/midiutils.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerdebug.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "util/math.h"

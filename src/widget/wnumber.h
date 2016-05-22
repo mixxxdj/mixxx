@@ -26,12 +26,11 @@
 class WNumber : public WLabel  {
     Q_OBJECT
   public:
-    WNumber(QWidget* pParent = NULL);
-    virtual ~WNumber();
+    explicit WNumber(QWidget* pParent = nullptr);
 
-    virtual void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
-    virtual void onConnectedControlChanged(double dParameter, double dValue);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
 
   public slots:
     virtual void setValue(double dValue);

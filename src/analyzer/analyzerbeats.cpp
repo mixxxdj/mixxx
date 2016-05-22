@@ -15,7 +15,7 @@
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
 #include "track/beatutils.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),

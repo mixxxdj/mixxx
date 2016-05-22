@@ -2,8 +2,8 @@
 
 #include <QtDebug>
 
-#include "controlobjectslave.h"
-#include "controlobject.h"
+#include "control/controlproxy.h"
+#include "control/controlobject.h"
 #include "util/math.h"
 #include "waveform/vsyncthread.h"
 
@@ -15,7 +15,7 @@ double VisualPlayPosition::m_dCallbackEntryToDacSecs = 0;
 VisualPlayPosition::VisualPlayPosition(const QString& key)
         : m_valid(false),
           m_key(key) {
-    m_audioBufferSize = new ControlObjectSlave(
+    m_audioBufferSize = new ControlProxy(
             "[Master]", "audio_buffer_size", this);
     m_audioBufferSize->connectValueChanged(
             SLOT(slotAudioBufferSizeChanged(double)));
@@ -108,4 +108,3 @@ void VisualPlayPosition::setCallbackEntryToDacSecs(double secs, const Performanc
     m_timeInfoTime = time;
     m_dCallbackEntryToDacSecs = secs;
 }
-

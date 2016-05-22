@@ -2,7 +2,7 @@
 
 #include <QtDebug>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"
@@ -40,6 +40,8 @@ bool AnalyzerEbur128::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 void AnalyzerEbur128::cleanup() {
     if (isInitialized()) {
         ebur128_destroy(&m_pState);
+        // ebur128_destroy clears the pointer but let's not rely on that.
+        m_pState = nullptr;
     }
     DEBUG_ASSERT(!isInitialized());
 }
@@ -50,11 +52,10 @@ void AnalyzerEbur128::cleanup(TrackPointer tio) {
 }
 
 void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
-    DEBUG_ASSERT_AND_HANDLE(isInitialized()) {
-        qWarning() << "AnalyzerEbur128::process(): Not initialized!";
+    if (!isInitialized()) {
         return;
     }
-    ScopedTimer t("AnalyserEbur128::process()");
+    ScopedTimer t("AnalyzerEbur128::process()");
     size_t frames = iLen / 2;
     int e = ebur128_add_frames_float(m_pState, pIn, frames);
     DEBUG_ASSERT_AND_HANDLE(e == EBUR128_SUCCESS) {
@@ -64,8 +65,7 @@ void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
 }
 
 void AnalyzerEbur128::finalize(TrackPointer tio) {
-    DEBUG_ASSERT_AND_HANDLE(isInitialized()) {
-        qWarning() << "AnalyzerEbur128::finalize(): Not initialized!";
+    if (!isInitialized()) {
         return;
     }
     double averageLufs;

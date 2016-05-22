@@ -53,14 +53,14 @@ void DlgTagFetcher::loadTrack(const TrackPointer track) {
     m_networkError = NOERROR;
     m_TagFetcher.startFetch(m_track);
 
-    disconnect(this, SLOT(updateTrackMetadata(TrackInfoObject*)));
-    connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-            this, SLOT(updateTrackMetadata(TrackInfoObject*)));
+    disconnect(this, SLOT(updateTrackMetadata(Track*)));
+    connect(track.data(), SIGNAL(changed(Track*)),
+            this, SLOT(updateTrackMetadata(Track*)));
 
     updateStack();
 }
 
-void DlgTagFetcher::updateTrackMetadata(TrackInfoObject* pTIO) {
+void DlgTagFetcher::updateTrackMetadata(Track* pTIO) {
     Q_UNUSED(pTIO);
     updateStack();
 }
@@ -90,7 +90,7 @@ void DlgTagFetcher::apply() {
 
 void DlgTagFetcher::quit() {
     m_TagFetcher.cancel();
-    close();
+    accept();
 }
 
 void DlgTagFetcher::fetchTagProgress(QString text) {

@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QPair>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 
 class FakeOverwriteAnswerer : public QObject {

@@ -27,7 +27,7 @@
 #include "control/controlvalue.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/rotary.h"
 #include "util/types.h"
 
@@ -49,7 +49,7 @@ class ClockControl;
 class CueControl;
 class ReadAheadManager;
 class ControlObject;
-class ControlObjectSlave;
+class ControlProxy;
 class ControlPushButton;
 class ControlIndicator;
 class ControlBeat;
@@ -334,14 +334,14 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
-    ControlObjectSlave* m_pSampleRate;
-    ControlObjectSlave* m_pKeylockEngine;
+    ControlProxy* m_pSampleRate;
+    ControlProxy* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
 
-    // This ControlObjectSlaves is created as parent to this and deleted by
+    // This ControlProxys is created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
     // thread, which is required to avoid segfaults.
-    ControlObjectSlave* m_pPassthroughEnabled;
+    ControlProxy* m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
 
