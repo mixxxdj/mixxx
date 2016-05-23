@@ -76,6 +76,7 @@ class SoundDevicePortAudio : public SoundDevice {
 
   private:
     void updateCallbackEntryToDacTime(const PaStreamCallbackTimeInfo* timeInfo);
+    void updateAudioLatencyUsage(const unsigned int framesPerBuffer);
 
     // PortAudio stream for this device.
     PaStream* volatile m_pStream;
@@ -105,8 +106,10 @@ class SoundDevicePortAudio : public SoundDevice {
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
-    bool m_invalidTimeInfoWarned;
+    int m_invalidTimeInfoCount;
     PerformanceTimer m_clkRefTimer;
+    PaTime m_lastCallbackEntrytoDacSecs;
+
 };
 
 #endif
