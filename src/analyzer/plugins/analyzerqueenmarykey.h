@@ -38,7 +38,7 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
 
   private:
     QScopedPointer<GetKeyMode> m_pKeyMode;
-    DownmixAndOverlapHelper<double, CSAMPLE> m_helper;
+    DownmixAndOverlapHelper m_helper;
     size_t m_currentFrame = 0;
     KeyChangeList m_resultKeys;
     mixxx::track::io::key::ChromaticKey m_prevKey;

@@ -42,7 +42,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
 
   private:
     QScopedPointer<DetectionFunction> m_pDetectionFunction;
-    DownmixAndOverlapHelper<double, CSAMPLE> m_helper;
+    DownmixAndOverlapHelper m_helper;
     size_t m_stepSize = 0;
     int m_iSampleRate = 0;
     std::vector<double> m_detectionResults;
