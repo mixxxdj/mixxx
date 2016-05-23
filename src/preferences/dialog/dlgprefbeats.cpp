@@ -64,7 +64,7 @@ void DlgPrefBeats::loadSettings() {
 }
 
 void DlgPrefBeats::slotResetToDefaults() {
-    // WARNING(rryan): Do not hard-code defaults here! Put them in
+    // NOTE(rryan): Do not hard-code defaults here! Put them in
     // KeyDetectionSettings.
     m_selectedAnalyzerId = m_bpmSettings.getBeatPluginIdDefault();
     m_banalyzerEnabled = m_bpmSettings.getBpmDetectionEnabledDefault();

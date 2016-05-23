@@ -124,7 +124,7 @@ void DlgPrefKey::loadSettings() {
 }
 
 void DlgPrefKey::slotResetToDefaults() {
-    // WARNING(rryan): Do not hard-code defaults here! Put them in
+    // NOTE(rryan): Do not hard-code defaults here! Put them in
     // KeyDetectionSettings.
     m_bAnalyzerEnabled = m_keySettings.getKeyDetectionEnabledDefault();
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysisDefault();
