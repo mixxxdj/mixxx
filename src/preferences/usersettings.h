@@ -30,7 +30,7 @@ typedef QWeakPointer<UserSettings> UserSettingsWeakPointer;
             default_value);                                                 \
     }                                                                       \
     inline type get##name##Default() const { return default_value; }        \
-    inline void set##name##Default() { set##name(get##name##Default()); }   \
+    inline void set##name##ToDefault() { set##name(get##name##Default()); } \
     inline void set##name(const type& value) {                              \
         m_pConfig->setValue(ConfigKey(preference_group, preference_item),   \
                             value);                                         \
