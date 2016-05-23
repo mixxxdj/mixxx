@@ -627,7 +627,7 @@ WWidget, QLabel {
 /* End spacing for Deck inner column (tempo slider, rate change) */
 
 
-/* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue) */
+/* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 #ControlsRow {
   qproperty-layoutSpacing: 5;
 }
@@ -648,17 +648,18 @@ WWidget, QLabel {
 #HotcueGrid WPushButton, #HotcueGridExtended WPushButton {
 }
 
-#LoopingContainer, #BeatLoopContainer, #TransportContainer {
+
+#LoopingContainer, #BeatLoopContainer, #TransportContainer, #VinylControlsContainer {
   background-color: #333333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }
 
-#LoopingContainer WWidgetGroup, #BeatLoopContainer WWidgetGroup, #TransportContainer WWidgetGroup {
+#LoopingContainer WWidgetGroup, #BeatLoopContainer WWidgetGroup, #TransportContainer WWidgetGroup, #VinylControlsContainer WWidgetGroup {
   qproperty-layoutSpacing: 2;
 }
 
-#LoopingContainer WPushButton, #BeatLoopContainer WPushButton, #TransportContainer WPushButton {
+#LoopingContainer WPushButton, #BeatLoopContainer WPushButton, #TransportContainer WPushButton, #VinylControlsContainer WPushButton {
 }
 /* End spacing for Deck controls row */
 

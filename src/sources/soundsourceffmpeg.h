@@ -1,16 +1,7 @@
 #ifndef MIXXX_SOUNDSOURCEFFMPEG_H
 #define MIXXX_SOUNDSOURCEFFMPEG_H
 
-#include "sources/soundsourceprovider.h"
-
-#include <encoder/encoderffmpegresample.h>
-
-// Needed to ensure that macros in <stdint.h> get defined.
-#ifndef __STDC_CONSTANT_MACROS
-#if __cplusplus < 201103L
-#define __STDC_CONSTANT_MACROS
-#endif
-#endif
+extern "C" {
 
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -20,11 +11,20 @@
 #include <libavutil/opt.h>
 #endif
 
-// Compability
+// Compatibility
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
 
+} // extern "C"
+
 #include <QVector>
+
+#include "sources/soundsourceprovider.h"
+
+#include "util/memory.h" // std::unique_ptr<> + std::make_unique()
+
+// forward declaration
+class EncoderFfmpegResample;
 
 namespace Mixxx {
 
@@ -42,8 +42,8 @@ struct ffmpegCacheObject {
 
 class SoundSourceFFmpeg : public SoundSource {
   public:
-    explicit SoundSourceFFmpeg(QUrl url);
-    ~SoundSourceFFmpeg();
+    explicit SoundSourceFFmpeg(const QUrl& url);
+    ~SoundSourceFFmpeg() override;
 
     void close() override;
 
@@ -66,7 +66,7 @@ class SoundSourceFFmpeg : public SoundSource {
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
 
-    EncoderFfmpegResample *m_pResample;
+    std::unique_ptr<EncoderFfmpegResample> m_pResample;
 
     SINT m_currentMixxxFrameIndex;
 

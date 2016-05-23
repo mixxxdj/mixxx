@@ -660,7 +660,7 @@ class Verbose(Feature):
 
 class Profiling(Feature):
     def description(self):
-        return "gprof/Saturn profiling support"
+        return "profiling (e.g. gprof) support"
 
     def enabled(self, build):
         build.flags['profiling'] = util.get_flags(build.env, 'profiling', 0)
@@ -672,7 +672,7 @@ class Profiling(Feature):
     def add_options(self, build, vars):
         if not build.platform_is_windows:
             vars.Add('profiling',
-                     '(DEVELOPER) Set to 1 to enable profiling using gprof (Linux) or Saturn (OS X)', 0)
+                     '(DEVELOPER) Set to 1 to enable profiling using gprof (Linux). Disables -fomit-frame-pointer.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -680,9 +680,6 @@ class Profiling(Feature):
         if build.platform_is_linux or build.platform_is_bsd:
             build.env.Append(CCFLAGS='-pg')
             build.env.Append(LINKFLAGS='-pg')
-        elif build.platform_is_osx:
-            build.env.Append(CCFLAGS='-finstrument-functions')
-            build.env.Append(LINKFLAGS='-lSaturn')
 
 
 class TestSuite(Feature):

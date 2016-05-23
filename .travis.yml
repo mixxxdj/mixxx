@@ -67,8 +67,8 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CXXFLAGS="-isystem /usr/local/include/opus" ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CFLAGS="-isystem /usr/local/include/opus" ; fi
 
-  # We support OS X 10.7 by default and use asan to detect memory safety errors.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS="osx_sdk_version_min=10.7 asan=1" ; fi
+  # We support OS X 10.7 by default.
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS="osx_sdk_version_min=10.7" ; fi
 
   ####
   # Common Build

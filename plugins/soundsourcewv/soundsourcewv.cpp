@@ -18,10 +18,10 @@ WavpackStreamReader SoundSourceWV::s_streamReader = {
 
 SoundSourceWV::SoundSourceWV(const QUrl& url)
         : SoundSourcePlugin(url, "wv"),
-          m_wpc(NULL),
+          m_wpc(nullptr),
           m_sampleScaleFactor(CSAMPLE_ZERO), 
-          m_pWVFile(NULL),
-          m_pWVCFile(NULL) {
+          m_pWVFile(nullptr),
+          m_pWVCFile(nullptr) {
 }
 
 SoundSourceWV::~SoundSourceWV() {
@@ -74,17 +74,17 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
 void SoundSourceWV::close() {
     if (m_wpc) {
         WavpackCloseFile(m_wpc);
-        m_wpc = NULL;
+        m_wpc = nullptr;
     }
     if (m_pWVFile) {
         m_pWVFile->close();
         delete m_pWVFile;
-        m_pWVFile = NULL;
+        m_pWVFile = nullptr;
     }
     if (m_pWVCFile) {
         m_pWVCFile->close();
         delete m_pWVCFile;
-        m_pWVCFile = NULL;
+        m_pWVCFile = nullptr;
     }
 }
 

@@ -62,7 +62,7 @@ class WPushButton : public WWidget {
         return 0;
     }
 
-    virtual void setup(QDomNode node, const SkinContext& context);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
 
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.

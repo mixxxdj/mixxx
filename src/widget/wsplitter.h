@@ -14,7 +14,7 @@ class WSplitter : public QSplitter, public WBaseWidget {
   public:
     WSplitter(QWidget* pParent, UserSettingsPointer pConfig);
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   protected:
     bool event(QEvent* pEvent) override;

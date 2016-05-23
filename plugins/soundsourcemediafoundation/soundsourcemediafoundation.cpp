@@ -54,7 +54,7 @@ inline qint64 mfFromFrame(qint64 frame, SINT frameRate) {
 template<class T> static void safeRelease(T **ppT) {
     if (*ppT) {
         (*ppT)->Release();
-        *ppT = NULL;
+        *ppT = nullptr;
     }
 }
 
@@ -62,13 +62,13 @@ template<class T> static void safeRelease(T **ppT) {
 
 namespace Mixxx {
 
-SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
+SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
           m_hrCoInitialize(E_FAIL),
           m_hrMFStartup(E_FAIL),
-          m_pReader(NULL),
+          m_pReader(nullptr),
           m_nextFrame(0),
-          m_leftoverBuffer(NULL),
+          m_leftoverBuffer(nullptr),
           m_leftoverBufferSize(0),
           m_leftoverBufferLength(0),
           m_leftoverBufferPosition(0),
@@ -95,7 +95,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
     }
 
     // Initialize the COM library.
-    m_hrCoInitialize = CoInitializeEx(NULL,
+    m_hrCoInitialize = CoInitializeEx(nullptr,
             COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (FAILED(m_hrCoInitialize)) {
         qWarning() << "SSMF: failed to initialize COM";
@@ -115,7 +115,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
     static_assert(sizeof(wchar_t) == sizeof(ushort), "QString::utf16(): wchar_t and ushort have different sizes");
     HRESULT hr = MFCreateSourceReaderFromURL(
             reinterpret_cast<const wchar_t*>(fileNameUtf16),
-            NULL,
+            nullptr,
             &m_pReader);
 
     if (FAILED(hr)) {
@@ -143,7 +143,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
 
 void SoundSourceMediaFoundation::close() {
     delete[] m_leftoverBuffer;
-    m_leftoverBuffer = NULL;
+    m_leftoverBuffer = nullptr;
 
     safeRelease(&m_pReader);
 
@@ -186,7 +186,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     }
 
     // http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
-    hr = m_pReader->SetCurrentPosition(GUID_NULL, prop);
+    hr = m_pReader->SetCurrentPosition(GUID_nullptr, prop);
     if (FAILED(hr)) {
         // nothing we can do here as we can't fail (no facility to other than
         // crashing mixxx)
@@ -235,12 +235,12 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         HRESULT hr(S_OK);
         DWORD dwFlags(0);
         qint64 timestamp(0);
-        IMFSample *pSample(NULL);
+        IMFSample *pSample(nullptr);
         bool error(false); // set to true to break after releasing
 
         hr = m_pReader->ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM, // [in] DWORD dwStreamIndex,
                 0,                                 // [in] DWORD dwControlFlags,
-                NULL,                      // [out] DWORD *pdwActualStreamIndex,
+                nullptr,                      // [out] DWORD *pdwActualStreamIndex,
                 &dwFlags,                        // [out] DWORD *pdwStreamFlags,
                 &timestamp,                     // [out] LONGLONG *pllTimestamp,
                 &pSample);                         // [out] IMFSample **ppSample
@@ -266,14 +266,14 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         } else if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) {
             qWarning() << "SSMF: Type change";
             break;
-        } else if (pSample == NULL) {
+        } else if (pSample == nullptr) {
             // generally this will happen when dwFlags contains ENDOFSTREAM,
             // so it'll be caught before now -bkgood
             qWarning() << "SSMF: No sample";
             continue;
         } // we now own a ref to the instance at pSample
 
-        IMFMediaBuffer *pMBuffer(NULL);
+        IMFMediaBuffer *pMBuffer(nullptr);
         // I know this does at least a memcopy and maybe a malloc, if we have
         // xrun issues with this we might want to look into using
         // IMFSample::GetBufferByIndex (although MS doesn't recommend this)
@@ -281,9 +281,9 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
             error = true;
             goto releaseSample;
         }
-        CSAMPLE *buffer(NULL);
+        CSAMPLE *buffer(nullptr);
         DWORD bufferLengthInBytes(0);
-        hr = pMBuffer->Lock(reinterpret_cast<quint8**>(&buffer), NULL, &bufferLengthInBytes);
+        hr = pMBuffer->Lock(reinterpret_cast<quint8**>(&buffer), nullptr, &bufferLengthInBytes);
         if (FAILED(hr)) {
             error = true;
             goto releaseMBuffer;
@@ -537,7 +537,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     // Set this type on the source reader. The source reader will
     // load the necessary decoder.
     hr = m_pReader->SetCurrentMediaType(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, NULL, pAudioType);
+            MF_SOURCE_READER_FIRST_AUDIO_STREAM, nullptr, pAudioType);
     if (FAILED(hr)) {
         qWarning() << "SSMF" << hr
             << "failed to set media type";

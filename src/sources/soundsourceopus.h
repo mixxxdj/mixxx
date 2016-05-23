@@ -10,10 +10,8 @@ namespace Mixxx {
 
 class SoundSourceOpus: public Mixxx::SoundSource {
 public:
-    static const SINT kSamplingRate;
-
-    explicit SoundSourceOpus(QUrl url);
-    ~SoundSourceOpus();
+    explicit SoundSourceOpus(const QUrl& url);
+    ~SoundSourceOpus() override;
 
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,

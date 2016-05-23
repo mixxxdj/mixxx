@@ -206,6 +206,8 @@
         </Connection>
       </WidgetStack>
 
+      <Template src="skin:vinylcontrol.xml"/>
+
     </Children>
   </WidgetGroup>
 </Template>

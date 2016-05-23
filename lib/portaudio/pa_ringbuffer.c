@@ -1,5 +1,5 @@
 /*
- * $Id: pa_ringbuffer.c 1738 2011-08-18 11:47:28Z rossb $
+ * $Id$
  * Portable Audio I/O Library
  * Ring Buffer utility.
  *
@@ -7,7 +7,7 @@
  * modified for SMP safety on Mac OS X by Bjorn Roche
  * modified for SMP safety on Linux by Leland Lucius
  * also, allowed for const where possible
- * modified for multiple-byte-sized data elements by Sven Fischer
+ * modified for multiple-byte-sized data elements by Sven Fischer 
  *
  * Note that this is safe only for a single-thread reader and a
  * single-thread writer.
@@ -37,13 +37,13 @@
  */
 
 /*
- * The text above constitutes the entire PortAudio license; however,
+ * The text above constitutes the entire PortAudio license; however, 
  * the PortAudio community also makes the following non-binding requests:
  *
  * Any person wishing to distribute modifications to the Software is
  * requested to send the modifications to the original developer so that
- * they can be incorporated into the canonical version. It is also
- * requested that these non-binding requests be included along with the
+ * they can be incorporated into the canonical version. It is also 
+ * requested that these non-binding requests be included along with the 
  * license above.
  */
 
@@ -55,10 +55,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "pa_ringbuffer.h"
 #include <string.h>
-
-#include "util/pa_memorybarrier.h"
-#include "util/pa_ringbuffer.h"
+#include "pa_memorybarrier.h"
 
 /***************************************************************************
  * Initialize FIFO.
@@ -139,7 +138,7 @@ ring_buffer_size_t PaUtil_GetRingBufferWriteRegions( PaUtilRingBuffer *rbuf, rin
 */
 ring_buffer_size_t PaUtil_AdvanceRingBufferWriteIndex( PaUtilRingBuffer *rbuf, ring_buffer_size_t elementCount )
 {
-    /* ensure that previous writes are seen before we update the write index
+    /* ensure that previous writes are seen before we update the write index 
        (write after write)
     */
     PaUtil_WriteMemoryBarrier();
@@ -177,7 +176,7 @@ ring_buffer_size_t PaUtil_GetRingBufferReadRegions( PaUtilRingBuffer *rbuf, ring
         *dataPtr2 = NULL;
         *sizePtr2 = 0;
     }
-
+    
     if( available )
         PaUtil_ReadMemoryBarrier(); /* (read-after-read) => read barrier */
 
@@ -187,7 +186,7 @@ ring_buffer_size_t PaUtil_GetRingBufferReadRegions( PaUtilRingBuffer *rbuf, ring
 */
 ring_buffer_size_t PaUtil_AdvanceRingBufferReadIndex( PaUtilRingBuffer *rbuf, ring_buffer_size_t elementCount )
 {
-    /* ensure that previous reads (copies out of the ring buffer) are always completed before updating (writing) the read index.
+    /* ensure that previous reads (copies out of the ring buffer) are always completed before updating (writing) the read index. 
        (write-after-read) => full barrier
     */
     PaUtil_FullMemoryBarrier();

@@ -15,7 +15,7 @@ WTrackProperty::WTrackProperty(const char* group,
     setAcceptDrops(true);
 }
 
-void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
+void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 
     m_property = context.selectString(node, "Property");

@@ -48,14 +48,14 @@ WVuMeter::WVuMeter(QWidget* parent)
     m_timer.start();
 }
 
-void WVuMeter::setup(QDomNode node, const SkinContext& context) {
+void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
     // Set pixmaps
-    bool bHorizontal = context.hasNode(node, "Horizontal") &&
-    context.selectString(node, "Horizontal") == "true";
+    bool bHorizontal = false;
+    context.hasNodeSelectBool(node, "Horizontal", &bHorizontal);
 
     // Set background pixmap if available
-    if (context.hasNode(node, "PathBack")) {
-        QDomElement backPathNode = context.selectElement(node, "PathBack");
+    QDomElement backPathNode = context.selectElement(node, "PathBack");
+    if (!backPathNode.isNull()) {
         // The implicit default in <1.12.0 was FIXED so we keep it for backwards
         // compatibility.
         setPixmapBackground(context.getPixmapSource(backPathNode),

@@ -56,6 +56,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotNextDlgTagFetcher();
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
+    void slotShowTrackInTagFetcher(TrackPointer track);
     void slotReloadTrackMetadata();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
@@ -72,6 +73,9 @@ class WTrackTableView : public WLibraryTableView {
     void slotScrollValueChanged(int);
     void slotCoverArtSelected(const CoverArt& art);
     void slotReloadCoverArt();
+
+    void slotTrackInfoClosed();
+    void slotTagFetcherClosed();
 
   private:
     void sendToAutoDJ(bool bTop);
@@ -100,8 +104,9 @@ class WTrackTableView : public WLibraryTableView {
 
     QSignalMapper m_loadTrackMapper;
 
-    DlgTrackInfo* m_pTrackInfo;
-    DlgTagFetcher m_DlgTagFetcher;
+    QScopedPointer<DlgTrackInfo> m_pTrackInfo;
+    QScopedPointer<DlgTagFetcher> m_pTagFetcher;
+
     QModelIndex currentTrackInfoIndex;
 
 

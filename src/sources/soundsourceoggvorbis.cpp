@@ -24,7 +24,7 @@ ov_callbacks SoundSourceOggVorbis::s_callbacks = {
     SoundSourceOggVorbis::TellCallback
 };
 
-SoundSourceOggVorbis::SoundSourceOggVorbis(QUrl url)
+SoundSourceOggVorbis::SoundSourceOggVorbis(const QUrl& url)
         : SoundSource(url, "ogg"),
           m_curFrameIndex(0) {
     memset(&m_vf, 0, sizeof(m_vf));
@@ -43,7 +43,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
         return OpenResult::FAILED;
     }
 
-    const int initDecoderResult = ov_open_callbacks(m_pFile.get(), &m_vf, NULL, 0, s_callbacks);
+    const int initDecoderResult = ov_open_callbacks(m_pFile.get(), &m_vf, nullptr, 0, s_callbacks);
     switch (initDecoderResult) {
     case 0:
         // success -> continue

@@ -12,7 +12,7 @@ WStarRating::WStarRating(QString group, QWidget* pParent)
           m_focused(false) {
 }
 
-void WStarRating::setup(QDomNode node, const SkinContext& context) {
+void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);
     setMouseTracking(true);

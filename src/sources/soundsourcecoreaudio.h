@@ -23,7 +23,7 @@ namespace Mixxx {
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
 public:
     explicit SoundSourceCoreAudio(QUrl url);
-    ~SoundSourceCoreAudio();
+    ~SoundSourceCoreAudio() override;
 
     void close() override;
 

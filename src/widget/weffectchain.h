@@ -16,7 +16,7 @@ class WEffectChain : public WLabel {
   public:
     WEffectChain(QWidget* pParent, EffectsManager* pEffectsManager);
 
-    void setup(QDomNode node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
     void chainUpdated();

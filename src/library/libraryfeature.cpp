@@ -20,7 +20,7 @@ LibraryFeature::~LibraryFeature() {
     
 }
 
-QString LibraryFeature::getPlaylistFile() {    
+QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {
     QString lastPlaylistDirectory = m_pConfig->getValueString(
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
@@ -30,10 +30,10 @@ QString LibraryFeature::getPlaylistFile() {
                      lastPlaylistDirectory,
                      tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     dialogg.setAcceptMode(QFileDialog::AcceptOpen);
-    dialogg.setFileMode(QFileDialog::ExistingFile);
+    dialogg.setFileMode(mode);
     dialogg.setModal(true);
     
     // If the user refuses return
-    if (! dialogg.exec()) return QString();
-    return dialogg.selectedFiles().first();
+    if (! dialogg.exec()) return QStringList();
+    return dialogg.selectedFiles();
 }

@@ -13,8 +13,8 @@ namespace Mixxx {
 
 class SoundSourceFLAC: public SoundSource {
 public:
-    explicit SoundSourceFLAC(QUrl url);
-    ~SoundSourceFLAC();
+    explicit SoundSourceFLAC(const QUrl& url);
+    ~SoundSourceFLAC() override;
 
     void close() override;
 

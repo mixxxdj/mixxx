@@ -24,8 +24,8 @@ public:
     static void configure(unsigned int bufferSizeLimit,
             const ModPlug::ModPlug_Settings &settings);
 
-    explicit SoundSourceModPlug(QUrl url);
-    ~SoundSourceModPlug();
+    explicit SoundSourceModPlug(const QUrl& url);
+    ~SoundSourceModPlug() override;
 
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,

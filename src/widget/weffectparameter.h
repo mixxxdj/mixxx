@@ -14,7 +14,7 @@ class WEffectParameter : public WEffectParameterBase {
   public:
     WEffectParameter(QWidget* pParent, EffectsManager* pEffectsManager);
 
-    void setup(QDomNode node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& context) override;
 };
 
 

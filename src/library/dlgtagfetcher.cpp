@@ -90,7 +90,7 @@ void DlgTagFetcher::apply() {
 
 void DlgTagFetcher::quit() {
     m_TagFetcher.cancel();
-    close();
+    accept();
 }
 
 void DlgTagFetcher::fetchTagProgress(QString text) {
