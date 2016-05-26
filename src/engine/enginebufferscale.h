@@ -1,26 +1,9 @@
-/***************************************************************************
-                          enginebufferscale.h  -  description
-                             -------------------
-    begin                : Sun Apr 13 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef ENGINEBUFFERSCALE_H
 #define ENGINEBUFFERSCALE_H
 
 #include <QObject>
 
-#include "util/types.h"
+#include "util/audiosignal.h"
 
 // MAX_SEEK_SPEED needs to be good and high to allow room for the very high
 //  instantaneous velocities of advanced scratching (Uzi) and spin-backs.
@@ -65,8 +48,10 @@ class EngineBufferScale : public QObject {
     }
 
     // Set the desired output sample rate.
-    virtual void setSampleRate(int iSampleRate) {
-        m_iSampleRate = iSampleRate;
+    virtual void setSampleRate(SINT iSampleRate);
+
+    const Mixxx::AudioSignal& getAudioSignal() const {
+        return m_audioSignal;
     }
 
     // Called from EngineBuffer when seeking, to ensure the buffers are flushed */
@@ -75,13 +60,15 @@ class EngineBufferScale : public QObject {
     // Returns the virtual number of sample frames that have been read.
     // The actual number of frames copied to the output buffer is always
     // an integer value, while the virtual number of read frames might be
-    // partial!
+    // partial number!
     virtual double getScaledSampleFrames(
             CSAMPLE* pOutputBuffer,
             SINT iOutputBufferSize) = 0;
 
+  private:
+    Mixxx::AudioSignal m_audioSignal;
+
   protected:
-    int m_iSampleRate;
     double m_dBaseRate;
     bool m_bSpeedAffectsPitch;
     double m_dTempoRatio;

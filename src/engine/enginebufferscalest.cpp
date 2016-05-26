@@ -1,20 +1,3 @@
-/***************************************************************************
-                          enginebufferscalest.cpp  -  description
-                             -------------------
-    begin                : November 2004
-    copyright            : (C) 2004 by Tue Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "engine/enginebufferscalest.h"
 
 // Fixes redefinition warnings from SoundTouch.
@@ -33,8 +16,6 @@ using namespace soundtouch;
 
 namespace {
 
-const SINT kNumChannels = 2;
-
 // Due to filtering and oversampling, SoundTouch is some samples behind.
 // The value below was experimental identified using a saw signal and SoundTouch 1.8
 // at a speed of 1.0
@@ -43,22 +24,20 @@ const SINT kNumChannels = 2;
 // (Rubberband does not suffer this issue)
 const SINT kSeekOffsetFrames = 519;
 
-const SINT kBackBufferSize = kSeekOffsetFrames * kNumChannels;
-
 }  // namespace
 
 EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
-    : EngineBufferScale(),
-      m_bBackwards(false),
-      m_pReadAheadManager(pReadAheadManager) {
-    m_pSoundTouch = new soundtouch::SoundTouch();
-    m_pSoundTouch->setChannels(kNumChannels);
+    : m_pReadAheadManager(pReadAheadManager),
+      m_pSoundTouch(std::make_unique<soundtouch::SoundTouch>()),
+      buffer_back_size(getAudioSignal().frames2samples(kSeekOffsetFrames)),
+      buffer_back(SampleUtil::alloc(buffer_back_size)),
+      m_bBackwards(false) {
+    DEBUG_ASSERT(getAudioSignal().isValid());
+    m_pSoundTouch->setChannels(getAudioSignal().getChannelCount());
+    m_pSoundTouch->setSampleRate(getAudioSignal().getSamplingRate());
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
-    m_pSoundTouch->setSampleRate(m_iSampleRate > 0 ? m_iSampleRate : 44100);
-
-    buffer_back = new CSAMPLE[kBackBufferSize];
 
     // Setting the tempo to a very low value will force SoundTouch
     // to preallocate buffers large enough to (almost certainly)
@@ -70,8 +49,7 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
 }
 
 EngineBufferScaleST::~EngineBufferScaleST() {
-    delete m_pSoundTouch;
-    delete [] buffer_back;
+    SampleUtil::free(buffer_back);
 }
 
 void EngineBufferScaleST::setScaleParameters(double base_rate,
@@ -120,32 +98,31 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
     // changed direction. I removed it because this is handled by EngineBuffer.
 }
 
-void EngineBufferScaleST::setSampleRate(int iSampleRate) {
+void EngineBufferScaleST::setSampleRate(SINT iSampleRate) {
+    EngineBufferScale::setSampleRate(iSampleRate);
     m_pSoundTouch->setSampleRate(iSampleRate);
-    m_iSampleRate = iSampleRate;
 }
 
 void EngineBufferScaleST::clear() {
     m_pSoundTouch->clear();
 
     // compensate seek offset for a rate of 1.0
-    SampleUtil::clear(buffer_back, kSeekOffsetFrames * kNumChannels);
+    SampleUtil::clear(buffer_back, getAudioSignal().frames2samples(kSeekOffsetFrames));
     m_pSoundTouch->putSamples(buffer_back, kSeekOffsetFrames);
 }
 
 double EngineBufferScaleST::getScaledSampleFrames(
         CSAMPLE* pOutputBuffer,
         SINT iOutputBufferSize) {
-    DEBUG_ASSERT((iOutputBufferSize % kNumChannels) == 0);
     if (m_dBaseRate == 0.0 || m_dTempoRatio == 0.0 || m_dPitchRatio == 0.0) {
         SampleUtil::clear(pOutputBuffer, iOutputBufferSize);
-        return iOutputBufferSize / kNumChannels;
+        return getAudioSignal().samples2frames(iOutputBufferSize);
     }
 
     SINT total_received_frames = 0;
     SINT total_read_frames = 0;
 
-    SINT remaining_frames = iOutputBufferSize / kNumChannels;
+    SINT remaining_frames = getAudioSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
@@ -154,7 +131,7 @@ double EngineBufferScaleST::getScaledSampleFrames(
         DEBUG_ASSERT(remaining_frames >= received_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
-        read += received_frames * kNumChannels;
+        read += getAudioSignal().frames2samples(received_frames);
 
         if (remaining_frames > 0) {
             SINT iAvailSamples = m_pReadAheadManager->getNextSamples(
@@ -162,9 +139,8 @@ double EngineBufferScaleST::getScaledSampleFrames(
                         // are going forward or backward.
                         (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
                         buffer_back,
-                        kBackBufferSize);
-            DEBUG_ASSERT((iAvailSamples % kNumChannels) == 0);
-            SINT iAvailFrames = iAvailSamples / kNumChannels;
+                        buffer_back_size);
+            SINT iAvailFrames = getAudioSignal().samples2frames(iAvailSamples);
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
@@ -174,7 +150,7 @@ double EngineBufferScaleST::getScaledSampleFrames(
                 if (last_read_failed) {
                     m_pSoundTouch->flush();
                     qWarning() << __FILE__ << "- only wrote" << total_received_frames
-                             << "frames instead of requested" << (iOutputBufferSize / kNumChannels);
+                             << "frames instead of requested" << getAudioSignal().samples2frames(iOutputBufferSize);
                     break; // exit loop after failure
                 }
                 last_read_failed = true;
