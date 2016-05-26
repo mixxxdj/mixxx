@@ -134,11 +134,9 @@ void EngineBufferScaleST::clear() {
 }
 
 double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
-    double samplesRead = 0.0;
-
-    if (m_dBaseRate == 0 || m_dTempoRatio == 0 || m_dPitchRatio == 0) {
+    if (m_dBaseRate == 0.0 || m_dTempoRatio == 0.0 || m_dPitchRatio == 0.0) {
         SampleUtil::clear(pOutput, buf_size);
-        return samplesRead;
+        return buf_size;
     }
 
     unsigned int total_received_frames = 0;
@@ -182,13 +180,13 @@ double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
         }
     }
 
-    // m_samplesRead is interpreted as the total number of virtual samples
+    // samplesRead is interpreted as the total number of virtual samples
     // consumed to produce the scaled buffer. Due to this, we do not take into
     // account directionality or starting point.
     // NOTE(rryan): Why no m_dPitchAdjust here? SoundTouch implements pitch
     // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
     // (*m_dPitchAdjust) so these two cancel out.
-    samplesRead = m_dBaseRate * m_dTempoRatio *
+    double samplesRead = m_dBaseRate * m_dTempoRatio *
             total_received_frames * kNumChannels;
 
     return samplesRead;

@@ -155,13 +155,9 @@ void EngineBufferScaleRubberBand::deinterleaveAndProcess(
 }
 
 double EngineBufferScaleRubberBand::getScaled(CSAMPLE* pOutput, const int buf_size) {
-    // qDebug() << "EngineBufferScaleRubberBand::getScaled" << buf_size
-    //          << "m_dSpeedAdjust" << m_dSpeedAdjust;
-    double samplesRead = 0.0;
-
-    if (m_dBaseRate == 0 || m_dTempoRatio == 0) {
+    if (m_dBaseRate == 0.0 || m_dTempoRatio == 0.0) {
         SampleUtil::clear(pOutput, buf_size);
-        return samplesRead;
+        return buf_size;
     }
 
     const int iNumChannels = 2;
@@ -237,7 +233,7 @@ double EngineBufferScaleRubberBand::getScaled(CSAMPLE* pOutput, const int buf_si
         counter.increment();
     }
 
-    // m_samplesRead is interpreted as the total number of virtual samples
+    // samplesRead is interpreted as the total number of virtual samples
     // consumed to produce the scaled buffer. Due to this, we do not take into
     // account directionality or starting point.
     // NOTE(rryan): Why no m_dPitchAdjust here? Pitch does not change the time
@@ -245,7 +241,7 @@ double EngineBufferScaleRubberBand::getScaled(CSAMPLE* pOutput, const int buf_si
     // time. So, if we used total_received_frames * iNumChannels in stretched
     // time, then multiplying that by the ratio of unstretched time to stretched
     // time will get us the unstretched samples read.
-    samplesRead = m_dBaseRate * m_dTempoRatio *
+    double samplesRead = m_dBaseRate * m_dTempoRatio *
             total_received_frames * iNumChannels;
 
     return samplesRead;
