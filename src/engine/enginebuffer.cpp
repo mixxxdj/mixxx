@@ -998,7 +998,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 // happens if samplesRead is a fraction ?
                 m_filepos_play =
                         m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
-                                static_cast<int>(m_filepos_play), samplesRead);
+                                m_filepos_play, samplesRead);
             }
         } else {
             SampleUtil::clear(pOutput, iBufferSize);
