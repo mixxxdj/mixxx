@@ -367,6 +367,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setYear(txtYear->text());
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
     m_pLoadedTrack->setComment(txtComment->toPlainText());
+    m_pLoadedTrack->setKeyText(txtKey->text());
 
     if (!m_pLoadedTrack->isBpmLocked()) {
         m_pLoadedTrack->setBeats(m_pBeatsClone);
