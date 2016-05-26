@@ -46,14 +46,15 @@ WCoverArt::~WCoverArt() {
     delete m_pDlgFullSize;
 }
 
-void WCoverArt::setup(QDomNode node, const SkinContext& context) {
+void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     setMouseTracking(true);
 
     // Background color
     QColor bgc(255,255,255);
-    if (context.hasNode(node, "BgColor")) {
-        bgc.setNamedColor(context.selectString(node, "BgColor"));
+    QString bgColorStr;
+    if (context.hasNodeSelectString(node, "BgColor", &bgColorStr)) {
+        bgc.setNamedColor(bgColorStr);
         setAutoFillBackground(true);
     }
     QPalette pal = palette();
@@ -61,16 +62,18 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
 
     // Foreground color
     QColor m_fgc(0,0,0);
-    if (context.hasNode(node, "FgColor")) {
-        m_fgc.setNamedColor(context.selectString(node, "FgColor"));
+    QString fgColorStr;
+    if (context.hasNodeSelectString(node, "FgColor", &fgColorStr)) {
+        m_fgc.setNamedColor(fgColorStr);
     }
     bgc = WSkinColor::getCorrectColor(bgc);
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
     pal.setBrush(foregroundRole(), m_fgc);
     setPalette(pal);
 
-    if (context.hasNode(node, "DefaultCover")) {
-        m_defaultCover = QPixmap(context.selectString(node, "DefaultCover"));
+    QString defaultCoverStr;
+    if (context.hasNodeSelectString(node, "DefaultCover", &defaultCoverStr)) {
+        m_defaultCover = QPixmap(defaultCoverStr);
     }
 
     // If no default cover is specified or we failed to load it, fall back on

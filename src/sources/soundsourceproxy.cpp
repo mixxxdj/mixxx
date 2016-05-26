@@ -113,6 +113,27 @@ QList<QDir> getSoundSourcePluginDirectories() {
     return pluginDirs;
 }
 
+QUrl getCanonicalUrlForTrack(const Track* pTrack) {
+    if (pTrack == nullptr) {
+        // Missing track
+        return QUrl();
+    }
+    const QString canonicalLocation(pTrack->getCanonicalLocation());
+    if (canonicalLocation.isEmpty()) {
+        // Corresponding file is missing or inaccessible
+        //
+        // NOTE(uklotzde): Special case handling is required for Qt 4.8!
+        // Creating an URL from an empty local file in Qt 4.8 will result
+        // in an URL with the string "file:" instead of an empty URL.
+        //
+        // TODO(XXX): This is no longer required for Qt 5.x
+        // http://doc.qt.io/qt-5/qurl.html#fromLocalFile
+        // "An empty localFile leads to an empty URL (since Qt 5.4)."
+        return QUrl();
+    }
+    return QUrl::fromLocalFile(canonicalLocation);
+}
+
 } // anonymous namespace
 
 // static
@@ -249,6 +270,10 @@ bool SoundSourceProxy::isFileExtensionSupported(const QString& fileExtension) {
 QList<Mixxx::SoundSourceProviderRegistration>
 SoundSourceProxy::findSoundSourceProviderRegistrations(
         const QUrl& url) {
+    if (url.isEmpty()) {
+        // silently ignore empty URLs
+        return QList<Mixxx::SoundSourceProviderRegistration>();
+    }
     QString fileExtension(Mixxx::SoundSource::getFileExtensionFromUrl(url));
     if (fileExtension.isEmpty()) {
         qWarning() << "Unknown file type:" << url.toString();
@@ -299,14 +324,14 @@ SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
 
 SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
     : m_pTrack(pTrack),
-      m_url(QUrl::fromLocalFile(pTrack->getCanonicalLocation())),
+      m_url(getCanonicalUrlForTrack(pTrack.data())),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
 }
 
 SoundSourceProxy::SoundSourceProxy(const Track* pTrack)
-    : m_url(QUrl::fromLocalFile(pTrack->getCanonicalLocation())),
+    : m_url(getCanonicalUrlForTrack(pTrack)),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
@@ -336,8 +361,10 @@ void SoundSourceProxy::initSoundSource() {
     while (m_pSoundSource.isNull()) {
         Mixxx::SoundSourceProviderPointer pProvider(getSoundSourceProvider());
         if (pProvider.isNull()) {
-            qWarning() << "No SoundSourceProvider for file"
-                       << getUrl().toString();
+            if (!getUrl().isEmpty()) {
+                qWarning() << "No SoundSourceProvider for file"
+                           << getUrl().toString();
+            }
             // Failure
             return;
         }

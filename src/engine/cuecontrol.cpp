@@ -2,6 +2,7 @@
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QMutexLocker>
+#include <QStringBuilder>
 
 #include "engine/cuecontrol.h"
 
@@ -970,11 +971,11 @@ bool CueControl::isTrackAtCue() {
     return (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f);
 }
 
-ConfigKey HotcueControl::keyForControl(int hotcue, QString name) {
+ConfigKey HotcueControl::keyForControl(int hotcue, const char* name) {
     ConfigKey key;
     key.group = m_group;
     // Add one to hotcue so that we dont have a hotcue_0
-    key.item = QString("hotcue_%1_%2").arg(QString::number(hotcue+1), name);
+    key.item = QLatin1String("hotcue_") % QString::number(hotcue+1) % "_" % name;
     return key;
 }
 

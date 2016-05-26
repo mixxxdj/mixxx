@@ -7,6 +7,12 @@
 #include "test/mixxxtest.h"
 #include "util/samplebuffer.h"
 
+namespace {
+
+const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
+
+} // anonymous namespace
+
 #ifdef __FFMPEGFILE__
 #include "sources/soundsourceffmpeg.h"
 #endif
@@ -42,11 +48,9 @@ class SoundSourceProxyTest: public MixxxTest {
     }
 
     static QStringList getFilePaths() {
-        const QString basePath(QDir::current().absoluteFilePath("src/test/id3-test-data"));
-        const QDir baseDir(basePath);
         QStringList filePaths;
         for (const auto& fileNameSuffix: getFileNameSuffixes()) {
-            filePaths.append(baseDir.absoluteFilePath("cover-test" + fileNameSuffix));
+            filePaths.append(kTestDir.absoluteFilePath("cover-test" + fileNameSuffix));
         }
         return filePaths;
     }
@@ -78,7 +82,7 @@ TEST_F(SoundSourceProxyTest, open) {
 
 TEST_F(SoundSourceProxyTest, readArtist) {
     TrackPointer pTrack(Track::newTemporary(
-            QDir::currentPath().append("/src/test/id3-test-data/artist.mp3")));
+            kTestDir.absoluteFilePath("artist.mp3")));
     SoundSourceProxy proxy(pTrack);
     Mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
@@ -87,7 +91,7 @@ TEST_F(SoundSourceProxyTest, readArtist) {
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
     TrackPointer pTrack(Track::newTemporary(
-            QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3")));
+            kTestDir.absoluteFilePath("TOAL_TPE2.mp3")));
     SoundSourceProxy proxy(pTrack);
     Mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));

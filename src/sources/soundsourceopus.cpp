@@ -4,6 +4,9 @@ namespace Mixxx {
 
 namespace {
 
+// Decoded output of opusfile has a fixed sample rate of 48 kHz
+const SINT kSamplingRate = 48000;
+
 // Parameter for op_channel_count()
 // See also: https://mf4.xiph.org/jenkins/view/opus/job/opusfile-unix/ws/doc/html/group__stream__info.html
 const int kCurrentStreamLink = -1; // get ... of the current (stream) link
@@ -30,12 +33,9 @@ private:
 
 } // anonymous namespace
 
-// Decoded output of opusfile has a fixed sample rate of 48 kHz
-const SINT SoundSourceOpus::kSamplingRate = 48000;
-
-SoundSourceOpus::SoundSourceOpus(QUrl url)
+SoundSourceOpus::SoundSourceOpus(const QUrl& url)
         : SoundSource(url, "opus"),
-          m_pOggOpusFile(NULL),
+          m_pOggOpusFile(nullptr),
           m_curFrameIndex(getMinFrameIndex()) {
 }
 
@@ -81,7 +81,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
 
     pTrackMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
-    pTrackMetadata->setSampleRate(Mixxx::SoundSourceOpus::kSamplingRate);
+    pTrackMetadata->setSampleRate(kSamplingRate);
     pTrackMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
     pTrackMetadata->setDuration(
             op_pcm_total(l_ptrOpusFile, -1) / pTrackMetadata->getSampleRate());
@@ -197,7 +197,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audi
 void SoundSourceOpus::close() {
     if (m_pOggOpusFile) {
         op_free(m_pOggOpusFile);
-        m_pOggOpusFile = NULL;
+        m_pOggOpusFile = nullptr;
     }
 }
 
@@ -235,7 +235,7 @@ SINT SoundSourceOpus::readSampleFrames(
     while (0 < numberOfFramesRemaining) {
         int readResult = op_read_float(m_pOggOpusFile,
                 pSampleBuffer,
-                frames2samples(numberOfFramesRemaining), NULL);
+                frames2samples(numberOfFramesRemaining), nullptr);
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             pSampleBuffer += frames2samples(readResult);

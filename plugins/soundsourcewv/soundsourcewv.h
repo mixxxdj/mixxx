@@ -12,7 +12,7 @@ namespace Mixxx {
 class SoundSourceWV: public SoundSourcePlugin {
   public:
     explicit SoundSourceWV(const QUrl& url);
-    ~SoundSourceWV();
+    ~SoundSourceWV() override;
 
     void close() override;
 

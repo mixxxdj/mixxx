@@ -139,6 +139,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
         }
         int m_column;
         Qt::SortOrder m_order;
+        
     };
 
     QVector<RowInfo> m_rowInfo;

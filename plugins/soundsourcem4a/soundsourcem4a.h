@@ -20,7 +20,7 @@ namespace Mixxx {
 class SoundSourceM4A: public SoundSourcePlugin {
 public:
     explicit SoundSourceM4A(const QUrl& url);
-    ~SoundSourceM4A();
+    ~SoundSourceM4A() override;
 
     void close() override;
 

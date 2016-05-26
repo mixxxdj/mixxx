@@ -37,7 +37,6 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
           m_bPersistInConfiguration(bPersist),
           m_bIgnoreNops(bIgnoreNops),
           m_bTrack(bTrack),
-          m_trackKey("control " + m_key.group + "," + m_key.item),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                        Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
@@ -62,6 +61,7 @@ void ControlDoublePrivate::initialize() {
 
     if (m_bTrack) {
         // TODO(rryan): Make configurable.
+        m_trackKey = "control " + m_key.group + "," + m_key.item;
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
                     static_cast<Stat::ComputeFlags>(m_trackFlags),
                     m_value.getValue());

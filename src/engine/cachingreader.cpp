@@ -43,7 +43,7 @@ CachingReader::CachingReader(QString group,
           m_maxReadableFrameIndex(Mixxx::AudioSource::getMinFrameIndex()),
           m_worker(group, &m_chunkReadRequestFIFO, &m_readerStatusFIFO) {
 
-    m_allocatedCachingReaderChunks.reserve(m_sampleBuffer.size());
+    m_allocatedCachingReaderChunks.reserve(maximumCachingReaderChunksInMemory);
 
     CSAMPLE* bufferStart = m_sampleBuffer.data();
 

@@ -189,7 +189,7 @@ bool lintPresetInfo(const PresetInfo& preset) {
 
 TEST_F(ControllerPresetValidationTest, MidiPresetsValid) {
     foreach (const PresetInfo& preset,
-             m_pEnumerator->getPresets(MIDI_PRESET_EXTENSION)) {
+             m_pEnumerator->getPresetsByExtension(MIDI_PRESET_EXTENSION)) {
         qDebug() << "Validating" << preset.getPath();
         EXPECT_TRUE(preset.isValid());
         EXPECT_TRUE(lintPresetInfo(preset));
@@ -199,7 +199,7 @@ TEST_F(ControllerPresetValidationTest, MidiPresetsValid) {
 
 TEST_F(ControllerPresetValidationTest, HidPresetsValid) {
     foreach (const PresetInfo& preset,
-             m_pEnumerator->getPresets(HID_PRESET_EXTENSION)) {
+             m_pEnumerator->getPresetsByExtension(HID_PRESET_EXTENSION)) {
         qDebug() << "Validating" << preset.getPath();
         EXPECT_TRUE(preset.isValid());
         EXPECT_TRUE(lintPresetInfo(preset));
@@ -209,7 +209,7 @@ TEST_F(ControllerPresetValidationTest, HidPresetsValid) {
 
 TEST_F(ControllerPresetValidationTest, BulkPresetsValid) {
     foreach (const PresetInfo& preset,
-             m_pEnumerator->getPresets(BULK_PRESET_EXTENSION)) {
+             m_pEnumerator->getPresetsByExtension(BULK_PRESET_EXTENSION)) {
         qDebug() << "Validating" << preset.getPath();
         EXPECT_TRUE(preset.isValid());
         EXPECT_TRUE(lintPresetInfo(preset));

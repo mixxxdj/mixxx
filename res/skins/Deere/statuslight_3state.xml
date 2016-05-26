@@ -28,9 +28,12 @@
     <MaximumSize><Variable name="MaximumSize"/></MaximumSize>
     <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
     <NumberPos>3</NumberPos>
-    <PathStatusLight0 scalemode="STRETCH_ASPECT"><Variable name="state_0"/></PathStatusLight0>
-    <PathStatusLight1 scalemode="STRETCH_ASPECT"><Variable name="state_1"/></PathStatusLight1>
-    <PathStatusLight2 scalemode="STRETCH_ASPECT"><Variable name="state_2"/></PathStatusLight2>
+    <PathStatusLight1 scalemode="STRETCH_ASPECT"><Variable name="state_0"/></PathStatusLight1>
+    <PathStatusLight2 scalemode="STRETCH_ASPECT"><Variable name="state_1"/></PathStatusLight2>
+    <PathStatusLight3 scalemode="STRETCH_ASPECT"><Variable name="state_2"/></PathStatusLight3>
+    <Connection>
+      <ConfigKey><Variable name="left_connection_control"/></ConfigKey>
+    </Connection>
     <Connection>
       <ConfigKey><Variable name="left_connection_control"/></ConfigKey>
       <BindProperty>visible</BindProperty>
