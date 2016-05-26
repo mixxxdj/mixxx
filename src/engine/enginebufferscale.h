@@ -72,7 +72,13 @@ class EngineBufferScale : public QObject {
     // Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     virtual void clear() = 0;
     // Scale buffer
-    virtual double getScaled(CSAMPLE* pOutput, const int iBufferSize) = 0;
+    // Returns the virtual number of sample frames that have been read.
+    // The actual number of frames copied to the output buffer is always
+    // an integer value, while the virtual number of read frames might be
+    // partial!
+    virtual double getScaledSampleFrames(
+            CSAMPLE* pOutputBuffer,
+            SINT iOutputBufferSize) = 0;
 
   protected:
     int m_iSampleRate;

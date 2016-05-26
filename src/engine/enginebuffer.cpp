@@ -41,8 +41,18 @@
 #include "engine/vinylcontrolcontrol.h"
 #endif
 
+namespace {
+
 const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
-const int kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
+
+const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
+
+inline void assertValidPlayPosition(double playPosition) {
+    DEBUG_ASSERT(playPosition == round(playPosition));
+    DEBUG_ASSERT((static_cast<SINT>(playPosition) % kSamplesPerFrame) == 0);
+}
+
+} // anonymous namespace
 
 EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
@@ -436,8 +446,8 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
     if (!m_bCrossfadeReady) {
         // Read buffer, as if there where no parameter change
         // (Must be called only once per callback)
-        m_pScale->getScaled(m_pCrossfadeBuffer, iBufferSize);
-        // Restore the original position that was lost due to getScaled() above
+        m_pScale->getScaledSampleFrames(m_pCrossfadeBuffer, iBufferSize);
+        // Restore the original position that was lost due to getScaledSampleFrames() above
         m_pReadAheadManager->notifySeek(m_filepos_play);
         m_bCrossfadeReady = true;
      }
@@ -448,6 +458,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 void EngineBuffer::setNewPlaypos(double newpos) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
+    assertValidPlayPosition(newpos);
     m_filepos_play = newpos;
 
     if (m_rate_old != 0.0) {
@@ -970,32 +981,21 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             //    qDebug() << "ramp to rate 0";
             //}
 
-            // TODO(XXX) The file position should be an integer value
-            // Why is this thing a double anyway!?
-            // WORKAROUND: Overwrite current floating-point file position
-            // with the rounded value and detect any violations of the integer
-            // assumption by a debug assertion.
-            double playFrame = m_filepos_play / kSamplesPerFrame;
-            double filepos_play_rounded = round(playFrame) * kSamplesPerFrame;
-            DEBUG_ASSERT_AND_HANDLE(m_filepos_play == filepos_play_rounded) {
-                m_filepos_play = filepos_play_rounded;
-            }
-
             // Perform scaling of Reader buffer into buffer.
-            double samplesRead = m_pScale->getScaled(pOutput, iBufferSize);
-
-            //qDebug() << "sourceSamples used " << iSourceSamples
-            //         <<" samplesRead " << samplesRead
-            //         << ", buffer pos " << iBufferStartSample
-            //         << ", play " << filepos_play
-            //         << " bufferlen " << iBufferSize;
+            double framesRead =
+                    m_pScale->getScaledSampleFrames(pOutput, iBufferSize);
+            // TODO(XXX): The result framesRead might not be an integer value.
+            // Converting to samples here does not make sense. All positional
+            // calculations should be done in frames instead of samples! Otherwise
+            // rounding errors might occur when converting from samples back to
+            // frames later.
+            double samplesRead = framesRead * kSamplesPerFrame;
 
             if (m_bScalerOverride) {
                 // If testing, we don't have a real log so we fake the position.
                 m_filepos_play += samplesRead;
             } else {
-                // Adjust filepos_play by the amount we processed. TODO(XXX) what
-                // happens if samplesRead is a fraction ?
+                // Adjust filepos_play by the amount we processed.
                 m_filepos_play =
                         m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                                 m_filepos_play, samplesRead);

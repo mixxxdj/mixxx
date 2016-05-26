@@ -141,7 +141,7 @@ TEST_F(EngineBufferScaleLinearTest, ScaleConstant) {
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
-    m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
+    m_pScaler->getScaledSampleFrames(pOutput, kiLinearScaleReadAheadLength);
     // TODO(rryan) the LERP w/ the previous buffer causes samples 0 and 1 to be
     // 0, for now skip the first two.
     AssertWholeBufferEquals(pOutput+2, 1.0f, kiLinearScaleReadAheadLength - 2);
@@ -167,7 +167,7 @@ TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
     m_pReadAheadMock->setReadBuffer(readBuffer.data(), readBuffer.size());
 
     CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
-    m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
+    m_pScaler->getScaledSampleFrames(pOutput, kiLinearScaleReadAheadLength);
 
     AssertBufferCycles(pOutput, kiLinearScaleReadAheadLength,
                        readBuffer.data(), readBuffer.size());
@@ -193,7 +193,7 @@ TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
-    m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
+    m_pScaler->getScaledSampleFrames(pOutput, kiLinearScaleReadAheadLength);
 
     AssertBufferMonotonicallyProgresses(pOutput, 0.0f, 1.0f, kiLinearScaleReadAheadLength);
 
@@ -218,7 +218,7 @@ TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
-    m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
+    m_pScaler->getScaledSampleFrames(pOutput, kiLinearScaleReadAheadLength);
 
     CSAMPLE expectedResult[] = { 1.0, 1.0,
                                  -1.0, -1.0 };
@@ -247,7 +247,7 @@ TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
-    m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
+    m_pScaler->getScaledSampleFrames(pOutput, kiLinearScaleReadAheadLength);
 
     CSAMPLE expectedResult[] = { -101.0, 101.0,
                                  -100.0, 100.0,
@@ -288,7 +288,7 @@ TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
     int samplesRemaining = kiLinearScaleReadAheadLength;
     while (samplesRemaining > 0) {
         int toRead = math_min(8, samplesRemaining);
-        m_pScaler->getScaled(pOutput, 8);
+        m_pScaler->getScaledSampleFrames(pOutput, 8);
         samplesRemaining -= toRead;
         AssertBufferCycles(pOutput, toRead, expectedResult, toRead);
     }

@@ -22,8 +22,9 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
 
     void setSampleRate(int iSampleRate) override;
 
-    // Read and scale buf_size samples from the provided RAMAN.
-    double getScaled(CSAMPLE* pOutput, const int iBufferSize) override;
+    double getScaledSampleFrames(
+            CSAMPLE* pOutputBuffer,
+            SINT iOutputBufferSize) override;
 
     // Flush buffer.
     void clear() override;
