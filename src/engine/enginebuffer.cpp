@@ -973,14 +973,13 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // TODO(XXX) The file position should be an integer value
             // Why is this thing a double anyway!?
             // WORKAROUND: Overwrite current floating-point file position
-            // with the rounded value.
+            // with the rounded value and detect any violations of the integer
+            // assumption by a debug assertion.
             double playFrame = m_filepos_play / kSamplesPerFrame;
             double filepos_play_rounded = round(playFrame) * kSamplesPerFrame;
-            // NOTE(uklotzde, 2016-05-25): The following DEBUG_ASSERT
-            // failed during EngineBufferTest.SlowRubberBand and has
-            // been removed:
-            // DEBUG_ASSERT(filepos_play_rounded == m_filepos_play)
-            m_filepos_play = filepos_play_rounded;
+            DEBUG_ASSERT_AND_HANDLE(m_filepos_play == filepos_play_rounded) {
+                m_filepos_play = filepos_play_rounded;
+            }
 
             // Perform scaling of Reader buffer into buffer.
             double samplesRead = m_pScale->getScaled(pOutput, iBufferSize);
