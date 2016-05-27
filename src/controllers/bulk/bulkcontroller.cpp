@@ -104,12 +104,20 @@ QString BulkController::presetExtension() {
     return BULK_PRESET_EXTENSION;
 }
 
+void BulkController::visit(const KeyboardControllerPreset* preset) {
+    Q_UNUSED(preset);
+    qWarning() << "ERROR: Attempting to load a KeyboardControllerPreset to a BulkController!";
+    // TODO(XXX): throw a hissy fit.
+
+};
+
 void BulkController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
+    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to a BulkController!";
     // TODO(XXX): throw a hissy fit.
-    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
 }
 
+// TODO Shouldn't this method raise a warning, just as visit(KeyboardControllerPreset*) and visit(MidiControllerPresetPreset*) ?
 void BulkController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.

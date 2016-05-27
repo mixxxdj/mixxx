@@ -114,7 +114,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     connect(&m_lastMessageTimer, SIGNAL(timeout()),
             this, SLOT(slotTimerExpired()));
 
-    m_firstMessageTimer.setInterval(7000);
+    m_firstMessageTimer.setInterval(7000);Q_OBJECT
     m_firstMessageTimer.setSingleShot(true);
     connect(&m_firstMessageTimer, SIGNAL(timeout()),
             this, SLOT(slotFirstMessageTimeout()));

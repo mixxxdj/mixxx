@@ -47,6 +47,12 @@ void MidiController::visit(const HidControllerPreset* preset) {
     // TODO(XXX): throw a hissy fit.
 }
 
+void MidiController::visit(const KeyboardControllerPreset* preset) {
+    Q_UNUSED(preset);
+    qWarning() << "ERROR: Attempting to load a KeyboardControllerPreset to a MidiController!";
+    // TODO(XXX): throw a hissy fit.
+}
+
 bool MidiController::matchPreset(const PresetInfo& preset) {
     // Product info mapping not implemented for MIDI devices yet
     Q_UNUSED(preset);
