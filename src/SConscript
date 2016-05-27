@@ -208,7 +208,7 @@ skin_files = Glob('#res/skins/*')
 controllermappings_files = Glob('#res/controllers/*')
 
 # Translation files
-translation_files = Glob('#res/translations/*.qm')
+translation_files = Glob('#res/translations/*.qm') + Glob(os.path.join(build.env['QTDIR'], 'translations/qt_*.qm'))
 
 # Font files
 font_files = Glob('#res/fonts/*')
@@ -408,7 +408,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 plugins.append(x.get_abspath())
 
         resource_map = {}
-        translation_files = Glob('#res/translations/*.qm')
         for tfile in translation_files:
                 resource_map[str(tfile)] = 'translations'
 
