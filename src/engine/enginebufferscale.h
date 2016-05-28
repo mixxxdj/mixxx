@@ -57,11 +57,13 @@ class EngineBufferScale : public QObject {
     // Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     virtual void clear() = 0;
     // Scale buffer
-    // Returns the virtual number of sample frames that have been read.
-    // The actual number of frames copied to the output buffer is always
-    // an integer value, while the virtual number of read frames might be
-    // partial number!
-    virtual double getScaledSampleFrames(
+    // Returns the number of frames that have bean read from the unscaled
+    // input buffer The number of frames copied to the output buffer is always
+    // an integer value, while the number of frames read from the unscaled
+    // input buffer might be partial number!
+    // The size of the output buffer is given in samples, i.e. twice the number
+    // of frames for an interleaved stereo signal.
+    virtual double scaleBuffer(
             CSAMPLE* pOutputBuffer,
             SINT iOutputBufferSize) = 0;
 

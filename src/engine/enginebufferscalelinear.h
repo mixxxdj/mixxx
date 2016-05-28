@@ -14,7 +14,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
             ReadAheadManager *pReadAheadManager);
     ~EngineBufferScaleLinear() override;
 
-    double getScaledSampleFrames(
+    double scaleBuffer(
             CSAMPLE* pOutputBuffer,
             SINT iOutputBufferSize) override;
     void clear() override;

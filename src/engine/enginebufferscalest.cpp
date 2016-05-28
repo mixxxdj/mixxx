@@ -76,7 +76,7 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
     // of rate adjustment.
     if (speed_abs != m_dTempoRatio) {
         // Note: A rate of zero would make Soundtouch crash,
-        // this is caught in getScaledSampleFrames()
+        // this is caught in scaleBuffer()
         m_pSoundTouch->setTempo(speed_abs);
         m_dTempoRatio = speed_abs;
     }
@@ -111,7 +111,7 @@ void EngineBufferScaleST::clear() {
     m_pSoundTouch->putSamples(buffer_back, kSeekOffsetFrames);
 }
 
-double EngineBufferScaleST::getScaledSampleFrames(
+double EngineBufferScaleST::scaleBuffer(
         CSAMPLE* pOutputBuffer,
         SINT iOutputBufferSize) {
     if (m_dBaseRate == 0.0 || m_dTempoRatio == 0.0 || m_dPitchRatio == 0.0) {

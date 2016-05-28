@@ -24,7 +24,7 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
 
     void setSampleRate(SINT iSampleRate) override;
 
-    double getScaledSampleFrames(
+    double scaleBuffer(
             CSAMPLE* pOutputBuffer,
             SINT iOutputBufferSize) override;
 

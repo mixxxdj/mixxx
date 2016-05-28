@@ -449,8 +449,8 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
     if (!m_bCrossfadeReady) {
         // Read buffer, as if there where no parameter change
         // (Must be called only once per callback)
-        m_pScale->getScaledSampleFrames(m_pCrossfadeBuffer, iBufferSize);
-        // Restore the original position that was lost due to getScaledSampleFrames() above
+        m_pScale->scaleBuffer(m_pCrossfadeBuffer, iBufferSize);
+        // Restore the original position that was lost due to scaleBuffer() above
         m_pReadAheadManager->notifySeek(m_filepos_play);
         m_bCrossfadeReady = true;
      }
@@ -992,7 +992,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
             // Perform scaling of Reader buffer into buffer.
             double framesRead =
-                    m_pScale->getScaledSampleFrames(pOutput, iBufferSize);
+                    m_pScale->scaleBuffer(pOutput, iBufferSize);
             // TODO(XXX): The result framesRead might not be an integer value.
             // Converting to samples here does not make sense. All positional
             // calculations should be done in frames instead of samples! Otherwise

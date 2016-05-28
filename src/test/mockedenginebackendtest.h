@@ -35,7 +35,7 @@ class MockScaler : public EngineBufferScale {
               m_processedPitch(-1) {
     }
     void clear() { }
-    double getScaledSampleFrames(CSAMPLE* pOutput, SINT buf_size) override {
+    double scaleBuffer(CSAMPLE* pOutput, SINT buf_size) override {
         Q_UNUSED(pOutput);
         m_processedTempo = m_dTempoRatio;
         m_processedPitch = m_dPitchRatio;

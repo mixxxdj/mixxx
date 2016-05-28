@@ -150,7 +150,7 @@ void EngineBufferScaleRubberBand::deinterleaveAndProcess(
                            frames, flush);
 }
 
-double EngineBufferScaleRubberBand::getScaledSampleFrames(
+double EngineBufferScaleRubberBand::scaleBuffer(
         CSAMPLE* pOutputBuffer,
         SINT iOutputBufferSize) {
     if (m_dBaseRate == 0.0 || m_dTempoRatio == 0.0) {

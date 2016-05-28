@@ -25,7 +25,7 @@ class EngineBufferScaleST : public EngineBufferScale {
     void setSampleRate(SINT iSampleRate) override;
 
     // Scale buffer.
-    double getScaledSampleFrames(
+    double scaleBuffer(
             CSAMPLE* pOutputBuffer,
             SINT iOutputBufferSize) override;
 

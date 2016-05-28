@@ -56,7 +56,7 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 
 // Determine if we're changing directions (scratching) and then perform
 // a stretch
-double EngineBufferScaleLinear::getScaledSampleFrames(
+double EngineBufferScaleLinear::scaleBuffer(
         CSAMPLE* pOutputBuffer,
         SINT iOutputBufferSize) {
     if (iOutputBufferSize == 0) {
