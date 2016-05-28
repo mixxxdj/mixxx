@@ -116,7 +116,9 @@ double EngineBufferScaleST::getScaledSampleFrames(
         SINT iOutputBufferSize) {
     if (m_dBaseRate == 0.0 || m_dTempoRatio == 0.0 || m_dPitchRatio == 0.0) {
         SampleUtil::clear(pOutputBuffer, iOutputBufferSize);
-        return getAudioSignal().samples2frames(iOutputBufferSize);
+        // No actual samples/frames have been read from the
+        // unscaled input buffer!
+        return 0.0;
     }
 
     SINT total_received_frames = 0;
