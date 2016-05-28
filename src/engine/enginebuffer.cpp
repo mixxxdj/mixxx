@@ -741,8 +741,8 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
 }
 
 void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
-    // Bail if we receive a non-even buffer size. Assert in debug builds.
-    DEBUG_ASSERT_AND_HANDLE(even(iBufferSize)) {
+    // Bail if we receive a buffer size with incomplete sample frames. Assert in debug builds.
+    DEBUG_ASSERT_AND_HANDLE((iBufferSize % kSamplesPerFrame) == 0) {
         return;
     }
     m_pReader->process();
