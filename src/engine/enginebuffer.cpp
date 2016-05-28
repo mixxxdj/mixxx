@@ -47,14 +47,6 @@ const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent al
 
 const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
-// TODO(XXX): Remove this function when it is no longer needed
-inline SINT getFrameStartPositionInSamples(double positionInSamples) {
-    // Always pick the nearest preceding integer value as the sample position -> round down
-    SINT samplePosition = static_cast<SINT>(floor(positionInSamples));
-    // Adjust to start of the current sample frame
-    return samplePosition - (samplePosition % kSamplesPerFrame);
-}
-
 } // anonymous namespace
 
 EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
@@ -461,12 +453,6 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 void EngineBuffer::setNewPlaypos(double newpos) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
-    // TODO(XXX): Remove debug assertion and handler code if it
-    // is no longer needed.
-    DEBUG_ASSERT_AND_HANDLE(newpos == getFrameStartPositionInSamples(newpos)) {
-        newpos = getFrameStartPositionInSamples(newpos);
-    }
-
     m_filepos_play = newpos;
 
     if (m_rate_old != 0.0) {
@@ -635,12 +621,6 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     // Don't allow the playposition to go past the end.
     if (new_playpos > m_trackSamplesOld) {
         new_playpos = m_trackSamplesOld;
-    }
-
-    // TODO(XXX): Remove debug assertion and handler code if it
-    // is no longer needed.
-    DEBUG_ASSERT_AND_HANDLE(new_playpos == getFrameStartPositionInSamples(new_playpos)) {
-        new_playpos = getFrameStartPositionInSamples(new_playpos);
     }
 
 #ifdef __VINYLCONTROL__
