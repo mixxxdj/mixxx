@@ -83,3 +83,8 @@ int KeyboardController::close() {
     // TODO(Tomasito) Check how this is done in the current keyboard implementation
     return 0;
 }
+
+// TODO(Tomasito) Could this method be inlined?
+ControllerPreset *KeyboardController::preset() {
+    return &m_preset;
+}
