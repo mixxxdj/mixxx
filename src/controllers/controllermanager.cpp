@@ -14,6 +14,7 @@
 #include "util/cmdlineargs.h"
 #include "util/time.h"
 
+#include "controllers/keyboard/keyboardenumerator.h"
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
@@ -127,6 +128,7 @@ void ControllerManager::slotInitialize() {
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
+    m_enumerators.append(new KeyboardEnumerator());
     m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator());

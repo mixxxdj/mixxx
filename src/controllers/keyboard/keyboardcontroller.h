@@ -1,7 +1,6 @@
 #ifndef KEYBOARDCONTROLLER_H
 #define KEYBOARDCONTROLLER_H
 
-
 #include "controllers/controller.h"
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
 

@@ -8,6 +8,9 @@
 
 KeyboardController::KeyboardController() : Controller() {
     setDeviceCategory(tr("Keyboard Controller")); // TODO Add translations
+
+    // TODO(Tomasito) If we add multiple keyboard support, this should be a more specific name
+    setDeviceName(tr("Keyboard")); // TODO Add translations
 }
 
 KeyboardController::~KeyboardController() {
@@ -16,7 +19,7 @@ KeyboardController::~KeyboardController() {
 
 // TODO(Tomasito) Implement this method
 // TODO(Tomasito) When this method is implemented properly, do installEventListener([the instance of KeyboardController])
-// TODO           on each widget where the KeyboardEventFilter is currently installed
+// TODO ...       on each widget where the KeyboardEventFilter is currently installed
 
 bool KeyboardController::eventFilter(QObject*, QEvent* e) {
     if (e->type() == QEvent::FocusOut) {

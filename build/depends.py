@@ -748,6 +748,7 @@ class MixxxCore(Feature):
                    "controllers/softtakeover.cpp",
                    "controllers/keyboard/keyboardeventfilter.cpp",
                    "controllers/keyboard/keyboardcontroller.cpp",
+                   "controllers/keyboard/keyboardenumerator.cpp",
 
                    "main.cpp",
                    "mixxx.cpp",
