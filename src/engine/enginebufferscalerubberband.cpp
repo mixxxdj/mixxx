@@ -120,14 +120,15 @@ void EngineBufferScaleRubberBand::clear() {
     m_pRubberBand->reset();
 }
 
-size_t EngineBufferScaleRubberBand::retrieveAndDeinterleave(CSAMPLE* pBuffer,
-                                                            size_t frames) {
-    size_t frames_available = m_pRubberBand->available();
-    size_t frames_to_read = math_min(frames_available, frames);
-    size_t received_frames = m_pRubberBand->retrieve(
+SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
+        CSAMPLE* pBuffer,
+        SINT frames) {
+    SINT frames_available = m_pRubberBand->available();
+    SINT frames_to_read = math_min(frames_available, frames);
+    SINT received_frames = m_pRubberBand->retrieve(
         (float* const*)m_retrieve_buffer, frames_to_read);
 
-    for (size_t i = 0; i < received_frames; ++i) {
+    for (SINT i = 0; i < received_frames; ++i) {
         pBuffer[i*2] = m_retrieve_buffer[0][i];
         pBuffer[i*2+1] = m_retrieve_buffer[1][i];
     }
@@ -136,9 +137,11 @@ size_t EngineBufferScaleRubberBand::retrieveAndDeinterleave(CSAMPLE* pBuffer,
 }
 
 void EngineBufferScaleRubberBand::deinterleaveAndProcess(
-    const CSAMPLE* pBuffer, size_t frames, bool flush) {
+    const CSAMPLE* pBuffer,
+    SINT frames,
+    bool flush) {
 
-    for (size_t i = 0; i < frames; ++i) {
+    for (SINT i = 0; i < frames; ++i) {
         m_retrieve_buffer[0][i] = pBuffer[i*2];
         m_retrieve_buffer[1][i] = pBuffer[i*2+1];
     }

@@ -24,15 +24,15 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
                              double* pPitchRatio) override;
 
   private:
-    int do_scale(CSAMPLE* buf, const int buf_size);
-    int do_copy(CSAMPLE* buf, const int buf_size);
+    SINT do_scale(CSAMPLE* buf, SINT buf_size);
+    SINT do_copy(CSAMPLE* buf, SINT buf_size);
 
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
 
     // Buffer for handling calls to ReadAheadManager
     CSAMPLE* m_bufferInt;
-    int m_bufferIntSize;
+    SINT m_bufferIntSize;
 
     CSAMPLE m_floorSampleOld[2];
 

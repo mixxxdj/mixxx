@@ -17,7 +17,7 @@ class StubReader : public CachingReader {
     StubReader()
             : CachingReader("[test]", UserSettingsPointer()) { }
 
-    int read(int sample, bool reverse, int num_samples,
+    SINT read(SINT sample, bool reverse, SINT num_samples,
              CSAMPLE* buffer) override {
         Q_UNUSED(sample);
         Q_UNUSED(reverse);

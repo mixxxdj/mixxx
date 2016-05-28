@@ -83,7 +83,7 @@ double EngineBufferScaleLinear::getScaledSampleFrames(
 
         // reset m_floorSampleOld in a way as we were coming from
         // the other direction
-        int iNextSample = getAudioSignal().frames2samples(static_cast<int>(ceil(m_dNextFrame)));
+        SINT iNextSample = getAudioSignal().frames2samples(static_cast<SINT>(ceil(m_dNextFrame)));
         if (iNextSample + 1 < m_bufferIntSize) {
             m_floorSampleOld[0] = m_bufferInt[iNextSample];
             m_floorSampleOld[1] = m_bufferInt[iNextSample + 1];
@@ -91,8 +91,8 @@ double EngineBufferScaleLinear::getScaledSampleFrames(
 
         // if the buffer has extra samples, do a read so RAMAN ends up back where
         // it should be
-        int iCurSample = getAudioSignal().frames2samples(static_cast<int>(ceil(m_dCurrentFrame)));
-        int extra_samples = m_bufferIntSize - iCurSample - getAudioSignal().getChannelCount();
+        SINT iCurSample = getAudioSignal().frames2samples(static_cast<SINT>(ceil(m_dCurrentFrame)));
+        SINT extra_samples = m_bufferIntSize - iCurSample - getAudioSignal().getChannelCount();
         if (extra_samples > 0) {
             if (extra_samples % getAudioSignal().getChannelCount() != 0) {
                 extra_samples -= extra_samples % getAudioSignal().getChannelCount();
@@ -100,7 +100,7 @@ double EngineBufferScaleLinear::getScaledSampleFrames(
             }
             //qDebug() << "extra samples" << extra_samples;
 
-            int next_samples_read = m_pReadAheadManager->getNextSamples(
+            SINT next_samples_read = m_pReadAheadManager->getNextSamples(
                     rate_add_new, m_bufferInt, extra_samples);
             frames_read += getAudioSignal().samples2frames(next_samples_read);
         }
@@ -122,12 +122,13 @@ double EngineBufferScaleLinear::getScaledSampleFrames(
     return frames_read;
 }
 
-int EngineBufferScaleLinear::do_copy(CSAMPLE* buf, const int buf_size) {
-    int samples_needed = buf_size;
+SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
+    SINT samples_needed = buf_size;
     CSAMPLE* write_buf = buf;
     // Use up what's left of the internal buffer.
-    int iNextSample = math_max<int>(static_cast<int>(ceil(m_dNextFrame)) * 2, 0);
-    int readSize = math_min<int>(m_bufferIntSize - iNextSample, samples_needed);
+    SINT iNextFrame = static_cast<SINT>(ceil(m_dNextFrame));
+    SINT iNextSample = math_max<SINT>(getAudioSignal().frames2samples(iNextFrame), 0);
+    SINT readSize = math_min<SINT>(m_bufferIntSize - iNextSample, samples_needed);
     if (readSize > 0) {
         SampleUtil::copy(write_buf, &m_bufferInt[iNextSample], readSize);
         samples_needed -= readSize;
@@ -141,10 +142,10 @@ int EngineBufferScaleLinear::do_copy(CSAMPLE* buf, const int buf_size) {
     // to call getNextSamples until you receive the number of samples you
     // wanted.
     while (samples_needed > 0) {
-        int read_size = m_pReadAheadManager->getNextSamples(m_dRate, write_buf,
+        SINT read_size = m_pReadAheadManager->getNextSamples(m_dRate, write_buf,
                 samples_needed);
         if (read_size == 0) {
-            if(++read_failed_count > 1) {
+            if (++read_failed_count > 1) {
                 break;
             } else {
                 continue;
@@ -157,7 +158,7 @@ int EngineBufferScaleLinear::do_copy(CSAMPLE* buf, const int buf_size) {
     // Instead of counting how many samples we got from the internal buffer
     // and the RAMAN calls, just measure the difference between what we
     // requested and what we still need.
-    int read_samples = buf_size - samples_needed;
+    SINT read_samples = buf_size - samples_needed;
     // Zero the remaining samples if we didn't fill them.
     SampleUtil::clear(write_buf, samples_needed);
     // update our class members so next time we need to scale it's ok. we do
@@ -172,8 +173,7 @@ int EngineBufferScaleLinear::do_copy(CSAMPLE* buf, const int buf_size) {
 }
 
 // Stretch a specified buffer worth of audio using linear interpolation
-int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
-                                      const int buf_size) {
+SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     float rate_old = m_dOldRate;
     const float rate_new = m_dRate;
     const float rate_diff = rate_new - rate_old;
@@ -200,7 +200,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // Simulate the loop to estimate how many frames we need
     double frames = 0;
-    const int bufferSizeFrames = getAudioSignal().samples2frames(buf_size);
+    const SINT bufferSizeFrames = getAudioSignal().samples2frames(buf_size);
     const double rate_delta = rate_diff / bufferSizeFrames;
     // use Gaussian sum formula (n(n+1))/2 for
     //for (int j = 0; j < bufferSizeFrames; ++j) {
@@ -213,7 +213,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // Intentional integer rounding: increases by one if the fractional part of
     // m_dNextFrame and frames are greater than one"
-    int unscaled_frames_needed = static_cast<int>(frames +
+    SINT unscaled_frames_needed = static_cast<SINT>(frames +
             m_dNextFrame - floor(m_dNextFrame));
 
     int read_failed_count = 0;
@@ -225,8 +225,8 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     ceil_sample[0] = 0;
     ceil_sample[1] = 0;
 
-    int frames_read = 0;
-    int i = 0;
+    SINT frames_read = 0;
+    SINT i = 0;
     //int screwups_debug = 0;
 
     double rate_add = fabs(rate_old);
@@ -245,7 +245,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
         // The first bounds check (< m_bufferIntSize) is probably not needed.
 
-        int currentFrameFloor = static_cast<int>(floor(m_dCurrentFrame));
+        SINT currentFrameFloor = static_cast<SINT>(floor(m_dCurrentFrame));
 
         if (currentFrameFloor < 0) {
             // we have advanced to a new buffer in the previous run,
@@ -271,14 +271,14 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             }
 
             do {
-                int old_bufsize = m_bufferIntSize;
+                SINT old_bufsize = m_bufferIntSize;
                 if (unscaled_frames_needed == 0) {
                     // protection against infinite loop
                     // This may happen due to double precision issues
                     ++unscaled_frames_needed;
                 }
 
-                int samples_to_read = math_min<int>(
+                SINT samples_to_read = math_min<SINT>(
                         kiLinearScaleReadAheadLength,
                         getAudioSignal().frames2samples(unscaled_frames_needed));
 
@@ -299,7 +299,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
                 // adapt the m_dCurrentFrame the index of the new buffer
                 m_dCurrentFrame -= getAudioSignal().samples2frames(old_bufsize);
-                currentFrameFloor = static_cast<int>(floor(m_dCurrentFrame));
+                currentFrameFloor = static_cast<SINT>(floor(m_dCurrentFrame));
             } while (getAudioSignal().frames2samples(currentFrameFloor) + 3 >= m_bufferIntSize);
 
             // I guess?

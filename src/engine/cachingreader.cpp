@@ -222,7 +222,7 @@ void CachingReader::process() {
     }
 }
 
-int CachingReader::read(int sample, bool reverse, int numSamples, CSAMPLE* buffer) {
+SINT CachingReader::read(SINT sample, bool reverse, SINT numSamples, CSAMPLE* buffer) {
     // Check for bad inputs
     DEBUG_ASSERT_AND_HANDLE(sample % CachingReaderChunk::kChannels == 0) {
         // This problem is easy to fix, but this type of call should be

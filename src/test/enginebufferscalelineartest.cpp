@@ -28,20 +28,20 @@ class ReadAheadManagerMock : public ReadAheadManager {
               m_iSamplesRead(0) {
     }
 
-    int getNextSamplesFake(double dRate, CSAMPLE* buffer, int requested_samples) {
+    SINT getNextSamplesFake(double dRate, CSAMPLE* buffer, SINT requested_samples) {
         Q_UNUSED(dRate);
         bool hasBuffer = m_pBuffer != NULL;
         // You forgot to set the mock read buffer.
         EXPECT_TRUE(hasBuffer);
 
-        for (int i = 0; i < requested_samples; ++i) {
+        for (SINT i = 0; i < requested_samples; ++i) {
             buffer[i] = hasBuffer ? m_pBuffer[m_iReadPosition++ % m_iBufferSize] : 0;
         }
         m_iSamplesRead += requested_samples;
         return requested_samples;
     }
 
-    void setReadBuffer(CSAMPLE* pBuffer, int iBufferSize) {
+    void setReadBuffer(CSAMPLE* pBuffer, SINT iBufferSize) {
         m_pBuffer = pBuffer;
         m_iBufferSize = iBufferSize;
         m_iReadPosition = 0;
@@ -51,12 +51,12 @@ class ReadAheadManagerMock : public ReadAheadManager {
         return m_iSamplesRead;
     }
 
-    MOCK_METHOD3(getNextSamples, int(double dRate, CSAMPLE* buffer, int requested_samples));
+    MOCK_METHOD3(getNextSamples, SINT(double dRate, CSAMPLE* buffer, SINT requested_samples));
 
     CSAMPLE* m_pBuffer;
-    int m_iBufferSize;
-    int m_iReadPosition;
-    int m_iSamplesRead;
+    SINT m_iBufferSize;
+    SINT m_iReadPosition;
+    SINT m_iSamplesRead;
 };
 
 class EngineBufferScaleLinearTest : public MixxxTest {
