@@ -47,14 +47,12 @@ const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent al
 
 const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
-inline bool verifyPlayPositionAtFrameStart(double playPosition) {
-    DEBUG_ASSERT_AND_HANDLE(playPosition == round(playPosition)) {
-        return false;
-    }
-    DEBUG_ASSERT_AND_HANDLE((static_cast<SINT>(playPosition) % kSamplesPerFrame) == 0) {
-        return false;
-    }
-    return true;
+// TODO(XXX): Remove this function when it is no longer needed
+inline SINT getFrameStartPositionInSamples(double positionInSamples) {
+    // Always pick the nearest preceding integer value as the sample position -> round down
+    SINT samplePosition = static_cast<SINT>(floor(positionInSamples));
+    // Adjust to start of the current sample frame
+    return samplePosition - (samplePosition % kSamplesPerFrame);
 }
 
 } // anonymous namespace
@@ -463,7 +461,12 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 void EngineBuffer::setNewPlaypos(double newpos) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
-    verifyPlayPositionAtFrameStart(newpos);
+    // TODO(XXX): Remove debug assertion and handler code if it
+    // is no longer needed.
+    DEBUG_ASSERT_AND_HANDLE(newpos == getFrameStartPositionInSamples(newpos)) {
+        newpos = getFrameStartPositionInSamples(newpos);
+    }
+
     m_filepos_play = newpos;
 
     if (m_rate_old != 0.0) {
@@ -634,9 +637,10 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
         new_playpos = m_trackSamplesOld;
     }
 
-    // Ensure that the file position is even (remember, stereo channel files...)
-    if (!even(static_cast<int>(new_playpos))) {
-        new_playpos--;
+    // TODO(XXX): Remove debug assertion and handler code if it
+    // is no longer needed.
+    DEBUG_ASSERT_AND_HANDLE(new_playpos == getFrameStartPositionInSamples(new_playpos)) {
+        new_playpos = getFrameStartPositionInSamples(new_playpos);
     }
 
 #ifdef __VINYLCONTROL__
