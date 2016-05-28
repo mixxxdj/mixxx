@@ -1,3 +1,6 @@
+#include <QKeyEvent>
+
+
 #include "keyboardcontroller.h"
 
 #include "controllers/defs_controllers.h"
@@ -8,7 +11,33 @@ KeyboardController::KeyboardController() : Controller() {
 }
 
 KeyboardController::~KeyboardController() {
-    // TODO Think of how the keyboard will close..
+    // TODO(Tomasito) Think of how the keyboard will close..
+}
+
+// TODO(Tomasito) Implement this method
+// TODO(Tomasito) When this method is implemented properly, do installEventListener([the instance of KeyboardController])
+// TODO           on each widget where the KeyboardEventFilter is currently installed
+
+bool KeyboardController::eventFilter(QObject*, QEvent* e) {
+    if (e->type() == QEvent::FocusOut) {
+        // Clear active key list (TODO: create active key list member)
+    }
+
+    if (e->type() == QEvent::KeyPress) {
+        QKeyEvent* ke = (QKeyEvent *)e;
+        int keyId = ke->nativeScanCode();
+
+        qDebug() << "Key pressed: " << ke->key() << "KeyId =" << keyId;
+    }
+
+    else if (e->type() == QEvent::KeyRelease) {
+        QKeyEvent* ke = (QKeyEvent *)e;
+        int keyId = ke->nativeScanCode();
+
+        qDebug() << "Key released: " << ke->key() << "KeyId =" << keyId;
+    }
+
+    return false;
 }
 
 
@@ -17,8 +46,8 @@ QString KeyboardController::presetExtension() {
 }
 
 bool KeyboardController::savePreset(const QString fileName) const {
-    // TODO Create KeyboardControllerPresetFileHandler class and instantiate here "handler"
-    // TODO handler.save() and return whether it saved successfully (return value of save())
+    // TODO(Tomasito) Create KeyboardControllerPresetFileHandler class and instantiate here "handler"
+    // TODO(Tomasito) handler.save() and return whether it saved successfully (return value of save())
     return false;
 }
 
@@ -43,4 +72,14 @@ bool KeyboardController::matchPreset(const PresetInfo &preset) {
     // Product info mapping not implemented for Keyboards yet
     Q_UNUSED(preset);
     return false;
+}
+
+int KeyboardController::open() {
+    // TODO(Tomasito) Check how this is done in the current keyboard implementation
+    return 0;
+}
+
+int KeyboardController::close() {
+    // TODO(Tomasito) Check how this is done in the current keyboard implementation
+    return 0;
 }

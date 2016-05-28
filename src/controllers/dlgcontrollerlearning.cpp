@@ -114,7 +114,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     connect(&m_lastMessageTimer, SIGNAL(timeout()),
             this, SLOT(slotTimerExpired()));
 
-    m_firstMessageTimer.setInterval(7000);Q_OBJECT
+    m_firstMessageTimer.setInterval(7000);
     m_firstMessageTimer.setSingleShot(true);
     connect(&m_firstMessageTimer, SIGNAL(timeout()),
             this, SLOT(slotFirstMessageTimeout()));
@@ -368,6 +368,12 @@ void DlgControllerLearning::slotMidiOptionsChanged() {
 void DlgControllerLearning::commitMapping() {
     emit(commitTemporaryInputMappings());
     emit(inputMappingsLearned(m_mappings));
+}
+
+void DlgControllerLearning::visit(KeyboardController* pKeyboardController) {
+    // TODO(Tomasito) Check if we can use the Dlg Controller Learning wizzard for keyboards
+    qWarning() << "ERROR: DlgControllerLearning does not support Keyboards.";
+    Q_UNUSED(pKeyboardController);
 }
 
 void DlgControllerLearning::visit(MidiController* pMidiController) {

@@ -27,6 +27,10 @@ void ControllerMappingTableModel::cancel() {
     setPreset(m_pPreset);
 }
 
+void ControllerMappingTableModel::visit(KeyboardControllerPreset* pKbdPreset) {
+    m_pKbdPreset = pKbdPreset;
+}
+
 void ControllerMappingTableModel::visit(MidiControllerPreset* pMidiPreset) {
     m_pMidiPreset = pMidiPreset;
 }

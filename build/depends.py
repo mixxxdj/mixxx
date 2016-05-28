@@ -747,6 +747,7 @@ class MixxxCore(Feature):
                    "controllers/midi/midioutputhandler.cpp",
                    "controllers/softtakeover.cpp",
                    "controllers/keyboard/keyboardeventfilter.cpp",
+                   "controllers/keyboard/keyboardcontroller.cpp",
 
                    "main.cpp",
                    "mixxx.cpp",

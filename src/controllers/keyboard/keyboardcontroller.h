@@ -5,12 +5,17 @@
 #include "controllers/controller.h"
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
 
+// This class can't be instantiated yet, because the virtual methods: "void send(QByteArray)", "bool isPolling()" and "ControllerPreset *preset()" aren't yet implemented
+// TODO(Tomasito) What is the best way to implement this methods? Subclassing KeyboardController, just as MidiController does? Or just implement them here? (I think the latter)
+
 class KeyboardController : public Controller {
 Q_OBJECT
 
 public:
     KeyboardController();
     virtual ~KeyboardController();
+
+    virtual bool eventFilter(QObject*, QEvent* e);
 
     virtual QString presetExtension();
 
@@ -37,6 +42,13 @@ public:
     }
 
     virtual bool matchPreset(const PresetInfo& preset);
+
+signals:
+    // TODO(Tomasito) onKeyPressed signal? check how it's done with the current keyboard implementation
+
+private slots:
+    virtual int open();
+    virtual int close();
 
 private:
     KeyboardControllerPreset m_preset;
