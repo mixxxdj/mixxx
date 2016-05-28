@@ -47,9 +47,14 @@ const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent al
 
 const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
-inline void assertValidPlayPosition(double playPosition) {
-    DEBUG_ASSERT(playPosition == round(playPosition));
-    DEBUG_ASSERT((static_cast<SINT>(playPosition) % kSamplesPerFrame) == 0);
+inline bool verifyPlayPositionAtFrameStart(double playPosition) {
+    DEBUG_ASSERT_AND_HANDLE(playPosition == round(playPosition)) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE((static_cast<SINT>(playPosition) % kSamplesPerFrame) == 0) {
+        return false;
+    }
+    return true;
 }
 
 } // anonymous namespace
@@ -458,7 +463,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 void EngineBuffer::setNewPlaypos(double newpos) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
-    assertValidPlayPosition(newpos);
+    verifyPlayPositionAtFrameStart(newpos);
     m_filepos_play = newpos;
 
     if (m_rate_old != 0.0) {
