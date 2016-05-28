@@ -95,6 +95,7 @@ double EngineBufferScaleLinear::getScaledSampleFrames(
         SINT extra_samples = m_bufferIntSize - iCurSample - getAudioSignal().getChannelCount();
         if (extra_samples > 0) {
             if (extra_samples % getAudioSignal().getChannelCount() != 0) {
+                // extra samples should include the whole frame
                 extra_samples -= extra_samples % getAudioSignal().getChannelCount();
                 extra_samples += getAudioSignal().getChannelCount();
             }
@@ -114,8 +115,10 @@ double EngineBufferScaleLinear::getScaledSampleFrames(
         // second half: rate goes from zero to new rate
         m_dOldRate = 0.0;
         m_dRate = rate_add_new;
-        // pass the address of the sample at the halfway point
-        frames_read += do_scale(&pOutputBuffer[getAudioSignal().samples2frames(iOutputBufferSize)], getAudioSignal().samples2frames(iOutputBufferSize));
+        // pass the address of the frame at the halfway point
+        SINT frameOffset =  getAudioSignal().samples2frames(iOutputBufferSize) / 2;
+        SINT sampleOffset = getAudioSignal().frames2samples(frameOffset);
+        frames_read += do_scale(pOutputBuffer + sampleOffset, iOutputBufferSize - sampleOffset);
     } else {
         frames_read += do_scale(pOutputBuffer, iOutputBufferSize);
     }
