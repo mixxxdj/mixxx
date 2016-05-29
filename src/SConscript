@@ -208,7 +208,7 @@ skin_files = Glob('#res/skins/*')
 controllermappings_files = Glob('#res/controllers/*')
 
 # Translation files
-translation_files = Glob('#res/translations/*.qm')
+translation_files = Glob('#res/translations/*.qm') + Glob(os.path.join(build.env['QTDIR'], 'translations/qt_*.qm'))
 
 # Font files
 font_files = Glob('#res/fonts/*')
@@ -408,7 +408,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 plugins.append(x.get_abspath())
 
         resource_map = {}
-        translation_files = Glob('#res/translations/*.qm')
         for tfile in translation_files:
                 resource_map[str(tfile)] = 'translations'
 
@@ -464,11 +463,11 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 COPYRIGHT="Copyright © 2001-%s Mixxx Development Team" % datetime.datetime.now().year,
                 # WARNING(rjryan): If you change this, you must also change it
                 # in the build/osx/product_definition.plist.
-                MINIMUM_OSX_VERSION="10.6.0",
+                MINIMUM_OSX_VERSION="10.7.0",
                 CATEGORY="public.app-category.music",
                 OTOOL_LOCAL_PATHS=otool_local_paths,
                 OTOOL_SYSTEM_PATHS=otool_system_paths,
-                FOR_APP_STORE=True,
+                FOR_APP_STORE=int(build.flags['macappstore']) > 0,
                 )
         #env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
         env.Alias('bundle', bundle)

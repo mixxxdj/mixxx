@@ -26,6 +26,7 @@
 #include <chromaprint.h>
 #include <rubberband/RubberBandStretcher.h>
 #include <taglib/taglib.h>
+#include <sndfile.h>
 #include <vorbis/codec.h>
 #ifdef __PORTAUDIO__
 #include <portaudio.h>
@@ -95,6 +96,10 @@ QString Version::buildFlags() {
 }
 
 QStringList Version::dependencyVersions() {
+    char sndfile_version[128];
+    sf_command(nullptr, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
+    // Null-terminate just in case.
+    sndfile_version[sizeof(sndfile_version) - 1] = '\0';
     // WARNING: may be inaccurate since some come from compile-time header
     // definitions instead of the actual dynamically loaded library).
     QStringList result;
@@ -122,6 +127,8 @@ QStringList Version::dependencyVersions() {
                                                     QString::number(CHROMAPRINT_VERSION_PATCH))
             // Should be accurate.
             << QString("Vorbis: %1").arg(vorbis_version_string())
+            // Should be accurate.
+            << QString("libsndfile: %1").arg(sndfile_version)
             // The version of the FLAC headers Mixxx was compiled with.
             << QString("FLAC: %1").arg(FLAC__VERSION_STRING);
 
