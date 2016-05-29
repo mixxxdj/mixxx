@@ -100,7 +100,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
             pLibrary, SLOT(scan()));
     m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, m_pConfig);
     addPageWidget(m_wcontrols);
-    m_wwaveform = new DlgPrefWaveform(this, mixxx, m_pConfig);
+    m_wwaveform = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
     addPageWidget(m_wwaveform);
     m_wautodj = new DlgPrefAutoDJ(this, m_pConfig);
     addPageWidget(m_wautodj);
