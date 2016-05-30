@@ -137,3 +137,43 @@ TEST_F(ReadAheadManagerTest, InReverseLoopEnableSeekForward) {
     EXPECT_EQ(0, m_pReadAheadManager->getNextSamples(-1.0, m_pBuffer, 100));
     EXPECT_EQ(100, m_pReadAheadManager->getPlaypos());
 }
+
+TEST_F(ReadAheadManagerTest, FractionalFrameLoop) {
+    // If we are in reverse, a loop is enabled, and the current playposition
+    // is before of the loop, we should seek to the out point of the loop.
+    m_pReadAheadManager->notifySeek(0.5);
+    // Trigger value means, the sample that triggers the loop (loop in)
+    m_pLoopControl->pushTriggerReturnValue(20.2);
+    m_pLoopControl->pushTriggerReturnValue(20.2);
+    m_pLoopControl->pushTriggerReturnValue(20.2);
+    m_pLoopControl->pushTriggerReturnValue(20.2);
+    m_pLoopControl->pushTriggerReturnValue(20.2);
+    m_pLoopControl->pushTriggerReturnValue(20.2);
+    // Process value is the sample we should seek to.
+    m_pLoopControl->pushProcessReturnValue(3.3);
+    m_pLoopControl->pushProcessReturnValue(3.3);
+    m_pLoopControl->pushProcessReturnValue(3.3);
+    m_pLoopControl->pushProcessReturnValue(3.3);
+    m_pLoopControl->pushProcessReturnValue(3.3);
+    m_pLoopControl->pushProcessReturnValue(kNoTrigger);
+    // read from start to loop trigger, overshoot 0.3
+    EXPECT_EQ(20, m_pReadAheadManager->getNextSamples(1.0, m_pBuffer, 100));
+    // read loop
+    EXPECT_EQ(18, m_pReadAheadManager->getNextSamples(1.0, m_pBuffer, 80));
+    // read loop
+    EXPECT_EQ(16, m_pReadAheadManager->getNextSamples(1.0, m_pBuffer, 62));
+    // read loop
+    EXPECT_EQ(18, m_pReadAheadManager->getNextSamples(1.0, m_pBuffer, 46));
+    // read loop
+    EXPECT_EQ(16, m_pReadAheadManager->getNextSamples(1.0, m_pBuffer, 28));
+    // read loop
+    EXPECT_EQ(12, m_pReadAheadManager->getNextSamples(1.0, m_pBuffer, 12));
+
+    // start 0.5 to 20.2 = 19.7
+    // loop 3.3 to 20.2 = 16.9
+    // 100 - 19,7 - 4 * 16,9 = 12,7
+    // 12.7 + 3.3 = 16
+
+    // The rounding error must not exceed a half frame (one samples in stereo)
+    EXPECT_NEAR(16, m_pReadAheadManager->getPlaypos(), 1);
+}
