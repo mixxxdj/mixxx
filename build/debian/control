@@ -6,7 +6,6 @@ XSBC-Original-Maintainer: RJ Ryan <rryan@mixxx.org>
 Build-Depends: debhelper (>= 4.0.0), 
                pkg-config, 
                docbook-to-man, 
-               xlibmesa-gl-dev, 
                libglu1-mesa-dev, 
                libqt4-opengl-dev | libqt4-dev (>= 4.6.0), 
                scons, 
