@@ -9,7 +9,10 @@
 #define _USE_MATH_DEFINES
 #endif
 #endif
-#include <cmath>
+
+#include <math.h>
+// Note: #include <cmath> does not work with GCC 6.1.1 because of our fpclassify hack 
+
 #include <algorithm>
 
 #include "util/assert.h"
