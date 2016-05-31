@@ -109,7 +109,6 @@ binary-arch: build install
 	dh_installudev --name=mixxx-usb
 #	dh_install
 	dh_installmenu
-	dh_desktop
 #	dh_installdebconf
 #	dh_installlogrotate
 #	dh_installemacsen
