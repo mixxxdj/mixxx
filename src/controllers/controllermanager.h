@@ -32,7 +32,7 @@ class ControllerManager : public QObject {
 
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
-    template <class ControllerType> QList<ControllerType*> getControllerListOfType();
+
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
     QSharedPointer<PresetInfoEnumerator> getMainThreadPresetEnumerator() {
         return m_pMainThreadPresetEnumerator;

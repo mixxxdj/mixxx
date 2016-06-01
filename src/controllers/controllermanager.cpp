@@ -207,34 +207,6 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
-template<class ControllerType>
-QList<ControllerType *> ControllerManager::getControllerListOfType() {
-    qDebug() << "ControllerManager::getControllerListOfType";
-
-    // TODO(Tomasito) Maybe add a test here to see if the given ControllerType
-    // TODO ...       is indeed a subclass of Controller. If not, raise a warning.
-    // TODO ...       It doesn't have a high priority though, because if it's not
-    // TODO ...       a Controller, it won't cast anyway
-
-    QMutexLocker locker(&m_mutex);
-    QList<Controller*> controllers = m_controllers;
-    locker.unlock();
-
-    // Create a list of controllers filtered to match the given Controllertype
-    QList<ControllerType*> filteredDeviceList;
-
-    foreach (Controller* device, controllers) {
-        ControllerType* castedDevice = dynamic_cast<ControllerType*>(device);
-
-        // castedDevice is a nullptr if couldn't cast to ControllerType
-        if (castedDevice) {
-            filteredDeviceList.push_back(castedDevice);
-        }
-    }
-
-    return filteredDeviceList;
-}
-
 void ControllerManager::slotSetUpDevices() {
     qDebug() << "ControllerManager: Setting up devices";
 
