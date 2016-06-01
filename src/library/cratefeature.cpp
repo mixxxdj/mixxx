@@ -28,7 +28,7 @@
 CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
                            UserSettingsPointer pConfig)
-        : LibraryFeature(pConfig),
+        : LibraryViewFeature(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection) {

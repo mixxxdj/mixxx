@@ -37,6 +37,7 @@ class EngineMaster;
 class GuiTick;
 class LaunchImage;
 class Library;
+class LibraryViewManager;
 class KeyboardEventFilter;
 class PlayerManager;
 class RecordingManager;
@@ -152,6 +153,9 @@ class MixxxMainWindow : public QMainWindow {
     KeyboardEventFilter* m_pKeyboard;
     // The library management object
     Library* m_pLibrary;
+    
+    // The library view management object
+    LibraryViewManager* m_pLibraryViewManager;
 
     WMainMenuBar* m_pMenuBar;
 

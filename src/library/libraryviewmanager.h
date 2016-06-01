@@ -30,12 +30,13 @@ class LibraryViewManager : public QObject {
         return m_rightPane;
     }
 
-    void addFeature(LibraryViewFeature* feature);
+    // To add a feature to the selected pane (0 <= pane < RIGHT_PANE_COUNT)
+    void addFeature(LibraryViewFeature* feature, int pane);
 
   public slots:
 
     void onSearch(QString& text);
-    
+
   private:
 
     WButtonBar* m_pButtonBar;
@@ -43,14 +44,15 @@ class LibraryViewManager : public QObject {
     QVector<QWidget*> m_rightPane;
     QVector<QStackedWidget*> m_rightPaneStack;
     QVector<WSearchLineEdit*> m_searchBar;
-    QVector<LibraryViewFeature*> m_features;
+    QVector<QVector<LibraryViewFeature*> > m_features;
     QVector<int> m_currentFeature;
     int m_currentPane;
 
   private slots:
 
-    // TODO(jmigual): Still needs to v
-    void onFocusChange();
+    // Used to handle focus change
+    // TODO(jmigual): Still needs to be implemented
+    bool eventFilter(QObject* object, QEvent* event);
 };
 
 #endif // LIBRARYVIEWMANAGER_H

@@ -12,6 +12,7 @@
 #include <QSet>
 
 #include "library/libraryfeature.h"
+#include "library/libraryviewfeature.h"
 #include "library/cratetablemodel.h"
 #include "library/library.h"
 
@@ -21,7 +22,7 @@
 
 class TrackCollection;
 
-class CrateFeature : public LibraryFeature {
+class CrateFeature : public LibraryViewFeature {
     Q_OBJECT
   public:
     CrateFeature(Library* pLibrary,
@@ -30,7 +31,15 @@ class CrateFeature : public LibraryFeature {
     virtual ~CrateFeature();
 
     QVariant title();
+    inline QVariant getTitle() { return title(); }
     QIcon getIcon();
+    
+    inline QString getName() { return "CRATE_FEATURE"; }
+    QWidget* getLeftPane() { return new QWidget(); }
+    QWidget* getRightPane() { return new QWidget(); }
+    
+    inline bool hasSearch() { return false; }
+    void onSearch(QString&) {}
 
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                          QObject* pSource);
@@ -103,6 +112,7 @@ class CrateFeature : public LibraryFeature {
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;
     QSet<int> m_cratesSelectedTrackIsIn;
+    UserSettingsPointer m_pConfig;
 };
 
 #endif /* CRATEFEATURE_H */

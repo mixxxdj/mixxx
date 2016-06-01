@@ -11,6 +11,7 @@ class KeyboardEventFilter;
 class PlayerManager;
 class ControllerManager;
 class Library;
+class LibraryViewManager;
 class VinylControlManager;
 class EffectsManager;
 class LaunchImage;
@@ -24,7 +25,7 @@ class SkinLoader {
                              KeyboardEventFilter* pKeyboard,
                              PlayerManager* pPlayerManager,
                              ControllerManager* pControllerManager,
-                             Library* pLibrary,
+                             Library* pLibrary, LibraryViewManager *pLibraryViewManager,
                              VinylControlManager* pVCMan,
                              EffectsManager* pEffectsManager);
 

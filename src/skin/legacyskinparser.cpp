@@ -140,6 +140,7 @@ LegacySkinParser::LegacySkinParser()
           m_pPlayerManager(NULL),
           m_pControllerManager(NULL),
           m_pLibrary(NULL),
+          m_pLibraryViewManager(NULL),
           m_pVCManager(NULL),
           m_pEffectsManager(NULL),
           m_pParent(NULL),
@@ -151,6 +152,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,
+                                   LibraryViewManager* pLibraryViewManager,
                                    VinylControlManager* pVCMan,
                                    EffectsManager* pEffectsManager)
         : m_pConfig(pConfig),
@@ -158,6 +160,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pPlayerManager(pPlayerManager),
           m_pControllerManager(pControllerManager),
           m_pLibrary(pLibrary),
+          m_pLibraryViewManager(pLibraryViewManager),
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
           m_pParent(NULL),
@@ -1261,7 +1264,7 @@ QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
     pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     m_pLibrary->bindSidebarWidget(pLibrarySidebar);
     commonWidgetSetup(node, pLibrarySidebar, false);
-    return pLibrarySidebar;
+    return pLibrarySidebar;    
 }
 
 QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {

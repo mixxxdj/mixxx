@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QLayout>
+#include <QVariant>
+#include <QIcon>
 
 class WButtonBar : QWidget
 {
@@ -11,11 +13,13 @@ class WButtonBar : QWidget
     WButtonBar(QWidget* parent = nullptr);
     
     void addItem(QIcon icon, QVariant title, QVariant data);
-    
+
   signals:
-    
+
     void clicked(QVariant data);
-    
+
+  private:
+
     QLayout* m_pLayout;
 };
 

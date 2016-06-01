@@ -1,6 +1,7 @@
 #include "libraryviewfeature.h"
 
-LibraryViewFeature::LibraryViewFeature() {
+LibraryViewFeature::LibraryViewFeature(UserSettingsPointer pConfig) 
+    : LibraryFeature(pConfig) {
 
 }
 

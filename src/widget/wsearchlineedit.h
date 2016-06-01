@@ -16,7 +16,7 @@
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
-    explicit WSearchLineEdit(QWidget* pParent);
+    explicit WSearchLineEdit(QWidget* pParent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
 
