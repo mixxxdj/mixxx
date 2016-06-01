@@ -7,36 +7,49 @@
 
 #include "library/libraryviewfeature.h"
 #include "widget/wbuttonbar.h"
+#include "widget/wsearchlineedit.h"
 
 class LibraryViewManager : public QObject {
     Q_OBJECT
 
   public:
 
+    const int RIGHT_PANE_COUNT = 2;
+
     LibraryViewManager(QObject* parent = nullptr);
 
-    inline void setButtonBar(WButtonBar* button) {
-        m_pButtonBar = button;
+    bool initialize();
+
+    inline WButtonBar* getButtonBar() const {
+        return m_pButtonBar;
     }
-    inline void setLeftPane(QStackedWidget* pane) {
-        m_pLeftPane = pane;
+    inline QStackedWidget* getLeftPane() const {
+        return m_pLeftPane;
     }
-    inline void addRightPane(QStackedWidget* pane) {
-        m_pRightPane.append(pane);
+    inline const QVector<QWidget*>& getRightPane() const {
+        return m_rightPane;
     }
 
     void addFeature(LibraryViewFeature* feature);
-    void featureSelected();
 
+  public slots:
+
+    void onSearch(QString& text);
+    
   private:
 
     WButtonBar* m_pButtonBar;
     QStackedWidget* m_pLeftPane;
-    QVector<QStackedWidget*> m_pRightPane;
-    QVector<LibraryViewFeature*> m_pFeatures;
+    QVector<QWidget*> m_rightPane;
+    QVector<QStackedWidget*> m_rightPaneStack;
+    QVector<WSearchLineEdit*> m_searchBar;
+    QVector<LibraryViewFeature*> m_features;
+    QVector<int> m_currentFeature;
+    int m_currentPane;
 
   private slots:
 
+    // TODO(jmigual): Still needs to v
     void onFocusChange();
 };
 
