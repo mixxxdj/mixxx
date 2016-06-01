@@ -14,6 +14,7 @@
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetinfoenumerator.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "preferences/usersettings.h"
 
 //Forward declaration(s)
@@ -27,7 +28,7 @@ bool controllerCompare(Controller *a, Controller *b);
 class ControllerManager : public QObject {
     Q_OBJECT
   public:
-    ControllerManager(UserSettingsPointer pConfig);
+    ControllerManager(UserSettingsPointer pConfig, KeyboardEventFilter* pKeyboard);
     virtual ~ControllerManager();
 
     QList<Controller*> getControllers() const;
@@ -100,6 +101,7 @@ class ControllerManager : public QObject {
     QThread* m_pThread;
     QSharedPointer<PresetInfoEnumerator> m_pMainThreadPresetEnumerator;
     bool m_skipPoll;
+    KeyboardEventFilter* m_pKeyboard;
 };
 
 #endif  // CONTROLLERMANAGER_H

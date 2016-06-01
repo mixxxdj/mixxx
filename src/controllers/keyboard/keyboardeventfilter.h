@@ -25,6 +25,9 @@ class KeyboardEventFilter : public QObject {
     void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
 
+  signals:
+    void keySeqPressed(QKeySequence keySeq);
+
   private:
     struct KeyDownInformation {
         KeyDownInformation(int keyId, int modifiers, ControlObject* pControl)

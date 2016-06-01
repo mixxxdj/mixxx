@@ -6,41 +6,20 @@
 #include "controllers/defs_controllers.h"
 
 
-KeyboardController::KeyboardController() : Controller() {
+KeyboardController::KeyboardController(KeyboardEventFilter* pKbdEventFilter) :
+        Controller(),
+        m_pKbdEventFilter(pKbdEventFilter) {
     setDeviceCategory(tr("Keyboard Controller")); // TODO Add translations
 
     // TODO(Tomasito) If we add multiple keyboard support, this should be a more specific name
     setDeviceName(tr("Keyboard")); // TODO Add translations
+
+    connect(m_pKbdEventFilter, SIGNAL(keySeqPressed(QKeySequence)),
+            this, SLOT(onKeySeqPressed(QKeySequence)));
 }
 
 KeyboardController::~KeyboardController() {
     // TODO(Tomasito) Think of how the keyboard will close..
-}
-
-// TODO(Tomasito) Implement this method
-// TODO(Tomasito) When this method is implemented properly, do installEventListener([the instance of KeyboardController])
-// TODO ...       on each widget where the KeyboardEventFilter is currently installed
-
-bool KeyboardController::eventFilter(QObject*, QEvent* e) {
-    if (e->type() == QEvent::FocusOut) {
-        // Clear active key list (TODO: create active key list member)
-    }
-
-    if (e->type() == QEvent::KeyPress) {
-        QKeyEvent* ke = (QKeyEvent *)e;
-        int keyId = ke->nativeScanCode();
-
-        qDebug() << "Key pressed: " << ke->key() << "KeyId =" << keyId;
-    }
-
-    else if (e->type() == QEvent::KeyRelease) {
-        QKeyEvent* ke = (QKeyEvent *)e;
-        int keyId = ke->nativeScanCode();
-
-        qDebug() << "Key released: " << ke->key() << "KeyId =" << keyId;
-    }
-
-    return false;
 }
 
 
@@ -49,6 +28,7 @@ QString KeyboardController::presetExtension() {
 }
 
 bool KeyboardController::savePreset(const QString fileName) const {
+    Q_UNUSED(fileName);
     // TODO(Tomasito) Create KeyboardControllerPresetFileHandler class and instantiate here "handler"
     // TODO(Tomasito) handler.save() and return whether it saved successfully (return value of save())
     return false;
@@ -91,3 +71,9 @@ int KeyboardController::close() {
 ControllerPreset *KeyboardController::preset() {
     return &m_preset;
 }
+
+void KeyboardController::onKeySeqPressed(QKeySequence ks) {
+    qDebug() << "KeyboardController::onKeySeqPressed() " << ks.toString();
+}
+
+

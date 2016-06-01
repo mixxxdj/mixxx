@@ -3,17 +3,20 @@
 
 #include "controllers/controllerenumerator.h"
 
+class KeyboardEventFilter;
+
 class KeyboardEnumerator : public ControllerEnumerator {
     Q_OBJECT
 
 public:
-    KeyboardEnumerator();
+    KeyboardEnumerator(KeyboardEventFilter* pKeyboard);
     virtual ~KeyboardEnumerator();
 
     virtual QList<Controller*> queryDevices();
 
 private:
     QList<Controller*> m_devices;
+    KeyboardEventFilter* m_pKeyboard;
 };
 
 

@@ -298,7 +298,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // but do not set up controllers until the end of the application startup
     // (long)
     qDebug() << "Creating ControllerManager";
-    m_pControllerManager = new ControllerManager(pConfig);
+    m_pControllerManager = new ControllerManager(pConfig, m_pKeyboard);
 
     launchProgress(47);
 

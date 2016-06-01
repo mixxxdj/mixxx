@@ -58,7 +58,7 @@ bool controllerCompare(Controller *a,Controller *b) {
     return a->getName() < b->getName();
 }
 
-ControllerManager::ControllerManager(UserSettingsPointer pConfig)
+ControllerManager::ControllerManager(UserSettingsPointer pConfig, KeyboardEventFilter* pKeyboard)
         : QObject(),
           m_pConfig(pConfig),
           // WARNING: Do not parent m_pControllerLearningEventFilter to
@@ -66,7 +66,8 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           // its own event loop.
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
           m_pollTimer(this),
-          m_skipPoll(false) {
+          m_skipPoll(false),
+          m_pKeyboard(pKeyboard) {
     qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
 
     // Create controller mapping paths in the user's home directory.
@@ -128,7 +129,7 @@ void ControllerManager::slotInitialize() {
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
-    m_enumerators.append(new KeyboardEnumerator());
+    m_enumerators.append(new KeyboardEnumerator(m_pKeyboard));
     m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator());

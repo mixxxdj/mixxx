@@ -46,6 +46,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         }
 
         QKeySequence ks = getKeySeq(ke);
+        emit keySeqPressed(ks);
+
+        // TODO(Tomasito) Move this code to KeyboardController
         if (!ks.isEmpty()) {
             ConfigValueKbd ksv(ks);
             // Check if a shortcut is defined

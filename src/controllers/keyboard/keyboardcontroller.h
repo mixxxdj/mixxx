@@ -3,15 +3,14 @@
 
 #include "controllers/controller.h"
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
+#include "keyboardeventfilter.h"
 
 class KeyboardController : public Controller {
 Q_OBJECT
 
 public:
-    KeyboardController();
+    KeyboardController(KeyboardEventFilter* pKbdEventFilter);
     virtual ~KeyboardController();
-
-    virtual bool eventFilter(QObject*, QEvent* e);
 
     virtual QString presetExtension();
 
@@ -39,6 +38,9 @@ public:
 
     virtual bool matchPreset(const PresetInfo& preset);
 
+public slots:
+    void onKeySeqPressed(QKeySequence ks);
+
 private slots:
     virtual int open();
     virtual int close();
@@ -57,6 +59,8 @@ private:
     virtual ControllerPreset* preset();
 
     KeyboardControllerPreset m_preset;
+
+    KeyboardEventFilter* m_pKbdEventFilter;
 };
 
 
