@@ -807,6 +807,7 @@ class MixxxCore(Feature):
                    "widget/wcoverartmenu.cpp",
                    "widget/wsingletoncontainer.cpp",
                    "widget/wmainmenubar.cpp",
+                   "widget/wbuttonbar.cpp",
 
                    "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",
@@ -886,6 +887,8 @@ class MixxxCore(Feature):
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
                    "library/library.cpp",
+                   "library/libraryviewmanager.cpp",
+                   "library/libraryviewfeature.cpp",
 
                    "library/scanner/libraryscanner.cpp",
                    "library/scanner/libraryscannerdlg.cpp",
