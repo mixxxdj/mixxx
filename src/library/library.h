@@ -19,6 +19,7 @@
 #include "library/coverartcache.h"
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
+#include "library/librarypanemanager.h"
 
 class TrackModel;
 class TrackCollection;
@@ -134,6 +135,7 @@ public:
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
+    QList<LibraryPaneManager*> m_panes;
 };
 
 #endif /* LIBRARY_H */
