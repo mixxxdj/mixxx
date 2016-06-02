@@ -60,9 +60,16 @@ class LibraryFeature : public QObject {
         return false;
     }
 
-    // Reimplement this to register custom views with the library widget.
-    virtual void bindWidget(WLibrary* /* libraryWidget */,
+    // Reimplement this to register custom views with the library widget
+    // at the right pane.
+    virtual void bindRightPane(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}
+    
+    // Reimplement this to register custem views with the library widget,
+    // at the left pane
+    virtual void bindLeftPane(WLibrary*,
+                              KeyboardEventFilter*) {}
+    
     virtual TreeItemModel* getChildModel() = 0;
 
   protected:

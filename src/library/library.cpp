@@ -209,7 +209,7 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     QListIterator<LibraryFeature*> feature_it(m_features);
     while(feature_it.hasNext()) {
         LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pLibraryWidget, pKeyboard);
+        feature->bindRightPane(pLibraryWidget, pKeyboard);
     }
 
     // Set the current font and row height on all the WTrackTableViews that were

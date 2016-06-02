@@ -33,8 +33,10 @@ class BasePlaylistFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindRightPane(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    void bindLeftPane(WLibrary* libraryWidget,
+                      KeyboardEventFilter* keyboard) {}
 
   signals:
     void showPage(const QUrl& page);

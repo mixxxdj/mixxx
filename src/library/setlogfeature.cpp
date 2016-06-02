@@ -53,9 +53,9 @@ QIcon SetlogFeature::getIcon() {
     return QIcon(":/images/library/ic_library_history.png");
 }
 
-void SetlogFeature::bindWidget(WLibrary* libraryWidget,
+void SetlogFeature::bindRightPane(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
-    BasePlaylistFeature::bindWidget(libraryWidget,
+    BasePlaylistFeature::bindRightPane(libraryWidget,
                                     keyboard);
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotPlayingTrackChanged(TrackPointer)));

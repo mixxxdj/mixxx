@@ -28,7 +28,7 @@
 CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
                            UserSettingsPointer pConfig)
-        : LibraryViewFeature(pConfig),
+        : LibraryFeature(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection) {
@@ -178,7 +178,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return !locked && formatSupported;
 }
 
-void CrateFeature::bindWidget(WLibrary* libraryWidget,
+void CrateFeature::bindRightPane(WLibrary* libraryWidget,
                               KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);

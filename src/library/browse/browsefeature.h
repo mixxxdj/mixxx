@@ -36,8 +36,10 @@ class BrowseFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindRightPane(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    void bindLeftPane(WLibrary* libraryWidget,
+                      KeyboardEventFilter* keyboard) {}
 
     TreeItemModel* getChildModel();
 

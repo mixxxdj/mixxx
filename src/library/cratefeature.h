@@ -22,7 +22,7 @@
 
 class TrackCollection;
 
-class CrateFeature : public LibraryViewFeature {
+class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
     CrateFeature(Library* pLibrary,
@@ -45,9 +45,12 @@ class CrateFeature : public LibraryViewFeature {
                          QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindRightPane(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
 
+    void bindLeftPane(WLibrary* libraryWidget,
+                      KeyboardEventFilter* keyboard) {}
+    
     TreeItemModel* getChildModel();
 
   signals:
