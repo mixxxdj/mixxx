@@ -5,46 +5,43 @@
 #include <QWidget>
 #include <QStackedWidget>
 
-#include "library/libraryviewfeature.h"
+#include "library/libraryfeature.h"
 #include "widget/wbuttonbar.h"
+#include "widget/wlibrary.h"
 #include "widget/wsearchlineedit.h"
 
-class LibraryViewManager : public QObject {
+class LibraryPaneManager : public QObject {
     Q_OBJECT
 
   public:
 
     const int RIGHT_PANE_COUNT = 2;
 
-    LibraryViewManager(QObject* parent = nullptr);
-
+    LibraryPaneManager(QObject* parent = nullptr);
+    
     bool initialize();
 
-    inline WButtonBar* getButtonBar() const {
-        return m_pButtonBar;
-    }
-    inline QStackedWidget* getLeftPane() const {
-        return m_pLeftPane;
-    }
-    inline const QVector<QWidget*>& getRightPane() const {
-        return m_rightPane;
-    }
+    // All features must be added before adding a pane
+    void bindLeftPane(WLibrary* leftWidget);
+    void bindRightPane(WLibrary* rightWidget);
+    
+    inline WLibrary* getLeftPane() { return m_pLeftPane; }
+    inline WLibrary* getRightPane() { return m_pRightPane; }
 
-    // To add a feature to the selected pane (0 <= pane < RIGHT_PANE_COUNT)
-    void addFeature(LibraryViewFeature* feature, int pane);
+    void addFeature(LibraryFeature* feature);
 
   public slots:
 
-    void onSearch(QString& text);
+    void search(QString& text);
+    
 
   private:
 
-    WButtonBar* m_pButtonBar;
-    QStackedWidget* m_pLeftPane;
-    QVector<QWidget*> m_rightPane;
-    QVector<QStackedWidget*> m_rightPaneStack;
-    QVector<WSearchLineEdit*> m_searchBar;
-    QVector<QVector<LibraryViewFeature*> > m_features;
+    WLibrary* m_pLeftPane;
+    WLibrary* m_pRightPane;
+    
+    QVector<LibraryFeature*> m_features;
+    
     QVector<int> m_currentFeature;
     int m_currentPane;
 
