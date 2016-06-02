@@ -34,7 +34,7 @@
 #include "effects/native/nativebackend.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
-#include "library/libraryviewmanager.h"
+#include "library/librarypanemanager.h"
 #include "library/library_preferences.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -99,7 +99,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #endif
           m_pKeyboard(nullptr),
           m_pLibrary(nullptr),
-          m_pLibraryViewManager(nullptr),
           m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
@@ -269,8 +268,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                              m_pPlayerManager,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
-
-    m_pLibraryViewManager = new LibraryViewManager;
     
     launchProgress(35);
 
@@ -344,7 +341,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                                                            m_pPlayerManager,
                                                            m_pControllerManager,
                                                            m_pLibrary,
-                                                           m_pLibraryViewManager,
                                                            m_pVCManager,
                                                            m_pEffectsManager))) {
         reportCriticalErrorAndQuit(

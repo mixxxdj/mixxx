@@ -114,7 +114,6 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                      PlayerManager* pPlayerManager,
                                      ControllerManager* pControllerManager,
                                      Library* pLibrary,
-                                     LibraryViewManager* pLibraryViewManager,
                                      VinylControlManager* pVCMan,
                                      EffectsManager* pEffectsManager) {
     ScopedTimer timer("SkinLoader::loadDefaultSkin");
@@ -126,8 +125,8 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
     }
 
     LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager,
-                            pControllerManager, pLibrary, pLibraryViewManager,
-                            pVCMan, pEffectsManager);
+                            pControllerManager, pLibrary, pVCMan, 
+                            pEffectsManager);
     return legacy.parseSkin(skinPath, pParent);
 }
 

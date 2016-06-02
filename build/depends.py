@@ -887,8 +887,7 @@ class MixxxCore(Feature):
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
                    "library/library.cpp",
-                   "library/libraryviewmanager.cpp",
-                   "library/libraryviewfeature.cpp",
+                   "library/librarypanemanager.cpp",
 
                    "library/scanner/libraryscanner.cpp",
                    "library/scanner/libraryscannerdlg.cpp",
