@@ -152,21 +152,72 @@ def construct_version(build, mixxx_version, branch_name, vcs_revision):
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                              ubuntu_version):
-        # Underscores are not ok in version names, dashes are fine though.
-        if branch_name:
-                branch_name = branch_name.replace('_', '-')
-        # In release mode, we only use the version and ubuntu_version
-        if build.build_is_release:
-                return "%s-%s" % (mixxx_version, ubuntu_version)
-        elif branch_name.startswith('release-'):
-                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, we must include the Mixxx version since it is the
-        # base "upstream" version in the Debian version number. Also include the
-        # branch name and VCS version so we know where the build came from.
-        # See: https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
-        # e.g. 1.12.0-alpha~master-gitXXXX~ppa1~trusty1
-        return "%s~%s-%s%s-%s" % (mixxx_version, branch_name, vcs_name,
-                                  vcs_revision, ubuntu_version)
+        # The format of a Debian/Ubuntu version is:
+        #
+        #   [epoch:]upstream_version[-debian_revision]
+        #
+        # A detailed description of the valid characters and sorting order of
+        # versions can be found here:
+        # https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
+        #
+        # For package upgrades to work correctly, we want the following
+        # orderings on package versions:
+        #
+        # nightly build < pre-alpha < alpha < beta < rc1 < rc2 < final release
+        #
+        # The sorting rules are complicated but the key detail is: "The lexical
+        # comparison is a comparison of ASCII values modified so that all the
+        # letters sort earlier than all the non-letters and so that a tilde
+        # sorts before anything, even the end of a part."
+        #
+        # The Mixxx version stored in src/defs_version.h (the "mixxx_version"
+        # parameter to this function) is formatted like:
+        #
+        # Pre Alpha: 2.0.0-alpha-pre
+        # Alpha: 2.0.0-alpha
+        # Beta: 2.0.0-beta
+        # RC: 2.0.0-rc1
+        # Final: 2.0.0
+        #
+        # Since hyphens are a separator character between the upstream version
+        # and Debian version, we replace these with tildes.
+        #
+        # Other goals:
+        # - We would like to know the branch and commit of a package.
+        # - We would like the PPA to trump the official Debian package.
+        #
+        # The following versions are sorted from low to high order:
+        # 1.9.9
+        # 2.0.0~alpha~pre
+        # 2.0.0~alpha
+        # 2.0.0~beta~pre
+        # 2.0.0~beta
+        # 2.0.0~dfsg4 <- official Debian package version
+        # 2.0.0~rc1
+        # 2.0.0
+        # 2.0.1~alpha~pre
+        #
+        # Our official Debian packages have a ~dfsg section, so in this case an
+        # rc1 package in our PPA would trump an official Debian package
+        # (probably not what we want but not too bad since we would probably
+        # publish a "2.0.0" final to our PPA before the official Debian package
+        # is even released.
+        #
+        # Note in the above sorted list that if the branch name were included
+        # after the mixxx_version, 2.0.0~master would sort earlier than
+        # 2.0.0~rc1~master!  To prevent branch and revision tags from
+        # interfering with package ordering we include them in the
+        # debian_revision portion of the version. This ensures they are only
+        # used for sorting if the upstream version of two packages is identical.
+        upstream_version = mixxx_version.replace('-', '~')
+        assert '_' not in upstream_version
+
+        # Strip underscores and dashes in the branch name.
+        branch_name = branch_name.strip('_-')
+        assert branch_name and branch_name != '(no branch)'
+
+        return "%s-%s~%s~%s%s" % (upstream_version, ubuntu_version, branch_name,
+                                  vcs_name, vcs_revision)
 
 #Set up the install target
 #=========================
