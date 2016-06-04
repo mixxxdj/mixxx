@@ -151,7 +151,7 @@ def construct_version(build, mixxx_version, branch_name, vcs_revision):
                                   vcs_revision, build_type)
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
-                             ubuntu_version):
+                             ubuntu_version, distro_version):
         # The format of a Debian/Ubuntu version is:
         #
         #   [epoch:]upstream_version[-debian_revision]
@@ -216,8 +216,8 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
         branch_name = branch_name.strip('_-')
         assert branch_name and branch_name != '(no branch)'
 
-        return "%s-%s~%s~%s%s" % (upstream_version, ubuntu_version, branch_name,
-                                  vcs_name, vcs_revision)
+        return "%s-%s~%s~%s%s~%s" % (upstream_version, ubuntu_version, branch_name,
+                                     vcs_name, vcs_revision, distro_version)
 
 #Set up the install target
 #=========================
@@ -840,11 +840,9 @@ def BuildUbuntuPackage(target, source, env):
                 # if a control.$distro file exists, use it
                 if os.path.exists('debian/control.%s' % ubuntu_distro):
                         os.system('cp debian/control.%s debian/control' % ubuntu_distro)
-                # TODO(rryan) currently can only have version 1 within a distro
-                ubuntu_distro_version = '%s~%s1' % (ubuntu_version, ubuntu_distro)
                 package_version = ubuntu_construct_version(build, mixxx_version,
                                                            branch_name, vcs_revision,
-                                                           ubuntu_distro_version)
+                                                           ubuntu_version, ubuntu_distro)
 
                 # Add a changelog record for this package
                 if build.build_is_debug:
