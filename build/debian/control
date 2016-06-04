@@ -42,7 +42,6 @@ Depends: ${shlibs:Depends},
          libqt4-opengl, 
          libqt4-svg, 
          libqt4-xmlpatterns, 
-         libqt4-webkit, 
          libqt4-sql, 
          libqt4-sql-sqlite
 Recommends: libmp3lame0
