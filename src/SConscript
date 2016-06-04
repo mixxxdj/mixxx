@@ -825,13 +825,23 @@ def BuildUbuntuPackage(target, source, env):
         os.system('cp -r build/debian .')
         os.system('cp res/linux/mixxx.usb.rules ./debian/mixxx.mixxx-usb.udev')
 
+        scons_flags = ' '.join([
+                'optimize=portable',
+                'virtualize=0',
+                'mad=1',
+                'localecompare=1',
+                'qt_sqlite_plugin=0',
+                'build=' + build.build,
+                'qt5=%d' % qt5])
+
         # Replace environment variables in the rules file.
         # TODO(rryan) something more elegant? I don't know a better way. When
         # Ubuntu build servers build us we don't get the chance to pass
         # environment variables in.
         with open('debian/rules', 'r') as fr:
                 rules = fr.read()
-                rules = rules.replace('$(MIXXX_BUILD)', build.build)
+                rules = rules.replace('MIXXX_SCONS_FLAGS = ""',
+                                      'MIXXX_SCONS_FLAGS = %s' % scons_flags)
 
                 with open('debian/rules', 'w') as fw:
                         fw.write(rules)
@@ -860,15 +870,15 @@ def BuildUbuntuPackage(target, source, env):
                 print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
                 print
 
-                command = ["MIXXX_BUILD=%s" % build.build,
-                           "ARCH=%s" % arch,
-                           "DIST=%s" % ubuntu_distro]
+                command = ['MIXXX_SCONS_FLAGS="%s"' % scons_flags,
+                           'ARCH=%s' % arch,
+                           'DIST=%s' % ubuntu_distro]
 
                 if package_target == 'source':
                         # TODO(rryan) we have to figure out the key-signing situation
                         # here.
-                        # Preserve the MIXXX_BUILD environment variable.
-                        command.extend(['debuild', '-eMIXXX_BUILD', '-S', '-sa',])
+                        # Preserve the MIXXX_SCONS_FLAGS environment variable.
+                        command.extend(['debuild', '-eMIXXX_SCONS_FLAGS', '-S', '-sa',])
                 else:
                         command.extend(['pdebuild'])
                 result = os.system(' '.join(command))
