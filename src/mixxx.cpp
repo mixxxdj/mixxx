@@ -1066,7 +1066,6 @@ void MixxxMainWindow::rebootMixxxView() {
                                                            m_pPlayerManager,
                                                            m_pControllerManager,
                                                            m_pLibrary,
-                                                           m_pLibraryViewManager,
                                                            m_pVCManager,
                                                            m_pEffectsManager))) {
 
