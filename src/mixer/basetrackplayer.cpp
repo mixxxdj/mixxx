@@ -243,6 +243,9 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
 
         // Clear loop
+        // It seems that the trick is to first clear the loop out point, and then
+        // the loop in point. If we first clear the loop in point, the loop out point
+        // does not get cleared.
         m_pLoopOutPoint->set(-1);
         m_pLoopInPoint->set(-1);
 
