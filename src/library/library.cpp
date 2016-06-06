@@ -178,7 +178,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             pSidebarWidget, SLOT(slotSetFont(QFont)));
 }
 
-void Library::bindWidget(WLibrary* pLibraryWidget,
+void Library::bindRightPane(WLibrary* pLibraryWidget,
                          KeyboardEventFilter* pKeyboard) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
@@ -219,6 +219,10 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     // just connected to us.
     emit(setTrackTableFont(m_trackTableFont));
     emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
+}
+
+void Library::bindLeftPane(WLibrary *leftPane, KeyboardEventFilter *pKeyboard) {
+    
 }
 
 void Library::addFeature(LibraryFeature* feature) {

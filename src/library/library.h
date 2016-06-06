@@ -45,8 +45,11 @@ public:
             RecordingManager* pRecordingManager);
     virtual ~Library();
 
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* pKeyboard);
+    void bindRightPane(WLibrary* libraryWidget,
+                       KeyboardEventFilter* pKeyboard);
+    void bindLeftPane(WLibrary* leftPane,
+                      KeyboardEventFilter* pKeyboard);
+    
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
     void addFeature(LibraryFeature* feature);
