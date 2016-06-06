@@ -22,8 +22,8 @@ class LibraryPaneManager : public QObject {
     bool initialize();
 
     // All features must be added before adding a pane
-    void bindLeftPane(WLibrary* leftWidget);
-    void bindRightPane(WLibrary* rightWidget);
+    void bindLeftPane(WLibrary* leftWidget, KeyboardEventFilter *pKeyboard);
+    void bindRightPane(WLibrary* rightWidget, KeyboardEventFilter *pKeyboard);
     
     inline WLibrary* getLeftPane() { return m_pLeftPane; }
     inline WLibrary* getRightPane() { return m_pRightPane; }

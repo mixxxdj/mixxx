@@ -13,12 +13,17 @@ bool LibraryPaneManager::initialize() {
     m_pRightPane = nullptr;
 }
 
-void LibraryPaneManager::bindLeftPane(WLibrary* leftWidget) {
+void LibraryPaneManager::bindLeftPane(WLibrary* leftWidget, KeyboardEventFilter *pKeyboard) {
 
 }
 
-void LibraryPaneManager::bindRightPane(WLibrary* rightWidget) {
-
+void LibraryPaneManager::bindRightPane(WLibrary* rightWidget,
+                                       KeyboardEventFilter* pKeyboard) {
+    m_pRightPane = rightWidget;
+    
+    for (LibraryFeature* f : m_features) {
+        f->bindRightPane(m_pRightPane, pKeyboard);
+    }
 }
 
 void LibraryPaneManager::search(QString& text) {
@@ -26,8 +31,7 @@ void LibraryPaneManager::search(QString& text) {
 }
 
 void LibraryPaneManager::addFeature(LibraryFeature* feature) {
-
-
+    m_features.append(feature);
 }
 
 bool LibraryPaneManager::eventFilter(QObject* object, QEvent* event) {
