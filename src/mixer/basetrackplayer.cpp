@@ -242,6 +242,10 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pKey->set(m_pLoadedTrack->getKey());
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
 
+        // Clear loop
+        m_pLoopOutPoint->set(-1);
+        m_pLoopInPoint->set(-1);
+
         const QList<CuePointer> trackCues(pNewTrack->getCuePoints());
         QListIterator<CuePointer> it(trackCues);
         while (it.hasNext()) {
