@@ -9,17 +9,17 @@
 
 #include "widget/wwidget.h"
 
-class WButtonBar : WWidget
+class WButtonBar : public WWidget
 {
     Q_OBJECT
   public:
     WButtonBar(QWidget* parent = nullptr);
 
-    void addButton(const QIcon& icon, const QVariant& title, const QVariant& data);
+    void addButton(const QIcon& icon, const QVariant& title, const QString& data);
 
   signals:
 
-    void buttonClicked(QVariant data);
+    void buttonClicked(const QString&);
 
   private slots:
 
@@ -29,7 +29,7 @@ class WButtonBar : WWidget
 
     QLayout* m_pLayout;
     QButtonGroup* m_pButtonGroup;
-    QList<QVariant> m_data;
+    QList<QString> m_data;
 };
 
 #endif // WBUTTONBAR_H

@@ -51,6 +51,8 @@ public:
                              KeyboardEventFilter* pKeyboard);
     
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
+    
+    void bindSidebar(WButtonBar* sidebar);
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();

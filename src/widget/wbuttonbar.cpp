@@ -1,7 +1,7 @@
 #include "wbuttonbar.h"
 
 WButtonBar::WButtonBar(QWidget* parent)
-        : QWidget(parent) {
+        : WWidget(parent) {
 
     m_pLayout = new QVBoxLayout(this);
     setLayout(m_pLayout);
@@ -15,7 +15,7 @@ void WButtonBar::slotButtonClicked(int id) {
     emit(buttonClicked(m_data[id]));
 }
 
-void WButtonBar::addButton(const QIcon& icon, const QVariant& title, const QVariant& data) {
+void WButtonBar::addButton(const QIcon& icon, const QVariant& title, const QString& data) {
     QPushButton* button = new QPushButton(icon, title.toString(), this);
 
     m_pButtonGroup->addButton(button, m_data.size());

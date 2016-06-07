@@ -128,6 +128,15 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             pSidebarWidget, SLOT(slotSetFont(QFont)));
 }
 
+void Library::bindSidebar(WButtonBar* sidebar) {
+    connect(sidebar, SIGNAL(buttonClicked(const QString&)),
+            this, SIGNAL(switchToView(const QString&)));
+    
+    for (LibraryFeature* f : m_features) {
+        sidebar->addButton(f->getIcon(), f->title(), f->getDefaultNameView());
+    }
+}
+
 void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
                          KeyboardEventFilter* pKeyboard) {
     WTrackTableView* pTrackTableView =
@@ -345,7 +354,7 @@ void Library::libraryWidgetFocused() {
     
     if (pane == m_pSidebarExpanded) m_focusedWidget = -1;
     
-    for (int i = 0; i < m_panes; ++i) {
+    for (int i = 0; i < m_panes.size(); ++i) {
         if (m_panes[i] == pane) {
             m_focusedWidget = i;
             break;
