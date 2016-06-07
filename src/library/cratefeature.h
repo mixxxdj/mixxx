@@ -34,7 +34,7 @@ class CrateFeature : public LibraryFeature {
     inline QVariant getTitle() { return title(); }
     QIcon getIcon();
     
-    inline QString getName() { return "CRATE_FEATURE"; }
+    inline QString getDefaultNameView() { return "CRATE_FEATURE"; }
     QWidget* getLeftPane() { return new QWidget(); }
     QWidget* getRightPane() { return new QWidget(); }
     

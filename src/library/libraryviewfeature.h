@@ -19,7 +19,7 @@ class LibraryViewFeature : public LibraryFeature {
     
     // Must be a unique name for each feature type, it will be used in 
     // the button bar to distinguish one feature from another
-    virtual QString getName() = 0; 
+    virtual QString getDefaultNameView() = 0; 
 
     // A LibraryViewFeature always has a right and a left pane
     virtual QWidget* getLeftPane() = 0;
