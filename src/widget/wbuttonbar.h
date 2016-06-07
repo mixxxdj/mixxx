@@ -15,12 +15,14 @@ class WButtonBar : WWidget
   public:
     WButtonBar(QWidget* parent = nullptr);
 
+    void addButton(const QIcon& icon, const QVariant& title, const QVariant& data);
+
   signals:
 
     void buttonClicked(QVariant data);
 
   private slots:
-    
+
     void slotButtonClicked(int id);
 
   private:
