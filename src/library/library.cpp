@@ -91,6 +91,11 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 Library::~Library() {
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
+    
+    for (LibraryFeature* f : m_features) {
+        delete f;
+    }
+    m_features.clear();
 
     delete m_pLibraryControl;
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
@@ -174,6 +179,7 @@ void Library::addFeature(LibraryFeature* feature) {
     DEBUG_ASSERT_AND_HANDLE(feature) {
         return;
     }
+    m_features.append(feature);
     
     m_pSidebarModel->addLibraryFeature(feature);
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
