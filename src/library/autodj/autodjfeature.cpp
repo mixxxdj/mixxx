@@ -94,7 +94,7 @@ QIcon AutoDJFeature::getIcon() {
     return QIcon(":/images/library/ic_library_autodj.png");
 }
 
-void AutoDJFeature::bindRightPane(WLibrary* libraryWidget,
+void AutoDJFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                   m_pConfig,

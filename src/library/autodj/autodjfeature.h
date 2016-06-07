@@ -43,7 +43,7 @@ class AutoDJFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
 
-    void bindRightPane(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
     void bindLeftPane(WLibrary* libraryWidget,
                       KeyboardEventFilter* keyboard) {}

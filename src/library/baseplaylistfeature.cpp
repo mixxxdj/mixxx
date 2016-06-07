@@ -593,7 +593,7 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BasePlaylistFeature::bindRightPane(WLibrary* libraryWidget,
+void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                      KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);

@@ -23,7 +23,7 @@ public:
     QVariant title();
     QIcon getIcon();
 
-    virtual void bindRightPane(WLibrary* libraryWidget,
+    virtual void bindLibraryWidget(WLibrary* libraryWidget,
                             KeyboardEventFilter* keyboard);
 
   public slots:

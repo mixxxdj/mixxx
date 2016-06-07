@@ -178,7 +178,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return !locked && formatSupported;
 }
 
-void CrateFeature::bindRightPane(WLibrary* libraryWidget,
+void CrateFeature::bindLibraryWidget(WLibrary* libraryWidget,
                               KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
