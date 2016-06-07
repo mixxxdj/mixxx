@@ -63,53 +63,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
-    addFeature(m_pMixxxLibraryFeature);
-
-    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));
-    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
-    addFeature(m_pPlaylistFeature);
-    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
-    addFeature(m_pCrateFeature);
-    BrowseFeature* browseFeature = new BrowseFeature(
-        this, pConfig, m_pTrackCollection, m_pRecordingManager);
-    connect(browseFeature, SIGNAL(scanLibrary()),
-            &m_scanner, SLOT(scan()));
-    connect(&m_scanner, SIGNAL(scanStarted()),
-            browseFeature, SLOT(slotLibraryScanStarted()));
-    connect(&m_scanner, SIGNAL(scanFinished()),
-            browseFeature, SLOT(slotLibraryScanFinished()));
-
-    addFeature(browseFeature);
-    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
-    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
-    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
-    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
-    addFeature(m_pAnalysisFeature);
-    //iTunes and Rhythmbox should be last until we no longer have an obnoxious
-    //messagebox popup when you select them. (This forces you to reach for your
-    //mouse or keyboard if you're using MIDI control and you scroll through them...)
-    if (RhythmboxFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
-        addFeature(new RhythmboxFeature(this, m_pTrackCollection));
-    }
-    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
-        BansheeFeature::prepareDbPath(pConfig);
-        if (BansheeFeature::isSupported()) {
-            addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
-        }
-    }
-    if (ITunesFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
-        addFeature(new ITunesFeature(this, m_pTrackCollection));
-    }
-    if (TraktorFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
-        addFeature(new TraktorFeature(this, m_pTrackCollection));
-    }
+    createFeatures();
 
     // On startup we need to check if all of the user's library folders are
     // accessible to us. If the user is using a database from <1.12.0 with
@@ -137,11 +91,6 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 Library::~Library() {
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
-    
-    for (LibraryFeature* f : m_features) {
-        delete f;
-    }
-    m_features.clear();
     
     for (LibraryPaneManager* p : m_panes) {
         delete p;
@@ -178,7 +127,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             pSidebarWidget, SLOT(slotSetFont(QFont)));
 }
 
-void Library::bindRightPane(WLibrary* pLibraryWidget,
+void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
                          KeyboardEventFilter* pKeyboard) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
@@ -221,7 +170,7 @@ void Library::bindRightPane(WLibrary* pLibraryWidget,
     emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
 }
 
-void Library::bindLeftPane(WLibrary *leftPane, KeyboardEventFilter *pKeyboard) {
+void Library::bindSidebarExpanded(WLibrary *leftPane, KeyboardEventFilter *pKeyboard) {
     
 }
 
@@ -229,7 +178,9 @@ void Library::addFeature(LibraryFeature* feature) {
     DEBUG_ASSERT_AND_HANDLE(feature) {
         return;
     }
-    m_features.push_back(feature);
+    
+    m_panes.last()->addFeature(feature);
+    
     m_pSidebarModel->addLibraryFeature(feature);
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
             this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
@@ -383,4 +334,54 @@ void Library::slotSetTrackTableFont(const QFont& font) {
 void Library::slotSetTrackTableRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
     emit(setTrackTableRowHeight(rowHeight));
+}
+
+void Library::createFeatures() {
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
+    addFeature(m_pMixxxLibraryFeature);
+
+    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));
+    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
+    addFeature(m_pPlaylistFeature);
+    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
+    addFeature(m_pCrateFeature);
+    BrowseFeature* browseFeature = new BrowseFeature(
+        this, pConfig, m_pTrackCollection, m_pRecordingManager);
+    connect(browseFeature, SIGNAL(scanLibrary()),
+            &m_scanner, SLOT(scan()));
+    connect(&m_scanner, SIGNAL(scanStarted()),
+            browseFeature, SLOT(slotLibraryScanStarted()));
+    connect(&m_scanner, SIGNAL(scanFinished()),
+            browseFeature, SLOT(slotLibraryScanFinished()));
+
+    addFeature(browseFeature);
+    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
+    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
+    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
+    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
+    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
+    addFeature(m_pAnalysisFeature);
+    //iTunes and Rhythmbox should be last until we no longer have an obnoxious
+    //messagebox popup when you select them. (This forces you to reach for your
+    //mouse or keyboard if you're using MIDI control and you scroll through them...)
+    if (RhythmboxFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
+        addFeature(new RhythmboxFeature(this, m_pTrackCollection));
+    }
+    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
+        BansheeFeature::prepareDbPath(pConfig);
+        if (BansheeFeature::isSupported()) {
+            addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
+        }
+    }
+    if (ITunesFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
+        addFeature(new ITunesFeature(this, m_pTrackCollection));
+    }
+    if (TraktorFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
+        addFeature(new TraktorFeature(this, m_pTrackCollection));
+    }
 }

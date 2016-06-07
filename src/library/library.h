@@ -45,10 +45,10 @@ public:
             RecordingManager* pRecordingManager);
     virtual ~Library();
 
-    void bindRightPane(WLibrary* libraryWidget,
-                       KeyboardEventFilter* pKeyboard);
-    void bindLeftPane(WLibrary* leftPane,
-                      KeyboardEventFilter* pKeyboard);
+    void bindLibraryWidget(WLibrary* libraryWidget,
+                           KeyboardEventFilter* pKeyboard);
+    void bindSidebarExpanded(WLibrary* leftPane,
+                             KeyboardEventFilter* pKeyboard);
     
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
@@ -126,7 +126,6 @@ public:
     UserSettingsPointer m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
-    QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
@@ -139,6 +138,8 @@ public:
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     QList<LibraryPaneManager*> m_panes;
+    
+    void createFeatures();
 };
 
 #endif /* LIBRARY_H */
