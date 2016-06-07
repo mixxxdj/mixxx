@@ -50,7 +50,8 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
-        m_scanner(m_pTrackCollection, pConfig) {
+        m_scanner(m_pTrackCollection, pConfig),
+        m_pSidebarExpanded(nullptr) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     connect(&m_scanner, SIGNAL(scanStarted()),
@@ -334,6 +335,22 @@ void Library::slotSetTrackTableFont(const QFont& font) {
 void Library::slotSetTrackTableRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
     emit(setTrackTableRowHeight(rowHeight));
+}
+
+void Library::libraryWidgetFocused() {
+    WLibrary* pane = dynamic_cast<WLibrary*>(sender());
+    DEBUG_ASSERT_AND_HANDLE(pane) {
+        return;
+    }
+    
+    if (pane == m_pSidebarExpanded) m_focusedWidget = -1;
+    
+    for (int i = 0; i < m_panes; ++i) {
+        if (m_panes[i] == pane) {
+            m_focusedWidget = i;
+            break;
+        }
+    }
 }
 
 void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface* pPlayerManager) {

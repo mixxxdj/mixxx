@@ -97,6 +97,7 @@ public:
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
+    void libraryWidgetFocused();
 
     void scan() {
         m_scanner.scan();
@@ -140,6 +141,10 @@ public:
     //QList<LibraryPaneManager*> m_panes;
     QList<LibraryFeature*> m_features;
     QList<WLibrary*> m_panes;
+    WLibrary* m_pSidebarExpanded;
+    
+    // -1 for the Sidebar Expanded and >= 0 for the other widgets
+    int m_focusedWidget;
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
 };
