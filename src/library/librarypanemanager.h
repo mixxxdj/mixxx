@@ -19,14 +19,16 @@ class LibraryPaneManager : public QObject {
 
     LibraryPaneManager(QObject* parent = nullptr);
     
+    ~LibraryPaneManager();
+    
     bool initialize();
 
     // All features must be added before adding a pane
-    void bindLeftPane(WLibrary* leftWidget, KeyboardEventFilter *pKeyboard);
-    void bindRightPane(WLibrary* rightWidget, KeyboardEventFilter *pKeyboard);
+    void bindSidebarExpanded(WLibrary* leftWidget, KeyboardEventFilter *pKeyboard);
+    void bindLibraryWidget(WLibrary* rightWidget, KeyboardEventFilter *pKeyboard);
     
-    inline WLibrary* getLeftPane() { return m_pLeftPane; }
-    inline WLibrary* getRightPane() { return m_pRightPane; }
+    inline WLibrary* getLeftPane() { return m_pSidebarExpanded; }
+    inline WLibrary* getRightPane() { return m_pLibraryWidget; }
 
     void addFeature(LibraryFeature* feature);
 
@@ -37,8 +39,8 @@ class LibraryPaneManager : public QObject {
 
   private:
 
-    WLibrary* m_pLeftPane;
-    WLibrary* m_pRightPane;
+    WLibrary* m_pSidebarExpanded;
+    WLibrary* m_pLibraryWidget;
     
     QVector<LibraryFeature*> m_features;
     
