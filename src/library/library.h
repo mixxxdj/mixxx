@@ -137,9 +137,11 @@ public:
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
-    QList<LibraryPaneManager*> m_panes;
+    //QList<LibraryPaneManager*> m_panes;
+    QList<LibraryFeature*> m_features;
+    QList<WLibrary*> m_panes;
     
-    void createFeatures();
+    void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
 };
 
 #endif /* LIBRARY_H */

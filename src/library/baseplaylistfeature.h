@@ -35,7 +35,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
-    void bindLeftPane(WLibrary* libraryWidget,
+    void bindSidebarWidget(WLibrary* libraryWidget,
                       KeyboardEventFilter* keyboard) {}
 
   signals:

@@ -37,7 +37,7 @@ class AnalysisFeature : public LibraryFeature {
                     KeyboardEventFilter* keyboard);
     
     // TODO(jmigual): Still needs to be implemented
-    void bindLeftPane(WLibrary* libraryWidget,
+    void bindSidebarWidget(WLibrary* libraryWidget,
                       KeyboardEventFilter* keyboard) {}
 
     TreeItemModel* getChildModel();

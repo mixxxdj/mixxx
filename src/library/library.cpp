@@ -63,7 +63,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    createFeatures();
+    createFeatures(pConfig, pPlayerManager);
 
     // On startup we need to check if all of the user's library folders are
     // accessible to us. If the user is using a database from <1.12.0 with
@@ -91,11 +91,6 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 Library::~Library() {
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
-    
-    for (LibraryPaneManager* p : m_panes) {
-        delete p;
-    }
-    m_panes.clear();
 
     delete m_pLibraryControl;
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
@@ -129,7 +124,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
 void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
                          KeyboardEventFilter* pKeyboard) {
-    /*WTrackTableView* pTrackTableView =
+    WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
@@ -155,12 +150,8 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(onSearchStarting()));
     connect(this, SIGNAL(searchCleared()),
             pTrackTableView, SLOT(onSearchCleared()));
-
-    */
     
-    m_panes.append(new LibraryPaneManager);
-    m_panes.last()->bindLibraryWidget(pLibraryWidget, pKeyboard);
-    
+    m_panes.append(pLibraryWidget);    
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
@@ -183,8 +174,6 @@ void Library::addFeature(LibraryFeature* feature) {
     DEBUG_ASSERT_AND_HANDLE(feature) {
         return;
     }
-    
-    m_panes.last()->addFeature(feature);
     
     m_pSidebarModel->addLibraryFeature(feature);
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
@@ -341,7 +330,7 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::createFeatures() {
+void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface* pPlayerManager) {
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
 
