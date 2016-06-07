@@ -24,16 +24,15 @@ class LibraryPaneManager : public QObject {
     bool initialize();
 
     // All features must be added before adding a pane
-    void bindSidebarExpanded(WLibrary* leftWidget, KeyboardEventFilter *pKeyboard);
     void bindLibraryWidget(WLibrary* rightWidget, KeyboardEventFilter *pKeyboard);
     
-    inline WLibrary* getLeftPane() { return m_pSidebarExpanded; }
     inline WLibrary* getRightPane() { return m_pLibraryWidget; }
 
     void addFeature(LibraryFeature* feature);
+    //void addFeatures(Q)
 
   public slots:
-
+/*
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
@@ -49,17 +48,19 @@ class LibraryPaneManager : public QObject {
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
-    
+  */  
 
   private:
 
-    WLibrary* m_pSidebarExpanded;
     WLibrary* m_pLibraryWidget;
     
     QVector<LibraryFeature*> m_features;
     
     QVector<int> m_currentFeature;
     int m_currentPane;
+    
+    QFont m_trackTableFont;
+    int m_iTrackTableRowHeight;
 
   private slots:
 
