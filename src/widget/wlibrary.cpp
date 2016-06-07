@@ -12,6 +12,7 @@ WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
           m_mutex(QMutex::Recursive) {
+    
 }
 
 bool WLibrary::registerView(QString name, QWidget* view) {
@@ -25,6 +26,7 @@ bool WLibrary::registerView(QString name, QWidget* view) {
                  << "Ignoring.";
         return false;
     }
+    view->installEventFilter(this);
     addWidget(view);
     m_viewMap[name] = view;
     return true;
@@ -67,9 +69,18 @@ LibraryView* WLibrary::getActiveView() const {
     return dynamic_cast<LibraryView*>(currentWidget());
 }
 
+bool WLibrary::eventFilter(QObject*, QEvent* pEvent) {
+    if (pEvent->type() == QEvent::FocusIn) {
+        emit(focused());
+    }
+    return false;
+}
+
+
 bool WLibrary::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
+    
     return QStackedWidget::event(pEvent);
 }

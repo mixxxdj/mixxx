@@ -29,6 +29,12 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     bool registerView(QString name, QWidget* view);
 
     LibraryView* getActiveView() const;
+    
+    bool eventFilter(QObject*, QEvent* pEvent);
+    
+  signals:
+    
+    void focused();
 
   public slots:
     // Show the view registered with the given name. Does nothing if the current
