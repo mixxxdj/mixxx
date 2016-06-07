@@ -1,26 +1,33 @@
 #ifndef WBUTTONBAR_H
 #define WBUTTONBAR_H
 
-#include <QWidget>
 #include <QLayout>
 #include <QVariant>
 #include <QIcon>
+#include <QPushButton>
+#include <QButtonGroup>
 
-class WButtonBar : QWidget
+#include "widget/wwidget.h"
+
+class WButtonBar : WWidget
 {
-  Q_OBJECT  
+    Q_OBJECT
   public:
     WButtonBar(QWidget* parent = nullptr);
-    
-    void addItem(QIcon icon, QVariant title, QVariant data);
 
   signals:
 
-    void clicked(QVariant data);
+    void buttonClicked(QVariant data);
+
+  private slots:
+    
+    void slotButtonClicked(int id);
 
   private:
 
     QLayout* m_pLayout;
+    QButtonGroup* m_pButtonGroup;
+    QList<QVariant> m_data;
 };
 
 #endif // WBUTTONBAR_H
