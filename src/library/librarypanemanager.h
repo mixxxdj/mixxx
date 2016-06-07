@@ -34,7 +34,21 @@ class LibraryPaneManager : public QObject {
 
   public slots:
 
-    void search(QString& text);
+    void slotShowTrackModel(QAbstractItemModel* model);
+    void slotSwitchToView(const QString& view);
+    void slotLoadTrack(TrackPointer pTrack);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
+    void slotLoadLocationToPlayer(QString location, QString group);
+    void slotRestoreSearch(const QString& text);
+    void slotRefreshLibraryModels();
+    //void slotCreatePlaylist();
+    //void slotCreateCrate();
+    //void slotRequestAddDir(QString directory);
+    //void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
+    //void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
+    void onSkinLoadFinished();
+    void slotSetTrackTableFont(const QFont& font);
+    void slotSetTrackTableRowHeight(int rowHeight);
     
 
   private:

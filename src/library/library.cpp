@@ -129,7 +129,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
 void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
                          KeyboardEventFilter* pKeyboard) {
-    WTrackTableView* pTrackTableView =
+    /*WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
@@ -156,6 +156,11 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(searchCleared()),
             pTrackTableView, SLOT(onSearchCleared()));
 
+    */
+    
+    m_panes.append(new LibraryPaneManager);
+    m_panes.last()->bindLibraryWidget(pLibraryWidget, pKeyboard);
+    
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
@@ -163,7 +168,7 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
         LibraryFeature* feature = feature_it.next();
         feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
     }
-
+    
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
     emit(setTrackTableFont(m_trackTableFont));
