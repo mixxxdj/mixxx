@@ -624,15 +624,15 @@ void CrateFeature::slotCreateImportCrate() {
     if (playlist_files.isEmpty()) {
         return;
     }
-    
-    
+
+
     // Set last import directory
     QFileInfo fileName(playlist_files.first());
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
-    
+
     int lastCrateId = -1;
-    
+
     // For each selected file
     for (const QString& playlistFile : playlist_files) {
         fileName = QFileInfo(playlistFile);
@@ -647,16 +647,16 @@ void CrateFeature::slotCreateImportCrate() {
             if (i != 0) {
                 name += QString::number(i);
             }
-    
+
             // Check name
             int existingId = m_crateDao.getCrateIdByName(name);
-    
+
             validNameGiven = (existingId == -1);
             ++i;
         }
-    
+
         lastCrateId = m_crateDao.createCrate(name);
-    
+
         if (lastCrateId != -1) {
             m_crateTableModel.setTableModel(lastCrateId);
         }
@@ -667,7 +667,7 @@ void CrateFeature::slotCreateImportCrate() {
                                       + name);
                 return;
         }
-    
+
         slotImportPlaylistFile(playlistFile);
     }
     activateCrate(lastCrateId);
@@ -684,7 +684,9 @@ void CrateFeature::slotAnalyzeCrate() {
 }
 
 void CrateFeature::slotExportPlaylist() {
-    qDebug() << "Export crate" << m_lastRightClickedIndex.data();
+    int crateId = m_crateTableModel.getCrate();
+    QString crateName = m_crateDao.crateName(crateId);
+    qDebug() << "Export crate" << crateId << crateName;
 
     QString lastCrateDirectory = m_pConfig->getValueString(
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
@@ -693,7 +695,7 @@ void CrateFeature::slotExportPlaylist() {
     QString file_location = QFileDialog::getSaveFileName(
         NULL,
         tr("Export Crate"),
-        lastCrateDirectory,
+        lastCrateDirectory.append("/").append(crateName),
         tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.
     if (file_location.isNull() || file_location.isEmpty()) {

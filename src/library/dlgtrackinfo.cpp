@@ -9,6 +9,8 @@
 #include "library/coverartutils.h"
 #include "library/dao/cue.h"
 #include "track/beatfactory.h"
+#include "track/keyfactory.h"
+#include "track/keyutils.h"
 #include "util/duration.h"
 
 const int kFilterLength = 80;
@@ -70,7 +72,8 @@ void DlgTrackInfo::init() {
     connect(spinBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotSpinBpmValueChanged(double)));
 
-
+    connect(txtKey, SIGNAL(editingFinished()),
+            this, SLOT(slotKeyTextChanged()));
 
     connect(btnCueActivate, SIGNAL(clicked()),
             this, SLOT(cueActivate()));
@@ -167,7 +170,8 @@ void DlgTrackInfo::populateFields(const Track& track) {
     txtType->setText(track.getType());
     txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr("kbps"));
     txtBpm->setText(track.getBpmText());
-    txtKey->setText(track.getKeyText());
+    m_keysClone = track.getKeys();
+    txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
     const Mixxx::ReplayGain replayGain(track.getReplayGain());
     txtReplayGain->setText(Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
 
@@ -373,6 +377,14 @@ void DlgTrackInfo::saveTrack() {
         reloadTrackBeats(*m_pLoadedTrack);
     }
 
+    // If the user is editing the key and hits enter to close DlgTrackInfo, the
+    // editingFinished signal will not fire in time. Run the key text changed
+    // handler now to see if the key was edited. If the key was unchanged or
+    // invalid then the change will be rejected.
+    slotKeyTextChanged();
+
+    m_pLoadedTrack->setKeys(m_keysClone);
+
     QSet<int> updatedRows;
     for (int row = 0; row < cueTable->rowCount(); ++row) {
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
@@ -456,12 +468,14 @@ void DlgTrackInfo::clear() {
     txtComment->setPlainText("");
     spinBpm->setValue(0.0);
     m_pBeatsClone.clear();
+    m_keysClone = Keys();
 
     txtDuration->setText("");
     txtType->setText("");
     txtLocation->setPlainText("");
     txtBitrate->setText("");
     txtBpm->setText("");
+    txtKey->setText("");
     txtReplayGain->setText("");
 
     m_cueMap.clear();
@@ -571,6 +585,28 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     // read back the actual value
     double newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue);
+}
+
+void DlgTrackInfo::slotKeyTextChanged() {
+    // Try to parse the user's input as a key.
+    const QString newKeyText = txtKey->text();
+    Keys newKeys = KeyFactory::makeBasicKeysFromText(newKeyText,
+                                                     mixxx::track::io::key::USER);
+    const mixxx::track::io::key::ChromaticKey globalKey(newKeys.getGlobalKey());
+
+    // If the new key string is invalid and not empty them reject the new key.
+    if (globalKey == mixxx::track::io::key::INVALID && !newKeyText.isEmpty()) {
+        txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
+        return;
+    }
+
+    // If the new key is the same as the old key, reject the change.
+    if (globalKey == m_keysClone.getGlobalKey()) {
+        return;
+    }
+
+    // Otherwise, accept.
+    m_keysClone = newKeys;
 }
 
 void DlgTrackInfo::reloadTrackMetadata() {

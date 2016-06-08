@@ -19,22 +19,22 @@
 <context>
     <name>AutoDJFeature</name>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="65"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="58"/>
         <source>Crates</source>
         <translation>Backar</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="86"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="79"/>
         <source>Remove Crate as Track Source</source>
         <translation>Avlägsna back som låtkälla</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="101"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="90"/>
         <source>Auto DJ</source>
         <translation>Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="380"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="350"/>
         <source>Add Crate as Track Source</source>
         <translation>Lägg till back som låtkälla</translation>
     </message>
@@ -173,7 +173,7 @@
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="68"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="448"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="464"/>
         <source>Export Playlist</source>
         <translation>Exportera spellista</translation>
     </message>
@@ -215,23 +215,23 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="290"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="294"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="307"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="418"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="432"/>
         <source>Playlist Creation Failed</source>
         <translation>Spellistan gick inte att skapa</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="308"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="419"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="433"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Ett okänt fel uppstod när spellistan skapades:</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="445"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="461"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>M3U-spellista (*.m3u)</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="450"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="466"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>M3U spellista (*.m3u);;M3U8 spellista (*.m3u8);;PLS spellista (*.pls);;Text CSV (*.csv);;Läsbar text (*.txt)</translation>
     </message>
@@ -239,127 +239,127 @@
 <context>
     <name>BaseSqlTableModel</name>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="61"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="64"/>
         <source>Played</source>
         <translation>Spelad</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="63"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
         <source>Artist</source>
         <translation>Artist</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="65"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="68"/>
         <source>Title</source>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="67"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="70"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="69"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="72"/>
         <source>Album Artist</source>
         <translation>Album-artist</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="71"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="74"/>
         <source>Genre</source>
         <translation>Genre</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="73"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="76"/>
         <source>Composer</source>
         <translation>Kompositör</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="75"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="78"/>
         <source>Grouping</source>
         <translation>Gruppindelning</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="77"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="80"/>
         <source>Year</source>
         <translation>År</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="79"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="82"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="81"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="84"/>
         <source>Location</source>
         <translation>Plats</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="83"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="86"/>
         <source>Comment</source>
         <translation>Kommentar</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="85"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="88"/>
         <source>Duration</source>
         <translation>Varaktighet</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="87"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="90"/>
         <source>Rating</source>
         <translation>Betyg</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="89"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="92"/>
         <source>Bitrate</source>
         <translation>Bithastighet</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="91"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="94"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="93"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="96"/>
         <source>Track #</source>
         <translation>Låt #</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="95"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="98"/>
         <source>Date Added</source>
         <translation>Datum tillagd</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="97"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="100"/>
         <source>#</source>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="99"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="102"/>
         <source>Timestamp</source>
         <translation>Tidsstämpel</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="101"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="104"/>
         <source>Key</source>
         <translation>Nyckel</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="103"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="106"/>
         <source>BPM Lock</source>
         <translation>BPM-lås</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="105"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="108"/>
         <source>Preview</source>
         <translation>Förhandsgranska</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="107"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="110"/>
         <source>Cover Art</source>
         <translation>Album-konst</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="109"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="112"/>
         <source>ReplayGain</source>
         <translation type="unfinished"/>
     </message>
@@ -367,7 +367,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="204"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="205"/>
         <source>Couldn&apos;t load track.</source>
         <translation>Kunde inte ladda in låt.</translation>
     </message>
@@ -2533,7 +2533,7 @@
 <context>
     <name>CrateFeature</name>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="292"/>
+        <location filename="../../src/library/cratefeature.cpp" line="282"/>
         <source>New Crate</source>
         <translation>Back</translation>
     </message>
@@ -2544,8 +2544,8 @@
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="36"/>
-        <location filename="../../src/library/cratefeature.cpp" line="290"/>
-        <location filename="../../src/library/cratefeature.cpp" line="801"/>
+        <location filename="../../src/library/cratefeature.cpp" line="280"/>
+        <location filename="../../src/library/cratefeature.cpp" line="807"/>
         <source>Create New Crate</source>
         <translation>Skapa ny back</translation>
     </message>
@@ -2556,7 +2556,7 @@
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="48"/>
-        <location filename="../../src/library/cratefeature.cpp" line="261"/>
+        <location filename="../../src/library/cratefeature.cpp" line="253"/>
         <source>Lock</source>
         <translation>Lås</translation>
     </message>
@@ -2576,41 +2576,31 @@
         <translation>Analysera hela backen</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="78"/>
+        <location filename="../../src/library/cratefeature.cpp" line="76"/>
         <source>Auto DJ Track Source</source>
         <translation>Låtkälla för Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="291"/>
-        <location filename="../../src/library/cratefeature.cpp" line="408"/>
+        <location filename="../../src/library/cratefeature.cpp" line="281"/>
+        <location filename="../../src/library/cratefeature.cpp" line="398"/>
         <source>Enter name for new crate:</source>
         <translation>Ange ett namn för den nya backen:</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="366"/>
+        <location filename="../../src/library/cratefeature.cpp" line="356"/>
         <source>Enter new name for crate:</source>
         <translation>Ange ett namn för den nya backen:</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="411"/>
+        <location filename="../../src/library/cratefeature.cpp" line="401"/>
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a crate</extracomment>
         <translation>_kopiera</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="663"/>
-        <source>Playlist Creation Failed</source>
-        <translation>Spellistan gick inte att skapa</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/cratefeature.cpp" line="664"/>
-        <source>An unknown error occurred while creating playlist: </source>
-        <translation>Ett okänt fel uppstod när spellistan skapades:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/cratefeature.cpp" line="127"/>
-        <location filename="../../src/library/cratefeature.cpp" line="795"/>
+        <location filename="../../src/library/cratefeature.cpp" line="121"/>
+        <location filename="../../src/library/cratefeature.cpp" line="801"/>
         <source>Crates</source>
         <translation>Backar</translation>
     </message>
@@ -2622,78 +2612,84 @@
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="60"/>
-        <location filename="../../src/library/cratefeature.cpp" line="691"/>
+        <location filename="../../src/library/cratefeature.cpp" line="697"/>
         <source>Export Crate</source>
         <translation>Exportera back</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="407"/>
+        <location filename="../../src/library/cratefeature.cpp" line="397"/>
         <source>Duplicate Crate</source>
         <translation>Duplicera back</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="261"/>
+        <location filename="../../src/library/cratefeature.cpp" line="253"/>
         <source>Unlock</source>
         <translation>Lås upp</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="320"/>
-        <location filename="../../src/library/cratefeature.cpp" line="441"/>
+        <location filename="../../src/library/cratefeature.cpp" line="310"/>
+        <location filename="../../src/library/cratefeature.cpp" line="431"/>
+        <location filename="../../src/library/cratefeature.cpp" line="666"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Ett okänt fel uppstod vid skapandet av backen</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="365"/>
+        <location filename="../../src/library/cratefeature.cpp" line="355"/>
         <source>Rename Crate</source>
         <translation>Döp om back</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="379"/>
-        <location filename="../../src/library/cratefeature.cpp" line="383"/>
-        <location filename="../../src/library/cratefeature.cpp" line="421"/>
-        <location filename="../../src/library/cratefeature.cpp" line="425"/>
+        <location filename="../../src/library/cratefeature.cpp" line="369"/>
+        <location filename="../../src/library/cratefeature.cpp" line="373"/>
+        <location filename="../../src/library/cratefeature.cpp" line="411"/>
+        <location filename="../../src/library/cratefeature.cpp" line="415"/>
         <source>Renaming Crate Failed</source>
         <translation>Omdöpning av back misslyckades</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="693"/>
+        <location filename="../../src/library/cratefeature.cpp" line="665"/>
+        <source>Crate Creation Failed</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/cratefeature.cpp" line="699"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>M3U spellista (*.m3u);;M3U8 spellista (*.m3u8);;PLS spellista (*.pls);;Text CSV (*.csv);;Läsbar text (*.txt)</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="796"/>
+        <location filename="../../src/library/cratefeature.cpp" line="802"/>
         <source>Crates are a great way to help organize the music you want to DJ with.</source>
         <translation>Backar är ett utmärkt sätt att hjälpa till att organisera den musik du vill mixa med.</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="797"/>
+        <location filename="../../src/library/cratefeature.cpp" line="803"/>
         <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.</source>
         <translation>Gör en back för din nästa spelning, för dina favorit electrohouse låtar, eller för dina mest efterfrågade låtar.</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="798"/>
+        <location filename="../../src/library/cratefeature.cpp" line="804"/>
         <source>Crates let you organize your music however you&apos;d like!</source>
         <translation>Med backar kan du organisera din musik hur du vill</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="307"/>
-        <location filename="../../src/library/cratefeature.cpp" line="384"/>
-        <location filename="../../src/library/cratefeature.cpp" line="426"/>
+        <location filename="../../src/library/cratefeature.cpp" line="297"/>
+        <location filename="../../src/library/cratefeature.cpp" line="374"/>
+        <location filename="../../src/library/cratefeature.cpp" line="416"/>
         <source>A crate cannot have a blank name.</source>
         <translation>En back kan inte ha ett tomt namn.</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="302"/>
-        <location filename="../../src/library/cratefeature.cpp" line="306"/>
-        <location filename="../../src/library/cratefeature.cpp" line="319"/>
-        <location filename="../../src/library/cratefeature.cpp" line="440"/>
+        <location filename="../../src/library/cratefeature.cpp" line="292"/>
+        <location filename="../../src/library/cratefeature.cpp" line="296"/>
+        <location filename="../../src/library/cratefeature.cpp" line="309"/>
+        <location filename="../../src/library/cratefeature.cpp" line="430"/>
         <source>Creating Crate Failed</source>
         <translation>Skapande av back misslyckades</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="303"/>
-        <location filename="../../src/library/cratefeature.cpp" line="380"/>
-        <location filename="../../src/library/cratefeature.cpp" line="422"/>
+        <location filename="../../src/library/cratefeature.cpp" line="293"/>
+        <location filename="../../src/library/cratefeature.cpp" line="370"/>
+        <location filename="../../src/library/cratefeature.cpp" line="412"/>
         <source>A crate by that name already exists.</source>
         <translation>En back med det namnet finns redan.</translation>
     </message>
@@ -2716,7 +2712,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="14"/>
         <location filename="../../src/library/dlganalysis.ui" line="105"/>
-        <location filename="../../src/library/dlganalysis.cpp" line="139"/>
+        <location filename="../../src/library/dlganalysis.cpp" line="141"/>
         <source>Analyze</source>
         <translation>Analysera</translation>
     </message>
@@ -2761,12 +2757,12 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlganalysis.cpp" line="136"/>
+        <location filename="../../src/library/dlganalysis.cpp" line="138"/>
         <source>Stop Analysis</source>
         <translation>Avsluta analys</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlganalysis.cpp" line="156"/>
+        <location filename="../../src/library/dlganalysis.cpp" line="158"/>
         <source>Analyzing %1/%2 %3%</source>
         <translation>Analyserar %1/%2 %3%</translation>
     </message>
@@ -2774,25 +2770,25 @@
 <context>
     <name>DlgAutoDJ</name>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="146"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="141"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="154"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="149"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="182"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="183"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="177"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="178"/>
         <source>Disable Auto DJ</source>
         <translation>Avaktivera Auto-dj</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="145"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="153"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="140"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="148"/>
         <source>Auto DJ</source>
         <translation>Auto DJ</translation>
     </message>
@@ -2859,8 +2855,8 @@
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="153"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="175"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="176"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="170"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="171"/>
         <source>Enable Auto DJ</source>
         <translation>Aktivera Auto-DJ</translation>
     </message>
@@ -3243,13 +3239,13 @@ Du försökte lära in: %1,%2</translation>
     <name>DlgPrefAutoDJ</name>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="10"/>
-        <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="42"/>
+        <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="40"/>
         <source>Off</source>
         <translation>Av</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="11"/>
-        <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="43"/>
+        <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="41"/>
         <source>On</source>
         <translation>På</translation>
     </message>
@@ -3533,100 +3529,100 @@ Du försökte lära in: %1,%2</translation>
 <context>
     <name>DlgPrefController</name>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="119"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="117"/>
         <source>Apply device settings?</source>
         <translation>Verkställ enhetsinställningar?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="120"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="118"/>
         <source>Your settings must be applied before starting the learning wizard.
 Apply settings and continue?</source>
         <translation>Dina inställningar måste verkställas innan läriin-guiden kan startas.
 Spara inställningarna och fortsätt?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="167"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="165"/>
         <source>None</source>
         <translation>Ingen</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="172"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="170"/>
         <source>%1 by %2</source>
         <translation>%1 av %2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="189"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="187"/>
         <source>No Name</source>
         <translation>Inget namn</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="198"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="196"/>
         <source>No Description</source>
         <translation>Ingen beskrivning</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="207"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="205"/>
         <source>No Author</source>
         <translation>Ingen upphovsman</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="440"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="447"/>
         <source>Troubleshooting</source>
         <translation>Felsökning</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="510"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="517"/>
         <source>Filename</source>
         <translation>Filnamn</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="512"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="519"/>
         <source>Function Prefix</source>
         <translation>Funktionsprefix</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="514"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="521"/>
         <source>Built-in</source>
         <translation>Inbyggd</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="590"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="597"/>
         <source>Clear Input Mappings</source>
         <translation>Rensa ingångs-länkningar</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="591"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="598"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation>Är du säker på att du vill rensa alla ingångs-länkningar?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="631"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="638"/>
         <source>Clear Output Mappings</source>
         <translation>Rensa utgångs-länkningar</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="632"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="639"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation>Är du säker på att du vill rensa alla utgångs-länkningar?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="644"/>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="654"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="651"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="661"/>
         <source>Add Script</source>
         <translation>Lägg till skript</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="646"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="653"/>
         <source>Controller Script Files (*.js)</source>
         <translation>Styrenhets-skriptfiler (*.js)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="655"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="662"/>
         <source>Could not add script file: &apos;%s&apos;</source>
         <translation>Kunde inte lägga till skript-fil: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="725"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="732"/>
         <source>Please select a script from the list to open.</source>
         <translation type="unfinished"/>
     </message>
@@ -5549,29 +5545,34 @@ milliseconds</extracomment>
 <context>
     <name>DlgPrefWaveform</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="15"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="17"/>
         <source>Filtered</source>
         <translation>Filtrerad</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="16"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="18"/>
         <source>HSV</source>
         <translation>HSV</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="17"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="19"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="81"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="85"/>
         <source>OpenGL not available</source>
         <translation>OpenGL är inte tillgängligt</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="196"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="211"/>
         <source>dropped frames</source>
         <translation>tappade frames</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="236"/>
+        <source>Cached waveforms occupy %1 MiB on disk.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -5582,34 +5583,34 @@ milliseconds</extracomment>
         <translation>Inställningar vågform</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="42"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="112"/>
         <source>Frame rate</source>
         <translation>Bildhastighet</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="134"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="157"/>
         <source>Summary type</source>
         <translation>Sammanfattningstyp</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="419"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="70"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
         <translation>Visar vilken OpenGL-version som understöds av den aktuella plattformen.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="163"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="319"/>
         <source>Overview type</source>
         <translation>Översiktstyp</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="35"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="389"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="302"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="309"/>
         <source>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</source>
         <extracomment>The main waveforms</extracomment>
         <translation>Välj mellan olika typer av visningar av vågformen; dessa skiljer sej huvudsakligen genom hur detaljrikt dom visas.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="321"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="63"/>
         <source>Normalize waveform overview</source>
         <translation>Normalisiera vågforms-översikten</translation>
     </message>
@@ -5619,90 +5620,110 @@ milliseconds</extracomment>
         <translation>Genomsnittlig bildhastighet</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="373"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="22"/>
         <source>Visual gain</source>
         <translation>Visuell förstärkning</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="396"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="393"/>
         <source>Default zoom level</source>
         <extracomment>Waveform zoom</extracomment>
         <translation>Standardzoomläge</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="409"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="326"/>
         <source>Displays the actual frame rate.</source>
         <translation>Visar den aktuella bildhastigheten.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="191"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="172"/>
         <source>Visual gain of the middle frequencies</source>
         <translation>Visuelle förstärkning av mellanfrekvenser</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="112"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="336"/>
         <source>End of track warning</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="150"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="138"/>
         <source>OpenGL status</source>
         <translation>OpenGL-status</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="170"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="80"/>
         <source>Highlight the waveforms when the last seconds of a track remains.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="173"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="83"/>
         <source> seconds</source>
         <translation>sekunder</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="210"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="191"/>
         <source>Low</source>
         <translation>Låg</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="223"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="204"/>
         <source>Middle</source>
         <translation>Mitten</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="236"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="217"/>
         <source>Global</source>
         <translation>Global</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="249"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="230"/>
         <source>Visual gain of the high frequencies</source>
         <translation>Visuelle förstärkning av höga frekvenser</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="268"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="249"/>
         <source>Visual gain of the low frequencies</source>
         <translation>Visuell förstärkning av låga frekvenser</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="287"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="268"/>
         <source>High</source>
         <translation>Hög</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="300"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="281"/>
         <source>Global visual gain</source>
         <translation>Global visuell förstärkning</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="335"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="406"/>
         <source>Synchronize zoom level across all waveform displays.</source>
         <translation>Synkronisera zoom-nivån för alla vågformer.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="338"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="409"/>
         <source>Synchronize zoom level across all waveforms</source>
         <translation>Synkronisera zoom-nivån för alla vågformer.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="416"/>
+        <source>Caching</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="428"/>
+        <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="438"/>
+        <source>Clear Cached Waveforms</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="445"/>
+        <source>Enable Waveform Caching</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -6266,7 +6287,7 @@ milliseconds</extracomment>
         <translation>&amp;Avbryt</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="169"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="171"/>
         <source>kbps</source>
         <translation>kbps</translation>
     </message>
@@ -6576,52 +6597,52 @@ milliseconds</extracomment>
 <context>
     <name>HidController</name>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="182"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="181"/>
         <source>Generic HID Mouse</source>
         <translation>Generisk HID-mus</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="183"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="182"/>
         <source>Generic HID Joystick</source>
         <translation>Generisk HID-joystick</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="184"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="183"/>
         <source>Generic HID Gamepad</source>
         <translation>Generisk HID-gamepad</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="185"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="184"/>
         <source>Generic HID Keyboard</source>
         <translation>Generiskt HID-tangentbord</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="186"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="185"/>
         <source>Generic HID Multiaxis Controller</source>
         <translation>Generisk HID Multiaxis-styrenhet</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="187"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="186"/>
         <source>Unknown HID Desktop Device</source>
         <translation>Okänd HID-skrivbordsutrustning</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="194"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="193"/>
         <source>HID Infrared Control</source>
         <translation>HID-infraröd-styrenhet</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="196"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="195"/>
         <source>Unknown Apple HID Device</source>
         <translation>Okänd Apple HID-enhet</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="201"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="200"/>
         <source>HID Unknown Device</source>
         <translation>Okänd HID-enhet</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="207"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="206"/>
         <source>HID Interface Number</source>
         <translation>HID gränssnittsnummer</translation>
     </message>
@@ -6669,13 +6690,13 @@ milliseconds</extracomment>
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1099"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1102"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Felsäker modus aktiverad</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1108"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1111"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -6684,57 +6705,57 @@ support.</source>
 stöd.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2008"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2012"/>
         <source>activate</source>
         <translation>aktivera</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2013"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2017"/>
         <source>toggle</source>
         <translation>växla</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2023"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2027"/>
         <source>right</source>
         <translation>höger</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2028"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2032"/>
         <source>left</source>
         <translation>vänster</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2033"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2037"/>
         <source>right small</source>
         <translation>höger liten</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2038"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2042"/>
         <source>left small</source>
         <translation>vänster liten</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2043"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2047"/>
         <source>up</source>
         <translation>upp</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2048"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2052"/>
         <source>down</source>
         <translation>ner</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2053"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2057"/>
         <source>up small</source>
         <translation>upp liten</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2058"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2062"/>
         <source>down small</source>
         <translation>ner liten</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2090"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2095"/>
         <source>Shortcut</source>
         <translation>Genväg</translation>
     </message>
@@ -6857,164 +6878,164 @@ stöd.</translation>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxx.cpp" line="288"/>
+        <location filename="../../src/mixxx.cpp" line="286"/>
         <source>Choose music library directory</source>
         <translation>Välj mapp för musikbibliotek</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="654"/>
+        <location filename="../../src/mixxx.cpp" line="664"/>
         <source>Sound Device Busy</source>
         <translation>Ljudenheten är upptagen</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="657"/>
+        <location filename="../../src/mixxx.cpp" line="667"/>
         <source>Mixxx was unable to access all the configured sound devices. Another application is using a sound device Mixxx is configured to use or a device is not plugged in.</source>
         <translation>Mixxx kunde inte komma åt alla konfigurerade ljudenheter. Ett annat program använder ett ljudenhet Mixxx är konfigurerad för att använda eller en enhet inte är inkopplad.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="662"/>
+        <location filename="../../src/mixxx.cpp" line="672"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Försök igen&lt;/b&gt; efter det andra programmet har stängts eller efter att en ljudenhet åter anslutits</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="666"/>
-        <location filename="../../src/mixxx.cpp" line="727"/>
+        <location filename="../../src/mixxx.cpp" line="676"/>
+        <location filename="../../src/mixxx.cpp" line="737"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Konfigurera om&lt;/b&gt; Mixxx ljudenhetsinställningar.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="669"/>
+        <location filename="../../src/mixxx.cpp" line="679"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Få &lt;b&gt;Hjälp&lt;/b&gt; från Mixxx Wiki.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="672"/>
-        <location filename="../../src/mixxx.cpp" line="730"/>
+        <location filename="../../src/mixxx.cpp" line="682"/>
+        <location filename="../../src/mixxx.cpp" line="740"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Avsluta&lt;/b&gt; Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="677"/>
+        <location filename="../../src/mixxx.cpp" line="687"/>
         <source>Retry</source>
         <translation>Försök igen</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="679"/>
-        <location filename="../../src/mixxx.cpp" line="736"/>
+        <location filename="../../src/mixxx.cpp" line="689"/>
+        <location filename="../../src/mixxx.cpp" line="746"/>
         <source>Reconfigure</source>
         <translation>Konfigurera om</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="681"/>
+        <location filename="../../src/mixxx.cpp" line="691"/>
         <source>Help</source>
         <translation>Hjälp</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="683"/>
-        <location filename="../../src/mixxx.cpp" line="737"/>
+        <location filename="../../src/mixxx.cpp" line="693"/>
+        <location filename="../../src/mixxx.cpp" line="747"/>
         <source>Exit</source>
         <translation>Avsluta</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="719"/>
+        <location filename="../../src/mixxx.cpp" line="729"/>
         <source>No Output Devices</source>
         <translation>Inga utenheter</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="720"/>
+        <location filename="../../src/mixxx.cpp" line="730"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx konfigurerades utan några enheter för ljudåtergivning. All ljudbehandling är deaktiverad när inga ljudutgångar är konfigurerade.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="724"/>
+        <location filename="../../src/mixxx.cpp" line="734"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Fortsätt&lt;/b&gt; utan några utgångar.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="735"/>
+        <location filename="../../src/mixxx.cpp" line="745"/>
         <source>Continue</source>
         <translation>Fortsätt</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="873"/>
+        <location filename="../../src/mixxx.cpp" line="882"/>
         <source>Load track to Deck %1</source>
         <translation>Ladda låt till tallrik %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="874"/>
+        <location filename="../../src/mixxx.cpp" line="883"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>Tallrik %1 spelar en låt just nu.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="876"/>
+        <location filename="../../src/mixxx.cpp" line="885"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Är du säker på att du vill ladda en nytt låt?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="992"/>
+        <location filename="../../src/mixxx.cpp" line="994"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Ingen enhet för ljudingång är utvald för den här vinylstyrningsenheten.
 Välj först en ingångsenhet i inställningarna för ljudhårdvara.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1003"/>
+        <location filename="../../src/mixxx.cpp" line="1005"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Ingen ingångsenhet utvald för den här genomgångsstyrenheten.
 Välj först ut en ingångsenhet i inställningarna för ljudhårdvara.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1014"/>
+        <location filename="../../src/mixxx.cpp" line="1016"/>
         <source>There is no input device selected for this microphone.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Ingen ingångsenhet utvald för den här mikrofonen.
 Välj först en ingångsenhet i inställningarna för ljudhårdvara.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1070"/>
+        <location filename="../../src/mixxx.cpp" line="1072"/>
         <source>Error in skin file</source>
         <translation>Fel hittat i skinn-filen</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1071"/>
+        <location filename="../../src/mixxx.cpp" line="1073"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>Kunde inte ladda in det utvalda skinnet.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1166"/>
+        <location filename="../../src/mixxx.cpp" line="1160"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL Direct Rendering</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1167"/>
+        <location filename="../../src/mixxx.cpp" line="1161"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation>Direkt Rendering är inte aktiv på din maskin.&lt;br&gt;&lt;br&gt;Detta leder till att vågformsvisningen blir mycket&lt;br&gt;&lt;b&gt;långsam och den kan belasta din CPU hårt.&lt;/b&gt;. Ändra antingen din&lt;br&gt;konfiguration och aktivera Direkt Rendering, eller stäng av&lt;br&gt;visningen av vågformer i Mixxx inställningar genom att välja&lt;br&gt;&quot;Tom&quot; som vågformsvisning i &apos;Gränssnitt&apos;-sektionen.&lt;br&gt;&lt;br&gt;OBS: om du har ett NVIDIA-grafikkort,&lt;br&gt;är möjligtvis Direkt Rendering inte synligt som alternativ, men du borde&lt;br&gt;ändå inte märka någon minskning av prestandan.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1201"/>
-        <location filename="../../src/mixxx.cpp" line="1209"/>
-        <location filename="../../src/mixxx.cpp" line="1218"/>
+        <location filename="../../src/mixxx.cpp" line="1195"/>
+        <location filename="../../src/mixxx.cpp" line="1203"/>
+        <location filename="../../src/mixxx.cpp" line="1212"/>
         <source>Confirm Exit</source>
         <translation>Bekräfta avsluta</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1202"/>
+        <location filename="../../src/mixxx.cpp" line="1196"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>En tallrik spelar fortfarande. Vill du avsluta Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1210"/>
+        <location filename="../../src/mixxx.cpp" line="1204"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>En samplare spelar fortfarande. Vill du avsluta Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1219"/>
+        <location filename="../../src/mixxx.cpp" line="1213"/>
         <source>The preferences window is still open.</source>
         <translation>Inställningsfönstret är fortfarande öppnat.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1220"/>
+        <location filename="../../src/mixxx.cpp" line="1214"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Kassera eventuella ändringar och avsluta Mixxx?</translation>
     </message>
@@ -7876,12 +7897,12 @@ För att avbryta denna funktion, klicka på Avbryt i Filfönstret.</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="83"/>
+        <location filename="../../src/widget/wbattery.cpp" line="78"/>
         <source>%1 minutes</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="85"/>
+        <location filename="../../src/widget/wbattery.cpp" line="80"/>
         <source>%1:%2</source>
         <translation type="unfinished"/>
     </message>
@@ -10128,32 +10149,32 @@ Klicka på OK för att avsluta.</translation>
 <context>
     <name>WBattery</name>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="111"/>
+        <location filename="../../src/widget/wbattery.cpp" line="106"/>
         <source>Time until charged unknown.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="113"/>
+        <location filename="../../src/widget/wbattery.cpp" line="108"/>
         <source>Time until charged: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="124"/>
+        <location filename="../../src/widget/wbattery.cpp" line="119"/>
         <source>Time left unknown.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="126"/>
+        <location filename="../../src/widget/wbattery.cpp" line="121"/>
         <source>Time left: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="132"/>
+        <location filename="../../src/widget/wbattery.cpp" line="127"/>
         <source>Battery fully charged.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="137"/>
+        <location filename="../../src/widget/wbattery.cpp" line="132"/>
         <source>Battery status unknown.</source>
         <translation type="unfinished"/>
     </message>
@@ -10688,7 +10709,7 @@ Klicka på OK för att avsluta.</translation>
     <name>WSearchLineEdit</name>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="19"/>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
         <source>Clear input</source>
         <comment>Clear the search bar input field</comment>
         <translation type="unfinished"/>
@@ -10700,50 +10721,50 @@ Klicka på OK för att avsluta.</translation>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="173"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
         <source>Search...</source>
         <comment>noun</comment>
         <translation>Sök...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="174"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
         <source>Search</source>
         <comment>noun</comment>
         <translation>Sök</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="174"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
         <source>Enter a string to search for</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
         <source>Shortcut</source>
         <translation>Genväg</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
         <source>Ctrl+F</source>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
         <source>Focus</source>
         <comment>Give search bar input focus</comment>
         <translation>Fokus</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
         <source>Ctrl+Backspace</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
         <source>Esc</source>
         <translation>Esc</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
         <source>Exit search</source>
         <comment>Exit search bar and leave focus</comment>
         <translation type="unfinished"/>
@@ -10752,219 +10773,219 @@ Klicka på OK för att avsluta.</translation>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="79"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="69"/>
         <source>Add to Playlist</source>
         <translation>Spara till spellistan.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="81"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="71"/>
         <source>Add to Crate</source>
         <translation>Spara till back</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="77"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="67"/>
         <source>Load to Sampler</source>
         <translation>Ladda till Samplare</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="83"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="73"/>
         <source>BPM Options</source>
         <translation>BPM alternativ</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="85"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="75"/>
         <source>Cover Art</source>
         <translation>Album-konst</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="115"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="105"/>
         <source>ESC</source>
         <comment>Focus</comment>
         <translation>ESC</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="375"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="364"/>
         <source>Remove</source>
         <translation>Ta bort</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="378"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="367"/>
         <source>Hide from Library</source>
         <translation>Dölj från biblioteket</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="381"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="370"/>
         <source>Unhide from Library</source>
         <translation>Ta fram från biblioteket</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="384"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="373"/>
         <source>Purge from Library</source>
         <translation>Rensa från biblioteket</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="387"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="376"/>
         <source>Properties</source>
         <translation>Egenskaper</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="391"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="380"/>
         <source>Open in File Browser</source>
         <translation>Öppna i filhanteraren</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="402"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="391"/>
         <source>Reload Metadata from File</source>
         <translation>Ladda om metadata från fil</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="406"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="395"/>
         <source>Get Metadata from MusicBrainz</source>
         <translation>Hämta metadata från MusicBrainz</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="761"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1369"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="795"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1403"/>
         <source>Create New Playlist</source>
         <translation>Skapa ny spellista</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="791"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1431"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="825"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1465"/>
         <source>Create New Crate</source>
         <translation>Skapa ny back</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1370"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1404"/>
         <source>Enter name for new playlist:</source>
         <translation>Mata in ett namn för ny spellista:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1372"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1406"/>
         <source>New Playlist</source>
         <translation>Ny spellista</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1379"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1383"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1392"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1413"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1417"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1426"/>
         <source>Playlist Creation Failed</source>
         <translation>Spellistan gick inte att skapa</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1380"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1414"/>
         <source>A playlist by that name already exists.</source>
         <translation>En spellista med det namnet finns redan.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1384"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1418"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>En spellista kan inte vara utan namn.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1393"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1427"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Ett okänt fel uppstod när spellistan skapades:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1432"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1466"/>
         <source>Enter name for new crate:</source>
         <translation>Ange ett namn för den nya backen:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1433"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1467"/>
         <source>New Crate</source>
         <translation>Back</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1441"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1446"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1457"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1475"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1480"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1491"/>
         <source>Creating Crate Failed</source>
         <translation>Skapande av back misslyckades</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1442"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1476"/>
         <source>A crate by that name already exists.</source>
         <translation>En back med det namnet finns redan.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1447"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1481"/>
         <source>A crate cannot have a blank name.</source>
         <translation>En back kan inte ha ett tomt namn.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1458"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1492"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Ett okänt fel uppstod vid skapandet av backen</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="410"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="399"/>
         <source>Load to Preview Deck</source>
         <translation>Ladda till förlyssnings-tallrik</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="395"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="384"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>Spara till Auto DJ kö (sist)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="398"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="387"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>Spara till Auto DJ kö (först)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="417"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="406"/>
         <source>Reset Play Count</source>
         <translation>Återställ uppspelningsräkneverket</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="421"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="410"/>
         <source>Lock BPM</source>
         <translation>Lås BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="422"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="411"/>
         <source>Unlock BPM</source>
         <translation>Lås upp BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="429"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="418"/>
         <source>Double BPM</source>
         <translation>Dubbel BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="430"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="419"/>
         <source>Halve BPM</source>
         <translation>Halva BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="431"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="420"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="432"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="421"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="448"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="437"/>
         <source>Clear BPM and Beatgrid</source>
         <translation>Rensa BPM och taktmönster</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="452"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="441"/>
         <source>Reset ReplayGain</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="701"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="735"/>
         <source>Load to Deck %1</source>
         <translation>Ladda till tallrik %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="720"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="754"/>
         <source>Sampler %1</source>
         <translation>Samplare %1</translation>
     </message>
