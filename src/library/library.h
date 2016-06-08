@@ -142,7 +142,9 @@ public:
     int m_iTrackTableRowHeight;
     //QList<LibraryPaneManager*> m_panes;
     QList<LibraryFeature*> m_features;
+    QList<WTrackTableView*> m_trackTables;
     QList<WLibrary*> m_panes;
+    QList<WSearchLineEdit*> m_searches;
     WLibrary* m_pSidebarExpanded;
     
     // -1 for the Sidebar Expanded and >= 0 for the other widgets
