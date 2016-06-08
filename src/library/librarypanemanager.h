@@ -2,6 +2,7 @@
 #define LIBRARYVIEWMANAGER_H
 
 #include <QObject>
+#include <QList>
 
 #include "library/libraryfeature.h"
 #include "widget/wbuttonbar.h"
@@ -24,39 +25,29 @@ class LibraryPaneManager : public QObject {
 
     // All features must be added before adding a pane
     void bindLibraryWidget(WLibrary* libraryWidget, KeyboardEventFilter *pKeyboard);
-    
     void bindTrackTable(WTrackTableView* pTrackTable);
-    
     void bindSearchBar(WSearchLineEdit* pSearchLine);
-
+    
     void addFeature(LibraryFeature* feature);
+    void addFeatures(const QList<LibraryFeature *> &features);
     
 signals:
     
     void focused();
     
+    void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString&);
     
-    //void addFeatures(Q)
+    void restoreSearch(const QString&);
+    void search(const QString& text);
+    void searchCleared();
+    void searchStarting();
 
   public slots:
 
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
-    //void slotLoadTrack(TrackPointer pTrack);
-    //void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
-    //void slotLoadLocationToPlayer(QString location, QString group);
-    void slotRestoreSearch(const QString& text);
-    void slotRefreshLibraryModels();
-    //void slotCreatePlaylist();
-    //void slotCreateCrate();
-    //void slotRequestAddDir(QString directory);
-    //void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
-    //void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
-    void onSkinLoadFinished();
-    void slotSetTrackTableFont(const QFont& font);
-    void slotSetTrackTableRowHeight(int rowHeight);
-  
+    void slotRestoreSearch(const QString& text);  
 
   private:
 
