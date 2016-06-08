@@ -1138,9 +1138,14 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
     commonWidgetSetup(node, pLineEditSearch, false);
     pLineEditSearch->setup(node, *m_pContext);
+    
+    int id;
+    if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
+        m_pLibrary->bindSearchBar(pLineEditSearch, id);
+    }
 
     // Connect search box signals to the library
-    connect(pLineEditSearch, SIGNAL(search(const QString&)),
+    /*connect(pLineEditSearch, SIGNAL(search(const QString&)),
             m_pLibrary, SIGNAL(search(const QString&)));
     connect(pLineEditSearch, SIGNAL(searchCleared()),
             m_pLibrary, SIGNAL(searchCleared()));
@@ -1148,7 +1153,7 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
             m_pLibrary, SIGNAL(searchStarting()));
     connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
             pLineEditSearch, SLOT(restoreSearch(const QString&)));
-
+    */
     return pLineEditSearch;
 }
 
@@ -1246,8 +1251,11 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     connect(m_pLibrary, SIGNAL(search(const QString&)),
             pLibraryWidget, SLOT(search(const QString&)));
 
-    m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard);
-
+    int id;
+    if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
+        m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard, id);
+    }
+    
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
     commonWidgetSetup(node, pLibraryWidget, false);
