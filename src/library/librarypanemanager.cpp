@@ -3,7 +3,7 @@
 #include "librarypanemanager.h"
 #include "util/assert.h"
 
-const QString Library::m_sTrackViewName = QString("WTrackTableView");
+const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
 
 LibraryPaneManager::LibraryPaneManager(QObject* parent)
         : QObject(parent) {
