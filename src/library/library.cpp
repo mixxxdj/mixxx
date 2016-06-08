@@ -145,10 +145,11 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
+    
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
-    connect(this, SIGNAL(switchToView(const QString&)),
-            pLibraryWidget, SLOT(switchToView(const QString&)));
+    //connect(this, SIGNAL(switchToView(const QString&)),
+    //        pLibraryWidget, SLOT(switchToView(const QString&)));
 
     connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
@@ -228,7 +229,14 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 
 void Library::slotSwitchToView(const QString& view) {
     //qDebug() << "Library::slotSwitchToView" << view;
-    emit(switchToView(view));
+    
+    if (m_focusedWidget == -1) {
+        m_pSidebarExpanded->switchToView(view);
+    }
+    else {
+        m_panes[m_focusedWidget]->switchToView(view);
+    }
+    //emit(switchToView(view));
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
@@ -248,6 +256,9 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
 }
 
 void Library::slotRestoreSearch(const QString& text) {
+    if (m_focusedWidget == -1) {
+        
+    }
     emit(restoreSearch(text));
 }
 

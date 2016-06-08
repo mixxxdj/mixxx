@@ -147,11 +147,16 @@ public:
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     //QList<LibraryPaneManager*> m_panes;
+    
+    // Panes widgets
     QList<LibraryFeature*> m_features;
     QList<WTrackTableView*> m_trackTables;
     QList<WLibrary*> m_panes;
     QList<WSearchLineEdit*> m_searches;
+    
+    // Sidebar Expanded widgets
     WLibrary* m_pSidebarExpanded;
+    WSearchLineEdit* m_pSidebarExpanded;
     
     // -1 for the Sidebar Expanded and >= 0 for the other widgets
     int m_focusedWidget;
