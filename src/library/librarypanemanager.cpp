@@ -3,6 +3,8 @@
 #include "librarypanemanager.h"
 #include "util/assert.h"
 
+const QString Library::m_sTrackViewName = QString("WTrackTableView");
+
 LibraryPaneManager::LibraryPaneManager(QObject* parent)
         : QObject(parent) {
 
@@ -15,13 +17,29 @@ LibraryPaneManager::~LibraryPaneManager() {
     m_features.clear();
 }
 
-void LibraryPaneManager::bindLibraryWidget(WLibrary* rightWidget,
+void LibraryPaneManager::bindLibraryWidget(WLibrary* libraryWidget,
                                            KeyboardEventFilter* pKeyboard) {
-    m_pLibraryWidget = rightWidget;
+    m_pLibraryWidget = libraryWidget;
+    m_pLibraryWidget->installEventFilter(this);
+    
+    connect(this, SIGNAL(switchToView(const QString&)),
+            m_pLibraryWidget, SLOT(switchToView(const QString&));
 
     for (LibraryFeature* f : m_features) {
         f->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
+        
+        
     }
+}
+
+void LibraryPaneManager::bindTrackTable(WTrackTableView *pTrackTable) {
+    m_pTrackTable = pTrackTable;
+    m_pTrackTable->installEventFilter(this);
+}
+
+void LibraryPaneManager::bindSearchBar(WSearchLineEdit *pSearchLine) {
+    m_pSearchLine = pSearchLine;
+    m_pSearchLine->installEventFilter(this);
 }
 /*
 void LibraryPaneManager::addFeature(LibraryFeature* feature) {
@@ -182,11 +200,9 @@ void LibraryPaneManager::slotSetTrackTableRowHeight(int rowHeight) {
 }
 */
 
-bool LibraryPaneManager::eventFilter(QObject* object, QEvent* event) {
-    //QObject::eventFilter(object, event);
+bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
 
     if (event->type() == QEvent::FocusIn) {
-        qDebug() << object;
     }
     return true;
 }
