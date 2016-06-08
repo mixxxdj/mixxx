@@ -131,7 +131,8 @@ void Library::bindSidebar(WButtonBar* sidebar) {
             this, SIGNAL(switchToView(const QString&)));
     
     for (LibraryFeature* f : m_features) {
-        sidebar->addButton(f->getIcon(), f->title(), f->getDefaultNameView());
+        QAbstractButton* button = sidebar->addButton(f->getIcon(), f->title());
+        connect(button, SIGNAL(clicked()), f, SLOT(activate()));
     }
 }
 

@@ -15,21 +15,11 @@ class WButtonBar : public WWidget
   public:
     WButtonBar(QWidget* parent = nullptr);
 
-    void addButton(const QIcon& icon, const QVariant& title, const QString& data);
-
-  signals:
-
-    void buttonClicked(const QString&);
-
-  private slots:
-
-    void slotButtonClicked(int id);
+    QAbstractButton* addButton(const QIcon& icon, const QVariant& title);
 
   private:
 
     QLayout* m_pLayout;
-    QButtonGroup* m_pButtonGroup;
-    QList<QString> m_data;
 };
 
 #endif // WBUTTONBAR_H
