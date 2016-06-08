@@ -91,6 +91,9 @@ Library::~Library() {
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
     
+    qDeleteAll(m_panes);
+    m_panes.clear();
+    
     qDeleteAll(m_features);
     m_features.clear();
 
@@ -122,6 +125,14 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     pSidebarWidget->slotSetFont(m_trackTableFont);
     connect(this, SIGNAL(setTrackTableFont(QFont)),
             pSidebarWidget, SLOT(slotSetFont(QFont)));
+}
+
+void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
+    if (!m_panes.contains(id)) {
+        createPane(id);
+    }
+    
+    m_panes[id]->bindSearchBar(searchLine);
 }
 
 void Library::bindSidebar(WButtonBar* sidebar) {
@@ -380,8 +391,16 @@ void Library::libraryWidgetFocused() {
     }
 }
 
-void Library::slotSearch(const QString& text) {
+void Library::createPane(int id) {
+    if (m_panes.contains(id)) {
+        return;
+    }
+    LibraryPaneManager* pane = new LibraryPaneManager;
+    pane->addFeatures(m_features);
+    m_panes.insert(id, pane);
     
+    connect(pane, SIGNAL(focused()),
+            this, SLOT(slotPaneFocused()));
 }
 
 void Library::slotSearchCleared() {

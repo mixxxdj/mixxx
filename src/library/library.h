@@ -49,12 +49,11 @@ public:
     virtual ~Library();
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                           KeyboardEventFilter* pKeyboard);
-    void bindSidebarExpanded(WLibrary* leftPane,
+                           KeyboardEventFilter* pKeyboard, int id);
+    void bindSearchBar(WSearchLineEdit* searchLine, int id);
+    void bindSidebarExpanded(WLibrary* leftPane, 
                              KeyboardEventFilter* pKeyboard);
-    
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
-    
     void bindSidebar(WButtonBar* sidebar);
 
     void addFeature(LibraryFeature* feature);
@@ -132,6 +131,11 @@ public:
     void scanFinished();
 
   private:
+    
+    void createPane(int id);
+    
+    LibraryPaneManager* getFocusedPane();
+    
     UserSettingsPointer m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
