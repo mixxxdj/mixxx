@@ -146,12 +146,13 @@ void Library::bindSidebar(WButtonBar* sidebar) {
 }
 
 void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
-                         KeyboardEventFilter* pKeyboard) {
+                         KeyboardEventFilter* pKeyboard, int id) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pTrackTableView->installEventFilter(pKeyboard);
-    connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
+    /*connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
+            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));*/
+    
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -170,19 +171,28 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
 
-    connect(this, SIGNAL(searchStarting()),
+    /*connect(this, SIGNAL(searchStarting()),
             pTrackTableView, SLOT(onSearchStarting()));
     connect(this, SIGNAL(searchCleared()),
             pTrackTableView, SLOT(onSearchCleared()));
+    */
     
-    m_panes.append(pLibraryWidget);    
+    if (! m_panes.contains(id)) {
+        createPane(id);
+    }
+    
+    m_panes[id]->bindLibraryWidget(pLibraryWidget, pKeyboard);
+    m_panes[id]->bindTrackTable(pTrackTableView);
+    
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
-
-    QListIterator<LibraryFeature*> feature_it(m_features);
+    
+    
+    
+    /*QListIterator<LibraryFeature*> feature_it(m_features);
     while(feature_it.hasNext()) {
         LibraryFeature* feature = feature_it.next();
         feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
-    }
+    }*/
     
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
