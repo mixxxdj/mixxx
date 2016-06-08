@@ -33,7 +33,7 @@ flags = build.flags
 # Build Mixxx as a static library so we can link it into the main executable and
 # the test executable.
 mixxx_sources = [filename for filename in sources if filename != 'main.cpp']
-mixxx_lib = env.StaticLibrary('mixxx', mixxx_sources)
+mixxx_lib = env.StaticLibrary('mixxxlib', mixxx_sources)
 
 # Build the Mixxx executable.
 bin_env = env.Clone()
