@@ -93,9 +93,7 @@ Library::~Library() {
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
     
-    for (LibraryFeature* f : m_features) {
-        delete f;
-    }
+    qDeleteAll(m_features);
     m_features.clear();
 
     delete m_pLibraryControl;
@@ -347,7 +345,7 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
 }
 
 void Library::libraryWidgetFocused() {
-    WLibrary* pane = dynamic_cast<WLibrary*>(sender());
+    WLibrary* pane = qobject_cast<WLibrary*>(sender());
     DEBUG_ASSERT_AND_HANDLE(pane) {
         return;
     }
