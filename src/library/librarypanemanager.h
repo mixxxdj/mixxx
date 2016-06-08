@@ -58,10 +58,6 @@ signals:
     WSearchLineEdit* m_pSearchLine;
     
     QList<LibraryFeature*> m_features;
-    
-    
-    QFont m_trackTableFont;
-    int m_iTrackTableRowHeight;
 
   private slots:
 
