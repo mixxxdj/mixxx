@@ -29,8 +29,6 @@
 #include "util/sandbox.h"
 #include "util/assert.h"
 
-#include "widget/wtracktableview.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -213,9 +211,19 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
     DEBUG_ASSERT_AND_HANDLE(trackModel) {
         return;
     }
-    emit(showTrackModel(model));
-    emit(switchToView(m_sTrackViewName));
-    emit(restoreSearch(trackModel->currentSearch()));
+    
+    if (m_focusedWidget < 0) {
+        // The sidebar expanded has not a track model
+        return;
+    }
+    
+    m_trackTables[m_focusedWidget]->loadTrackModel(model);
+    m_panes[m_focusedWidget]->switchToView(m_sTrackViewName);
+    m_searches[m_focusedWidget]->restoreSearch(trackModel->currentSearch());
+    
+    //emit(showTrackModel(model));
+    //emit(switchToView(m_sTrackViewName));
+    //emit(restoreSearch(trackModel->currentSearch()));
 }
 
 void Library::slotSwitchToView(const QString& view) {
@@ -359,6 +367,18 @@ void Library::libraryWidgetFocused() {
             break;
         }
     }
+}
+
+void Library::slotSearch(const QString& text) {
+    
+}
+
+void Library::slotSearchCleared() {
+
+}
+
+void Library::slotSearchStarting() {
+
 }
 
 void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface* pPlayerManager) {

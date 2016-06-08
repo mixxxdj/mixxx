@@ -21,6 +21,9 @@
 #include "library/scanner/libraryscanner.h"
 #include "library/librarypanemanager.h"
 
+#include "widget/wtracktableview.h"
+#include "widget/wlibrary.h"
+
 class TrackModel;
 class TrackCollection;
 class SidebarModel;
@@ -100,6 +103,9 @@ public:
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
     void libraryWidgetFocused();
+    void slotSearch(const QString& text);
+    void slotSearchCleared();
+    void slotSearchStarting();
 
     void scan() {
         m_scanner.scan();
