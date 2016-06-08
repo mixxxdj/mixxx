@@ -229,19 +229,16 @@ void Library::addFeature(LibraryFeature* feature) {
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "Library::slotShowTrackModel" << model;
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
+    /*TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
     DEBUG_ASSERT_AND_HANDLE(trackModel) {
         return;
-    }
+    }*/
     
-    if (m_focusedWidget < 0) {
-        // The sidebar expanded has not a track model
+    LibraryPaneManager* pane = getFocusedPane();
+    DEBUG_ASSERT_AND_HANDLE(pane) {
         return;
     }
-    
-    m_trackTables[m_focusedWidget]->loadTrackModel(model);
-    m_panes[m_focusedWidget]->switchToView(m_sTrackViewName);
-    m_searches[m_focusedWidget]->restoreSearch(trackModel->currentSearch());
+    pane->slotShowTrackModel(model);
     
     //emit(showTrackModel(model));
     //emit(switchToView(m_sTrackViewName));
@@ -251,12 +248,11 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 void Library::slotSwitchToView(const QString& view) {
     //qDebug() << "Library::slotSwitchToView" << view;
     
-    if (m_focusedWidget == -1) {
-        m_pSidebarExpanded->switchToView(view);
+    LibraryPaneManager* pane = getFocusedPane();
+    DEBUG_ASSERT_AND_HANDLE(pane) {
+        return;
     }
-    else {
-        m_panes[m_focusedWidget]->switchToView(view);
-    }
+    pane->slotSwitchToView(view);
     //emit(switchToView(view));
 }
 
@@ -277,10 +273,12 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
 }
 
 void Library::slotRestoreSearch(const QString& text) {
-    if (m_focusedWidget == -1) {
-        
+    LibraryPaneManager* pane = getFocusedPane();
+    DEBUG_ASSERT_AND_HANDLE(pane) {
+        return;
     }
-    emit(restoreSearch(text));
+    pane->slotRestoreSearch(text);
+    //emit(restoreSearch(text));
 }
 
 void Library::slotRefreshLibraryModels() {
@@ -385,20 +383,14 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::libraryWidgetFocused() {
-    WLibrary* pane = qobject_cast<WLibrary*>(sender());
+void Library::slotPaneFocused() {
+    LibraryPaneManager* pane = qobject_cast<LibraryPaneManager*>(sender());
     DEBUG_ASSERT_AND_HANDLE(pane) {
         return;
     }
     
     if (pane == m_pSidebarExpanded) m_focusedWidget = -1;
-    
-    for (int i = 0; i < m_panes.size(); ++i) {
-        if (m_panes[i] == pane) {
-            m_focusedWidget = i;
-            break;
-        }
-    }
+    m_focusedWidget = m_panes.key(pane, -1);
 }
 
 void Library::createPane(int id) {
@@ -413,12 +405,14 @@ void Library::createPane(int id) {
             this, SLOT(slotPaneFocused()));
 }
 
-void Library::slotSearchCleared() {
-
-}
-
-void Library::slotSearchStarting() {
-
+LibraryPaneManager *Library::getFocusedPane() {
+    if (m_focusedWidget == -1) {
+        return m_pSidebarExpanded;
+    }
+    else if (m_panes.contains(m_focusedWidget)) {
+        return m_panes[m_focusedWidget];
+    }
+    return nullptr;
 }
 
 void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface* pPlayerManager) {

@@ -101,10 +101,7 @@ public:
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
-    void libraryWidgetFocused();
-    void slotSearch(const QString& text);
-    void slotSearchCleared();
-    void slotSearchStarting();
+    void slotPaneFocused();
 
     void scan() {
         m_scanner.scan();
@@ -150,17 +147,16 @@ public:
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
-    //QList<LibraryPaneManager*> m_panes;
     
-    // Panes widgets
+    QHash<int, LibraryPaneManager*> m_panes;
+    LibraryPaneManager* m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
-    QList<WTrackTableView*> m_trackTables;
-    QList<WLibrary*> m_panes;
-    QList<WSearchLineEdit*> m_searches;
     
-    // Sidebar Expanded widgets
-    WLibrary* m_pSidebarExpanded;
-    WSearchLineEdit* m_pSidebarExpanded;
+    /*// Panes widgets
+    QList<WTrackTableView*> m_trackTables;
+    //QList<WLibrary*> m_panes;
+    QList<WSearchLineEdit*> m_searches;*/
+    
     
     // -1 for the Sidebar Expanded and >= 0 for the other widgets
     int m_focusedWidget;
