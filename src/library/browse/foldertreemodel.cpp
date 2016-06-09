@@ -38,6 +38,10 @@ bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
      * However, for, buid-in items such as 'Quick Links' there exist
      * child items at init time
      */
+    if (item == nullptr) {
+        return false;
+    }
+    
     if(item->dataPath().toString() == QUICK_LINK_NODE)
         return true;
     //Can only happen on Windows
