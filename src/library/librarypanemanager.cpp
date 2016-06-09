@@ -11,10 +11,6 @@ LibraryPaneManager::LibraryPaneManager(QObject* parent)
 }
 
 LibraryPaneManager::~LibraryPaneManager() {
-    for (LibraryFeature* f : m_features) {
-        delete f;
-    }
-    m_features.clear();
 }
 
 void LibraryPaneManager::bindLibraryWidget(WLibrary* libraryWidget,
