@@ -12,7 +12,6 @@
 #include <QSet>
 
 #include "library/libraryfeature.h"
-#include "library/libraryviewfeature.h"
 #include "library/cratetablemodel.h"
 #include "library/library.h"
 
@@ -31,7 +30,6 @@ class CrateFeature : public LibraryFeature {
     virtual ~CrateFeature();
 
     QVariant title();
-    inline QVariant getTitle() { return title(); }
     QIcon getIcon();
     
     inline QString getDefaultNameView() { return "CRATE_FEATURE"; }
