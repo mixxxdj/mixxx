@@ -33,7 +33,7 @@
           </LibrarySidebarExpanded>
 
           <!-- For Track table 1 -->
-          <WidgetStack>
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <Children>
               <SearchBox>
@@ -46,10 +46,10 @@
                 <Id>1</Id>
               </Library>
             </Children>
-          </WidgetStack>
+          </WidgetGroup>
        
           <!-- For Track table 2 -->
-          <WidgetStack>
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <Children>
               <SearchBox>
@@ -62,7 +62,7 @@
                 <Id>2</Id>
               </Library>
             </Children>
-          </WidgetStack>
+          </WidgetGroup>
         </Children>
     </Splitter>
   </Children>
