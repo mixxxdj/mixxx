@@ -29,7 +29,6 @@ class LibraryPaneManager : public QObject {
     // All features must be added before adding a pane
     void bindPaneWidget(WLibrary* libraryWidget, 
                         KeyboardEventFilter *pKeyboard, FeaturePane pane);
-    void bindTrackTable(WTrackTableView* pTrackTable);
     void bindSearchBar(WSearchLineEdit* pSearchLine);
     
     void addFeature(LibraryFeature* feature);
@@ -58,7 +57,6 @@ signals:
     const static QString m_sTrackViewName;
     
     WLibrary* m_pLibraryWidget;
-    WTrackTableView* m_pTrackTable;
     
     QList<LibraryFeature*> m_features;
 

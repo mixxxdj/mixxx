@@ -7,8 +7,7 @@ const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
 
 LibraryPaneManager::LibraryPaneManager(QObject* parent)
         : QObject(parent),
-          m_pLibraryWidget(nullptr),
-          m_pTrackTable(nullptr) {
+          m_pLibraryWidget(nullptr){
     qApp->installEventFilter(this);
 }
 
@@ -41,17 +40,6 @@ void LibraryPaneManager::bindPaneWidget(WLibrary* libraryWidget,
     }
 }
 
-void LibraryPaneManager::bindTrackTable(WTrackTableView *pTrackTable) {
-    m_pTrackTable = pTrackTable;    
-    
-    connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            m_pTrackTable, SLOT(loadTrackModel(QAbstractItemModel*)));
-    connect(this, SIGNAL(searchStarting()),
-            m_pTrackTable, SLOT(onSearchStarting()));
-    connect(this, SIGNAL(searchCleared()),
-            m_pTrackTable, SLOT(onSearchCleared()));
-}
-
 void LibraryPaneManager::bindSearchBar(WSearchLineEdit *pSearchLine) {
     pSearchLine->installEventFilter(this);
     
@@ -74,9 +62,7 @@ void LibraryPaneManager::addFeature(LibraryFeature* feature) {
 }
 
 void LibraryPaneManager::addFeatures(const QList<LibraryFeature *> &features) {
-    for (LibraryFeature* f : features) {
-        addFeature(f);
-    }
+    m_features.append(features);
 }
 
 void LibraryPaneManager::slotShowTrackModel(QAbstractItemModel* model) {

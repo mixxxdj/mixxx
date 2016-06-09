@@ -162,17 +162,6 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-
-    /*connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));*/
-    
-    /*connect(this, SIGNAL(searchStarting()),
-            pTrackTableView, SLOT(onSearchStarting()));
-    connect(this, SIGNAL(searchCleared()),
-            pTrackTableView, SLOT(onSearchCleared()));
-    */
-    //connect(this, SIGNAL(switchToView(const QString&)),
-    //        pLibraryWidget, SLOT(switchToView(const QString&)));
     
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
     
@@ -182,7 +171,14 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
     
     m_panes[id]->bindPaneWidget(pLibraryWidget, pKeyboard, 
                                    LibraryPaneManager::FeaturePane::TrackTable);
-    m_panes[id]->bindTrackTable(pTrackTableView);
+    
+    connect(m_panes[id], SIGNAL(showTrackModel(QAbstractItemModel*)),
+            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
+    connect(m_panes[id], SIGNAL(searchStarting()),
+            pTrackTableView, SLOT(onSearchStarting()));
+    connect(m_panes[id], SIGNAL(searchCleared()),
+            pTrackTableView, SLOT(onSearchCleared()));
+    
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
     
     
