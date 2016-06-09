@@ -5,7 +5,7 @@
 #include <QVariant>
 #include <QIcon>
 #include <QPushButton>
-#include <QButtonGroup>
+#include <QToolButton>
 
 #include "widget/wwidget.h"
 
