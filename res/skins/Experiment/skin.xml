@@ -26,6 +26,7 @@
 
         <Children>
           <LibrarySidebar>
+            <MaximumSize>100, -1</MaximumSize>
           </LibrarySidebar>
           <LibrarySidebarExpanded>
             <MinimumSize>100,100</MinimumSize>
