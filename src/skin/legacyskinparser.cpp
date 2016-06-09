@@ -1151,16 +1151,6 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     pSearchLineEdit->setup(node, *m_pContext);
     commonWidgetSetup(node, pSearchLineEdit, false);
 
-    // Connect search box signals to the library
-    /*connect(pLineEditSearch, SIGNAL(search(const QString&)),
-            m_pLibrary, SIGNAL(search(const QString&)));
-    connect(pLineEditSearch, SIGNAL(searchCleared()),
-            m_pLibrary, SIGNAL(searchCleared()));
-    connect(pLineEditSearch, SIGNAL(searchStarting()),
-            m_pLibrary, SIGNAL(searchStarting()));
-    connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
-            pLineEditSearch, SLOT(restoreSearch(const QString&)));
-    */
     return pSearchLineEdit;
 }
 
@@ -1270,8 +1260,7 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
-    //commonWidgetSetup(node, pLibraryWidget, false);
-    qDebug() << pLibraryWidget;
+    commonWidgetSetup(node, pLibraryWidget, false);
     return pLibraryWidget;
 }
 
