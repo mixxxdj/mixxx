@@ -1,0 +1,16 @@
+<!DOCTYPE template>
+<Template>
+  <PushButton>
+    <NumberStates>1</NumberStates>
+    <MinimumSize>40,20</MinimumSize>
+    <MaximumSize>100,20</MaximumSize>
+    <SizePolicy>me,me</SizePolicy>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="text"/></Text>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="connection_control"/></ConfigKey>
+    </Connection>
+  </PushButton>
+</Template>

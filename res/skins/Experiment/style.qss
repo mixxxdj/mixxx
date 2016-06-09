@@ -1,0 +1,199 @@
+/* library table */
+QTableView {
+  color: #d2d2d2;
+  background-color: #1F1F1F;
+  alternate-background-color: #1A1A1A;
+  selection-background-color: #006596;
+  selection-color: #D6D6D6;
+  border: 1px solid #1A1A1A;
+  gridline-color: red;
+}
+
+/* checkbox in library "Played" column */
+QTableView::indicator {
+  width: 12px;
+  height: 12px;
+}
+
+QSplitter:handle {
+  background-color:  #622121
+}
+
+/* checkbox in library "Played" column */
+QTableView::indicator {
+  width: 12px;
+  height: 12px;
+}
+
+QTableView::indicator:checked {
+  background: url(skin:/image/style_checkbox_checked.png);
+}
+
+QTableView::indicator:unchecked {
+  background: url(skin:/image/style_checkbox_unchecked.png);
+}
+
+
+/* library header row */
+QHeaderView {
+  color: #d2d2d2;
+  background: #1A1A1A;
+  border-bottom: 1px solid #141414;
+}
+
+QHeaderView::section {
+  height: 18px;
+  font-size: 13px/15px;
+  font-weight: normal;
+  padding: 2px;
+  background: #1A1A1A;
+  border-top: none;
+  border-bottom: 1px solid #141414;
+  border-left: 1px solid #141414;
+  border-right: none;
+}
+
+QHeaderView::section:selected {
+  font-size: 13px/15px;
+  font-weight: bold;
+  padding: 2px;
+  background: #1A1A1A;
+  border-top: none;
+  border-bottom: 1px solid #141414;
+  border-left: 1px solid #141414;
+  border-right: none;
+}
+
+/* Spacing between treeview and preview deck/search bar */
+QTreeView {
+  margin: 4px 0px 0px 0px;
+}
+
+/* sidebar, as well as root items for playlists, crates, and history */
+QTextBrowser, QTreeView {
+  color: #d2d2d2;
+  background-color: #1F1F1F;
+  selection-background-color: #006596;
+  selection-color: #D6D6D6;
+  border: 1px solid #1A1A1A;
+  gridline-color: red;
+  /* Suppresses that selected sidebar item's branch indicator shows wrong color
+     when out of focus, see lp:880588 */
+  show-decoration-selected: 1;
+}
+/* triangle for closed/opened branches in treeview */
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+  border-image: none; image: url(skin:/image/style_branch_closed.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+  border-image: none; image: url(skin:/image/style_branch_open.png);
+}
+
+
+/*******************************************************************************
+ ** Buttons  *******************************************************************
+ *******************************************************************************/
+
+WPushButton {
+    color: #D2D2D2;
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #4B4B4B,
+                                      stop: 1 #4B4B4B);
+    border: 1px solid #4B4B4B;
+    border-radius: 2px;
+    outline: none;
+}
+
+WPushButton:hover {
+    color: #D2D2D2;
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #5F5F5F,
+                                      stop: 1 #5F5F5F);
+    border: 0px solid #5F5F5F;
+}
+
+/*"Pressed" state*/
+WPushButton[value="1"] {
+    /*color: #FDFDFD;*/
+    color: #FDFDFD;
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #006596,
+                                      stop: 1 #006596);
+    border: 0px solid #006596;
+}
+
+WPushButton[value="1"]:hover {
+    color: #FDFDFD;
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #0080bE,
+                                      stop: 1 #0080BE);
+    border: 0px solid #0080BE;
+}
+
+/*"Enabled" state, e.g. for recording status
+  0 -- disconnected / off
+  1 -- connecting / enabling
+  2 -- connected / enabled
+*/
+WPushButton[value="2"] {
+    color: #FDFDFD;
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #006596,
+                                      stop: 1 #006596);
+    border: 0px solid #006596;
+}
+
+WPushButton[value="2"]:hover {
+    color: #FDFDFD;
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #0080BE,
+                                      stop: 1 #0080BE);
+    border: 0px solid #0080BE;
+}
+
+WLabel {
+  color: #D2D2D2;
+}
+
+
+/* transition time in Auto DJ tab */
+WLibrary QSpinBox {
+  min-height: 20px;
+  max-height: 20px;
+  min-width: 40px;
+  max-width: 40px;
+}
+
+WLibrary QSpinBox:editable {
+  background: transparent;
+  color:#d2d2d2;
+}
+
+/* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
+WLibrary QLabel, WLibrary QRadioButton {
+  /* same as QTreeview */
+  color: #d2d2d2;
+  margin: 9px 10px 6px 0px;
+}
+
+WLibrary QRadioButton::indicator {
+  margin: 0px 5px 0px 2px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Additional space for the first QRadionButton in the row */
+WLibrary QRadioButton#radioButtonRecentlyAdded {
+  margin: 9px 10px 6px 14px;
+}
+
+WLibrary QRadioButton::indicator:checked {
+  background: url(skin:/icon/ic_radio_button_on_18px.svg);
+}
+
+WLibrary QRadioButton::indicator:unchecked {
+  background: url(skin:/icon/ic_radio_button_off_18px.svg);
+}
