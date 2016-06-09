@@ -191,8 +191,9 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
 void Library::bindSidebarExpanded(WLibrary* expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
     m_pSidebarExpanded = new LibraryPaneManager;
+    m_pSidebarExpanded->addFeatures(m_features);    
     m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard,
-                                          LibraryPaneManager::FeaturePane::SidebarExpanded);
+                                       LibraryPaneManager::FeaturePane::SidebarExpanded);
     m_focusedPane = -1;
 }
 
@@ -279,7 +280,7 @@ void Library::slotCreateCrate() {
 
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.
-    m_pSidebarModel->activateDefaultSelection();
+    //m_pSidebarModel->activateDefaultSelection();
     if (m_panes.size() > 0) {
         m_focusedPane = m_panes.begin().key();
     }
