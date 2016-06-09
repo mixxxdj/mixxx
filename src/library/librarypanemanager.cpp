@@ -120,10 +120,15 @@ void LibraryPaneManager::slotRestoreSearch(const QString& text) {
     emit(restoreSearch(text));
 }
 
-bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
-
-    if (event->type() == QEvent::FocusIn) {
-        emit(focused());
+bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {    
+    if (m_pLibraryWidget == nullptr) return false;
+    
+    if (event->type() == QEvent::MouseButtonPress && 
+            m_pLibraryWidget->underMouse()) {
+            emit(focused());
     }
+    
+    // Since this event filter is for the entire application (to handle the
+    // mouse event), NEVER return true
     return false;
 }
