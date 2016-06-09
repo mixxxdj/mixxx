@@ -48,7 +48,7 @@ public:
             RecordingManager* pRecordingManager);
     virtual ~Library();
 
-    void bindLibraryWidget(WLibrary* libraryWidget,
+    void bindPaneWidget(WLibrary* libraryWidget,
                            KeyboardEventFilter* pKeyboard, int id);
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
     void bindSidebarExpanded(WLibrary* expandedPane, 

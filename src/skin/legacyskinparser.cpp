@@ -1257,7 +1257,7 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
             SKIN_WARNING(node, *m_pContext) << "Id must be >= 0";
             id = 0;
         }
-        m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard, id);
+        m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, id);
     }
     else {
         SKIN_WARNING(node, *m_pContext) << "No Id found";

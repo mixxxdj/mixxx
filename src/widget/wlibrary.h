@@ -30,10 +30,6 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
 
     LibraryView* getActiveView() const;
     
-  signals:
-    
-    void focused();
-
   public slots:
     // Show the view registered with the given name. Does nothing if the current
     // view is the specified view, or if the name does not specify any
@@ -43,6 +39,7 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     void search(const QString&);
 
   protected:
+    
     bool event(QEvent* pEvent) override;
 
   private:

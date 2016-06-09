@@ -144,7 +144,7 @@ void Library::bindPaneWidget(WButtonBar* sidebar) {
     }
 }
 
-void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
+void Library::bindPaneWidget(WLibrary* pLibraryWidget,
                          KeyboardEventFilter* pKeyboard, int id) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
@@ -180,7 +180,7 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
         createPane(id);
     }
     
-    m_panes[id]->bindLibraryWidget(pLibraryWidget, pKeyboard, 
+    m_panes[id]->bindPaneWidget(pLibraryWidget, pKeyboard, 
                                    LibraryPaneManager::FeaturePane::TrackTable);
     m_panes[id]->bindTrackTable(pTrackTableView);
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
@@ -195,7 +195,7 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
 void Library::bindSidebarExpanded(WLibrary* expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
     m_pSidebarExpanded = new LibraryPaneManager;
-    m_pSidebarExpanded->bindLibraryWidget(expandedPane, pKeyboard,
+    m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard,
                                           LibraryPaneManager::FeaturePane::SidebarExpanded);
     m_focusedPane = -1;
 }
@@ -384,6 +384,8 @@ void Library::slotPaneFocused() {
     
     if (pane == m_pSidebarExpanded) m_focusedPane = -1;
     m_focusedPane = m_panes.key(pane, -1);
+    
+    qDebug() << "Library::slotPaneFocused" << m_focusedPane;
 }
 
 
