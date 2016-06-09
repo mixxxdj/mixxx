@@ -101,6 +101,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseSearchBox(const QDomElement& node);
     QWidget* parseLibrary(const QDomElement& node);
     QWidget* parseLibrarySidebar(const QDomElement& node);
+    QWidget* parseLibrarySidebarExpanded(const QDomElement& node);
     QWidget* parseBattery(const QDomElement& node);
     QWidget* parseCoverArt(const QDomElement& node);
 

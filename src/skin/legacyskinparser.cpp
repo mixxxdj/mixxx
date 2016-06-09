@@ -65,6 +65,7 @@
 #include "widget/wsearchlineedit.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wbuttonbar.h"
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidgetstack.h"
@@ -553,6 +554,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseSplitter(node));
     } else if (nodeName == "LibrarySidebar") {
         result = wrapWidget(parseLibrarySidebar(node));
+    } else if (nodeName == "LibrarySidebarExpanded") {
+        result = wrapWidget(parseLibrarySidebarExpanded(node));
     } else if (nodeName == "Library") {
         result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
@@ -1264,12 +1267,28 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
-    WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(m_pParent);
+    
+    
+    WButtonBar* pLibrarySidebar = new WButtonBar(m_pParent);
+    pLibrarySidebar->installEventFilter(m_pKeyboard);
+    m_pLibrary->bindSidebarWidget(pLibrarySidebar);
+    commonWidgetSetup(node, pLibrarySidebar, false);
+    return pLibrarySidebar;
+    
+    /*WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(m_pParent);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
     pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     m_pLibrary->bindSidebarWidget(pLibrarySidebar);
     commonWidgetSetup(node, pLibrarySidebar, false);
-    return pLibrarySidebar;    
+    return pLibrarySidebar;    */
+}
+
+QWidget *LegacySkinParser::parseLibrarySidebarExpanded(const QDomElement &node) {
+    WLibrary* pLibrarySidebarExpanded = new WLibrary(m_pParent);
+    pLibrarySidebarExpanded->installEventFilter(m_pKeyboard);
+    m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded, m_pKeyboard);
+    commonWidgetSetup(node, pLibrarySidebarExpanded, false);    
+    return pLibrarySidebarExpanded;
 }
 
 QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
