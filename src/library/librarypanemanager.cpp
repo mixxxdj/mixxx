@@ -14,15 +14,25 @@ LibraryPaneManager::~LibraryPaneManager() {
 }
 
 void LibraryPaneManager::bindLibraryWidget(WLibrary* libraryWidget,
-                                           KeyboardEventFilter* pKeyboard) {
+                                           KeyboardEventFilter* pKeyboard, 
+                                           FeaturePane pane) {
     m_pLibraryWidget = libraryWidget;
     m_pLibraryWidget->installEventFilter(this);
-    
-    connect(this, SIGNAL(switchToView(const QString&)),
-            m_pLibraryWidget, SLOT(switchToView(const QString&)));
 
-    for (LibraryFeature* f : m_features) {
-        f->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
+    connect(this, SIGNAL(switchToView(const QString &)),
+            m_pLibraryWidget, SLOT(switchToView(const QString &)));
+
+    switch (pane) {
+        case FeaturePane::SidebarExpanded:
+            for (LibraryFeature* f : m_features) {
+                f->bindSidebarWidget(m_pLibraryWidget, pKeyboard);
+            }
+            break;
+        case FeaturePane::TrackTable:
+            for (LibraryFeature* f : m_features) {
+                f->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
+            }
+            break;
     }
 }
 
@@ -64,7 +74,7 @@ void LibraryPaneManager::addFeature(LibraryFeature* feature) {
     /*connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
             this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
     connect(feature, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotSwitchToView(const QString&)));
+            this, SLOT(slotSwitchToView(const QString&)));*/
     /*connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -95,7 +105,7 @@ void LibraryPaneManager::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void LibraryPaneManager::slotSwitchToView(const QString& view) {
-    //qDebug() << "LibraryPaneManager::slotSwitchToView" << view;
+    qDebug() << "LibraryPaneManager::slotSwitchToView" << view;
     emit(switchToView(view));
 }
 
@@ -108,5 +118,5 @@ bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
     if (event->type() == QEvent::FocusIn) {
         emit(focused());
     }
-    return true;
+    return false;
 }

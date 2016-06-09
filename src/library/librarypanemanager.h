@@ -14,8 +14,11 @@ class LibraryPaneManager : public QObject {
     Q_OBJECT
 
   public:
-
-    const int RIGHT_PANE_COUNT = 2;
+    
+    enum class FeaturePane {
+        SidebarExpanded,
+        TrackTable
+    };
 
     LibraryPaneManager(QObject* parent = nullptr);
     
@@ -24,7 +27,8 @@ class LibraryPaneManager : public QObject {
     bool initialize();
 
     // All features must be added before adding a pane
-    void bindLibraryWidget(WLibrary* libraryWidget, KeyboardEventFilter *pKeyboard);
+    void bindLibraryWidget(WLibrary* libraryWidget, 
+                           KeyboardEventFilter *pKeyboard, FeaturePane pane);
     void bindTrackTable(WTrackTableView* pTrackTable);
     void bindSearchBar(WSearchLineEdit* pSearchLine);
     
