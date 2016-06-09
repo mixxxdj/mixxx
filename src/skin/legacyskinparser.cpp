@@ -1144,6 +1144,10 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
         //qDebug() << "SearchBox ID:" << id;
         
+        if (id < 0) {
+            SKIN_WARNING(node, *m_pContext) << "Id must be >= 0";
+            id = 0;
+        }
         m_pLibrary->bindSearchBar(pSearchLineEdit, id);
     }
     else {
@@ -1249,6 +1253,10 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
         //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
         
+        if (id < 0) {
+            SKIN_WARNING(node, *m_pContext) << "Id must be >= 0";
+            id = 0;
+        }
         m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard, id);
     }
     else {
