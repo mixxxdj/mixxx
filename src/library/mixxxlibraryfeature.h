@@ -39,7 +39,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
-    void bindLibraryWidget(WLibrary* pLibrary,
+    void bindPaneWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard);
 
   public slots:

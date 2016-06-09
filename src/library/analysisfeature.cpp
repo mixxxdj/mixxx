@@ -58,7 +58,7 @@ QIcon AnalysisFeature::getIcon() {
     return QIcon(":/images/library/ic_library_prepare.png");
 }
 
-void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
+void AnalysisFeature::bindPaneWidget(WLibrary* libraryWidget,
                                  KeyboardEventFilter* keyboard) {
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
                                       m_pConfig,

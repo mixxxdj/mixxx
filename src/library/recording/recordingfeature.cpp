@@ -38,7 +38,7 @@ QIcon RecordingFeature::getIcon() {
 TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
-void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
+void RecordingFeature::bindPaneWidget(WLibrary* pLibraryWidget,
                                   KeyboardEventFilter *keyboard) {
     //The view will be deleted by LibraryWidget
     DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,

@@ -33,7 +33,7 @@ class AnalysisFeature : public LibraryFeature {
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
-    void bindLibraryWidget(WLibrary* libraryWidget,
+    void bindPaneWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
 
     TreeItemModel* getChildModel();

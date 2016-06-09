@@ -33,7 +33,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-    void bindLibraryWidget(WLibrary* libraryWidget,
+    void bindPaneWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
 
   signals:

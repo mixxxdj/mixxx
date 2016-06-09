@@ -207,7 +207,7 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
+void BrowseFeature::bindPaneWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);

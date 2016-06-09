@@ -37,7 +37,7 @@ void LibraryPaneManager::bindLibraryWidget(WLibrary* libraryWidget,
         case FeaturePane::TrackTable:
             //qDebug() << "LibraryPaneManager::bindLibraryWidget:TrackTable";
             for (LibraryFeature* f : m_features) {
-                f->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
+                f->bindPaneWidget(m_pLibraryWidget, pKeyboard);
             }
             break;
     }
