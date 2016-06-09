@@ -30,8 +30,6 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
 
     LibraryView* getActiveView() const;
     
-    bool eventFilter(QObject*, QEvent* pEvent);
-    
   signals:
     
     void focused();

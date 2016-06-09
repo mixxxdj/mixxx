@@ -26,7 +26,6 @@ bool WLibrary::registerView(QString name, QWidget* view) {
                  << "Ignoring.";
         return false;
     }
-    view->installEventFilter(this);
     addWidget(view);
     m_viewMap[name] = view;
     return true;
@@ -68,14 +67,6 @@ void WLibrary::search(const QString& name) {
 LibraryView* WLibrary::getActiveView() const {
     return dynamic_cast<LibraryView*>(currentWidget());
 }
-
-bool WLibrary::eventFilter(QObject*, QEvent* pEvent) {
-    if (pEvent->type() == QEvent::FocusIn) {
-        emit(focused());
-    }
-    return false;
-}
-
 
 bool WLibrary::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
