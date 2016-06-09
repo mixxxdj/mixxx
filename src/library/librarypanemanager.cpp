@@ -6,7 +6,10 @@
 const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
 
 LibraryPaneManager::LibraryPaneManager(QObject* parent)
-        : QObject(parent) {
+        : QObject(parent),
+          m_pLibraryWidget(nullptr),
+          m_pTrackTable(nullptr),
+          m_pSearchLine(nullptr) {
 
 }
 
