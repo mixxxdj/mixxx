@@ -1251,12 +1251,17 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
     // Connect Library search signals to the WLibrary
-    connect(m_pLibrary, SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&)));
+    /*connect(m_pLibrary, SIGNAL(search(const QString&)),
+            pLibraryWidget, SLOT(search(const QString&))); */
 
     int id;
     if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
+        qDebug() << "ID" << id;
+        
         m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard, id);
+    }
+    else {
+        qDebug() << "No Id found";
     }
     
     // This must come after the bindWidget or we will not style any of the
