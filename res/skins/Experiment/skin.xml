@@ -37,6 +37,8 @@
             <Layout>vertical</Layout>
             <Children>
               <SearchBox>
+                <MinimumSize>100,100</MinimumSize>
+                <MaximumSize>-1, 10</MaximumSize>
                 <Id>1</Id>
               </SearchBox>
               <Library>
@@ -51,6 +53,8 @@
             <Layout>vertical</Layout>
             <Children>
               <SearchBox>
+                <MinimumSize>100,100</MinimumSize>
+                <MaximumSize>-1, 10</MaximumSize>
                 <Id>2</Id>
               </SearchBox>
               <Library>
