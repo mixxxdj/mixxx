@@ -159,7 +159,7 @@ public:
     
     
     // -1 for the Sidebar Expanded and >= 0 for the other widgets
-    int m_focusedWidget;
+    int m_focusedPane;
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
 };

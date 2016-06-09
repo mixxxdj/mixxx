@@ -137,10 +137,7 @@ void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
     m_panes[id]->bindSearchBar(searchLine);
 }
 
-void Library::bindSidebarWidget(WButtonBar* sidebar) {
-    connect(sidebar, SIGNAL(buttonClicked(const QString&)),
-            this, SIGNAL(switchToView(const QString&)));
-    
+void Library::bindSidebarWidget(WButtonBar* sidebar) {    
     for (LibraryFeature* f : m_features) {
         QAbstractButton* button = sidebar->addButton(f->getIcon(), f->title());
         connect(button, SIGNAL(clicked()), f, SLOT(activate()));
@@ -231,7 +228,7 @@ void Library::addFeature(LibraryFeature* feature) {
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
-    //qDebug() << "Library::slotShowTrackModel" << model;
+    qDebug() << "Library::slotShowTrackModel" << m_focusedPane;
     
     LibraryPaneManager* pane = getFocusedPane();
     DEBUG_ASSERT_AND_HANDLE(pane) {
@@ -290,6 +287,12 @@ void Library::slotCreateCrate() {
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.
     m_pSidebarModel->activateDefaultSelection();
+    if (m_panes.size() > 0) {
+        m_focusedPane = m_panes.begin().key();
+    }
+    else {
+        m_focusedPane = -1;
+    }
 }
 
 void Library::slotRequestAddDir(QString dir) {
@@ -382,8 +385,8 @@ void Library::slotPaneFocused() {
         return;
     }
     
-    if (pane == m_pSidebarExpanded) m_focusedWidget = -1;
-    m_focusedWidget = m_panes.key(pane, -1);
+    if (pane == m_pSidebarExpanded) m_focusedPane = -1;
+    m_focusedPane = m_panes.key(pane, -1);
 }
 
 
@@ -400,11 +403,12 @@ void Library::createPane(int id) {
 }
 
 LibraryPaneManager *Library::getFocusedPane() {
-    if (m_focusedWidget == -1) {
+    qDebug() << "Focused" << m_focusedPane;
+    if (m_focusedPane == -1) {
         return m_pSidebarExpanded;
     }
-    else if (m_panes.contains(m_focusedWidget)) {
-        return m_panes[m_focusedWidget];
+    else if (m_panes.contains(m_focusedPane)) {
+        return m_panes[m_focusedPane];
     }
     return nullptr;
 }
