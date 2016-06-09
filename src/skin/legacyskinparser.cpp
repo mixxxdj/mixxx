@@ -1264,7 +1264,7 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
     WButtonBar* pLibrarySidebar = new WButtonBar(m_pParent);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
-    m_pLibrary->bindSidebarWidget(pLibrarySidebar);
+    m_pLibrary->bindPaneWidget(pLibrarySidebar);
     commonWidgetSetup(node, pLibrarySidebar, false);
     return pLibrarySidebar;
     

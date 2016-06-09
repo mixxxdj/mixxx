@@ -54,7 +54,7 @@ public:
     void bindSidebarExpanded(WLibrary* expandedPane, 
                              KeyboardEventFilter* pKeyboard);
     //void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
-    void bindSidebarWidget(WButtonBar* sidebar);
+    void bindPaneWidget(WButtonBar* sidebar);
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();

@@ -137,7 +137,7 @@ void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
     m_panes[id]->bindSearchBar(searchLine);
 }
 
-void Library::bindSidebarWidget(WButtonBar* sidebar) {    
+void Library::bindPaneWidget(WButtonBar* sidebar) {    
     for (LibraryFeature* f : m_features) {
         QAbstractButton* button = sidebar->addButton(f->getIcon(), f->title());
         connect(button, SIGNAL(clicked()), f, SLOT(activate()));
