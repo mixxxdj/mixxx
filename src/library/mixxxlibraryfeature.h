@@ -41,8 +41,6 @@ class MixxxLibraryFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
     void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard);
-    void bindSidebarWidget(WLibrary* libraryWidget,
-                      KeyboardEventFilter* keyboard) {}
 
   public slots:
     void activate();

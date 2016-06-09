@@ -14,11 +14,13 @@
 #include <QUrl>
 #include <QDesktopServices>
 #include <QFileDialog>
+#include <QTreeView>
 
 #include "track/track.h"
 #include "treeitemmodel.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
+#include "widget/wlibrary.h"
 
 class TrackModel;
 class WLibrarySidebar;
@@ -72,9 +74,9 @@ class LibraryFeature : public QObject {
                             KeyboardEventFilter* /* keyboard */) {}
     
     // Reimplement this to register custem views with the library widget,
-    // at the left pane
-    virtual void bindSidebarWidget(WLibrary*,
-                              KeyboardEventFilter*) {}
+    // at the sidebar expanded pane
+    virtual void bindSidebarWidget(WLibrary* pPane,
+                              KeyboardEventFilter*);
     
     virtual TreeItemModel* getChildModel() = 0;
 

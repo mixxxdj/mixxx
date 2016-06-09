@@ -35,8 +35,6 @@ class BasePlaylistFeature : public LibraryFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
-    void bindSidebarWidget(WLibrary* libraryWidget,
-                      KeyboardEventFilter* keyboard) {}
 
   signals:
     void showPage(const QUrl& page);

@@ -35,10 +35,6 @@ class AnalysisFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
-    
-    // TODO(jmigual): Still needs to be implemented
-    void bindSidebarWidget(WLibrary* libraryWidget,
-                      KeyboardEventFilter* keyboard) {}
 
     TreeItemModel* getChildModel();
     void refreshLibraryModels();

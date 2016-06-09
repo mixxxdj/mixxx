@@ -47,9 +47,6 @@ class CrateFeature : public LibraryFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
-
-    void bindSidebarWidget(WLibrary* libraryWidget,
-                      KeyboardEventFilter* keyboard) {}
     
     TreeItemModel* getChildModel();
 
