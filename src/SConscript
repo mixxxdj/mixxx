@@ -29,21 +29,8 @@ Import('mixxxminimal_plugins')
 env = build.env
 flags = build.flags
 
-
-# Build Mixxx as a static library so we can link it into the main executable and
-# the test executable.
-mixxx_sources = [filename for filename in sources if filename != 'main.cpp']
-mixxx_lib = env.StaticLibrary('mixxx', mixxx_sources)
-
-# Build the Mixxx executable.
-bin_env = env.Clone()
-bin_env.Append(LIBS=mixxx_lib)
-
-# Bug #1258435: executable name must match CFBundleExecutable in the
-# Info.plist. For codesigned bundles it seems the CFBundleExecutable must match
-# the bundle name or else we SIGILL at startup (not sure why).
-executable_name = 'Mixxx' if build.platform_is_osx else 'mixxx'
-
+#Tell SCons to build Mixxx
+#=========================
 if build.platform_is_windows:
         dist_dir = 'dist%s' % build.bitwidth
         # Populate the stuff that changes in the .rc file
@@ -75,11 +62,17 @@ if build.platform_is_windows:
         fo.write(''.join(str_list))
         fo.close()
 
-        mixxx_bin = bin_env.Program(executable_name,
-                                    ['main.cpp', env.RES('#src/mixxx.rc')],
-                                    LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+        mixxx_bin = env.Program('mixxx',
+                            [sources, env.RES('#src/mixxx.rc')],
+                            LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+elif build.platform_is_osx:
+        # Bug #1258435: executable name must match CFBundleExecutable in the
+        # Info.plist. For codesigned bundles it seems the CFBundleExecutable
+        # must match the bundle name or else we SIGILL at startup (not sure
+        # why).
+        mixxx_bin = env.Program('Mixxx', sources)
 else:
-        mixxx_bin = bin_env.Program(executable_name, ['main.cpp'])
+        mixxx_bin = env.Program('mixxx', sources)
 
 # For convenience, copy the Mixxx binary out of the build directory to the
 # root. Don't do it on windows because the binary can't run on its own and needs
@@ -87,7 +80,6 @@ else:
 if not build.platform_is_windows:
     Command("../mixxx", mixxx_bin, Copy("$TARGET", "$SOURCE"))
 
-# Build the Mixxx test executable.
 test_bin = None
 def build_tests():
         global test_bin
@@ -99,21 +91,21 @@ def build_tests():
         test_files = [test_env.StaticObject(filename)
                       if filename !='main.cpp' else filename
                       for filename in test_files]
+        mixxx_sources = [filename for filename in sources if filename != 'main.cpp']
+        test_sources = (test_files + mixxx_sources)
 
-        test_env.Append(LIBPATH="#lib/gtest-1.7.0/lib")
-        test_env.Append(LIBS = 'gtest')
+        env.Append(LIBPATH="#lib/gtest-1.7.0/lib")
+        env.Append(LIBS = 'gtest')
 
-        test_env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
-        test_env.Append(LIBS = 'gmock')
+        env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
+        env.Append(LIBS = 'gmock')
 
-        test_env.Append(LIBPATH="#lib/benchmark/lib")
-        test_env.Append(LIBS = 'benchmark')
-
-        test_env.Append(LIBS = mixxx_lib)
+        env.Append(LIBPATH="#lib/benchmark/lib")
+        env.Append(LIBS = 'benchmark')
 
         if build.platform_is_windows:
                 # For SHGetValueA in Google's benchmark library.
-                test_env.Append(LIBS = 'Shlwapi')
+                env.Append(LIBS = 'Shlwapi')
 
                 # TODO(rryan): Build Mixxx core as a shared object and link it
                 # into mixxx and mixxx-test. We could build both in different
@@ -121,11 +113,11 @@ def build_tests():
                 # both environments which makes SCons unhappy.
                 # Currently both executables are built with /subsystem:windows
                 # and the console is attached manually
-                test_bin = test_env.Program(
-                        'mixxx-test', [test_files, test_env.RES('#src/mixxx.rc')],
-                        LINKCOM = [test_env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+                test_bin = env.Program(
+                        'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
+                        LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
         else:
-                test_bin = test_env.Program('mixxx-test', test_files)
+                test_bin = env.Program(target='mixxx-test', source=test_sources)
 
         env.Alias('mixxx-test', test_bin)
 
