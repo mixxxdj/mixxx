@@ -8,21 +8,19 @@ const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
 LibraryPaneManager::LibraryPaneManager(QObject* parent)
         : QObject(parent),
           m_pLibraryWidget(nullptr),
-          m_pTrackTable(nullptr),
-          m_pSearchLine(nullptr) {
-
+          m_pTrackTable(nullptr) {
+    qApp->installEventFilter(this);
 }
 
 LibraryPaneManager::~LibraryPaneManager() {
 }
 
-void LibraryPaneManager::bindLibraryWidget(WLibrary* libraryWidget,
+void LibraryPaneManager::bindPaneWidget(WLibrary* libraryWidget,
                                            KeyboardEventFilter* pKeyboard, 
                                            FeaturePane pane) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
     
     m_pLibraryWidget = libraryWidget;
-    m_pLibraryWidget->installEventFilter(this);
 
     connect(this, SIGNAL(switchToView(const QString &)),
             m_pLibraryWidget, SLOT(switchToView(const QString &)));
@@ -44,9 +42,7 @@ void LibraryPaneManager::bindLibraryWidget(WLibrary* libraryWidget,
 }
 
 void LibraryPaneManager::bindTrackTable(WTrackTableView *pTrackTable) {
-    m_pTrackTable = pTrackTable;
-    m_pTrackTable->installEventFilter(this);
-    
+    m_pTrackTable = pTrackTable;    
     
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
             m_pTrackTable, SLOT(loadTrackModel(QAbstractItemModel*)));
@@ -57,17 +53,16 @@ void LibraryPaneManager::bindTrackTable(WTrackTableView *pTrackTable) {
 }
 
 void LibraryPaneManager::bindSearchBar(WSearchLineEdit *pSearchLine) {
-    m_pSearchLine = pSearchLine;
-    m_pSearchLine->installEventFilter(this);
+    pSearchLine->installEventFilter(this);
     
-    connect(m_pSearchLine, SIGNAL(search(const QString&)),
+    connect(pSearchLine, SIGNAL(search(const QString&)),
             this, SIGNAL(search(const QString&)));
-    connect(m_pSearchLine, SIGNAL(searchCleared()),
+    connect(pSearchLine, SIGNAL(searchCleared()),
             this, SIGNAL(searchCleared()));
-    connect(m_pSearchLine, SIGNAL(searchStarting()),
+    connect(pSearchLine, SIGNAL(searchStarting()),
             this, SIGNAL(searchStarting()));
     connect(this, SIGNAL(restoreSearch(const QString&)),
-            m_pSearchLine, SLOT(restoreSearch(const QString&)));
+            pSearchLine, SLOT(restoreSearch(const QString&)));
 }
 
 void LibraryPaneManager::addFeature(LibraryFeature* feature) {
@@ -76,22 +71,6 @@ void LibraryPaneManager::addFeature(LibraryFeature* feature) {
     }
     
     m_features.append(feature);
-
-    
-    /*connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
-    connect(feature, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotSwitchToView(const QString&)));*/
-    /*connect(feature, SIGNAL(loadTrack(TrackPointer)),
-            this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));*/
-    /*connect(feature, SIGNAL(restoreSearch(const QString&)),
-            this, SLOT(slotRestoreSearch(const QString&)));*/
-    /*connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
-            this, SIGNAL(enableCoverArtDisplay(bool)));*/
-    /*connect(feature, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));*/
 }
 
 void LibraryPaneManager::addFeatures(const QList<LibraryFeature *> &features) {
