@@ -149,19 +149,12 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pTrackTableView->installEventFilter(pKeyboard);
-    /*connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));*/
     
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     
-    pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
-
-    //connect(this, SIGNAL(switchToView(const QString&)),
-    //        pLibraryWidget, SLOT(switchToView(const QString&)));
-
     connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
 
@@ -170,28 +163,29 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
 
+    /*connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
+            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));*/
+    
     /*connect(this, SIGNAL(searchStarting()),
             pTrackTableView, SLOT(onSearchStarting()));
     connect(this, SIGNAL(searchCleared()),
             pTrackTableView, SLOT(onSearchCleared()));
     */
+    //connect(this, SIGNAL(switchToView(const QString&)),
+    //        pLibraryWidget, SLOT(switchToView(const QString&)));
+    
+    
+    pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
     
     if (! m_panes.contains(id)) {
         createPane(id);
     }
     
-    m_panes[id]->bindLibraryWidget(pLibraryWidget, pKeyboard);
+    m_panes[id]->bindLibraryWidget(pLibraryWidget, pKeyboard, 
+                                   LibraryPaneManager::FeaturePane::TrackTable);
     m_panes[id]->bindTrackTable(pTrackTableView);
-    
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
     
-    
-    
-    /*QListIterator<LibraryFeature*> feature_it(m_features);
-    while(feature_it.hasNext()) {
-        LibraryFeature* feature = feature_it.next();
-        feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
-    }*/
     
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
@@ -199,8 +193,12 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
     emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
 }
 
-void Library::bindSidebarExpanded(WLibrary *leftPane, KeyboardEventFilter *pKeyboard) {
-    
+void Library::bindSidebarExpanded(WLibrary* expandedPane,
+                                  KeyboardEventFilter* pKeyboard) {
+    m_pSidebarExpanded = new LibraryPaneManager;
+    m_pSidebarExpanded->bindLibraryWidget(expandedPane, pKeyboard,
+                                          LibraryPaneManager::FeaturePane::TrackTable);
+    m_focusedPane = -1;
 }
 
 
@@ -238,7 +236,7 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void Library::slotSwitchToView(const QString& view) {
-    //qDebug() << "Library::slotSwitchToView" << view;
+    qDebug() << "Library::slotSwitchToView" << view;
     
     LibraryPaneManager* pane = getFocusedPane();
     DEBUG_ASSERT_AND_HANDLE(pane) {
@@ -391,6 +389,8 @@ void Library::slotPaneFocused() {
 
 
 void Library::createPane(int id) {
+    qDebug() << "Library::createPane" << id;
+    
     if (m_panes.contains(id)) {
         return;
     }
@@ -400,6 +400,7 @@ void Library::createPane(int id) {
     
     connect(pane, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
+    m_focusedPane = id;
 }
 
 LibraryPaneManager *Library::getFocusedPane() {

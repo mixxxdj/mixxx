@@ -51,7 +51,7 @@ public:
     void bindLibraryWidget(WLibrary* libraryWidget,
                            KeyboardEventFilter* pKeyboard, int id);
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
-    void bindSidebarExpanded(WLibrary* leftPane, 
+    void bindSidebarExpanded(WLibrary* expandedPane, 
                              KeyboardEventFilter* pKeyboard);
     //void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
     void bindSidebarWidget(WButtonBar* sidebar);
@@ -151,12 +151,6 @@ public:
     QHash<int, LibraryPaneManager*> m_panes;
     LibraryPaneManager* m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
-    
-    /*// Panes widgets
-    QList<WTrackTableView*> m_trackTables;
-    //QList<WLibrary*> m_panes;
-    QList<WSearchLineEdit*> m_searches;*/
-    
     
     // -1 for the Sidebar Expanded and >= 0 for the other widgets
     int m_focusedPane;
