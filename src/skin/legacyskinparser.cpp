@@ -1138,14 +1138,18 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
-    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
-    commonWidgetSetup(node, pLineEditSearch, false);
-    pLineEditSearch->setup(node, *m_pContext);
+    WSearchLineEdit* pSearchLineEdit = new WSearchLineEdit(m_pParent);
     
-    int id;
+    int id = -1;
     if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
-        m_pLibrary->bindSearchBar(pLineEditSearch, id);
+        qDebug() << "SearchBox ID:" << id;
+        m_pLibrary->bindSearchBar(pSearchLineEdit, id);
     }
+    else {
+        SKIN_WARNING(node, *m_pContext) << "SearchBox Id not found";
+    }
+    pSearchLineEdit->setup(node, *m_pContext);
+    commonWidgetSetup(node, pSearchLineEdit, false);
 
     // Connect search box signals to the library
     /*connect(pLineEditSearch, SIGNAL(search(const QString&)),
@@ -1157,7 +1161,7 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
             pLineEditSearch, SLOT(restoreSearch(const QString&)));
     */
-    return pLineEditSearch;
+    return pSearchLineEdit;
 }
 
 QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
@@ -1254,20 +1258,20 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     /*connect(m_pLibrary, SIGNAL(search(const QString&)),
             pLibraryWidget, SLOT(search(const QString&))); */
 
-    int id;
+    int id = -1;
     if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
         qDebug() << "ID" << id;
         
-        m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard, id);
+        //m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard, id);
     }
     else {
-        qDebug() << "No Id found";
+        SKIN_WARNING(node, *m_pContext) << "No Id found";
     }
     
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
-    commonWidgetSetup(node, pLibraryWidget, false);
-
+    //commonWidgetSetup(node, pLibraryWidget, false);
+    qDebug() << pLibraryWidget;
     return pLibraryWidget;
 }
 
