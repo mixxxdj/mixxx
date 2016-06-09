@@ -196,7 +196,7 @@ void Library::bindSidebarExpanded(WLibrary* expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
     m_pSidebarExpanded = new LibraryPaneManager;
     m_pSidebarExpanded->bindLibraryWidget(expandedPane, pKeyboard,
-                                          LibraryPaneManager::FeaturePane::TrackTable);
+                                          LibraryPaneManager::FeaturePane::SidebarExpanded);
     m_focusedPane = -1;
 }
 
