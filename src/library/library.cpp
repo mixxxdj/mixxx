@@ -106,6 +106,7 @@ Library::~Library() {
     delete m_pTrackCollection;
 }
 
+/*
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 
@@ -124,8 +125,9 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
     pSidebarWidget->slotSetFont(m_trackTableFont);
     connect(this, SIGNAL(setTrackTableFont(QFont)),
-            pSidebarWidget, SLOT(slotSetFont(QFont)));
+            pSidebarWidget, SLOT(slotSetFont(QFont))); 
 }
+*/
 
 void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
     if (!m_panes.contains(id)) {
@@ -135,7 +137,7 @@ void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
     m_panes[id]->bindSearchBar(searchLine);
 }
 
-void Library::bindSidebar(WButtonBar* sidebar) {
+void Library::bindSidebarWidget(WButtonBar* sidebar) {
     connect(sidebar, SIGNAL(buttonClicked(const QString&)),
             this, SIGNAL(switchToView(const QString&)));
     
@@ -204,6 +206,7 @@ void Library::bindSidebarExpanded(WLibrary *leftPane, KeyboardEventFilter *pKeyb
     
 }
 
+
 void Library::addFeature(LibraryFeature* feature) {
     DEBUG_ASSERT_AND_HANDLE(feature) {
         return;
@@ -229,20 +232,12 @@ void Library::addFeature(LibraryFeature* feature) {
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "Library::slotShowTrackModel" << model;
-    /*TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
-        return;
-    }*/
     
     LibraryPaneManager* pane = getFocusedPane();
     DEBUG_ASSERT_AND_HANDLE(pane) {
         return;
     }
     pane->slotShowTrackModel(model);
-    
-    //emit(showTrackModel(model));
-    //emit(switchToView(m_sTrackViewName));
-    //emit(restoreSearch(trackModel->currentSearch()));
 }
 
 void Library::slotSwitchToView(const QString& view) {
@@ -253,7 +248,6 @@ void Library::slotSwitchToView(const QString& view) {
         return;
     }
     pane->slotSwitchToView(view);
-    //emit(switchToView(view));
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
@@ -278,7 +272,6 @@ void Library::slotRestoreSearch(const QString& text) {
         return;
     }
     pane->slotRestoreSearch(text);
-    //emit(restoreSearch(text));
 }
 
 void Library::slotRefreshLibraryModels() {
@@ -392,6 +385,7 @@ void Library::slotPaneFocused() {
     if (pane == m_pSidebarExpanded) m_focusedWidget = -1;
     m_focusedWidget = m_panes.key(pane, -1);
 }
+
 
 void Library::createPane(int id) {
     if (m_panes.contains(id)) {

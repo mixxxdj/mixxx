@@ -53,8 +53,8 @@ public:
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
     void bindSidebarExpanded(WLibrary* leftPane, 
                              KeyboardEventFilter* pKeyboard);
-    void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
-    void bindSidebar(WButtonBar* sidebar);
+    //void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
+    void bindSidebarWidget(WButtonBar* sidebar);
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
