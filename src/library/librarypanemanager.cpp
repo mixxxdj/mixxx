@@ -16,6 +16,8 @@ LibraryPaneManager::~LibraryPaneManager() {
 void LibraryPaneManager::bindLibraryWidget(WLibrary* libraryWidget,
                                            KeyboardEventFilter* pKeyboard, 
                                            FeaturePane pane) {
+    //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
+    
     m_pLibraryWidget = libraryWidget;
     m_pLibraryWidget->installEventFilter(this);
 
@@ -24,11 +26,13 @@ void LibraryPaneManager::bindLibraryWidget(WLibrary* libraryWidget,
 
     switch (pane) {
         case FeaturePane::SidebarExpanded:
+            //qDebug() << "LibraryPaneManager::bindLibraryWidget:SidebarExpanded";
             for (LibraryFeature* f : m_features) {
                 f->bindSidebarWidget(m_pLibraryWidget, pKeyboard);
             }
             break;
         case FeaturePane::TrackTable:
+            //qDebug() << "LibraryPaneManager::bindLibraryWidget:TrackTable";
             for (LibraryFeature* f : m_features) {
                 f->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
             }
@@ -105,7 +109,7 @@ void LibraryPaneManager::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void LibraryPaneManager::slotSwitchToView(const QString& view) {
-    qDebug() << "LibraryPaneManager::slotSwitchToView" << view;
+    //qDebug() << "LibraryPaneManager::slotSwitchToView" << view;
     emit(switchToView(view));
 }
 

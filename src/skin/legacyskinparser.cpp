@@ -1142,7 +1142,8 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     
     int id = -1;
     if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
-        qDebug() << "SearchBox ID:" << id;
+        //qDebug() << "SearchBox ID:" << id;
+        
         m_pLibrary->bindSearchBar(pSearchLineEdit, id);
     }
     else {
@@ -1244,15 +1245,11 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
-    // Connect Library search signals to the WLibrary
-    /*connect(m_pLibrary, SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&))); */
-
     int id = -1;
     if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
-        qDebug() << "ID" << id;
+        //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
         
-        //m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard, id);
+        m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard, id);
     }
     else {
         SKIN_WARNING(node, *m_pContext) << "No Id found";
@@ -1265,8 +1262,6 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
-    
-    
     WButtonBar* pLibrarySidebar = new WButtonBar(m_pParent);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
     m_pLibrary->bindSidebarWidget(pLibrarySidebar);

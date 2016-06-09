@@ -174,7 +174,6 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
     //connect(this, SIGNAL(switchToView(const QString&)),
     //        pLibraryWidget, SLOT(switchToView(const QString&)));
     
-    
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
     
     if (! m_panes.contains(id)) {
@@ -226,7 +225,7 @@ void Library::addFeature(LibraryFeature* feature) {
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
-    qDebug() << "Library::slotShowTrackModel" << m_focusedPane;
+    //qDebug() << "Library::slotShowTrackModel" << m_focusedPane;
     
     LibraryPaneManager* pane = getFocusedPane();
     DEBUG_ASSERT_AND_HANDLE(pane) {
@@ -236,7 +235,7 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void Library::slotSwitchToView(const QString& view) {
-    qDebug() << "Library::slotSwitchToView" << view;
+    //qDebug() << "Library::slotSwitchToView" << view;
     
     LibraryPaneManager* pane = getFocusedPane();
     DEBUG_ASSERT_AND_HANDLE(pane) {
@@ -389,7 +388,7 @@ void Library::slotPaneFocused() {
 
 
 void Library::createPane(int id) {
-    qDebug() << "Library::createPane" << id;
+    //qDebug() << "Library::createPane" << id;
     
     if (m_panes.contains(id)) {
         return;
@@ -404,7 +403,7 @@ void Library::createPane(int id) {
 }
 
 LibraryPaneManager *Library::getFocusedPane() {
-    qDebug() << "Focused" << m_focusedPane;
+    //qDebug() << "Focused" << m_focusedPane;
     if (m_focusedPane == -1) {
         return m_pSidebarExpanded;
     }
