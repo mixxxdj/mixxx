@@ -26,8 +26,9 @@
             <Orientation>horizontal</Orientation>
             <SizePolicy>me,me</SizePolicy>
             <SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>
-            <SplitSizes>2,8</SplitSizes>
+            <SplitSizes>1,1,4,4</SplitSizes>
             <Children>
+              <LibrarySidebar></LibrarySidebar>
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <Children>
@@ -39,8 +40,6 @@
                         <SetVariable name="object_name">LibraryToggle</SetVariable>
                         <SetVariable name="control">[Library],show_library</SetVariable>
                       </Template>
-                      <SearchBox>
-                      </SearchBox>
                     </Children>
                   </WidgetGroup>
                   <WidgetGroup>
@@ -153,8 +152,8 @@
                     <SplitSizes>2,8</SplitSizes>
                     <Collapsible>0,0</Collapsible>
                     <Children>
-                      <LibrarySidebar>
-                      </LibrarySidebar>
+                      <LibrarySidebarExpanded>
+                      </LibrarySidebarExpanded>
 
                       <CoverArt>
                         <ObjectName>LibraryCoverArt</ObjectName>
@@ -170,8 +169,32 @@
                   </Splitter>
                 </Children>
               </WidgetGroup>
-              <Library>
-              </Library>
+
+              <!-- For Track table 1 -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <SearchBox>
+                    <Id>1</Id>
+                  </SearchBox>
+                  <Library>
+                    <Id>1</Id>
+                  </Library>
+                </Children>
+              </WidgetGroup>
+
+              <!-- For Track table 2 -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <SearchBox>
+                    <Id>2</Id>
+                  </SearchBox>
+                  <Library>
+                    <Id>2</Id>
+                  </Library>
+                </Children>
+              </WidgetGroup>
             </Children>
           </Splitter>
         </Children>
