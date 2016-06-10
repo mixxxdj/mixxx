@@ -1287,6 +1287,7 @@ QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
 QWidget *LegacySkinParser::parseLibrarySidebarExpanded(const QDomElement &node) {
     WLibrary* pLibrarySidebarExpanded = new WLibrary(m_pParent);
     pLibrarySidebarExpanded->installEventFilter(m_pKeyboard);
+    pLibrarySidebarExpanded->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded, m_pKeyboard);
     commonWidgetSetup(node, pLibrarySidebarExpanded, false);    
     return pLibrarySidebarExpanded;
