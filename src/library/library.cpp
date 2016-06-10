@@ -144,7 +144,7 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
     }
     
     m_panes[id]->bindPaneWidget(pLibraryWidget, pKeyboard, 
-                                   LibraryPaneManager::FeaturePane::TrackTable);
+                                LibraryPaneManager::FeaturePane::TrackTable);
     
     connect(m_panes[id], SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
@@ -152,6 +152,8 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(onSearchStarting()));
     connect(m_panes[id], SIGNAL(searchCleared()),
             pTrackTableView, SLOT(onSearchCleared()));
+    connect(m_panes[id], SIGNAL(search(const QString&)),
+            pLibraryWidget, SLOT(search(const QString&)));
     
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
     
