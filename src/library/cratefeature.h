@@ -32,7 +32,7 @@ class CrateFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
     
-    inline QString getViewName() { return "CRATE_FEATURE"; }
+    inline QString getViewName() { return m_sCrateViewName; }
     QWidget* getLeftPane() { return new QWidget(); }
     QWidget* getRightPane() { return new QWidget(); }
     
