@@ -147,7 +147,7 @@ public:
     LibraryPaneManager* m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
     
-    // -1 for the Sidebar Expanded and >= 0 for the other widgets
+    // Can be any integer as it's used with a HashMap
     int m_focusedPane;
     bool m_sidebarExpandedFocused;
     
