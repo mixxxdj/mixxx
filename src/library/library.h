@@ -47,7 +47,7 @@ public:
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
-
+    
     void bindPaneWidget(WLibrary* libraryWidget,
                            KeyboardEventFilter* pKeyboard, int id);
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
@@ -74,8 +74,6 @@ public:
     inline const QFont& getTrackTableFont() const {
         return m_trackTableFont;
     }
-
-    //static Library* buildDefaultLibrary();
 
     enum RemovalType {
         LeaveTracksUnchanged = 0,
@@ -108,14 +106,9 @@ public:
     }
 
   signals:
-    //void showTrackModel(QAbstractItemModel* model);
-    //void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    //void restoreSearch(const QString&);
-    //void search(const QString& text);
-    //void searchCleared();
-    //void searchStarting();
+    
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);

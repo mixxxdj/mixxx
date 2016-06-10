@@ -90,6 +90,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 Library::~Library() {
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
+    delete m_pSidebarExpanded;
     
     qDeleteAll(m_panes);
     m_panes.clear();
@@ -105,29 +106,6 @@ Library::~Library() {
     // Has to be deleted at last because the features holds references of it.
     delete m_pTrackCollection;
 }
-
-/*
-void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
-
-    // Setup the sources view
-    pSidebarWidget->setModel(m_pSidebarModel);
-    connect(m_pSidebarModel, SIGNAL(selectIndex(const QModelIndex&)),
-            pSidebarWidget, SLOT(selectIndex(const QModelIndex&)));
-    connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
-            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
-    // Lazy model: Let triangle symbol increment the model
-    connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
-            m_pSidebarModel, SLOT(doubleClicked(const QModelIndex&)));
-
-    connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
-            m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
-
-    pSidebarWidget->slotSetFont(m_trackTableFont);
-    connect(this, SIGNAL(setTrackTableFont(QFont)),
-            pSidebarWidget, SLOT(slotSetFont(QFont))); 
-}
-*/
 
 void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
     if (!m_panes.contains(id)) {
