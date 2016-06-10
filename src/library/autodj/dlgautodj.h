@@ -19,12 +19,11 @@ class WTrackTableView;
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
-    DlgAutoDJ(QWidget* parent, UserSettingsPointer pConfig,
-              Library* pLibrary,
-              AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
-              KeyboardEventFilter* pKeyboard);
+    DlgAutoDJ(QWidget* parent, AutoDJProcessor* pProcessor);
     virtual ~DlgAutoDJ();
 
+    void setTrackTableView(WTrackTableView* pTrackTableView, Library *pLibrary);
+    
     void onShow();
     void onSearch(const QString& text);
     void loadSelectedTrack();
