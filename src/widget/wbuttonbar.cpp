@@ -12,6 +12,7 @@ QAbstractButton* WButtonBar::addButton(const QIcon& icon, const QVariant& title)
     button->setIcon(icon);
     button->setText(title.toString());
     button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    button->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     
     m_pLayout->addWidget(button);
     return button;

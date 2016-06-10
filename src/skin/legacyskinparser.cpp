@@ -9,6 +9,7 @@
 #include <QMutexLocker>
 #include <QSplitter>
 #include <QStackedWidget>
+#include <QScrollArea>
 #include <QVBoxLayout>
 #include <QtDebug>
 #include <QtGlobal>
@@ -1270,11 +1271,19 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
+    QScrollArea* scroll = new QScrollArea(m_pParent);
+    scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scroll->setWidgetResizable(true);
+    scroll->setAlignment(Qt::AlignCenter);
+    
     WButtonBar* pLibrarySidebar = new WButtonBar(m_pParent);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
     m_pLibrary->bindSidebarWidget(pLibrarySidebar);
+    scroll->setWidget(pLibrarySidebar);
+    
     commonWidgetSetup(node, pLibrarySidebar, false);
-    return pLibrarySidebar;
+    setupWidget(node, scroll);
+    return scroll;
     
     /*WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(m_pParent);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
