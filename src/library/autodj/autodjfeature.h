@@ -39,6 +39,9 @@ class AutoDJFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    QString getViewName() {
+        return m_sAutoDJViewName;
+    }
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);

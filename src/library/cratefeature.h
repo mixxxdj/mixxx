@@ -32,7 +32,7 @@ class CrateFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
     
-    inline QString getDefaultNameView() { return "CRATE_FEATURE"; }
+    inline QString getViewName() { return "CRATE_FEATURE"; }
     QWidget* getLeftPane() { return new QWidget(); }
     QWidget* getRightPane() { return new QWidget(); }
     
@@ -45,6 +45,8 @@ class CrateFeature : public LibraryFeature {
 
     void bindPaneWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    void bindSidebarWidget(WLibrary* sidebarWidget,
+                           KeyboardEventFilter*);
     
     TreeItemModel* getChildModel();
 
@@ -111,6 +113,7 @@ class CrateFeature : public LibraryFeature {
     TrackPointer m_pSelectedTrack;
     QSet<int> m_cratesSelectedTrackIsIn;
     UserSettingsPointer m_pConfig;
+    const static QString m_sCrateViewName;
 };
 
 #endif /* CRATEFEATURE_H */

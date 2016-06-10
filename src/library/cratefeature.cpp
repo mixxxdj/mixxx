@@ -25,6 +25,8 @@
 #include "util/dnd.h"
 #include "util/time.h"
 
+const QString CrateFeature::m_sCrateViewName = QString("CRATEHOME");
+
 CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
                            UserSettingsPointer pConfig)
@@ -186,7 +188,22 @@ void CrateFeature::bindPaneWidget(WLibrary* libraryWidget,
     edit->setOpenLinks(false);
     connect(edit, SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
-    libraryWidget->registerView("CRATEHOME", edit);
+    libraryWidget->registerView(m_sCrateViewName, edit);
+}
+
+void CrateFeature::bindSidebarWidget(WLibrary *sidebarWidget, 
+                                     KeyboardEventFilter *) {
+//    WLibrarySidebar* pSidebar = new WLibrarySidebar(sidebarWidget);
+//    pSidebar->setModel(getChildModel());
+    
+//    sidebarWidget->registerView(getViewName(), pSidebar);
+    
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(sidebarWidget);
+    edit->setHtml(getRootViewHtml());
+    edit->setOpenLinks(false);
+    connect(edit, SIGNAL(anchorClicked(const QUrl)),
+            this, SLOT(htmlLinkClicked(const QUrl)));
+    sidebarWidget->registerView(m_sCrateViewName, edit);
 }
 
 TreeItemModel* CrateFeature::getChildModel() {
@@ -194,7 +211,7 @@ TreeItemModel* CrateFeature::getChildModel() {
 }
 
 void CrateFeature::activate() {
-    emit(switchToView("CRATEHOME"));
+    emit(switchToView(m_sCrateViewName));
     emit(restoreSearch(QString())); //disable search on crate home
     emit(enableCoverArtDisplay(true));
 }
