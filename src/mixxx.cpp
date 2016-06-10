@@ -1044,6 +1044,7 @@ void MixxxMainWindow::rebootMixxxView() {
     // that need to be deleted -- otherwise we can't tell what features the skin
     // supports since the controls from the previous skin will be left over.
     m_pMenuBar->onNewSkinAboutToLoad();
+    m_pLibrary->destroyInterface();
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
