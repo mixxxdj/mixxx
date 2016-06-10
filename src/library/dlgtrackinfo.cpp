@@ -501,14 +501,14 @@ void DlgTrackInfo::slotBpmHalve() {
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    m_pBeatsClone->scale(Beats::Beats::TWOTHIRDS);
+    m_pBeatsClone->scale(Beats::TWOTHIRDS);
     // read back the actual value
     double newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    m_pBeatsClone->scale(Beats::Beats::THREEFOURTHS);
+    m_pBeatsClone->scale(Beats::THREEFOURTHS);
     // read back the actual value
     double newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue);
