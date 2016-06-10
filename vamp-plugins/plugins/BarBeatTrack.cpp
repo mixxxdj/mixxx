@@ -26,7 +26,9 @@ using std::cerr;
 using std::endl;
 
 #ifndef __GNUC__
+#ifndef __WINDOWS__
 #include <alloca.h>
+#endif
 #endif
 
 float BarBeatTracker::m_stepSecs = 0.01161; // 512 samples at 44100

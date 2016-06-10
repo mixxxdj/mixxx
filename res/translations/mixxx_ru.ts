@@ -19,24 +19,24 @@
 <context>
     <name>AutoDJFeature</name>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="65"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="58"/>
         <source>Crates</source>
-        <translation>Ящики</translation>
+        <translation>Контейнеры</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="86"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="79"/>
         <source>Remove Crate as Track Source</source>
-        <translation>Удалить ящик как источник трек</translation>
+        <translation>Удалить контейнер как источник дорожки</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="101"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="90"/>
         <source>Auto DJ</source>
-        <translation>Auto DJ</translation>
+        <translation>Автосведение</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="380"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="350"/>
         <source>Add Crate as Track Source</source>
-        <translation>Добавить ящик как источник трек</translation>
+        <translation>Добавить контейнер как источник дорожки</translation>
     </message>
 </context>
 <context>
@@ -45,19 +45,19 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="25"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="115"/>
         <source>Banshee</source>
-        <translation>Баньши</translation>
+        <translation>Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="75"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="84"/>
         <source>Error loading Banshee database</source>
-        <translation>Ошибка при загрузке базы данных баньши</translation>
+        <translation>Ошибка при загрузке базы данных Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <source>Banshee database file not found at
 </source>
-        <translation>Баньши файл базы данных не найден в
+        <translation>Файл базы данных Banshee не найден в
 </translation>
     </message>
     <message>
@@ -73,22 +73,22 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="11"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Добавить в очередь Auto DJ (внизу)</translation>
+        <translation>Добавить в очередь автосведения (вниз)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="15"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Добавить в очередь Auto DJ (сверху)</translation>
+        <translation>Добавить в очередь автосведения (наверх)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="19"/>
         <source>Import Playlist</source>
-        <translation>Импорт списка воспроизведения</translation>
+        <translation>Импортировать список воспроизведения</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="92"/>
         <source>Playlist Creation Failed</source>
-        <translation>Ошибка создания плейлиста</translation>
+        <translation>Ошибка создания списка воспроизведения</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="93"/>
@@ -106,18 +106,18 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="36"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Добавить в очередь Auto DJ (внизу)</translation>
+        <translation>Добавить в очередь автосведения (вниз)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="32"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="278"/>
         <source>Create New Playlist</source>
-        <translation>Создать новый плейлист</translation>
+        <translation>Создать новый список воспроизведения</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="40"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Добавить в очередь Auto DJ (сверху)</translation>
+        <translation>Добавить в очередь автосведения (наверх)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="44"/>
@@ -132,7 +132,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="52"/>
         <source>Lock</source>
-        <translation>Замок</translation>
+        <translation>Заблокировать</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="56"/>
@@ -143,17 +143,17 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="60"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="64"/>
         <source>Import Playlist</source>
-        <translation>Импорт списка воспроизведения</translation>
+        <translation>Импортировать список воспроизведения</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="72"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>Экспорт файлов дорожек</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="76"/>
         <source>Analyze entire Playlist</source>
-        <translation>Анализировать весь плейлист</translation>
+        <translation>Анализировать весь список воспроизведения</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="182"/>
@@ -163,7 +163,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="222"/>
         <source>Duplicate Playlist</source>
-        <translation>Дублировать плейлист</translation>
+        <translation>Дублировать список воспроизведения</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="223"/>
@@ -173,7 +173,7 @@
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="68"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="448"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="464"/>
         <source>Export Playlist</source>
         <translation>Экспорт списка воспроизведения</translation>
     </message>
@@ -186,28 +186,28 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="194"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="198"/>
         <source>Renaming Playlist Failed</source>
-        <translation>Не удалось переименовать плейлист</translation>
+        <translation>Не удалось переименовать список воспроизведения</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="195"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="237"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="291"/>
         <source>A playlist by that name already exists.</source>
-        <translation>Плейлист с таким именем уже существует.</translation>
+        <translation>Список воспроизведения с таким именем уже существует.</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="199"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="241"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="295"/>
         <source>A playlist cannot have a blank name.</source>
-        <translation>Список воспроизведения не может иметь пустое имя.</translation>
+        <translation>Имя списка воспроизведения не может быть пустым.</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="226"/>
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a playlist</extracomment>
-        <translation>_Copy</translation>
+        <translation>_копия</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="236"/>
@@ -215,161 +215,161 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="290"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="294"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="307"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="418"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="432"/>
         <source>Playlist Creation Failed</source>
-        <translation>Ошибка создания плейлиста</translation>
+        <translation>Не удалось создать список воспроизведения</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="308"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="419"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="433"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Произошла неизвестная ошибка при создании списка воспроизведения: </translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="445"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="461"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Список воспроизведения M3U (*.m3u)</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="450"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="466"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U плейлист (*.m3u); M3u8 плейлист (*.m3u8); PLS плейлист (* .pls); Текст CSV (*.csv); Удобочитаемый текст (*.txt)</translation>
+        <translation>Список воспроизведения M3U (*.m3u); Список воспроизведения M3u8 (*.m3u8); Список воспроизведения PLS (*.pls); Текст CSV (*.csv); Читаемый текст (*.txt)</translation>
     </message>
 </context>
 <context>
     <name>BaseSqlTableModel</name>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="61"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="64"/>
         <source>Played</source>
-        <translation>Проиграна</translation>
+        <translation>Воспроизведено</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="63"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
         <source>Artist</source>
         <translation>Исполнитель</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="65"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="68"/>
         <source>Title</source>
         <translation>Название</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="67"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="70"/>
         <source>Album</source>
         <translation>Альбом</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="69"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="72"/>
         <source>Album Artist</source>
         <translation>Исполнитель альбома</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="71"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="74"/>
         <source>Genre</source>
         <translation>Жанр</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="73"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="76"/>
         <source>Composer</source>
         <translation>Композитор</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="75"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="78"/>
         <source>Grouping</source>
-        <translation>Группировка</translation>
+        <translation>Группа</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="77"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="80"/>
         <source>Year</source>
         <translation>Год</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="79"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="82"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="81"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="84"/>
         <source>Location</source>
         <translation>Местоположение</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="83"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="86"/>
         <source>Comment</source>
         <translation>Комментарий</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="85"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="88"/>
         <source>Duration</source>
         <translation>Продолжительность</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="87"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="90"/>
         <source>Rating</source>
         <translation>Рейтинг</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="89"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="92"/>
         <source>Bitrate</source>
         <translation>Битрейт</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="91"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="94"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="93"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="96"/>
         <source>Track #</source>
-        <translation>Трек #</translation>
+        <translation>Дорожка #</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="95"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="98"/>
         <source>Date Added</source>
         <translation>Дата добавления</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="97"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="100"/>
         <source>#</source>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="99"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="102"/>
         <source>Timestamp</source>
-        <translation>Штамп времени</translation>
+        <translation>Дата создания</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="101"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="104"/>
         <source>Key</source>
-        <translation>Ключ</translation>
+        <translation>Тональность</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="103"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="106"/>
         <source>BPM Lock</source>
         <translation>Блокировка BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="105"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="108"/>
         <source>Preview</source>
         <translation>Предварительный просмотр</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="107"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="110"/>
         <source>Cover Art</source>
-        <translation>Обложка игры</translation>
+        <translation>Обложка</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="109"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="112"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Выравнивание громкости</translation>
     </message>
 </context>
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="204"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="205"/>
         <source>Couldn&apos;t load track.</source>
-        <translation>Не удалось загрузить трек.</translation>
+        <translation>Не удалось загрузить дорожку.</translation>
     </message>
 </context>
 <context>
@@ -377,12 +377,12 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="38"/>
         <source>Add to Quick Links</source>
-        <translation>Добавить в ссылки</translation>
+        <translation>Добавить в Быстрые Ссылки</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="41"/>
         <source>Remove from Quick Links</source>
-        <translation>Удалите из ссылки</translation>
+        <translation>Удалите из Быстрых Ссылок</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="44"/>
@@ -392,7 +392,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="59"/>
         <source>Quick Links</source>
-        <translation>Быстрые ссылки</translation>
+        <translation>Быстрые Ссылки</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="65"/>
@@ -512,7 +512,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Выравнивание громкости</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="43"/>
@@ -2533,7 +2533,7 @@
 <context>
     <name>CrateFeature</name>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="292"/>
+        <location filename="../../src/library/cratefeature.cpp" line="282"/>
         <source>New Crate</source>
         <translation>Новый ящик</translation>
     </message>
@@ -2544,8 +2544,8 @@
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="36"/>
-        <location filename="../../src/library/cratefeature.cpp" line="290"/>
-        <location filename="../../src/library/cratefeature.cpp" line="801"/>
+        <location filename="../../src/library/cratefeature.cpp" line="280"/>
+        <location filename="../../src/library/cratefeature.cpp" line="807"/>
         <source>Create New Crate</source>
         <translation>Создать новый ящик</translation>
     </message>
@@ -2556,14 +2556,14 @@
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="48"/>
-        <location filename="../../src/library/cratefeature.cpp" line="261"/>
+        <location filename="../../src/library/cratefeature.cpp" line="253"/>
         <source>Lock</source>
         <translation>Замок</translation>
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="64"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>Экспорт трек файлов</translation>
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="68"/>
@@ -2576,41 +2576,31 @@
         <translation>Анализировать весь ящик</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="78"/>
+        <location filename="../../src/library/cratefeature.cpp" line="76"/>
         <source>Auto DJ Track Source</source>
         <translation>Источник трек DJ авто</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="291"/>
-        <location filename="../../src/library/cratefeature.cpp" line="408"/>
+        <location filename="../../src/library/cratefeature.cpp" line="281"/>
+        <location filename="../../src/library/cratefeature.cpp" line="398"/>
         <source>Enter name for new crate:</source>
         <translation>Введите имя для новой ящик:</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="366"/>
+        <location filename="../../src/library/cratefeature.cpp" line="356"/>
         <source>Enter new name for crate:</source>
         <translation>Введите новое имя для ящиков:</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="411"/>
+        <location filename="../../src/library/cratefeature.cpp" line="401"/>
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a crate</extracomment>
         <translation>_Copy</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="663"/>
-        <source>Playlist Creation Failed</source>
-        <translation>Ошибка создания плейлиста</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/cratefeature.cpp" line="664"/>
-        <source>An unknown error occurred while creating playlist: </source>
-        <translation>Произошла неизвестная ошибка при создании списка воспроизведения: </translation>
-    </message>
-    <message>
-        <location filename="../../src/library/cratefeature.cpp" line="127"/>
-        <location filename="../../src/library/cratefeature.cpp" line="795"/>
+        <location filename="../../src/library/cratefeature.cpp" line="121"/>
+        <location filename="../../src/library/cratefeature.cpp" line="801"/>
         <source>Crates</source>
         <translation>Ящики</translation>
     </message>
@@ -2622,78 +2612,84 @@
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="60"/>
-        <location filename="../../src/library/cratefeature.cpp" line="691"/>
+        <location filename="../../src/library/cratefeature.cpp" line="697"/>
         <source>Export Crate</source>
         <translation>Обрешеткой экспорта</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="407"/>
+        <location filename="../../src/library/cratefeature.cpp" line="397"/>
         <source>Duplicate Crate</source>
         <translation>Дублировать обрешеткой</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="261"/>
+        <location filename="../../src/library/cratefeature.cpp" line="253"/>
         <source>Unlock</source>
         <translation>Разблокировать</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="320"/>
-        <location filename="../../src/library/cratefeature.cpp" line="441"/>
+        <location filename="../../src/library/cratefeature.cpp" line="310"/>
+        <location filename="../../src/library/cratefeature.cpp" line="431"/>
+        <location filename="../../src/library/cratefeature.cpp" line="666"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Произошла неизвестная ошибка при создании ящик: </translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="365"/>
+        <location filename="../../src/library/cratefeature.cpp" line="355"/>
         <source>Rename Crate</source>
         <translation>Переименование обрешеткой</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="379"/>
-        <location filename="../../src/library/cratefeature.cpp" line="383"/>
-        <location filename="../../src/library/cratefeature.cpp" line="421"/>
-        <location filename="../../src/library/cratefeature.cpp" line="425"/>
+        <location filename="../../src/library/cratefeature.cpp" line="369"/>
+        <location filename="../../src/library/cratefeature.cpp" line="373"/>
+        <location filename="../../src/library/cratefeature.cpp" line="411"/>
+        <location filename="../../src/library/cratefeature.cpp" line="415"/>
         <source>Renaming Crate Failed</source>
         <translation>Переименование обрешеткой сбой</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="693"/>
+        <location filename="../../src/library/cratefeature.cpp" line="665"/>
+        <source>Crate Creation Failed</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/cratefeature.cpp" line="699"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>M3U плейлист (*.m3u); M3u8 плейлист (*.m3u8); PLS плейлист (* .pls); Текст CSV (*.csv); Удобочитаемый текст (*.txt)</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="796"/>
+        <location filename="../../src/library/cratefeature.cpp" line="802"/>
         <source>Crates are a great way to help organize the music you want to DJ with.</source>
         <translation>Ящики являются отличным способом помочь организовать музыку, которую вы хотите DJ с.</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="797"/>
+        <location filename="../../src/library/cratefeature.cpp" line="803"/>
         <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.</source>
         <translation>Сделайте ящик для вашего следующего концерта, для ваших любимых electrohouse треков или для ваших самых популярных песен.</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="798"/>
+        <location filename="../../src/library/cratefeature.cpp" line="804"/>
         <source>Crates let you organize your music however you&apos;d like!</source>
         <translation>Ящики позволяют организовать вашу музыку, однако вы хотели!</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="307"/>
-        <location filename="../../src/library/cratefeature.cpp" line="384"/>
-        <location filename="../../src/library/cratefeature.cpp" line="426"/>
+        <location filename="../../src/library/cratefeature.cpp" line="297"/>
+        <location filename="../../src/library/cratefeature.cpp" line="374"/>
+        <location filename="../../src/library/cratefeature.cpp" line="416"/>
         <source>A crate cannot have a blank name.</source>
         <translation>Обрешеткой не может иметь пустое имя.</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="302"/>
-        <location filename="../../src/library/cratefeature.cpp" line="306"/>
-        <location filename="../../src/library/cratefeature.cpp" line="319"/>
-        <location filename="../../src/library/cratefeature.cpp" line="440"/>
+        <location filename="../../src/library/cratefeature.cpp" line="292"/>
+        <location filename="../../src/library/cratefeature.cpp" line="296"/>
+        <location filename="../../src/library/cratefeature.cpp" line="309"/>
+        <location filename="../../src/library/cratefeature.cpp" line="430"/>
         <source>Creating Crate Failed</source>
         <translation>Создание ящиков не удалось</translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="303"/>
-        <location filename="../../src/library/cratefeature.cpp" line="380"/>
-        <location filename="../../src/library/cratefeature.cpp" line="422"/>
+        <location filename="../../src/library/cratefeature.cpp" line="293"/>
+        <location filename="../../src/library/cratefeature.cpp" line="370"/>
+        <location filename="../../src/library/cratefeature.cpp" line="412"/>
         <source>A crate by that name already exists.</source>
         <translation>Ящик с таким именем уже существует.</translation>
     </message>
@@ -2716,7 +2712,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="14"/>
         <location filename="../../src/library/dlganalysis.ui" line="105"/>
-        <location filename="../../src/library/dlganalysis.cpp" line="139"/>
+        <location filename="../../src/library/dlganalysis.cpp" line="141"/>
         <source>Analyze</source>
         <translation>Анализ</translation>
     </message>
@@ -2761,12 +2757,12 @@
         <translation>Запускает beatgrid, ключ и ReplayGain обнаружения на выбранных треков. Не генерировать сигналы для выбранных треков для экономии дискового пространства.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlganalysis.cpp" line="136"/>
+        <location filename="../../src/library/dlganalysis.cpp" line="138"/>
         <source>Stop Analysis</source>
         <translation>Остановить анализ</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlganalysis.cpp" line="156"/>
+        <location filename="../../src/library/dlganalysis.cpp" line="158"/>
         <source>Analyzing %1/%2 %3%</source>
         <translation>Анализируя %1 / %2 %3%</translation>
     </message>
@@ -2774,25 +2770,25 @@
 <context>
     <name>DlgAutoDJ</name>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="146"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="141"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
-        <translation type="unfinished"/>
+        <translation>Одна дека должна быть остановлена для включения режима автосведения.</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="154"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="149"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
-        <translation type="unfinished"/>
+        <translation>Дека 3 и 4 должны быть остановлены для включения режима автосведения.</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="182"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="183"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="177"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="178"/>
         <source>Disable Auto DJ</source>
         <translation>Отключить автоматический DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="145"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="153"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="140"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="148"/>
         <source>Auto DJ</source>
         <translation>Auto DJ</translation>
     </message>
@@ -2859,8 +2855,8 @@
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="153"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="175"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="176"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="170"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="171"/>
         <source>Enable Auto DJ</source>
         <translation>Включить автоматический DJ</translation>
     </message>
@@ -3242,13 +3238,13 @@ You tried to learn: %1,%2</source>
     <name>DlgPrefAutoDJ</name>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="10"/>
-        <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="42"/>
+        <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="40"/>
         <source>Off</source>
         <translation>Выкл</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="11"/>
-        <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="43"/>
+        <location filename="../../src/preferences/dialog/dlgprefautodj.cpp" line="41"/>
         <source>On</source>
         <translation>На</translation>
     </message>
@@ -3283,7 +3279,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="14"/>
         <source>Auto DJ Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Настройки автосведения</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="46"/>
@@ -3532,100 +3528,100 @@ You tried to learn: %1,%2</source>
 <context>
     <name>DlgPrefController</name>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="119"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="117"/>
         <source>Apply device settings?</source>
         <translation>Применить настройки устройства?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="120"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="118"/>
         <source>Your settings must be applied before starting the learning wizard.
 Apply settings and continue?</source>
         <translation>Ваши параметры должны применяться перед запуском мастера обучения.
 Применить параметры и продолжить?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="167"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="165"/>
         <source>None</source>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="172"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="170"/>
         <source>%1 by %2</source>
         <translation>%1 в %2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="189"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="187"/>
         <source>No Name</source>
         <translation>Без имени</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="198"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="196"/>
         <source>No Description</source>
         <translation>Нет описания</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="207"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="205"/>
         <source>No Author</source>
         <translation>Без автора</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="440"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="447"/>
         <source>Troubleshooting</source>
         <translation>Устранение неполадок</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="510"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="517"/>
         <source>Filename</source>
         <translation>Имя файла</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="512"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="519"/>
         <source>Function Prefix</source>
         <translation>Префикс функции</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="514"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="521"/>
         <source>Built-in</source>
         <translation>Встроенная</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="590"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="597"/>
         <source>Clear Input Mappings</source>
         <translation>Очистить ввода сопоставления</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="591"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="598"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation>Вы уверены, что хотите очистить все входные сопоставления?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="631"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="638"/>
         <source>Clear Output Mappings</source>
         <translation>Очистить вывода сопоставлений</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="632"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="639"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation>Вы уверены, что хотите очистить все сопоставления выходных?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="644"/>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="654"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="651"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="661"/>
         <source>Add Script</source>
         <translation>Добавление сценария</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="646"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="653"/>
         <source>Controller Script Files (*.js)</source>
         <translation>Файлы сценариев контроллера (*.js)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="655"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="662"/>
         <source>Could not add script file: &apos;%s&apos;</source>
         <translation>Не удалось добавить файл сценария: «%s»</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="725"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="732"/>
         <source>Please select a script from the list to open.</source>
         <translation>Пожалуйста, выберите сценарий из списка, чтобы открыть.</translation>
     </message>
@@ -3821,22 +3817,22 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcontrols.cpp" line="91"/>
         <source>4%</source>
-        <translation type="unfinished"/>
+        <translation>4%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcontrols.cpp" line="92"/>
         <source>6% (semitone)</source>
-        <translation type="unfinished"/>
+        <translation>6% (полутон)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcontrols.cpp" line="95"/>
         <source>16%</source>
-        <translation type="unfinished"/>
+        <translation>16%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcontrols.cpp" line="96"/>
         <source>24%</source>
-        <translation type="unfinished"/>
+        <translation>24%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcontrols.cpp" line="240"/>
@@ -5549,29 +5545,34 @@ milliseconds</extracomment>
 <context>
     <name>DlgPrefWaveform</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="15"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="17"/>
         <source>Filtered</source>
         <translation>Фильтрация</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="16"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="18"/>
         <source>HSV</source>
         <translation>HSV</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="17"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="19"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="81"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="85"/>
         <source>OpenGL not available</source>
         <translation>OpenGL не доступны</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="196"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="211"/>
         <source>dropped frames</source>
         <translation>пропуск кадров</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="236"/>
+        <source>Cached waveforms occupy %1 MiB on disk.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -5582,34 +5583,34 @@ milliseconds</extracomment>
         <translation>Настройки сигнала</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="42"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="112"/>
         <source>Frame rate</source>
         <translation>Частота кадров</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="134"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="157"/>
         <source>Summary type</source>
         <translation>Краткий вид</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="419"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="70"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
         <translation>Показывает, какая версия OpenGL поддерживается на текущей платформе.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="163"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="319"/>
         <source>Overview type</source>
         <translation>Обзор типов</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="35"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="389"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="302"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="309"/>
         <source>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</source>
         <extracomment>The main waveforms</extracomment>
         <translation>Выберите из различных типов дисплеев для сигнала, которые отличаются прежде всего в уровне детализации, показан в виде волны.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="321"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="63"/>
         <source>Normalize waveform overview</source>
         <translation>Нормализации сигнала обзор</translation>
     </message>
@@ -5619,90 +5620,110 @@ milliseconds</extracomment>
         <translation>Средняя частота кадров</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="373"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="22"/>
         <source>Visual gain</source>
         <translation>Визуальный выигрыш</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="396"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="393"/>
         <source>Default zoom level</source>
         <extracomment>Waveform zoom</extracomment>
         <translation>Уровень масштаба по умолчанию</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="409"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="326"/>
         <source>Displays the actual frame rate.</source>
         <translation>Отображается фактическая частота кадров.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="191"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="172"/>
         <source>Visual gain of the middle frequencies</source>
         <translation>Визуальные прирост средних частот</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="112"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="336"/>
         <source>End of track warning</source>
         <translation>Конец пути предупреждения</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="150"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="138"/>
         <source>OpenGL status</source>
         <translation>OpenGL статус</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="170"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="80"/>
         <source>Highlight the waveforms when the last seconds of a track remains.</source>
         <translation>Выделите сигналы, когда остается на последних секундах трек.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="173"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="83"/>
         <source> seconds</source>
         <translation> секунд</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="210"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="191"/>
         <source>Low</source>
         <translation>Низкая</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="223"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="204"/>
         <source>Middle</source>
         <translation>Средний</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="236"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="217"/>
         <source>Global</source>
         <translation>Глобальные</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="249"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="230"/>
         <source>Visual gain of the high frequencies</source>
         <translation>Визуальные усиление высоких частот</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="268"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="249"/>
         <source>Visual gain of the low frequencies</source>
         <translation>Визуальные усиления низких частот</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="287"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="268"/>
         <source>High</source>
         <translation>Высокая</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="300"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="281"/>
         <source>Global visual gain</source>
         <translation>Глобальные выгоды визуальные</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="335"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="406"/>
         <source>Synchronize zoom level across all waveform displays.</source>
         <translation>Синхронизация всех дисплеев сигнала уровень масштабирования.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="338"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="409"/>
         <source>Synchronize zoom level across all waveforms</source>
         <translation>Синхронизация всех сигналов уровня масштабирования</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="416"/>
+        <source>Caching</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="428"/>
+        <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="438"/>
+        <source>Clear Cached Waveforms</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="445"/>
+        <source>Enable Waveform Caching</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -5970,7 +5991,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="84"/>
         <source>(status text)</source>
-        <translation type="unfinished"/>
+        <translation>(status text)</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="112"/>
@@ -6266,7 +6287,7 @@ milliseconds</extracomment>
         <translation>&amp; Отмена</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="169"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="171"/>
         <source>kbps</source>
         <translation>кбит/с</translation>
     </message>
@@ -6576,52 +6597,52 @@ milliseconds</extracomment>
 <context>
     <name>HidController</name>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="182"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="181"/>
         <source>Generic HID Mouse</source>
         <translation>Общий HID мыши</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="183"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="182"/>
         <source>Generic HID Joystick</source>
         <translation>Универсальный СПРЯТАЛ джойстик</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="184"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="183"/>
         <source>Generic HID Gamepad</source>
         <translation>Универсальный контроллер HID</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="185"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="184"/>
         <source>Generic HID Keyboard</source>
         <translation>Общий HID клавиатуры</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="186"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="185"/>
         <source>Generic HID Multiaxis Controller</source>
         <translation>Универсальный контроллер HID многоосные</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="187"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="186"/>
         <source>Unknown HID Desktop Device</source>
         <translation>Неизвестное устройство HID Обои</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="194"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="193"/>
         <source>HID Infrared Control</source>
         <translation>HID ИК-управления</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="196"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="195"/>
         <source>Unknown Apple HID Device</source>
         <translation>Неизвестные Apple СПРЯТАЛ устройство</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="201"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="200"/>
         <source>HID Unknown Device</source>
         <translation>HID неизвестное устройство</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="207"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="206"/>
         <source>HID Interface Number</source>
         <translation>HID интерфейс номер</translation>
     </message>
@@ -6669,13 +6690,13 @@ milliseconds</extracomment>
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1099"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1102"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Безопасный режим включен</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1108"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1111"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -6683,57 +6704,57 @@ support.</source>
         <translation>Отсутствует поддержка OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2008"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2012"/>
         <source>activate</source>
         <translation>активировать</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2013"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2017"/>
         <source>toggle</source>
         <translation>Переключение</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2023"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2027"/>
         <source>right</source>
         <translation>право</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2028"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2032"/>
         <source>left</source>
         <translation>слева</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2033"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2037"/>
         <source>right small</source>
         <translation>право малых</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2038"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2042"/>
         <source>left small</source>
         <translation>оставил небольшой</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2043"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2047"/>
         <source>up</source>
         <translation>вверх</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2048"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2052"/>
         <source>down</source>
         <translation>вниз</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2053"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2057"/>
         <source>up small</source>
         <translation>до малого</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2058"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2062"/>
         <source>down small</source>
         <translation>вниз малых</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2090"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2095"/>
         <source>Shortcut</source>
         <translation>Ярлык</translation>
     </message>
@@ -6856,164 +6877,164 @@ support.</source>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxx.cpp" line="288"/>
+        <location filename="../../src/mixxx.cpp" line="286"/>
         <source>Choose music library directory</source>
         <translation>Выберите каталог библиотеки музыки</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="654"/>
+        <location filename="../../src/mixxx.cpp" line="664"/>
         <source>Sound Device Busy</source>
         <translation>Звуковое устройство занят</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="657"/>
+        <location filename="../../src/mixxx.cpp" line="667"/>
         <source>Mixxx was unable to access all the configured sound devices. Another application is using a sound device Mixxx is configured to use or a device is not plugged in.</source>
         <translation>Mixxx смог получить доступ к все настроенные звуковых устройств. Другое приложение использует звук устройство Mixxx настроен для использования или не подключен.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="662"/>
+        <location filename="../../src/mixxx.cpp" line="672"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Повторите попытку&lt;/b&gt; после закрытия другие приложения или повторное подключение звукового устройства</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="666"/>
-        <location filename="../../src/mixxx.cpp" line="727"/>
+        <location filename="../../src/mixxx.cpp" line="676"/>
+        <location filename="../../src/mixxx.cpp" line="737"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Перенастройка&lt;/b&gt; Mixxx в настройки звукового устройства.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="669"/>
+        <location filename="../../src/mixxx.cpp" line="679"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Получите &lt;b&gt;помощь&lt;/b&gt; от Mixxx Wiki.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="672"/>
-        <location filename="../../src/mixxx.cpp" line="730"/>
+        <location filename="../../src/mixxx.cpp" line="682"/>
+        <location filename="../../src/mixxx.cpp" line="740"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Выход&lt;/b&gt; Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="677"/>
+        <location filename="../../src/mixxx.cpp" line="687"/>
         <source>Retry</source>
         <translation>Повтор</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="679"/>
-        <location filename="../../src/mixxx.cpp" line="736"/>
+        <location filename="../../src/mixxx.cpp" line="689"/>
+        <location filename="../../src/mixxx.cpp" line="746"/>
         <source>Reconfigure</source>
         <translation>Повторная настройка</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="681"/>
+        <location filename="../../src/mixxx.cpp" line="691"/>
         <source>Help</source>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="683"/>
-        <location filename="../../src/mixxx.cpp" line="737"/>
+        <location filename="../../src/mixxx.cpp" line="693"/>
+        <location filename="../../src/mixxx.cpp" line="747"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="719"/>
+        <location filename="../../src/mixxx.cpp" line="729"/>
         <source>No Output Devices</source>
         <translation>Нет устройства вывода</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="720"/>
+        <location filename="../../src/mixxx.cpp" line="730"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx был настроен без каких-либо звуковых устройств вывода. Обработка аудио будет отключен без настроенного выходного устройства.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="724"/>
+        <location filename="../../src/mixxx.cpp" line="734"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Продолжить&lt;/b&gt; без каких-либо результатов.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="735"/>
+        <location filename="../../src/mixxx.cpp" line="745"/>
         <source>Continue</source>
         <translation>Продолжить</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="873"/>
+        <location filename="../../src/mixxx.cpp" line="882"/>
         <source>Load track to Deck %1</source>
         <translation>Загрузить трек палубу %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="874"/>
+        <location filename="../../src/mixxx.cpp" line="883"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>Палуба %1 в настоящее время играет трек.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="876"/>
+        <location filename="../../src/mixxx.cpp" line="885"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Вы уверены, что вы хотите, чтобы загрузить новый трек?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="992"/>
+        <location filename="../../src/mixxx.cpp" line="994"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Существует нет устройство ввода, выбранные для этого винила.
 Сначала выберите устройство ввода в параметрах звукового оборудования.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1003"/>
+        <location filename="../../src/mixxx.cpp" line="1005"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Существует нет устройство ввода, выбранные для этого passthrough.
 Сначала выберите устройство ввода в параметрах звукового оборудования.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1014"/>
+        <location filename="../../src/mixxx.cpp" line="1016"/>
         <source>There is no input device selected for this microphone.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Существует нет устройство ввода, отобранных для этого микрофона.
 Сначала выберите устройство ввода в параметрах звукового оборудования.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1070"/>
+        <location filename="../../src/mixxx.cpp" line="1072"/>
         <source>Error in skin file</source>
         <translation>Ошибка в файле обложки</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1071"/>
+        <location filename="../../src/mixxx.cpp" line="1073"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>Не удается загрузить выбранный кожи.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1166"/>
+        <location filename="../../src/mixxx.cpp" line="1160"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL Прямой рендеринг</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1167"/>
+        <location filename="../../src/mixxx.cpp" line="1161"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation>Прямой рендеринг не включен на вашем компьютере. &lt;br&gt;&lt;br&gt;Это означает, что сигнала показывает будет быть очень &lt;br&gt;&lt;b&gt;медленно и может сильно налоговые вашего процессора&lt;/b&gt;. Обновить конфигурацию &lt;br&gt;для включения прямого рендеринга, либо отключить &lt;br&gt;сигнала отображается в параметрах Mixxx, выбрав раздел &lt;br&gt;«Пустой» как отображение сигнала в «Интерфейс». &lt;br&gt; &lt;br&gt;Примечание: Если вы используете NVIDIA аппаратных, &lt;br&gt;прямого рендеринга не могут присутствовать, но вы должны &lt;br&gt;не опыт деградации производительности.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1201"/>
-        <location filename="../../src/mixxx.cpp" line="1209"/>
-        <location filename="../../src/mixxx.cpp" line="1218"/>
+        <location filename="../../src/mixxx.cpp" line="1195"/>
+        <location filename="../../src/mixxx.cpp" line="1203"/>
+        <location filename="../../src/mixxx.cpp" line="1212"/>
         <source>Confirm Exit</source>
         <translation>Подтвердить выход</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1202"/>
+        <location filename="../../src/mixxx.cpp" line="1196"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>В настоящее время играет для загара. Выход Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1210"/>
+        <location filename="../../src/mixxx.cpp" line="1204"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>В настоящее время играет сэмплер. Выход Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1219"/>
+        <location filename="../../src/mixxx.cpp" line="1213"/>
         <source>The preferences window is still open.</source>
         <translation>Окно настроек остается открытым.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1220"/>
+        <location filename="../../src/mixxx.cpp" line="1214"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Отменить все изменения и закрыть Mixxx?</translation>
     </message>
@@ -7872,14 +7893,14 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="83"/>
+        <location filename="../../src/widget/wbattery.cpp" line="78"/>
         <source>%1 minutes</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="85"/>
+        <location filename="../../src/widget/wbattery.cpp" line="80"/>
         <source>%1:%2</source>
-        <translation type="unfinished"/>
+        <translation>%1:%2</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="27"/>
@@ -10124,32 +10145,32 @@ Mixxx требует QT с поддержкой SQLite. Пожалуйста, п
 <context>
     <name>WBattery</name>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="111"/>
+        <location filename="../../src/widget/wbattery.cpp" line="106"/>
         <source>Time until charged unknown.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="113"/>
+        <location filename="../../src/widget/wbattery.cpp" line="108"/>
         <source>Time until charged: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="124"/>
+        <location filename="../../src/widget/wbattery.cpp" line="119"/>
         <source>Time left unknown.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="126"/>
+        <location filename="../../src/widget/wbattery.cpp" line="121"/>
         <source>Time left: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="132"/>
+        <location filename="../../src/widget/wbattery.cpp" line="127"/>
         <source>Battery fully charged.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wbattery.cpp" line="137"/>
+        <location filename="../../src/widget/wbattery.cpp" line="132"/>
         <source>Battery status unknown.</source>
         <translation type="unfinished"/>
     </message>
@@ -10234,7 +10255,7 @@ Mixxx требует QT с поддержкой SQLite. Пожалуйста, п
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="79"/>
         <source>Load Track to Deck &amp;%1</source>
-        <translation>Загрузить трек на палубе &amp; %1</translation>
+        <translation>Загрузить трек в деку &amp;%1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="80"/>
@@ -10684,7 +10705,7 @@ Mixxx требует QT с поддержкой SQLite. Пожалуйста, п
     <name>WSearchLineEdit</name>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="19"/>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
         <source>Clear input</source>
         <comment>Clear the search bar input field</comment>
         <translation>Ясно, вход</translation>
@@ -10696,50 +10717,50 @@ Mixxx требует QT с поддержкой SQLite. Пожалуйста, п
         <translation>Ctrl + F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="173"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
         <source>Search...</source>
         <comment>noun</comment>
         <translation>Поиск...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="174"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
         <source>Search</source>
         <comment>noun</comment>
         <translation>Поиск</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="174"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
         <source>Enter a string to search for</source>
         <translation>Введите строку для поиска</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
         <source>Shortcut</source>
         <translation>Ярлык</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
         <source>Ctrl+F</source>
         <translation>Ctrl + F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
         <source>Focus</source>
         <comment>Give search bar input focus</comment>
         <translation>Фокус</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
         <source>Ctrl+Backspace</source>
         <translation>Ctrl + Backspace</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
         <source>Esc</source>
         <translation>ESC</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
         <source>Exit search</source>
         <comment>Exit search bar and leave focus</comment>
         <translation>Поиск выхода</translation>
@@ -10748,219 +10769,219 @@ Mixxx требует QT с поддержкой SQLite. Пожалуйста, п
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="79"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="69"/>
         <source>Add to Playlist</source>
         <translation>Добавить в плейлист</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="81"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="71"/>
         <source>Add to Crate</source>
         <translation>Добавить в ящик</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="77"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="67"/>
         <source>Load to Sampler</source>
         <translation>Загрузить сборник</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="83"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="73"/>
         <source>BPM Options</source>
         <translation>Параметры BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="85"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="75"/>
         <source>Cover Art</source>
         <translation>Обложка игры</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="115"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="105"/>
         <source>ESC</source>
         <comment>Focus</comment>
         <translation>ESC</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="375"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="364"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="378"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="367"/>
         <source>Hide from Library</source>
         <translation>Скрыть из библиотеки</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="381"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="370"/>
         <source>Unhide from Library</source>
         <translation>Отобразить из библиотеки</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="384"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="373"/>
         <source>Purge from Library</source>
         <translation>Удалить из библиотеки</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="387"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="376"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="391"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="380"/>
         <source>Open in File Browser</source>
         <translation>Открыть в браузере файл</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="402"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="391"/>
         <source>Reload Metadata from File</source>
         <translation>Обновить метаданные из файла</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="406"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="395"/>
         <source>Get Metadata from MusicBrainz</source>
         <translation>Получить метаданные из MusicBrainz</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="761"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1369"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="795"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1403"/>
         <source>Create New Playlist</source>
         <translation>Создать новый плейлист</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="791"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1431"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="825"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1465"/>
         <source>Create New Crate</source>
         <translation>Создать новый ящик</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1370"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1404"/>
         <source>Enter name for new playlist:</source>
         <translation>Введите имя для нового списка воспроизведения:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1372"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1406"/>
         <source>New Playlist</source>
         <translation>Новый список воспроизведения</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1379"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1383"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1392"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1413"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1417"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1426"/>
         <source>Playlist Creation Failed</source>
         <translation>Ошибка создания плейлиста</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1380"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1414"/>
         <source>A playlist by that name already exists.</source>
         <translation>Плейлист с таким именем уже существует.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1384"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1418"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Список воспроизведения не может иметь пустое имя.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1393"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1427"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Произошла неизвестная ошибка при создании списка воспроизведения: </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1432"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1466"/>
         <source>Enter name for new crate:</source>
         <translation>Введите имя для новой ящик:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1433"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1467"/>
         <source>New Crate</source>
         <translation>Новый ящик</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1441"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1446"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1457"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1475"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1480"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1491"/>
         <source>Creating Crate Failed</source>
         <translation>Создание ящиков не удалось</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1442"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1476"/>
         <source>A crate by that name already exists.</source>
         <translation>Ящик с таким именем уже существует.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1447"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1481"/>
         <source>A crate cannot have a blank name.</source>
         <translation>Обрешеткой не может иметь пустое имя.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1458"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1492"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Произошла неизвестная ошибка при создании ящик: </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="410"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="399"/>
         <source>Load to Preview Deck</source>
         <translation>Загрузить для просмотра палубе</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="395"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="384"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>Добавить в очередь Auto DJ (внизу)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="398"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="387"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>Добавить в очередь Auto DJ (сверху)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="417"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="406"/>
         <source>Reset Play Count</source>
         <translation>Сбросить счетчик воспроизведения</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="421"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="410"/>
         <source>Lock BPM</source>
         <translation>Блокировка BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="422"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="411"/>
         <source>Unlock BPM</source>
         <translation>Разблокировать BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="429"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="418"/>
         <source>Double BPM</source>
         <translation>Двойной BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="430"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="419"/>
         <source>Halve BPM</source>
         <translation>Сократить вдвое BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="431"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="420"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="432"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="421"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="448"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="437"/>
         <source>Clear BPM and Beatgrid</source>
         <translation>Очистить BPM и Beatgrid</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="452"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="441"/>
         <source>Reset ReplayGain</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="701"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="735"/>
         <source>Load to Deck %1</source>
         <translation>Загрузить на палубу %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="720"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="754"/>
         <source>Sampler %1</source>
         <translation>Сборники %1</translation>
     </message>
