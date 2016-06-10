@@ -20,11 +20,6 @@ LibraryFeature::~LibraryFeature() {
     
 }
 
-void LibraryFeature::bindSidebarWidget(WLibrary* pPane, KeyboardEventFilter *) {
-    QTreeView* tree = new QTreeView(pPane);
-    tree->setModel(getChildModel());
-}
-
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {
     QString lastPlaylistDirectory = m_pConfig->getValueString(
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),

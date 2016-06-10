@@ -21,6 +21,7 @@
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 
 class TrackModel;
 class WLibrarySidebar;
@@ -77,8 +78,8 @@ class LibraryFeature : public QObject {
     
     // Reimplement this to register custem views with the library widget,
     // at the sidebar expanded pane
-    virtual void bindSidebarWidget(WLibrary* pPane,
-                                   KeyboardEventFilter*);
+    virtual void bindSidebarWidget(WLibrary*,
+                                   KeyboardEventFilter*) {}
     
     virtual TreeItemModel* getChildModel() = 0;
 
