@@ -100,10 +100,11 @@ void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
     //qDebug() << "AutoDJFeature::bindPaneWidget" << pLibraryWidget;
     m_pTrackTableView = new WTrackTableView(pLibraryWidget, m_pConfig, 
                                             m_pTrackCollection, false);
+    
     m_pTrackTableView->installEventFilter(pKeyboard);
     pLibraryWidget->registerView(m_sAutoDJViewName, m_pTrackTableView);
-    
-    if (m_pAutoDJView != nullptr) {
+
+    if (m_pAutoDJView) {
         m_pAutoDJView->setTrackTableView(m_pTrackTableView, m_pLibrary);
     }
 }
@@ -127,7 +128,7 @@ void AutoDJFeature::bindSidebarWidget(WLibrary* pSidebarWidget,
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
     
-    if (m_pTrackTableView != nullptr) {
+    if (m_pTrackTableView) {
         m_pAutoDJView->setTrackTableView(m_pTrackTableView, m_pLibrary);
     }
 }
