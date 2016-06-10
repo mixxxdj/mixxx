@@ -34,8 +34,9 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(-1),
-          m_pAutoDJProcessor(NULL),
-          m_pAutoDJView(NULL),
+          m_pAutoDJProcessor(nullptr),
+          m_pAutoDJView(nullptr),
+          m_pTrackTableView(nullptr),
           m_autoDjCratesDao(pTrackCollection->getDatabase(),
                             pTrackCollection->getTrackDAO(),
                             pTrackCollection->getCrateDAO(),
@@ -94,15 +95,24 @@ QIcon AutoDJFeature::getIcon() {
     return QIcon(":/images/library/ic_library_autodj.png");
 }
 
-void AutoDJFeature::bindPaneWidget(WLibrary* libraryWidget,
-                               KeyboardEventFilter* keyboard) {
-    m_pAutoDJView = new DlgAutoDJ(libraryWidget,
-                                  m_pConfig,
-                                  m_pLibrary,
-                                  m_pAutoDJProcessor,
-                                  m_pTrackCollection,
-                                  keyboard);
-    libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
+void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
+                               KeyboardEventFilter* pKeyboard) {
+    //qDebug() << "AutoDJFeature::bindPaneWidget" << pLibraryWidget;
+    m_pTrackTableView = new WTrackTableView(pLibraryWidget, m_pConfig, 
+                                            m_pTrackCollection, false);
+    m_pTrackTableView->installEventFilter(pKeyboard);
+    pLibraryWidget->registerView(m_sAutoDJViewName, m_pTrackTableView);
+    
+    if (m_pAutoDJView != nullptr) {
+        m_pAutoDJView->setTrackTableView(m_pTrackTableView, m_pLibrary);
+    }
+}
+
+void AutoDJFeature::bindSidebarWidget(WLibrary* pSidebarWidget, 
+                                      KeyboardEventFilter*) {
+    //qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
+    m_pAutoDJView = new DlgAutoDJ(pSidebarWidget, m_pAutoDJProcessor);
+    pSidebarWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -116,6 +126,10 @@ void AutoDJFeature::bindPaneWidget(WLibrary* libraryWidget,
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
+    
+    if (m_pTrackTableView != nullptr) {
+        m_pAutoDJView->setTrackTableView(m_pTrackTableView, m_pLibrary);
+    }
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
