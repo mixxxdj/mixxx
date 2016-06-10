@@ -557,8 +557,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseLibrarySidebar(node));
     } else if (nodeName == "LibrarySidebarExpanded") {
         result = wrapWidget(parseLibrarySidebarExpanded(node));
-    } else if (nodeName == "Library") {
-        result = wrapWidget(parseLibrary(node));
+    } else if (nodeName == "LibraryPane") {
+        result = wrapWidget(parseLibraryPane(node));
     } else if (nodeName == "Key") {
         result = wrapWidget(parseEngineKey(node));
     } else if (nodeName == "Battery") {
@@ -1240,7 +1240,7 @@ void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
     pChild->hide();
 }
 
-QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
+QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
     WLibrary* pLibraryWidget = new WLibrary(m_pParent);
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -1317,7 +1317,7 @@ QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
     QWidget* oldParent = m_pParent;
 
     m_pParent = pSplitter;
-    QWidget* pLibraryWidget = parseLibrary(node);
+    QWidget* pLibraryWidget = parseLibraryPane(node);
 
     QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
     m_pParent = pLibrarySidebarPage;

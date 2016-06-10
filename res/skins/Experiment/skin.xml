@@ -38,9 +38,9 @@
               <SearchBox>
                 <Id>1</Id>
               </SearchBox>
-              <Library>
+              <LibraryPane>
                 <Id>1</Id>
-              </Library>
+              </LibraryPane>
             </Children>
           </WidgetGroup>
        
@@ -51,9 +51,9 @@
               <SearchBox>
                 <Id>2</Id>
               </SearchBox>
-              <Library>
+              <LibraryPane>
                 <Id>2</Id>
-              </Library>
+              </LibraryPane>
             </Children>
           </WidgetGroup>
         </Children>
