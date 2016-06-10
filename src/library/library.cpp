@@ -90,11 +90,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 Library::~Library() {
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
-    delete m_pSidebarExpanded;
-    
-    qDeleteAll(m_panes);
-    m_panes.clear();
-    
+        
     qDeleteAll(m_features);
     m_features.clear();
 
@@ -175,6 +171,13 @@ void Library::bindSidebarExpanded(WLibrary* expandedPane,
     m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard,
                                        LibraryPaneManager::FeaturePane::SidebarExpanded);
     m_sidebarExpandedFocused = true;
+}
+
+void Library::destroyInterface() {
+    delete m_pSidebarExpanded;
+    
+    qDeleteAll(m_panes);
+    m_panes.clear();
 }
 
 
