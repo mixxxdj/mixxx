@@ -56,7 +56,7 @@ DlgAutoDJ::~DlgAutoDJ() {
 
     // Delete m_pTrackTableView before the table model. This is because the
     // table view saves the header state using the model.
-    delete m_pTrackTableView;
+    //delete m_pTrackTableView;
 }
 
 void DlgAutoDJ::setTrackTableView(WTrackTableView* pTrackTableView,
