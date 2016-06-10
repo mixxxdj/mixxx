@@ -13,11 +13,14 @@
 #include <QEvent>
 
 #include "widget/wbasewidget.h"
+#include "library/libraryview.h"
 
-class WLibrarySidebar : public QTreeView, public WBaseWidget {
+class WLibrarySidebar : public QTreeView, public WBaseWidget, public LibraryView {
     Q_OBJECT
   public:
     explicit WLibrarySidebar(QWidget* parent = nullptr);
+    
+    void onShow() override {}
 
     void contextMenuEvent(QContextMenuEvent * event) override;
     void dragMoveEvent(QDragMoveEvent * event) override;
