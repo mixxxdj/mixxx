@@ -180,30 +180,26 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return !locked && formatSupported;
 }
 
-void CrateFeature::bindPaneWidget(WLibrary* libraryWidget,
+void CrateFeature::bindPaneWidget(WLibrary* pLibraryWidget,
                               KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(pLibraryWidget);
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
     connect(edit, SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
-    libraryWidget->registerView(m_sCrateViewName, edit);
+    pLibraryWidget->registerView(m_sCrateViewName, edit);
 }
 
-void CrateFeature::bindSidebarWidget(WLibrary *sidebarWidget, 
+void CrateFeature::bindSidebarWidget(WLibrary *pSidebarWidget, 
                                      KeyboardEventFilter *) {
-//    WLibrarySidebar* pSidebar = new WLibrarySidebar(sidebarWidget);
-//    pSidebar->setModel(getChildModel());
+    WLibrarySidebar* pSidebar = new WLibrarySidebar(pSidebarWidget);
     
-//    sidebarWidget->registerView(getViewName(), pSidebar);
+    pSidebar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    pSidebar->setModel(getChildModel());
+    pSidebarWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(sidebarWidget);
-    edit->setHtml(getRootViewHtml());
-    edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)),
-            this, SLOT(htmlLinkClicked(const QUrl)));
-    sidebarWidget->registerView(m_sCrateViewName, edit);
+    pSidebarWidget->registerView(getViewName(), pSidebar);
 }
 
 TreeItemModel* CrateFeature::getChildModel() {

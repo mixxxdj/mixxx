@@ -115,7 +115,7 @@ void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
     m_panes[id]->bindSearchBar(searchLine);
 }
 
-void Library::bindPaneWidget(WButtonBar* sidebar) {    
+void Library::bindSidebarWidget(WButtonBar* sidebar) {    
     for (LibraryFeature* f : m_features) {
         QAbstractButton* button = sidebar->addButton(f->getIcon(), f->title());
         connect(button, SIGNAL(clicked()), f, SLOT(activate()));
@@ -169,10 +169,12 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
 void Library::bindSidebarExpanded(WLibrary* expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
     m_pSidebarExpanded = new LibraryPaneManager;
+    connect(m_pSidebarExpanded, SIGNAL(focused()),
+            this, SLOT(slotPaneFocused()));
     m_pSidebarExpanded->addFeatures(m_features);    
     m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard,
                                        LibraryPaneManager::FeaturePane::SidebarExpanded);
-    m_focusedPane = -1;
+    m_sidebarExpandedFocused = true;
 }
 
 
@@ -187,6 +189,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
     connect(feature, SIGNAL(switchToView(const QString&)),
             this, SLOT(slotSwitchToView(const QString&)));
+    connect(feature, SIGNAL(switchToViewChild(const QString&)),
+            this, SLOT(slotSwitchToViewChild(const QString&)));
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -201,22 +205,22 @@ void Library::addFeature(LibraryFeature* feature) {
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "Library::slotShowTrackModel" << m_focusedPane;
-    
-    LibraryPaneManager* pane = getFocusedPane();
-    DEBUG_ASSERT_AND_HANDLE(pane) {
-        return;
-    }
-    pane->slotShowTrackModel(model);
+    m_panes[m_focusedPane]->slotShowTrackModel(model);
 }
 
 void Library::slotSwitchToView(const QString& view) {
     //qDebug() << "Library::slotSwitchToView" << view;
     
-    LibraryPaneManager* pane = getFocusedPane();
-    DEBUG_ASSERT_AND_HANDLE(pane) {
-        return;
+    if (m_sidebarExpandedFocused) {
+        m_pSidebarExpanded->slotSwitchToView(view);
     }
-    pane->slotSwitchToView(view);
+    else {
+        m_panes[m_focusedPane]->slotSwitchToView(view);
+    }
+}
+
+void Library::slotSwitchToViewChild(const QString &view) {
+    m_panes[m_focusedPane]->slotSwitchToView(view);
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
@@ -263,8 +267,9 @@ void Library::onSkinLoadFinished() {
         m_focusedPane = m_panes.begin().key();
     }
     else {
-        m_focusedPane = -1;
+        m_sidebarExpandedFocused = true;
     }
+    m_features.first()->activate();
 }
 
 void Library::slotRequestAddDir(QString dir) {
@@ -357,10 +362,18 @@ void Library::slotPaneFocused() {
         return;
     }
     
-    if (pane == m_pSidebarExpanded) m_focusedPane = -1;
-    m_focusedPane = m_panes.key(pane, -1);
+    if (pane == m_pSidebarExpanded) {
+        m_sidebarExpandedFocused = true;
+    }
+    else {
+        m_sidebarExpandedFocused = false;
+        m_focusedPane = m_panes.key(pane, -1);
+        DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
+            return;
+        }
+    }
     
-    qDebug() << "Library::slotPaneFocused" << m_focusedPane;
+    qDebug() << "Library::slotPaneFocused" << m_focusedPane << m_sidebarExpandedFocused;
 }
 
 

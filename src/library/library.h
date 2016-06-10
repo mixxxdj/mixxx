@@ -48,13 +48,12 @@ public:
             RecordingManager* pRecordingManager);
     virtual ~Library();
     
-    void bindPaneWidget(WLibrary* libraryWidget,
-                           KeyboardEventFilter* pKeyboard, int id);
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
+    void bindSidebarWidget(WButtonBar* sidebar);
+    void bindPaneWidget(WLibrary* libraryWidget,
+                        KeyboardEventFilter* pKeyboard, int id);
     void bindSidebarExpanded(WLibrary* expandedPane, 
                              KeyboardEventFilter* pKeyboard);
-    //void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
-    void bindPaneWidget(WButtonBar* sidebar);
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
@@ -86,6 +85,7 @@ public:
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
+    void slotSwitchToViewChild(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
@@ -147,6 +147,7 @@ public:
     
     // -1 for the Sidebar Expanded and >= 0 for the other widgets
     int m_focusedPane;
+    bool m_sidebarExpandedFocused;
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
 };
