@@ -85,7 +85,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
 SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     if (SUCCEEDED(m_hrCoInitialize)) {
         qWarning() << "Cannot reopen MediaFoundation file" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     const QString fileName(getLocalFileName());
@@ -186,7 +186,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     }
 
     // http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
-    hr = m_pReader->SetCurrentPosition(GUID_nullptr, prop);
+    hr = m_pReader->SetCurrentPosition(GUID_NULL, prop);
     if (FAILED(hr)) {
         // nothing we can do here as we can't fail (no facility to other than
         // crashing mixxx)

@@ -421,6 +421,7 @@ class ReplayGain(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
 
+
 class Ebur128Mit(Dependence):
     INTERNAL_PATH = '#lib/libebur128-1.1.0'
     INTERNAL_LINK = False
@@ -436,6 +437,8 @@ class Ebur128Mit(Dependence):
             self.INTERNAL_LINK = True;
             env.Append(CPPPATH=['%s/ebur128' % self.INTERNAL_PATH])
             #env.Append(CPPDEFINES='USE_SPEEX_RESAMPLER') # Required for unused EBUR128_MODE_TRUE_PEAK
+            if not conf.CheckHeader('sys/queue.h'):
+                env.Append(CPPPATH=['%s/ebur128/queue' % self.INTERNAL_PATH])
 
 
 class SoundTouch(Dependence):
