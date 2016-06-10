@@ -224,6 +224,10 @@ WSearchLineEdit:focus {
   selection-color: #222222;
 }
 
+WButtonBar {
+  background-color: #222222;
+}
+
 /* library preview deck */
 #PreviewDeckContainer {
   margin: 4px 0px 0px 0px;
@@ -517,6 +521,11 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
   border: none;
+}
+
+QScrollArea {
+  border: 1px solid #1A1A1A;
+  background-color: #222222;
 }
 
 /*******************************************************************************
@@ -1077,7 +1086,7 @@ WWidgetGroup {
  ** Buttons  *******************************************************************
  *******************************************************************************/
 
-WPushButton {
+WPushButton, QToolButton {
     color: #D2D2D2;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                       stop: 0 #4B4B4B,
@@ -1087,7 +1096,7 @@ WPushButton {
     outline: none;
 }
 
-WPushButton:hover {
+WPushButton:hover, QToolButton:hover {
     color: #D2D2D2;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                       stop: 0 #5F5F5F,
@@ -1096,7 +1105,7 @@ WPushButton:hover {
 }
 
 /*"Pressed" state*/
-WPushButton[value="1"] {
+WPushButton[value="1"], QToolButton:pressed {
     /*color: #FDFDFD;*/
     color: #FDFDFD;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
