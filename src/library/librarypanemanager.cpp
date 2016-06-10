@@ -94,6 +94,7 @@ bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
     }
     
     // Since this event filter is for the entire application (to handle the
-    // mouse event), NEVER return true
+    // mouse event), NEVER return true. If true is returned I will block all
+    // application events and will block the entire application.
     return false;
 }
