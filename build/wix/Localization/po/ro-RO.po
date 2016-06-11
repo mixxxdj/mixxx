@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Sébastien BLAISOT <sebastien@blaisot.org>, 2016
 # titus <titus0818@gmail.com>, 2016
@@ -29,7 +29,7 @@ msgstr "Echipa de dezvoltare Mixxx"
 
 msgctxt "ProductDescription"
 msgid "Open-source Digital DJ software"
-msgstr "Aplicație DJ Digital Opesource"
+msgstr "Aplicaţie DJ Digital Opesource"
 
 msgctxt "Comments"
 msgid "Installs Mixxx"
@@ -43,17 +43,17 @@ msgstr "Acest produs necesită Windows XP sau ulterior."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
-msgstr "Aceiași sau o versiune mai nouă a acestui produs este deja instalată."
+msgstr "Aceiaşi sau o versiune mai nouă a acestui produs este deja instalată."
 
 msgctxt "x64VersionRequired"
 msgid ""
 "You need to install the 64-bit version of this product on 64-bit Windows."
-msgstr "Trebuie să instalați versiunea produsului pe 64-biți pentru Windows."
+msgstr "Trebuie să instalaţi versiunea produsului pe 64-biţi pentru Windows."
 
 msgctxt "x86VersionRequired"
 msgid ""
 "You need to install the 32-bit version of this product on 32-bit Windows."
-msgstr "Trebuie să instalați versiunea pe 32-biți a acestui produs pentru Windows."
+msgstr "Trebuie să instalaţi versiunea pe 32-biţi a acestui produs pentru Windows."
 
 msgctxt "x86VersionWarning"
 msgid ""
@@ -66,7 +66,7 @@ msgctxt "XPWarning"
 msgid ""
 "You are installing Mixxx on an outdated operating system. Some functions may"
 " not work well or at all. We recommend upgrading your operating system."
-msgstr "Instalați Mixxx pe un sistem de operare expirat. Unele funcții este posibil să nu funcționeze corect sau deloc. Vă recomandăm să actualizați sistemul de operare."
+msgstr "Instalaţi Mixxx pe un sistem de operare expirat. Unele funcţii este posibil să nu funcţioneze corect sau deloc. Vă recomandăm să actualizaţi sistemul de operare."
 
 msgctxt "bitWidthMismatch32"
 msgid ""
@@ -89,12 +89,12 @@ msgid ""
 "An older version of Mixxx has been detected. As we changed installer, we can"
 " not smoothly upgrade. Please uninstall older version before installing this"
 " one."
-msgstr "O versiune veche Mixxx a fost detectată. Deoarece am schimbat instalatorul, nu putem actualiza facil. Dezinstalați versiunea veche înaintea instalării acesteia."
+msgstr "O versiune veche Mixxx a fost detectată. Deoarece am schimbat instalatorul, nu putem actualiza facil. Dezinstalaţi versiunea veche înaintea instalării acesteia."
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
-msgstr "{\\WixUI_Font_Title}Atenție"
+msgstr "{\\WixUI_Font_Title}Atenţie"
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
@@ -103,11 +103,11 @@ msgstr "Pachetul complet."
 
 msgctxt "FeatureMainProgramTitle"
 msgid "Core application"
-msgstr "Aplicația de bază"
+msgstr "Aplicaţia de bază"
 
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
-msgstr "Aplicația de bază Mixxx include preconfigurări controllere."
+msgstr "Aplicaţia de bază Mixxx include preconfigurări controllere."
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"
@@ -135,4 +135,4 @@ msgctxt "FeatureTranslationsDescription"
 msgid ""
 "Resource files that allow Mixxx to display in alternate languages, other "
 "than US english"
-msgstr "Fișierele resursă care permit Mixxx să afișeze în alte limbi, altele decât Engleza US"
+msgstr "Fişierele resursă care permit Mixxx să afişeze în alte limbi, altele decât Engleza US"
