@@ -1,11 +1,12 @@
 # 
 # Translators:
+# Raf Van De Meirssche <raf@rafke.be>, 2016
 # Sébastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-01-09 20:21+0000\n"
-"Last-Translator: Sébastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2016-01-14 12:16+0000\n"
+"Last-Translator: Raf Van De Meirssche <raf@rafke.be>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/nl_NL/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,56 +17,56 @@ msgstr ""
 #.  Programm informations
 msgctxt "ApplicationName"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 msgctxt "ManufacturerName"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 msgctxt "ManufacturerFullName"
 msgid "The Mixxx Development Team"
-msgstr ""
+msgstr "Het Mixxx ontwikkellingsteam"
 
 msgctxt "ProductDescription"
 msgid "Open-source Digital DJ software"
-msgstr ""
+msgstr "Open-source Digitale DJ software"
 
 msgctxt "Comments"
 msgid "Installs Mixxx"
-msgstr ""
+msgstr "Installeert Mixxx"
 
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
 msgid "This product requires Windows XP or above."
-msgstr ""
+msgstr "Dit product vereist Windows XP of hoger."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
-msgstr ""
+msgstr "Dezelfde of een nieuwere versie van dit product is reeds geïnstalleerd."
 
 msgctxt "x64VersionRequired"
 msgid ""
 "You need to install the 64-bit version of this product on 64-bit Windows."
-msgstr ""
+msgstr "Je moet de 64-bits versie van dit product installeren op een 64-bits versie van Windows."
 
 msgctxt "x86VersionRequired"
 msgid ""
 "You need to install the 32-bit version of this product on 32-bit Windows."
-msgstr ""
+msgstr "Je moet de 32-bits versie van dit product installeren op een 32-bits versie van Windows."
 
 msgctxt "x86VersionWarning"
 msgid ""
 "You are about to install the 32-bit version on a 64-bit operating system.\r\n"
 "We recommend using the 64-bit version for better performance.\r\n"
 "You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr ""
+msgstr "Je staat op het punt om de 32-bits versie te installeren op een 64-bits besturingssysteem.\nWe raden aan om de 64-bits versie te gebruiken voor betere prestaties.\nJe kunt het 64-bits installatiepakket downloaden van http://mixxx.org/download/"
 
 msgctxt "XPWarning"
 msgid ""
 "You are installing Mixxx on an outdated operating system. Some functions may"
 " not work well or at all. We recommend upgrading your operating system."
-msgstr ""
+msgstr "Je wilt Mixxx installeren op een verouderd besturingssysteem. Sommige functies werken mogelijk niet goed of helemaal niet. We raden je aan om je besturingssysteem te upgraden."
 
 msgctxt "bitWidthMismatch32"
 msgid ""
@@ -73,7 +74,7 @@ msgid ""
 "installed. This can lead to undesired behavior. Please un-install the "
 "existing Mixxx first, or download the 64-bit installation package to upgrade"
 " (unless you know exactly what you are doing.)"
-msgstr ""
+msgstr "Je wilt de 32-bits versie installeren maar een 64-bits is reeds geïnstalleerd. Dit kan leiden tot ongewenste effecten. Gelieve eerst de bestaande Mixxx te verwijderen, of het 64-bits installatiepakket te downloaden en te upgraden (Tenzij je exact weet waar je aan begint)"
 
 msgctxt "bitWidthMismatch64"
 msgid ""
@@ -81,57 +82,57 @@ msgid ""
 "installed. This can lead to undesired behavior. Please un-install the "
 "existing Mixxx first, or download the 32-bit installation package to upgrade"
 " (unless you know exactly what you are doing.)"
-msgstr ""
+msgstr "Je wilt de 64-bits versie installeren maar een 32-bits is reeds geïnstalleerd. Dit kan leiden tot ongewenste effecten. Gelieve eerst de bestaande Mixxx te verwijderen, of het 32-bits installatiepakket te downloaden en te upgraden (Tenzij je exact weet waar je aan begint)"
 
 msgctxt "OlderVersionFound"
 msgid ""
 "An older version of Mixxx has been detected. As we changed installer, we can"
 " not smoothly upgrade. Please uninstall older version before installing this"
 " one."
-msgstr ""
+msgstr "Een oudere versie van Mixxx is gedetecteerd. Door wijziging van de installer is een vlotte bijwerking niet mogelijk. Verwijder de oudere versie voordat u deze versie installeert."
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
-msgstr ""
+msgstr "{\\WixUI_Font_Title}Waarschuwing"
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
 msgid "The complete package."
-msgstr ""
+msgstr "Het volledige pakket."
 
 msgctxt "FeatureMainProgramTitle"
 msgid "Core application"
-msgstr ""
+msgstr "Kerntoepassing"
 
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
-msgstr ""
+msgstr "De Mixxx-kerntoepassing inclusief voorinstellingen voor controllers."
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"
-msgstr ""
+msgstr "Snelkoppeling op het bureaublad"
 
 msgctxt "FeatureDesktopShortcutDescription"
 msgid "Add a shortcut to Mixxx on your desktop"
-msgstr ""
+msgstr "Voeg een snelkoppeling naar Mixxx toe op je bureaublad"
 
 msgctxt "FeatureManualTitle"
 msgid "User Manual"
-msgstr ""
+msgstr "Gebruikershandleiding"
 
 msgctxt "FeatureManualDescription"
 msgid ""
 "The Mixxx user manual in PDF form, also available at "
 "http://mixxx.org/manual/"
-msgstr ""
+msgstr "De Mixxx gebruikershandleiding in PDF-formaat, ook beschikbaar op http://mixxx.org/manual/"
 
 msgctxt "FeatureTranslationsTitle"
 msgid "Translations"
-msgstr ""
+msgstr "Vertalingen"
 
 msgctxt "FeatureTranslationsDescription"
 msgid ""
 "Resource files that allow Mixxx to display in alternate languages, other "
 "than US english"
-msgstr ""
+msgstr "Hulpbestanden die Mixxx toelaten om te werken met andere talen dan Amerikaans Engels"

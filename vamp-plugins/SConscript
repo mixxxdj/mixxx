@@ -66,7 +66,6 @@ if int(build.flags['vamp']):
         depend_source = [x for x in depend.sources(build) if 'enginebufferscalest' not in x]
         mixxxminimal_sources.extend(depend_source)
 
-    env.Append(CPPDEFINES='kiss_fft_scalar=double')
     env = conf.Finish()
     if build.platform_is_linux:
         env["LINKFLAGS"].append("-Wl,--version-script=vamp-plugins/vamp-plugin.map")

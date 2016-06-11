@@ -1,10 +1,11 @@
 # 
 # Translators:
 # Sébastien BLAISOT <sebastien@blaisot.org>, 2016
+# 鬼迪 陳 <Hank_10702@yahoo.com.tw>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-01-09 20:21+0000\n"
+"PO-Revision-Date: 2016-01-15 18:17+0000\n"
 "Last-Translator: Sébastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/zh_TW/)\n"
 "MIME-Version: 1.0\n"
@@ -16,56 +17,56 @@ msgstr ""
 #.  Programm informations
 msgctxt "ApplicationName"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 msgctxt "ManufacturerName"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 msgctxt "ManufacturerFullName"
 msgid "The Mixxx Development Team"
-msgstr ""
+msgstr "Mixxx 開發團隊"
 
 msgctxt "ProductDescription"
 msgid "Open-source Digital DJ software"
-msgstr ""
+msgstr "開放源碼數位 DJ 軟體"
 
 msgctxt "Comments"
 msgid "Installs Mixxx"
-msgstr ""
+msgstr "安裝 Mixxx"
 
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
 msgid "This product requires Windows XP or above."
-msgstr ""
+msgstr "此產品需要 Windows XP 或以上。"
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
-msgstr ""
+msgstr "已安裝相同版本或更新版本的這種產品。"
 
 msgctxt "x64VersionRequired"
 msgid ""
 "You need to install the 64-bit version of this product on 64-bit Windows."
-msgstr ""
+msgstr "您需要在 64 位 Windows 上安裝此產品的 64 位版本。"
 
 msgctxt "x86VersionRequired"
 msgid ""
 "You need to install the 32-bit version of this product on 32-bit Windows."
-msgstr ""
+msgstr "您需要在 32 位 Windows 上安裝 32 位版本的這種產品。"
 
 msgctxt "x86VersionWarning"
 msgid ""
 "You are about to install the 32-bit version on a 64-bit operating system.\r\n"
 "We recommend using the 64-bit version for better performance.\r\n"
 "You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr ""
+msgstr "您將要在 64 位作業系統上安裝 32 位版本。\r\n我們推薦使用 64 位版本的更好的性能。\r\n你可以從 HTTP://mixxx.org/download/ 下載 64 位安裝包"
 
 msgctxt "XPWarning"
 msgid ""
 "You are installing Mixxx on an outdated operating system. Some functions may"
 " not work well or at all. We recommend upgrading your operating system."
-msgstr ""
+msgstr "你過時的作業系統上安裝 Mixxx。好或根本，某些功能可能無法工作。我們建議升級您的作業系統。"
 
 msgctxt "bitWidthMismatch32"
 msgid ""
@@ -73,7 +74,7 @@ msgid ""
 "installed. This can lead to undesired behavior. Please un-install the "
 "existing Mixxx first, or download the 64-bit installation package to upgrade"
 " (unless you know exactly what you are doing.)"
-msgstr ""
+msgstr "您將要安裝的 32 位版本，但已經安裝了一個 64 位。這可能導致意外的行為。首先，請卸載現有的 Mixxx 首先，請卸載現有的 Mixxx 或下載 64 位安裝套裝軟體來升級 (除非你知道你在做什麼)。"
 
 msgctxt "bitWidthMismatch64"
 msgid ""
@@ -81,44 +82,44 @@ msgid ""
 "installed. This can lead to undesired behavior. Please un-install the "
 "existing Mixxx first, or download the 32-bit installation package to upgrade"
 " (unless you know exactly what you are doing.)"
-msgstr ""
+msgstr "您將要安裝 64 位版本，但已經安裝了一個 32 位。這可能導致意外的行為。首先，請卸載現有的 Mixxx 首先，請卸載現有的 Mixxx 或下載 32 位安裝套裝軟體來升級 (除非你知道你在做什麼)。"
 
 msgctxt "OlderVersionFound"
 msgid ""
 "An older version of Mixxx has been detected. As we changed installer, we can"
 " not smoothly upgrade. Please uninstall older version before installing this"
 " one."
-msgstr ""
+msgstr "檢測到舊版本的 Mixxx。當我們改變了安裝程式，我們不能順利升級。請安裝這個之前，卸載舊版本。"
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
-msgstr ""
+msgstr "{\\WixUI_Font_Title}警告"
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
 msgid "The complete package."
-msgstr ""
+msgstr "完整的包。"
 
 msgctxt "FeatureMainProgramTitle"
 msgid "Core application"
-msgstr ""
+msgstr "核心應用程式"
 
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
-msgstr ""
+msgstr "核心 Mixxx 應用程式包括控制器預設。"
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"
-msgstr ""
+msgstr "桌面快捷方式"
 
 msgctxt "FeatureDesktopShortcutDescription"
 msgid "Add a shortcut to Mixxx on your desktop"
-msgstr ""
+msgstr "添加 Mixxx 在您的桌面上的快捷方式"
 
 msgctxt "FeatureManualTitle"
 msgid "User Manual"
-msgstr ""
+msgstr "使用者手冊"
 
 msgctxt "FeatureManualDescription"
 msgid ""

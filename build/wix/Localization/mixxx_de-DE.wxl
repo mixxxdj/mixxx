@@ -2,11 +2,11 @@
 <WixLocalization Culture="de-de" Codepage="1252"
                  xmlns="http://schemas.microsoft.com/wix/2006/localization">
 
-  <!-- .................................................... -->
-  <!-- This wxl file has been auto generated from a po file -->
-  <!-- using https://github.com/sblaisot/wxl-po-tools       -->
-  <!-- Source File: po/de-DE.po                             -->
-  <!-- .................................................... -->
+  <!-- ..................................................... -->
+  <!-- This wxl file has been auto generated from a po file  -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools        -->
+  <!-- Source File: po/de-DE.po                              -->
+  <!-- ..................................................... -->
 
   <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
   <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->

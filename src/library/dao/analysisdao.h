@@ -47,8 +47,11 @@ class AnalysisDao : public DAO {
     bool deleteAnalysis(const int analysisId);
     void deleteAnalyses(const QList<TrackId>& trackIds);
     bool deleteAnalysesForTrack(TrackId trackId);
+    bool deleteAnalysesByType(AnalysisType type);
 
     void saveTrackAnalyses(Track* pTrack);
+
+    size_t getDiskUsageInBytes(AnalysisType type);
 
   private:
     bool saveWaveform(const Track& tio,
