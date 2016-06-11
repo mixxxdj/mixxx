@@ -9,7 +9,9 @@
 
 class KeyboardControllerPreset : public ControllerPreset {
 public:
-    KeyboardControllerPreset() {}
+    KeyboardControllerPreset() {
+        m_KbdConfigEmpty = new ConfigObject<ConfigValueKbd>(QString());
+    }
     virtual ~KeyboardControllerPreset() {}
 
     virtual void accept(ControllerPresetVisitor* visitor) {
@@ -28,11 +30,12 @@ public:
         return true;
     }
 
-    // TODO Store keyboard mapping in a
+    // NOTE: Not functional yet. First the keyboard controller preset XML parser has to be implemented, after that
+    // it will load the preset into m_KbdConfig
 
-    // MIDI input and output mappings.
-    QHash<uint16_t, MidiInputMapping> inputMappings;
-    QHash<ConfigKey, MidiOutputMapping> outputMappings;
+    // Keyboard mappings
+    ConfigObject<ConfigValueKbd>* m_KbdConfig;
+    ConfigObject<ConfigValueKbd>* m_KbdConfigEmpty;
 };
 
 #endif

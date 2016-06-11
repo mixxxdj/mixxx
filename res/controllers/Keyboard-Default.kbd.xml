@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- TODO(Tomasito): Change this to the version in which KeyboardController support will be added-->
+<MixxxKeyboardPreset schemaVersion="1" mixxxVersion="2.0.0+">
+  <info>
+    <name>Keyboard Default</name>
+    <author>Mixxx</author>
+    <description>Default keyboard mapping.</description>
+    <wiki>https://www.mixxx.org/manual/latest/chapters/appendix.html#appendix-keyboard</wiki>
+  </info>
+
+  <controller>
+
+  </controller>
+</MixxxKeyboardPreset>
