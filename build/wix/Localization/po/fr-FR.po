@@ -6,7 +6,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 
-#.  Programm informations 
+#.  Programm informations
 msgctxt "ApplicationName"
 msgid "Mixxx"
 msgstr "Mixxx"
@@ -27,7 +27,7 @@ msgctxt "Comments"
 msgid "Installs Mixxx"
 msgstr "Installe Mixxx"
 
-#.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE 
+#.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
 msgid "This product requires Windows XP or above."
 msgstr "Ce produit nécessite au moins Windows XP."
@@ -70,17 +70,17 @@ msgctxt "OlderVersionFound"
 msgid "An older version of Mixxx has been detected. As we changed installer, we can not smoothly upgrade. Please uninstall older version before installing this one."
 msgstr "Une ancienne version de Mixxx a été détectée. Comme nous avons changé d'installeur, nous ne pouvons pas mettre à jour de manière transparente. Merci de désinstaller l'ancienne version avant d'installer celle-ci."
 
-#.  Custom Warning Dialog 
+#.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
 msgstr "{\\WixUI_Font_Title}Attention"
 
-#.  Custom exit dialog 
+#.  Custom exit dialog
 msgctxt "StartOnExit"
 msgid "Launch Mixxx when setup exits."
 msgstr "Démarrer Mixxx en quittant l'installeur."
 
-#.  Features translations 
+#.  Features translations
 msgctxt "FeatureCompleteDescription"
 msgid "The complete package."
 msgstr "Installation complète."
@@ -92,6 +92,14 @@ msgstr "Programme principal"
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
 msgstr "Le programme et l'ensemble de ses dépendances."
+
+msgctxt "FeaturePDBTitle"
+msgid "PDB debug files"
+msgstr "Fichiers de debug PDB"
+
+msgctxt "FeaturePDBDescription"
+msgid "Install Mixxx PDB files to use with a debugger. This is usefull to debug Mixxx and provide readable backtrace to the development team."
+msgstr "Installe les fichiers PDB de Mixxx, à utiliser avec un debuggueur. Utile pour débugguer Mixxx et fournir à l'équipe de développement des backtraces exploitables."
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"
