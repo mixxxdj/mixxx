@@ -41,6 +41,8 @@
   <String Id="FeatureCompleteDescription">Installation complète.</String>
   <String Id="FeatureMainProgramTitle">Programme principal</String>
   <String Id="FeatureMainProgramDescription">Le programme et l'ensemble de ses dépendances.</String>
+  <String Id="FeaturePDBTitle">Fichiers de debug PDB</String>
+  <String Id="FeaturePDBDescription">Installe les fichiers PDB de Mixxx, à utiliser avec un debuggueur. Utile pour débugguer Mixxx et fournir à l'équipe de développement des backtraces exploitables.</String>
   <String Id="FeatureDesktopShortcutTitle">Raccourci sur le bureau</String>
   <String Id="FeatureDesktopShortcutDescription">Ajoute un raccourci "Mixxx" sur le bureau</String>
   <String Id="FeatureManualTitle">Manuel Mixxx</String>

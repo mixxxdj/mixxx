@@ -401,7 +401,14 @@
         <ComponentGroupRef Id='promoComp' />
       <?endif?>
       <?if $(var.PDB) = "yes" ?>
-        <ComponentGroupRef Id='mainPDBCompGroup' />
+        <Feature Id="PDBFeature"
+               Title="!(loc.FeaturePDBTitle)"
+               Description="!(loc.FeaturePDBDescription)"
+               AllowAdvertise='no'
+               InstallDefault='local'
+               Level="1">
+          <ComponentGroupRef Id='mainPDBCompGroup' />
+        </Feature>
       <?endif?>
       <Feature Id="DesktopShortcutFeature"
                Title="!(loc.FeatureDesktopShortcutTitle)"
