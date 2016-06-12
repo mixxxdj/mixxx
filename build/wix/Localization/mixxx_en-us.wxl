@@ -35,6 +35,8 @@
    <String Id="FeatureCompleteDescription">The complete package.</String>
    <String Id="FeatureMainProgramTitle">Core application</String>
    <String Id="FeatureMainProgramDescription">The core Mixxx application including controller presets.</String>
+   <String Id="FeaturePDBTitle">PDB debug files</String>
+   <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is usefull to debug Mixxx and provide readable backtrace to the development team.</String>
    <String Id="FeatureDesktopShortcutTitle">Desktop Shortcut</String>
    <String Id="FeatureDesktopShortcutDescription">Add a shortcut to Mixxx on your desktop</String>
    <String Id="FeatureManualTitle">User Manual</String>
