@@ -481,28 +481,36 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
     if (column > 0 && column < m_tableColumns.size()) {
         // Table sorting, no history
-        m_tableOrderBy.append("ORDER BY ");
-        QString field = m_tableColumns[column];
-        QString sort_field = QString("%1.%2").arg(m_tableName, field);
-        m_tableOrderBy.append(sort_field);
-    #ifdef __SQLITE3__
-        m_tableOrderBy.append(" COLLATE localeAwareCompare");
-    #endif
-        m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
-        
-        // Random sort easter egg
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+            // Random sort easter egg
             m_tableOrderBy = "ORDER BY RANDOM()";
+        } else {
+            m_tableOrderBy = "ORDER BY ";
+            QString field = m_tableColumns[column];
+            QString sort_field = QString("%1.%2").arg(m_tableName, field);
+            m_tableOrderBy.append(sort_field);
+        #ifdef __SQLITE3__
+            m_tableOrderBy.append(" COLLATE localeAwareCompare");
+        #endif
+            m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
         }
-        
         m_sortColumns.clear();
+        m_sortColumns.prepend(SortColumn(column, order));
     } else if (m_trackSource) {
-        
         bool first = true;
         for (const SortColumn &sc : m_sortColumns) {
             QString sort_field;
-            if (sc.m_column == kIdColumn) {
-                sort_field = m_trackSource->columnSortForFieldIndex(kIdColumn);
+            if (sc.m_column < m_tableColumns.size()) {
+                if (sc.m_column == kIdColumn) {
+                    sort_field = m_trackSource->columnSortForFieldIndex(kIdColumn);
+                } else if (sc.m_column ==
+                        fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+                    sort_field = "RANDOM()";
+                } else {
+                    // we cant sort by other table columns here since primary sort is a track 
+                    // column: skip   
+                    continue;
+                }
             } else {
                 // + 1 to skip id column
                 int ccColumn = sc.m_column - m_tableColumns.size() + 1;
