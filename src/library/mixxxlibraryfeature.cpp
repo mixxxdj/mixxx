@@ -20,6 +20,8 @@
 #include "library/dlghidden.h"
 #include "library/dlgmissing.h"
 
+const QString MixxxLibraryFeature::m_sMixxxLibraryViewName = QString("MixxxLibraryFeature");
+
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          TrackCollection* pTrackCollection,
                                          UserSettingsPointer pConfig)
@@ -164,6 +166,7 @@ void MixxxLibraryFeature::refreshLibraryModels() {
 
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
+    emit(switchToView(m_sMixxxLibraryViewName));
     emit(showTrackModel(m_pLibraryTableModel));
     emit(enableCoverArtDisplay(true));
 }

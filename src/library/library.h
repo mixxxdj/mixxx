@@ -23,6 +23,7 @@
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
+#include "widget/wrightclickbutton.h"
 
 class TrackModel;
 class TrackCollection;
@@ -121,6 +122,8 @@ public:
     // Emitted when a library scan starts and finishes.
     void scanStarted();
     void scanFinished();
+    
+    void switchToView(const QString&);
 
   private:
     

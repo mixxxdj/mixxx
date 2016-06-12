@@ -30,6 +30,9 @@ class AnalysisFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    inline QString getViewName() { 
+        return m_sAnalysisViewName; 
+    }
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);

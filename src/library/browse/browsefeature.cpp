@@ -22,6 +22,8 @@
 
 const QString kQuickLinksSeparator = "-+-";
 
+const QString BrowseFeature::m_sBrowseViewName = QString("BROWSEHOME");
+
 BrowseFeature::BrowseFeature(QObject* parent,
                              UserSettingsPointer pConfig,
                              TrackCollection* pTrackCollection,
@@ -212,11 +214,11 @@ void BrowseFeature::bindPaneWidget(WLibrary* libraryWidget,
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
-    libraryWidget->registerView("BROWSEHOME", edit);
+    libraryWidget->registerView(m_sBrowseViewName, edit);
 }
 
 void BrowseFeature::activate() {
-    emit(switchToView("BROWSEHOME"));
+    emit(switchToView(m_sBrowseViewName));
     emit(restoreSearch(QString()));
     emit(enableCoverArtDisplay(false));
 }

@@ -40,7 +40,7 @@ class AutoDJFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getViewName() {
+    inline QString getViewName() {
         return m_sAutoDJViewName;
     }
 

@@ -35,6 +35,10 @@ class BasePlaylistFeature : public LibraryFeature {
 
     void bindPaneWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    
+    QString getViewName() { 
+        return m_rootViewName; 
+    }
 
   signals:
     void showPage(const QUrl& page);

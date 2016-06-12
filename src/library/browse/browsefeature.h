@@ -75,6 +75,7 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
+    static const QString m_sBrowseViewName;
 };
 
 #endif // BROWSEFEATURE_H

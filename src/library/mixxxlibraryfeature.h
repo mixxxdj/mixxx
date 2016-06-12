@@ -41,6 +41,10 @@ class MixxxLibraryFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
     void bindPaneWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard);
+    
+    inline QString getViewName() {
+        return m_sMixxxLibraryViewName;
+    }
 
   public slots:
     void activate();
@@ -59,6 +63,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     TrackDAO& m_trackDao;
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
+    static const QString m_sMixxxLibraryViewName;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

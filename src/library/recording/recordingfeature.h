@@ -31,6 +31,9 @@ class RecordingFeature : public LibraryFeature {
 
     void bindPaneWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    inline QString getViewName() {
+        return m_sRecordingViewName;
+    }
 
     TreeItemModel* getChildModel();
 

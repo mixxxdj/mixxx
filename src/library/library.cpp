@@ -113,8 +113,10 @@ void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
 
 void Library::bindSidebarWidget(WButtonBar* sidebar) {    
     for (LibraryFeature* f : m_features) {
-        QAbstractButton* button = sidebar->addButton(f->getIcon(), f->title());
+        WRightClickButton* button = sidebar->addButton(f->getIcon(), f->title());
         connect(button, SIGNAL(clicked()), f, SLOT(activate()));
+        connect(button, SIGNAL(rightClicked(const QPoint&)),
+                f, SLOT(onRightClick(const QPoint&)));
     }
 }
 
@@ -215,6 +217,7 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 
 void Library::slotSwitchToView(const QString& view) {
     //qDebug() << "Library::slotSwitchToView" << view;
+    emit(switchToView(view));
     
     if (m_sidebarExpandedFocused) {
         m_pSidebarExpanded->slotSwitchToView(view);
