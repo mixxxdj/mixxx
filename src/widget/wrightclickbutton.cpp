@@ -9,5 +9,6 @@ void WRightClickButton::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::RightButton) {
         emit(rightClicked(event->globalPos()));
     }
+    QToolButton::mousePressEvent(event);
 }
 

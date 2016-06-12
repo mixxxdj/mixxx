@@ -7,7 +7,7 @@ WButtonBar::WButtonBar(QWidget* parent)
     setLayout(m_pLayout);
 }
 
-WRightClickButton *WButtonBar::addButton(const QIcon& icon, const QVariant& title) {
+WRightClickButton* WButtonBar::addButton(const QIcon& icon, const QVariant& title) {
     WRightClickButton* button = new WRightClickButton(this);
     button->setIcon(icon);
     button->setText(title.toString());
