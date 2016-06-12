@@ -30,6 +30,9 @@ public:
         return true;
     }
 
+    // Multi-hash of config keys, bound to a specific key sequence
+    QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
+
     // NOTE: Not functional yet. First the keyboard controller preset XML parser has to be implemented, after that
     // it will load the preset into m_KbdConfig
 

@@ -107,11 +107,14 @@ QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& ro
     // TODO(XXX): Controllers can have multiple <controller> blocks. We should
     // expose this to the user and let them pick them as alternate "versions" of
     // a preset.
+
+    // TODO(Tomasito): We could use multiple <controller> blocks for different
+    //                 keyboard layouts.
     return root.firstChildElement("controller");
 }
 
 void ControllerPresetFileHandler::addScriptFilesToPreset(
-    const QDomElement& controller, ControllerPreset* preset) const {
+        const QDomElement& controller, ControllerPreset* preset) const {
     if (controller.isNull())
         return;
 

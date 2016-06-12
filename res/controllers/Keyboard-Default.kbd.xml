@@ -10,6 +10,38 @@
   </info>
 
   <controller>
+    <group name="[AutoDJ]">
+      <control action="shuffle_playlist" keyseq="Shift+F9" />
+      <control action="skip_next" keyseq="Shift+F10" />
+      <control action="fade_now" keyseq="Shift+F11" />
+      <control action="enabled" keyseq="Shift+F12" />
+    </group>
 
+    <group name="[Master]">
+      <control action="crossfader_up" keyseq="h" />
+      <control action="crossfader_down" keyseq="g" />
+      <control action="crossfader_up_small" keyseq="Shift+h" />
+      <control action="crossfader_down_small" keyseq="Shift+g" />
+    </group>
+
+    <group name="[Microphone]">
+      <control action="talkover" keyseq="`" />
+    </group>
+
+    <group name="[PreviewDeck1]">
+      <control action="LoadSelectedAndPlay" keyseq="Alt+Return" />
+      <control action="start_stop" keyseq="Return" />
+      <control action="back" keyseq="Alt+Left" />
+      <control action="fwd" keyseq="" />
+    </group>
+
+    <group name="[Channel1]">
+      <control action="play" keyseq="d" />
+      <control action="cue_set" keyseq="Shift+d" />
+      <control action="cue_default" keyseq="f" />
+      <control action="cue_gotoandstop" keyseq="Shift+f" />
+    </group>
+
+    <!-- etc... -->
   </controller>
 </MixxxKeyboardPreset>
