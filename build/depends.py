@@ -808,6 +808,7 @@ class MixxxCore(Feature):
                    "widget/wsingletoncontainer.cpp",
                    "widget/wmainmenubar.cpp",
                    "widget/wbuttonbar.cpp",
+                   "widget/wrightclickbutton.cpp",
 
                    "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",

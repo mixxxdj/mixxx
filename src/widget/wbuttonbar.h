@@ -5,9 +5,9 @@
 #include <QVariant>
 #include <QIcon>
 #include <QPushButton>
-#include <QToolButton>
 
 #include "widget/wwidget.h"
+#include "widget/wrightclickbutton.h"
 
 class WButtonBar : public WWidget
 {
@@ -15,7 +15,7 @@ class WButtonBar : public WWidget
   public:
     WButtonBar(QWidget* parent = nullptr);
 
-    QAbstractButton* addButton(const QIcon& icon, const QVariant& title);
+    WRightClickButton* addButton(const QIcon& icon, const QVariant& title);
 
   private:
 
