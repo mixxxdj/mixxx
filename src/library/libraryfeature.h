@@ -78,8 +78,8 @@ class LibraryFeature : public QObject {
     
     // Reimplement this to register custem views with the library widget,
     // at the sidebar expanded pane
-    virtual void bindSidebarWidget(WLibrary*,
-                                   KeyboardEventFilter*) {}
+    virtual void bindSidebarWidget(WLibrary*pSidebarWidget,
+                                   KeyboardEventFilter*);
     
     virtual TreeItemModel* getChildModel() = 0;
 

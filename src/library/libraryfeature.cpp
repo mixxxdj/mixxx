@@ -20,6 +20,17 @@ LibraryFeature::~LibraryFeature() {
     
 }
 
+void LibraryFeature::bindSidebarWidget(WLibrary* pSidebarWidget, KeyboardEventFilter *) {
+    TreeItemModel* pTreeModel = getChildModel();
+    //qDebug() << "LibraryFeature::bindSidebarWidget" << pTreeModel->rowCount();    
+    
+    if (pTreeModel->rowCount() > 0) {
+        WLibrarySidebar* pSidebar = new WLibrarySidebar(pSidebarWidget);
+        pSidebar->setModel(pTreeModel);
+        pSidebarWidget->registerView(getViewName(), pSidebar);
+    }
+}
+
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {
     QString lastPlaylistDirectory = m_pConfig->getValueString(
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
