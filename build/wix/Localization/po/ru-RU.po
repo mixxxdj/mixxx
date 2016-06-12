@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Vladimir Novikov <dancenoise1@gmail.com>, 2016
@@ -113,6 +113,16 @@ msgstr "Основная программа"
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
 msgstr "Основная программа Mixxx включает настройки контроллера."
+
+msgctxt "FeaturePDBTitle"
+msgid "PDB debug files"
+msgstr ""
+
+msgctxt "FeaturePDBDescription"
+msgid ""
+"Install Mixxx PDB files to use with a debugger. This is usefull to debug "
+"Mixxx and provide readable backtrace to the development team."
+msgstr ""
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"

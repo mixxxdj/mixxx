@@ -42,6 +42,8 @@
   <String Id="FeatureCompleteDescription">El paquet complet.</String>
   <String Id="FeatureMainProgramTitle">L'aplicació.</String>
   <String Id="FeatureMainProgramDescription">L'aplicació Mixxx incloent les configuracions per defecte de diversos controladors.</String>
+  <String Id="FeaturePDBTitle">PDB debug files</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is usefull to debug Mixxx and provide readable backtrace to the development team.</String>
   <String Id="FeatureDesktopShortcutTitle">Crea una icona a l'escriptori</String>
   <String Id="FeatureDesktopShortcutDescription">Afegeix un accés directe al Mixxx a l'escriptori</String>
   <String Id="FeatureManualTitle">Manual d'usuari</String>

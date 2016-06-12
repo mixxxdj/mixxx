@@ -42,6 +42,8 @@
   <String Id="FeatureCompleteDescription">Pachetul complet.</String>
   <String Id="FeatureMainProgramTitle">Aplicaţia de bază</String>
   <String Id="FeatureMainProgramDescription">Aplicaţia de bază Mixxx include preconfigurări controllere.</String>
+  <String Id="FeaturePDBTitle">PDB debug files</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is usefull to debug Mixxx and provide readable backtrace to the development team.</String>
   <String Id="FeatureDesktopShortcutTitle">Scurtătură birou</String>
   <String Id="FeatureDesktopShortcutDescription">Adaugă o scurtătură pentru Mixxx pe birou</String>
   <String Id="FeatureManualTitle">Manual utilizator</String>

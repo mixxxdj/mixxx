@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Benny Beat <bennybeat@gmail.com>, 2016
 # Ferran Pujol Camins <ferranpujolcamins@gmail.com>, 2016
@@ -115,6 +115,16 @@ msgstr "L'aplicació."
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
 msgstr "L'aplicació Mixxx incloent les configuracions per defecte de diversos controladors."
+
+msgctxt "FeaturePDBTitle"
+msgid "PDB debug files"
+msgstr ""
+
+msgctxt "FeaturePDBDescription"
+msgid ""
+"Install Mixxx PDB files to use with a debugger. This is usefull to debug "
+"Mixxx and provide readable backtrace to the development team."
+msgstr ""
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"

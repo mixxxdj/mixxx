@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
@@ -112,6 +112,16 @@ msgstr "Kernanwendung"
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
 msgstr "Die Mixxx Kernanwendung einschließlich Controller-Voreinstellungen."
+
+msgctxt "FeaturePDBTitle"
+msgid "PDB debug files"
+msgstr ""
+
+msgctxt "FeaturePDBDescription"
+msgid ""
+"Install Mixxx PDB files to use with a debugger. This is usefull to debug "
+"Mixxx and provide readable backtrace to the development team."
+msgstr ""
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"

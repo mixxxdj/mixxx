@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Nya Chan (喵酱) <dlj2013@gmail.com>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
@@ -113,6 +113,16 @@ msgstr "核心程序"
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
 msgstr "核心Mixxx程序包含控制器预设"
+
+msgctxt "FeaturePDBTitle"
+msgid "PDB debug files"
+msgstr ""
+
+msgctxt "FeaturePDBDescription"
+msgid ""
+"Install Mixxx PDB files to use with a debugger. This is usefull to debug "
+"Mixxx and provide readable backtrace to the development team."
+msgstr ""
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"
