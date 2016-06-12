@@ -500,8 +500,6 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         
         bool first = true;
         for (const SortColumn &sc : m_sortColumns) {
-            m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
-            
             QString sort_field;
             if (sc.m_column == kIdColumn) {
                 sort_field = m_trackSource->columnSortForFieldIndex(kIdColumn);
@@ -515,7 +513,11 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                     m_trackSourceSortOrder = sc.m_order;
                 }
             }
+            DEBUG_ASSERT_AND_HANDLE(!sort_field.isEmpty()){
+                continue;
+            }
 
+            m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
             m_trackSourceOrderBy.append(sort_field);
 
     #ifdef __SQLITE3__
