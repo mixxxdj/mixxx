@@ -1,7 +1,6 @@
 #include <QList>
 #include <QtDebug>
 #include <QKeyEvent>
-#include <QEvent>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "control/controlobject.h"
@@ -9,16 +8,15 @@
 
 KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
                                          QObject* parent, const char* name)
-        : QObject(parent),
-          m_pKbdConfigObject(NULL) {
+        : QObject(parent) {
     setObjectName(name);
-    setKeyboardConfig(pKbdConfigObject);
 }
 
 KeyboardEventFilter::~KeyboardEventFilter() {
 }
 
 bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
+    // TODO(Tomasito) Also clear active key list when keyboard controller disabled
     if (e->type() == QEvent::FocusOut) {
         // If we lose focus, we need to clear out the active key list
         // because we might not get Key Release events.
@@ -51,30 +49,39 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // TODO(Tomasito) Move this code to KeyboardController
         if (!ks.isEmpty()) {
             ConfigValueKbd ksv(ks);
+
             // Check if a shortcut is defined
             bool result = false;
-            // using const_iterator here is faster than QMultiHash::values()
-            for (QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator it =
-                         m_keySequenceToControlHash.find(ksv);
-                 it != m_keySequenceToControlHash.end() && it.key() == ksv; ++it) {
-                const ConfigKey& configKey = it.value();
-                if (configKey.group != "[KeyboardShortcuts]") {
-                    ControlObject* control = ControlObject::getControl(configKey);
-                    if (control) {
-                        //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
-                        // Add key to active key list
-                        m_qActiveKeyList.append(KeyDownInformation(
-                            keyId, ke->modifiers(), control));
-                        // Since setting the value might cause us to go down
-                        // a route that would eventually clear the active
-                        // key list, do that last.
-                        control->setValueFromMidi(MIDI_NOTE_ON, 1);
-                        result = true;
-                    } else {
-                        qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
-                                 << configKey.group << configKey.item;
-                    }
+
+            QMultiHash<ConfigValueKbd, ConfigKey> mapping = m_kbdPreset->m_keySequenceToControlHash;
+
+            // NOTE: Using const_iterator here is faster than QMultiHash::values()
+            QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator iterator = mapping.find(ksv);
+
+            // Iterate over all possible key combinations in the currently loaded preset
+            for (iterator; iterator != mapping.end(); ++iterator) {
+                // TODO(Tomasito) Overload != operator for ConfigValueKbd and use it here
+                if (!(iterator.key() == ksv)) continue;
+
+                const ConfigKey& configKey = iterator.value();
+                if (configKey.group == "[KeyboardShortcuts]") continue;
+
+                ControlObject* control = ControlObject::getControl(configKey);
+                if (control) {
+                    //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
+                    // Add key to active key list
+                    m_qActiveKeyList.append(KeyDownInformation(
+                        keyId, ke->modifiers(), control));
+                    // Since setting the value might cause us to go down
+                    // a route that would eventually clear the active
+                    // key list, do that last.
+                    control->setValueFromMidi(MIDI_NOTE_ON, 1);
+                    result = true;
+                } else {
+                    qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
+                             << configKey.group << configKey.item;
                 }
+
             }
             return result;
         }
@@ -160,15 +167,10 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     return k;
 }
 
-void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
-    // Keyboard configs are a surjection from ConfigKey to key sequence. We
-    // invert the mapping to create an injection from key sequence to
-    // ConfigKey. This allows a key sequence to trigger multiple controls in
-    // Mixxx.
-    m_keySequenceToControlHash = pKbdConfigObject->transpose();
-    m_pKbdConfigObject = pKbdConfigObject;
-}
+void KeyboardEventFilter::slotSetKeyboardMapping(ControllerPresetPointer presetPointer) {
+    m_kbdPreset = presetPointer.dynamicCast<KeyboardControllerPreset>();
 
-ConfigObject<ConfigValueKbd>* KeyboardEventFilter::getKeyboardConfig() {
-    return m_pKbdConfigObject;
+    // If preset pointer couldn't be casted back to KeyboardControllerPreset, the dynamic
+    // cast returns null. That shouldn't happen.
+    DEBUG_ASSERT(!m_kbdPreset.isNull());
 }

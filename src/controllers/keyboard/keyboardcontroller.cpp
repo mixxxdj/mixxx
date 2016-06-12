@@ -16,6 +16,10 @@ KeyboardController::KeyboardController(KeyboardEventFilter* pKbdEventFilter) :
 
     connect(m_pKbdEventFilter, SIGNAL(keySeqPressed(QKeySequence)),
             this, SLOT(onKeySeqPressed(QKeySequence)));
+
+    // TODO(Tomasito) Check if it should be better
+    connect(this, SIGNAL(presetLoaded(ControllerPresetPointer)),
+            m_pKbdEventFilter, SLOT(slotSetKeyboardMapping(ControllerPresetPointer)));
 }
 
 KeyboardController::~KeyboardController() {
@@ -73,7 +77,7 @@ ControllerPreset *KeyboardController::preset() {
 }
 
 void KeyboardController::onKeySeqPressed(QKeySequence ks) {
-    qDebug() << "KeyboardController::onKeySeqPressed() " << ks.toString();
+    Q_UNUSED(ks);
 }
 
 

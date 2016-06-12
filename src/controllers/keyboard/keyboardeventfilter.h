@@ -6,7 +6,9 @@
 #include <QKeyEvent>
 #include <QMultiHash>
 
+#include "controllers/controllerpreset.h"
 #include "preferences/configobject.h"
+#include "keyboardcontrollerpreset.h"
 
 class ControlObject;
 
@@ -20,13 +22,12 @@ class KeyboardEventFilter : public QObject {
 
     bool eventFilter(QObject* obj, QEvent* e);
 
-    // Set the keyboard config object. KeyboardEventFilter does NOT take
-    // ownership of pKbdConfigObject.
-    void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
-    ConfigObject<ConfigValueKbd>* getKeyboardConfig();
-
   signals:
     void keySeqPressed(QKeySequence keySeq);
+
+  public slots:
+    void slotSetKeyboardMapping(ControllerPresetPointer presetPointer);
+
 
   private:
     struct KeyDownInformation {
@@ -43,12 +44,15 @@ class KeyboardEventFilter : public QObject {
 
     // Returns a valid QString with modifier keys from a QKeyEvent
     QKeySequence getKeySeq(QKeyEvent *e);
+
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
-    // Pointer to keyboard config object
-    ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
+
     // Multi-hash of key sequence to
     QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
+
+    // Clone of keyboard controller preset, containing keyboard mapping info
+    QSharedPointer<KeyboardControllerPreset> m_kbdPreset;
 };
 
 #endif  // CONTROLLERS_KEYBOARD_KEYBOARDEVENTFILTER_H

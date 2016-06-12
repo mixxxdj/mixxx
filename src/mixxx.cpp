@@ -922,11 +922,11 @@ void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     if (toggle) {
         //qDebug() << "Enable keyboard shortcuts/mappings";
-        m_pKeyboard->setKeyboardConfig(m_pKbdConfig);
+        // TODO(Tomasito) Enable keyboard controller
         pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
     } else {
         //qDebug() << "Disable keyboard shortcuts/mappings";
-        m_pKeyboard->setKeyboardConfig(m_pKbdConfigEmpty);
+        // TODO(Tomasito) Disable keyboard controller
         pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(0));
     }
 }
