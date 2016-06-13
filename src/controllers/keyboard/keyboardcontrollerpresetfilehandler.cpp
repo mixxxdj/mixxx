@@ -53,3 +53,13 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
 
     return ControllerPresetPointer(preset);
 }
+
+bool KeyboardControllerPresetFileHandler::save(const KeyboardControllerPreset &preset, const QString deviceName,
+                                               const QString fileName) const {
+    Q_UNUSED(preset);
+    Q_UNUSED(deviceName);
+    Q_UNUSED(fileName);
+
+    // TODO(Tomasito) Implement this method
+    return false;
+}

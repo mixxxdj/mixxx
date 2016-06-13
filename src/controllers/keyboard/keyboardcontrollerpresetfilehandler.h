@@ -9,6 +9,9 @@ public:
     KeyboardControllerPresetFileHandler();
     virtual ~KeyboardControllerPresetFileHandler();
 
+    bool save(const KeyboardControllerPreset& preset,
+              const QString deviceName, const QString fileName) const;
+
 private:
     virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName);
 };

@@ -616,6 +616,8 @@ void MixxxMainWindow::initializeKeyboard() {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     QString resourcePath = pConfig->getResourcePath();
 
+    // TODO(Tomasito) Completely migrate from ConfigObject to preset and remove redundant code here
+
     // Set the default value in settings file
     if (pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
         pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
@@ -655,7 +657,7 @@ void MixxxMainWindow::initializeKeyboard() {
     // Workaround for today: KeyboardEventFilter calls delete
     bool keyboardShortcutsEnabled = pConfig->getValueString(
         ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
+    m_pKeyboard = new KeyboardEventFilter();
 }
 
 int MixxxMainWindow::noSoundDlg(void) {

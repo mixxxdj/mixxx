@@ -6,8 +6,7 @@
 #include "control/controlobject.h"
 #include "util/cmdlineargs.h"
 
-KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
-                                         QObject* parent, const char* name)
+KeyboardEventFilter::KeyboardEventFilter(QObject* parent, const char* name)
         : QObject(parent) {
     setObjectName(name);
 }
@@ -46,7 +45,11 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         QKeySequence ks = getKeySeq(ke);
         emit keySeqPressed(ks);
 
-        // TODO(Tomasito) Move this code to KeyboardController
+        // If no key-mapping info is known, there is nothing to check
+        if (m_kbdPreset.isNull()) {
+            return false;
+        }
+
         if (!ks.isEmpty()) {
             ConfigValueKbd ksv(ks);
 
@@ -54,11 +57,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             bool result = false;
 
             QMultiHash<ConfigValueKbd, ConfigKey> mapping = m_kbdPreset->m_keySequenceToControlHash;
-
-            // NOTE: Using const_iterator here is faster than QMultiHash::values()
             QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator iterator = mapping.find(ksv);
 
-            // Iterate over all possible key combinations in the currently loaded preset
+            // NOTE: Using const_iterator here is faster than QMultiHash::values()
             for (iterator; iterator != mapping.end(); ++iterator) {
                 // TODO(Tomasito) Overload != operator for ConfigValueKbd and use it here
                 if (!(iterator.key() == ksv)) continue;
@@ -67,6 +68,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 if (configKey.group == "[KeyboardShortcuts]") continue;
 
                 ControlObject* control = ControlObject::getControl(configKey);
+
+                // TODO(Tomasito) Move this to KeyboardController
                 if (control) {
                     //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
                     // Add key to active key list

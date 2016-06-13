@@ -4,6 +4,7 @@
 #include "keyboardcontroller.h"
 
 #include "controllers/defs_controllers.h"
+#include "keyboardcontrollerpresetfilehandler.h"
 
 
 KeyboardController::KeyboardController(KeyboardEventFilter* pKbdEventFilter) :
@@ -23,7 +24,7 @@ KeyboardController::KeyboardController(KeyboardEventFilter* pKbdEventFilter) :
 }
 
 KeyboardController::~KeyboardController() {
-    // TODO(Tomasito) Think of how the keyboard will close..
+    close();
 }
 
 
@@ -32,10 +33,8 @@ QString KeyboardController::presetExtension() {
 }
 
 bool KeyboardController::savePreset(const QString fileName) const {
-    Q_UNUSED(fileName);
-    // TODO(Tomasito) Create KeyboardControllerPresetFileHandler class and instantiate here "handler"
-    // TODO(Tomasito) handler.save() and return whether it saved successfully (return value of save())
-    return false;
+    KeyboardControllerPresetFileHandler handler;
+    return handler.save(m_preset, getName(), fileName);
 }
 
 void KeyboardController::visit(const KeyboardControllerPreset *preset) {
