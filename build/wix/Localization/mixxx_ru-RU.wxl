@@ -43,7 +43,7 @@
   <String Id="FeatureMainProgramTitle">Основная программа</String>
   <String Id="FeatureMainProgramDescription">Основная программа Mixxx включает настройки контроллера.</String>
   <String Id="FeaturePDBTitle">PDB debug files</String>
-  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is usefull to debug Mixxx and provide readable backtrace to the development team.</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
   <String Id="FeatureDesktopShortcutTitle">Ярлык на Рабочем столе</String>
   <String Id="FeatureDesktopShortcutDescription">Добавляет ярлык Mixxx на Рабочий стол</String>
   <String Id="FeatureManualTitle">Руководство пользователя</String>
