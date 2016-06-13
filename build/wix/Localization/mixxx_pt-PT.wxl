@@ -43,7 +43,7 @@
   <String Id="FeatureMainProgramTitle">Aplicação principal</String>
   <String Id="FeatureMainProgramDescription">A Mixxx core application inclui presets de controladores.</String>
   <String Id="FeaturePDBTitle">PDB debug files</String>
-  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is usefull to debug Mixxx and provide readable backtrace to the development team.</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
   <String Id="FeatureDesktopShortcutTitle">Atalho no ambiente de trabalho</String>
   <String Id="FeatureDesktopShortcutDescription">Adiciona um atalho do Mixxx no ambiente de trabalho</String>
   <String Id="FeatureManualTitle">Manual do Utilizador</String>
