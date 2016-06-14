@@ -69,7 +69,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QString m_dbItunesRoot;
     QString m_mixxxItunesRoot;
-    QString m_sItunesView;
+    static const QString m_sItunesView;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
 

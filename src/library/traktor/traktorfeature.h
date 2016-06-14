@@ -79,7 +79,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
-    QString m_sTraktorViewName;
+    static const QString m_sTraktorViewName;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
 };

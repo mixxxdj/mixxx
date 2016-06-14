@@ -371,7 +371,7 @@ void Library::slotPaneFocused() {
         }
     }
     
-    qDebug() << "Library::slotPaneFocused" << m_focusedPane << m_sidebarExpandedFocused;
+    qDebug() << "Library::slotPaneFocused" << m_focusedPane;
 }
 
 
