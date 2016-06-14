@@ -205,6 +205,10 @@ QIcon BrowseFeature::getIcon() {
     return QIcon(":/images/library/ic_library_browse.png");
 }
 
+QString BrowseFeature::getViewName() {
+    return m_sBrowseViewName;
+}
+
 TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }

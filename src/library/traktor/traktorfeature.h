@@ -43,6 +43,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    virtual QString getViewName();
     static bool isSupported();
 
     TreeItemModel* getChildModel();
@@ -78,6 +79,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
+    QString m_sTraktorViewName;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
 };

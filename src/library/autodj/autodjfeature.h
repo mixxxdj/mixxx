@@ -40,9 +40,7 @@ class AutoDJFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    inline QString getViewName() {
-        return m_sAutoDJViewName;
-    }
+    virtual QString getViewName();
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);

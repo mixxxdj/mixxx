@@ -10,6 +10,8 @@
 #include "library/treeitem.h"
 #include "library/queryutil.h"
 
+const QString RhythmboxFeature::m_sRhythmBoxViewName = QString("RHYTHMBOX_VIEW");
+
 RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),

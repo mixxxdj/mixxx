@@ -95,6 +95,10 @@ QIcon AutoDJFeature::getIcon() {
     return QIcon(":/images/library/ic_library_autodj.png");
 }
 
+QString AutoDJFeature::getViewName() {
+    return m_sAutoDJViewName;
+}
+
 void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
                                KeyboardEventFilter* pKeyboard) {
     //qDebug() << "AutoDJFeature::bindPaneWidget" << pLibraryWidget;

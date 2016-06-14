@@ -27,6 +27,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    virtual QString getViewName();
 
     TreeItemModel* getChildModel();
 
@@ -68,6 +69,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QString m_dbItunesRoot;
     QString m_mixxxItunesRoot;
+    QString m_sItunesView;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
 

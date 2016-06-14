@@ -35,6 +35,7 @@ class BrowseFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    virtual QString getViewName();
 
     void bindPaneWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);

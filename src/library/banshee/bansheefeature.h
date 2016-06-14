@@ -27,6 +27,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
 
     virtual QVariant title();
     virtual QIcon getIcon();
+    virtual QString getViewName();
 
     virtual TreeItemModel* getChildModel();
 
@@ -56,6 +57,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
 
     static QString m_databaseFile;
 
+    static const QString m_sBansheeViewName;
     static const QString BANSHEE_MOUNT_KEY;
 };
 
