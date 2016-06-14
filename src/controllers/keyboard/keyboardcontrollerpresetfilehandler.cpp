@@ -56,10 +56,54 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
 
 bool KeyboardControllerPresetFileHandler::save(const KeyboardControllerPreset &preset, const QString deviceName,
                                                const QString fileName) const {
-    Q_UNUSED(preset);
-    Q_UNUSED(deviceName);
-    Q_UNUSED(fileName);
+    QDomDocument doc = buildRootWithScripts(preset, deviceName);
+    addControlsToDocument(preset, &doc);
+    return writeDocument(doc, fileName);
+}
 
-    // TODO(Tomasito) Implement this method
-    return false;
+void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardControllerPreset& preset,
+                                                            QDomDocument* doc) const {
+    QDomElement controller = doc->documentElement().firstChildElement("controller");
+
+    // Group blocks will be inflated here
+    QMultiHash<QString, QDomElement> groupNodes;
+    QMultiHash<QString, QDomElement>::iterator groupNodesIterator;
+
+    // Iterate over all key sequences bound to one or more actions
+    const QMultiHash<ConfigValueKbd, ConfigKey>& mapping = preset.m_keySequenceToControlHash;
+    QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator iterator;
+
+    for (iterator = mapping.begin(); iterator != mapping.end(); ++iterator) {
+        const ConfigValueKbd& configValueKbd = iterator.key();
+        QString groupName = iterator.value().group;
+        QString action = iterator.value().item;
+
+
+        groupNodesIterator = groupNodes.find(groupName);
+
+        // Inflate group block if it doesn't exist yet
+        if (groupNodesIterator == groupNodes.end()) {
+            QDomElement groupElement = doc->createElement("group");
+            groupElement.setTagName("group");
+            groupElement.setAttribute("name", groupName);
+            groupNodesIterator = groupNodes.insert(groupName, groupElement);
+        }
+
+        Q_ASSERT(groupNodesIterator != groupNodes.end());
+        QDomElement& groupNode = groupNodesIterator.value();
+
+        // Inflate control node and append it to the group block
+        QDomElement controlNode = doc->createElement("control");
+        controlNode.setAttribute("action", action);
+        controlNode.setAttribute("keyseq", configValueKbd.value);
+        groupNode.appendChild(controlNode);
+
+        // TODO(Tomasito) Support multiple actions bound to configValueKbd
+    }
+
+    // Append all group blocks to the controller node
+    for (groupNodesIterator = groupNodes.begin();
+         groupNodesIterator != groupNodes.end(); ++groupNodesIterator) {
+        controller.appendChild(groupNodesIterator.value());
+    }
 }

@@ -14,6 +14,9 @@ public:
 
 private:
     virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName);
+
+    void addControlsToDocument(const KeyboardControllerPreset& preset,
+                               QDomDocument* doc) const;
 };
 
 
