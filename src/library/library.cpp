@@ -176,7 +176,6 @@ void Library::bindSidebarExpanded(WLibrary* expandedPane,
     m_pSidebarExpanded->addFeatures(m_features);    
     m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard,
                                        LibraryPaneManager::FeaturePane::SidebarExpanded);
-    m_sidebarExpandedFocused = true;
 }
 
 void Library::destroyInterface() {
@@ -220,12 +219,8 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 void Library::slotSwitchToView(const QString& view) {
     //qDebug() << "Library::slotSwitchToView" << view;
     
-    if (m_sidebarExpandedFocused) {
-        m_pSidebarExpanded->slotSwitchToView(view);
-    }
-    else {
-        m_panes[m_focusedPane]->slotSwitchToView(view);
-    }
+    m_pSidebarExpanded->slotSwitchToView(view);
+    m_panes[m_focusedPane]->slotSwitchToView(view);
     emit(switchToView(view));
 }
 
@@ -275,9 +270,6 @@ void Library::onSkinLoadFinished() {
     //m_pSidebarModel->activateDefaultSelection();
     if (m_panes.size() > 0) {
         m_focusedPane = m_panes.begin().key();
-    }
-    else {
-        m_sidebarExpandedFocused = true;
     }
     m_features.first()->activate();
 }
@@ -372,11 +364,7 @@ void Library::slotPaneFocused() {
         return;
     }
     
-    if (pane == m_pSidebarExpanded) {
-        m_sidebarExpandedFocused = true;
-    }
-    else {
-        m_sidebarExpandedFocused = false;
+    if (pane != m_pSidebarExpanded) {
         m_focusedPane = m_panes.key(pane, -1);
         DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
             return;

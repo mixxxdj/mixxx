@@ -152,7 +152,6 @@ public:
     
     // Can be any integer as it's used with a HashMap
     int m_focusedPane;
-    bool m_sidebarExpandedFocused;
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
 };
