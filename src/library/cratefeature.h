@@ -33,8 +33,6 @@ class CrateFeature : public LibraryFeature {
     QIcon getIcon();
     
     inline QString getViewName() { return m_sCrateViewName; }
-    QWidget* getLeftPane() { return new QWidget(); }
-    QWidget* getRightPane() { return new QWidget(); }
     
     inline bool hasSearch() { return false; }
     void onSearch(QString&) {}
@@ -45,8 +43,6 @@ class CrateFeature : public LibraryFeature {
 
     void bindPaneWidget(WLibrary* pLibraryWidget,
                     KeyboardEventFilter* keyboard);
-    void bindSidebarWidget(WLibrary* pSidebarWidget,
-                           KeyboardEventFilter*);
     
     TreeItemModel* getChildModel();
 

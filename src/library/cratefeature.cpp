@@ -191,17 +191,6 @@ void CrateFeature::bindPaneWidget(WLibrary* pLibraryWidget,
     pLibraryWidget->registerView(m_sCrateViewName, edit);
 }
 
-void CrateFeature::bindSidebarWidget(WLibrary *pSidebarWidget, 
-                                     KeyboardEventFilter *) {
-    WLibrarySidebar* pSidebar = new WLibrarySidebar(pSidebarWidget);
-    
-    pSidebar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    pSidebar->setModel(getChildModel());
-    pSidebarWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    
-    pSidebarWidget->registerView(getViewName(), pSidebar);
-}
-
 TreeItemModel* CrateFeature::getChildModel() {
     return &m_childModel;
 }
