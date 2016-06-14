@@ -25,12 +25,10 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
     parsePresetInfo(root, preset);
     addScriptFilesToPreset(controller, preset);
 
-    QDomElement group = controller.firstChildElement("group");
-
     // Iterate through each <group> block in the XML
+    QDomElement group = controller.firstChildElement("group");
     while (!group.isNull()) {
         QString groupName = group.attributeNode("name").value();
-
         QDomElement control = group.firstChildElement("control");
 
         // Iterate through each <control> node inside the current <group> block
@@ -49,7 +47,6 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
 
         group = group.nextSiblingElement("group");
     }
-
 
     return ControllerPresetPointer(preset);
 }
@@ -78,7 +75,6 @@ void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardCo
         QString groupName = iterator.value().group;
         QString action = iterator.value().item;
 
-
         groupNodesIterator = groupNodes.find(groupName);
 
         // Inflate group block if it doesn't exist yet
@@ -97,8 +93,6 @@ void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardCo
         controlNode.setAttribute("action", action);
         controlNode.setAttribute("keyseq", configValueKbd.value);
         groupNode.appendChild(controlNode);
-
-        // TODO(Tomasito) Support multiple actions bound to configValueKbd
     }
 
     // Append all group blocks to the controller node
