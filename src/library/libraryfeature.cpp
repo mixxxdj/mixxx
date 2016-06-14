@@ -23,12 +23,21 @@ LibraryFeature::~LibraryFeature() {
 void LibraryFeature::bindSidebarWidget(WLibrary* pSidebarWidget, KeyboardEventFilter *) {
     TreeItemModel* pTreeModel = getChildModel();
     //qDebug() << "LibraryFeature::bindSidebarWidget" << pTreeModel->rowCount();    
+    WLibrarySidebar* pSidebar = new WLibrarySidebar(pSidebarWidget);
+    pSidebarWidget->registerView(getViewName(), pSidebar);
     
-    if (pTreeModel->rowCount() > 0) {
-        WLibrarySidebar* pSidebar = new WLibrarySidebar(pSidebarWidget);
-        pSidebar->setModel(pTreeModel);
-        pSidebarWidget->registerView(getViewName(), pSidebar);
+    if (pTreeModel == nullptr) {
+        return;
     }
+   
+    pSidebar->setModel(pTreeModel);
+    
+    connect(pSidebar, SIGNAL(clicked(const QModelIndex&)),
+            pTreeModel, SLOT(clicked(const QModelIndex&)));
+    connect(pSidebar, SIGNAL(doubleClicked(const QModelIndex&)),
+            pTreeModel, SLOT(doubleClicked(const QModelIndex&)));
+    connect(pSidebar, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
+            pTreeModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
 }
 
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {

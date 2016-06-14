@@ -43,10 +43,7 @@ class LibraryFeature : public QObject {
     
     // Must be a unique name for each feature, it must be a unique name for each
     // different feature
-    virtual QString getViewName() {
-        // TODO(jmigual): This is a STUB must be removed later
-        return "DEFAULT_FEATURE";
-    }
+    virtual QString getViewName() = 0;
 
     virtual bool dropAccept(QList<QUrl> urls, QObject* pSource) {
         Q_UNUSED(urls);
