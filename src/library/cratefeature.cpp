@@ -240,9 +240,6 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int crateId = crateIdFromIndex(index);
-    if (crateId == -1) {
-        return;
-    }
 
     bool locked = m_crateDao.isCrateLocked(crateId);
 
