@@ -342,6 +342,7 @@ WLibrary QSpinBox:editable {
 WLibrary QLabel, WLibrary QRadioButton {
   /* same as QTreeview */
   color: #d2d2d2;
+  font-size: 10px;
   margin: 9px 10px 6px 0px;
 }
 
@@ -363,6 +364,7 @@ WLibrary QRadioButton::indicator:checked {
 WLibrary QRadioButton::indicator:unchecked {
   background: url(skin:/icon/ic_radio_button_off_18px.svg);
 }
+
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
 #DlgMissing > QPushButton,
@@ -527,6 +529,11 @@ QScrollArea {
   border: 1px solid #1A1A1A;
   background-color: #222222;
 }
+
+WLibrary QWidget {
+  background-color: #222222;
+}
+
 
 /*******************************************************************************
  ** END LIBRARY *****************************************************************
