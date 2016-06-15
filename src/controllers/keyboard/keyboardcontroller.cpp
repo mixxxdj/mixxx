@@ -15,10 +15,9 @@ KeyboardController::KeyboardController(KeyboardEventFilter* pKbdEventFilter) :
     // TODO(Tomasito) If we add multiple keyboard support, this should be a more specific name
     setDeviceName(tr("Keyboard")); // TODO Add translations
 
-    connect(m_pKbdEventFilter, SIGNAL(keySeqPressed(QKeySequence)),
-            this, SLOT(onKeySeqPressed(QKeySequence)));
+    connect(m_pKbdEventFilter, SIGNAL(controlKeySeqPressed(ConfigKey)),
+            this, SLOT(onKeySeqPressed(ConfigKey)));
 
-    // TODO(Tomasito) Check if it should be better
     connect(this, SIGNAL(presetLoaded(ControllerPresetPointer)),
             m_pKbdEventFilter, SLOT(slotSetKeyboardMapping(ControllerPresetPointer)));
 }
@@ -61,12 +60,12 @@ bool KeyboardController::matchPreset(const PresetInfo &preset) {
 }
 
 int KeyboardController::open() {
-    // TODO(Tomasito) Check how this is done in the current keyboard implementation
+    setOpen(true);
     return 0;
 }
 
 int KeyboardController::close() {
-    // TODO(Tomasito) Check how this is done in the current keyboard implementation
+    setOpen(false);
     return 0;
 }
 
@@ -75,8 +74,13 @@ ControllerPreset *KeyboardController::preset() {
     return &m_preset;
 }
 
-void KeyboardController::onKeySeqPressed(QKeySequence ks) {
-    Q_UNUSED(ks);
+void KeyboardController::onKeySeqPressed(ConfigKey configKey) {
+    if (!isOpen()) return;
+
+    ControlObject* control = ControlObject::getControl(configKey);
+
+    // Since setting the value might cause us to go down
+    // a route that would eventually clear the active
+    // key list, do that last.
+    control->setValueFromMidi(MIDI_NOTE_ON, 1);
 }
-
-

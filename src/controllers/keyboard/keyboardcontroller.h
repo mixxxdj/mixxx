@@ -39,7 +39,8 @@ public:
     virtual bool matchPreset(const PresetInfo& preset);
 
 public slots:
-    void onKeySeqPressed(QKeySequence ks);
+    // Sets a control, only if the keyboard is enabled
+    void onKeySeqPressed(ConfigKey configKey);
 
 private slots:
     virtual int open();

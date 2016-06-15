@@ -57,10 +57,10 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             bool result = false;
 
             QMultiHash<ConfigValueKbd, ConfigKey> mapping = m_kbdPreset->m_keySequenceToControlHash;
-            QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator iterator = mapping.find(ksv);
+            QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator iterator;
 
             // NOTE: Using const_iterator here is faster than QMultiHash::values()
-            for (iterator; iterator != mapping.end(); ++iterator) {
+            for (iterator = mapping.find(ksv); iterator != mapping.end(); ++iterator) {
                 // TODO(Tomasito) Overload != operator for ConfigValueKbd and use it here
                 if (!(iterator.key() == ksv)) continue;
 
@@ -69,16 +69,15 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
                 ControlObject* control = ControlObject::getControl(configKey);
 
-                // TODO(Tomasito) Move this to KeyboardController
                 if (control) {
                     //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
                     // Add key to active key list
                     m_qActiveKeyList.append(KeyDownInformation(
                         keyId, ke->modifiers(), control));
-                    // Since setting the value might cause us to go down
-                    // a route that would eventually clear the active
-                    // key list, do that last.
-                    control->setValueFromMidi(MIDI_NOTE_ON, 1);
+
+                    // TODO(Tomasito) I assume that sending the pointer wouldn't be safe. Check if this assumption is
+                    // ...            is true. If it's not, send only the pointer.
+                    emit controlKeySeqPressed(configKey);
                     result = true;
                 } else {
                     qDebug() << "Warning: Keyboard key is configured for nonexistent control:"

@@ -162,6 +162,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     qRegisterMetaType<Mixxx::ReplayGain>("Mixxx::ReplayGain");
     qRegisterMetaType<Mixxx::Bpm>("Mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<ConfigKey>("ConfigKey");
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
@@ -817,6 +818,7 @@ void MixxxMainWindow::connectMenuBar() {
             m_pMenuBar, SLOT(onFullScreenStateChange(bool)));
 
     // Keyboard shortcuts
+    // TODO(Tomasito) Make slot KeyboardController and connect to all KeyboardControllers
     connect(m_pMenuBar, SIGNAL(toggleKeyboardShortcuts(bool)),
             this, SLOT(slotOptionsKeyboard(bool)));
 

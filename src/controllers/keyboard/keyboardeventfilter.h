@@ -5,6 +5,7 @@
 #include <QEvent>
 #include <QKeyEvent>
 #include <QMultiHash>
+#include <control/controlobject.h>
 
 #include "controllers/controllerpreset.h"
 #include "preferences/configobject.h"
@@ -23,6 +24,7 @@ class KeyboardEventFilter : public QObject {
 
   signals:
     void keySeqPressed(QKeySequence keySeq);
+    void controlKeySeqPressed(ConfigKey configKey);
 
   public slots:
     void slotSetKeyboardMapping(ControllerPresetPointer presetPointer);
@@ -46,9 +48,6 @@ class KeyboardEventFilter : public QObject {
 
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
-
-    // Multi-hash of key sequence to
-    QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
 
     // Clone of keyboard controller preset, containing keyboard mapping info
     QSharedPointer<KeyboardControllerPreset> m_kbdPreset;
