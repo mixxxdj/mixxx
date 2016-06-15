@@ -28,6 +28,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         : LibraryFeature(pLibrary),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
+          kLibraryTitle(tr("Library")),
           m_pLibrary(pLibrary),
           m_pMissingView(NULL),
           m_pHiddenView(NULL),
@@ -111,10 +112,14 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
 
     TreeItem* pRootItem = new TreeItem();
+    TreeItem* pLibraryChildItem = new TreeItem(kLibraryTitle, m_sMixxxLibraryViewName,
+                                               this, pRootItem);
+    pLibraryChildItem->setIcon(getIcon());
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
                                                this, pRootItem);
     TreeItem* phiddenChildItem = new TreeItem(kHiddenTitle, kHiddenTitle,
                                               this, pRootItem);
+    pRootItem->appendChild(pLibraryChildItem);
     pRootItem->appendChild(pmissingChildItem);
     pRootItem->appendChild(phiddenChildItem);
 
@@ -141,7 +146,7 @@ void MixxxLibraryFeature::bindPaneWidget(WLibrary* pLibraryWidget,
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Library");
+    return kLibraryTitle;
 }
 
 QIcon MixxxLibraryFeature::getIcon() {
@@ -172,7 +177,12 @@ void MixxxLibraryFeature::activate() {
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
-    QString itemName = index.data().toString();
+    QString itemName = index.data(TreeItemModel::kDataPathRole).toString();
+    if (itemName == m_sMixxxLibraryViewName) {
+        activate();
+        return;
+    }
+    
     emit(switchToView(itemName));
     emit(enableCoverArtDisplay(true));
 }

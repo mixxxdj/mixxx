@@ -54,6 +54,7 @@ class MixxxLibraryFeature : public LibraryFeature {
   private:
     const QString kMissingTitle;
     const QString kHiddenTitle;
+    const QString kLibraryTitle;
     Library* m_pLibrary;
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
