@@ -17,7 +17,8 @@ bool WBaseLibrary::registerView(QString name, QWidget* view) {
         return false;
     }
 
-    addWidget(view);
+    int index = addWidget(view);
+    setCurrentIndex(index);
     m_viewMap[name] = view;
     return true;
 }
