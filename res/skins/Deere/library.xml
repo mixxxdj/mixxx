@@ -14,33 +14,32 @@
       <!-- Main Library -->
       <WidgetGroup trigger="[Library],show_library">
         <ObjectName>LibraryExpanded</ObjectName>
-        <Layout>vertical</Layout>
-        <!-- Fixed is interesting here. Ignore is the only thing that lets it
-             shrink to nothing. -->
-        <SizePolicy>me,f</SizePolicy>
-        <MinimumSize>0,0</MinimumSize>
+        <Layout>horizontal</Layout>
         <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <MinimumSize>0,0</MinimumSize>
+            <MaximumSize>120,-1</MaximumSize>
+            <Children>
+              <Template src="skin:hide_show_button.xml">
+                <SetVariable name="TooltipId">show_library</SetVariable>
+                <SetVariable name="object_name">LibraryToggle</SetVariable>
+                <SetVariable name="control">[Library],show_library</SetVariable>
+              </Template>
+              <LibrarySidebar>
+                <MaximumSize>120,-1</MaximumSize>
+              </LibrarySidebar>
+            </Children>
+          </WidgetGroup>
           <!-- QSplitter between LibrarySidebar and Library -->
           <Splitter>
             <ObjectName>LibrarySplitter</ObjectName>
             <Orientation>horizontal</Orientation>
             <SizePolicy>me,me</SizePolicy>
             <SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>
-            <SplitSizes>1,1,4,4</SplitSizes>
+            <SplitSizes>2,4,4</SplitSizes>
             <Children>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Children>
-                  <Template src="skin:hide_show_button.xml">
-                    <SetVariable name="TooltipId">show_library</SetVariable>
-                    <SetVariable name="object_name">LibraryToggle</SetVariable>
-                    <SetVariable name="control">[Library],show_library</SetVariable>
-                  </Template>
-                  <LibrarySidebar>
-                    <MaximumSize>120,-1</MaximumSize>
-                  </LibrarySidebar>
-                </Children>
-              </WidgetGroup>
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <Children>

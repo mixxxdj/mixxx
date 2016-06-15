@@ -333,11 +333,6 @@ WBaseLibrary QRadioButton::indicator {
   height: 18px;
 }
 
-/* Additional space for the first QRadionButton in the row */
-WBaseLibrary QRadioButton#radioButtonRecentlyAdded {
-  margin: 9px 10px 6px 14px;
-}
-
 WBaseLibrary QRadioButton::indicator:checked {
   background: url(skin:/icon/ic_radio_button_on_18px.svg);
 }
@@ -428,8 +423,7 @@ WBaseLibrary QRadioButton::indicator:unchecked {
 /* Additional space for the first and the last QPushButton in the row */
 #DlgMissing > QPushButton#btnPurge,
 #DlgHidden > QPushButton#btnUnhide,
-#DlgRecording > QPushButton#pushButtonRecording,
-#DlgAnalysis > QPushButton#pushButtonAnalyze {
+#DlgRecording > QPushButton#pushButtonRecording {
   margin: 9px 12px 6px 3px;
 }
 
