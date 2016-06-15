@@ -9,6 +9,7 @@
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
 #include "widget/wlibrary.h"
+#include "widget/wanalysislibrarytableview.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "analyzer/analyzerqueue.h"
 #include "sources/soundsourceproxy.h"
@@ -23,10 +24,11 @@ AnalysisFeature::AnalysisFeature(QObject* parent,
         LibraryFeature(parent),
         m_pConfig(pConfig),
         m_pTrackCollection(pTrackCollection),
-        m_pAnalyzerQueue(NULL),
+        m_pAnalyzerQueue(nullptr),
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
-        m_pAnalysisView(NULL) {
+        m_pAnalysisView(nullptr),
+        m_pAnalysisTableView(nullptr){
     setTitleDefault();
 }
 
@@ -59,33 +61,49 @@ QIcon AnalysisFeature::getIcon() {
 }
 
 void AnalysisFeature::bindPaneWidget(WLibrary* libraryWidget,
-                                 KeyboardEventFilter* keyboard) {
-    m_pAnalysisView = new DlgAnalysis(libraryWidget,
-                                      m_pConfig,
-                                      m_pTrackCollection);
+                                     KeyboardEventFilter*) {
+    
+    m_pAnalysisTableView = new WAnalysisLibraryTableView(libraryWidget,
+            m_pConfig,
+            m_pTrackCollection);
+    
+    if (m_pAnalysisView) {
+        m_pAnalysisView->setAnalysisTableView(m_pAnalysisTableView);
+    }
+
+    libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisTableView);
+}
+
+void AnalysisFeature::bindSidebarWidget(WBaseLibrary* libraryWidget,
+                                        KeyboardEventFilter* pKeyboard) {
+    m_pAnalysisView = new DlgAnalysis(libraryWidget, m_pTrackCollection);
     connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+        this, SIGNAL(loadTrack(TrackPointer)));
+    connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer,QString)),
+        this, SIGNAL(loadTrackToPlayer(TrackPointer,QString)));
     connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<TrackId>)),
-            this, SLOT(analyzeTracks(QList<TrackId>)));
+        this, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
-            this, SLOT(stopAnalysis()));
+        this, SLOT(stopAnalysis()));
 
     connect(m_pAnalysisView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+        this, SIGNAL(trackSelected(TrackPointer)));
 
     connect(this, SIGNAL(analysisActive(bool)),
-            m_pAnalysisView, SLOT(analysisActive(bool)));
+        m_pAnalysisView, SLOT(analysisActive(bool)));
     connect(this, SIGNAL(trackAnalysisStarted(int)),
-            m_pAnalysisView, SLOT(trackAnalysisStarted(int)));
+        m_pAnalysisView, SLOT(trackAnalysisStarted(int)));
 
-    m_pAnalysisView->installEventFilter(keyboard);
-
+    m_pAnalysisView->installEventFilter(pKeyboard);
+    
+    if (m_pAnalysisTableView) {
+        m_pAnalysisView->setAnalysisTableView(m_pAnalysisTableView);
+    }
+    
     // Let the DlgAnalysis know whether or not analysis is active.
     bool bAnalysisActive = m_pAnalyzerQueue != NULL;
     emit(analysisActive(bAnalysisActive));
-
+    
     libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
 }
 

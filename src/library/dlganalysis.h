@@ -16,7 +16,6 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     Q_OBJECT
   public:
     DlgAnalysis(QWidget *parent,
-               UserSettingsPointer pConfig,
                TrackCollection* pTrackCollection);
     virtual ~DlgAnalysis();
 
@@ -31,6 +30,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
         return m_pAnalysisLibraryTableModel->currentSearch();
     }
     int getNumTracks();
+    
+    void setAnalysisTableView(WAnalysisLibraryTableView* pTable);
 
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,
@@ -54,7 +55,6 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
 
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file
-    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
     bool m_bAnalysisActive;
     QButtonGroup m_songsButtonGroup;

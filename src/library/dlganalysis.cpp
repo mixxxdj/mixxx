@@ -8,10 +8,8 @@
 #include "util/assert.h"
 
 DlgAnalysis::DlgAnalysis(QWidget* parent,
-                       UserSettingsPointer pConfig,
-                       TrackCollection* pTrackCollection)
+                         TrackCollection* pTrackCollection)
         : QWidget(parent),
-          m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
           m_tracksInQueue(0),
@@ -20,25 +18,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, pTrackCollection);
-    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-
-    connect(m_pAnalysisLibraryTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
-    } else {
-        box->removeWidget(m_pTrackTablePlaceholder);
-        m_pTrackTablePlaceholder->hide();
-        box->insertWidget(1, m_pAnalysisLibraryTableView);
-    }
-
     m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pTrackCollection);
-    m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
             this,  SLOT(showRecentSongs()));
@@ -56,11 +36,6 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
 
     connect(pushButtonSelectAll, SIGNAL(clicked()),
             this, SLOT(selectAll()));
-
-    connect(m_pAnalysisLibraryTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
-            this,
-            SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
 }
 
 DlgAnalysis::~DlgAnalysis() {
@@ -165,6 +140,24 @@ void DlgAnalysis::trackAnalysisProgress(int progress) {
 
 int DlgAnalysis::getNumTracks() {
     return m_tracksInQueue;
+}
+
+void DlgAnalysis::setAnalysisTableView(WAnalysisLibraryTableView *pTable) {
+    m_pAnalysisLibraryTableView = pTable;
+    
+    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+
+    connect(m_pAnalysisLibraryTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
+    
+    m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
+    connect(m_pAnalysisLibraryTableView->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
+            this,
+            SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
 }
 
 void DlgAnalysis::trackAnalysisStarted(int size) {
