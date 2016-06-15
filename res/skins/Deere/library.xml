@@ -36,7 +36,9 @@
                     <SetVariable name="object_name">LibraryToggle</SetVariable>
                     <SetVariable name="control">[Library],show_library</SetVariable>
                   </Template>
-                  <LibrarySidebar></LibrarySidebar>
+                  <LibrarySidebar>
+                    <MaximumSize>120,-1</MaximumSize>
+                  </LibrarySidebar>
                 </Children>
               </WidgetGroup>
               <WidgetGroup>
