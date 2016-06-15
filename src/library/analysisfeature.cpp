@@ -61,11 +61,12 @@ QIcon AnalysisFeature::getIcon() {
 }
 
 void AnalysisFeature::bindPaneWidget(WLibrary* libraryWidget,
-                                     KeyboardEventFilter*) {
+                                     KeyboardEventFilter* pKeyboard) {
     
     m_pAnalysisTableView = new WAnalysisLibraryTableView(libraryWidget,
             m_pConfig,
             m_pTrackCollection);
+    m_pAnalysisTableView->installEventFilter(pKeyboard);
     
     if (m_pAnalysisView) {
         m_pAnalysisView->setAnalysisTableView(m_pAnalysisTableView);
@@ -76,6 +77,7 @@ void AnalysisFeature::bindPaneWidget(WLibrary* libraryWidget,
 
 void AnalysisFeature::bindSidebarWidget(WBaseLibrary* libraryWidget,
                                         KeyboardEventFilter* pKeyboard) {
+    
     m_pAnalysisView = new DlgAnalysis(libraryWidget, m_pTrackCollection);
     connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
         this, SIGNAL(loadTrack(TrackPointer)));

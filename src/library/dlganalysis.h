@@ -43,7 +43,6 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void trackAnalysisStarted(int size);
     void showRecentSongs();
     void showAllSongs();
-    void installEventFilter(QObject* pFilter);
     void analysisActive(bool bActive);
 
   signals:
