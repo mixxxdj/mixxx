@@ -860,7 +860,7 @@ def generate(env):
         from SCons.Script.SConscript import SConsEnvironment
         SConsEnvironment.EnableQt5Modules = enable_modules
 
-def enable_modules(self, modules, debug=False, crosscompiling=False) :
+def enable_modules(self, modules, debug=False, crosscompiling=False, staticdeps=False) :
     validModules = [
         # Qt Essentials
         'QtCore',
@@ -905,6 +905,8 @@ def enable_modules(self, modules, debug=False, crosscompiling=False) :
     ]
     staticModules = [
     ]
+    if sys.platform == "win32" and staticdeps :
+        staticModules.extend(validModules)
     invalidModules=[]
     for module in modules:
         if module not in validModules :
