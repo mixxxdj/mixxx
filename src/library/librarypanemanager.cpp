@@ -14,15 +14,15 @@ LibraryPaneManager::LibraryPaneManager(QObject* parent)
 LibraryPaneManager::~LibraryPaneManager() {
 }
 
-void LibraryPaneManager::bindPaneWidget(WLibrary* libraryWidget,
-                                           KeyboardEventFilter* pKeyboard, 
-                                           FeaturePane pane) {
+void LibraryPaneManager::bindPaneWidget(WBaseLibrary* libraryWidget,
+                                        KeyboardEventFilter* pKeyboard,
+                                        FeaturePane pane) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
-    
+
     m_pLibraryWidget = libraryWidget;
 
-    connect(this, SIGNAL(switchToView(const QString &)),
-            m_pLibraryWidget, SLOT(switchToView(const QString &)));
+    connect(this, SIGNAL(switchToView(const QString&)),
+        m_pLibraryWidget, SLOT(switchToView(const QString&)));
 
     switch (pane) {
         case FeaturePane::SidebarExpanded:
@@ -33,8 +33,12 @@ void LibraryPaneManager::bindPaneWidget(WLibrary* libraryWidget,
             break;
         case FeaturePane::TrackTable:
             //qDebug() << "LibraryPaneManager::bindLibraryWidget:TrackTable";
+            WLibrary* lib = qobject_cast<WLibrary*>(m_pLibraryWidget);
+            if (lib == nullptr) {
+                return;
+            }
             for (LibraryFeature* f : m_features) {
-                f->bindPaneWidget(m_pLibraryWidget, pKeyboard);
+                f->bindPaneWidget(lib, pKeyboard);
             }
             break;
     }

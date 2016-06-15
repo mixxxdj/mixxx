@@ -814,7 +814,6 @@ class MixxxCore(Feature):
                    "widget/wmainmenubar.cpp",
                    "widget/wbuttonbar.cpp",
                    "widget/wrightclickbutton.cpp",
-                   "widget/wscrollarea.cpp",
 
                    "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",
@@ -828,6 +827,7 @@ class MixxxCore(Feature):
                    "widget/wtracktableviewheader.cpp",
                    "widget/wlibrarysidebar.cpp",
                    "widget/wlibrary.cpp",
+                   "widget/wbaselibrary.cpp",
                    "widget/wlibrarytableview.cpp",
                    "widget/wanalysislibrarytableview.cpp",
                    "widget/wlibrarytextbrowser.cpp",

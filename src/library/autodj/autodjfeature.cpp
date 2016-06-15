@@ -114,20 +114,21 @@ void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
     }
 }
 
-void AutoDJFeature::bindSidebarWidget(WLibrary* pSidebarWidget, 
+void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget, 
                                       KeyboardEventFilter*) {
-    //qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
-    WScrollArea* pArea = new WScrollArea(pSidebarWidget);
+    qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
+    
+    QScrollArea* pArea = new QScrollArea(pSidebarWidget);
     m_pAutoDJView = new DlgAutoDJ(pArea, m_pAutoDJProcessor);
     pArea->setWidget(m_pAutoDJView);  
     pArea->setWidgetResizable(true);
     
     pSidebarWidget->registerView(m_sAutoDJViewName, pArea);
+    
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-
     connect(m_pAutoDJView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
 

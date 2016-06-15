@@ -22,7 +22,6 @@
 
 #include "library/dao/autodjcratesdao.h"
 #include "widget/wtracktableview.h"
-#include "widget/wscrollarea.h"
 
 class DlgAutoDJ;
 class Library;
@@ -47,7 +46,7 @@ class AutoDJFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
 
     void bindPaneWidget(WLibrary* pLibraryWidget, KeyboardEventFilter*pKeyboard);
-    void bindSidebarWidget(WLibrary* pSidebarWidget, KeyboardEventFilter*);
+    void bindSidebarWidget(WBaseLibrary *pSidebarWidget, KeyboardEventFilter*);
 
     TreeItemModel* getChildModel();
 

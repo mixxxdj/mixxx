@@ -53,7 +53,7 @@ public:
     void bindSidebarWidget(WButtonBar* sidebar);
     void bindPaneWidget(WLibrary* libraryWidget,
                         KeyboardEventFilter* pKeyboard, int id);
-    void bindSidebarExpanded(WLibrary* expandedPane, 
+    void bindSidebarExpanded(WBaseLibrary* expandedPane, 
                              KeyboardEventFilter* pKeyboard);
 
     void destroyInterface();

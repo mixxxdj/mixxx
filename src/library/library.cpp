@@ -168,7 +168,7 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
     emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
 }
 
-void Library::bindSidebarExpanded(WLibrary* expandedPane,
+void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
     m_pSidebarExpanded = new LibraryPaneManager;
     connect(m_pSidebarExpanded, SIGNAL(focused()),

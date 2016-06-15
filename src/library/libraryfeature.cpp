@@ -20,7 +20,7 @@ LibraryFeature::~LibraryFeature() {
     
 }
 
-void LibraryFeature::bindSidebarWidget(WLibrary* pSidebarWidget, KeyboardEventFilter *) {
+void LibraryFeature::bindSidebarWidget(WBaseLibrary *pSidebarWidget, KeyboardEventFilter *) {
     TreeItemModel* pTreeModel = getChildModel();
     //qDebug() << "LibraryFeature::bindSidebarWidget" << pTreeModel->rowCount();    
     WLibrarySidebar* pSidebar = new WLibrarySidebar(pSidebarWidget);
