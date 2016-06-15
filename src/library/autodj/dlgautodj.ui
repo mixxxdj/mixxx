@@ -143,6 +143,22 @@
     </spacer>
    </item>
   </layout>
+  <zorder>pushButtonAutoDJ</zorder>
+  <zorder>pushButtonShuffle</zorder>
+  <zorder>pushButtonSkipNext</zorder>
+  <zorder>pushButtonAddRandom</zorder>
+  <zorder>pushButtonFadeNow</zorder>
+  <zorder>pushButtonAutoDJ</zorder>
+  <zorder>pushButtonShuffle</zorder>
+  <zorder>pushButtonSkipNext</zorder>
+  <zorder>pushButtonAddRandom</zorder>
+  <zorder>pushButtonFadeNow</zorder>
+  <zorder>pushButtonAutoDJ</zorder>
+  <zorder>pushButtonShuffle</zorder>
+  <zorder>pushButtonSkipNext</zorder>
+  <zorder>pushButtonAddRandom</zorder>
+  <zorder>pushButtonFadeNow</zorder>
+  <zorder>labelSelectionInfo</zorder>
  </widget>
  <resources/>
  <connections/>

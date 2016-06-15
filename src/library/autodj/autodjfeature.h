@@ -22,6 +22,7 @@
 
 #include "library/dao/autodjcratesdao.h"
 #include "widget/wtracktableview.h"
+#include "widget/wscrollarea.h"
 
 class DlgAutoDJ;
 class Library;
