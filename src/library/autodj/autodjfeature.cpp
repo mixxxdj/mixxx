@@ -6,6 +6,7 @@
 #include <QMetaObject>
 #include <QMenu>
 #include <QScrollArea>
+#include <QSplitter>
 
 #include "library/autodj/autodjfeature.h"
 
@@ -118,12 +119,21 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
                                       KeyboardEventFilter*) {
     qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
     
-    QScrollArea* pArea = new QScrollArea(pSidebarWidget);
+    QSplitter* pContainer = new QSplitter(pSidebarWidget);
+    
+    WLibrarySidebar* pSidebar = new WLibrarySidebar(pContainer);
+    pSidebar->setModel(&m_childModel);
+    pContainer->addWidget(pSidebar);
+    pContainer->adjustSize();
+    
+    
+    QScrollArea* pArea = new QScrollArea(pContainer);
     m_pAutoDJView = new DlgAutoDJ(pArea, m_pAutoDJProcessor);
     pArea->setWidget(m_pAutoDJView);  
     pArea->setWidgetResizable(true);
-    
-    pSidebarWidget->registerView(m_sAutoDJViewName, pArea);
+    pArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    pArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    pContainer->addWidget(pArea);
     
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
@@ -137,6 +147,8 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
+    
+    pSidebarWidget->registerView(m_sAutoDJViewName, pContainer);
     
     if (m_pTrackTableView) {
         m_pAutoDJView->setTrackTableView(m_pTrackTableView, m_pLibrary);
