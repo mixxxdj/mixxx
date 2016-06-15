@@ -129,7 +129,7 @@ void RhythmboxFeature::activate() {
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
         emit (featureIsLoading(this, true));
     }
-
+    emit(switchToView(m_sRhythmBoxViewName));
     emit(showTrackModel(m_pRhythmboxTrackModel));
     emit(enableCoverArtDisplay(false));
 }

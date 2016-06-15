@@ -26,7 +26,6 @@ void LibraryFeature::bindSidebarWidget(WLibrary* pSidebarWidget, KeyboardEventFi
     WLibrarySidebar* pSidebar = new WLibrarySidebar(pSidebarWidget);
     pSidebarWidget->registerView(getViewName(), pSidebar);
     qDebug() << getViewName() << pTreeModel;
-    pSidebar->setObjectName(getViewName());
     
     if (pTreeModel == nullptr) {
         return;
