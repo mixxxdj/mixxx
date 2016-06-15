@@ -57,6 +57,7 @@ public:
                              KeyboardEventFilter* pKeyboard);
 
     void destroyInterface();
+    LibraryView* getActiveView();
     
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();

@@ -25,7 +25,7 @@ void LibraryFeature::bindSidebarWidget(WBaseLibrary *pSidebarWidget, KeyboardEve
     //qDebug() << "LibraryFeature::bindSidebarWidget" << pTreeModel->rowCount();    
     WLibrarySidebar* pSidebar = new WLibrarySidebar(pSidebarWidget);
     pSidebarWidget->registerView(getViewName(), pSidebar);
-    qDebug() << getViewName() << pTreeModel << pTreeModel->hasChildren();
+    //qDebug() << getViewName() << pTreeModel << pTreeModel->hasChildren();
     
     if (pTreeModel == nullptr) {
         return;

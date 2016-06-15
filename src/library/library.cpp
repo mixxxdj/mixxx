@@ -157,10 +157,7 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
     connect(m_panes[id], SIGNAL(searchCleared()),
             pTrackTableView, SLOT(onSearchCleared()));
     connect(m_panes[id], SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&)));
-    
-    m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
-    
+            pLibraryWidget, SLOT(search(const QString&)));    
     
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
@@ -183,6 +180,15 @@ void Library::destroyInterface() {
     
     qDeleteAll(m_panes);
     m_panes.clear();
+}
+
+LibraryView *Library::getActiveView() {
+    WBaseLibrary* pPane = m_panes[m_focusedPane]->getPaneWidget();
+    WLibrary* pLibrary = qobject_cast<WLibrary*>(pPane);
+    DEBUG_ASSERT_AND_HANDLE(pLibrary) {
+        return nullptr;
+    }
+    return pLibrary->getActiveView();
 }
 
 
