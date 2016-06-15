@@ -45,8 +45,10 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole && role != kDataPathRole && role != kBoldRole)
+    if (role != Qt::DisplayRole && role != kDataPathRole && 
+            role != kBoldRole && role != Qt::DecorationRole) {
         return QVariant();
+    }
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
@@ -55,6 +57,8 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         return item->dataPath();
     } else if (role == kBoldRole) {
         return item->isBold();
+    } else if (role == Qt::DecorationRole) {
+        return item->getIcon();
     }
     return item->data();
 }
