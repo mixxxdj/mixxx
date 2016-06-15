@@ -11,11 +11,11 @@
 #include <QEvent>
 
 #include "library/libraryview.h"
-#include "widget/wbasewidget.h"
+#include "widget/wbaselibrary.h"
 
 class KeyboardEventFilter;
 
-class WLibrary : public QStackedWidget, public WBaseWidget {
+class WLibrary : public WBaseLibrary {
     Q_OBJECT
   public:
     explicit WLibrary(QWidget* parent);
@@ -38,13 +38,8 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
 
     void search(const QString&);
 
-  protected:
-    
-    bool event(QEvent* pEvent) override;
-
   private:
     QMutex m_mutex;
-    QMap<QString, QWidget*> m_viewMap;
 };
 
 #endif /* WLIBRARY_H */

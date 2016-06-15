@@ -9,26 +9,20 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 
 WLibrary::WLibrary(QWidget* parent)
-        : QStackedWidget(parent),
-          WBaseWidget(this),
+        : WBaseLibrary(parent),
           m_mutex(QMutex::Recursive) {
     
 }
 
 bool WLibrary::registerView(QString name, QWidget* view) {
     QMutexLocker lock(&m_mutex);
-    if (m_viewMap.contains(name)) {
-        return false;
-    }
     if (dynamic_cast<LibraryView*>(view) == nullptr) {
         qDebug() << "WARNING: Attempted to register a view with WLibrary "
                  << "that does not implement the LibraryView interface. "
                  << "Ignoring.";
         return false;
     }
-    addWidget(view);
-    m_viewMap[name] = view;
-    return true;
+    return WBaseLibrary::registerView(name, view);
 }
 
 void WLibrary::switchToView(const QString& name) {
@@ -66,12 +60,4 @@ void WLibrary::search(const QString& name) {
 
 LibraryView* WLibrary::getActiveView() const {
     return dynamic_cast<LibraryView*>(currentWidget());
-}
-
-bool WLibrary::event(QEvent* pEvent) {
-    if (pEvent->type() == QEvent::ToolTip) {
-        updateTooltip();
-    }
-    
-    return QStackedWidget::event(pEvent);
 }
