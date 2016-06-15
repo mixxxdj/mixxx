@@ -282,40 +282,21 @@ QTreeView::branch:open:has-children:has-siblings {
 }
 
 /* QSplitter between LibrarySidebar and Library */
-#LibrarySplitter::handle {
+QSplitter::handle {
   image: url(skin:/image/style_handle_horizontal_unchecked.svg);
   background: none;
 }
 
-#LibrarySplitter::handle:pressed {
+QSplitter::handle:pressed {
   image: url(skin:/image/style_handle_horizontal_checked.svg);
   background: none;
 }
 
-#LibrarySplitter::handle:horizontal {
+QSplitter::handle:horizontal {
   width: 6px;
 }
 
-#LibrarySplitter::handle:vertical {
-  height: 6px;
-}
-
-/* QSplitter between LibrarySidebar and CoverArt */
-#LibraryCoverArtSplitter::handle {
-  image: url(skin:/image/style_handle_vertical_unchecked.svg);
-  background: none;
-}
-
-#LibraryCoverArtSplitter::handle:pressed {
-  image: url(skin:/image/style_handle_vertical_checked.svg);
-  background: none;
-}
-
-#LibraryCoverArtSplitter::handle:horizontal {
-  width: 6px;
-}
-
-#LibraryCoverArtSplitter::handle:vertical {
+QSplitter::handle:vertical {
   height: 6px;
 }
 
@@ -372,8 +353,8 @@ WBaseLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
-  margin: 9px 3px 6px 3px;
-  padding: 4px;
+  margin: 3px 3px 3px 3px;
+  padding: 2px;
   color: #D2D2D2;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                     stop: 0 #4B4B4B,
@@ -389,8 +370,6 @@ WBaseLibrary QRadioButton::indicator:unchecked {
 #DlgAnalysis > QPushButton:!enabled {
   /* buttons in "disabled" (not click-able) state. They are nearly invisible
      by default QT palette, so style accordingly */
-  margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #808080; /* Default #A3A3A3 -90L HSL*/
   background-color: qlineargradient(spread:pad,
                                     x1:0, y1:0, x2:1, y2:0,
@@ -398,8 +377,6 @@ WBaseLibrary QRadioButton::indicator:unchecked {
                                     stop:1 rgba(95, 95, 95, 127));
                                     /* 50% #5F5F5F = RGBA#5F5F5F7F */
   border: 0px solid #5F5F5F;
-  border-radius: 2px;
-  outline: none;
 }
 
 #DlgMissing > QPushButton:hover,
@@ -407,45 +384,33 @@ WBaseLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton:hover,
 #DlgRecording > QPushButton:hover,
 #DlgAnalysis > QPushButton:hover {
-  margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #D2D2D2;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                     stop: 0 #5F5F5F,
                                     stop: 1 #5F5F5F);
   border: 0px solid #5F5F5F;
-  border-radius: 2px;
-  outline: none;
 }
 
 #DlgAutoDJ > QPushButton:checked,
 #DlgRecording > QPushButton:checked,
 #DlgAnalysis > QPushButton:checked {
   /* checkbuttons in active state */
-  margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                     stop: 0 #006596,
                                     stop: 1 #006596);
   border: 0px solid #006596;
-  border-radius: 2px;
-  outline: none;
 }
 
 #DlgAutoDJ > QPushButton:checked:hover,
 #DlgRecording > QPushButton:checked:hover,
 #DlgAnalysis > QPushButton:checked:hover {
   /* checkbuttons hovered over in "active" state */
-  margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                     stop: 0 #0080BE,
                                     stop: 1 #0080BE);
   border: 0px solid #0080BE;
-  border-radius: 2px;
-  outline: none;
 }
 
 #DlgMissing > QPushButton:pressed,
@@ -453,30 +418,20 @@ WBaseLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton:pressed,
 #DlgAnalysis > QPushButton:pressed {
   /* pushbuttons in "down" state */
-  margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                     stop: 0 #006596,
                                     stop: 1 #006596);
   border: 0px solid #006596;
-  border-radius: 2px;
-  outline: none;
 }
 
 /* Additional space for the first and the last QPushButton in the row */
 #DlgMissing > QPushButton#btnPurge,
 #DlgHidden > QPushButton#btnUnhide,
-#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
 #DlgRecording > QPushButton#pushButtonRecording,
 #DlgAnalysis > QPushButton#pushButtonAnalyze {
   margin: 9px 12px 6px 3px;
 }
-
-#DlgAutoDJ > QPushButton#pushButtonShuffle {
-  margin: 9px 3px 6px 12px;
-}
-
 
 /* Scroll bars */
 QScrollBar:horizontal {
