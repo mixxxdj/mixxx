@@ -33,6 +33,10 @@ FolderTreeModel::~FolderTreeModel() {
  * is only called if necessary.
  */
 bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
+    if (!parent.isValid()) {
+        return true;
+    }    
+    
     TreeItem *item = static_cast<TreeItem*>(parent.internalPointer());
     /* Usually the child count is 0 becuase we do lazy initalization
      * However, for, buid-in items such as 'Quick Links' there exist
