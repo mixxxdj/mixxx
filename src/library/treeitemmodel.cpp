@@ -204,3 +204,42 @@ void TreeItemModel::triggerRepaint() {
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
     emit(dataChanged(left, right));
 }
+
+bool TreeItemModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
+                               QObject* pSource) {
+    //qDebug() << "TreeItemModel::dropAccept() index=" << index << urls;
+    bool result = false;
+    if (index.isValid()) {
+        LibraryFeature* pFeature;
+        if (index.internalPointer() == this) {
+            pFeature = m_pRootItem->getFeature();
+        } else {
+            TreeItem* treeItem = (TreeItem*) index.internalPointer();
+            if (treeItem) {
+                pFeature = treeItem->getFeature();
+            }
+        }
+        
+        pFeature->dropAcceptChild(index, urls, pSource);
+    }
+    return result;
+}
+
+bool TreeItemModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
+    //qDebug() << "TreeItemModel::dragMoveAccept() index=" << index << url;
+    bool result = false;
+    if (index.isValid()) {
+        LibraryFeature* pFeature;
+        if (index.internalPointer() == this) {
+            pFeature = m_pRootItem->getFeature();
+        } else {
+            TreeItem* treeItem = (TreeItem*) index.internalPointer();
+            if (treeItem) {
+                pFeature = treeItem->getFeature();
+            }
+        }
+        
+        result = pFeature->dragMoveAcceptChild(index, url);
+    }
+    return result;
+}

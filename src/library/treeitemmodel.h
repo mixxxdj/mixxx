@@ -5,6 +5,7 @@
 #include <QModelIndex>
 #include <QVariant>
 #include <QList>
+#include <QUrl>
 
 class TreeItem;
 
@@ -36,6 +37,9 @@ class TreeItemModel : public QAbstractItemModel {
     TreeItem* getItem(const QModelIndex &index) const;
 
     void triggerRepaint();
+    
+    bool dropAccept(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
+    bool dragMoveAccept(const QModelIndex& index, QUrl url);
 
   private:
     TreeItem *m_pRootItem;
