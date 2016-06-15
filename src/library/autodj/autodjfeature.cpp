@@ -38,7 +38,6 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_iAutoDJPlaylistId(-1),
           m_pAutoDJProcessor(nullptr),
           m_pAutoDJView(nullptr),
-          m_pTrackTableView(nullptr),
           m_autoDjCratesDao(pTrackCollection->getDatabase(),
                             pTrackCollection->getTrackDAO(),
                             pTrackCollection->getCrateDAO(),
@@ -104,14 +103,21 @@ QString AutoDJFeature::getViewName() {
 void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
                                KeyboardEventFilter* pKeyboard) {
     //qDebug() << "AutoDJFeature::bindPaneWidget" << pLibraryWidget;
-    m_pTrackTableView = new WTrackTableView(pLibraryWidget, m_pConfig, 
-                                            m_pTrackCollection, false);
+    WTrackTableView* pTrackTableView = new WTrackTableView(pLibraryWidget, 
+            m_pConfig, m_pTrackCollection, false);
     
-    m_pTrackTableView->installEventFilter(pKeyboard);
-    pLibraryWidget->registerView(m_sAutoDJViewName, m_pTrackTableView);
-
+    pTrackTableView->installEventFilter(pKeyboard);
+    pLibraryWidget->registerView(m_sAutoDJViewName, pTrackTableView);
+    
+    connect(m_pLibrary, SIGNAL(setTrackTableFont(const QFont&)),
+            pTrackTableView, SLOT(setTrackTableFont(const QFont&)));
+    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    
     if (m_pAutoDJView) {
-        m_pAutoDJView->setTrackTableView(m_pTrackTableView, m_pLibrary);
+        m_pAutoDJView->setTrackTableView(pTrackTableView);
+    } else {
+        m_trackTables.append(pTrackTableView);
     }
 }
 
@@ -128,7 +134,7 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
     
     
     QScrollArea* pArea = new QScrollArea(pContainer);
-    m_pAutoDJView = new DlgAutoDJ(pArea, m_pAutoDJProcessor);
+    m_pAutoDJView = new DlgAutoDJ(pArea, m_pLibrary, m_pAutoDJProcessor);
     pArea->setWidget(m_pAutoDJView);  
     pArea->setWidgetResizable(true);
     pArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -150,9 +156,10 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
     
     pSidebarWidget->registerView(m_sAutoDJViewName, pContainer);
     
-    if (m_pTrackTableView) {
-        m_pAutoDJView->setTrackTableView(m_pTrackTableView, m_pLibrary);
+    for (WTrackTableView* pT : m_trackTables) {
+        m_pAutoDJView->setTrackTableView(pT);
     }
+    m_trackTables.clear();
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {

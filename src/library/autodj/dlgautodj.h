@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QString>
+#include <QList>
 
 #include "library/autodj/ui_dlgautodj.h"
 #include "preferences/usersettings.h"
@@ -16,19 +17,14 @@
 class PlaylistTableModel;
 class WTrackTableView;
 
-class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
+class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ {
     Q_OBJECT
   public:
-    DlgAutoDJ(QWidget* parent, AutoDJProcessor* pProcessor);
+    DlgAutoDJ(QWidget* parent, Library *pLibrary, AutoDJProcessor* pProcessor);
     virtual ~DlgAutoDJ();
-
-    void setTrackTableView(WTrackTableView* pTrackTableView, Library *pLibrary);
     
     void onShow();
-    void onSearch(const QString& text);
-    void loadSelectedTrack();
-    void loadSelectedTrackToGroup(QString group, bool play);
-    void moveSelection(int delta);
+    void setTrackTableView(WTrackTableView* pTrackTableView);
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);
@@ -38,8 +34,6 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void transitionTimeChanged(int time);
     void transitionSliderChanged(int value);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
-    void setTrackTableFont(const QFont& font);
-    void setTrackTableRowHeight(int rowHeight);
     void updateSelectionInfo();
 
   signals:
@@ -50,8 +44,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
 
   private:
     AutoDJProcessor* m_pAutoDJProcessor;
-    WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
+    Library* m_pLibrary;
 };
 
 #endif //DLGAUTODJ_H

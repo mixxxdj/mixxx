@@ -8,13 +8,14 @@
 #include "util/time.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
+                     Library* pLibrary,
                      AutoDJProcessor* pProcessor)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
           m_pAutoDJProcessor(pProcessor),
           // no sorting
-          m_pTrackTableView(nullptr),
-          m_pAutoDJTableModel(nullptr) {
+          m_pAutoDJTableModel(nullptr),
+          m_pLibrary(pLibrary) {
     setupUi(this);
 
     // We do _NOT_ take ownership of this from AutoDJProcessor.
@@ -53,63 +54,36 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
 
 DlgAutoDJ::~DlgAutoDJ() {
     qDebug() << "~DlgAutoDJ()";
-
-    // Delete m_pTrackTableView before the table model. This is because the
-    // table view saves the header state using the model.
-    //delete m_pTrackTableView;
-}
-
-void DlgAutoDJ::setTrackTableView(WTrackTableView* pTrackTableView,
-                                  Library* pLibrary) {
-    m_pTrackTableView = pTrackTableView;
-    m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
-    
-    // Do not set this because it disables auto-scrolling
-    //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
-    
-    connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(updateSelectionInfo()));
-    
-    updateSelectionInfo();
 }
 
 void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
 }
 
-void DlgAutoDJ::onSearch(const QString& text) {
-    // Do not allow filtering the Auto DJ playlist, because
-    // Auto DJ will work from the filtered table
-    Q_UNUSED(text);
+void DlgAutoDJ::setTrackTableView(WTrackTableView* pTrackTableView) {
+    pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
+    
+    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SLOT(updateSelectionInfo()));
+    
+    updateSelectionInfo();
 }
 
-void DlgAutoDJ::loadSelectedTrack() {
-    m_pTrackTableView->loadSelectedTrack();
-}
-
-void DlgAutoDJ::loadSelectedTrackToGroup(QString group, bool play) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
-}
-
-void DlgAutoDJ::moveSelection(int delta) {
-    m_pTrackTableView->moveSelection(delta);
-}
-
-void DlgAutoDJ::shufflePlaylistButton(bool) {
-    QModelIndexList indexList = m_pTrackTableView->selectionModel()->selectedRows();
-
-    // Activate regardless of button being checked
-    m_pAutoDJProcessor->shufflePlaylist(indexList);
+void DlgAutoDJ::shufflePlaylistButton(bool) {    
+    LibraryView* pView = m_pLibrary->getActiveView();
+    WTrackTableView* pTrackTable = dynamic_cast<WTrackTableView*>(pView);
+    
+    if (pView) {
+        QModelIndexList indexList = pTrackTable->selectionModel()->selectedRows();
+        // Activate regardless of button being checked
+        m_pAutoDJProcessor->shufflePlaylist(indexList);
+    }
 }
 
 void DlgAutoDJ::skipNextButton(bool) {
@@ -181,19 +155,17 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
     }
 }
 
-void DlgAutoDJ::setTrackTableFont(const QFont& font) {
-    m_pTrackTableView->setTrackTableFont(font);
-}
-
-void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
-    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
-}
-
 void DlgAutoDJ::updateSelectionInfo() {
     int duration = 0;
 
-    QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
-
+    LibraryView* pView = m_pLibrary->getActiveView();
+    WTrackTableView* pTrackTable = dynamic_cast<WTrackTableView*>(pView);
+    if (!pView) {
+        return;
+    }
+    QModelIndexList indices = pTrackTable->selectionModel()->selectedRows();
+    
+    
     for (int i = 0; i < indices.size(); ++i) {
         TrackPointer pTrack = m_pAutoDJTableModel->getTrack(indices.at(i));
         if (pTrack) {
