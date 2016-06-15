@@ -50,7 +50,6 @@ void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
 LibraryControl::LibraryControl(Library* pLibrary)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
-          m_pLibraryWidget(NULL),
           m_pSidebarWidget(NULL),
           m_numDecks("[Master]", "num_decks", this),
           m_numSamplers("[Master]", "num_samplers", this),
@@ -194,30 +193,13 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             this, SLOT(sidebarWidgetDeleted()));
 }
 
-void LibraryControl::bindWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
-    Q_UNUSED(pKeyboard);
-    if (m_pLibraryWidget != NULL) {
-        disconnect(m_pLibraryWidget, 0, this, 0);
-    }
-    m_pLibraryWidget = pLibraryWidget;
-    connect(m_pLibraryWidget, SIGNAL(destroyed()),
-            this, SLOT(libraryWidgetDeleted()));
-}
-
-void LibraryControl::libraryWidgetDeleted() {
-    m_pLibraryWidget = NULL;
-}
-
 void LibraryControl::sidebarWidgetDeleted() {
     m_pSidebarWidget = NULL;
 }
 
 void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
-    if (m_pLibraryWidget == NULL) {
-        return;
-    }
 
-    LibraryView* activeView = m_pLibraryWidget->getActiveView();
+    LibraryView* activeView = m_pLibrary->getActiveView();
     if (!activeView) {
         return;
     }
@@ -225,12 +207,9 @@ void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
-    if (m_pLibraryWidget == NULL) {
-        return;
-    }
-
+    
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
+        LibraryView* activeView = m_pLibrary->getActiveView();
         if (!activeView) {
             return;
         }
@@ -239,12 +218,8 @@ void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
 }
 
 void LibraryControl::slotAutoDjAddTop(double v) {
-    if (m_pLibraryWidget == NULL) {
-        return;
-    }
-
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
+        LibraryView* activeView = m_pLibrary->getActiveView();
         if (!activeView) {
             return;
         }
@@ -253,12 +228,8 @@ void LibraryControl::slotAutoDjAddTop(double v) {
 }
 
 void LibraryControl::slotAutoDjAddBottom(double v) {
-    if (m_pLibraryWidget == NULL) {
-        return;
-    }
-
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
+        LibraryView* activeView = m_pLibrary->getActiveView();
         if (!activeView) {
             return;
         }
@@ -279,13 +250,9 @@ void LibraryControl::slotSelectPrevTrack(double v) {
 }
 
 void LibraryControl::slotSelectTrack(double v) {
-    if (m_pLibraryWidget == NULL) {
-        return;
-    }
-
     int i = (int)v;
 
-    LibraryView* activeView = m_pLibraryWidget->getActiveView();
+    LibraryView* activeView = m_pLibrary->getActiveView();
     if (!activeView) {
         return;
     }
