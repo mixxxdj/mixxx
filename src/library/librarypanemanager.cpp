@@ -7,7 +7,7 @@ const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
 
 LibraryPaneManager::LibraryPaneManager(QObject* parent)
         : QObject(parent),
-          m_pLibraryWidget(nullptr){
+          m_pPaneWidget(nullptr){
     qApp->installEventFilter(this);
 }
 
@@ -19,21 +19,21 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* libraryWidget,
                                         FeaturePane pane) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
 
-    m_pLibraryWidget = libraryWidget;
+    m_pPaneWidget = libraryWidget;
 
     connect(this, SIGNAL(switchToView(const QString&)),
-        m_pLibraryWidget, SLOT(switchToView(const QString&)));
+        m_pPaneWidget, SLOT(switchToView(const QString&)));
 
     switch (pane) {
         case FeaturePane::SidebarExpanded:
             //qDebug() << "LibraryPaneManager::bindLibraryWidget:SidebarExpanded";
             for (LibraryFeature* f : m_features) {
-                f->bindSidebarWidget(m_pLibraryWidget, pKeyboard);
+                f->bindSidebarWidget(m_pPaneWidget, pKeyboard);
             }
             break;
         case FeaturePane::TrackTable:
             //qDebug() << "LibraryPaneManager::bindLibraryWidget:TrackTable";
-            WLibrary* lib = qobject_cast<WLibrary*>(m_pLibraryWidget);
+            WLibrary* lib = qobject_cast<WLibrary*>(m_pPaneWidget);
             if (lib == nullptr) {
                 return;
             }
@@ -69,6 +69,10 @@ void LibraryPaneManager::addFeatures(const QList<LibraryFeature *> &features) {
     m_features.append(features);
 }
 
+WBaseLibrary *LibraryPaneManager::getPaneWidget() {
+    return m_pPaneWidget;
+}
+
 void LibraryPaneManager::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "LibraryPaneManager::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
@@ -90,10 +94,10 @@ void LibraryPaneManager::slotRestoreSearch(const QString& text) {
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {    
-    if (m_pLibraryWidget == nullptr) return false;
+    if (m_pPaneWidget == nullptr) return false;
     
     if (event->type() == QEvent::MouseButtonPress && 
-            m_pLibraryWidget->underMouse()) {
+            m_pPaneWidget->underMouse()) {
             emit(focused());
     }
     

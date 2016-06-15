@@ -34,6 +34,8 @@ class LibraryPaneManager : public QObject {
     void addFeature(LibraryFeature* feature);
     void addFeatures(const QList<LibraryFeature *> &features);
     
+    WBaseLibrary* getPaneWidget();
+    
 signals:
     
     void focused();
@@ -56,7 +58,7 @@ signals:
 
     const static QString m_sTrackViewName;
     
-    WBaseLibrary* m_pLibraryWidget;
+    WBaseLibrary* m_pPaneWidget;
     
     QList<LibraryFeature*> m_features;
 
