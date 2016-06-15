@@ -1263,7 +1263,7 @@ QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
 QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
     QScrollArea* scroll = new QScrollArea(m_pParent);
     scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scroll->setWidgetResizable(true);
+    scroll->setWidgetResizable(false);
     scroll->setAlignment(Qt::AlignCenter);
     
     WButtonBar* pLibrarySidebar = new WButtonBar(m_pParent);
