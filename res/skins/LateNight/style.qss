@@ -1373,3 +1373,13 @@ QTreeView::item:selected {
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
   color: #cfb32c;
 }
+
+WBaseLibrary[showFocus="0"] {
+  padding: 1px 1px 1px 1px;
+  border: none;
+}
+
+WBaseLibrary[showFocus="1"] {
+  padding: 1px 1px 1px 1px;
+  border: 1px solid #FF7100 !important;
+}
