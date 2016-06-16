@@ -7,13 +7,15 @@
 // The reason for this is that LibraryFeature uses slots/signals and for this
 // to work the code has to be precompiles by moc
 LibraryFeature::LibraryFeature(QObject *parent)
-        : QObject(parent) {
+        : QObject(parent),
+          m_featureFocus(-1) {
 
 }
 
 LibraryFeature::LibraryFeature(UserSettingsPointer pConfig, QObject* parent)
         : QObject(parent),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_featureFocus(-1) {
 }
 
 LibraryFeature::~LibraryFeature() {
@@ -41,6 +43,10 @@ void LibraryFeature::bindSidebarWidget(WBaseLibrary *pSidebarWidget, KeyboardEve
             this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
     connect(pSidebar, SIGNAL(expanded(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
+}
+
+void LibraryFeature::setFeatureFocus(int focus) {
+    m_featureFocus = focus;
 }
 
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {

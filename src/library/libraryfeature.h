@@ -79,11 +79,19 @@ class LibraryFeature : public QObject {
                                    KeyboardEventFilter*);
     
     virtual TreeItemModel* getChildModel() = 0;
+    
+    void setFeatureFocus(int focus);
+    
+    int getFeatureFocus() {
+        return m_featureFocus;
+    }
 
   protected:
     inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
     inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
     UserSettingsPointer m_pConfig;
+    
+    int m_featureFocus;
 
   public slots:
     // called when you single click on the root item

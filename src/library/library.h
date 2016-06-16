@@ -11,6 +11,7 @@
 #include <QObject>
 #include <QAbstractItemModel>
 #include <QFont>
+#include <QHash>
 
 #include "preferences/usersettings.h"
 #include "track/track.h"
@@ -87,9 +88,11 @@ public:
     static const int kDefaultRowHeightPx;
 
   public slots:
+    void slotActivateFeature(const QString& featureName);
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotSwitchToViewChild(const QString& view);
+    void slotSwitchToNotFocusedView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
@@ -150,6 +153,7 @@ public:
     QHash<int, LibraryPaneManager*> m_panes;
     LibraryPaneManager* m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
+    QHash<QString, LibraryFeature*> m_featuresMap;
     
     // Can be any integer as it's used with a HashMap
     int m_focusedPane;

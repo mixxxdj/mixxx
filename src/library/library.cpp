@@ -114,10 +114,13 @@ void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
 
 void Library::bindSidebarWidget(WButtonBar* sidebar) {    
     for (LibraryFeature* f : m_features) {
-        QAbstractButton* button = sidebar->addButton(f->getIcon(), f->title());
+        WRightClickButton* button = sidebar->addButton(f->getIcon(), f->title(),
+                                                       f->getViewName());
         
+        connect(button, SIGNAL(clicked(const QString&)),
+                this, SLOT(slotActivateFeature(const QString&)));
         
-        connect(button, SIGNAL(clicked()), f, SLOT(activate()));
+        //connect(button, SIGNAL(clicked()), f, SLOT(activate()));
         connect(button, SIGNAL(rightClicked(const QPoint&)),
                 f, SLOT(onRightClick(const QPoint&)));
     }
@@ -201,6 +204,7 @@ void Library::addFeature(LibraryFeature* feature) {
         return;
     }
     m_features.append(feature);
+    m_featuresMap.insert(feature->getViewName(), feature);
     
     m_pSidebarModel->addLibraryFeature(feature);
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
@@ -227,14 +231,39 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void Library::slotSwitchToView(const QString& view) {
-    //qDebug() << "Library::slotSwitchToView" << view;
-    
+    qDebug() << "Library::slotSwitchToView" << view;
     m_pSidebarExpanded->slotSwitchToView(view);
-    m_panes[m_focusedPane]->slotSwitchToView(view);
+    
+    WBaseLibrary* wLibrary = m_panes[m_focusedPane]->getPaneWidget();
+    // Only change the current pane if it's not shown already
+    if (wLibrary->getCurrentViewName() != view) {
+        m_panes[m_focusedPane]->slotSwitchToView(view);
+    }
+    
+    m_panes[m_focusedPane]->setFocus();
+    for (auto it = m_panes.begin(); it != m_panes.end(); ++it) {
+        if (it.key() != m_focusedPane) {
+            it.value()->clearFocus();
+        }
+    }
+    
     emit(switchToView(view));
 }
 
 void Library::slotSwitchToViewChild(const QString &view) {
+    qDebug() << "Library::slotSwitchToViewChild";
+    m_panes[m_focusedPane]->slotSwitchToView(view);
+}
+
+void Library::slotSwitchToNotFocusedView(const QString &view) {
+    
+    // Search for the view not being shown already
+    for (LibraryPaneManager* p : m_panes) {
+        if (p->getPaneWidget()->getCurrentViewName() == view) {
+            return;
+        }
+    }
+    
     m_panes[m_focusedPane]->slotSwitchToView(view);
 }
 
@@ -362,6 +391,32 @@ QStringList Library::getDirs() {
     return m_pTrackCollection->getDirectoryDAO().getDirs();
 }
 
+void Library::slotActivateFeature(const QString &featureName) {
+    LibraryFeature* pFeature = m_featuresMap[featureName];
+    
+    // The feature is being shown currently in the focused pane
+    if (m_panes[m_focusedPane]->getFocusedFeature() == featureName) {
+        return;        
+    }
+    
+    // The feature is not focused anywhere
+    if (pFeature->getFeatureFocus() < 0) {
+        
+        // Remove the previous focused feature in this pane
+        for (LibraryFeature* f : m_features) {
+            if (f->getFeatureFocus() == m_focusedPane) {
+                f->setFeatureFocus(-1);
+            }
+        }
+    } else {
+        m_focusedPane = pFeature->getFeatureFocus();
+    }
+    
+    m_panes[m_focusedPane]->setFocusedFeature(featureName);
+    pFeature->setFeatureFocus(m_focusedPane);    
+    pFeature->activate();
+}
+
 void Library::slotSetTrackTableFont(const QFont& font) {
     m_trackTableFont = font;
     emit(setTrackTableFont(font));
@@ -382,6 +437,13 @@ void Library::slotPaneFocused() {
         m_focusedPane = m_panes.key(pane, -1);
         DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
             return;
+        }
+        pane->setFocus();
+        // Clear the focus from the other panes
+        for (auto it = m_panes.begin(); it != m_panes.end(); ++it) {
+            if (it.key() != m_focusedPane) {
+                it.value()->clearFocus();
+            }
         }
     }
     
