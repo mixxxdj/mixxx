@@ -15,7 +15,7 @@ class WButtonBar : public WWidget
   public:
     WButtonBar(QWidget* parent = nullptr);
 
-    WRightClickButton* addButton(const QIcon& icon, const QVariant& title);
+    WRightClickButton* addButton(const QIcon& icon, const QVariant& title, const QString &data);
 
   private:
 
