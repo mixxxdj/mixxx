@@ -20,7 +20,7 @@
 #include "library/dlghidden.h"
 #include "library/dlgmissing.h"
 
-const QString MixxxLibraryFeature::m_sMixxxLibraryViewName = QString("MixxxLibraryFeature");
+const QString MixxxLibraryFeature::m_sMixxxLibraryViewName = "MixxxLibraryFeature";
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          TrackCollection* pTrackCollection,
