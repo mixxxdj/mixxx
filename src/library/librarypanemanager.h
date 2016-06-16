@@ -36,6 +36,16 @@ class LibraryPaneManager : public QObject {
     
     WBaseLibrary* getPaneWidget();
     
+    void setFocusedFeature(const QString& featureName);
+    
+    QString getFocusedFeature() {
+        return m_focusedFeature;
+    }
+    
+    void setFocus();
+    
+    void clearFocus();
+    
 signals:
     
     void focused();
@@ -61,6 +71,8 @@ signals:
     WBaseLibrary* m_pPaneWidget;
     
     QList<LibraryFeature*> m_features;
+    
+    QString m_focusedFeature;
 
   private slots:
 

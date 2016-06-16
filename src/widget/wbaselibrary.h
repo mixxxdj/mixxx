@@ -14,6 +14,14 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
     WBaseLibrary(QWidget* parent = nullptr);
 
     virtual bool registerView(QString name, QWidget* view);
+    
+    QString getCurrentViewName();
+    
+    Q_PROPERTY(int showFocus READ getShowFocus WRITE setShowFocus)
+    
+    int getShowFocus();
+    
+    void setShowFocus(int sFocus);
 
   public slots:
 
@@ -26,8 +34,12 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
     QMap<QString, QWidget*> m_viewMap;
 
   private:
+    
+    QString m_currentViewName;
 
     QMutex m_mutex;
+    
+    int m_showFocus;
 };
 
 #endif // WLIBRARYSIDEBAREXPANDED_H

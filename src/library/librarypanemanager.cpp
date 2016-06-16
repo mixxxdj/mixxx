@@ -73,6 +73,20 @@ WBaseLibrary *LibraryPaneManager::getPaneWidget() {
     return m_pPaneWidget;
 }
 
+void LibraryPaneManager::setFocusedFeature(const QString &featureName) {
+    m_focusedFeature = featureName;
+}
+
+void LibraryPaneManager::setFocus() {
+    //qDebug() << "LibraryPaneManager::setFocus";
+    m_pPaneWidget->setProperty("showFocus", 1);
+}
+
+void LibraryPaneManager::clearFocus() {
+    //qDebug() << "LibraryPaneManager::clearFocus";
+    m_pPaneWidget->setProperty("showFocus", 0);
+}
+
 void LibraryPaneManager::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "LibraryPaneManager::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
@@ -87,6 +101,7 @@ void LibraryPaneManager::slotShowTrackModel(QAbstractItemModel* model) {
 void LibraryPaneManager::slotSwitchToView(const QString& view) {
     //qDebug() << "LibraryPaneManager::slotSwitchToView" << view;
     emit(switchToView(view));
+    m_pPaneWidget->setFocus();
 }
 
 void LibraryPaneManager::slotRestoreSearch(const QString& text) {
@@ -98,7 +113,7 @@ bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
     
     if (event->type() == QEvent::MouseButtonPress && 
             m_pPaneWidget->underMouse()) {
-            emit(focused());
+        emit(focused());
     }
     
     // Since this event filter is for the entire application (to handle the
