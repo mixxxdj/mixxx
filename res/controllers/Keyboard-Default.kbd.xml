@@ -40,6 +40,55 @@
       <control action="cue_set" keyseq="Shift+d" />
       <control action="cue_default" keyseq="f" />
       <control action="cue_gotoandstop" keyseq="Shift+f" />
+
+      <control action="back" keyseq="a" />
+      <control action="reverse" keyseq="Shift+a" />
+      <control action="fwd" keyseq="s" />
+
+      <control action="beatsync" keyseq="1" />
+      <control action="bpm_tap" keyseq="Shift+!" />
+
+      <control action="rate_perm_down" keyseq="F1" />
+      <control action="rate_perm_up" keyseq="F2" />
+      <control action="rate_temp_down" keyseq="F3" />
+      <control action="rate_temp_up" keyseq="F4" />
+      <control action="rate_perm_down_small" keyseq="Shift+F1" />
+      <control action="rate_perm_up_small" keyseq="Shift+F2" />
+      <control action="rate_temp_down_small" keyseq="Shift+F3" />
+      <control action="rate_temp_up_small" keyseq="Shift+F4" />
+
+      <control action="pfl" keyseq="t" />
+      <control action="filterLowKill" keyseq="b" />
+      <control action="flanger" keyseq="5" />
+
+      <control action="hotcue_1_activate" keyseq="z" />
+      <control action="hotcue_2_activate" keyseq="x" />
+      <control action="hotcue_3_activate" keyseq="c" />
+      <control action="hotcue_4_activate" keyseq="v" />
+      <control action="hotcue_1_clear" keyseq="Shift+z" />
+      <control action="hotcue_2_clear" keyseq="Shift+x" />
+      <control action="hotcue_3_clear" keyseq="Shift+c" />
+      <control action="hotcue_4_clear" keyseq="Shift+v" />
+
+      <control action="LoadSelectedTrack" keyseq="Shift+Left" />
+      <control action="eject" keyseq="Alt+Shift+Left" />
+
+      <control action="loop_in" keyseq="2" />
+      <control action="loop_out" keyseq="3" />
+      <control action="reloop_exit" keyseq="4" />
+
+      <control action="beatloop_4_toggle" keyseq="q" />
+      <control action="loop_halve" keyseq="w" />
+      <control action="loop_double" keyseq="e" />
+
+      <control action="passthrough" keyseq="Ctrl+j" />
+      <control action="vinylcontrol_mode" keyseq="Ctrl+Shift+Y" />
+      <control action="vinylcontrol_cueing" keyseq="Ctrl+Alt+Y" />
+    </group>
+
+    <!-- THIS IS ONLY FOR DEMOING THAT THE KEYBOARD SHORTCUTS WORK -->
+    <group name="[KeyboardShortcuts]">
+      <control action="ViewMenu_MaximizeLibrary" keyseq="Ctrl+Shift+k" />
     </group>
 
     <!-- etc... -->

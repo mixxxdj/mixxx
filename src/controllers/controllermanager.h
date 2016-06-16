@@ -63,6 +63,7 @@ class ControllerManager : public QObject {
     void requestShutdown();
     void requestSave(bool onlyActive);
     void requestInitialize();
+    void keyboardPresetChanged(ControllerPresetPointer);
 
   public slots:
     void updateControllerList();
@@ -72,6 +73,7 @@ class ControllerManager : public QObject {
 
     // Writes out presets for currently connected input devices
     void slotSavePresets(bool onlyActive=false);
+    void slotKeyboardPresetChanged(ControllerPresetPointer);
 
   private slots:
     // Perform initialization that should be delayed until the ControllerManager

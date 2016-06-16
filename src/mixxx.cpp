@@ -301,6 +301,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // (long)
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(pConfig, m_pKeyboard);
+    connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(ControllerPresetPointer)),
+            m_pMenuBar, SLOT(updateShortcuts(ControllerPresetPointer)));
 
     launchProgress(47);
 
@@ -746,9 +748,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
-    DEBUG_ASSERT(m_pKbdConfig != nullptr);
-    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(),
-                                  m_pKbdConfig);
+    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings());
     setMenuBar(m_pMenuBar);
 }
 

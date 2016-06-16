@@ -184,6 +184,8 @@ void ControllerManager::updateControllerList() {
             pKeyboardController = qobject_cast<KeyboardController*>(pController);
             if (pKeyboardController) {
                 m_keyboardController = pKeyboardController;
+                connect(m_keyboardController, SIGNAL(presetLoaded(ControllerPresetPointer)),
+                        this, SLOT(slotKeyboardPresetChanged(ControllerPresetPointer)));
             }
         }
         m_controllers = newDeviceList;
@@ -422,6 +424,10 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
                        << name << "to" << presetPath;
         }
     }
+}
+
+void ControllerManager::slotKeyboardPresetChanged(ControllerPresetPointer pPreset) {
+    emit(keyboardPresetChanged(pPreset));
 }
 
 // static

@@ -755,7 +755,7 @@ class MixxxCore(Feature):
                    "controllers/keyboard/keyboardcontroller.cpp",
                    "controllers/keyboard/keyboardenumerator.cpp",
                    "controllers/keyboard/keyboardcontrollerpresetfilehandler.cpp",
-
+                   "controllers/keyboard/shortcutchangewatcher.cpp",
 
                    "main.cpp",
                    "mixxx.cpp",
