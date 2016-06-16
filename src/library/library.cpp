@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QTranslator>
 #include <QDir>
+#include <QDebug>
 
 #include "mixer/playermanager.h"
 #include "library/library.h"
@@ -167,6 +168,7 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
 
 void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
+    //qDebug() << "Library::bindSidebarExpanded";
     m_pSidebarExpanded = new LibraryPaneManager;
     connect(m_pSidebarExpanded, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
@@ -176,9 +178,11 @@ void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
 }
 
 void Library::destroyInterface() {
-    delete m_pSidebarExpanded;
+    m_pSidebarExpanded->deleteLater();
     
-    qDeleteAll(m_panes);
+    for (LibraryPaneManager* p : m_panes) {
+        p->deleteLater();
+    }
     m_panes.clear();
 }
 
@@ -275,9 +279,13 @@ void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.
     //m_pSidebarModel->activateDefaultSelection();
     if (m_panes.size() > 0) {
+        
         m_focusedPane = m_panes.begin().key();
+        m_features.first()->activate();
     }
-    m_features.first()->activate();
+    else {
+        qDebug() << "Library::onSkinLoadFinished No Panes loaded!";
+    }
 }
 
 void Library::slotRequestAddDir(QString dir) {
@@ -377,7 +385,7 @@ void Library::slotPaneFocused() {
         }
     }
     
-    qDebug() << "Library::slotPaneFocused" << m_focusedPane;
+    //qDebug() << "Library::slotPaneFocused" << m_focusedPane;
 }
 
 
