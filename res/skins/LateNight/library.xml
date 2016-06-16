@@ -64,8 +64,6 @@
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>
-								<!-- Library Table-->
-								<Style>QGroupBox {}</Style>
 								<Layout>vertical</Layout>
 								<Children>
 									<SearchBox>
@@ -73,8 +71,6 @@
 									</SearchBox>
 									<LibraryPane>
 										<Id>2</Id>
-										<BgColor>#585858</BgColor>
-										<FgColor>#eece33</FgColor>
 									</LibraryPane>
 								</Children>
 							</WidgetGroup>
