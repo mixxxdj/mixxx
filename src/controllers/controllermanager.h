@@ -9,6 +9,7 @@
 #define CONTROLLERMANAGER_H
 
 #include <QSharedPointer>
+#include <controllers/keyboard/keyboardcontroller.h>
 
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"
@@ -33,6 +34,8 @@ class ControllerManager : public QObject {
 
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
+
+    KeyboardController* getKeyboardController();
 
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
     QSharedPointer<PresetInfoEnumerator> getMainThreadPresetEnumerator() {
@@ -98,6 +101,10 @@ class ControllerManager : public QObject {
     mutable QMutex m_mutex;
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
+
+    // TODO(Tomasito) We should make a method to retrieve all controllers of a given type, so that
+    // ...            we can keep the keyboard controller in m_controllers, where it belongs
+    KeyboardController* m_keyboardController;
     QThread* m_pThread;
     QSharedPointer<PresetInfoEnumerator> m_pMainThreadPresetEnumerator;
     bool m_skipPoll;

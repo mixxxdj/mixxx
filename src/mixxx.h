@@ -111,7 +111,6 @@ class MixxxMainWindow : public QMainWindow {
     // this must be called from the GUi thread only
     void launchProgress(int progress);
     void initializeWindow();
-    void initializeKeyboard();
     void checkDirectRendering();
     bool confirmExit();
     int noSoundDlg(void);

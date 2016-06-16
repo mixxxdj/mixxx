@@ -15,6 +15,7 @@
 #include "util/time.h"
 
 #include "controllers/keyboard/keyboardenumerator.h"
+#include "controllers/keyboard/keyboardcontroller.h"
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
@@ -177,7 +178,18 @@ void ControllerManager::updateControllerList() {
 
     locker.relock();
     if (newDeviceList != m_controllers) {
+        // Check for keyboard controller
+        KeyboardController* pKeyboardController;
+        foreach (Controller* pController, newDeviceList) {
+            pKeyboardController = qobject_cast<KeyboardController*>(pController);
+            if (pKeyboardController) {
+                m_keyboardController = pKeyboardController;
+            }
+        }
         m_controllers = newDeviceList;
+
+        // TODO(Tomasito) This unlock is redundant. locker, being a QMutexLocker
+        // ...            unlocks itself when destroyed
         locker.unlock();
         emit(devicesChanged());
     }
@@ -206,6 +218,11 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
         }
     }
     return filteredDeviceList;
+}
+
+KeyboardController* ControllerManager::getKeyboardController() {
+    QMutexLocker locker(&m_mutex);
+    return m_keyboardController;
 }
 
 void ControllerManager::slotSetUpDevices() {

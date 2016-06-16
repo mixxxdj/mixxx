@@ -119,7 +119,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
 
-    initializeKeyboard();
+    // Initialize keyboard event filter
+    m_pKeyboard = new KeyboardEventFilter();
 
     // Menubar depends on translations.
     mixxx::Translations::initializeTranslations(
@@ -613,54 +614,6 @@ void MixxxMainWindow::initializeWindow() {
     slotUpdateWindowTitle(TrackPointer());
 }
 
-void MixxxMainWindow::initializeKeyboard() {
-    UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    QString resourcePath = pConfig->getResourcePath();
-
-    // TODO(Tomasito) Completely migrate from ConfigObject to preset and remove redundant code here
-
-    // Set the default value in settings file
-    if (pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
-        pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
-
-    // Read keyboard configuration and set kdbConfig object in WWidget
-    // Check first in user's Mixxx directory
-    QString userKeyboard = QDir(m_cmdLineArgs.getSettingsPath()).filePath("Custom.kbd.cfg");
-
-    // Empty keyboard configuration
-    m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>(QString());
-
-    if (QFile::exists(userKeyboard)) {
-        qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
-        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
-    } else {
-        // Default to the locale for the main input method (e.g. keyboard).
-        QLocale locale = inputLocale();
-
-        // check if a default keyboard exists
-        QString defaultKeyboard = QString(resourcePath).append("keyboard/");
-        defaultKeyboard += locale.name();
-        defaultKeyboard += ".kbd.cfg";
-
-        if (!QFile::exists(defaultKeyboard)) {
-            qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
-            defaultKeyboard = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
-            if (!QFile::exists(defaultKeyboard)) {
-                qDebug() << defaultKeyboard << " not found, starting without shortcuts";
-                defaultKeyboard = "";
-            }
-        }
-        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(defaultKeyboard);
-    }
-
-    // TODO(XXX) leak pKbdConfig, KeyboardEventFilter owns it? Maybe roll all keyboard
-    // initialization into KeyboardEventFilter
-    // Workaround for today: KeyboardEventFilter calls delete
-    bool keyboardShortcutsEnabled = pConfig->getValueString(
-        ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new KeyboardEventFilter();
-}
-
 int MixxxMainWindow::noSoundDlg(void) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
@@ -818,7 +771,6 @@ void MixxxMainWindow::connectMenuBar() {
             m_pMenuBar, SLOT(onFullScreenStateChange(bool)));
 
     // Keyboard shortcuts
-    // TODO(Tomasito) Make slot KeyboardController and connect to all KeyboardControllers
     connect(m_pMenuBar, SIGNAL(toggleKeyboardShortcuts(bool)),
             this, SLOT(slotOptionsKeyboard(bool)));
 
@@ -924,14 +876,13 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
 
 void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
+    pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(toggle ? 1 : 0));
+
+    KeyboardController* pKeyboardController = m_pControllerManager->getKeyboardController();
     if (toggle) {
-        //qDebug() << "Enable keyboard shortcuts/mappings";
-        // TODO(Tomasito) Enable keyboard controller
-        pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
+        m_pControllerManager->openController(pKeyboardController);
     } else {
-        //qDebug() << "Disable keyboard shortcuts/mappings";
-        // TODO(Tomasito) Disable keyboard controller
-        pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(0));
+        m_pControllerManager->closeController(pKeyboardController);
     }
 }
 
