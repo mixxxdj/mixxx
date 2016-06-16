@@ -1156,7 +1156,39 @@
 
 /* Library styling is hard */
 
-QTableView, QTextBrowser, QTreeView {
+#LibrarySidebar, #LibrarySidebar WButtonBar {
+  background-color: #0f0f0f;
+  margin-right: 10px;
+}
+
+#LibrarySidebarExpanded QWidget {
+  background-color: #0f0f0f;
+}
+
+#LibrarySidebarExpanded QScrollArea {
+  border: 1px solid #585858;
+}
+
+#LibrarySidebar QAbstractButton, 
+#LibrarySidebarExpanded QAbstractButton {
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  border: none;
+  color: #cfb32c;
+  background-color: #191919;
+}
+
+#LibrarySidebar QAbstractButton:hover, 
+#LibrarySidebarExpanded QAbstractButton:hover {
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  border: 1px solid #585858;
+  background-color: #232323;
+  border-radius: 2px;
+  color: #cfb32c;
+}
+
+#LibrarySidebar, QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
   /*font: 15px/18px;*/
   color: #cfb32c;
@@ -1286,27 +1318,35 @@ WCoverArt { background: transparent; color: #ACACAC; }
 QLabel, QRadioButton { background: transparent; color: #cfb32c; }
 
 /* Additional space for QRadionButtons and QLabels */
-WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
+WBaseLibrary QRadioButton, WBaseLibrary QLabel { margin: 9px 3px 6px 3px; }
 
 /* Additional space for the first QRadionButton in the row */
-WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
+WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 
 /* Additional space for the QPushButtons */
 #DlgMissing > QPushButton,
 #DlgHidden > QPushButton,
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton { margin: 9px 3px 6px 3px; padding: 3px 8px; min-width: 65px; }
+#DlgAnalysis > QPushButton { 
+  margin: 2px 3px 2px 3px; 
+  padding: 4px 6px; 
+  min-width: 65px; 
+}
+
+#DlgMissing > QPushButton:!enabled,
+#DlgHidden > QPushButton:!enabled,
+#DlgAutoDJ > QPushButton:!enabled,
+#DlgRecording > QPushButton:!enabled,
+#DlgAnalysis > QPushButton:!enabled {
+  color: #666666;
+}
 
 /* Additional space for the first QPushButton in the row */
 #DlgMissing > QPushButton#btnPurge,
 #DlgHidden > QPushButton#btnUnhide,
-#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
 #DlgRecording > QPushButton#pushButtonRecording,
 #DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
-
-/* Additional space for the last QPushButton in the row */
-#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
 
 /* Spacing between treeview and searchbar */
 QTreeView { margin: 10px 0px 0px 0px; }
