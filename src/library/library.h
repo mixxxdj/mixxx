@@ -21,6 +21,7 @@
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/librarypanemanager.h"
+#include "library/librarysidebarexpandedmanager.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"

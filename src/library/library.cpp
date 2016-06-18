@@ -151,8 +151,7 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
         createPane(id);
     }
     
-    m_panes[id]->bindPaneWidget(pLibraryWidget, pKeyboard, 
-                                LibraryPaneManager::FeaturePane::TrackTable);
+    m_panes[id]->bindPaneWidget(pLibraryWidget, pKeyboard);
     
     connect(m_panes[id], SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
@@ -172,12 +171,11 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
 void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
     //qDebug() << "Library::bindSidebarExpanded";
-    m_pSidebarExpanded = new LibraryPaneManager;
+    m_pSidebarExpanded = new LibrarySidebarExpandedManager;
     connect(m_pSidebarExpanded, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
     m_pSidebarExpanded->addFeatures(m_features);    
-    m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard,
-                                       LibraryPaneManager::FeaturePane::SidebarExpanded);
+    m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard);
 }
 
 void Library::destroyInterface() {
@@ -310,6 +308,7 @@ void Library::onSkinLoadFinished() {
     if (m_panes.size() > 0) {
         
         m_focusedPane = m_panes.begin().key();
+        m_features.first()->setFeatureFocus(m_focusedPane);
         m_features.first()->activate();
     }
     else {
