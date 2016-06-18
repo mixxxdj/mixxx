@@ -19,20 +19,20 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
                TrackCollection* pTrackCollection);
     virtual ~DlgAnalysis();
 
-    virtual void onSearch(const QString& text);
     virtual void onShow();
-    virtual void slotSendToAutoDJTop();
-    virtual void moveSelection(int delta);
     inline const QString currentSearch() {
         return m_pAnalysisLibraryTableModel->currentSearch();
     }
     int getNumTracks();
     
     void setAnalysisTableView(WAnalysisLibraryTableView* pTable, int pane);
+    inline void setFocusedPane(int pane) {
+    	m_focusedPane = pane;
+    }
 
   public slots:
-    void tableSelectionChanged(const QItemSelection& selected,
-                               const QItemSelection& deselected);
+    void tableSelectionChanged(const QItemSelection&,
+                               const QItemSelection&);
     void selectAll();
     void analyze();
     void trackAnalysisFinished(int size);
@@ -54,10 +54,10 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
     TrackCollection* m_pTrackCollection;
     bool m_bAnalysisActive;
     QButtonGroup m_songsButtonGroup;
-    WAnalysisLibraryTableView* m_pAnalysisLibraryTableView;
     AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;
     int m_tracksInQueue;
     int m_currentTrack;
+    int m_focusedPane;
     
     QHash<int, WAnalysisLibraryTableView*> m_analysisTable;
 };

@@ -16,7 +16,7 @@
 #include "util/dnd.h"
 #include "util/debug.h"
 
-const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
+const QString AnalysisFeature::m_sAnalysisViewName = "AnalysisView";
 
 AnalysisFeature::AnalysisFeature(QObject* parent,
                                UserSettingsPointer pConfig,
@@ -27,8 +27,7 @@ AnalysisFeature::AnalysisFeature(QObject* parent,
         m_pAnalyzerQueue(nullptr),
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
-        m_pAnalysisView(nullptr),
-        m_pAnalysisTableView(nullptr){
+        m_pAnalysisView(nullptr){
     setTitleDefault();
 }
 
@@ -61,22 +60,25 @@ QIcon AnalysisFeature::getIcon() {
 }
 
 void AnalysisFeature::bindPaneWidget(WLibrary* libraryWidget,
-                                     KeyboardEventFilter* pKeyboard) {
+                                     KeyboardEventFilter* pKeyboard,
+									 int paneId) {
     
-    m_pAnalysisTableView = new WAnalysisLibraryTableView(libraryWidget,
+    WAnalysisLibraryTableView* pTable = new WAnalysisLibraryTableView(libraryWidget,
             m_pConfig,
             m_pTrackCollection);
-    m_pAnalysisTableView->installEventFilter(pKeyboard);
+    pTable->installEventFilter(pKeyboard);
     
     if (m_pAnalysisView) {
-        m_pAnalysisView->setAnalysisTableView(m_pAnalysisTableView);
+        m_pAnalysisView->setAnalysisTableView(pTable, paneId);
+    } else {
+    	m_analysisTables[paneId] = pTable;
     }
 
-    libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisTableView);
+    libraryWidget->registerView(m_sAnalysisViewName, pTable);
 }
 
 void AnalysisFeature::bindSidebarWidget(WBaseLibrary* libraryWidget,
-                                        KeyboardEventFilter* pKeyboard, int) {
+                                        KeyboardEventFilter* pKeyboard) {
     
     m_pAnalysisView = new DlgAnalysis(libraryWidget, m_pTrackCollection);
     connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
@@ -98,8 +100,11 @@ void AnalysisFeature::bindSidebarWidget(WBaseLibrary* libraryWidget,
 
     m_pAnalysisView->installEventFilter(pKeyboard);
     
-    if (m_pAnalysisTableView) {
-        m_pAnalysisView->setAnalysisTableView(m_pAnalysisTableView);
+    if (m_analysisTables.size() > 0) {
+    	for (auto it = m_analysisTables.begin(); it != m_analysisTables.end(); ++it) {
+    		m_pAnalysisView->setAnalysisTableView(it.value(), it.key());
+    	}
+    	m_analysisTables.clear();
     }
     
     // Let the DlgAnalysis know whether or not analysis is active.
@@ -123,6 +128,7 @@ void AnalysisFeature::activate() {
     //qDebug() << "AnalysisFeature::activate()";
     emit(switchToView(m_sAnalysisViewName));
     if (m_pAnalysisView) {
+    	m_pAnalysisView->setFocusedPane(m_featureFocus);
         emit(restoreSearch(m_pAnalysisView->currentSearch()));
     }
     emit(enableCoverArtDisplay(true));

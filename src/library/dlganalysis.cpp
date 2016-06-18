@@ -13,7 +13,8 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
           m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
           m_tracksInQueue(0),
-          m_currentTrack(0) {
+          m_currentTrack(0),
+		  m_focusedPane(-1) {
     setupUi(this);
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
@@ -47,28 +48,14 @@ void DlgAnalysis::onShow() {
     m_pAnalysisLibraryTableModel->select();
 }
 
-void DlgAnalysis::onSearch(const QString& text) {
-    m_pAnalysisLibraryTableModel->search(text);
-}
-
-void DlgAnalysis::slotSendToAutoDJTop() {
-    m_pAnalysisLibraryTableView->slotSendToAutoDJTop();
-}
-
-void DlgAnalysis::moveSelection(int delta) {
-    m_pAnalysisLibraryTableView->moveSelection(delta);
-}
-
-void DlgAnalysis::tableSelectionChanged(const QItemSelection& selected,
-                                       const QItemSelection& deselected) {
-    Q_UNUSED(selected);
-    Q_UNUSED(deselected);
-    bool tracksSelected = m_pAnalysisLibraryTableView->selectionModel()->hasSelection();
+void DlgAnalysis::tableSelectionChanged(const QItemSelection&,
+                                       const QItemSelection&) {
+    bool tracksSelected = m_analysisTable[m_focusedPane]->selectionModel()->hasSelection();
     pushButtonAnalyze->setEnabled(tracksSelected || m_bAnalysisActive);
 }
 
 void DlgAnalysis::selectAll() {
-    m_pAnalysisLibraryTableView->selectAll();
+    m_analysisTable[m_focusedPane]->selectAll();
 }
 
 void DlgAnalysis::analyze() {
@@ -77,9 +64,8 @@ void DlgAnalysis::analyze() {
         emit(stopAnalysis());
     } else {
         QList<TrackId> trackIds;
-
-        QModelIndexList selectedIndexes = m_pAnalysisLibraryTableView->selectionModel()->selectedRows();
-        foreach(QModelIndex selectedIndex, selectedIndexes) {
+        QModelIndexList selectedIndexes = m_analysisTable[m_focusedPane]->selectionModel()->selectedRows();
+        for (QModelIndex selectedIndex : selectedIndexes) {
             TrackId trackId(selectedIndex.sibling(
                 selectedIndex.row(),
                 m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data());
@@ -129,8 +115,7 @@ int DlgAnalysis::getNumTracks() {
     return m_tracksInQueue;
 }
 
-void DlgAnalysis::setAnalysisTableView(WAnalysisLibraryTableView *pTable, int pane) {
-    m_pAnalysisLibraryTableView = pTable;
+void DlgAnalysis::setAnalysisTableView(WAnalysisLibraryTableView* pTable, int pane) {
     m_analysisTable[pane] = pTable;
     
     connect(pTable, SIGNAL(loadTrack(TrackPointer)),

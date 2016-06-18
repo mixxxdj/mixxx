@@ -406,7 +406,7 @@ void Library::slotActivateFeature(const QString &featureName) {
         m_pSidebarExpanded->slotSwitchToView(featureName);
         return;
     }
-    
+
     // The feature is not focused anywhere
     if (pFeature->getFeatureFocus() < 0) {
         // Remove the previous focused feature in this pane
@@ -416,7 +416,11 @@ void Library::slotActivateFeature(const QString &featureName) {
             }
         }
     } else {
+    	// The feature is shown in some pane
         m_focusedPane = pFeature->getFeatureFocus();
+		m_pSidebarExpanded->slotSwitchToView(featureName);
+		handleFocus();
+		return;
     }
     
     m_panes[m_focusedPane]->setFocusedFeature(featureName);

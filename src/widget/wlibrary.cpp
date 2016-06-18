@@ -16,6 +16,7 @@ WLibrary::WLibrary(QWidget* parent)
 
 bool WLibrary::registerView(QString name, QWidget* view) {
     QMutexLocker lock(&m_mutex);
+    //qDebug() << "WLibrary::registerView" << name;
     if (dynamic_cast<LibraryView*>(view) == nullptr) {
         qDebug() << "WARNING: Attempted to register a view with WLibrary "
                  << "that does not implement the LibraryView interface. "
@@ -37,11 +38,9 @@ void WLibrary::switchToView(const QString& name) {
                      << "Ignoring.";
             return;
         }
-        if (currentWidget() != widget) {
-            //qDebug() << "WLibrary::setCurrentWidget" << name;
-            setCurrentWidget(widget);
-            lview->onShow();
-        }
+        
+        WBaseLibrary::switchToView(name);
+        lview->onShow();
     }
 }
 

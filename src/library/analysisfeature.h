@@ -36,9 +36,10 @@ class AnalysisFeature : public LibraryFeature {
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
-    void bindPaneWidget(WLibrary* libraryWidget, KeyboardEventFilter*pKeyboard);
+    void bindPaneWidget(WLibrary* libraryWidget, KeyboardEventFilter*pKeyboard, 
+    					int paneId);
     void bindSidebarWidget(WBaseLibrary* libraryWidget,
-                           KeyboardEventFilter*pKeyboard, int);
+                           KeyboardEventFilter*pKeyboard);
 
     TreeItemModel* getChildModel();
     void refreshLibraryModels();
@@ -77,7 +78,7 @@ class AnalysisFeature : public LibraryFeature {
     const static QString m_sAnalysisViewName;
     QString m_analysisTitleName;
     QPointer<DlgAnalysis> m_pAnalysisView;
-    QPointer<WAnalysisLibraryTableView> m_pAnalysisTableView;
+    QHash<int, WAnalysisLibraryTableView*> m_analysisTables;
 };
 
 
