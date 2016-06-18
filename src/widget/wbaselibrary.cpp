@@ -35,7 +35,7 @@ int WBaseLibrary::getShowFocus() {
 }
 
 void WBaseLibrary::setShowFocus(int sFocus) {
-    qDebug() << "WBaseLibrary::setShowFocus" << sFocus << this;
+    //qDebug() << "WBaseLibrary::setShowFocus" << sFocus << this;
     m_showFocus = sFocus;
     
     style()->unpolish(this);
@@ -45,7 +45,7 @@ void WBaseLibrary::setShowFocus(int sFocus) {
 
 void WBaseLibrary::switchToView(const QString& name) {
     QMutexLocker lock(&m_mutex);
-    qDebug() << "WBaseLibrary::switchToView" << name;
+    //qDebug() << "WBaseLibrary::switchToView" << name;
     QWidget* widget = m_viewMap.value(name, nullptr);
     if (widget != nullptr && currentWidget() != widget) {
         //qDebug() << "WBaseLibrary::setCurrentWidget" << name;

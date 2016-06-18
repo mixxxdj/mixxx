@@ -20,13 +20,13 @@
 #include "library/coverartcache.h"
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
-#include "library/librarypanemanager.h"
 #include "library/librarysidebarexpandedmanager.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wfeatureclickbutton.h"
 
+class LibraryPaneManager;
 class TrackModel;
 class TrackCollection;
 class SidebarModel;
