@@ -1375,11 +1375,11 @@ QTreeView::item:selected {
 }
 
 WBaseLibrary[showFocus="0"] {
-  padding: 1px 1px 1px 1px;
+  padding: 1px 0 0 0;
   border: none;
 }
 
 WBaseLibrary[showFocus="1"] {
-  padding: 1px 1px 1px 1px;
-  border: 1px solid #FF7100 !important;
+  padding: 1px 0 0 0;
+  border-top: 1px solid #FF7100 !important;
 }

@@ -143,6 +143,16 @@ QTableView::indicator:unchecked {
   background: url(skin:/image/style_checkbox_unchecked.png);
 }
 
+WBaseLibrary[showFocus="0"] {
+  padding: 1px 0 0 0;
+  border: none;
+}
+
+WBaseLibrary[showFocus="1"] {
+  padding: 1px 1px 1px 1px;
+  border-top: 1px solid #DE6B0F;
+}
+
 /* BPM lock icon in the library "BPM" column. */
 #LibraryBPMButton::indicator:checked {
   image: url(:/images/library/ic_library_checked.png);
@@ -150,6 +160,11 @@ QTableView::indicator:unchecked {
 
 #LibraryBPMButton::indicator:unchecked {
   image: url(:/images/library/ic_library_unchecked.png);
+}
+
+#LibrarySidebar, #LibrarySidebar WButtonBAr {
+  background-color: #222222;
+  margin-right: 10px;
 }
 
 /* button in library "Preview" column */
@@ -222,10 +237,6 @@ WSearchLineEdit:focus {
   background-color: #4B4B4B;
   color: #D6D6D6;
   selection-color: #222222;
-}
-
-WButtonBar {
-  background-color: #222222;
 }
 
 /* library preview deck */

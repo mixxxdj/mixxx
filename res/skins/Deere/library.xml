@@ -28,7 +28,7 @@
                 <SetVariable name="control">[Library],show_library</SetVariable>
               </Template>
               <LibrarySidebar>
-                <MaximumSize>120,-1</MaximumSize>
+                <ObjectName>LibrarySidebar</ObjectName>
               </LibrarySidebar>
             </Children>
           </WidgetGroup>
