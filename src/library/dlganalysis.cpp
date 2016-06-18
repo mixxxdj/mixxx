@@ -51,19 +51,6 @@ void DlgAnalysis::onSearch(const QString& text) {
     m_pAnalysisLibraryTableModel->search(text);
 }
 
-void DlgAnalysis::loadSelectedTrack() {
-    m_pAnalysisLibraryTableView->loadSelectedTrack();
-}
-
-void DlgAnalysis::loadSelectedTrackToGroup(QString group, bool play) {
-    m_pAnalysisLibraryTableView->loadSelectedTrackToGroup(group, play);
-}
-
-void DlgAnalysis::slotSendToAutoDJ() {
-    // append to auto DJ
-    m_pAnalysisLibraryTableView->slotSendToAutoDJ();
-}
-
 void DlgAnalysis::slotSendToAutoDJTop() {
     m_pAnalysisLibraryTableView->slotSendToAutoDJTop();
 }
@@ -142,19 +129,20 @@ int DlgAnalysis::getNumTracks() {
     return m_tracksInQueue;
 }
 
-void DlgAnalysis::setAnalysisTableView(WAnalysisLibraryTableView *pTable) {
+void DlgAnalysis::setAnalysisTableView(WAnalysisLibraryTableView *pTable, int pane) {
     m_pAnalysisLibraryTableView = pTable;
+    m_analysisTable[pane] = pTable;
     
-    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
+    connect(pTable, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+    connect(pTable, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
-    connect(m_pAnalysisLibraryTableView, SIGNAL(trackSelected(TrackPointer)),
+    connect(pTable, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
     
-    m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
-    connect(m_pAnalysisLibraryTableView->selectionModel(),
+    pTable->loadTrackModel(m_pAnalysisLibraryTableModel);
+    connect(pTable->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
             this,
             SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));

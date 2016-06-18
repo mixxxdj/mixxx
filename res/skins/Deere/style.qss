@@ -162,9 +162,9 @@ WBaseLibrary[showFocus="1"] {
   image: url(:/images/library/ic_library_unchecked.png);
 }
 
-#LibrarySidebar, #LibrarySidebar WButtonBAr {
+#LibrarySidebar, #LibrarySidebar WButtonBar {
   background-color: #222222;
-  margin-right: 10px;
+  margin-right: 13px;
 }
 
 /* button in library "Preview" column */
@@ -350,6 +350,10 @@ WBaseLibrary QRadioButton::indicator:checked {
 
 WBaseLibrary QRadioButton::indicator:unchecked {
   background: url(skin:/icon/ic_radio_button_off_18px.svg);
+}
+
+WButtonBar QAbstractButton {
+  border-radius: 0px;
 }
 
 /* buttons in library (in hierarchical order of appearance)
@@ -1058,7 +1062,7 @@ WPushButton, QToolButton {
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                       stop: 0 #4B4B4B,
                                       stop: 1 #4B4B4B);
-    border: 1px solid #4B4B4B;
+    border: 0px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
 }

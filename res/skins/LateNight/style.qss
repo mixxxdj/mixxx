@@ -1158,7 +1158,7 @@
 
 #LibrarySidebar, #LibrarySidebar WButtonBar {
   background-color: #0f0f0f;
-  margin-right: 10px;
+  margin-right: 11px;
 }
 
 #LibrarySidebarExpanded QWidget {

@@ -19,8 +19,6 @@
           <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
-            <MinimumSize>0,0</MinimumSize>
-            <MaximumSize>120,-1</MaximumSize>
             <Children>
               <Template src="skin:hide_show_button.xml">
                 <SetVariable name="TooltipId">show_library</SetVariable>

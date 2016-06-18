@@ -12,7 +12,7 @@
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
 
-class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
+class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
     Q_OBJECT
   public:
     DlgAnalysis(QWidget *parent,
@@ -21,9 +21,6 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
 
     virtual void onSearch(const QString& text);
     virtual void onShow();
-    virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group, bool play);
-    virtual void slotSendToAutoDJ();
     virtual void slotSendToAutoDJTop();
     virtual void moveSelection(int delta);
     inline const QString currentSearch() {
@@ -31,7 +28,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     }
     int getNumTracks();
     
-    void setAnalysisTableView(WAnalysisLibraryTableView* pTable);
+    void setAnalysisTableView(WAnalysisLibraryTableView* pTable, int pane);
 
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,
@@ -61,6 +58,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;
     int m_tracksInQueue;
     int m_currentTrack;
+    
+    QHash<int, WAnalysisLibraryTableView*> m_analysisTable;
 };
 
 #endif //DLGTRIAGE_H
