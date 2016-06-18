@@ -219,12 +219,13 @@ bool TreeItemModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
             pFeature = m_pRootItem->getFeature();
         } else {
             TreeItem* treeItem = (TreeItem*) index.internalPointer();
-            if (treeItem) {
-                pFeature = treeItem->getFeature();
+            if (!treeItem) {
+                return false;
             }
+            pFeature = treeItem->getFeature();
         }
         
-        pFeature->dropAcceptChild(index, urls, pSource);
+        result = pFeature->dropAcceptChild(index, urls, pSource);
     }
     return result;
 }
