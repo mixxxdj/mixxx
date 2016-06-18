@@ -229,7 +229,7 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void Library::slotSwitchToView(const QString& view) {
-    qDebug() << "Library::slotSwitchToView" << view;
+    //qDebug() << "Library::slotSwitchToView" << view;
     m_pSidebarExpanded->slotSwitchToView(view);
     
     WBaseLibrary* wLibrary = m_panes[m_focusedPane]->getPaneWidget();
@@ -249,7 +249,7 @@ void Library::slotSwitchToView(const QString& view) {
 }
 
 void Library::slotSwitchToViewChild(const QString &view) {
-    qDebug() << "Library::slotSwitchToViewChild";
+    //qDebug() << "Library::slotSwitchToViewChild";
     m_panes[m_focusedPane]->slotSwitchToView(view);
 }
 
@@ -307,9 +307,21 @@ void Library::onSkinLoadFinished() {
     //m_pSidebarModel->activateDefaultSelection();
     if (m_panes.size() > 0) {
         
-        m_focusedPane = m_panes.begin().key();
-        m_features.first()->setFeatureFocus(m_focusedPane);
-        m_features.first()->activate();
+        auto itF = m_features.begin();
+        auto itP = m_panes.begin();
+        
+        // Assign a feature to show on each pane unless there are more panes
+        // than features
+        while (itP != m_panes.end() && itF != m_features.end()) {
+            qDebug() << (*itF)->getViewName() << itP.key();
+            m_focusedPane = itP.key();
+            
+            (*itF)->setFeatureFocus(itP.key());
+            (*itF)->activate();
+            
+            ++itP;
+            ++itF;
+        }
     }
     else {
         qDebug() << "Library::onSkinLoadFinished No Panes loaded!";
@@ -395,7 +407,8 @@ void Library::slotActivateFeature(const QString &featureName) {
     
     // The feature is being shown currently in the focused pane
     if (m_panes[m_focusedPane]->getFocusedFeature() == featureName) {
-        return;        
+        m_pSidebarExpanded->slotSwitchToView(featureName);
+        return;
     }
     
     // The feature is not focused anywhere
@@ -510,6 +523,7 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
         pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
     }
+
     if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
