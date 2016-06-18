@@ -85,6 +85,13 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.exec(globalPos);
 }
 
+
+bool PlaylistFeature::dragMoveAccept(QUrl url) {
+    return SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+}
+
+
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                       QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);

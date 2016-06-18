@@ -27,6 +27,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     QVariant title();
     QIcon getIcon();
 
+    bool dragMoveAccept(QUrl url);
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 

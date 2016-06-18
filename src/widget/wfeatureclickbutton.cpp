@@ -41,7 +41,7 @@ void WFeatureClickButton::dragEnterEvent(QDragEnterEvent* event) {
     }
 }
 
-void WFeatureClickButton::dragLeaveEvent(QDragLeaveEvent* event) {
+void WFeatureClickButton::dragLeaveEvent(QDragLeaveEvent*) {
     m_hoverTimer.stop();
 }
 
