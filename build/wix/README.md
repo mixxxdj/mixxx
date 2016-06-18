@@ -19,4 +19,4 @@ To test your multilingual package
 
 `msiexec /i mixxx-full-name.msi ProductLanguage=xxxx`
 
-where xxxx is a language code taken from http://www.science.co.il/Language/Locale-codes.asp and available as a translation in build/wix/Localization
+where xxxx is a LCID in decimal notation taken from http://www.science.co.il/Language/Locale-codes.asp and available as a translation in build/wix/Localization
