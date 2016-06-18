@@ -14,6 +14,8 @@
 #include "preferences/usersettings.h"
 #include "controllers/keyboard/shortcutchangewatcher.h"
 
+class ShortcutController;
+
 class VisibilityControlConnection : public QObject {
     Q_OBJECT
   public:
@@ -35,7 +37,7 @@ class VisibilityControlConnection : public QObject {
 class WMainMenuBar : public QMenuBar {
     Q_OBJECT
   public:
-    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig);
+    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig, ShortcutController* pShortcutController);
 
   public slots:
     void onLibraryScanStarted();
@@ -49,7 +51,6 @@ class WMainMenuBar : public QMenuBar {
     void onFullScreenStateChange(bool fullscreen);
     void onVinylControlDeckEnabledStateChange(int deck, bool enabled);
     void onNumberOfDecksChanged(int decks);
-    void updateShortcuts(ControllerPresetPointer);
 
   signals:
     void createCrate();
@@ -87,14 +88,12 @@ class WMainMenuBar : public QMenuBar {
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     UserSettingsPointer m_pConfig;
-    ConfigObject<ConfigValueKbd>* m_pKbdConfig;
+    ShortcutController* m_pShortcutController;
     QSignalMapper m_loadToDeckMapper;
     QSignalMapper m_visitUrlMapper;
     QList<QAction*> m_loadToDeckActions;
     QSignalMapper m_vinylControlEnabledMapper;
     QList<QAction*> m_vinylControlEnabledActions;
-    QList<ShortcutChangeWatcher*> m_shortcutChangeWatchers;
-    ControllerManager* m_pControllerManager;
 };
 
 #endif /* WIDGET_WMAINMENUBAR */

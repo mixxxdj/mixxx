@@ -12,10 +12,11 @@ public:
     void updateShortcut(QMultiHash<ConfigValueKbd, ConfigKey> *pHash);
     void restoreDefault();
 
+    const ConfigKey m_configKey;
+
 private:
-    QAction* m_pAction;
-    ConfigKey m_configKey;
-    QKeySequence m_defaultKeySeq;
+    QAction * const m_pAction;
+    const QKeySequence m_defaultKeySeq;
 };
 
 

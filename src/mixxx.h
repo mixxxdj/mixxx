@@ -20,6 +20,7 @@
 
 #include <QMainWindow>
 #include <QString>
+#include <controllers/keyboard/shortcutcontroller.h>
 
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
@@ -38,6 +39,7 @@ class GuiTick;
 class LaunchImage;
 class Library;
 class KeyboardEventFilter;
+class ShortcutController;
 class PlayerManager;
 class RecordingManager;
 class SettingsManager;
@@ -149,6 +151,9 @@ class MixxxMainWindow : public QMainWindow {
     VinylControlManager* m_pVCManager;
 
     KeyboardEventFilter* m_pKeyboard;
+
+    ShortcutController* m_pShortcutController;
+
     // The library management object
     Library* m_pLibrary;
 

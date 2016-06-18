@@ -4,6 +4,7 @@
 #include <QList>
 
 #include <QUrl>
+#include <controllers/keyboard/shortcutcontroller.h>
 
 #include "control/controlproxy.h"
 #include "defs_urls.h"
@@ -60,9 +61,10 @@ QString fullScreenDefaultKeyBinding() {
 
 }  // namespace
 
-WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig)
+WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig, ShortcutController* pShortcutController)
         : QMenuBar(pParent),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_pShortcutController(pShortcutController) {
     initialize();
     connect(&m_loadToDeckMapper, SIGNAL(mapped(int)),
             this, SIGNAL(loadTrackToDeck(int)));
@@ -84,7 +86,7 @@ void WMainMenuBar::initialize() {
         QAction* pFileLoadSongToPlayer = new QAction(
             loadTrackText.arg(QString::number(deck + 1)), this);
 
-        m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+        m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
                 pFileLoadSongToPlayer,
                 ConfigKey("[KeyboardShortcuts]", QString("FileMenu_LoadDeck%1").arg(deck + 1)),
                 QKeySequence(loadToDeckDefaultKeyBinding(deck))
@@ -108,7 +110,7 @@ void WMainMenuBar::initialize() {
     QString quitTitle = tr("&Exit");
     QString quitText = tr("Quits Mixxx");
     auto pFileQuit = new QAction(quitTitle, this);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pFileQuit,
             ConfigKey("[KeyboardShortcuts]", "FileMenu_Quit"),
             tr("Ctrl+q")
@@ -143,7 +145,7 @@ void WMainMenuBar::initialize() {
     QString createPlaylistTitle = tr("Create &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     auto pLibraryCreatePlaylist = new QAction(createPlaylistTitle, this);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pLibraryCreatePlaylist,
             ConfigKey("[KeyboardShortcuts]", "LibraryMenu_NewPlaylist"),
             tr("Ctrl+n")
@@ -158,7 +160,7 @@ void WMainMenuBar::initialize() {
     QString createCrateTitle = tr("Create New &Crate");
     QString createCrateText = tr("Create a new crate");
     auto pLibraryCreateCrate = new QAction(createCrateTitle, this);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pLibraryCreateCrate,
             ConfigKey("[KeyboardShortcuts]", "LibraryMenu_NewCrate"),
             tr("Ctrl+Shift+N")
@@ -181,7 +183,7 @@ void WMainMenuBar::initialize() {
             " " + mayNotBeSupported;
     auto pViewShowSamplers = new QAction(showSamplersTitle, this);
     pViewShowSamplers->setCheckable(true);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pViewShowSamplers,
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowSamplers"),
             tr("Ctrl+1", "Menubar|View|Show Samplers")
@@ -196,7 +198,7 @@ void WMainMenuBar::initialize() {
             " " + mayNotBeSupported;
     auto pViewShowMicrophone = new QAction(showMicrophoneTitle, this);
     pViewShowMicrophone->setCheckable(true);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pViewShowMicrophone,
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowMicrophone"),
             tr("Ctrl+2", "Menubar|View|Show Microphone Section")
@@ -212,7 +214,7 @@ void WMainMenuBar::initialize() {
             " " + mayNotBeSupported;
     auto pViewVinylControl = new QAction(showVinylControlTitle, this);
     pViewVinylControl->setCheckable(true);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pViewVinylControl,
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowVinylControl"),
             tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section")
@@ -228,7 +230,7 @@ void WMainMenuBar::initialize() {
             " " + mayNotBeSupported;
     auto pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
     pViewShowPreviewDeck->setCheckable(true);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pViewShowPreviewDeck,
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowPreviewDeck"),
             tr("Ctrl+4", "Menubar|View|Show Preview Deck")
@@ -243,7 +245,7 @@ void WMainMenuBar::initialize() {
     " " + mayNotBeSupported;
     auto pViewShowEffects = new QAction(showEffectsTitle, this);
     pViewShowEffects->setCheckable(true);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pViewShowEffects,
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowEffects"),
             tr("Ctrl+5", "Menubar|View|Show Effect Rack")
@@ -259,7 +261,7 @@ void WMainMenuBar::initialize() {
             " " + mayNotBeSupported;
     auto pViewShowCoverArt = new QAction(showCoverArtTitle, this);
     pViewShowCoverArt->setCheckable(true);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pViewShowCoverArt,
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowCoverArt"),
             tr("Ctrl+6", "Menubar|View|Show Cover Art")
@@ -275,7 +277,7 @@ void WMainMenuBar::initialize() {
             " " + mayNotBeSupported;
     auto pViewMaximizeLibrary = new QAction(maximizeLibraryTitle, this);
     pViewMaximizeLibrary->setCheckable(true);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pViewMaximizeLibrary,
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_MaximizeLibrary"),
             tr("Space", "Menubar|View|Maximize Library")
@@ -292,7 +294,7 @@ void WMainMenuBar::initialize() {
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
     auto pViewFullScreen = new QAction(fullScreenTitle, this);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pViewFullScreen,
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_Fullscreen"),
             fullScreenDefaultKeyBinding()
@@ -322,7 +324,7 @@ void WMainMenuBar::initialize() {
         QString vinylControlTitle = tr("Enable Vinyl Control &%1").arg(i + 1);
         auto vc_checkbox = new QAction(vinylControlTitle, this);
         m_vinylControlEnabledActions.push_back(vc_checkbox);
-        m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+        m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
                 vc_checkbox,
                 ConfigKey("[KeyboardShortcuts]",
                           QString("OptionsMenu_EnableVinyl%1").arg(i + 1)),
@@ -353,7 +355,7 @@ void WMainMenuBar::initialize() {
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
     auto pOptionsRecord = new QAction(recordTitle, this);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pOptionsRecord,
             ConfigKey("[KeyboardShortcuts]", "OptionsMenu_RecordMix"),
             tr("Ctrl+R")
@@ -372,7 +374,7 @@ void WMainMenuBar::initialize() {
     QString broadcastingTitle = tr("Enable Live &Broadcasting");
     QString broadcastingText = tr("Stream your mixes to a shoutcast or icecast server");
     auto pOptionsBroadcasting = new QAction(broadcastingTitle, this);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pOptionsBroadcasting,
             ConfigKey("[KeyboardShortcuts]", "OptionsMenu_EnableLiveBroadcasting"),
             tr("Ctrl+L")
@@ -400,7 +402,7 @@ void WMainMenuBar::initialize() {
     bool keyboardShortcutsEnabled = m_pConfig->getValueString(
         ConfigKey("[Controller]", "Keyboard")) == "1";
     auto pOptionsKeyboard = new QAction(keyboardShortcutTitle, this);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pOptionsKeyboard,
             ConfigKey("[KeyboardShortcuts]", "OptionsMenu_EnableShortcuts"),
             tr("Ctrl+`")
@@ -420,7 +422,7 @@ void WMainMenuBar::initialize() {
     QString preferencesTitle = tr("&Preferences");
     QString preferencesText = tr("Change Mixxx settings (e.g. playback, MIDI, controls)");
     auto pOptionsPreferences = new QAction(preferencesTitle, this);
-    m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+    m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
             pOptionsPreferences,
             ConfigKey("[KeyboardShortcuts]", "OptionsMenu_Preferences"),
             showPreferencesKeyBinding()
@@ -442,7 +444,7 @@ void WMainMenuBar::initialize() {
         QString reloadSkinTitle = tr("&Reload Skin");
         QString reloadSkinText = tr("Reload the skin");
         auto pDeveloperReloadSkin = new QAction(reloadSkinTitle, this);
-        m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+        m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
                 pDeveloperReloadSkin,
                 ConfigKey("[KeyboardShortcuts]", "OptionsMenu_ReloadSkin"),
                 tr("Ctrl+Shift+R")
@@ -457,7 +459,7 @@ void WMainMenuBar::initialize() {
         QString developerToolsTitle = tr("Developer &Tools");
         QString developerToolsText = tr("Opens the developer tools dialog");
         auto pDeveloperTools = new QAction(developerToolsTitle, this);
-        m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+        m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
                 pDeveloperTools,
                 ConfigKey("[KeyboardShortcuts]", "OptionsMenu_DeveloperTools"),
                 tr("Ctrl+Shift+T")
@@ -477,7 +479,7 @@ void WMainMenuBar::initialize() {
         QString enableExperimentToolsText = tr(
             "Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.");
         auto pDeveloperStatsExperiment = new QAction(enableExperimentTitle, this);
-        m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+        m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
                 pDeveloperStatsExperiment,
                 ConfigKey("[KeyboardShortcuts]", "OptionsMenu_DeveloperStatsExperiment"),
                 tr("Ctrl+Shift+E")
@@ -496,7 +498,7 @@ void WMainMenuBar::initialize() {
         QString enableBaseToolsText = tr(
             "Enables base mode. Collects stats in the BASE tracking bucket.");
         auto pDeveloperStatsBase = new QAction(enableBaseTitle, this);
-        m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+        m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
                 pDeveloperStatsBase,
                 ConfigKey("[KeyboardShortcuts]", "OptionsMenu_DeveloperStatsBase"),
                 tr("Ctrl+Shift+B")
@@ -517,7 +519,7 @@ void WMainMenuBar::initialize() {
         bool scriptDebuggerEnabled = m_pConfig->getValueString(
             ConfigKey("[ScriptDebugger]", "Enabled")) == "1";
         auto pDeveloperDebugger = new QAction(scriptDebuggerTitle, this);
-        m_shortcutChangeWatchers.append(new ShortcutChangeWatcher(
+        m_pShortcutController->addWatcher(new ShortcutChangeWatcher(
                 pDeveloperDebugger,
                 ConfigKey("[KeyboardShortcuts]", "DeveloperMenu_EnableDebugger"),
                 tr("Ctrl+Shift+D")
@@ -709,21 +711,6 @@ void WMainMenuBar::onNumberOfDecksChanged(int decks) {
     deck = 0;
     for (QAction* pLoadToDeck : m_loadToDeckActions) {
         pLoadToDeck->setVisible(deck++ < decks);
-    }
-}
-
-void WMainMenuBar::updateShortcuts(ControllerPresetPointer pPreset) {
-    QSharedPointer<KeyboardControllerPreset> keyboardPreset = pPreset.dynamicCast<KeyboardControllerPreset>();
-    QMultiHash<ConfigValueKbd, ConfigKey> keyboardShortcuts =
-            keyboardPreset->getMappingByGroup("[KeyboardShortcuts]");
-
-    QMultiHash<ConfigValueKbd, ConfigKey>::iterator it;
-    for (it = keyboardShortcuts.begin(); it != keyboardShortcuts.end(); ++it) {
-        qDebug() << it.value();
-    }
-
-    foreach (ShortcutChangeWatcher* watcher, m_shortcutChangeWatchers) {
-            watcher->updateShortcut(&keyboardShortcuts);
     }
 }
 

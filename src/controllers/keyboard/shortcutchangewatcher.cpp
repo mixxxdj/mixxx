@@ -11,8 +11,8 @@
 
 ShortcutChangeWatcher::ShortcutChangeWatcher(QAction* action, ConfigKey configKey, QKeySequence defaultKeySeq) :
     QObject(action),
-    m_pAction(action),
     m_configKey(configKey),
+    m_pAction(action),
     m_defaultKeySeq(defaultKeySeq) {
 
     restoreDefault();

@@ -97,6 +97,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pVCManager(nullptr),
 #endif
           m_pKeyboard(nullptr),
+          m_pShortcutController(nullptr),
           m_pLibrary(nullptr),
           m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
@@ -121,6 +122,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Initialize keyboard event filter
     m_pKeyboard = new KeyboardEventFilter();
+
+    m_pShortcutController = new ShortcutController();
 
     // Menubar depends on translations.
     mixxx::Translations::initializeTranslations(
@@ -302,7 +305,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(pConfig, m_pKeyboard);
     connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(ControllerPresetPointer)),
-            m_pMenuBar, SLOT(updateShortcuts(ControllerPresetPointer)));
+            m_pShortcutController, SLOT(slotUpdateShortcuts(ControllerPresetPointer)));
 
     launchProgress(47);
 
@@ -748,7 +751,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
-    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings());
+    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(), m_pShortcutController);
     setMenuBar(m_pMenuBar);
 }
 
