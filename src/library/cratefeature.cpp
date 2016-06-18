@@ -181,7 +181,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void CrateFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                              KeyboardEventFilter* keyboard) {
+                              KeyboardEventFilter* keyboard, int) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(pLibraryWidget);
     edit->setHtml(getRootViewHtml());

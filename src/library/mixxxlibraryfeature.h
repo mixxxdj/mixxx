@@ -40,7 +40,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
     void bindPaneWidget(WLibrary* pLibrary,
-                    KeyboardEventFilter* pKeyboard);
+                        KeyboardEventFilter* pKeyboard, int);
     
     inline QString getViewName() {
         return m_sMixxxLibraryViewName;

@@ -101,7 +101,8 @@ QString AutoDJFeature::getViewName() {
 }
 
 void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                               KeyboardEventFilter* pKeyboard) {
+                                   KeyboardEventFilter* pKeyboard,
+                                   int paneId) {
     //qDebug() << "AutoDJFeature::bindPaneWidget" << pLibraryWidget;
     WTrackTableView* pTrackTableView = new WTrackTableView(pLibraryWidget, 
             m_pConfig, m_pTrackCollection, false);
@@ -115,9 +116,9 @@ void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
     
     if (m_pAutoDJView) {
-        m_pAutoDJView->setTrackTableView(pTrackTableView);
+        m_pAutoDJView->setTrackTableView(pTrackTableView, paneId);
     } else {
-        m_trackTables.append(pTrackTableView);
+        m_trackTables[paneId] = pTrackTableView;
     }
 }
 
@@ -156,8 +157,8 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
     
     pSidebarWidget->registerView(m_sAutoDJViewName, pContainer);
     
-    for (WTrackTableView* pT : m_trackTables) {
-        m_pAutoDJView->setTrackTableView(pT);
+    for (auto it = m_trackTables.begin(); it != m_trackTables.end(); ++it) {
+        m_pAutoDJView->setTrackTableView(it.value(), it.key());
     }
     m_trackTables.clear();
 }
@@ -168,6 +169,7 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
+    m_pAutoDJView->setFocusedPane(m_featureFocus);
     m_pAutoDJView->onShow();
     emit(switchToView(m_sAutoDJViewName));
     emit(restoreSearch(QString())); //Null String disables search box

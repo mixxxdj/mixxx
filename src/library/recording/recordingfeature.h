@@ -30,7 +30,7 @@ class RecordingFeature : public LibraryFeature {
     QIcon getIcon();
 
     void bindPaneWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+                        KeyboardEventFilter* keyboard, int);
     inline QString getViewName() {
         return m_sRecordingViewName;
     }

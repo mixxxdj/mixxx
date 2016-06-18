@@ -595,7 +595,7 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
 }
 
 void BasePlaylistFeature::bindPaneWidget(WLibrary* libraryWidget,
-                                     KeyboardEventFilter* keyboard) {
+                                     KeyboardEventFilter* keyboard, int) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());

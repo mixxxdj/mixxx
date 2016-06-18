@@ -5,9 +5,10 @@
 
 const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
 
-LibraryPaneManager::LibraryPaneManager(QObject* parent)
+LibraryPaneManager::LibraryPaneManager(int paneId, QObject* parent)
         : QObject(parent),
-          m_pPaneWidget(nullptr) {
+          m_pPaneWidget(nullptr),
+          m_paneId(paneId) {
     qApp->installEventFilter(this);
 }
 
@@ -28,7 +29,7 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* libraryWidget,
         return;
     }
     for (LibraryFeature* f : m_features) {
-        f->bindPaneWidget(lib, pKeyboard);
+        f->bindPaneWidget(lib, pKeyboard, m_paneId);
     }
 }
 

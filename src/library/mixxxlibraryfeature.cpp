@@ -131,7 +131,7 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 }
 
 void MixxxLibraryFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                                     KeyboardEventFilter* pKeyboard) {
+                                     KeyboardEventFilter* pKeyboard, int) {
     m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
                                   m_pTrackCollection, pKeyboard);
     pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);

@@ -24,7 +24,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ {
     virtual ~DlgAutoDJ();
     
     void onShow();
-    void setTrackTableView(WTrackTableView* pTrackTableView);
+    void setTrackTableView(WTrackTableView* pTrackTableView, int pane);
+    void setFocusedPane(int focusedPane);
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);
@@ -46,6 +47,10 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ {
     AutoDJProcessor* m_pAutoDJProcessor;
     PlaylistTableModel* m_pAutoDJTableModel;
     Library* m_pLibrary;
+    
+    int m_focusedPane;
+    
+    QMap<int, WTrackTableView*> m_trackTables;
 };
 
 #endif //DLGAUTODJ_H

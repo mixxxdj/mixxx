@@ -1,7 +1,7 @@
 #include "librarysidebarexpandedmanager.h"
 
 LibrarySidebarExpandedManager::LibrarySidebarExpandedManager(QObject* parent)
-        : LibraryPaneManager(parent) {
+        : LibraryPaneManager(-1, parent) {
 
 }
 

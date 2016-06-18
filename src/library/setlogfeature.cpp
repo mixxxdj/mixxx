@@ -54,9 +54,9 @@ QIcon SetlogFeature::getIcon() {
 }
 
 void SetlogFeature::bindPaneWidget(WLibrary* libraryWidget,
-                               KeyboardEventFilter* keyboard) {
+                               KeyboardEventFilter* keyboard, int paneId) {
     BasePlaylistFeature::bindPaneWidget(libraryWidget,
-                                    keyboard);
+                                        keyboard, paneId);
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotPlayingTrackChanged(TrackPointer)));
 }

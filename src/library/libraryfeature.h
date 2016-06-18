@@ -70,7 +70,8 @@ class LibraryFeature : public QObject {
     // Reimplement this to register custom views with the library widget
     // at the right pane.
     virtual void bindPaneWidget(WLibrary* /* libraryWidget */,
-                                KeyboardEventFilter* /* keyboard */) {
+                                KeyboardEventFilter* /* keyboard */,
+                                int /* paneId */) {
     }
     
     // Reimplement this to register custem views with the library widget,

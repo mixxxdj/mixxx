@@ -76,7 +76,7 @@ void AnalysisFeature::bindPaneWidget(WLibrary* libraryWidget,
 }
 
 void AnalysisFeature::bindSidebarWidget(WBaseLibrary* libraryWidget,
-                                        KeyboardEventFilter* pKeyboard) {
+                                        KeyboardEventFilter* pKeyboard, int) {
     
     m_pAnalysisView = new DlgAnalysis(libraryWidget, m_pTrackCollection);
     connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),

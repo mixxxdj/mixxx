@@ -39,7 +39,7 @@ TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 void RecordingFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                                  KeyboardEventFilter *keyboard) {
+                                  KeyboardEventFilter *keyboard, int) {
     //The view will be deleted by LibraryWidget
     DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,
                                                     m_pConfig,

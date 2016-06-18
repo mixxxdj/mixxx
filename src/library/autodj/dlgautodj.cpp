@@ -15,12 +15,13 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
           m_pAutoDJProcessor(pProcessor),
           // no sorting
           m_pAutoDJTableModel(nullptr),
-          m_pLibrary(pLibrary) {
+          m_pLibrary(pLibrary),
+          m_focusedPane(-1) {
     setupUi(this);
 
     // We do _NOT_ take ownership of this from AutoDJProcessor.
     m_pAutoDJTableModel = m_pAutoDJProcessor->getTableModel();
-    
+
     // Override some playlist-view properties:
 
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
@@ -60,8 +61,10 @@ void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
 }
 
-void DlgAutoDJ::setTrackTableView(WTrackTableView* pTrackTableView) {
+void DlgAutoDJ::setTrackTableView(WTrackTableView* pTrackTableView, int pane) {
     pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
+    
+    m_trackTables[pane] = pTrackTableView;
     
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
@@ -73,6 +76,10 @@ void DlgAutoDJ::setTrackTableView(WTrackTableView* pTrackTableView) {
             this, SLOT(updateSelectionInfo()));
     
     updateSelectionInfo();
+}
+
+void DlgAutoDJ::setFocusedPane(int focusedPane) {
+    m_focusedPane = focusedPane;
 }
 
 void DlgAutoDJ::shufflePlaylistButton(bool) {    
@@ -156,16 +163,19 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
 }
 
 void DlgAutoDJ::updateSelectionInfo() {
-    int duration = 0;
-
-    LibraryView* pView = m_pLibrary->getActiveView();
-    WTrackTableView* pTrackTable = dynamic_cast<WTrackTableView*>(pView);
-    if (!pView) {
+    if (!m_trackTables.contains(m_focusedPane)) {
+        labelSelectionInfo->setText("");
+        labelSelectionInfo->setEnabled(false);
         return;
     }
+    
+    int duration = 0;
+    WTrackTableView* pTrackTable = m_trackTables[m_focusedPane];
+    if (!pTrackTable) {
+        return;
+    }
+    
     QModelIndexList indices = pTrackTable->selectionModel()->selectedRows();
-    
-    
     for (int i = 0; i < indices.size(); ++i) {
         TrackPointer pTrack = m_pAutoDJTableModel->getTrack(indices.at(i));
         if (pTrack) {
@@ -174,7 +184,6 @@ void DlgAutoDJ::updateSelectionInfo() {
     }
 
     QString label;
-
     if (!indices.isEmpty()) {
         label.append(Time::formatSeconds(duration));
         label.append(QString(" (%1)").arg(indices.size()));

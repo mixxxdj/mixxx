@@ -20,7 +20,7 @@ class LibraryPaneManager : public QObject {
         TrackTable
     };
 
-    LibraryPaneManager(QObject* parent = nullptr);
+    LibraryPaneManager(int paneId, QObject* parent = nullptr);
 
     ~LibraryPaneManager();
 
@@ -45,6 +45,10 @@ class LibraryPaneManager : public QObject {
     void setFocus();
 
     void clearFocus();
+    
+    inline int getPaneId() { 
+        return m_paneId;
+    }
 
   signals:
 
@@ -75,6 +79,8 @@ class LibraryPaneManager : public QObject {
     const static QString m_sTrackViewName;
 
     QString m_focusedFeature;
+    
+    int m_paneId;
 
   private slots:
 

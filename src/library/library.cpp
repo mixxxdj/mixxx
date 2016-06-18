@@ -456,7 +456,7 @@ void Library::createPane(int id) {
     if (m_panes.contains(id)) {
         return;
     }
-    LibraryPaneManager* pane = new LibraryPaneManager;
+    LibraryPaneManager* pane = new LibraryPaneManager(id);
     pane->addFeatures(m_features);
     m_panes.insert(id, pane);
     

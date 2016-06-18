@@ -38,7 +38,7 @@ class AnalysisFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     void bindPaneWidget(WLibrary* libraryWidget, KeyboardEventFilter*pKeyboard);
     void bindSidebarWidget(WBaseLibrary* libraryWidget,
-                           KeyboardEventFilter*pKeyboard);
+                           KeyboardEventFilter*pKeyboard, int);
 
     TreeItemModel* getChildModel();
     void refreshLibraryModels();
