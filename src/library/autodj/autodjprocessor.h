@@ -131,6 +131,8 @@ class AutoDJProcessor : public QObject {
         return m_pAutoDJTableModel;
     }
 
+    bool nextTrackLoaded();
+
   public slots:
     void setTransitionTime(int seconds);
 

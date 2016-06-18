@@ -52,6 +52,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
     connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
+
 
     // Create the "Crates" tree-item under the root item.
     TreeItem* root = m_childModel.getItem(QModelIndex());

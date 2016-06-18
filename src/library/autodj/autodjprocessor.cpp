@@ -801,8 +801,8 @@ void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
 
     // The Deck has ejected a track and no new one is loaded
     // This happens if loading fails or the user manually ejected the track
-    // and would normally stopp the AutoDJ flow, which is not desired.
-    // It should be safe to load a load a new track from the queue. The only case where
+    // and would normally stop the AutoDJ flow, which is not desired.
+    // It should be safe to load a new track from the queue. The only case where
     // we request a load-and-play is case #1 currently so we can easily test for
     // this based on the mode.
 
@@ -864,4 +864,31 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
         }
     }
     return pOtherDeck;
+}
+
+bool AutoDJProcessor::nextTrackLoaded() {
+    if (m_eState == ADJ_DISABLED) {
+        // AutoDJ always loads the top track (again) if enabled
+        return false;
+    }
+
+    DeckAttributes& leftDeck = *m_decks[0];
+    DeckAttributes& rightDeck = *m_decks[1];
+    bool leftDeckPlaying = leftDeck.isPlaying();
+    bool rightDeckPlaying = rightDeck.isPlaying();
+
+
+    // Calculate idle deck
+    TrackPointer loadedTrack;
+    if (leftDeckPlaying && !rightDeckPlaying) {
+        loadedTrack = rightDeck.getLoadedTrack();
+    } else if (!leftDeckPlaying && rightDeckPlaying) {
+        loadedTrack = leftDeck.getLoadedTrack();
+    } else if (getCrossfader() < 0.0) {
+        loadedTrack = rightDeck.getLoadedTrack();
+    } else {
+        loadedTrack = leftDeck.getLoadedTrack();
+    }
+
+    return loadedTrack == getNextTrackFromQueue();
 }
