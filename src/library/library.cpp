@@ -114,7 +114,7 @@ void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
 
 void Library::bindSidebarWidget(WButtonBar* sidebar) {    
     for (LibraryFeature* f : m_features) {
-        WRightClickButton* button = sidebar->addButton(f->getIcon(), f->title(),
+        WFeatureClickButton* button = sidebar->addButton(f->getIcon(), f->title(),
                                                        f->getViewName());
         
         connect(button, SIGNAL(clicked(const QString&)),

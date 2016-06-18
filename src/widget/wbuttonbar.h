@@ -7,7 +7,7 @@
 #include <QPushButton>
 
 #include "widget/wwidget.h"
-#include "widget/wrightclickbutton.h"
+#include "widget/wfeatureclickbutton.h"
 
 class WButtonBar : public WWidget
 {
@@ -15,7 +15,7 @@ class WButtonBar : public WWidget
   public:
     WButtonBar(QWidget* parent = nullptr);
 
-    WRightClickButton* addButton(const QIcon& icon, const QVariant& title, const QString &data);
+    WFeatureClickButton* addButton(const QIcon& icon, const QVariant& title, const QString &data);
 
   private:
 

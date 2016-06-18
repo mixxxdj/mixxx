@@ -25,7 +25,7 @@
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
-#include "widget/wrightclickbutton.h"
+#include "widget/wfeatureclickbutton.h"
 
 class TrackModel;
 class TrackCollection;

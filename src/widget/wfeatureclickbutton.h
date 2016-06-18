@@ -4,12 +4,12 @@
 #include <QToolButton>
 #include <QMouseEvent>
 
-class WRightClickButton : public QToolButton
+class WFeatureClickButton : public QToolButton
 {
     Q_OBJECT
     
 public:
-    WRightClickButton(QWidget* parent = nullptr);
+    WFeatureClickButton(QWidget* parent = nullptr);
     
     void setData(const QString& data);
     
@@ -22,6 +22,8 @@ signals:
 protected:
     
     void mousePressEvent(QMouseEvent* event);
+    
+    void dropEvent(QDropEvent* event);
     
 private slots:
     
