@@ -4,21 +4,17 @@
 #include <QObject>
 #include <QList>
 
-#include "library/libraryfeature.h"
-#include "widget/wbuttonbar.h"
 #include "widget/wlibrary.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
+
+class LibraryFeature;
+class WButtonBar;
 
 class LibraryPaneManager : public QObject {
     Q_OBJECT
 
   public:
-
-    enum class FeaturePane {
-        SidebarExpanded,
-        TrackTable
-    };
 
     LibraryPaneManager(int paneId, QObject* parent = nullptr);
 

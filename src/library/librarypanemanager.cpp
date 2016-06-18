@@ -1,6 +1,8 @@
 #include <QDebug>
 
 #include "librarypanemanager.h"
+#include "widget/wbuttonbar.h"
+#include "library/libraryfeature.h"
 #include "util/assert.h"
 
 const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");

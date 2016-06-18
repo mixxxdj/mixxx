@@ -1,4 +1,5 @@
 #include "librarysidebarexpandedmanager.h"
+#include "library/libraryfeature.h"
 
 LibrarySidebarExpandedManager::LibrarySidebarExpandedManager(QObject* parent)
         : LibraryPaneManager(-1, parent) {
