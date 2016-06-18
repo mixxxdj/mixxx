@@ -1,4 +1,5 @@
 #include "wbuttonbar.h"
+#include "library/libraryfeature.h"
 
 WButtonBar::WButtonBar(QWidget* parent)
         : WWidget(parent) {
@@ -9,13 +10,8 @@ WButtonBar::WButtonBar(QWidget* parent)
     setLayout(m_pLayout);
 }
 
-WFeatureClickButton* WButtonBar::addButton(const QIcon& icon, 
-                                         const QVariant& title,
-                                         const QString& data) {
-    WFeatureClickButton* button = new WFeatureClickButton(this);
-    button->setIcon(icon);
-    button->setText(title.toString());
-    button->setData(data);
+WFeatureClickButton* WButtonBar::addButton(LibraryFeature* pFeature) {
+    WFeatureClickButton* button = new WFeatureClickButton(pFeature, this);
     button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     button->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     

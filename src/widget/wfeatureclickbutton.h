@@ -1,6 +1,7 @@
 #ifndef WRIGHTCLICKBUTTON_H
 #define WRIGHTCLICKBUTTON_H
 
+#include <library/libraryfeature.h>
 #include <QToolButton>
 #include <QMouseEvent>
 
@@ -9,7 +10,8 @@ class WFeatureClickButton : public QToolButton
     Q_OBJECT
     
 public:
-    WFeatureClickButton(QWidget* parent = nullptr);
+    WFeatureClickButton(LibraryFeature* feature = nullptr, 
+                        QWidget* parent = nullptr);
     
     void setData(const QString& data);
     
@@ -19,11 +21,19 @@ signals:
     
     void rightClicked(const QPoint&);
     
+    void hoverShow(const QString& feature);
+    
 protected:
     
     void mousePressEvent(QMouseEvent* event);
     
+    void dragEnterEvent(QDragEnterEvent* event);
+    
+    void dragLeaveEvent(QDragLeaveEvent* event);
+    
     void dropEvent(QDropEvent* event);
+    
+    void timerEvent(QTimerEvent* event);
     
 private slots:
     
@@ -31,7 +41,13 @@ private slots:
     
 private:
     
+    static const int kHoverTime;
+    
     QString m_data;
+    
+    LibraryFeature* m_feature;
+    
+    QBasicTimer m_hoverTimer;
 };
 
 #endif // WRIGHTCLICKBUTTON_H

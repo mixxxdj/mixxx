@@ -15,7 +15,7 @@ class WButtonBar : public WWidget
   public:
     WButtonBar(QWidget* parent = nullptr);
 
-    WFeatureClickButton* addButton(const QIcon& icon, const QVariant& title, const QString &data);
+    WFeatureClickButton* addButton(LibraryFeature *pFeature);
 
   private:
 
