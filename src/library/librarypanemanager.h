@@ -14,45 +14,45 @@ class LibraryPaneManager : public QObject {
     Q_OBJECT
 
   public:
-    
+
     enum class FeaturePane {
         SidebarExpanded,
         TrackTable
     };
 
     LibraryPaneManager(QObject* parent = nullptr);
-    
+
     ~LibraryPaneManager();
-    
+
     bool initialize();
 
     // All features must be added before adding a pane
-    void bindPaneWidget(WBaseLibrary *libraryWidget, 
-                        KeyboardEventFilter *pKeyboard, FeaturePane pane);
+    virtual void bindPaneWidget(WBaseLibrary* libraryWidget,
+                                KeyboardEventFilter* pKeyboard);
     void bindSearchBar(WSearchLineEdit* pSearchLine);
-    
+
     void addFeature(LibraryFeature* feature);
-    void addFeatures(const QList<LibraryFeature *> &features);
-    
+    void addFeatures(const QList<LibraryFeature*>& features);
+
     WBaseLibrary* getPaneWidget();
-    
+
     void setFocusedFeature(const QString& featureName);
-    
+
     QString getFocusedFeature() {
         return m_focusedFeature;
     }
-    
+
     void setFocus();
-    
+
     void clearFocus();
-    
-signals:
-    
+
+  signals:
+
     void focused();
-    
+
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString&);
-    
+
     void restoreSearch(const QString&);
     void search(const QString& text);
     void searchCleared();
@@ -62,22 +62,23 @@ signals:
 
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
-    void slotRestoreSearch(const QString& text);  
+    void slotRestoreSearch(const QString& text);
+
+  protected:
+
+    WBaseLibrary* m_pPaneWidget;
+    
+    QList<LibraryFeature*> m_features;
 
   private:
 
     const static QString m_sTrackViewName;
-    
-    WBaseLibrary* m_pPaneWidget;
-    
-    QList<LibraryFeature*> m_features;
-    
+
     QString m_focusedFeature;
 
   private slots:
 
     // Used to handle focus change
-    // TODO(jmigual): Still needs to be implemented
     bool eventFilter(QObject*, QEvent* event);
 };
 

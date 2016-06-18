@@ -7,7 +7,7 @@ const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
 
 LibraryPaneManager::LibraryPaneManager(QObject* parent)
         : QObject(parent),
-          m_pPaneWidget(nullptr){
+          m_pPaneWidget(nullptr) {
     qApp->installEventFilter(this);
 }
 
@@ -15,38 +15,26 @@ LibraryPaneManager::~LibraryPaneManager() {
 }
 
 void LibraryPaneManager::bindPaneWidget(WBaseLibrary* libraryWidget,
-                                        KeyboardEventFilter* pKeyboard,
-                                        FeaturePane pane) {
+                                        KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
 
     m_pPaneWidget = libraryWidget;
 
     connect(this, SIGNAL(switchToView(const QString&)),
-        m_pPaneWidget, SLOT(switchToView(const QString&)));
+            m_pPaneWidget, SLOT(switchToView(const QString&)));
 
-    switch (pane) {
-        case FeaturePane::SidebarExpanded:
-            //qDebug() << "LibraryPaneManager::bindLibraryWidget:SidebarExpanded";
-            for (LibraryFeature* f : m_features) {
-                f->bindSidebarWidget(m_pPaneWidget, pKeyboard);
-            }
-            break;
-        case FeaturePane::TrackTable:
-            //qDebug() << "LibraryPaneManager::bindLibraryWidget:TrackTable";
-            WLibrary* lib = qobject_cast<WLibrary*>(m_pPaneWidget);
-            if (lib == nullptr) {
-                return;
-            }
-            for (LibraryFeature* f : m_features) {
-                f->bindPaneWidget(lib, pKeyboard);
-            }
-            break;
+    WLibrary* lib = qobject_cast<WLibrary*>(m_pPaneWidget);
+    if (lib == nullptr) {
+        return;
+    }
+    for (LibraryFeature* f : m_features) {
+        f->bindPaneWidget(lib, pKeyboard);
     }
 }
 
-void LibraryPaneManager::bindSearchBar(WSearchLineEdit *pSearchLine) {
+void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchLine) {
     pSearchLine->installEventFilter(this);
-    
+
     connect(pSearchLine, SIGNAL(search(const QString&)),
             this, SIGNAL(search(const QString&)));
     connect(pSearchLine, SIGNAL(searchCleared()),
@@ -61,19 +49,19 @@ void LibraryPaneManager::addFeature(LibraryFeature* feature) {
     DEBUG_ASSERT_AND_HANDLE(feature) {
         return;
     }
-    
+
     m_features.append(feature);
 }
 
-void LibraryPaneManager::addFeatures(const QList<LibraryFeature *> &features) {
+void LibraryPaneManager::addFeatures(const QList<LibraryFeature*>& features) {
     m_features.append(features);
 }
 
-WBaseLibrary *LibraryPaneManager::getPaneWidget() {
+WBaseLibrary* LibraryPaneManager::getPaneWidget() {
     return m_pPaneWidget;
 }
 
-void LibraryPaneManager::setFocusedFeature(const QString &featureName) {
+void LibraryPaneManager::setFocusedFeature(const QString& featureName) {
     m_focusedFeature = featureName;
 }
 
@@ -108,14 +96,16 @@ void LibraryPaneManager::slotRestoreSearch(const QString& text) {
     emit(restoreSearch(text));
 }
 
-bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {    
-    if (m_pPaneWidget == nullptr) return false;
-    
-    if (event->type() == QEvent::MouseButtonPress && 
-            m_pPaneWidget->underMouse()) {
+bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
+    if (m_pPaneWidget == nullptr) {
+        return false;
+    }
+
+    if (event->type() == QEvent::MouseButtonPress &&
+        m_pPaneWidget->underMouse()) {
         emit(focused());
     }
-    
+
     // Since this event filter is for the entire application (to handle the
     // mouse event), NEVER return true. If true is returned I will block all
     // application events and will block the entire application.
