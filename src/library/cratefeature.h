@@ -37,6 +37,7 @@ class CrateFeature : public LibraryFeature {
     inline bool hasSearch() { return false; }
     void onSearch(QString&) {}
 
+    bool dragMoveAccept(QUrl url);
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                          QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);

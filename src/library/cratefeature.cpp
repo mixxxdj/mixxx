@@ -142,6 +142,12 @@ int CrateFeature::crateIdFromIndex(QModelIndex index) {
     return playlistId;
 }
 
+bool CrateFeature::dragMoveAccept(QUrl url) {
+    return SoundSourceProxy::isUrlSupported(url) ||
+                Parser::isPlaylistFilenameSupported(url.toLocalFile());
+}
+
+
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     int crateId = crateIdFromIndex(index);

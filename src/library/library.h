@@ -90,6 +90,7 @@ public:
 
   public slots:
     void slotActivateFeature(const QString& featureName);
+    void slotHoverFeature(const QString& featureName);
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotSwitchToViewChild(const QString& view);
@@ -160,6 +161,8 @@ public:
     int m_focusedPane;
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
+    
+    void handleFocus();
 };
 
 #endif /* LIBRARY_H */

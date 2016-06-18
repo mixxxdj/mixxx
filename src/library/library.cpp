@@ -12,6 +12,7 @@
 #include "library/library_preferences.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
+#include "library/librarypanemanager.h"
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
@@ -31,6 +32,7 @@
 #include "util/assert.h"
 
 #include "widget/wlibrarysidebar.h"
+#include "widget/wbuttonbar.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 
@@ -114,13 +116,12 @@ void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
 
 void Library::bindSidebarWidget(WButtonBar* sidebar) {    
     for (LibraryFeature* f : m_features) {
-        WFeatureClickButton* button = sidebar->addButton(f->getIcon(), f->title(),
-                                                       f->getViewName());
+        WFeatureClickButton* button = sidebar->addButton(f);
         
         connect(button, SIGNAL(clicked(const QString&)),
                 this, SLOT(slotActivateFeature(const QString&)));
-        
-        //connect(button, SIGNAL(clicked()), f, SLOT(activate()));
+        connect(button, SIGNAL(hoverShow(const QString&)),
+                this, SLOT(slotHoverFeature(const QString&)));
         connect(button, SIGNAL(rightClicked(const QPoint&)),
                 f, SLOT(onRightClick(const QPoint&)));
     }
@@ -238,12 +239,7 @@ void Library::slotSwitchToView(const QString& view) {
         m_panes[m_focusedPane]->slotSwitchToView(view);
     }
     
-    m_panes[m_focusedPane]->setFocus();
-    for (auto it = m_panes.begin(); it != m_panes.end(); ++it) {
-        if (it.key() != m_focusedPane) {
-            it.value()->clearFocus();
-        }
-    }
+    handleFocus();
     
     emit(switchToView(view));
 }
@@ -413,7 +409,6 @@ void Library::slotActivateFeature(const QString &featureName) {
     
     // The feature is not focused anywhere
     if (pFeature->getFeatureFocus() < 0) {
-        
         // Remove the previous focused feature in this pane
         for (LibraryFeature* f : m_features) {
             if (f->getFeatureFocus() == m_focusedPane) {
@@ -427,6 +422,14 @@ void Library::slotActivateFeature(const QString &featureName) {
     m_panes[m_focusedPane]->setFocusedFeature(featureName);
     pFeature->setFeatureFocus(m_focusedPane);    
     pFeature->activate();
+    handleFocus();
+}
+
+void Library::slotHoverFeature(const QString &featureName) {
+    // This function only changes the sidebar expanded to allow dropping items
+    // directly in some features sidebar panes
+    
+    m_pSidebarExpanded->slotSwitchToView(featureName);
 }
 
 void Library::slotSetTrackTableFont(const QFont& font) {
@@ -450,13 +453,7 @@ void Library::slotPaneFocused() {
         DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
             return;
         }
-        pane->setFocus();
-        // Clear the focus from the other panes
-        for (auto it = m_panes.begin(); it != m_panes.end(); ++it) {
-            if (it.key() != m_focusedPane) {
-                it.value()->clearFocus();
-            }
-        }
+        handleFocus();
     }
     
     //qDebug() << "Library::slotPaneFocused" << m_focusedPane;
@@ -537,5 +534,14 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
     if (TraktorFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
+    }
+}
+
+void Library::handleFocus() {
+    m_panes[m_focusedPane]->setFocus();
+    for (auto it = m_panes.begin(); it != m_panes.end(); ++it) {
+        if (it.key() != m_focusedPane) {
+            it.value()->clearFocus();
+        }
     }
 }
