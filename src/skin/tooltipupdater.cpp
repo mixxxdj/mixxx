@@ -141,9 +141,7 @@ void SliderTooltipWatcher::update() {
         setTooltipShortcut("_down", tr("left"));
         setTooltipShortcut("_up_small", tr("right small"));
         setTooltipShortcut("_down_small", tr("left small"));
-    }
-
-    if (m_direction == VERTICAL) {
+    } else if (m_direction == VERTICAL) {
         setTooltipShortcut("_up", tr("up"));
         setTooltipShortcut("_down", tr("down"));
         setTooltipShortcut("_up_small", tr("up small"));
@@ -152,11 +150,7 @@ void SliderTooltipWatcher::update() {
 }
 
 int SliderTooltipWatcher::getDirection(WSliderComposed *pSlider) {
-    if (pSlider->isHorizontal()) {
-        return HORIZONTAL;
-    } else {
-        return VERTICAL;
-    }
+    return pSlider->isHorizontal() ? HORIZONTAL : VERTICAL;
 }
 
 
@@ -174,17 +168,6 @@ PushButtonTooltipWatcher::PushButtonTooltipWatcher(KeyboardControllerPresetPoint
 void PushButtonTooltipWatcher::update() {
     WidgetTooltipWatcher::update();
 
-    // check for "_activate", "_toggle"
-    ConfigKey subkey;
-    QString shortcut;
-
-    subkey = m_ConfigKey;
-    subkey.item += "_activate";
-    shortcut = getKeyString(*m_ppKbdPreset, subkey);
-    setTooltipShortcut(shortcut, tr("activate"));
-
-    subkey = m_ConfigKey;
-    subkey.item += "_toggle";
-    shortcut = getKeyString(*m_ppKbdPreset, subkey);
-    setTooltipShortcut(shortcut, tr("toggle"));
+    setTooltipShortcut("_activate", tr("activate"));
+    setTooltipShortcut("_toggle", tr("toggle"));
 }
