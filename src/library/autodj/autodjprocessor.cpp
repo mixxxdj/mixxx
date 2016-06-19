@@ -428,7 +428,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // for the playing deck).
             m_eState = ADJ_IDLE;
 
-            if (leftDeckPlaying && !rightDeckPlaying) {
+            if (!rightDeckPlaying) {
+                // Only left deck playing!
                 // In ADJ_ENABLE_P1LOADED mode we wait until the left deck
                 // successfully starts playing. We don't know in toggleAutoDJ
                 // whether the track will load successfully so we have to
@@ -445,6 +446,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // Set crossfade thresholds for left deck.
                 calculateTransition(&leftDeck, &rightDeck);
             } else {
+
                 // Set crossfade thresholds for right deck.
                 calculateTransition(&rightDeck, &leftDeck);
             }
