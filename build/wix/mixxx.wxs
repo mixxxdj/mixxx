@@ -136,6 +136,14 @@
     <!-- Install VCRedist -->
     <CustomAction Id='InstallVCRedist' BinaryKey='VCRedist' ExeCommand='/quiet /install /norestart' Return='check' />
 
+    <!-- CA to launch the exe after install -->
+    <CustomAction Id          ="CA.StartAppOnExit"
+                  FileKey     ="mixxxExe"
+                  ExeCommand  =""
+                  Execute     ="immediate"
+                  Impersonate ="yes"
+                  Return      ="asyncNoWait" />
+
     <!-- License agreement -->
     <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
 
@@ -245,6 +253,9 @@
 
 
     <SetProperty Id="MyWarningText" After="SetMyWarningText3" Value="[MyWarningText1]&#13;&#10;&#13;&#10;[MyWarningText2]&#13;&#10;&#13;&#10;[MyWarningText3]" />
+
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT"
+              Value="!(loc.StartOnExit)" />
 
     <!-- Outermost folder (kind of virtual). Fixed entry. -->
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -425,8 +436,14 @@
     <WixVariable Id="WixUIDialogBmp" Value="images\dialog.bmp" />
 
 <UI Id="MyWixUI_FeatureTree">
-  <UIRef Id="WixUI_FeatureTree" />
-  <UIRef Id="WixUI_ErrorProgressText" />
+    <UIRef Id="WixUI_FeatureTree" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Publish Dialog  ="ExitDialog"
+             Control ="Finish"
+             Order   ="1"
+             Event   ="DoAction"
+             Value   ="CA.StartAppOnExit">WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT</Publish>
 
     <DialogRef Id="WarningDlg" />
 
