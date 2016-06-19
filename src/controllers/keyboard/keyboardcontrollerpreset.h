@@ -28,9 +28,21 @@ public:
         return true;
     }
 
+    QList<QKeySequence> getKeySequences(ConfigKey configKey) {
+        QList<QKeySequence> keySeqs;
+        QMultiHash<ConfigValueKbd, ConfigKey>::iterator it;
+        for (it = m_keySequenceToControlHash.begin(); it != m_keySequenceToControlHash.end(); ++it) {
+            const ConfigKey& currentConfigKey = it.value();
+            if (currentConfigKey == configKey) {
+                ConfigValueKbd configValueKbd = it.key();
+                keySeqs.append(configValueKbd.m_qKey);
+            }
+        }
+        return keySeqs;
+    }
+
     QMultiHash<ConfigValueKbd, ConfigKey> getMappingByGroup(QString targetGroup) {
         QMultiHash<ConfigValueKbd, ConfigKey> filteredKeySequenceHash;
-
         QMultiHash<ConfigValueKbd, ConfigKey>::iterator it;
         for (it = m_keySequenceToControlHash.begin(); it != m_keySequenceToControlHash.end(); ++it) {
             QString currentGroup = it.value().group;

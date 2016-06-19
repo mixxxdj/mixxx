@@ -9,13 +9,13 @@
 #define CONTROLLERMANAGER_H
 
 #include <QSharedPointer>
-#include <controllers/keyboard/keyboardcontroller.h>
 
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetinfoenumerator.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "controllers/keyboard/keyboardcontroller.h"
 #include "preferences/usersettings.h"
 
 //Forward declaration(s)

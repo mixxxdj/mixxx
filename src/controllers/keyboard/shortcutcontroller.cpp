@@ -33,11 +33,6 @@ void ShortcutController::slotUpdateShortcuts(ControllerPresetPointer pPreset) {
     QMultiHash<ConfigValueKbd, ConfigKey> keyboardShortcuts =
             keyboardPreset->getMappingByGroup("[KeyboardShortcuts]");
 
-    QMultiHash<ConfigValueKbd, ConfigKey>::iterator it;
-    for (it = keyboardShortcuts.begin(); it != keyboardShortcuts.end(); ++it) {
-        qDebug() << it.value();
-    }
-
     foreach (ShortcutChangeWatcher* watcher, m_shortcutChangeWatchers) {
         watcher->updateShortcut(&keyboardShortcuts);
     }

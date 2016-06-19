@@ -124,9 +124,9 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
         return NULL;
     }
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager,
-                            pControllerManager, pLibrary, pVCMan,
-                            pEffectsManager);
+    LegacySkinParser legacy(m_pConfig, pKeyboard, &m_TooltipUpdater,
+                            pPlayerManager, pControllerManager,
+                            pLibrary, pVCMan, pEffectsManager);
     return legacy.parseSkin(skinPath, pParent);
 }
 

@@ -994,6 +994,7 @@ class MixxxCore(Feature):
                    "skin/svgparser.cpp",
                    "skin/pixmapsource.cpp",
                    "skin/launchimage.cpp",
+                   "skin/tooltipupdater.cpp",
 
                    "track/beatfactory.cpp",
                    "track/beatgrid.cpp",

@@ -5,7 +5,9 @@
 #include <QList>
 #include <QDir>
 
+#include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "preferences/usersettings.h"
+#include "skin/tooltipupdater.h"
 
 class KeyboardEventFilter;
 class PlayerManager;
@@ -15,7 +17,8 @@ class VinylControlManager;
 class EffectsManager;
 class LaunchImage;
 
-class SkinLoader {
+class SkinLoader : public QObject {
+    Q_OBJECT
   public:
     SkinLoader(UserSettingsPointer pConfig);
     virtual ~SkinLoader();
@@ -32,13 +35,16 @@ class SkinLoader {
 
     QString getSkinPath();
     QList<QDir> getSkinSearchPaths();
+    inline const TooltipShortcutUpdater *getTooltipUpdater() {
+        return &m_TooltipUpdater;
+    };
 
   private:
     QString getConfiguredSkinPath();
     QString getDefaultSkinName() const;
     QString getDefaultSkinPath();
     QString pickResizableSkin(QString oldSkin);
-
+    TooltipShortcutUpdater m_TooltipUpdater;
     UserSettingsPointer m_pConfig;
 };
 

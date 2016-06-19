@@ -306,6 +306,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pControllerManager = new ControllerManager(pConfig, m_pKeyboard);
     connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(ControllerPresetPointer)),
             m_pShortcutController, SLOT(slotUpdateShortcuts(ControllerPresetPointer)));
+    connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(ControllerPresetPointer)),
+            m_pSkinLoader->getTooltipUpdater(), SLOT(updateShortcuts(ControllerPresetPointer)));
 
     launchProgress(47);
 
