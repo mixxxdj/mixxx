@@ -145,7 +145,8 @@ LegacySkinParser::LegacySkinParser()
           m_pVCManager(NULL),
           m_pEffectsManager(NULL),
           m_pParent(NULL),
-          m_pContext(NULL) {
+          m_pContext(NULL),
+		  m_paneId(0) {
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
@@ -163,7 +164,8 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
           m_pParent(NULL),
-          m_pContext(NULL) {
+          m_pContext(NULL),
+		  m_paneId(0) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -555,10 +557,14 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseSplitter(node));
     } else if (nodeName == "LibrarySidebarButtons") {
         result = wrapWidget(parseLibrarySidebarButtons(node));
+    } else if (nodeName == "LibrarySidebar") {
+        result = wrapWidget(parseLibrarySidebar(node));
     } else if (nodeName == "LibrarySidebarExpanded") {
         result = wrapWidget(parseLibrarySidebarExpanded(node));
     } else if (nodeName == "LibraryPane") {
         result = wrapWidget(parseLibraryPane(node));
+    } else if (nodeName == "Library") {
+    	result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
         result = wrapWidget(parseEngineKey(node));
     } else if (nodeName == "Battery") {
@@ -1260,12 +1266,65 @@ QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
     return pLibraryWidget;
 }
 
+QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
+	// Must add both a SearchBox and a LibraryPane
+	QFrame* pContainer = new QFrame(m_pParent);
+	QVBoxLayout* pLayout = new QVBoxLayout(pContainer);
+	pContainer->setLayout(pLayout);
+	
+	WSearchLineEdit* pSearchBox = new WSearchLineEdit(pContainer);
+	pSearchBox->setup(node, *m_pContext);
+	commonWidgetSetup(node, pSearchBox);
+	pLayout->addWidget(pSearchBox);
+	
+	WLibrary* pLibraryWidget = new WLibrary(pContainer);
+	pLibraryWidget->installEventFilter(m_pKeyboard);
+	pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+	pLayout->addWidget(pLibraryWidget);
+	
+	m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, m_paneId);
+	commonWidgetSetup(node, pLibraryWidget, false);
+	qDebug() << "LegacySkinParser::parseLibrary";
+	
+	++m_paneId;
+	return pContainer;
+}
+
+
+QWidget *LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
+    // We must create both LibrarySidebarButtons and LibrarySidebarExpanded
+	// to allow support for old skins
+	QFrame* pContainer = new QFrame(m_pParent);
+	QHBoxLayout* pLayout = new QHBoxLayout(pContainer);
+	pContainer->setLayout(pLayout);
+	
+	QScrollArea* scroll = new QScrollArea(pContainer);
+	scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	scroll->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	
+	WButtonBar* pLibrarySidebar = new WButtonBar(pContainer);
+	pLibrarySidebar->installEventFilter(m_pKeyboard);
+	m_pLibrary->bindSidebarWidget(pLibrarySidebar);
+	scroll->setWidget(pLibrarySidebar);
+	pLayout->addWidget(scroll);
+
+	WBaseLibrary* pLibrarySidebarExpanded = new WBaseLibrary(pContainer);
+	pLibrarySidebarExpanded->installEventFilter(m_pKeyboard);
+	pLibrarySidebarExpanded->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+	m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded, m_pKeyboard);
+	pLayout->addWidget(pLibrarySidebarExpanded);
+	
+	commonWidgetSetup(node, pLibrarySidebar, false);
+	commonWidgetSetup(node, pLibrarySidebarExpanded, false);
+	return pContainer;
+}
+
 QWidget* LegacySkinParser::parseLibrarySidebarButtons(const QDomElement& node) {
     QScrollArea* scroll = new QScrollArea(m_pParent);
     scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scroll->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     
-    WButtonBar* pLibrarySidebar = new WButtonBar(m_pParent);
+    WButtonBar* pLibrarySidebar = new WButtonBar(scroll);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
     m_pLibrary->bindSidebarWidget(pLibrarySidebar);
     scroll->setWidget(pLibrarySidebar);

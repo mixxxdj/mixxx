@@ -1159,6 +1159,8 @@
 #LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
   background-color: #0f0f0f;
   margin-right: 11px;
+
+  
 }
 
 #LibrarySidebarExpanded QWidget {
@@ -1169,7 +1171,7 @@
   border: 1px solid #585858;
 }
 
-#LibrarySidebar QAbstractButton, 
+#LibrarySidebarButtons QAbstractButton, 
 #LibrarySidebarExpanded QAbstractButton {
   margin: 0px 0px 0px 0px;
   padding: 0px 0px 0px 0px;
@@ -1178,7 +1180,7 @@
   background-color: #191919;
 }
 
-#LibrarySidebar QAbstractButton:hover, 
+#LibrarySidebarButtons QAbstractButton:hover, 
 #LibrarySidebarExpanded QAbstractButton:hover {
   margin: 0px 0px 0px 0px;
   padding: 0px 0px 0px 0px;
@@ -1188,7 +1190,7 @@
   color: #cfb32c;
 }
 
-#LibrarySidebar, QTableView, QTextBrowser, QTreeView {
+#LibrarySidebarButtons, QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
   /*font: 15px/18px;*/
   color: #cfb32c;
