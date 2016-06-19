@@ -138,7 +138,7 @@ class AutoDJProcessor : public QObject {
 
     AutoDJError shufflePlaylist(const QModelIndexList& selectedIndices);
     AutoDJError skipNext();
-    AutoDJError fadeNow();
+    void fadeNow();
     AutoDJError toggleAutoDJ(bool enable);
 
     // The following virtual signal wrappers are used for testing

@@ -178,41 +178,41 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
     return ADJ_OK;
 }
 
-AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
+void AutoDJProcessor::fadeNow() {
     // Auto-DJ needs at least two decks
     DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
-        return ADJ_NOT_TWO_DECKS;
+        return;
     }
-    if (m_eState == ADJ_IDLE) {
-        double crossfader = getCrossfader();
-        DeckAttributes& leftDeck = *m_decks[0];
-        DeckAttributes& rightDeck = *m_decks[1];
-        if (crossfader <= 0.3 && leftDeck.isPlaying()) {
-            // left deck is playing and the crossfader is on the left
-
-            // Make sure leftDeck.fadeDuration is up to date.
-            calculateTransition(&leftDeck, &rightDeck);
-
-            // override posThreshold to start fade now
-            leftDeck.posThreshold = leftDeck.playPosition() -
-                    ((crossfader + 1.0) / 2 * (leftDeck.fadeDuration));
-            // Repeat is disabled by FadeNow but disables auto Fade
-            leftDeck.setRepeat(false);
-        } else if (crossfader >= -0.3 && rightDeck.isPlaying()) {
-            // right deck is playing and the crossfader is on the right
-
-            // Make sure rightDeck.fadeDuration is up to date.
-            calculateTransition(&rightDeck, &leftDeck);
-
-            // override posThreshold to start fade now
-            rightDeck.posThreshold = rightDeck.playPosition() -
-                    ((1.0 - crossfader) / 2 * (rightDeck.fadeDuration));
-            // Repeat is disabled by FadeNow but disables auto Fade
-            rightDeck.setRepeat(false);
-        }
-        // else { // do not know what to do  }
+    if (m_eState != ADJ_IDLE) {
+        // we cannot fade if AutoDj is disabled or already fading
+        return;
     }
-    return ADJ_OK;
+
+    double crossfader = getCrossfader();
+    DeckAttributes& leftDeck = *m_decks[0];
+    DeckAttributes& rightDeck = *m_decks[1];
+    if (leftDeck.isPlaying() &&
+            (!rightDeck.isPlaying() || crossfader < 0.0)) {
+        // Make sure leftDeck.fadeDuration is up to date.
+        calculateTransition(&leftDeck, &rightDeck);
+
+        // override posThreshold to start fade now
+        leftDeck.posThreshold = leftDeck.playPosition() -
+                ((crossfader + 1.0) / 2 * (leftDeck.fadeDuration));
+        // Repeat is disabled by FadeNow but disables auto Fade
+        leftDeck.setRepeat(false);
+    } else if (rightDeck.isPlaying()) {
+        // Make sure rightDeck.fadeDuration is up to date.
+        calculateTransition(&rightDeck, &leftDeck);
+
+        // override posThreshold to start fade now
+        rightDeck.posThreshold = rightDeck.playPosition() -
+                ((1.0 - crossfader) / 2 * (rightDeck.fadeDuration));
+        // Repeat is disabled by FadeNow but disables auto Fade
+        rightDeck.setRepeat(false);
+    }
+    //else {
+    //    No deck playing, do not know what to do
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
@@ -446,7 +446,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // Set crossfade thresholds for left deck.
                 calculateTransition(&leftDeck, &rightDeck);
             } else {
-
+                // At least right Deck is playing
                 // Set crossfade thresholds for right deck.
                 calculateTransition(&rightDeck, &leftDeck);
             }
