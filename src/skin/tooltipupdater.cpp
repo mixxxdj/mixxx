@@ -75,7 +75,7 @@ void WidgetTooltipWatcher::setTooltipShortcut(const QString &keySuffix, const QS
         configKey.item += keySuffix;
     }
 
-    QString shortcut = getKeyString(*m_ppKbdPreset, configKey);
+    QString shortcut = (*m_ppKbdPreset)->getKeySequencesToString(configKey, ", ");
 
     if (shortcut.isEmpty()) {
         return;
@@ -157,7 +157,7 @@ int SliderTooltipWatcher::getDirection(WSliderComposed *pSlider) {
 
 
 //  --------------------------------------------
-//  TooltipShortcutUpdater::ButtonTooltip
+//     TooltipShortcutUpdater::ButtonTooltip
 //  --------------------------------------------
 
 PushButtonTooltipWatcher::PushButtonTooltipWatcher(KeyboardControllerPresetPointer *ppKbdPreset,

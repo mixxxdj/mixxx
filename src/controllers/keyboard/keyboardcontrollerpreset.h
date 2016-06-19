@@ -7,6 +7,9 @@
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/midi/midimessage.h"
 
+// TODO(Tomasito) Make implementation file and move getKeySequencesString,
+//                getKeySequences and getMappingByGroup to that file
+
 class KeyboardControllerPreset : public ControllerPreset {
 public:
     KeyboardControllerPreset() {}
@@ -28,6 +31,19 @@ public:
         return true;
     }
 
+    // Get all QKeySequences bound to a given ConfigKey, separated by a given separator
+    QString getKeySequencesToString(ConfigKey configKey, QString separator) {
+        QList<QKeySequence> keySeqs = getKeySequences(configKey);
+        QString keySeqsString = "";
+
+        foreach (QKeySequence keySeq, keySeqs) {
+            keySeqsString += keySeq.toString() + separator;
+        }
+
+        return keySeqsString;
+    }
+
+    // Get all QKeySequences bound to a given ConfigKey
     QList<QKeySequence> getKeySequences(ConfigKey configKey) {
         QList<QKeySequence> keySeqs;
         QMultiHash<ConfigValueKbd, ConfigKey>::iterator it;

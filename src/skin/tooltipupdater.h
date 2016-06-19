@@ -11,6 +11,7 @@ class KeyboardPresetChangeWatcher;
 class KeyboardControllerPreset;
 class WidgetTooltipWatcher;
 
+// TODO(Tomasito) Move this to controllerpreset.h? Or move to keyboardcontrollerpreset.h
 typedef QSharedPointer<KeyboardControllerPreset> KeyboardControllerPresetPointer;
 
 class TooltipShortcutUpdater : public QObject {
