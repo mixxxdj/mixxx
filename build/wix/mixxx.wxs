@@ -144,6 +144,14 @@
                   Impersonate ="yes"
                   Return      ="asyncNoWait" />
 
+    <!-- CA to launch the exe after install -->
+    <CustomAction Id          ="CA.StartAppOnExit"
+                  FileKey     ="mixxxExe"
+                  ExeCommand  =""
+                  Execute     ="immediate"
+                  Impersonate ="yes"
+                  Return      ="asyncNoWait" />
+
     <!-- License agreement -->
     <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
 
