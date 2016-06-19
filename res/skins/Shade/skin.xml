@@ -482,6 +482,16 @@
 						background-color: transparent;
 					}
 
+					WBaseLibrary QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
+						background-color: #191919;
+						border: none;
+					}
+
+					WBaseLibrary QTabWidget::pane {
+						background-color: #191919;
+						border: 1px solid #646464;
+					}
+
 					QScrollArea QPushButton {
 						border: 1px solid black;
 						background-color: #aab2b7;

@@ -104,6 +104,8 @@ void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
                                    KeyboardEventFilter* pKeyboard,
                                    int paneId) {
     //qDebug() << "AutoDJFeature::bindPaneWidget" << pLibraryWidget;
+	
+	
     WTrackTableView* pTrackTableView = new WTrackTableView(pLibraryWidget, 
             m_pConfig, m_pTrackCollection, false);
     
@@ -126,21 +128,23 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
                                       KeyboardEventFilter*) {
     qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
     
-    QSplitter* pContainer = new QSplitter(pSidebarWidget);
+    QTabWidget* pContainer = new QTabWidget(pSidebarWidget);
+    //QSplitter* pContainer = new QSplitter(pSidebarWidget);
     
     WLibrarySidebar* pSidebar = new WLibrarySidebar(pContainer);
     pSidebar->setModel(&m_childModel);
-    pContainer->addWidget(pSidebar);
-    pContainer->adjustSize();
+    pContainer->addTab(pSidebar, tr("Controls"));
+    
+    //pContainer->addWidget(pSidebar);
+    //pContainer->adjustSize();
     
     
-    QScrollArea* pArea = new QScrollArea(pContainer);
-    m_pAutoDJView = new DlgAutoDJ(pArea, m_pLibrary, m_pAutoDJProcessor);
-    pArea->setWidget(m_pAutoDJView);  
-    pArea->setWidgetResizable(true);
-    pArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    pArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    pContainer->addWidget(pArea);
+    m_pAutoDJView = new DlgAutoDJ(pContainer, m_pLibrary, m_pAutoDJProcessor);
+    //pArea->setWidgetResizable(true);
+    //pArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    //pArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    //pContainer->addWidget(pArea);
+    pContainer->addTab(m_pAutoDJView, tr("Drop target"));
     
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
@@ -168,7 +172,7 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 }
 
 void AutoDJFeature::activate() {
-    //qDebug() << "AutoDJFeature::activate()";
+    qDebug() << "AutoDJFeature::activate()";
     m_pAutoDJView->setFocusedPane(m_featureFocus);
     m_pAutoDJView->onShow();
     emit(switchToView(m_sAutoDJViewName));

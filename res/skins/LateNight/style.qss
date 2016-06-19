@@ -1171,6 +1171,46 @@
   border: 1px solid #585858;
 }
 
+#LibrarySidebarExpanded QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
+  margin: 0;
+  border: none;
+}
+
+#LibrarySidebarExpanded QTabWidget {
+  border: none
+}
+
+#LibrarySidebarExpanded QTabWidget::pane {
+  border: 1px solid #585858;
+}
+
+#LibrarySidebarExpanded QTabBar::tab {
+  padding: 5px;
+  border: none;
+  color: #cfb32c;
+  background-color: #191919;
+  border-radius: 2px;
+}
+
+#LibrarySidebarExpanded QTabBar::tab:hover {
+  border: 1px solid #585858;
+  background-color: #232323;
+  border-radius: 2px;
+  color: #cfb32c;
+}
+
+#LibrarySidebarExpanded QTabBar::tab:selected {
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+}
+
+#LibrarySidebarExpanded QScrollArea QAbstractButton {
+  padding: 3px !important;
+}
+
+#LibrarySidebarExpanded QWidget:!enabled {
+  color: #666666;
+}
+
 #LibrarySidebarButtons QAbstractButton, 
 #LibrarySidebarExpanded QAbstractButton {
   margin: 0px 0px 0px 0px;
@@ -1328,7 +1368,6 @@ WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 /* Additional space for the QPushButtons */
 #DlgMissing > QPushButton,
 #DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton { 
   margin: 2px 3px 2px 3px; 
@@ -1338,7 +1377,6 @@ WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 
 #DlgMissing > QPushButton:!enabled,
 #DlgHidden > QPushButton:!enabled,
-#DlgAutoDJ > QPushButton:!enabled,
 #DlgRecording > QPushButton:!enabled,
 #DlgAnalysis > QPushButton:!enabled {
   color: #666666;

@@ -45,7 +45,7 @@ void WBaseLibrary::setShowFocus(int sFocus) {
 
 void WBaseLibrary::switchToView(const QString& name) {
     QMutexLocker lock(&m_mutex);
-    qDebug() << "WBaseLibrary::switchToView" << name;
+    //qDebug() << "WBaseLibrary::switchToView" << name;
     QWidget* widget = m_viewMap.value(name, nullptr);
     if (widget != nullptr && currentWidget() != widget) {
         //qDebug() << "WBaseLibrary::setCurrentWidget" << name;
