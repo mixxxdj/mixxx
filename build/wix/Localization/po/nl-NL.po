@@ -1,12 +1,14 @@
 # 
 # Translators:
 # Raf Van De Meirssche <raf@rafke.be>, 2016
-# Sébastien BLAISOT <sebastien@blaisot.org>, 2016
+# Raf Van De Meirssche <raf@rafke.be>, 2016
+# Sebastien BLAISOT <sebastien@blaisot.org>, 2016
+# Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-01-14 12:16+0000\n"
-"Last-Translator: Raf Van De Meirssche <raf@rafke.be>\n"
+"PO-Revision-Date: 2016-06-19 21:40+0000\n"
+"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/nl_NL/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -95,6 +97,11 @@ msgstr "Een oudere versie van Mixxx is gedetecteerd. Door wijziging van de insta
 msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
 msgstr "{\\WixUI_Font_Title}Waarschuwing"
+
+#.  Custom exit dialog
+msgctxt "StartOnExit"
+msgid "Launch Mixxx when setup exits."
+msgstr ""
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"

@@ -72,6 +72,11 @@ msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
 msgstr ""
 
+#.  Custom exit dialog 
+msgctxt "StartOnExit"
+msgid "Launch Mixxx when setup exits."
+msgstr ""
+
 #.  Features translations 
 msgctxt "FeatureCompleteDescription"
 msgid "The complete package."

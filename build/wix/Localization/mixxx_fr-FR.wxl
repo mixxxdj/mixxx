@@ -20,7 +20,6 @@
   <String Id="ProductDescription">Logiciel libre de mixage numérique</String>
   <String Id="Comments">Installe Mixxx</String>
 
-  <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
   <String Id="OS2Old">Ce produit nécessite au moins Windows XP.</String>
   <String Id="NewerInstalled">Une version plus récente ou identique de ce produit est déjà installée.</String>
@@ -37,7 +36,7 @@
 
   <!-- Custom exit dialog -->
   <String Id="StartOnExit">Démarrer Mixxx en quittant l'installeur.</String>
-  
+
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">Installation complète.</String>
   <String Id="FeatureMainProgramTitle">Programme principal</String>
