@@ -1,12 +1,13 @@
-#
+# 
 # Translators:
-# Sébastien BLAISOT <sebastien@blaisot.org>, 2016
+# Sebastien BLAISOT <sebastien@blaisot.org>, 2016
+# Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # titus <titus0818@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-01-30 19:20+0000\n"
-"Last-Translator: titus <titus0818@gmail.com>\n"
+"PO-Revision-Date: 2016-06-19 21:40+0000\n"
+"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Romanian (Romania) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ro_RO/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -95,6 +96,11 @@ msgstr "O versiune veche Mixxx a fost detectată. Deoarece am schimbat instalato
 msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
 msgstr "{\\WixUI_Font_Title}Atenţie"
+
+#.  Custom exit dialog
+msgctxt "StartOnExit"
+msgid "Launch Mixxx when setup exits."
+msgstr ""
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"

@@ -35,6 +35,9 @@
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Hoiatus</String>
 
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">Launch Mixxx when setup exits.</String>
+
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">Kogu pakett.</String>
   <String Id="FeatureMainProgramTitle">Põhi rakendus</String>
