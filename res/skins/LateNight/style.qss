@@ -1203,7 +1203,7 @@
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
 }
 
-#LibrarySidebarExpanded QScrollArea QAbstractButton {
+#LibrarySidebarExpanded QScrollArea QPushButton {
   padding: 3px !important;
 }
 
@@ -1211,8 +1211,8 @@
   color: #666666;
 }
 
-#LibrarySidebarButtons QAbstractButton, 
-#LibrarySidebarExpanded QAbstractButton {
+#LibrarySidebarButtons QToolButton, 
+#LibrarySidebarExpanded QPushButton {
   margin: 0px 0px 0px 0px;
   padding: 0px 0px 0px 0px;
   border: none;
@@ -1220,8 +1220,8 @@
   background-color: #191919;
 }
 
-#LibrarySidebarButtons QAbstractButton:hover, 
-#LibrarySidebarExpanded QAbstractButton:hover {
+#LibrarySidebarButtons QToolButton:hover, 
+#LibrarySidebarExpanded QPushButton:hover {
   margin: 0px 0px 0px 0px;
   padding: 0px 0px 0px 0px;
   border: 1px solid #585858;
@@ -1362,8 +1362,8 @@ QLabel, QRadioButton { background: transparent; color: #cfb32c; }
 /* Additional space for QRadionButtons and QLabels */
 WBaseLibrary QRadioButton, WBaseLibrary QLabel { margin: 9px 3px 6px 3px; }
 
-/* Additional space for the first QRadionButton in the row */
-WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
+/* Additional space for the first QRadionButton in the row 
+WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; } */
 
 /* Additional space for the QPushButtons */
 #DlgMissing > QPushButton,
@@ -1381,12 +1381,6 @@ WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 #DlgAnalysis > QPushButton:!enabled {
   color: #666666;
 }
-
-/* Additional space for the first QPushButton in the row */
-#DlgMissing > QPushButton#btnPurge,
-#DlgHidden > QPushButton#btnUnhide,
-#DlgRecording > QPushButton#pushButtonRecording,
-#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
 
 /* Spacing between treeview and searchbar */
 QTreeView { margin: 10px 0px 0px 0px; }

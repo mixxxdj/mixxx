@@ -129,22 +129,13 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
     qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
     
     QTabWidget* pContainer = new QTabWidget(pSidebarWidget);
-    //QSplitter* pContainer = new QSplitter(pSidebarWidget);
     
     WLibrarySidebar* pSidebar = new WLibrarySidebar(pContainer);
     pSidebar->setModel(&m_childModel);
-    pContainer->addTab(pSidebar, tr("Controls"));
-    
-    //pContainer->addWidget(pSidebar);
-    //pContainer->adjustSize();
-    
+    pContainer->addTab(pSidebar, tr("Drop target"));
     
     m_pAutoDJView = new DlgAutoDJ(pContainer, m_pLibrary, m_pAutoDJProcessor);
-    //pArea->setWidgetResizable(true);
-    //pArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    //pArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    //pContainer->addWidget(pArea);
-    pContainer->addTab(m_pAutoDJView, tr("Drop target"));
+    pContainer->addTab(m_pAutoDJView, tr("controls"));
     
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
