@@ -167,6 +167,57 @@ WBaseLibrary[showFocus="1"] {
   margin-right: 13px;
 }
 
+#LibraryCoverArtSplitter QTabWidget {
+  border: none;
+}
+
+#LibraryCoverArtSplitter QTabWidget::pane {
+  border: 1px solid #1A1A1A;
+}
+
+#LibraryCoverArtSplitter QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
+  margin: 0;
+  border: none;
+}
+
+#DlgAutoDJ QLabel {
+  margin: 2px 4px 2px 4px;
+}
+
+#LibraryCoverArtSplitter QTabBar::tab {
+  padding: 4px;
+  border: none;
+  color: #cfb32c;
+  background-color: #191919;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+
+  color: #D2D2D2;
+  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                    stop: 0 #4B4B4B,
+                                    stop: 1 #4B4B4B);
+  border: 0px solid #4B4B4B;
+  outline: none;  
+}
+
+#LibraryCoverArtSplitter QTabBar::tab:hover {
+  border-top: 0px solid #5F5F5F;
+  border-right: 0px solid #5F5F5F;
+  border-left: 0px solid #5F5F5F;
+  color: #D2D2D2;
+  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #5F5F5F,
+                                      stop: 1 #5F5F5F);
+}
+
+#LibraryCoverArtSplitter QTabBar::tab:selected {
+  color: #FDFDFD;
+  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                    stop: 0 #006596,
+                                    stop: 1 #006596);
+  border: 0px solid #006596;
+}
+
 /* button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
   width: 23px;
@@ -360,10 +411,10 @@ WButtonBar QAbstractButton {
    Style them just as the other regular buttons */
 #DlgMissing > QPushButton,
 #DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
+#DlgAutoDJ  QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
-  margin: 3px 3px 3px 3px;
+  margin: 2px 3px 2px 3px;
   padding: 2px;
   color: #D2D2D2;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -376,7 +427,7 @@ WButtonBar QAbstractButton {
 
 #DlgMissing > QPushButton:!enabled,
 #DlgHidden > QPushButton:!enabled,
-#DlgAutoDJ > QPushButton:!enabled,
+#DlgAutoDJ  QPushButton:!enabled,
 #DlgAnalysis > QPushButton:!enabled {
   /* buttons in "disabled" (not click-able) state. They are nearly invisible
      by default QT palette, so style accordingly */
@@ -391,7 +442,7 @@ WButtonBar QAbstractButton {
 
 #DlgMissing > QPushButton:hover,
 #DlgHidden > QPushButton:hover,
-#DlgAutoDJ > QPushButton:hover,
+#DlgAutoDJ  QPushButton:hover,
 #DlgRecording > QPushButton:hover,
 #DlgAnalysis > QPushButton:hover {
   color: #D2D2D2;
@@ -401,7 +452,7 @@ WButtonBar QAbstractButton {
   border: 0px solid #5F5F5F;
 }
 
-#DlgAutoDJ > QPushButton:checked,
+#DlgAutoDJ  QPushButton:checked,
 #DlgRecording > QPushButton:checked,
 #DlgAnalysis > QPushButton:checked {
   /* checkbuttons in active state */

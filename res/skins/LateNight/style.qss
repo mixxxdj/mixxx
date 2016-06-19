@@ -1189,14 +1189,15 @@
   border: none;
   color: #cfb32c;
   background-color: #191919;
-  border-radius: 2px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
 }
 
 #LibrarySidebarExpanded QTabBar::tab:hover {
-  border: 1px solid #585858;
+  border-top: 2px solid #585858;
+  border-right: 2px solid #585858;
+  border-left: 2px solid #585858; 
   background-color: #232323;
-  border-radius: 2px;
-  color: #cfb32c;
 }
 
 #LibrarySidebarExpanded QTabBar::tab:selected {
