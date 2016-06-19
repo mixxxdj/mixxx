@@ -487,12 +487,12 @@
 						background-color: #aab2b7;
 					}
 
-					#LibrarySidebar, #LibrarySidebar WButtonBar {
+					#LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
 						background-color: #8d98a3;
 						margin-right: 13px;
 					}
 
-					#LibrarySidebar QScrollArea {
+					#LibrarySidebarButtons QScrollArea {
 						background-color: #8d98a3;
 					}
 
@@ -775,9 +775,9 @@
 												<WidgetGroup>
 													<Layout>horizontal</Layout>
 													<Children>
-														<LibrarySidebar>
-															<ObjectName>LibrarySidebar</ObjectName>
-														</LibrarySidebar>
+														<LibrarySidebarButtons>
+															<ObjectName>LibrarySidebarButtons</ObjectName>
+														</LibrarySidebarButtons>
 														<WidgetGroup>
 															<Layout>vertical</Layout>
 															<Children>

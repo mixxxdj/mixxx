@@ -1156,7 +1156,7 @@
 
 /* Library styling is hard */
 
-#LibrarySidebar, #LibrarySidebar WButtonBar {
+#LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
   background-color: #0f0f0f;
   margin-right: 11px;
 }

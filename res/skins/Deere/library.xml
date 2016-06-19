@@ -25,9 +25,9 @@
                 <SetVariable name="object_name">LibraryToggle</SetVariable>
                 <SetVariable name="control">[Library],show_library</SetVariable>
               </Template>
-              <LibrarySidebar>
-                <ObjectName>LibrarySidebar</ObjectName>
-              </LibrarySidebar>
+              <LibrarySidebarButtons>
+                <ObjectName>LibrarySidebarButtons</ObjectName>
+              </LibrarySidebarButtons>
             </Children>
           </WidgetGroup>
           <!-- QSplitter between LibrarySidebar and Library -->

@@ -162,7 +162,7 @@ WBaseLibrary[showFocus="1"] {
   image: url(:/images/library/ic_library_unchecked.png);
 }
 
-#LibrarySidebar, #LibrarySidebar WButtonBar {
+#LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
   background-color: #222222;
   margin-right: 13px;
 }

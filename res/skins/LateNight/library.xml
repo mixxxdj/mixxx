@@ -13,9 +13,9 @@
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
 				<Children>
-					<LibrarySidebar>
-						<ObjectName>LibrarySidebar</ObjectName>
-					</LibrarySidebar>
+					<LibrarySidebarButtons>
+						<ObjectName>LibrarySidebarButtons</ObjectName>
+					</LibrarySidebarButtons>
 					<Splitter>
                         <ObjectName>LibrarySplitter</ObjectName>
 						<Size>me,me</Size>

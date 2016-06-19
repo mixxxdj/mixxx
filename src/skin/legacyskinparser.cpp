@@ -553,8 +553,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseLabelWidget<WTime>(node));
     } else if (nodeName == "Splitter") {
         result = wrapWidget(parseSplitter(node));
-    } else if (nodeName == "LibrarySidebar") {
-        result = wrapWidget(parseLibrarySidebar(node));
+    } else if (nodeName == "LibrarySidebarButtons") {
+        result = wrapWidget(parseLibrarySidebarButtons(node));
     } else if (nodeName == "LibrarySidebarExpanded") {
         result = wrapWidget(parseLibrarySidebarExpanded(node));
     } else if (nodeName == "LibraryPane") {
@@ -1260,7 +1260,7 @@ QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
     return pLibraryWidget;
 }
 
-QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
+QWidget* LegacySkinParser::parseLibrarySidebarButtons(const QDomElement& node) {
     QScrollArea* scroll = new QScrollArea(m_pParent);
     scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scroll->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -1313,7 +1313,7 @@ QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
 
     QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
     m_pParent = pLibrarySidebarPage;
-    QWidget* pLibrarySidebar = parseLibrarySidebar(node);
+    QWidget* pLibrarySidebar = parseLibrarySidebarButtons(node);
     QWidget* pLineEditSearch = parseSearchBox(node);
     m_pParent = oldParent;
 
