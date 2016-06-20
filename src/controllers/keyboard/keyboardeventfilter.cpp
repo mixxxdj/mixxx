@@ -55,7 +55,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             // Check if a shortcut is defined
             bool result = false;
 
-            QMultiHash<ConfigValueKbd, ConfigKey> mapping = m_kbdPreset->m_keySequenceToControlHash;
+            QMultiHash<ConfigValueKbd, ConfigKey> mapping = m_kbdPreset->m_mapping;
             QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator iterator;
 
             // NOTE: Using const_iterator here is faster than QMultiHash::values()

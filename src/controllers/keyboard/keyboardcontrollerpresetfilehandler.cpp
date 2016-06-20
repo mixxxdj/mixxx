@@ -40,7 +40,7 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
             ConfigKey configKey = ConfigKey(groupName, action);
 
             // Load action into preset
-            preset->m_keySequenceToControlHash.insert(configValueKbd, configKey);
+            preset->m_mapping.insert(configValueKbd, configKey);
 
             control = control.nextSiblingElement("control");
         }
@@ -67,7 +67,7 @@ void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardCo
     QMultiHash<QString, QDomElement>::iterator groupNodesIterator;
 
     // Iterate over all key sequences bound to one or more actions
-    const QMultiHash<ConfigValueKbd, ConfigKey>& mapping = preset.m_keySequenceToControlHash;
+    const QMultiHash<ConfigValueKbd, ConfigKey>& mapping = preset.m_mapping;
     QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator iterator;
 
     for (iterator = mapping.begin(); iterator != mapping.end(); ++iterator) {

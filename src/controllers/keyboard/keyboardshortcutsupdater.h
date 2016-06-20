@@ -17,17 +17,22 @@ class ShortcutChangeWatcher;
 
 class KeyboardShortcutsUpdater : public QObject {
     Q_OBJECT
-public:
+  public:
     KeyboardShortcutsUpdater();
     virtual ~KeyboardShortcutsUpdater();
 
+    // Add a watcher to the watcher list. When added, the
+    // watcher will be dealt with in slotUpdateShortcuts()
     void addWatcher(ShortcutChangeWatcher* watcher);
 
-public slots:
+  public slots:
     void slotUpdateShortcuts(ControllerPresetPointer pPreset);
 
-private:
+  private:
     QList<ShortcutChangeWatcher*> m_shortcutChangeWatchers;
+
+    // Returns ShortcutChangeWatcher matching the given configKey, if found
+    // in m_shortcutChangeWatchers. If no watcher is found, returns nullptr
     ShortcutChangeWatcher* getWatcher(ConfigKey configKey);
 };
 
@@ -35,16 +40,21 @@ private:
 
 class ShortcutChangeWatcher : public QObject {
     Q_OBJECT
-public:
+  public:
     ShortcutChangeWatcher(QAction* action, ConfigKey configKey, QKeySequence defaultKeySeq);
     virtual ~ShortcutChangeWatcher();
 
+    // Update shortcut of bound QAction. The shortcut is set to whatever
+    // ConfigValueKbd is found in the given MultiHash that matches m_configKey
     void updateShortcut(QMultiHash<ConfigValueKbd, ConfigKey>* pHash);
+
+    // Set the shortcut of the bound QAction to the default QKeySequence
     void restoreDefault();
 
     const ConfigKey m_configKey;
 
-private:
+  private:
+    // The actual action to which the shortcut will be bound
     QAction* const m_pAction;
     const QKeySequence m_defaultKeySeq;
 };

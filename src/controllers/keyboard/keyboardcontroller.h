@@ -5,9 +5,11 @@
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "keyboardeventfilter.h"
 
+// KeyboardController is the controller for the keyboard, holding a reference to the KeyboardEventFilter, which is
+// sent a signal when a new preset --new keyboard mapping-- is loaded.
 class KeyboardController : public Controller {
     Q_OBJECT
-public:
+  public:
     KeyboardController(KeyboardEventFilter* pKbdEventFilter);
     virtual ~KeyboardController();
 
@@ -31,11 +33,11 @@ public:
     }
     inline virtual bool isMappable() const override { return m_preset.isMappable(); }
 
-public slots:
+  public slots:
     // Sets a control, only if the keyboard is enabled
     void onKeySeqPressed(ConfigKey configKey);
 
-private:
+  private:
     virtual void send(QByteArray data) override {
         // Keyboard is an input-only controller, so this
         // method doesn't need any implementation
@@ -45,10 +47,13 @@ private:
     inline virtual bool isPolling() const override { return false; }
     inline virtual ControllerPreset* preset() override { return &m_preset; }
 
+    // Keyboard controller preset, holding mapping info
     KeyboardControllerPreset m_preset;
+
+    // Pointer to KeyboardEventFilter, owned by MixxxMainWindow
     KeyboardEventFilter* m_pKbdEventFilter;
 
-private slots:
+  private slots:
     virtual int open() override;
     virtual int close() override;
 };

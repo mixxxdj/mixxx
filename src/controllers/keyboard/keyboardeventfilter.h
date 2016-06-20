@@ -19,13 +19,12 @@ class KeyboardEventFilter : public QObject {
     virtual ~KeyboardEventFilter();
     bool eventFilter(QObject* obj, QEvent* e);
 
-  signals:
-    void keySeqPressed(QKeySequence keySeq);
-    void controlKeySeqPressed(ConfigKey configKey);
-
   public slots:
     void slotSetKeyboardMapping(ControllerPresetPointer presetPointer);
 
+  signals:
+    void keySeqPressed(QKeySequence keySeq);
+    void controlKeySeqPressed(ConfigKey configKey);
 
   private:
     struct KeyDownInformation {

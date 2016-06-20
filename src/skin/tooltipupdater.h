@@ -13,15 +13,15 @@ class WidgetTooltipWatcher;
 
 class TooltipShortcutUpdater : public QObject {
     Q_OBJECT
-public:
+  public:
     TooltipShortcutUpdater();
     virtual ~TooltipShortcutUpdater();
     void addWatcher(QList<ConfigKey> configKeys, WBaseWidget* pWidget);
 
-public slots:
+  public slots:
     void updateShortcuts(ControllerPresetPointer pPreset);
 
-private:
+  private:
     QList<WidgetTooltipWatcher*> m_pWatchers;
     KeyboardControllerPresetPointer m_pKbdPreset;
     WSliderComposed* toSliderComposed(WBaseWidget* pWidget);
@@ -34,13 +34,15 @@ private:
 // has a tooltip, containing info about a keyboard shortcut.
 class WidgetTooltipWatcher : public QObject {
     Q_OBJECT
-public:
+  public:
     WidgetTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset, QList<ConfigKey> configKeys,
                          WBaseWidget* pWidget);
     void update();
 
-protected:
+  protected:
     const QList<ConfigKey> m_configKeys;
+
+    // A pointer to QSHaredPointer<KeyboardControllerPreset>, stored in TooltipShortcutUpdater
     KeyboardControllerPresetPointer* m_ppKbdPreset;
 
     // Updates m_pTooltipShortcuts
@@ -48,7 +50,7 @@ protected:
     void addShortcut(const ConfigKey &configKey, const QString &keySuffix, const QString &cmd);
     void pushShortcutsToWidget();
 
-private:
+  private:
     WBaseWidget* m_pWidget;
     QString m_pTooltipShortcuts;
 };
@@ -58,7 +60,7 @@ private:
 // For slider widgets, the shortcut info will display: "shortcut up:", "shortcut down:", etc.
 class SliderTooltipWatcher : public WidgetTooltipWatcher {
     Q_OBJECT
-public:
+  public:
     static int HORIZONTAL, VERTICAL;
     int m_direction;
 
@@ -67,7 +69,7 @@ public:
                          WSliderComposed* pSlider);
     virtual void updateShortcuts(const ConfigKey &configKey) override;
 
-private:
+  private:
     int getDirection(WSliderComposed* pSlider);
 };
 
@@ -76,7 +78,7 @@ private:
 // For pushbutton widgets, the shortcut info will display: "shortcut activate:" or "shortcut toggle"
 class PushButtonTooltipWatcher : public WidgetTooltipWatcher {
     Q_OBJECT
-public:
+  public:
     PushButtonTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,
                              QList<ConfigKey> &configKeys,
                              WPushButton* pPushButton);

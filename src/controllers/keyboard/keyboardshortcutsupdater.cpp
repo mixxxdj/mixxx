@@ -48,14 +48,6 @@ ShortcutChangeWatcher::ShortcutChangeWatcher(QAction* action, ConfigKey configKe
 
 ShortcutChangeWatcher::~ShortcutChangeWatcher() { }
 
-/* ------------------------------------------------------------------
-Purpose: Update shortcut of the bound QAction. The shortcut is set to
-         whatever ConfigValueKbd is found in the given MultiHash that
-         matches m_configKey.
-Input:   QMultiHash<ConfigValueKbd, ConfigKey>, containing mapping
-         info.
-Output:  -
-------------------------------------------------------------------- */
 void ShortcutChangeWatcher::updateShortcut(QMultiHash<ConfigValueKbd, ConfigKey>* pShortcuts) {
     // Check if shortcut is found in the given QMultiHash
     bool shortcutFound = false;
@@ -83,12 +75,6 @@ void ShortcutChangeWatcher::updateShortcut(QMultiHash<ConfigValueKbd, ConfigKey>
     }
 }
 
-/* ------------------------------------------------------------------
-Purpose: Set the shortcut of the bound QAction to the default
-         QKeySequence.
-Input:   -
-Output:  -
-------------------------------------------------------------------- */
 void ShortcutChangeWatcher::restoreDefault() {
     m_pAction->setShortcut(m_defaultKeySeq);
 }

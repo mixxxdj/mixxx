@@ -8,7 +8,7 @@
 #include "controllers/midi/midimessage.h"
 
 class KeyboardControllerPreset : public ControllerPreset {
-public:
+  public:
     KeyboardControllerPreset() {}
     virtual ~KeyboardControllerPreset() {}
 
@@ -36,7 +36,7 @@ public:
     QMultiHash<ConfigValueKbd, ConfigKey> getMappingByGroup(QString targetGroup);
 
     // Multi-hash of config keys, bound to a specific key sequence
-    QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
+    QMultiHash<ConfigValueKbd, ConfigKey> m_mapping;
 };
 
 typedef QSharedPointer<KeyboardControllerPreset> KeyboardControllerPresetPointer;

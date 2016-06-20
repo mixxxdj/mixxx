@@ -14,7 +14,7 @@ QString KeyboardControllerPreset::getKeySequencesToString(ConfigKey configKey, Q
 QList<QKeySequence> KeyboardControllerPreset::getKeySequences(ConfigKey configKey) {
     QList<QKeySequence> keySeqs;
     QMultiHash<ConfigValueKbd, ConfigKey>::iterator it;
-    for (it = m_keySequenceToControlHash.begin(); it != m_keySequenceToControlHash.end(); ++it) {
+    for (it = m_mapping.begin(); it != m_mapping.end(); ++it) {
         const ConfigKey& currentConfigKey = it.value();
         if (currentConfigKey == configKey) {
             ConfigValueKbd configValueKbd = it.key();
@@ -27,7 +27,7 @@ QList<QKeySequence> KeyboardControllerPreset::getKeySequences(ConfigKey configKe
 QMultiHash<ConfigValueKbd, ConfigKey> KeyboardControllerPreset::getMappingByGroup(QString targetGroup) {
     QMultiHash<ConfigValueKbd, ConfigKey> filteredKeySequenceHash;
     QMultiHash<ConfigValueKbd, ConfigKey>::iterator it;
-    for (it = m_keySequenceToControlHash.begin(); it != m_keySequenceToControlHash.end(); ++it) {
+    for (it = m_mapping.begin(); it != m_mapping.end(); ++it) {
         QString currentGroup = it.value().group;
         if (currentGroup == targetGroup) {
             filteredKeySequenceHash.insert(it.key(), it.value());

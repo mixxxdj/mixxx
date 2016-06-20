@@ -9,7 +9,7 @@
 KeyboardController::KeyboardController(KeyboardEventFilter* pKbdEventFilter) :
         Controller(),
         m_pKbdEventFilter(pKbdEventFilter) {
-    setDeviceCategory(tr("Keyboard Controller")); // TODO Add translations
+    setDeviceCategory(tr("Keyboard Controller")); // TODO(XXX) Add translations
 
     // TODO(Tomasito) If we add multiple keyboard support, this should be a more specific name
     setDeviceName(tr("Keyboard")); // TODO Add translations
