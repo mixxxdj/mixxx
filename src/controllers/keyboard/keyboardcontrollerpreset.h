@@ -12,21 +12,19 @@ public:
     KeyboardControllerPreset() {}
     virtual ~KeyboardControllerPreset() {}
 
-    virtual void accept(ControllerPresetVisitor* visitor) {
+    virtual void accept(ControllerPresetVisitor* visitor) override {
         if (visitor) {
             visitor->visit(this);
         }
     }
 
-    virtual void accept(ConstControllerPresetVisitor* visitor) const {
+    virtual void accept(ConstControllerPresetVisitor* visitor) const override {
         if (visitor) {
             visitor->visit(this);
         }
     }
 
-    virtual bool isMappable() const {
-        return true;
-    }
+    virtual bool isMappable() const override { return true; }
 
     // Get all QKeySequences bound to a given ConfigKey, separated by a given separator
     QString getKeySequencesToString(ConfigKey configKey, QString separator);

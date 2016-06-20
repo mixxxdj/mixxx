@@ -4,7 +4,9 @@
 
 TooltipShortcutUpdater::TooltipShortcutUpdater() { }
 
-TooltipShortcutUpdater::~TooltipShortcutUpdater() { }
+TooltipShortcutUpdater::~TooltipShortcutUpdater() {
+    // TODO(Tomasito) Delete WidgetTooltipWatchers
+}
 
 void TooltipShortcutUpdater::addWatcher(QList<ConfigKey> configKeys, WBaseWidget *pWidget) {
     WSliderComposed *sliderComposed = toSliderComposed(pWidget);

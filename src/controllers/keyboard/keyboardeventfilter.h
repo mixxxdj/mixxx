@@ -17,7 +17,6 @@ class KeyboardEventFilter : public QObject {
   public:
     KeyboardEventFilter(QObject *parent = nullptr, const char* name = nullptr);
     virtual ~KeyboardEventFilter();
-
     bool eventFilter(QObject* obj, QEvent* e);
 
   signals:

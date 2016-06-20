@@ -13,7 +13,7 @@ public:
               const QString deviceName, const QString fileName) const;
 
 private:
-    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName);
+    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName) override;
 
     void addControlsToDocument(const KeyboardControllerPreset& preset,
                                QDomDocument* doc) const;

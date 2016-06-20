@@ -7,12 +7,10 @@ class KeyboardEventFilter;
 
 class KeyboardEnumerator : public ControllerEnumerator {
     Q_OBJECT
-
 public:
     KeyboardEnumerator(KeyboardEventFilter* pKeyboard);
     virtual ~KeyboardEnumerator();
-
-    virtual QList<Controller*> queryDevices();
+    virtual QList<Controller*> queryDevices() override;
 
 private:
     QList<Controller*> m_devices;

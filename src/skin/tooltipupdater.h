@@ -16,7 +16,6 @@ class TooltipShortcutUpdater : public QObject {
 public:
     TooltipShortcutUpdater();
     virtual ~TooltipShortcutUpdater();
-
     void addWatcher(QList<ConfigKey> configKeys, WBaseWidget *pWidget);
 
 public slots:
@@ -66,7 +65,6 @@ public:
     SliderTooltipWatcher(KeyboardControllerPresetPointer *ppKbdPreset,
                          QList<ConfigKey> &configKey,
                          WSliderComposed *pSlider);
-
     virtual void updateShortcuts(const ConfigKey &configKey) override;
 
 private:

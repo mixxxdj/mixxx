@@ -34,7 +34,7 @@ private:
 
 
 class ShortcutChangeWatcher : public QObject {
-Q_OBJECT
+    Q_OBJECT
 public:
     ShortcutChangeWatcher(QAction* action, ConfigKey configKey, QKeySequence defaultKeySeq);
     virtual ~ShortcutChangeWatcher();
