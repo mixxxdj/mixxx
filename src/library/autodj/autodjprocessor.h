@@ -131,12 +131,14 @@ class AutoDJProcessor : public QObject {
         return m_pAutoDJTableModel;
     }
 
+    bool nextTrackLoaded();
+
   public slots:
     void setTransitionTime(int seconds);
 
     AutoDJError shufflePlaylist(const QModelIndexList& selectedIndices);
     AutoDJError skipNext();
-    AutoDJError fadeNow();
+    void fadeNow();
     AutoDJError toggleAutoDJ(bool enable);
 
     // The following virtual signal wrappers are used for testing

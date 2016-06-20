@@ -1298,10 +1298,6 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     }
 
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-    int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    if (iAutoDJPlaylistId == -1) {
-        return;
-    }
 
     QModelIndexList indices = selectionModel()->selectedRows();
     QList<TrackId> trackIds;
@@ -1322,17 +1318,10 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
         }
     }
 
-    if (bTop) {
-        // Load track to position two because position one is
-        // already loaded to the player
-        playlistDao.insertTracksIntoPlaylist(trackIds,
-                                             iAutoDJPlaylistId, 2);
-    } else {
-        // TODO(XXX): Care whether the append succeeded.
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
-        playlistDao.appendTracksToPlaylist(
-                trackIds, iAutoDJPlaylistId);
-    }
+    m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
+
+    // TODO(XXX): Care whether the append succeeded.
+    playlistDao.sendToAutoDJ(trackIds, bTop);
 }
 
 void WTrackTableView::slotReloadTrackMetadata() {
