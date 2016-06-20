@@ -16,7 +16,7 @@ class TooltipShortcutUpdater : public QObject {
 public:
     TooltipShortcutUpdater();
     virtual ~TooltipShortcutUpdater();
-    void addWatcher(QList<ConfigKey> configKeys, WBaseWidget *pWidget);
+    void addWatcher(QList<ConfigKey> configKeys, WBaseWidget* pWidget);
 
 public slots:
     void updateShortcuts(ControllerPresetPointer pPreset);
@@ -24,8 +24,8 @@ public slots:
 private:
     QList<WidgetTooltipWatcher*> m_pWatchers;
     KeyboardControllerPresetPointer m_pKbdPreset;
-    WSliderComposed * toSliderComposed(WBaseWidget *pWidget);
-    WPushButton * toPushButton(WBaseWidget *pWidget);
+    WSliderComposed* toSliderComposed(WBaseWidget* pWidget);
+    WPushButton* toPushButton(WBaseWidget* pWidget);
 };
 
 
@@ -35,8 +35,8 @@ private:
 class WidgetTooltipWatcher : public QObject {
     Q_OBJECT
 public:
-    WidgetTooltipWatcher(KeyboardControllerPresetPointer *ppKbdPreset, QList<ConfigKey> configKeys,
-                         WBaseWidget *pWidget);
+    WidgetTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset, QList<ConfigKey> configKeys,
+                         WBaseWidget* pWidget);
     void update();
 
 protected:
@@ -62,9 +62,9 @@ public:
     static int HORIZONTAL, VERTICAL;
     int m_direction;
 
-    SliderTooltipWatcher(KeyboardControllerPresetPointer *ppKbdPreset,
+    SliderTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,
                          QList<ConfigKey> &configKey,
-                         WSliderComposed *pSlider);
+                         WSliderComposed* pSlider);
     virtual void updateShortcuts(const ConfigKey &configKey) override;
 
 private:
@@ -77,9 +77,9 @@ private:
 class PushButtonTooltipWatcher : public WidgetTooltipWatcher {
     Q_OBJECT
 public:
-    PushButtonTooltipWatcher(KeyboardControllerPresetPointer *ppKbdPreset,
+    PushButtonTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,
                              QList<ConfigKey> &configKeys,
-                             WPushButton *pPushButton);
+                             WPushButton* pPushButton);
     virtual void updateShortcuts(const ConfigKey &configKeys) override;
 };
 

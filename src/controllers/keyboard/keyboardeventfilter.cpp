@@ -21,7 +21,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // because we might not get Key Release events.
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
-        QKeyEvent* ke = (QKeyEvent *)e;
+        QKeyEvent* ke = (QKeyEvent*)e;
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode

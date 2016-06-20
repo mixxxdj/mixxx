@@ -39,13 +39,13 @@ public:
     ShortcutChangeWatcher(QAction* action, ConfigKey configKey, QKeySequence defaultKeySeq);
     virtual ~ShortcutChangeWatcher();
 
-    void updateShortcut(QMultiHash<ConfigValueKbd, ConfigKey> *pHash);
+    void updateShortcut(QMultiHash<ConfigValueKbd, ConfigKey>* pHash);
     void restoreDefault();
 
     const ConfigKey m_configKey;
 
 private:
-    QAction * const m_pAction;
+    QAction* const m_pAction;
     const QKeySequence m_defaultKeySeq;
 };
 
