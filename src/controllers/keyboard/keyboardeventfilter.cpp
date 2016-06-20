@@ -35,7 +35,6 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
         // Run through list of active keys to see if the pressed key is already active
         // Just for returning true if we are consuming this key event
-
         foreach (const KeyDownInformation& keyDownInfo, m_qActiveKeyList) {
             if (keyDownInfo.keyId == keyId) {
                 return true;
@@ -61,29 +60,22 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
             // NOTE: Using const_iterator here is faster than QMultiHash::values()
             for (iterator = mapping.find(ksv); iterator != mapping.end(); ++iterator) {
-                // TODO(Tomasito) Overload != operator for ConfigValueKbd and use it here
-                if (!(iterator.key() == ksv)) continue;
+                if (iterator.key() != ksv) continue;
 
                 const ConfigKey& configKey = iterator.value();
                 if (configKey.group == "[KeyboardShortcuts]") continue;
 
                 ControlObject* control = ControlObject::getControl(configKey);
-
                 if (control) {
-                    //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
                     // Add key to active key list
                     m_qActiveKeyList.append(KeyDownInformation(
                         keyId, ke->modifiers(), control));
-
-                    // TODO(Tomasito) I assume that sending the pointer wouldn't be safe. Check if this assumption is
-                    // ...            is true. If it's not, send only the pointer.
                     emit controlKeySeqPressed(configKey);
                     result = true;
                 } else {
                     qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
                              << configKey.group << configKey.item;
                 }
-
             }
             return result;
         }

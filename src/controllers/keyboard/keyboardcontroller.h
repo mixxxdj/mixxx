@@ -32,11 +32,9 @@ public:
         }
     }
 
-    virtual bool isMappable() const {
-        return m_preset.isMappable();
-    }
-
     virtual bool matchPreset(const PresetInfo& preset);
+
+    inline virtual bool isMappable() const { return m_preset.isMappable(); }
 
 public slots:
     // Sets a control, only if the keyboard is enabled
@@ -53,11 +51,9 @@ private:
         Q_UNUSED(data);
     }
 
-    virtual inline bool isPolling() const {
-        return false;
-    }
+    virtual inline bool isPolling() const { return false; }
 
-    virtual ControllerPreset* preset();
+    inline virtual ControllerPreset* preset() { return &m_preset; }
 
     KeyboardControllerPreset m_preset;
 

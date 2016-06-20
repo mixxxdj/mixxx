@@ -1,7 +1,6 @@
 #include "widget/wslidercomposed.h"
 #include "widget/wpushbutton.h"
 #include "tooltipupdater.h"
-#include "controllers/keyboard/keyboardcontrollerpreset.h"
 
 TooltipShortcutUpdater::TooltipShortcutUpdater() { }
 

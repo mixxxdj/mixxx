@@ -138,9 +138,18 @@ bool operator==(const ConfigValue& s1, const ConfigValue& s2) {
     return (s1.value.toUpper() == s2.value.toUpper());
 }
 
+bool operator!=(const ConfigValue& s1, const ConfigValue& s2) {
+    return (s1.value.toUpper() != s2.value.toUpper());
+}
+
 bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2) {
     //qDebug() << s1.m_qKey << "==" << s2.m_qKey;
     return (s1.m_qKey == s2.m_qKey);
+}
+
+bool operator!=(const ConfigValueKbd& s1, const ConfigValueKbd& s2) {
+    //qDebug() << s1.m_qKey << "==" << s2.m_qKey;
+    return (s1.m_qKey != s2.m_qKey);
 }
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QString& file)

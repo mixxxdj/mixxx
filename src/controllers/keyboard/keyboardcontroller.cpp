@@ -69,11 +69,6 @@ int KeyboardController::close() {
     return 0;
 }
 
-// TODO(Tomasito) Could this method be inlined?
-ControllerPreset *KeyboardController::preset() {
-    return &m_preset;
-}
-
 void KeyboardController::onKeySeqPressed(ConfigKey configKey) {
     if (!isOpen()) return;
 

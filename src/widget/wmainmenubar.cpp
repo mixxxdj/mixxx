@@ -396,9 +396,6 @@ void WMainMenuBar::initialize() {
     QString keyboardShortcutTitle = tr("Enable &Keyboard Shortcuts");
     QString keyboardShortcutText = tr("Toggles keyboard shortcuts on or off");
 
-    // TODO(Tomasito) We shouldn't depend on this config key, but rather on the
-    //                keyboard controller enabled config key (
-
     bool keyboardShortcutsEnabled = m_pConfig->getValueString(
         ConfigKey("[Controller]", "Keyboard")) == "1";
     auto pOptionsKeyboard = new QAction(keyboardShortcutTitle, this);

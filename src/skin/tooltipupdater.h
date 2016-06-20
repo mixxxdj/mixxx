@@ -1,7 +1,7 @@
 #ifndef TOOLTIPUPDATER_H
 #define TOOLTIPUPDATER_H
 
-#include "controllers/controllerpreset.h"
+#include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "preferences/configobject.h"
 
 class WBaseWidget;
@@ -10,9 +10,6 @@ class WPushButton;
 class KeyboardPresetChangeWatcher;
 class KeyboardControllerPreset;
 class WidgetTooltipWatcher;
-
-// TODO(Tomasito) Move this to controllerpreset.h? Or move to keyboardcontrollerpreset.h
-typedef QSharedPointer<KeyboardControllerPreset> KeyboardControllerPresetPointer;
 
 class TooltipShortcutUpdater : public QObject {
     Q_OBJECT
