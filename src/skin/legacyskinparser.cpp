@@ -1859,6 +1859,8 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
 
     ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
 
+    QList<ConfigKey> shortcutConfigKeys;
+
     for (QDomNode con = m_pContext->selectNode(node, "Connection");
             !con.isNull();
             con = con.nextSibling()) {
@@ -1993,14 +1995,15 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                 // Add keyboard shortcut info to tooltip string
                 QString key = m_pContext->selectString(con, "ConfigKey");
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
-
-                // Adding current widget to the tooltipupdater. When a new keyboard
-                // preset is loaded, the tooltipupdater will update the tooltip in
-                // order to show the correct keyboard shortcut for the given ConfigKey
-                m_pTooltipUpdater->addWatcher(configKey, pWidget);
+                shortcutConfigKeys.append(configKey);
             }
         }
     }
+
+    // Adding current widget to the tooltipupdater. When a new keyboard
+    // preset is loaded, the tooltipupdater will update the tooltip in
+    // order to show the correct keyboard shortcut for the given ConfigKey
+    m_pTooltipUpdater->addWatcher(shortcutConfigKeys, pWidget);
 
     // Legacy behavior: The last left-button or no-button connection with
     // connectValueToWidget is the display connection. If no left-button or
