@@ -1,5 +1,5 @@
-#include <widget/wslidercomposed.h>
-#include <widget/wpushbutton.h>
+#include "widget/wslidercomposed.h"
+#include "widget/wpushbutton.h"
 #include "tooltipupdater.h"
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
 
@@ -67,8 +67,13 @@ WidgetTooltipWatcher::WidgetTooltipWatcher(KeyboardControllerPresetPointer *ppKb
         m_ppKbdPreset(ppKbdPreset),
         m_pWidget(pWidget) { }
 
+void WidgetTooltipWatcher::update() {
+    m_pTooltipShortcuts = "";
+    updateShortcuts();
+    pushShortcutsToWidget();
+}
 
-void WidgetTooltipWatcher::setTooltipShortcut(const QString &keySuffix, const QString &cmd) {
+void WidgetTooltipWatcher::addShortcut(const QString &keySuffix, const QString &cmd) {
     ConfigKey configKey = m_ConfigKey;
 
     if (!keySuffix.isEmpty()) {
@@ -99,23 +104,19 @@ void WidgetTooltipWatcher::setTooltipShortcut(const QString &keySuffix, const QS
     }
     tooltip += ": ";
     tooltip += nativeShortcut;
-    m_pWidget->appendBaseTooltip(tooltip);
+
+    m_pTooltipShortcuts += tooltip;
 }
 
-
-
-QString WidgetTooltipWatcher::getKeyString(KeyboardControllerPresetPointer kbdPreset, ConfigKey configKey) {
-    QList<QKeySequence> keySequences = kbdPreset->getKeySequences(configKey);
-
-    if (keySequences.isEmpty()) {
-        return QString("");
-    }
-    return keySequences[0].toString();
-}
-
-void WidgetTooltipWatcher::update() {
+void WidgetTooltipWatcher::updateShortcuts() {
     // do not add Shortcut string for feedback connections
-    setTooltipShortcut("", "");
+    addShortcut("", "");
+}
+
+void WidgetTooltipWatcher::pushShortcutsToWidget() {
+    QString baseTooltip = m_pWidget->baseTooltip();
+    QWidget* qWidget = m_pWidget->toQWidget();
+    qWidget->setToolTip(baseTooltip + m_pTooltipShortcuts);
 }
 
 
@@ -133,26 +134,25 @@ SliderTooltipWatcher::SliderTooltipWatcher(KeyboardControllerPresetPointer *ppKb
         WidgetTooltipWatcher(ppKbdPreset, configKey, pSlider),
         m_direction(getDirection(pSlider)) { }
 
-void SliderTooltipWatcher::update() {
-    WidgetTooltipWatcher::update();
+void SliderTooltipWatcher::updateShortcuts() {
+    WidgetTooltipWatcher::updateShortcuts();
 
     if (m_direction == HORIZONTAL) {
-        setTooltipShortcut("_up", tr("right"));
-        setTooltipShortcut("_down", tr("left"));
-        setTooltipShortcut("_up_small", tr("right small"));
-        setTooltipShortcut("_down_small", tr("left small"));
+        addShortcut("_up", tr("right"));
+        addShortcut("_down", tr("left"));
+        addShortcut("_up_small", tr("right small"));
+        addShortcut("_down_small", tr("left small"));
     } else if (m_direction == VERTICAL) {
-        setTooltipShortcut("_up", tr("up"));
-        setTooltipShortcut("_down", tr("down"));
-        setTooltipShortcut("_up_small", tr("up small"));
-        setTooltipShortcut("_down_small", tr("down small"));
+        addShortcut("_up", tr("up"));
+        addShortcut("_down", tr("down"));
+        addShortcut("_up_small", tr("up small"));
+        addShortcut("_down_small", tr("down small"));
     }
 }
 
 int SliderTooltipWatcher::getDirection(WSliderComposed *pSlider) {
     return pSlider->isHorizontal() ? HORIZONTAL : VERTICAL;
 }
-
 
 
 
@@ -165,9 +165,9 @@ PushButtonTooltipWatcher::PushButtonTooltipWatcher(KeyboardControllerPresetPoint
                                                              WPushButton *pPushButton) :
         WidgetTooltipWatcher(ppKbdPreset, configKey, pPushButton) { }
 
-void PushButtonTooltipWatcher::update() {
-    WidgetTooltipWatcher::update();
+void PushButtonTooltipWatcher::updateShortcuts() {
+    WidgetTooltipWatcher::updateShortcuts();
 
-    setTooltipShortcut("_activate", tr("activate"));
-    setTooltipShortcut("_toggle", tr("toggle"));
+    addShortcut("_activate", tr("activate"));
+    addShortcut("_toggle", tr("toggle"));
 }

@@ -40,16 +40,20 @@ class WidgetTooltipWatcher : public QObject {
     Q_OBJECT
 public:
     WidgetTooltipWatcher(KeyboardControllerPresetPointer *ppKbdPreset, ConfigKey configKey, WBaseWidget *pWidget);
-    virtual void update();
+    void update();
 
 protected:
-    ConfigKey m_ConfigKey;
+    const ConfigKey m_ConfigKey;
     KeyboardControllerPresetPointer* m_ppKbdPreset;
-    void setTooltipShortcut(const QString &keySuffix, const QString &cmd);
-    QString getKeyString(QSharedPointer<KeyboardControllerPreset>, ConfigKey configKey);
+
+    // Updates m_pTooltipShortcuts
+    virtual void updateShortcuts();
+    void addShortcut(const QString &keySuffix, const QString &cmd);
+    void pushShortcutsToWidget();
 
 private:
     WBaseWidget* m_pWidget;
+    QString m_pTooltipShortcuts;
 };
 
 
@@ -64,7 +68,8 @@ public:
     SliderTooltipWatcher(KeyboardControllerPresetPointer *ppKbdPreset,
                   const ConfigKey &configKey,
                   WSliderComposed *pSlider);
-    virtual void update() override;
+
+    virtual void updateShortcuts() override;
 
 private:
     int getDirection(WSliderComposed* pSlider);
@@ -79,7 +84,7 @@ public:
     PushButtonTooltipWatcher(KeyboardControllerPresetPointer *ppKbdPreset,
                       const ConfigKey &configKey,
                       WPushButton *pPushButton);
-    virtual void update() override;
+    virtual void updateShortcuts() override;
 };
 
 
