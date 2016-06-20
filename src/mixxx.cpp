@@ -36,7 +36,7 @@
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "controllers/controllermanager.h"
-#include "controllers/keyboard/shortcutcontroller.h"
+#include "controllers/keyboard/keyboardshortcutsupdater.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
 #include "broadcast/broadcastmanager.h"
@@ -97,7 +97,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pVCManager(nullptr),
 #endif
           m_pKeyboard(nullptr),
-          m_pShortcutController(nullptr),
+          m_pKbdShortcutsUpdater(nullptr),
           m_pLibrary(nullptr),
           m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
@@ -123,7 +123,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // Initialize keyboard event filter
     m_pKeyboard = new KeyboardEventFilter();
 
-    m_pShortcutController = new ShortcutController();
+    m_pKbdShortcutsUpdater = new KeyboardShortcutsUpdater();
 
     // Menubar depends on translations.
     mixxx::Translations::initializeTranslations(
@@ -305,7 +305,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(pConfig, m_pKeyboard);
     connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(ControllerPresetPointer)),
-            m_pShortcutController, SLOT(slotUpdateShortcuts(ControllerPresetPointer)));
+            m_pKbdShortcutsUpdater, SLOT(slotUpdateShortcuts(ControllerPresetPointer)));
     connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(ControllerPresetPointer)),
             m_pSkinLoader->getTooltipUpdater(), SLOT(updateShortcuts(ControllerPresetPointer)));
 
@@ -753,7 +753,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
-    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(), m_pShortcutController);
+    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(), m_pKbdShortcutsUpdater);
     setMenuBar(m_pMenuBar);
 }
 

@@ -11,9 +11,8 @@
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
-#include "controllers/keyboard/shortcutchangewatcher.h"
 
-class ShortcutController;
+class KeyboardShortcutsUpdater;
 
 class VisibilityControlConnection : public QObject {
     Q_OBJECT
@@ -36,7 +35,7 @@ class VisibilityControlConnection : public QObject {
 class WMainMenuBar : public QMenuBar {
     Q_OBJECT
   public:
-    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig, ShortcutController* pShortcutController);
+    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig, KeyboardShortcutsUpdater* pShortcutController);
 
   public slots:
     void onLibraryScanStarted();
@@ -87,7 +86,7 @@ class WMainMenuBar : public QMenuBar {
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     UserSettingsPointer m_pConfig;
-    ShortcutController* m_pShortcutController;
+    KeyboardShortcutsUpdater* m_pKbdShortcutsUpdater;
     QSignalMapper m_loadToDeckMapper;
     QSignalMapper m_visitUrlMapper;
     QList<QAction*> m_loadToDeckActions;
