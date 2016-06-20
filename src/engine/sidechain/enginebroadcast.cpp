@@ -23,7 +23,7 @@
 #include "track/track.h"
 #include "util/sleep.h"
 
-static const int kConnectRetries = 10;
+static const int kConnectRetries = 30;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
