@@ -5,11 +5,9 @@
 #include <QEvent>
 #include <QKeyEvent>
 #include <QMultiHash>
-#include <control/controlobject.h>
 
+#include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "controllers/controllerpreset.h"
-#include "preferences/configobject.h"
-#include "keyboardcontrollerpreset.h"
 
 class ControlObject;
 

@@ -4,9 +4,9 @@
 #include <QList>
 
 #include <QUrl>
-#include <controllers/keyboard/shortcutcontroller.h>
 
 #include "control/controlproxy.h"
+#include "controllers/keyboard/shortcutcontroller.h"
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
 #include "util/cmdlineargs.h"

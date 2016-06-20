@@ -36,7 +36,7 @@
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "controllers/controllermanager.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "controllers/keyboard/shortcutcontroller.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
 #include "broadcast/broadcastmanager.h"

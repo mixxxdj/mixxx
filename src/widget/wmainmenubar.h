@@ -7,7 +7,6 @@
 #include <QObject>
 #include <QScopedPointer>
 #include <QSignalMapper>
-#include <controllers/controllermanager.h>
 
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"

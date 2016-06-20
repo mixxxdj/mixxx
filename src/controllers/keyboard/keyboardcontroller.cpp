@@ -1,9 +1,8 @@
 #include <QKeyEvent>
 
-
-#include "keyboardcontroller.h"
-
+#include "control/controlobject.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/keyboard/keyboardcontroller.h"
 #include "keyboardcontrollerpresetfilehandler.h"
 
 

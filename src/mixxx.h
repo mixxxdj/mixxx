@@ -20,7 +20,6 @@
 
 #include <QMainWindow>
 #include <QString>
-#include <controllers/keyboard/shortcutcontroller.h>
 
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
