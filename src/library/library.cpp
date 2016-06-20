@@ -185,6 +185,10 @@ void Library::destroyInterface() {
     for (LibraryPaneManager* p : m_panes) {
         p->deleteLater();
     }
+    
+    for (LibraryFeature* f : m_features) {
+        f->setFeatureFocus(-1);
+    }
     m_panes.clear();
 }
 
