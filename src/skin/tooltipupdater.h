@@ -61,7 +61,9 @@ class WidgetTooltipWatcher : public QObject {
 class SliderTooltipWatcher : public WidgetTooltipWatcher {
     Q_OBJECT
   public:
-    static int HORIZONTAL, VERTICAL;
+    static const int HORIZONTAL = 0;
+    static const int VERTICAL = 1;
+
     int m_direction;
 
     SliderTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,

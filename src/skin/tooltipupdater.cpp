@@ -54,9 +54,9 @@ WPushButton* TooltipShortcutUpdater::toPushButton(WBaseWidget* pWidget) {
 
 
 
-//  --------------------------------------------
-//  TooltipShortcutUpdater::Tooltip (base class)
-//  --------------------------------------------
+//  -------------------------------------
+//    WidgetTooltipWatcher (base class)
+//  -------------------------------------
 
 // TODO(Tomasito) WidgetTooltipWatcher is not a good name, since it's not watching the widget tooltips. It's
 // ...            watching the keyboard changes and then updating the widget tooltip. The same goes for
@@ -121,12 +121,9 @@ void WidgetTooltipWatcher::pushShortcutsToWidget() {
 
 
 
-//  --------------------------------------------
-//  TooltipShortcutUpdater::SliderTooltipWatcher
-//  --------------------------------------------
-
-int SliderTooltipWatcher::HORIZONTAL = 0;
-int SliderTooltipWatcher::VERTICAL = 1;
+//  ------------------------------------
+//          SliderTooltipWatcher
+//  ------------------------------------
 
 SliderTooltipWatcher::SliderTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,
                                            QList<ConfigKey> &configKeys,
@@ -156,9 +153,9 @@ int SliderTooltipWatcher::getDirection(WSliderComposed* pSlider) {
 
 
 
-//  --------------------------------------------
-//     TooltipShortcutUpdater::ButtonTooltip
-//  --------------------------------------------
+//  -------------------------------------
+//         PushButtonTooltipWatcher
+//  -------------------------------------
 
 PushButtonTooltipWatcher::PushButtonTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,
                                                    QList<ConfigKey> &configKeys,
