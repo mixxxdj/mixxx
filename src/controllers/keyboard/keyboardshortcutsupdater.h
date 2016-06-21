@@ -11,7 +11,7 @@
 #include <QList>
 
 #include "preferences/configobject.h"
-#include "controllers/controllerpreset.h"
+#include "controllers/keyboard/keyboardcontrollerpreset.h"
 
 class ShortcutChangeWatcher;
 
@@ -26,7 +26,7 @@ class KeyboardShortcutsUpdater : public QObject {
     void addWatcher(ShortcutChangeWatcher* watcher);
 
   public slots:
-    void slotUpdateShortcuts(ControllerPresetPointer pPreset);
+    void slotUpdateShortcuts(KeyboardControllerPresetPointer pKbdPreset);
 
   private:
     QList<ShortcutChangeWatcher*> m_shortcutChangeWatchers;

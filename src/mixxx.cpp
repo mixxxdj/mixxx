@@ -304,10 +304,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // (long)
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(pConfig, m_pKeyboard);
-    connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(ControllerPresetPointer)),
-            m_pKbdShortcutsUpdater, SLOT(slotUpdateShortcuts(ControllerPresetPointer)));
-    connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(ControllerPresetPointer)),
-            m_pSkinLoader->getTooltipUpdater(), SLOT(updateShortcuts(ControllerPresetPointer)));
+    connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(KeyboardControllerPresetPointer)),
+            m_pKbdShortcutsUpdater, SLOT(slotUpdateShortcuts(KeyboardControllerPresetPointer)));
+    connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(KeyboardControllerPresetPointer)),
+            m_pSkinLoader->getTooltipUpdater(), SLOT(updateShortcuts(KeyboardControllerPresetPointer)));
 
     launchProgress(47);
 

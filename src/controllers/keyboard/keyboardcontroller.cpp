@@ -17,8 +17,8 @@ KeyboardController::KeyboardController(KeyboardEventFilter* pKbdEventFilter) :
     connect(m_pKbdEventFilter, SIGNAL(controlKeySeqPressed(ConfigKey)),
             this, SLOT(onKeySeqPressed(ConfigKey)));
 
-    connect(this, SIGNAL(presetLoaded(ControllerPresetPointer)),
-            m_pKbdEventFilter, SLOT(slotSetKeyboardMapping(ControllerPresetPointer)));
+    connect(this, SIGNAL(keyboardControllerPresetLoaded(KeyboardControllerPresetPointer)),
+            m_pKbdEventFilter, SLOT(slotSetKeyboardMapping(KeyboardControllerPresetPointer)));
 }
 
 KeyboardController::~KeyboardController() {
@@ -38,7 +38,8 @@ bool KeyboardController::savePreset(const QString fileName) const {
 void KeyboardController::visit(const KeyboardControllerPreset* preset) {
     m_preset = *preset;
     emit(presetLoaded(getPreset()));
-}
+    emit(keyboardControllerPresetLoaded(getKeyboardPreset()));
+} 
 
 void KeyboardController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);

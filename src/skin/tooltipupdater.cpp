@@ -14,9 +14,7 @@ void TooltipShortcutUpdater::addWatcher(WidgetTooltipWatcher* tooltipWatcher ) {
 }
 
 
-void TooltipShortcutUpdater::updateShortcuts(ControllerPresetPointer pPreset) {
-    QSharedPointer<KeyboardControllerPreset> pKbdPreset = pPreset.dynamicCast<KeyboardControllerPreset>();
-    if (pKbdPreset.isNull()) return;
+void TooltipShortcutUpdater::updateShortcuts(KeyboardControllerPresetPointer pKbdPreset) {
     m_pKbdPreset = pKbdPreset;
 
     for (WidgetTooltipWatcher* pTooltip: m_pWatchers) {

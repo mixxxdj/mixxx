@@ -14,8 +14,6 @@
 #include "util/cmdlineargs.h"
 #include "util/time.h"
 
-#include "controllers/keyboard/keyboardenumerator.h"
-#include "controllers/keyboard/keyboardcontroller.h"
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
@@ -70,6 +68,7 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig, KeyboardEventF
           m_skipPoll(false),
           m_pKeyboard(pKeyboard) {
     qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
+    qRegisterMetaType<KeyboardControllerPresetPointer>("KeyboardControllerPresetPointer");
 
     // Create controller mapping paths in the user's home directory.
     QString userPresets = userPresetsPath(m_pConfig);
@@ -130,7 +129,6 @@ void ControllerManager::slotInitialize() {
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
-    m_enumerators.append(new KeyboardEnumerator(m_pKeyboard));
     m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator());
@@ -158,6 +156,8 @@ void ControllerManager::slotShutdown() {
         delete pEnumerator;
     }
 
+    delete m_pKeyboardController;
+
     // Stop the processor after the enumerators since the engines live in it
     m_pThread->quit();
 }
@@ -176,20 +176,17 @@ void ControllerManager::updateControllerList() {
         newDeviceList.append(pEnumerator->queryDevices());
     }
 
+    // Since there is only one KeyboardController, it is not
+    // enumerated by an enumerator but added directly here.
+    KeyboardController* kbdController = new KeyboardController(m_pKeyboard);
+    newDeviceList.prepend(kbdController);
+
     locker.relock();
     if (newDeviceList != m_controllers) {
-        // Check for keyboard controller
-        KeyboardController* pKeyboardController;
-        for (Controller* pController: newDeviceList) {
-            pKeyboardController = qobject_cast<KeyboardController*>(pController);
-            if (pKeyboardController) {
-                m_keyboardController = pKeyboardController;
-                connect(m_keyboardController, SIGNAL(presetLoaded(ControllerPresetPointer)),
-                        this, SLOT(slotKeyboardPresetChanged(ControllerPresetPointer)));
-            }
-        }
         m_controllers = newDeviceList;
-
+        m_pKeyboardController = kbdController;
+        connect(m_pKeyboardController, SIGNAL(keyboardControllerPresetLoaded(KeyboardControllerPresetPointer)),
+                this, SIGNAL(keyboardPresetChanged(KeyboardControllerPresetPointer)));
         locker.unlock();
         emit(devicesChanged());
     }
@@ -221,7 +218,7 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
 }
 
 KeyboardController* ControllerManager::getKeyboardController() {
-    return m_keyboardController;
+    return m_pKeyboardController;
 }
 
 void ControllerManager::slotSetUpDevices() {
@@ -421,10 +418,6 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
                        << name << "to" << presetPath;
         }
     }
-}
-
-void ControllerManager::slotKeyboardPresetChanged(ControllerPresetPointer pPreset) {
-    emit(keyboardPresetChanged(pPreset));
 }
 
 // static

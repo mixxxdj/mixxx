@@ -21,6 +21,12 @@ class KeyboardController : public Controller {
         return ControllerPresetPointer(pClone);
     }
 
+    KeyboardControllerPresetPointer getKeyboardPreset() const {
+        KeyboardControllerPreset* pClone = new KeyboardControllerPreset();
+        *pClone = m_preset;
+        return KeyboardControllerPresetPointer(pClone);
+    }
+
     virtual bool savePreset(const QString fileName) const override;
     virtual bool matchPreset(const PresetInfo& preset) override;
     virtual void visit(const KeyboardControllerPreset* preset) override;
@@ -36,6 +42,9 @@ class KeyboardController : public Controller {
   public slots:
     // Sets a control, only if the keyboard is enabled
     void onKeySeqPressed(ConfigKey configKey);
+
+  signals:
+    void keyboardControllerPresetLoaded(KeyboardControllerPresetPointer presetPointer);
 
   private:
     virtual void send(QByteArray data) override {

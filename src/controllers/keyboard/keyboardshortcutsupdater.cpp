@@ -1,8 +1,6 @@
 #include <QAction>
 
-#include "keyboardshortcutsupdater.h"
-#include "keyboardcontrollerpreset.h"
-
+#include "controllers/keyboard/keyboardshortcutsupdater.h"
 
 KeyboardShortcutsUpdater::KeyboardShortcutsUpdater() { }
 KeyboardShortcutsUpdater::~KeyboardShortcutsUpdater() { }
@@ -25,10 +23,9 @@ ShortcutChangeWatcher* KeyboardShortcutsUpdater::getWatcher(ConfigKey configKey)
     return nullptr;
 }
 
-void KeyboardShortcutsUpdater::slotUpdateShortcuts(ControllerPresetPointer pPreset) {
-    QSharedPointer<KeyboardControllerPreset> keyboardPreset = pPreset.dynamicCast<KeyboardControllerPreset>();
+void KeyboardShortcutsUpdater::slotUpdateShortcuts(KeyboardControllerPresetPointer pKbdPreset) {
     QMultiHash<ConfigValueKbd, ConfigKey> keyboardShortcuts =
-            keyboardPreset->getMappingByGroup("[KeyboardShortcuts]");
+            pKbdPreset->getMappingByGroup("[KeyboardShortcuts]");
 
     for (ShortcutChangeWatcher* watcher: m_shortcutChangeWatchers) {
         watcher->updateShortcut(&keyboardShortcuts);

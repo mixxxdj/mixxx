@@ -7,7 +7,6 @@
 #include <QMultiHash>
 
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
-#include "controllers/controllerpreset.h"
 
 class ControlObject;
 
@@ -20,7 +19,9 @@ class KeyboardEventFilter : public QObject {
     bool eventFilter(QObject* obj, QEvent* e);
 
   public slots:
-    void slotSetKeyboardMapping(ControllerPresetPointer presetPointer);
+    void slotSetKeyboardMapping(KeyboardControllerPresetPointer presetPointer) {
+        m_kbdPreset = presetPointer;
+    };
 
   signals:
     void keySeqPressed(QKeySequence keySeq);

@@ -160,11 +160,3 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     }
     return k;
 }
-
-void KeyboardEventFilter::slotSetKeyboardMapping(ControllerPresetPointer presetPointer) {
-    m_kbdPreset = presetPointer.dynamicCast<KeyboardControllerPreset>();
-
-    // If preset pointer couldn't be casted back to KeyboardControllerPreset, the dynamic
-    // cast returns null. That shouldn't happen.
-    DEBUG_ASSERT(!m_kbdPreset.isNull());
-}

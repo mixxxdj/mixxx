@@ -19,7 +19,7 @@ class TooltipShortcutUpdater : public QObject {
     void addWatcher(WidgetTooltipWatcher* tooltipWatcher);
 
   public slots:
-    void updateShortcuts(ControllerPresetPointer pPreset);
+    void updateShortcuts(KeyboardControllerPresetPointer pPreset);
 
   private:
     QList<WidgetTooltipWatcher*> m_pWatchers;

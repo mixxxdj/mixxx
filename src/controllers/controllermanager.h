@@ -63,7 +63,7 @@ class ControllerManager : public QObject {
     void requestShutdown();
     void requestSave(bool onlyActive);
     void requestInitialize();
-    void keyboardPresetChanged(ControllerPresetPointer);
+    void keyboardPresetChanged(KeyboardControllerPresetPointer pKbdPreset);
 
   public slots:
     void updateControllerList();
@@ -73,7 +73,6 @@ class ControllerManager : public QObject {
 
     // Writes out presets for currently connected input devices
     void slotSavePresets(bool onlyActive=false);
-    void slotKeyboardPresetChanged(ControllerPresetPointer);
 
   private slots:
     // Perform initialization that should be delayed until the ControllerManager
@@ -103,10 +102,7 @@ class ControllerManager : public QObject {
     mutable QMutex m_mutex;
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
-
-    // TODO(Tomasito) We should make a method to retrieve all controllers of a given type, so that
-    // ...            we can keep the keyboard controller in m_controllers, where it belongs
-    KeyboardController* m_keyboardController;
+    KeyboardController* m_pKeyboardController;
     QThread* m_pThread;
     QSharedPointer<PresetInfoEnumerator> m_pMainThreadPresetEnumerator;
     bool m_skipPoll;
