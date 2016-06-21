@@ -21,12 +21,15 @@ from xml.dom import minidom
 class KeyboardControllerTranslator:
 
     def __init__(self, kbdCfgPath, name):
+        # Info variables, will be used when creating <info> block
         self.m_name = name
         self.m_author = 'Auto-generated'
         self.m_description = 'This keyboard controller preset was generated from ' + kbdCfgPath
-        
+
+        # Setup config parser
         self.m_kbdCfgPath = kbdCfgPath
         self.m_configParser = configparser.ConfigParser(allow_no_value=True)
+        self.m_configParser.optionxform = str
         self.m_configParser.read(self.m_kbdCfgPath)
         
         self.initRootElement()
@@ -39,13 +42,16 @@ class KeyboardControllerTranslator:
         self.m_rootElement.set('mixxxVersion', mixxxVersion)
 
     def addInfo(self):
+        # Creating <info> element
         infoElement = ET.SubElement(self.m_rootElement, 'info')
         name = ET.SubElement(infoElement, 'name')
         name.text = self.m_name
-        
+
+        # Adding author
         author = ET.SubElement(infoElement, 'author')
         author.text = self.m_author
-        
+
+        # Adding description
         description = ET.SubElement(infoElement, 'description')
         description.text = self.m_description
 
