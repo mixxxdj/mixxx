@@ -190,8 +190,6 @@ void ControllerManager::updateControllerList() {
         }
         m_controllers = newDeviceList;
 
-        // TODO(Tomasito) This unlock is redundant. locker, being a QMutexLocker
-        // ...            unlocks itself when destroyed
         locker.unlock();
         emit(devicesChanged());
     }
@@ -223,7 +221,6 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
 }
 
 KeyboardController* ControllerManager::getKeyboardController() {
-    QMutexLocker locker(&m_mutex);
     return m_keyboardController;
 }
 
