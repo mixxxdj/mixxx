@@ -78,7 +78,7 @@ class KeyboardControllerTranslator:
                 controlElement.set('keyseq', keyseq)
 
     def writeOut(self, path):
-        xmlstr = minidom.parseString(ET.tostring(self.m_rootElement)).toprettyxml(indent="   ")
+        xmlstr = minidom.parseString(ET.tostring(self.m_rootElement)).toprettyxml()
         with open(path, "w") as f:
             f.write(xmlstr)
 
@@ -101,7 +101,7 @@ if (nArguments == 1):
     if not os.path.exists(xmlDirectory):
         os.makedirs(xmlDirectory)
 
-# If there is a given argument, set target directory to that      
+# If an argument is given, set target directory to that
 elif (nArguments == 2):
     xmlDirectory = sys.argv[1]
 
