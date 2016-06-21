@@ -39,7 +39,7 @@ void TooltipShortcutUpdater::updateShortcuts(ControllerPresetPointer pPreset) {
     if (pKbdPreset.isNull()) return;
     m_pKbdPreset = pKbdPreset;
 
-    foreach (WidgetTooltipWatcher* pTooltip, m_pWatchers) {
+    for (WidgetTooltipWatcher* pTooltip: m_pWatchers) {
         pTooltip->update();
     }
 }
@@ -70,7 +70,7 @@ WidgetTooltipWatcher::WidgetTooltipWatcher(KeyboardControllerPresetPointer* ppKb
 
 void WidgetTooltipWatcher::update() {
     m_pTooltipShortcuts = "";
-    foreach (ConfigKey configKey, m_configKeys) {
+    for (ConfigKey configKey: m_configKeys) {
         updateShortcuts(configKey);
     }
     pushShortcutsToWidget();

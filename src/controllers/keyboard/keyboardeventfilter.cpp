@@ -35,7 +35,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
         // Run through list of active keys to see if the pressed key is already active
         // Just for returning true if we are consuming this key event
-        foreach (const KeyDownInformation& keyDownInfo, m_qActiveKeyList) {
+        for (const KeyDownInformation& keyDownInfo: m_qActiveKeyList) {
             if (keyDownInfo.keyId == keyId) {
                 return true;
             }

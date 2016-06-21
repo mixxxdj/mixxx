@@ -17,7 +17,7 @@ void KeyboardShortcutsUpdater::addWatcher(ShortcutChangeWatcher* watcher) {
 // NOTE(Tomasito): There shouldn't be more than one watchers with the same ConfigKey, but if
 // ...             there are, this will return the first one that is found.
 ShortcutChangeWatcher* KeyboardShortcutsUpdater::getWatcher(ConfigKey configKey) {
-    foreach (ShortcutChangeWatcher* watcher, m_shortcutChangeWatchers) {
+    for (ShortcutChangeWatcher* watcher: m_shortcutChangeWatchers) {
         if (watcher->m_configKey == configKey) {
             return watcher;
         }
@@ -30,7 +30,7 @@ void KeyboardShortcutsUpdater::slotUpdateShortcuts(ControllerPresetPointer pPres
     QMultiHash<ConfigValueKbd, ConfigKey> keyboardShortcuts =
             keyboardPreset->getMappingByGroup("[KeyboardShortcuts]");
 
-    foreach (ShortcutChangeWatcher* watcher, m_shortcutChangeWatchers) {
+    for (ShortcutChangeWatcher* watcher: m_shortcutChangeWatchers) {
         watcher->updateShortcut(&keyboardShortcuts);
     }
 }

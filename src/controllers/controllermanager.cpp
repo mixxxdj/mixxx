@@ -154,7 +154,7 @@ void ControllerManager::slotShutdown() {
     locker.unlock();
 
     // Delete enumerators and they'll delete their Devices
-    foreach (ControllerEnumerator* pEnumerator, enumerators) {
+    for (ControllerEnumerator* pEnumerator: enumerators) {
         delete pEnumerator;
     }
 
@@ -172,7 +172,7 @@ void ControllerManager::updateControllerList() {
     locker.unlock();
 
     QList<Controller*> newDeviceList;
-    foreach (ControllerEnumerator* pEnumerator, enumerators) {
+    for (ControllerEnumerator* pEnumerator: enumerators) {
         newDeviceList.append(pEnumerator->queryDevices());
     }
 
@@ -180,7 +180,7 @@ void ControllerManager::updateControllerList() {
     if (newDeviceList != m_controllers) {
         // Check for keyboard controller
         KeyboardController* pKeyboardController;
-        foreach (Controller* pController, newDeviceList) {
+        for (Controller* pController: newDeviceList) {
             pKeyboardController = qobject_cast<KeyboardController*>(pController);
             if (pKeyboardController) {
                 m_keyboardController = pKeyboardController;
@@ -213,7 +213,7 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     // options.
     QList<Controller*> filteredDeviceList;
 
-    foreach (Controller* device, controllers) {
+    for (Controller* device: controllers) {
         if ((bOutputDevices == device->isOutputDevice()) ||
             (bInputDevices == device->isInputDevice())) {
             filteredDeviceList.push_back(device);
@@ -235,7 +235,7 @@ void ControllerManager::slotSetUpDevices() {
 
     QSet<QString> filenames;
 
-    foreach (Controller* pController, deviceList) {
+    for (Controller* pController: deviceList) {
         QString name = pController->getName();
 
         if (pController->isOpen()) {
@@ -289,7 +289,7 @@ void ControllerManager::maybeStartOrStopPolling() {
     locker.unlock();
 
     bool shouldPoll = false;
-    foreach (Controller* pController, controllers) {
+    for (Controller* pController: controllers) {
         if (pController->isOpen() && pController->isPolling()) {
             shouldPoll = true;
         }
@@ -343,7 +343,7 @@ void ControllerManager::pollDevices() {
     }
 
     mixxx::Duration start = Time::elapsed();
-    foreach (Controller* pDevice, m_controllers) {
+    for (Controller* pDevice: m_controllers) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }
@@ -410,7 +410,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
     // TODO(rryan): This should be split up somehow but the filename selection
     // is dependent on all of the controllers to prevent over-writing each
     // other. We need a better solution.
-    foreach (Controller* pController, deviceList) {
+    for (Controller* pController: deviceList) {
         if (onlyActive && !pController->isOpen()) {
             continue;
         }
@@ -467,7 +467,7 @@ QString ControllerManager::getAbsolutePath(const QString& pathOrFilename,
         return pathOrFilename;
     }
 
-    foreach (const QString& path, paths) {
+    for (const QString& path: paths) {
         QDir pathDir(path);
 
         if (pathDir.exists(pathOrFilename)) {

@@ -4,7 +4,7 @@ QString KeyboardControllerPreset::getKeySequencesToString(ConfigKey configKey, Q
     QList<QKeySequence> keySeqs = getKeySequences(configKey);
     QString keySeqsString = "";
 
-        foreach (QKeySequence keySeq, keySeqs) {
+        for (QKeySequence keySeq: keySeqs) {
             keySeqsString += keySeq.toString() + separator;
         }
 
