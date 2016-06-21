@@ -43,6 +43,7 @@ res/developer_skins
 *.wixpdb
 *.msi
 *.mst
+*.cab
 build/wix/subdirs/*.wxs
 
 *.obj
