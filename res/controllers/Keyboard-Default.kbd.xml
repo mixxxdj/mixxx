@@ -5,92 +5,140 @@
   <info>
     <name>Keyboard Default</name>
     <author>Mixxx</author>
-    <description>Default keyboard mapping.</description>
+    <description>Default keyboard mapping. (Layout: en_US)</description>
     <wiki>https://www.mixxx.org/manual/latest/chapters/appendix.html#appendix-keyboard</wiki>
   </info>
 
   <controller>
     <group name="[AutoDJ]">
-      <control action="shuffle_playlist" keyseq="Shift+F9" />
-      <control action="skip_next" keyseq="Shift+F10" />
-      <control action="fade_now" keyseq="Shift+F11" />
-      <control action="enabled" keyseq="Shift+F12" />
+      <control action="shuffle_playlist" keyseq="Shift+F9"/>
+      <control action="skip_next" keyseq="Shift+F10"/>
+      <control action="fade_now" keyseq="Shift+F11"/>
+      <control action="enabled" keyseq="Shift+F12"/>
     </group>
 
     <group name="[Master]">
-      <control action="crossfader_up" keyseq="h" />
-      <control action="crossfader_down" keyseq="g" />
-      <control action="crossfader_up_small" keyseq="Shift+h" />
-      <control action="crossfader_down_small" keyseq="Shift+g" />
+      <control action="crossfader_up" keyseq="h"/>
+      <control action="crossfader_down" keyseq="g"/>
+      <control action="crossfader_up_small" keyseq="Shift+h"/>
+      <control action="crossfader_down_small" keyseq="Shift+g"/>
     </group>
 
     <group name="[Microphone]">
-      <control action="talkover" keyseq="`" />
+      <control action="talkover" keyseq="`"/>
     </group>
 
     <group name="[PreviewDeck1]">
-      <control action="LoadSelectedAndPlay" keyseq="Alt+Return" />
-      <control action="start_stop" keyseq="Return" />
-      <control action="back" keyseq="Alt+Left" />
-      <control action="fwd" keyseq="" />
+      <control action="LoadSelectedTrackAndPlay" keyseq="Alt+Return"/>
+      <control action="start_stop" keyseq="Return"/>
+      <control action="back" keyseq="Alt+Left"/>
+      <control action="fwd" keyseq="Alt+Right"/>
     </group>
 
     <group name="[Channel1]">
-      <control action="play" keyseq="d" />
-      <control action="cue_set" keyseq="Shift+d" />
-      <control action="cue_default" keyseq="f" />
-      <control action="cue_gotoandstop" keyseq="Shift+f" />
-
-      <control action="back" keyseq="a" />
-      <control action="reverse" keyseq="Shift+a" />
-      <control action="fwd" keyseq="s" />
-
-      <control action="beatsync" keyseq="1" />
-      <control action="bpm_tap" keyseq="Shift+!" />
-
-      <control action="rate_perm_down" keyseq="F1" />
-      <control action="rate_perm_up" keyseq="F2" />
-      <control action="rate_temp_down" keyseq="F3" />
-      <control action="rate_temp_up" keyseq="F4" />
-      <control action="rate_perm_down_small" keyseq="Shift+F1" />
-      <control action="rate_perm_up_small" keyseq="Shift+F2" />
-      <control action="rate_temp_down_small" keyseq="Shift+F3" />
-      <control action="rate_temp_up_small" keyseq="Shift+F4" />
-
-      <control action="pfl" keyseq="t" />
-      <control action="filterLowKill" keyseq="b" />
-      <control action="flanger" keyseq="5" />
-
-      <control action="hotcue_1_activate" keyseq="z" />
-      <control action="hotcue_2_activate" keyseq="x" />
-      <control action="hotcue_3_activate" keyseq="c" />
-      <control action="hotcue_4_activate" keyseq="v" />
-      <control action="hotcue_1_clear" keyseq="Shift+z" />
-      <control action="hotcue_2_clear" keyseq="Shift+x" />
-      <control action="hotcue_3_clear" keyseq="Shift+c" />
-      <control action="hotcue_4_clear" keyseq="Shift+v" />
-
-      <control action="LoadSelectedTrack" keyseq="Shift+Left" />
-      <control action="eject" keyseq="Alt+Shift+Left" />
-
-      <control action="loop_in" keyseq="2" />
-      <control action="loop_out" keyseq="3" />
-      <control action="reloop_exit" keyseq="4" />
-
-      <control action="beatloop_4_toggle" keyseq="q" />
-      <control action="loop_halve" keyseq="w" />
-      <control action="loop_double" keyseq="e" />
-
-      <control action="passthrough" keyseq="Ctrl+j" />
-      <control action="vinylcontrol_mode" keyseq="Ctrl+Shift+Y" />
-      <control action="vinylcontrol_cueing" keyseq="Ctrl+Alt+Y" />
+      <control action="play" keyseq="d"/>
+      <control action="cue_set" keyseq="Shift+d"/>
+      <control action="cue_default" keyseq="f"/>
+      <control action="cue_gotoandstop" keyseq="Shift+f"/>
+      <control action="back" keyseq="a"/>
+      <control action="reverse" keyseq="Shift+a"/>
+      <control action="fwd" keyseq="s"/>
+      <control action="beatsync" keyseq="1"/>
+      <control action="bpm_tap" keyseq="Shift+!"/>
+      <control action="rate_perm_down" keyseq="F1"/>
+      <control action="rate_perm_up" keyseq="F2"/>
+      <control action="rate_temp_down" keyseq="F3"/>
+      <control action="rate_temp_up" keyseq="F4"/>
+      <control action="rate_perm_down_small" keyseq="Shift+F1"/>
+      <control action="rate_perm_up_small" keyseq="Shift+F2"/>
+      <control action="rate_temp_down_small" keyseq="Shift+F3"/>
+      <control action="rate_temp_up_small" keyseq="Shift+F4"/>
+      <control action="pfl" keyseq="t"/>
+      <control action="filterLowKill" keyseq="b"/>
+      <control action="flanger" keyseq="5"/>
+      <control action="hotcue_1_activate" keyseq="z"/>
+      <control action="hotcue_2_activate" keyseq="x"/>
+      <control action="hotcue_3_activate" keyseq="c"/>
+      <control action="hotcue_4_activate" keyseq="v"/>
+      <control action="hotcue_1_clear" keyseq="Shift+z"/>
+      <control action="hotcue_2_clear" keyseq="Shift+x"/>
+      <control action="hotcue_3_clear" keyseq="Shift+c"/>
+      <control action="hotcue_4_clear" keyseq="Shift+v"/>
+      <control action="LoadSelectedTrack" keyseq="Shift+Left"/>
+      <control action="eject" keyseq="Alt+Shift+Left"/>
+      <control action="loop_in" keyseq="2"/>
+      <control action="loop_out" keyseq="3"/>
+      <control action="reloop_exit" keyseq="4"/>
+      <control action="beatloop_4_toggle" keyseq="q"/>
+      <control action="loop_halve" keyseq="w"/>
+      <control action="loop_double" keyseq="e"/>
+      <control action="passthrough" keyseq="Ctrl+j"/>
+      <control action="vinylcontrol_mode" keyseq="Ctrl+Shift+Y"/>
+      <control action="vinylcontrol_cueing" keyseq="Ctrl+Alt+Y"/>
     </group>
 
-    <!-- THIS IS ONLY FOR DEMOING THAT THE KEYBOARD SHORTCUTS WORK -->
+    <group name="[Channel2]">
+      <control action="play" keyseq="l"/>
+      <control action="cue_set" keyseq="Shift+l"/>
+      <control action="cue_default" keyseq=";"/>
+      <control action="cue_gotoandstop" keyseq="Shift+"/>
+      <control action="back" keyseq="j"/>
+      <control action="reverse" keyseq="Shift+j"/>
+      <control action="fwd" keyseq="k"/>
+      <control action="beatsync" keyseq="6"/>
+      <control action="bpm_tap" keyseq="Shift+^"/>
+      <control action="rate_perm_down" keyseq="F5"/>
+      <control action="rate_perm_up" keyseq="F6"/>
+      <control action="rate_temp_down" keyseq="F7"/>
+      <control action="rate_temp_up" keyseq="F8"/>
+      <control action="rate_perm_down_small" keyseq="Shift+F5"/>
+      <control action="rate_perm_up_small" keyseq="Shift+F6"/>
+      <control action="rate_temp_down_small" keyseq="Shift+F7"/>
+      <control action="rate_temp_up_small" keyseq="Shift+F8"/>
+      <control action="pfl" keyseq="y"/>
+      <control action="filterLowKill" keyseq="n"/>
+      <control action="flanger" keyseq="0"/>
+      <control action="hotcue_1_activate" keyseq="m"/>
+      <control action="hotcue_2_activate" keyseq=","/>
+      <control action="hotcue_3_activate" keyseq="."/>
+      <control action="hotcue_4_activate" keyseq="/"/>
+      <control action="hotcue_1_clear" keyseq="Shift+M"/>
+      <control action="hotcue_2_clear" keyseq="Shift+&lt;"/>
+      <control action="hotcue_3_clear" keyseq="Shift+&gt;"/>
+      <control action="hotcue_4_clear" keyseq="Shift+?"/>
+      <control action="LoadSelectedTrack" keyseq="Shift+Right"/>
+      <control action="eject" keyseq="Alt+Shift+Right"/>
+      <control action="loop_in" keyseq="7"/>
+      <control action="loop_out" keyseq="8"/>
+      <control action="reloop_exit" keyseq="9"/>
+      <control action="beatloop_4_toggle" keyseq="u"/>
+      <control action="loop_halve" keyseq="i"/>
+      <control action="loop_double" keyseq="o"/>
+      <control action="passthrough" keyseq="Ctrl+k"/>
+      <control action="vinylcontrol_mode" keyseq="Ctrl+Shift+U"/>
+      <control action="vinylcontrol_cueing" keyseq="Ctrl+Alt+U"/>
+    </group>
+
     <group name="[KeyboardShortcuts]">
-      <control action="ViewMenu_MaximizeLibrary" keyseq="Ctrl+Shift+k" />
+      <control action="FileMenu_LoadDeck1" keyseq="Ctrl+o"/>
+      <control action="FileMenu_LoadDeck2" keyseq="Ctrl+Shift+O"/>
+      <control action="FileMenu_Quit" keyseq="Ctrl+q"/>
+      <control action="LibraryMenu_NewPlaylist" keyseq="Ctrl+n"/>
+      <control action="LibraryMenu_NewCrate" keyseq="Ctrl+Shift+N"/>
+      <control action="ViewMenu_ShowSamplers" keyseq="Ctrl+1"/>
+      <control action="ViewMenu_ShowMicrophone" keyseq="Ctrl+2"/>
+      <control action="ViewMenu_ShowVinylControl" keyseq="Ctrl+3"/>
+      <control action="ViewMenu_ShowPreviewDeck" keyseq="Ctrl+4"/>
+      <control action="ViewMenu_ShowEffects" keyseq="Ctrl+5"/>
+      <control action="ViewMenu_ShowCoverArt" keyseq="Ctrl+6"/>
+      <control action="ViewMenu_MaximizeLibrary" keyseq="Space"/>
+      <control action="OptionsMenu_EnableLiveBroadcasting" keyseq="Ctrl+l"/>
+      <control action="OptionsMenu_EnableVinyl1" keyseq="Ctrl+t"/>
+      <control action="OptionsMenu_EnableVinyl2" keyseq="Ctrl+y"/>
+      <control action="OptionsMenu_EnableVinyl3" keyseq="Ctrl+u"/>
+      <control action="OptionsMenu_EnableVinyl4" keyseq="Ctrl+i"/>
+      <control action="OptionsMenu_RecordMix" keyseq="Ctrl+r"/>
+      <control action="OptionsMenu_ReloadSkin" keyseq="Ctrl+Shift+R"/>
     </group>
-
-    <!-- etc... -->
   </controller>
 </MixxxKeyboardPreset>
