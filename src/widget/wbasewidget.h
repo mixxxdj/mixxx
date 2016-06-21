@@ -5,6 +5,8 @@
 #include <QWidget>
 #include <QList>
 
+#include "skin/tooltipupdater.h"
+
 class ControlWidgetPropertyConnection;
 class ControlParameterWidgetConnection;
 
@@ -53,6 +55,10 @@ class WBaseWidget {
     double getControlParameterLeft() const;
     double getControlParameterRight() const;
     double getControlParameterDisplay() const;
+
+    // Create a tooltip watcher. When added to TooltipUpdater it will update the
+    // tooltips to always show the correct shortcut information
+    virtual WidgetTooltipWatcher* createTooltipWatcher(QList<ConfigKey> configKeys);
 
   protected:
     // Whenever a connected control is changed, onConnectedControlChanged is

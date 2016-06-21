@@ -16,7 +16,7 @@ class TooltipShortcutUpdater : public QObject {
   public:
     TooltipShortcutUpdater();
     virtual ~TooltipShortcutUpdater();
-    void addWatcher(QList<ConfigKey> configKeys, WBaseWidget* pWidget);
+    void addWatcher(WidgetTooltipWatcher* tooltipWatcher);
 
   public slots:
     void updateShortcuts(ControllerPresetPointer pPreset);
@@ -35,9 +35,12 @@ class TooltipShortcutUpdater : public QObject {
 class WidgetTooltipWatcher : public QObject {
     Q_OBJECT
   public:
-    WidgetTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset, QList<ConfigKey> configKeys,
-                         WBaseWidget* pWidget);
+    WidgetTooltipWatcher(WBaseWidget *pWidget, QList<ConfigKey> configKeys,
+                             KeyboardControllerPresetPointer *ppKbdPreset);
     void update();
+    inline void setKeyboardPreset(KeyboardControllerPresetPointer* ppKbdPreset) {
+        m_ppKbdPreset = ppKbdPreset;
+    }
 
   protected:
     const QList<ConfigKey> m_configKeys;
@@ -45,9 +48,12 @@ class WidgetTooltipWatcher : public QObject {
     // A pointer to QSHaredPointer<KeyboardControllerPreset>, stored in TooltipShortcutUpdater
     KeyboardControllerPresetPointer* m_ppKbdPreset;
 
-    // Updates m_pTooltipShortcuts
+    // Updates m_pTooltipShortcuts, but do not update widget
     virtual void updateShortcuts(const ConfigKey &configKey);
     void addShortcut(const ConfigKey &configKey, const QString &keySuffix, const QString &cmd);
+
+    // Call when m_pTooltipShortcuts are updated to push
+    // the shortcut information to the widget tooltip
     void pushShortcutsToWidget();
 
   private:
@@ -66,9 +72,8 @@ class SliderTooltipWatcher : public WidgetTooltipWatcher {
 
     int m_direction;
 
-    SliderTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,
-                         QList<ConfigKey> &configKey,
-                         WSliderComposed* pSlider);
+    SliderTooltipWatcher(WSliderComposed *pSlider, QList<ConfigKey> &configKey,
+                             KeyboardControllerPresetPointer *ppKbdPreset);
     virtual void updateShortcuts(const ConfigKey &configKey) override;
 
   private:
@@ -81,9 +86,8 @@ class SliderTooltipWatcher : public WidgetTooltipWatcher {
 class PushButtonTooltipWatcher : public WidgetTooltipWatcher {
     Q_OBJECT
   public:
-    PushButtonTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,
-                             QList<ConfigKey> &configKeys,
-                             WPushButton* pPushButton);
+    PushButtonTooltipWatcher(WPushButton *pPushButton, QList<ConfigKey> &configKeys,
+                                 KeyboardControllerPresetPointer *ppKbdPreset);
     virtual void updateShortcuts(const ConfigKey &configKeys) override;
 };
 

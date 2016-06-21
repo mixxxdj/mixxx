@@ -8,29 +8,9 @@ TooltipShortcutUpdater::~TooltipShortcutUpdater() {
     // TODO(Tomasito) Delete WidgetTooltipWatchers
 }
 
-void TooltipShortcutUpdater::addWatcher(QList<ConfigKey> configKeys, WBaseWidget* pWidget) {
-    WSliderComposed* sliderComposed = toSliderComposed(pWidget);
-    WPushButton* pushButton = toPushButton(pWidget);
-
-    if (sliderComposed) {
-        m_pWatchers.append(new SliderTooltipWatcher(
-                &m_pKbdPreset,
-                 configKeys,
-                 sliderComposed
-        ));
-    } else if (pushButton) {
-        m_pWatchers.append(new PushButtonTooltipWatcher(
-                &m_pKbdPreset,
-                configKeys,
-                pushButton
-        ));
-    } else {
-        m_pWatchers.append(new WidgetTooltipWatcher(
-                &m_pKbdPreset,
-                configKeys,
-                pWidget
-        ));
-    }
+void TooltipShortcutUpdater::addWatcher(WidgetTooltipWatcher* tooltipWatcher ) {
+    tooltipWatcher->setKeyboardPreset(&m_pKbdPreset);
+    m_pWatchers.append(tooltipWatcher);
 }
 
 
@@ -62,8 +42,8 @@ WPushButton* TooltipShortcutUpdater::toPushButton(WBaseWidget* pWidget) {
 // ...            watching the keyboard changes and then updating the widget tooltip. The same goes for
 // ...            SliderTooltipWatcher and PushButtonTooltipWatcher
 
-WidgetTooltipWatcher::WidgetTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,
-                                           QList<ConfigKey> configKeys, WBaseWidget* pWidget) :
+WidgetTooltipWatcher::WidgetTooltipWatcher(WBaseWidget *pWidget, QList<ConfigKey> configKeys,
+                                           KeyboardControllerPresetPointer *ppKbdPreset) :
         m_configKeys(configKeys),
         m_ppKbdPreset(ppKbdPreset),
         m_pWidget(pWidget) { }
@@ -82,6 +62,8 @@ void WidgetTooltipWatcher::addShortcut(const ConfigKey &configKey, const QString
     if (!keySuffix.isEmpty()) {
         subKey.item += keySuffix;
     }
+
+    Q_ASSERT(m_ppKbdPreset != nullptr);
 
     QString shortcut = (*m_ppKbdPreset)->getKeySequencesToString(subKey, ", ");
     if (shortcut.isEmpty()) { return; }
@@ -125,10 +107,9 @@ void WidgetTooltipWatcher::pushShortcutsToWidget() {
 //          SliderTooltipWatcher
 //  ------------------------------------
 
-SliderTooltipWatcher::SliderTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,
-                                           QList<ConfigKey> &configKeys,
-                                           WSliderComposed* pSlider)  :
-        WidgetTooltipWatcher(ppKbdPreset, configKeys, pSlider),
+SliderTooltipWatcher::SliderTooltipWatcher(WSliderComposed *pSlider, QList<ConfigKey> &configKeys,
+                                           KeyboardControllerPresetPointer *ppKbdPreset) :
+        WidgetTooltipWatcher(pSlider, configKeys, ppKbdPreset),
         m_direction(getDirection(pSlider)) { }
 
 void SliderTooltipWatcher::updateShortcuts(const ConfigKey &configKey) {
@@ -157,10 +138,9 @@ int SliderTooltipWatcher::getDirection(WSliderComposed* pSlider) {
 //         PushButtonTooltipWatcher
 //  -------------------------------------
 
-PushButtonTooltipWatcher::PushButtonTooltipWatcher(KeyboardControllerPresetPointer* ppKbdPreset,
-                                                   QList<ConfigKey> &configKeys,
-                                                   WPushButton* pPushButton) :
-        WidgetTooltipWatcher(ppKbdPreset, configKeys, pPushButton) { }
+PushButtonTooltipWatcher::PushButtonTooltipWatcher(WPushButton *pPushButton, QList<ConfigKey> &configKeys,
+                                                   KeyboardControllerPresetPointer *ppKbdPreset) :
+        WidgetTooltipWatcher(pPushButton, configKeys, ppKbdPreset) { }
 
 void PushButtonTooltipWatcher::updateShortcuts(const ConfigKey &configKey) {
     WidgetTooltipWatcher::updateShortcuts(configKey);

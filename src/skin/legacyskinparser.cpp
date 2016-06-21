@@ -2000,10 +2000,12 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
         }
     }
 
-    // Adding current widget to the tooltipupdater. When a new keyboard
-    // preset is loaded, the tooltipupdater will update the tooltip in
+    // Adding current widget to the TooltipShortcutUpdater. When a new keyboard
+    // preset is loaded, the TooltipShortcutUpdater will update the tooltip in
     // order to show the correct keyboard shortcut for the given ConfigKey
-    m_pTooltipUpdater->addWatcher(shortcutConfigKeys, pWidget);
+    m_pTooltipUpdater->addWatcher(
+            pWidget->createTooltipWatcher(shortcutConfigKeys)
+    );
 
     // Legacy behavior: The last left-button or no-button connection with
     // connectValueToWidget is the display connection. If no left-button or

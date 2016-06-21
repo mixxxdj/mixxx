@@ -110,6 +110,10 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal,
     }
 }
 
+WidgetTooltipWatcher* WSliderComposed::createTooltipWatcher(QList<ConfigKey> configKeys) {
+    return new SliderTooltipWatcher(this, configKeys, nullptr);
+}
+
 void WSliderComposed::unsetPixmaps() {
     m_pSlider.clear();
     m_pHandle.clear();
