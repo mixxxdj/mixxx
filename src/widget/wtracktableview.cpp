@@ -118,6 +118,7 @@ WTrackTableView::~WTrackTableView() {
 
     delete m_pImportMetadataFromFileAct;
     delete m_pImportMetadataFromMusicBrainzAct;
+    delete m_pExportMetadataAct;
     delete m_pAddToPreviewDeck;
     delete m_pAutoDJBottomAct;
     delete m_pAutoDJTopAct;
@@ -408,6 +409,10 @@ void WTrackTableView::createActions() {
     m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import Metadata from MusicBrainz"),this);
     connect(m_pImportMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
+
+    m_pExportMetadataAct = new QAction(tr("Export Metadata into File"), this);
+    connect(m_pExportMetadataAct, SIGNAL(triggered()),
+            this, SLOT(slotExportTrackMetadata()));
 
     m_pAddToPreviewDeck = new QAction(tr("Load to Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
@@ -946,6 +951,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pImportMetadataFromFileAct);
         m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
+        m_pMenu->addAction(m_pExportMetadataAct);
     }
 
     // Cover art menu only applies if at least one track is selected.
@@ -1394,6 +1400,31 @@ void WTrackTableView::slotImportTrackMetadata() {
             // separately.
             SoundSourceProxy(pTrack).updateTrackFromSource(
                     SoundSourceProxy::ImportTrackMetadataMode::Again);
+        }
+    }
+}
+
+void WTrackTableView::slotExportTrackMetadata() {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
+        return;
+    }
+
+    QModelIndexList indices = selectionModel()->selectedRows();
+
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            // Export of metadata is deferred until all references to the
+            // corresponding track object have been dropped. Otherwise
+            // writing to files that are still used for playback might
+            // cause crashes or at least audible glitches!
+            pTrack->markForMetadataExport();
         }
     }
 }

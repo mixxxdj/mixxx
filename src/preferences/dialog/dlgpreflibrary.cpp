@@ -38,8 +38,6 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
           m_baddedDirectory(false),
           m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
-    slotUpdate();
-    checkbox_ID3_sync->setVisible(false);
 
     connect(this, SIGNAL(requestAddDir(QString)),
             m_pLibrary, SLOT(slotRequestAddDir(QString)));
@@ -89,6 +87,12 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
     builtInFormatsStr += ", ModPlug";
 #endif
     builtInFormats->setText(builtInFormatsStr);
+
+    connect(checkBox_SyncTrackMetadataExport, SIGNAL(toggled(bool)),
+            this, SLOT(slotSyncTrackMetadataExportToggled()));
+
+    // Initialize the controls after all slots have been connected
+    slotUpdate();
 }
 
 DlgPrefLibrary::~DlgPrefLibrary() {
@@ -148,7 +152,7 @@ void DlgPrefLibrary::slotExtraPlugins() {
 
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
-    checkbox_ID3_sync->setChecked(false);
+    checkBox_SyncTrackMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -165,9 +169,9 @@ void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
     checkBox_library_scan->setChecked(m_pconfig->getValue(
             ConfigKey("[Library]","RescanOnStartup"), false));
-    checkbox_ID3_sync->setChecked(m_pconfig->getValue(
-            ConfigKey("[Library]","WriteAudioTags"), false));
-    checkBox_use_relative_path->setChecked(m_pconfig->getValue(
+    checkBox_SyncTrackMetadataExport->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]","SyncTrackMetadataExport"), false));
+    checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
     checkBox_show_rhythmbox->setChecked(m_pconfig->getValue(
             ConfigKey("[Library]","ShowRhythmboxLibrary"), true));
@@ -298,9 +302,9 @@ void DlgPrefLibrary::slotRelocateDir() {
 void DlgPrefLibrary::slotApply() {
     m_pconfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","WriteAudioTags"),
-                ConfigValue((int)checkbox_ID3_sync->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
+    m_pConfig->set(ConfigKey("[Library]","SyncTrackMetadataExport"),
+                ConfigValue((int)checkBox_SyncTrackMetadataExport->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));

@@ -216,7 +216,7 @@ void TrackDAO::saveTrack(Track* pTrack) {
         // a timestamp is used to keep track of when metadata has been
         // last synchronized. Exporting metadata will update this time
         // stamp on the track object!
-        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1) {
             SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
         }
 
