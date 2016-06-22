@@ -48,7 +48,7 @@ WidgetTooltipWatcher::WidgetTooltipWatcher(WBaseWidget *pWidget, QList<ConfigKey
 
 void WidgetTooltipWatcher::update() {
     m_pTooltipShortcuts = "";
-    for (ConfigKey configKey: m_configKeys) {
+    for (const auto& configKey: m_configKeys) {
         updateShortcuts(configKey);
     }
     pushShortcutsToWidget();
