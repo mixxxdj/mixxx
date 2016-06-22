@@ -205,7 +205,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
         // Limit to an insane high value of 1 MB,
         // we got 4278190742 in https://bugs.launchpad.net/mixxx/+bug/1594169
         // TODO() set this to the mp4 maximum allowed block size, if there is one   
-        qWarning() << "maxSampleBlockInputSize is to big:" << maxSampleBlockInputSize << getUrlString();
+        qWarning() << "maxSampleBlockInputSize is too big:" << maxSampleBlockInputSize << getUrlString();
         return OpenResult::FAILED;    
     }
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
