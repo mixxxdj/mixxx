@@ -24,6 +24,7 @@ SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
 }
 
 SkinLoader::~SkinLoader() {
+    delete m_TooltipUpdater;
     LegacySkinParser::freeChannelStrings();
 }
 

@@ -4,12 +4,11 @@
 
 TooltipShortcutUpdater::TooltipShortcutUpdater() { }
 
-TooltipShortcutUpdater::~TooltipShortcutUpdater() {
-    // TODO(Tomasito) Delete WidgetTooltipWatchers
-}
+TooltipShortcutUpdater::~TooltipShortcutUpdater() { }
 
 void TooltipShortcutUpdater::addWatcher(WidgetTooltipWatcher* tooltipWatcher ) {
     tooltipWatcher->setKeyboardPreset(&m_pKbdPreset);
+    tooltipWatcher->setParent(this);
     m_pWatchers.append(tooltipWatcher);
 }
 
