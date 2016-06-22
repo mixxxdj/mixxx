@@ -29,13 +29,14 @@ class FakeController : public Controller {
             HidControllerPreset* pClone = new HidControllerPreset();
             *pClone = m_hidPreset;
             return ControllerPresetPointer(pClone);
-        } else if (m_bMidiPreset) {
-            MidiControllerPreset* pClone = new MidiControllerPreset();
-            *pClone = m_midiPreset;
-            return ControllerPresetPointer(pClone);
         } else if (m_bKbdPreset) {
             KeyboardControllerPreset* pClone = new KeyboardControllerPreset();
             *pClone = m_kbdPreset;
+            return ControllerPresetPointer(pClone);
+        } else {
+            // Default to Midi
+            MidiControllerPreset* pClone = new MidiControllerPreset();
+            *pClone = m_midiPreset;
             return ControllerPresetPointer(pClone);
         }
     }
