@@ -201,6 +201,13 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     // sample block for the selected track.
     const u_int32_t maxSampleBlockInputSize = MP4GetTrackMaxSampleSize(m_hFile,
             m_trackId);
+    if (maxSampleBlockInputSize > 1048576) { 
+        // Limit to an insane high value of 1 MB,
+        // we got 4278190742 in https://bugs.launchpad.net/mixxx/+bug/1594169
+        // TODO() set this to the mp4 maximum allowed block size, if there is one   
+        qWarning() << "maxSampleBlockInputSize is to big:" << maxSampleBlockInputSize << getUrlString();
+        return OpenResult::FAILED;    
+    }
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
 
     DEBUG_ASSERT(nullptr == m_hDecoder); // not already opened
