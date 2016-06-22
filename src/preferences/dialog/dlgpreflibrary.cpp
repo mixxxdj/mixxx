@@ -38,8 +38,6 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
           m_baddedDirectory(false),
           m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
-    slotUpdate();
-    checkbox_ID3_sync->setVisible(false);
 
     connect(this, SIGNAL(requestAddDir(QString)),
             m_pLibrary, SLOT(slotRequestAddDir(QString)));
@@ -89,6 +87,11 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
     builtInFormatsStr += ", ModPlug";
 #endif
     builtInFormats->setText(builtInFormatsStr);
+
+    connect(checkBox_WriteAudioTags, SIGNAL(toggled(bool)),
+            this, SLOT(slotWriteAudioTagsToggled()));
+    // Initialize the controls after all slots have been connected
+    slotUpdate();
 }
 
 DlgPrefLibrary::~DlgPrefLibrary() {
@@ -148,7 +151,7 @@ void DlgPrefLibrary::slotExtraPlugins() {
 
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
-    checkbox_ID3_sync->setChecked(false);
+    checkBox_WriteAudioTags->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -165,7 +168,7 @@ void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
     checkBox_library_scan->setChecked(m_pconfig->getValue(
             ConfigKey("[Library]","RescanOnStartup"), false));
-    checkbox_ID3_sync->setChecked(m_pconfig->getValue(
+    checkBox_WriteAudioTags->setChecked(m_pconfig->getValue(
             ConfigKey("[Library]","WriteAudioTags"), false));
     checkBox_use_relative_path->setChecked(m_pconfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
@@ -299,7 +302,7 @@ void DlgPrefLibrary::slotApply() {
     m_pconfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","WriteAudioTags"),
-                ConfigValue((int)checkbox_ID3_sync->isChecked()));
+                ConfigValue((int)checkBox_WriteAudioTags->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
