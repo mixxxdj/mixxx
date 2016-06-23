@@ -211,6 +211,11 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     // sample block for the selected track.
     const u_int32_t maxSampleBlockInputSize = MP4GetTrackMaxSampleSize(m_hFile,
             m_trackId);
+    if (maxSampleBlockInputSize == 0) {
+        qWarning() << "Failed to read MP4 DecoderConfigDescriptor.bufferSizeDB:"
+                << getUrlString();
+        return OpenResult::FAILED;
+    }
     if (maxSampleBlockInputSize > kMaxSampleBlockInputSizeLimit) {
         // Workaround for a possible bug in libmp4v2 2.0.0 (Ubuntu 16.04)
         // that returns 4278190742 when opening a corrupt file.
