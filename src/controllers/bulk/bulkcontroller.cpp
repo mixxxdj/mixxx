@@ -117,7 +117,6 @@ void BulkController::visit(const MidiControllerPreset* preset) {
     // TODO(XXX): throw a hissy fit.
 }
 
-// TODO Shouldn't this method raise a warning, just as visit(KeyboardControllerPreset*) and visit(MidiControllerPresetPreset*) ?
 void BulkController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.
