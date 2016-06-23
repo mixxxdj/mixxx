@@ -26,10 +26,12 @@ SoundSource::OpenResult SoundSource::open(const AudioSourceConfig& audioSrcCfg) 
     OpenResult result;
     try {
         result = tryOpen(audioSrcCfg);
-    } catch (...) {
+    } catch (const std::exception& e) {
+        qWarning() << "tryOpen failed" << getLocalFileName() << e.what();
         close();
-        throw;
+        return OpenResult::FAILED;
     }
+
     if (OpenResult::SUCCEEDED != result) {
         close();
     }
