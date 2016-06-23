@@ -23,17 +23,19 @@ SoundSource::SoundSource(const QUrl& url, const QString& type)
 
 SoundSource::OpenResult SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
     close(); // reopening is not supported
+
     OpenResult result;
     try {
         result = tryOpen(audioSrcCfg);
     } catch (const std::exception& e) {
-        qWarning() << "tryOpen failed" << getLocalFileName() << e.what();
-        close();
-        return OpenResult::FAILED;
+        qWarning() << "Caught unexpected exception from SoundSource::tryOpen():" << e.what();
+        result = OpenResult::FAILED;
+    } catch (...) {
+        qWarning() << "Caught unknown exception from SoundSource::tryOpen()";
+        result = OpenResult::FAILED;
     }
-
     if (OpenResult::SUCCEEDED != result) {
-        close();
+        close(); // rollback
     }
     return result;
 }
