@@ -24,8 +24,8 @@
 #include <portaudio.h>
 #endif // ifdef __PORTAUDIO__
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
@@ -78,10 +78,10 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
     m_pControlObjectVinylControlGainCO = new ControlObject(
             ConfigKey(VINYL_PREF_KEY, "gain"));
 
-    m_pMasterAudioLatencyOverloadCount = new ControlObjectSlave("[Master]",
+    m_pMasterAudioLatencyOverloadCount = new ControlProxy("[Master]",
             "audio_latency_overload_count");
 
-    m_pMasterAudioLatencyOverload = new ControlObjectSlave("[Master]",
+    m_pMasterAudioLatencyOverload = new ControlProxy("[Master]",
             "audio_latency_overload");
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
@@ -644,7 +644,11 @@ void SoundManager::setJACKName() const {
             reinterpret_cast<SetJackClientName>(
                 portaudio.resolve("PaJack_SetClientName")));
         if (func) {
-            if (!func(Version::applicationName().toLocal8Bit().constData())) qDebug() << "JACK client name set";
+            // PortAudio does not make a copy of the string we provide it so we
+            // need to make sure it will last forever so we intentionally leak
+            // this string.
+            char* jackNameCopy = strdup(Version::applicationName().toLocal8Bit().constData());
+            if (!func(jackNameCopy)) qDebug() << "JACK client name set";
         } else {
             qWarning() << "failed to resolve JACK name method";
         }

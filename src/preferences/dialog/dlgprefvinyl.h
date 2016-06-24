@@ -25,7 +25,7 @@
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 #include "preferences/dlgpreferencepage.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 class VinylControlManager;
 
 class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
@@ -66,8 +66,8 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
 
     VinylControlManager* m_pVCManager;
     UserSettingsPointer config;
-    QList<ControlObjectSlave*> m_COSpeeds;
-    ControlObjectSlave* m_pNumDecks;
+    QList<ControlProxy*> m_COSpeeds;
+    ControlProxy* m_pNumDecks;
     int m_iConfiguredDecks;
 };
 

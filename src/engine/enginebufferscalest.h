@@ -27,9 +27,6 @@
 
 #include "engine/enginebufferscale.h"
 
-// Number of samples to read ahead. Setting this too high (10000) causes
-// stuttering.
-const int kiSoundTouchReadAheadLength = 1000;
 class ReadAheadManager;
 
 namespace soundtouch {
@@ -41,19 +38,19 @@ class EngineBufferScaleST : public EngineBufferScale {
     Q_OBJECT
   public:
     EngineBufferScaleST(ReadAheadManager* pReadAheadManager);
-    virtual ~EngineBufferScaleST();
+    ~EngineBufferScaleST() override;
 
-    virtual void setScaleParameters(double base_rate,
-                                    double* pTempoRatio,
-                                    double* pPitchRatio);
+    void setScaleParameters(double base_rate,
+                            double* pTempoRatio,
+                            double* pPitchRatio) override;
 
-    virtual void setSampleRate(int iSampleRate);
+    void setSampleRate(int iSampleRate) override;
 
     // Scale buffer.
-    CSAMPLE* getScaled(unsigned long buf_size);
+    double getScaled(CSAMPLE* pOutput, const int iBufferSize) override;
 
     // Flush buffer.
-    void clear();
+    void clear() override;
 
   private:
     // Holds the playback direction.

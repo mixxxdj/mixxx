@@ -2,7 +2,7 @@
 
 #include "vinylcontrol/vinylcontrolprocessor.h"
 
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "util/defs.h"
 #include "util/event.h"
 #include "util/sample.h"

@@ -54,7 +54,7 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     m_iTotalSamples = totalSamples;
 
     // if we can't load a stored track reanalyze it
-    bool bShouldAnalyze = !loadStored(tio);
+    bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
         m_pVamp = new VampAnalyzer();
@@ -76,7 +76,7 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     return bShouldAnalyze;
 }
 
-bool AnalyzerKey::loadStored(TrackPointer tio) const {
+bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     bool bPreferencesFastAnalysisEnabled = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
@@ -94,7 +94,7 @@ bool AnalyzerKey::loadStored(TrackPointer tio) const {
     if (pluginID.isEmpty() || pluginID.isNull())
         pluginID = VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID;
 
-    const Keys& keys = tio->getKeys();
+    const Keys keys(tio->getKeys());
     if (keys.isValid()) {
         QString version = keys.getVersion();
         QString subVersion = keys.getSubVersion();

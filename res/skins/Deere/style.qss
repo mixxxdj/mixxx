@@ -338,13 +338,18 @@ WLibrary QSpinBox:editable {
 WLibrary QLabel, WLibrary QRadioButton {
   /* same as QTreeview */
   color: #d2d2d2;
-  margin: 0px 10px 0px 0px;
+  margin: 9px 10px 6px 0px;
 }
 
 WLibrary QRadioButton::indicator {
   margin: 0px 5px 0px 2px;
   width: 18px;
   height: 18px;
+}
+
+/* Additional space for the first QRadionButton in the row */
+WLibrary QRadioButton#radioButtonRecentlyAdded {
+  margin: 9px 10px 6px 14px;
 }
 
 WLibrary QRadioButton::indicator:checked {
@@ -361,6 +366,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #D2D2D2;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -377,6 +383,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAnalysis > QPushButton:!enabled {
   /* buttons in "disabled" (not click-able) state. They are nearly invisible
      by default QT palette, so style accordingly */
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #808080; /* Default #A3A3A3 -90L HSL*/
   background-color: qlineargradient(spread:pad,
@@ -394,6 +401,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton:hover,
 #DlgRecording > QPushButton:hover,
 #DlgAnalysis > QPushButton:hover {
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #D2D2D2;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -408,6 +416,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgRecording > QPushButton:checked,
 #DlgAnalysis > QPushButton:checked {
   /* checkbuttons in active state */
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -422,6 +431,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgRecording > QPushButton:checked:hover,
 #DlgAnalysis > QPushButton:checked:hover {
   /* checkbuttons hovered over in "active" state */
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -437,6 +447,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton:pressed,
 #DlgAnalysis > QPushButton:pressed {
   /* pushbuttons in "down" state */
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -445,6 +456,19 @@ WLibrary QRadioButton::indicator:unchecked {
   border: 0px solid #006596;
   border-radius: 2px;
   outline: none;
+}
+
+/* Additional space for the first and the last QPushButton in the row */
+#DlgMissing > QPushButton#btnPurge,
+#DlgHidden > QPushButton#btnUnhide,
+#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
+#DlgRecording > QPushButton#pushButtonRecording,
+#DlgAnalysis > QPushButton#pushButtonAnalyze {
+  margin: 9px 12px 6px 3px;
+}
+
+#DlgAutoDJ > QPushButton#pushButtonShuffle {
+  margin: 9px 3px 6px 12px;
 }
 
 
@@ -603,7 +627,7 @@ WWidget, QLabel {
 /* End spacing for Deck inner column (tempo slider, rate change) */
 
 
-/* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue) */
+/* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 #ControlsRow {
   qproperty-layoutSpacing: 5;
 }
@@ -624,17 +648,18 @@ WWidget, QLabel {
 #HotcueGrid WPushButton, #HotcueGridExtended WPushButton {
 }
 
-#LoopingContainer, #BeatLoopContainer, #TransportContainer {
+
+#LoopingContainer, #BeatLoopContainer, #TransportContainer, #VinylControlsContainer {
   background-color: #333333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }
 
-#LoopingContainer WWidgetGroup, #BeatLoopContainer WWidgetGroup, #TransportContainer WWidgetGroup {
+#LoopingContainer WWidgetGroup, #BeatLoopContainer WWidgetGroup, #TransportContainer WWidgetGroup, #VinylControlsContainer WWidgetGroup {
   qproperty-layoutSpacing: 2;
 }
 
-#LoopingContainer WPushButton, #BeatLoopContainer WPushButton, #TransportContainer WPushButton {
+#LoopingContainer WPushButton, #BeatLoopContainer WPushButton, #TransportContainer WPushButton, #VinylControlsContainer WPushButton {
 }
 /* End spacing for Deck controls row */
 

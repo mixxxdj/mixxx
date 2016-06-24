@@ -846,7 +846,7 @@ def generate(env):
         from SCons.Script.SConscript import SConsEnvironment
         SConsEnvironment.EnableQt4Modules = enable_modules
 
-def enable_modules(self, modules, debug=False, crosscompiling=False) :
+def enable_modules(self, modules, debug=False, crosscompiling=False, staticdeps=False) :
     import sys
 
     validModules = [
@@ -883,6 +883,9 @@ def enable_modules(self, modules, debug=False, crosscompiling=False) :
     staticModules = [
         'QtUiTools',
     ]
+    if sys.platform == "win32" and staticdeps :
+        staticModules.extend(validModules)
+        
     invalidModules=[]
     for module in modules:
         if module not in validModules :

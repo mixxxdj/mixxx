@@ -21,7 +21,7 @@ void ControlModel::addControl(const ConfigKey& key,
     info.key = key;
     info.title = title;
     info.description = description;
-    info.pControl = new ControlObjectSlave(this);
+    info.pControl = new ControlProxy(this);
     info.pControl->initialize(info.key);
 
     beginInsertRows(QModelIndex(), m_controls.size(),

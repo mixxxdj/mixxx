@@ -21,7 +21,7 @@
 #include "preferences/usersettings.h"
 
 class ControlPotmeter;
-class ControlObjectSlave;
+class ControlProxy;
 
 class EngineDelay : public EngineObject {
     Q_OBJECT
@@ -36,7 +36,7 @@ class EngineDelay : public EngineObject {
 
   private:
     ControlPotmeter* m_pDelayPot;
-    ControlObjectSlave* m_pSampleRate;
+    ControlProxy* m_pSampleRate;
     CSAMPLE* m_pDelayBuffer;
     int m_iDelayPos;
     int m_iDelay;

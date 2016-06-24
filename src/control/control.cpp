@@ -1,5 +1,4 @@
 #include <QtDebug>
-#include <QMutexLocker>
 #include <QSharedPointer>
 
 #include "control/control.h"
@@ -9,9 +8,14 @@
 
 // Static member variable definition
 UserSettingsPointer ControlDoublePrivate::s_pUserConfig;
-QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::s_qCOHash;
-QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash;
-QMutex ControlDoublePrivate::s_qCOHashMutex;
+
+QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::s_qCOHash
+GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
+
+QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash
+GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
+
+MMutex ControlDoublePrivate::s_qCOHashMutex;
 
 /*
 ControlDoublePrivate::ControlDoublePrivate()
@@ -33,7 +37,6 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
           m_bPersistInConfiguration(bPersist),
           m_bIgnoreNops(bIgnoreNops),
           m_bTrack(bTrack),
-          m_trackKey("control " + m_key.group + "," + m_key.item),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                        Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
@@ -58,6 +61,7 @@ void ControlDoublePrivate::initialize() {
 
     if (m_bTrack) {
         // TODO(rryan): Make configurable.
+        m_trackKey = "control " + m_key.group + "," + m_key.item;
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
                     static_cast<Stat::ComputeFlags>(m_trackFlags),
                     m_value.getValue());
@@ -80,7 +84,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 
 // static
 void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& key) {
-    QMutexLocker locker(&s_qCOHashMutex);
+    MMutexLocker locker(&s_qCOHashMutex);
 
     QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it =
             s_qCOHash.find(key);
@@ -111,31 +115,32 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         return QSharedPointer<ControlDoublePrivate>();
     }
 
-    QMutexLocker locker(&s_qCOHashMutex);
-    QSharedPointer<ControlDoublePrivate> pControl;
-    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.find(key);
 
-    if (it != s_qCOHash.end()) {
-        if (pCreatorCO) {
-            if (warn) {
-                qDebug() << "ControlObject" << key.group << key.item << "already created";
+    QSharedPointer<ControlDoublePrivate> pControl;
+    // Scope for MMutexLocker.
+    {
+        MMutexLocker locker(&s_qCOHashMutex);
+        QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.find(key);
+
+        if (it != s_qCOHash.end()) {
+            if (pCreatorCO) {
+                if (warn) {
+                    qDebug() << "ControlObject" << key.group << key.item << "already created";
+                }
+            } else {
+                pControl = it.value();
             }
-        } else {
-            pControl = it.value();
         }
     }
-
-    locker.unlock();
 
     if (pControl == NULL) {
         if (pCreatorCO) {
             pControl = QSharedPointer<ControlDoublePrivate>(
                     new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops,
                                              bTrack, bPersist));
-            locker.relock();
+            MMutexLocker locker(&s_qCOHashMutex);
             //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
             s_qCOHash.insert(key, pControl);
-            locker.unlock();
         } else if (warn) {
             qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
                        << key.group << "," << key.item << ")";
@@ -161,7 +166,7 @@ void ControlDoublePrivate::getControls(
 
 // static
 QHash<ConfigKey, ConfigKey> ControlDoublePrivate::getControlAliases() {
-    QMutexLocker locker(&s_qCOHashMutex);
+    MMutexLocker locker(&s_qCOHashMutex);
     return s_qCOAliasHash;
 }
 

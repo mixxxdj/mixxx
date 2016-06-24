@@ -29,17 +29,18 @@ WLabel::WLabel(QWidget* pParent)
           m_elideMode(Qt::ElideNone) {
 }
 
-WLabel::~WLabel() {
-}
-
-void WLabel::setup(QDomNode node, const SkinContext& context) {
+void WLabel::setup(const QDomNode& node, const SkinContext& context) {
     // Colors
     QPalette pal = palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
-    if (context.hasNode(node, "BgColor")) {
-        m_qBgColor.setNamedColor(context.selectString(node, "BgColor"));
+
+
+    QDomElement bgColor = context.selectElement(node, "BgColor");
+    if (!bgColor.isNull()) {
+        m_qBgColor.setNamedColor(context.nodeToString(bgColor));
         pal.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
         setAutoFillBackground(true);
     }
+
     m_qFgColor.setNamedColor(context.selectString(node, "FgColor"));
     pal.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
     setPalette(pal);
@@ -60,7 +61,7 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     // Alignment
     QString alignment;
     if (context.hasNodeSelectString(node, "Alignment", &alignment)) {
-    	alignment = alignment.toLower();
+        alignment = alignment.toLower();
         if (alignment == "right") {
             setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         } else if (alignment == "center") {
@@ -76,7 +77,7 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     // Adds an ellipsis to turncated text
     QString elide;
     if (context.hasNodeSelectString(node, "Elide", &elide)) {
-    	elide = elide.toLower();
+        elide = elide.toLower();
         if (elide == "right") {
             m_elideMode = Qt::ElideRight;
         } else if (elide == "middle") {

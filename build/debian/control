@@ -17,13 +17,11 @@ Build-Depends: debhelper (>= 4.0.0),
                libsndfile1-dev,
                libasound2-dev,
                libvorbis-dev,
-               libsoundtouch1-dev,
                libmp4v2-dev,
                libfaad-dev,
                libportmidi-dev,
                libtag1-dev,
                libshout-dev,
-               libqtwebkit-dev,
                vamp-plugin-sdk,
                libprotobuf-dev,
                protobuf-compiler,
@@ -33,7 +31,8 @@ Build-Depends: debhelper (>= 4.0.0),
                libopusfile-dev,
                libsqlite3-dev,
                libsoundtouch-dev,
-               libhidapi-dev
+               libhidapi-dev,
+               libupower-glib-dev
 Standards-Version: 3.7.3
 Homepage: http://www.mixxx.org/
 
@@ -45,7 +44,6 @@ Depends: ${shlibs:Depends},
          libqt4-opengl,
          libqt4-svg,
          libqt4-xmlpatterns,
-         libqt4-webkit,
          libqt4-sql,
          libqt4-sql-sqlite
 Recommends: libmp3lame0

@@ -13,11 +13,14 @@
   <property name="windowTitle">
    <string>Missing Tracks</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
     <number>0</number>
    </property>
    <property name="rightMargin">
@@ -28,14 +31,17 @@
    </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetMinimumSize</enum>
+     <property name="spacing">
+      <number>0</number>
      </property>
      <property name="leftMargin">
-      <number>12</number>
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
      </property>
      <property name="rightMargin">
-      <number>12</number>
+      <number>0</number>
      </property>
      <property name="bottomMargin">
       <number>0</number>
@@ -80,12 +86,6 @@
    </item>
    <item>
     <widget class="QTableView" name="m_pTrackTablePlaceholder">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <property name="showGrid">
       <bool>true</bool>
      </property>

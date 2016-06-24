@@ -65,8 +65,8 @@
 								<ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_status</ConfigKey>
 							</Connection>
 						</StatusLight>
-	
-						<!-- Collapsing Waveform, Vinylcontrol & spinning Vinyl widget-->
+
+						<!-- Collapsing Waveform, VinylControl & spinning Vinyl widget-->
 						<WidgetGroup>
 							<Pos>2,43</Pos>
 							<Size>313,117</Size>
@@ -145,8 +145,8 @@
 										<TextColor>#FFFFFF</TextColor>
 									</Mark>
 								</Visual>
-	
-								<!-- Spinning Vinyl & Vinylcontrol -->
+
+								<!-- Spinning Vinyl & VinylControl -->
 								<WidgetGroup>
 									<Style>
                                         QGroupBox { 

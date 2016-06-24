@@ -2,13 +2,13 @@
 
 #include <QtDebug>
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "preferences/usersettings.h"
-#include "controlindicator.h"
-#include "controllinpotmeter.h"
-#include "controlobjectslave.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlindicator.h"
+#include "control/controllinpotmeter.h"
+#include "control/controlproxy.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "engine/bpmcontrol.h"
 #include "engine/clockcontrol.h"
 #include "engine/cuecontrol.h"
@@ -28,7 +28,7 @@
 #include "engine/sync/synccontrol.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/defs.h"
@@ -44,10 +44,10 @@
 const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 const int kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
-EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
+EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
         : m_group(group),
-          m_pConfig(_config),
+          m_pConfig(pConfig),
           m_pLoopingControl(NULL),
           m_pSyncControl(NULL),
           m_pVinylControlControl(NULL),
@@ -105,7 +105,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
 
-    m_pReader = new CachingReader(group, _config);
+    m_pReader = new CachingReader(group, pConfig);
     connect(m_pReader, SIGNAL(trackLoading()),
             this, SLOT(slotTrackLoading()),
             Qt::DirectConnection);
@@ -180,9 +180,9 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
 
     // Sample rate
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
 
-    m_pKeylockEngine = new ControlObjectSlave("[Master]", "keylock_engine", this);
+    m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
     m_pKeylockEngine->connectValueChanged(SLOT(slotKeylockEngineChanged(double)),
                                           Qt::DirectConnection);
 
@@ -200,10 +200,10 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
-    QuantizeControl* quantize_control = new QuantizeControl(group, _config);
+    QuantizeControl* quantize_control = new QuantizeControl(group, pConfig);
 
     // Create the Loop Controller
-    m_pLoopingControl = new LoopingControl(group, _config);
+    m_pLoopingControl = new LoopingControl(group, pConfig);
     addControl(m_pLoopingControl);
 
     addControl(quantize_control);
@@ -211,20 +211,20 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
 
     m_pEngineSync = pMixingEngine->getEngineSync();
 
-    m_pSyncControl = new SyncControl(group, _config, pChannel, m_pEngineSync);
+    m_pSyncControl = new SyncControl(group, pConfig, pChannel, m_pEngineSync);
     addControl(m_pSyncControl);
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlControl = new VinylControlControl(group, _config);
+    m_pVinylControlControl = new VinylControlControl(group, pConfig);
     addControl(m_pVinylControlControl);
 #endif
 
-    m_pRateControl = new RateControl(group, _config);
+    m_pRateControl = new RateControl(group, pConfig);
     // Add the Rate Controller
     addControl(m_pRateControl);
 
     // Create the BPM Controller
-    m_pBpmControl = new BpmControl(group, _config);
+    m_pBpmControl = new BpmControl(group, pConfig);
     addControl(m_pBpmControl);
 
     // TODO(rryan) remove this dependence?
@@ -235,15 +235,15 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
     m_fwdButton = ControlObject::getControl(ConfigKey(group, "fwd"));
     m_backButton = ControlObject::getControl(ConfigKey(group, "back"));
 
-    m_pKeyControl = new KeyControl(group, _config);
+    m_pKeyControl = new KeyControl(group, pConfig);
     addControl(m_pKeyControl);
 
     // Create the clock controller
-    m_pClockControl = new ClockControl(group, _config);
+    m_pClockControl = new ClockControl(group, pConfig);
     addControl(m_pClockControl);
 
     // Create the cue controller
-    m_pCueControl = new CueControl(group, _config);
+    m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
@@ -264,7 +264,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
     m_pScale->clear();
     m_bScalerChanged = true;
 
-    m_pPassthroughEnabled = new ControlObjectSlave(group, "passthrough", this);
+    m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
@@ -436,14 +436,11 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
     if (!m_bCrossfadeReady) {
         // Read buffer, as if there where no parameter change
         // (Must be called only once per callback)
-        CSAMPLE* fadeout = m_pScale->getScaled(iBufferSize);
-        SampleUtil::copy(m_pCrossfadeBuffer, fadeout, iBufferSize);
-
+        m_pScale->getScaled(m_pCrossfadeBuffer, iBufferSize);
         // Restore the original position that was lost due to getScaled() above
         m_pReadAheadManager->notifySeek(m_filepos_play);
-
         m_bCrossfadeReady = true;
-    }
+     }
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -502,7 +499,7 @@ void EngineBuffer::slotTrackLoading() {
 }
 
 TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
-    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     // 10 seconds
     pTrack->setDuration(10);
@@ -513,7 +510,7 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
     }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
     m_pSyncControl->setLocalBpm(filebpm);
-    m_pSyncControl->trackLoaded(pTrack);
+    m_pSyncControl->trackLoaded(pTrack, TrackPointer());
     return pTrack;
 }
 
@@ -522,6 +519,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
     //qDebug() << getGroup() << "EngineBuffer::slotTrackLoaded";
+    TrackPointer pOldTrack = m_pCurrentTrack;
+
     m_pause.lock();
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
@@ -539,7 +538,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pause.unlock();
 
     // All EngineControls are connected directly
-    emit(trackLoaded(pTrack));
+    emit(trackLoaded(pTrack, pOldTrack));
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
     m_iTrackLoading = 0;
@@ -549,6 +548,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     m_iTrackLoading = 0;
+    // Loading of a new track failed.
+    // eject the currently loaded track (the old Track) as well
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -559,6 +560,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 
 void EngineBuffer::ejectTrack() {
     // clear track values in any case, this may fix Bug #1450424
+    //qDebug() << "EngineBuffer::ejectTrack()";
     m_pause.lock();
     m_iTrackLoading = 0;
     m_pTrackSamples->set(0);
@@ -574,7 +576,7 @@ void EngineBuffer::ejectTrack() {
     m_pause.unlock();
 
     if (pTrack) {
-        emit(trackUnloaded(pTrack));
+        emit(trackLoaded(TrackPointer(), pTrack));
     }
 }
 
@@ -978,17 +980,13 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
 
             // Perform scaling of Reader buffer into buffer.
-            CSAMPLE* output = m_pScale->getScaled(iBufferSize);
-            double samplesRead = m_pScale->getSamplesRead();
+            double samplesRead = m_pScale->getScaled(pOutput, iBufferSize);
 
             //qDebug() << "sourceSamples used " << iSourceSamples
             //         <<" samplesRead " << samplesRead
             //         << ", buffer pos " << iBufferStartSample
             //         << ", play " << filepos_play
             //         << " bufferlen " << iBufferSize;
-
-            // Copy scaled audio into pOutput
-            SampleUtil::copy(pOutput, output, iBufferSize);
 
             if (m_bScalerOverride) {
                 // If testing, we don't have a real log so we fake the position.
@@ -1310,22 +1308,24 @@ void EngineBuffer::hintReader(const double dRate) {
 }
 
 // WARNING: This method runs in the GUI thread
-void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
-    // Signal to the reader to load the track. The reader will respond with
-    // trackLoading and then either with trackLoaded or trackLoadFailed signals.
-    m_bPlayAfterLoading = play;
-    m_pReader->newTrack(pTrack);
+void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
+    if (pTrack.isNull()) {
+        // Loading a null track means "eject"
+        ejectTrack();
+    } else {
+        // Signal to the reader to load the track. The reader will respond with
+        // trackLoading and then either with trackLoaded or trackLoadFailed signals.
+        m_bPlayAfterLoading = play;
+        m_pReader->newTrack(pTrack);
+    }
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
     m_engineControls.push_back(pControl);
     pControl->setEngineBuffer(this);
-    connect(this, SIGNAL(trackLoaded(TrackPointer)),
-            pControl, SLOT(trackLoaded(TrackPointer)),
-            Qt::DirectConnection);
-    connect(this, SIGNAL(trackUnloaded(TrackPointer)),
-            pControl, SLOT(trackUnloaded(TrackPointer)),
+    connect(this, SIGNAL(trackLoaded(TrackPointer, TrackPointer)),
+            pControl, SLOT(trackLoaded(TrackPointer, TrackPointer)),
             Qt::DirectConnection);
 }
 

@@ -31,31 +31,50 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="EnableAnalyzer">
+       <widget class="QLabel" name="label_boost">
         <property name="toolTip">
-         <string>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</string>
+         <string>For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale).</string>
         </property>
         <property name="text">
-         <string>Enable ReplayGain 1.0 Analysis</string>
+         <string>Target loudness</string>
+        </property>
+        <property name="buddy">
+         <cstring>SliderReplayGainBoost</cstring>
         </property>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="grpRP">
-     <property name="minimumSize">
-      <size>
-       <width>409</width>
-       <height>200</height>
-      </size>
-     </property>
-     <property name="title">
-      <string/>
-     </property>
-     <layout class="QGridLayout">
-      <item row="3" column="0">
+      <item>
+       <widget class="QSlider" name="SliderReplayGainBoost">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="locale">
+         <locale language="C" country="AnyCountry"/>
+        </property>
+        <property name="minimum">
+         <number>-12</number>
+        </property>
+        <property name="maximum">
+         <number>12</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="pageStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="tickInterval">
+         <number>5</number>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <property name="spacing">
          <number>6</number>
@@ -115,38 +134,7 @@
         </item>
        </layout>
       </item>
-      <item row="2" column="0">
-       <widget class="QSlider" name="SliderReplayGainBoost">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="locale">
-         <locale language="C" country="AnyCountry"/>
-        </property>
-        <property name="minimum">
-         <number>-12</number>
-        </property>
-        <property name="maximum">
-         <number>12</number>
-        </property>
-        <property name="singleStep">
-         <number>1</number>
-        </property>
-        <property name="pageStep">
-         <number>1</number>
-        </property>
-        <property name="value">
-         <number>0</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="tickInterval">
-         <number>5</number>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
+      <item>
        <widget class="QLabel" name="label">
         <property name="toolTip">
          <string>When ReplayGain is enabled, adjust tracks lacking ReplayGain information by this amount.</string>
@@ -156,20 +144,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_boost">
-        <property name="toolTip">
-         <string>For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale).</string>
-        </property>
-        <property name="text">
-         <string>Target loudness</string>
-        </property>
-        <property name="buddy">
-         <cstring>SliderReplayGainBoost</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
+      <item>
        <widget class="QSlider" name="SliderDefaultBoost">
         <property name="minimum">
          <number>-12</number>
@@ -188,7 +163,7 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <property name="bottomMargin">
          <number>0</number>
@@ -241,6 +216,43 @@
          </widget>
         </item>
        </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBoxAnalysis">
+     <property name="title">
+      <string>Analysis</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QRadioButton" name="radioButtonRG2">
+        <property name="text">
+         <string>ReplayGain 2.0 (ITU-R BS.1770)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButtonRG1">
+        <property name="text">
+         <string>ReplayGain 1.0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButtonDisable">
+        <property name="text">
+         <string>Disabled</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxReanalyze">
+        <property name="text">
+         <string>Re-analyze and override an existing value </string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

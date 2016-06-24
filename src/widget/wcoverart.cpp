@@ -6,14 +6,14 @@
 #include <QStylePainter>
 #include <QStyleOption>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "widget/wcoverart.h"
 #include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
-#include "util/math.h"
 #include "util/dnd.h"
+#include "util/math.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      UserSettingsPointer pConfig,
@@ -29,7 +29,7 @@ WCoverArt::WCoverArt(QWidget* parent,
     setAcceptDrops(!m_group.isEmpty());
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
+    if (pCache != nullptr) {
         connect(pCache, SIGNAL(coverFound(const QObject*, const int,
                                           const CoverInfo&, QPixmap, bool)),
                 this, SLOT(slotCoverFound(const QObject*, const int,
@@ -46,14 +46,15 @@ WCoverArt::~WCoverArt() {
     delete m_pDlgFullSize;
 }
 
-void WCoverArt::setup(QDomNode node, const SkinContext& context) {
+void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     setMouseTracking(true);
 
     // Background color
     QColor bgc(255,255,255);
-    if (context.hasNode(node, "BgColor")) {
-        bgc.setNamedColor(context.selectString(node, "BgColor"));
+    QString bgColorStr;
+    if (context.hasNodeSelectString(node, "BgColor", &bgColorStr)) {
+        bgc.setNamedColor(bgColorStr);
         setAutoFillBackground(true);
     }
     QPalette pal = palette();
@@ -61,16 +62,18 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
 
     // Foreground color
     QColor m_fgc(0,0,0);
-    if (context.hasNode(node, "FgColor")) {
-        m_fgc.setNamedColor(context.selectString(node, "FgColor"));
+    QString fgColorStr;
+    if (context.hasNodeSelectString(node, "FgColor", &fgColorStr)) {
+        m_fgc.setNamedColor(fgColorStr);
     }
     bgc = WSkinColor::getCorrectColor(bgc);
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
     pal.setBrush(foregroundRole(), m_fgc);
     setPalette(pal);
 
-    if (context.hasNode(node, "DefaultCover")) {
-        m_defaultCover = QPixmap(context.selectString(node, "DefaultCover"));
+    QString defaultCoverStr;
+    if (context.hasNodeSelectString(node, "DefaultCover", &defaultCoverStr)) {
+        m_defaultCover = QPixmap(defaultCoverStr);
     }
 
     // If no default cover is specified or we failed to load it, fall back on
@@ -104,8 +107,13 @@ void WCoverArt::slotEnable(bool enable) {
     if (wasDisabled) {
         slotLoadTrack(m_loadedTrack);
     }
-
     update();
+}
+
+void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
+    slotReset();
 }
 
 void WCoverArt::slotReset() {
@@ -144,7 +152,7 @@ void WCoverArt::slotTrackCoverArtUpdated() {
         m_lastRequestedCover = m_loadedTrack->getCoverInfo();
         m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
         CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache != NULL) {
+        if (pCache != nullptr) {
             // TODO(rryan): Don't use track id.
             pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId().toInt());
         }
@@ -179,7 +187,7 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
     return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
-void WCoverArt::paintEvent(QPaintEvent*) {
+void WCoverArt::paintEvent(QPaintEvent* /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
@@ -204,7 +212,7 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     }
 }
 
-void WCoverArt::resizeEvent(QResizeEvent*) {
+void WCoverArt::resizeEvent(QResizeEvent* /*unused*/) {
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
@@ -226,7 +234,7 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     }
 }
 
-void WCoverArt::leaveEvent(QEvent*) {
+void WCoverArt::leaveEvent(QEvent* /*unused*/) {
     m_pDlgFullSize->close();
 }
 

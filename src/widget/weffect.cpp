@@ -11,10 +11,7 @@ WEffect::WEffect(QWidget* pParent, EffectsManager* pEffectsManager)
     effectUpdated();
 }
 
-WEffect::~WEffect() {
-}
-
-void WEffect::setup(QDomNode node, const SkinContext& context) {
+void WEffect::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(

@@ -1,14 +1,16 @@
 #include <QtDebug>
 #include <QtSql>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/dao/playlistdao.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "library/autodj/autodjprocessor.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO(QSqlDatabase& database)
-        : m_database(database) {
+        : m_database(database),
+          m_pAutoDJProcessor(nullptr) {
 }
 
 PlaylistDAO::~PlaylistDAO() {
@@ -1002,5 +1004,28 @@ void PlaylistDAO::getPlaylistsTrackIsIn(TrackId trackId,
     for (QHash<TrackId, int>::const_iterator it = m_playlistsTrackIsIn.find(trackId);
          it != m_playlistsTrackIsIn.end() && it.key() == trackId; ++it) {
         playlistSet->insert(it.value());
+    }
+}
+
+void PlaylistDAO::setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor) {
+    m_pAutoDJProcessor = pAutoDJProcessor;
+}
+
+void PlaylistDAO::sendToAutoDJ(const QList<TrackId>& trackIds, bool bTop) {
+    int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
+    if (iAutoDJPlaylistId == -1) {
+        return;
+    }
+
+    if (bTop) {
+        int position = 1;
+        if (m_pAutoDJProcessor && m_pAutoDJProcessor->nextTrackLoaded()) {
+            // Load track to position two because position one is
+            // already loaded to the player
+            position = 2;
+        }
+        insertTracksIntoPlaylist(trackIds, iAutoDJPlaylistId, position);
+    } else {
+        appendTracksToPlaylist(trackIds, iAutoDJPlaylistId);
     }
 }

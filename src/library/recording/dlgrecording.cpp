@@ -1,6 +1,6 @@
 #include <QDesktopServices>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "library/recording/dlgrecording.h"
 #include "library/trackcollection.h"
 #include "widget/wwidget.h"
@@ -10,7 +10,7 @@
 
 DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
                            Library* pLibrary, TrackCollection* pTrackCollection,
-                           RecordingManager* pRecordingManager, MixxxKeyboard* pKeyboard)
+                           RecordingManager* pRecordingManager, KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
@@ -57,7 +57,8 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
 
     connect(pushButtonRecording, SIGNAL(toggled(bool)),
             this,  SLOT(toggleRecording(bool)));
-    label->setText(tr("Start recording here ..."));
+    label->setText("");
+    label->setEnabled(false);
 }
 
 DlgRecording::~DlgRecording() {
@@ -117,9 +118,11 @@ void DlgRecording::toggleRecording(bool toggle) {
 void DlgRecording::slotRecordingEnabled(bool isRecording) {
     if (isRecording) {
         pushButtonRecording->setText((tr("Stop Recording")));
+        label->setEnabled(true);
     } else {
         pushButtonRecording->setText((tr("Start Recording")));
-        label->setText("Start recording here ...");
+        label->setText("");
+        label->setEnabled(false);
     }
     //This will update the recorded track table view
     m_browseModel.setPath(m_recordingDir);

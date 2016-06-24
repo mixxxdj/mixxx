@@ -29,7 +29,7 @@
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 
 class SoundManager;
-class ControlObjectSlave;
+class ControlProxy;
 
 /** Dynamically resolved function which allows us to enable a realtime-priority callback
     thread from ALSA/PortAudio. This must be dynamically resolved because PortAudio can't
@@ -74,6 +74,7 @@ class SoundDevicePortAudio : public SoundDevice {
 
   private:
     void updateCallbackEntryToDacTime(const PaStreamCallbackTimeInfo* timeInfo);
+    void updateAudioLatencyUsage(const unsigned int framesPerBuffer);
 
     // PortAudio stream for this device.
     PaStream* volatile m_pStream;
@@ -95,12 +96,14 @@ class SoundDevicePortAudio : public SoundDevice {
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
-    ControlObjectSlave* m_pMasterAudioLatencyUsage;
+    ControlProxy* m_pMasterAudioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
-    bool m_invalidTimeInfoWarned;
+    int m_invalidTimeInfoCount;
     PerformanceTimer m_clkRefTimer;
+    PaTime m_lastCallbackEntrytoDacSecs;
+
 };
 
 #endif

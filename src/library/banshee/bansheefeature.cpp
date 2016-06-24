@@ -13,7 +13,9 @@
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 QString BansheeFeature::m_databaseFile;
 
-BansheeFeature::BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, UserSettingsPointer pConfig)
+BansheeFeature::BansheeFeature(QObject* parent,
+                               TrackCollection* pTrackCollection,
+                               UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false) {

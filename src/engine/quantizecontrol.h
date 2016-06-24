@@ -6,7 +6,7 @@
 #include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
 
 class ControlObject;
@@ -22,8 +22,7 @@ class QuantizeControl : public EngineControl {
                                   const double dTotalSamples);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
     void slotBeatsUpdated();

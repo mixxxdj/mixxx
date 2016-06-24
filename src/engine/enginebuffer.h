@@ -22,12 +22,12 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "preferences/usersettings.h"
 #include "control/controlvalue.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/rotary.h"
 #include "util/types.h"
 
@@ -49,13 +49,12 @@ class ClockControl;
 class CueControl;
 class ReadAheadManager;
 class ControlObject;
-class ControlObjectSlave;
+class ControlProxy;
 class ControlPushButton;
 class ControlIndicator;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
-class CachingReader;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
@@ -116,7 +115,7 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(QString _group, UserSettingsPointer _config,
+    EngineBuffer(QString _group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
@@ -173,6 +172,11 @@ class EngineBuffer : public EngineObject {
         }
     }
 
+    // Request that the EngineBuffer load a track. Since the process is
+    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
+    // has completed.
+    void loadTrack(TrackPointer pTrack, bool play);
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -186,17 +190,11 @@ class EngineBuffer : public EngineObject {
     void slotControlSlip(double);
     void slotKeylockEngineChanged(double);
 
-    // Request that the EngineBuffer load a track. Since the process is
-    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
-    // has completed.
-    void slotLoadTrack(TrackPointer pTrack, bool play = false);
-
     void slotEjectTrack(double);
 
   signals:
-    void trackLoaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
-    void trackUnloaded(TrackPointer pTrack);
 
   private slots:
     void slotTrackLoading();
@@ -336,14 +334,14 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
-    ControlObjectSlave* m_pSampleRate;
-    ControlObjectSlave* m_pKeylockEngine;
+    ControlProxy* m_pSampleRate;
+    ControlProxy* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
 
-    // This ControlObjectSlaves is created as parent to this and deleted by
+    // This ControlProxys is created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
     // thread, which is required to avoid segfaults.
-    ControlObjectSlave* m_pPassthroughEnabled;
+    ControlProxy* m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
 

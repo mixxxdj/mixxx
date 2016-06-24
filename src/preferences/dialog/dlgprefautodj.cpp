@@ -13,8 +13,6 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)),
             this, SLOT(slotSetAutoDjRequeue(int)));
 
-#ifdef __AUTODJCRATES__
-
     // The minimum available for randomly-selected tracks
     autoDjMinimumAvailableSpinBox->setValue(
             m_pConfig->getValueString(
@@ -61,19 +59,6 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
             SLOT(slotEnableAutoDJRandomQueue(int)));
     connect(autoDJRandomQueueMinimumSpinBox, SIGNAL(valueChanged(int)), this,
             SLOT(slotSetAutoDJRandomQueueMin(int)));
-
-#else // __AUTODJCRATES__
-
-    // Remove the preferences.
-    autoDjMinimumAvailableLabel->setVisible(false);
-    GridLayout1->removeWidget(autoDjMinimumAvailableLabel);
-    autoDjMinimumAvailableSpinBox->setVisible(false);
-    GridLayout1->removeWidget(autoDjMinimumAvailableSpinBox);
-    autoDjIgnoreTimeCheckBox->setVisible(false);
-    GridLayout1->removeWidget(autoDjIgnoreTimeCheckBox);
-    autoDjIgnoreTimeEdit->setVisible(false);
-    GridLayout1->removeWidget(autoDjIgnoreTimeEdit);
-#endif // __AUTODJCRATES__
 }
 
 DlgPrefAutoDJ::~DlgPrefAutoDJ() {
@@ -86,7 +71,6 @@ void DlgPrefAutoDJ::slotApply() {
     //Copy from Buffer to actual values
     m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"),
             m_pConfig->getValueString(ConfigKey("[Auto DJ]", "RequeueBuff"),"0"));
-#ifdef __AUTODJCRATES__
     m_pConfig->set(ConfigKey("[Auto DJ]","MinimumAvailable"),
             m_pConfig->getValueString(
                     ConfigKey("[Auto DJ]", "MinimumAvailableBuff"), "20"));
@@ -104,7 +88,6 @@ void DlgPrefAutoDJ::slotApply() {
     m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueue"),
             m_pConfig->getValueString(
                     ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),"0"));
-#endif //__AUTODJCRATES__
 }
 
 void DlgPrefAutoDJ::slotCancel() {
@@ -113,7 +96,6 @@ void DlgPrefAutoDJ::slotCancel() {
             m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue"),"0").toInt());
     m_pConfig->set(ConfigKey("[Auto DJ]", "RequeueBuff"),
             m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue"),"0"));
-#ifdef __AUTODJCRATES__
     autoDjMinimumAvailableSpinBox->setValue(
             m_pConfig->getValueString(
                       ConfigKey("[Auto DJ]", "MinimumAvailable"), "20").toInt());
@@ -146,14 +128,12 @@ void DlgPrefAutoDJ::slotCancel() {
                     ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt());
     slotEnableAutoDJRandomQueueComboBox(
             m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
-#endif //__AUTODJCRATES__
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
     // Re-queue tracks in AutoDJ
     ComboBoxAutoDjRequeue->setCurrentIndex(0);
     m_pConfig->set(ConfigKey("[Auto DJ]", "RequeueBuff"),ConfigValue(0));
-#ifdef __AUTODJCRATES__
     autoDjMinimumAvailableSpinBox->setValue(20);
 
     autoDjIgnoreTimeEdit->setTime(QTime::fromString(
@@ -167,7 +147,6 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),QString("0"));
     autoDJRandomQueueMinimumSpinBox->setEnabled(false);
     ComboBoxAutoDjRandomQueue->setEnabled(true);
-#endif
 }
 
 void DlgPrefAutoDJ::slotSetAutoDjRequeue(int) {
@@ -176,40 +155,31 @@ void DlgPrefAutoDJ::slotSetAutoDjRequeue(int) {
 }
 
 void DlgPrefAutoDJ::slotSetAutoDjMinimumAvailable(int a_iValue) {
-#ifdef __AUTODJCRATES__
     QString str;
     str.setNum(a_iValue);
     m_pConfig->set(ConfigKey("[Auto DJ]","MinimumAvailableBuff"),str);
-#endif // __AUTODJCRATES__
 }
 
 void DlgPrefAutoDJ::slotSetAutoDjUseIgnoreTime(int a_iState) {
-#ifdef __AUTODJCRATES__
     bool bChecked = (a_iState == Qt::Checked);
     QString strChecked = (bChecked) ? "1" : "0";
     m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"), strChecked);
     autoDjIgnoreTimeEdit->setEnabled(bChecked);
-#endif // __AUTODJCRATES__
 }
 
 void DlgPrefAutoDJ::slotSetAutoDjIgnoreTime(const QTime &a_rTime) {
-#ifdef __AUTODJCRATES__
     QString str = a_rTime.toString(autoDjIgnoreTimeEdit->displayFormat());
     m_pConfig->set(ConfigKey("[Auto DJ]", "IgnoreTimeBuff"),str);
-#endif // __AUTODJCRATES__
 }
 
 void DlgPrefAutoDJ::slotSetAutoDJRandomQueueMin(int a_iValue) {
-#ifdef __AUTODJCRATES__
     QString str;
     //qDebug() << "min allowed " << a_iValue;
     str.setNum(a_iValue);
     m_pConfig->set(ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowedBuff"), str);
-#endif // __AUTODJCRATES__
 }
 
 void DlgPrefAutoDJ::slotEnableAutoDJRandomQueueComboBox(int a_iValue) {
-#ifdef __AUTODJCRATES__
     if (a_iValue == 1) {
         // Requeue is enabled
         m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
@@ -223,11 +193,9 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueueComboBox(int a_iValue) {
                 m_pConfig->getValueString(
                         ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),"0").toInt());
     }
-#endif // __AUTODJCRATES__
 }
 
 void DlgPrefAutoDJ::slotEnableAutoDJRandomQueue(int a_iValue) {
-#ifdef __AUTODJCRATES__
     // Disable enable the option to select minimum tracks
     if (a_iValue == 0) {
         autoDJRandomQueueMinimumSpinBox->setEnabled(false);
@@ -238,5 +206,4 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueue(int a_iValue) {
         m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
                 ConfigValue(1));
     }
-#endif // __AUTODJCRATES__
 }

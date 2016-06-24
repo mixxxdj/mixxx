@@ -10,7 +10,7 @@
 #include "preferences/usersettings.h"
 #include "library/export/trackexportworker.h"
 #include "library/export/ui_dlgtrackexport.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 // A dialog for interacting with the track exporter in an interactive manner.
 // Handles errors and user interactions.

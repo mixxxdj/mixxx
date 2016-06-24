@@ -6,7 +6,7 @@
 
 #include "library/coverart.h"
 #include "util/singleton.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     Q_OBJECT

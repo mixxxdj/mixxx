@@ -32,8 +32,8 @@ namespace Mixxx {
 
 class SoundSourceMediaFoundation : public Mixxx::SoundSourcePlugin {
 public:
-    explicit SoundSourceMediaFoundation(QUrl url);
-    ~SoundSourceMediaFoundation();
+    explicit SoundSourceMediaFoundation(const QUrl& url);
+    ~SoundSourceMediaFoundation() override;
 
     void close() override;
 
@@ -42,7 +42,7 @@ public:
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) override;
 
     bool configureAudioStream(const Mixxx::AudioSourceConfig& audioSrcCfg);
     bool readProperties();

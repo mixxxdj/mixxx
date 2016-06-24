@@ -22,6 +22,16 @@ public:
     Result writeTrackMetadata(
             const TrackMetadata& trackMetadata) const override;
 
+    enum class OpenResult {
+        SUCCEEDED,
+        FAILED,
+        // If a SoundSource supports only some of the file formats
+        // behind a supported file extension it may return the
+        // following error. This is not really a failure as it
+        // only indicates a lack of functionality.
+        UNSUPPORTED_FORMAT
+    };
+
     // Opens the AudioSource for reading audio data.
     //
     // Since reopening is not supported close() will be called
@@ -31,7 +41,7 @@ public:
     // of the decoded audio signal. Some decoders are able to reduce
     // the number of channels or do resampling on the fly while decoding
     // the input data.
-    Result open(const AudioSourceConfig& audioSrcCfg = AudioSourceConfig());
+    OpenResult open(const AudioSourceConfig& audioSrcCfg = AudioSourceConfig());
 
     // Closes the AudioSource and frees all resources.
     //
@@ -53,7 +63,7 @@ private:
     // need to free resources in tryOpen() themselves, but
     // should instead be prepared for the following invocation
     // of close().
-    virtual Result tryOpen(const AudioSourceConfig& audioSrcCfg) = 0;
+    virtual OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) = 0;
 
     const QString m_type;
 };

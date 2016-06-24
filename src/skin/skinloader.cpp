@@ -110,7 +110,7 @@ QString SkinLoader::getSkinPath() {
 }
 
 QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
-                                     MixxxKeyboard* pKeyboard,
+                                     KeyboardEventFilter* pKeyboard,
                                      PlayerManager* pPlayerManager,
                                      ControllerManager* pControllerManager,
                                      Library* pLibrary,

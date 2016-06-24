@@ -6,7 +6,8 @@
 #include <QScopedPointer>
 #include <QByteArray>
 
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
+#include "util/valuetransformer.h"
 
 class WBaseWidget;
 class ValueTransformer;
@@ -18,7 +19,6 @@ class ControlWidgetConnection : public QObject {
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
                             const ConfigKey& key,
                             ValueTransformer* pTransformer);
-    virtual ~ControlWidgetConnection();
 
     double getControlParameter() const;
     double getControlParameterForValue(double value) const;
@@ -33,14 +33,14 @@ class ControlWidgetConnection : public QObject {
     virtual void slotControlValueChanged(double v) = 0;
 
   protected:
-    void setControlParameter(double v);
+    void setControlParameter(double parameter);
 
     WBaseWidget* m_pWidget;
 
-    // This ControlObjectSlaves is created as parent to this and deleted by
+    // This ControlProxys is created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
     // thread, which is required to avoid segfaults.
-    ControlObjectSlave* m_pControl;
+    ControlProxy* m_pControl;
 
   private:
     QScopedPointer<ValueTransformer> m_pValueTransformer;
@@ -100,11 +100,10 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
                                      ValueTransformer* pTransformer,
                                      DirectionOption directionOption,
                                      EmitOption emitOption);
-    virtual ~ControlParameterWidgetConnection();
 
     void Init();
 
-    QString toDebugString() const;
+    QString toDebugString() const override;
 
     int getDirectionOption() const { return m_directionOption; };
     int getEmitOption() const { return m_emitOption; };
@@ -118,7 +117,7 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     void setControlParameterUp(double v);
 
   private slots:
-    virtual void slotControlValueChanged(double v);
+    void slotControlValueChanged(double value) override;
 
   private:
     DirectionOption m_directionOption;
@@ -131,13 +130,12 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
     ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
                                     const ConfigKey& key,
                                     ValueTransformer* pTransformer,
-                                    const QString& property);
-    virtual ~ControlWidgetPropertyConnection();
+                                    const QString& propertyName);
 
-    QString toDebugString() const;
+    QString toDebugString() const override;
 
   private slots:
-    virtual void slotControlValueChanged(double v);
+    void slotControlValueChanged(double v) override;
 
   private:
     QByteArray m_propertyName;

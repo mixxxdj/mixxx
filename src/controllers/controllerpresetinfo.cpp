@@ -19,7 +19,7 @@ PresetInfo::PresetInfo()
         : m_valid(false) {
 }
 
-PresetInfo::PresetInfo(const QString preset_path)
+PresetInfo::PresetInfo(const QString& preset_path)
         : m_valid(false) {
     // Parse <info> header section from a controller description XML file
     // Contents parsed by xml path:
@@ -38,7 +38,7 @@ PresetInfo::PresetInfo(const QString preset_path)
 
     QDomElement root = XmlParse::openXMLFile(m_path, "controller");
     if (root.isNull()) {
-        qDebug() << "ERROR parsing" << m_path;
+        qWarning() << "ERROR parsing" << m_path;
         return;
     }
     QDomElement info = root.firstChildElement("info");
@@ -87,19 +87,18 @@ PresetInfo::PresetInfo(const QString preset_path)
     }
 }
 
-QHash<QString,QString> PresetInfo::parseBulkProduct(const QDomElement& element) const {
+ProductInfo PresetInfo::parseBulkProduct(const QDomElement& element) const {
     // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105" in_epaddr="0x82" out_epaddr="0x03">
-
-    QHash<QString, QString> product;
-    product.insert("protocol", element.attribute("protocol",""));
-    product.insert("vendor_id", element.attribute("vendor_id",""));
-    product.insert("product_id", element.attribute("product_id",""));
-    product.insert("in_epaddr", element.attribute("in_epaddr",""));
-    product.insert("out_epaddr", element.attribute("out_epaddr",""));
+    ProductInfo product;
+    product.protocol = element.attribute("protocol");
+    product.vendor_id = element.attribute("vendor_id");
+    product.product_id = element.attribute("product_id");
+    product.in_epaddr = element.attribute("in_epaddr");
+    product.out_epaddr = element.attribute("out_epaddr");
     return product;
 }
 
-QHash<QString,QString> PresetInfo::parseHIDProduct(const QDomElement& element) const {
+ProductInfo PresetInfo::parseHIDProduct(const QDomElement& element) const {
     // HID device <product> element parsing. Example of valid element:
     //   <product protocol="hid" vendor_id="0x1" product_id="0x2" usage_page="0x3" usage="0x4" interface_number="0x3" />
     // All numbers must be hex prefixed with 0x
@@ -107,28 +106,12 @@ QHash<QString,QString> PresetInfo::parseHIDProduct(const QDomElement& element) c
     // usage_page and usage are matched on OS/X and windows
     // interface_number is matched on linux, which does support usage_page/usage
 
-    QHash<QString,QString> product;
-    product.insert("procotol", element.attribute("protocol",""));
-    product.insert("vendor_id", element.attribute("vendor_id",""));
-    product.insert("product_id", element.attribute("product_id",""));
-    product.insert("usage_page", element.attribute("usage_page",""));
-    product.insert("usage", element.attribute("usage",""));
-    product.insert("interface_number", element.attribute("interface_number",""));
-    return product;
-}
-
-QHash<QString,QString> PresetInfo::parseMIDIProduct(const QDomElement& element) const {
-    // TODO - implement parsing of MIDI attributes
-    // When done, remember to fix switch() above to call this
-    QHash<QString,QString> product;
-    product.insert("procotol",element.attribute("protocol",""));
-    return product;
-}
-
-QHash<QString,QString> PresetInfo::parseOSCProduct(const QDomElement& element) const {
-    // TODO - implement parsing of OSC product attributes
-    // When done, remember to fix switch() above to call this
-    QHash<QString,QString> product;
-    product.insert("procotol",element.attribute("protocol",""));
+    ProductInfo product;
+    product.protocol = element.attribute("protocol");
+    product.vendor_id = element.attribute("vendor_id");
+    product.product_id = element.attribute("product_id");
+    product.usage_page = element.attribute("usage_page");
+    product.usage = element.attribute("usage");
+    product.interface_number = element.attribute("interface_number");
     return product;
 }

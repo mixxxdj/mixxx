@@ -3,7 +3,7 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
+                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
  ***************************************************************************/
 
 /***************************************************************************
@@ -82,7 +82,7 @@ EncoderVorbis::~EncoderVorbis() {
     }
 }
 
-// call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
+// call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
 void EncoderVorbis::flush() {
     vorbis_analysis_wrote(&m_vdsp, 0);
     writePage();
@@ -164,7 +164,7 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size) {
     writePage();
 }
 
-/* Originally called from engineshoutcast.cpp to update metadata information
+/* Originally called from enginebroadcast.cpp to update metadata information
  * when streaming, however, this causes pops
  *
  * Currently this method is used before init() once to save artist, title and album

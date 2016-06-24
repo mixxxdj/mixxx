@@ -19,7 +19,7 @@
 
 #include "library/scanner/libraryscanner.h"
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "library/scanner/recursivescandirectorytask.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/queryutil.h"
@@ -33,8 +33,7 @@
 // TODO(rryan) make configurable
 const int kScannerThreadPoolSize = 1;
 
-LibraryScanner::LibraryScanner(QWidget* pParentWidget,
-                               TrackCollection* collection,
+LibraryScanner::LibraryScanner(TrackCollection* collection,
                                UserSettingsPointer pConfig)
               : m_pCollection(collection),
                 m_libraryHashDao(m_database),
@@ -67,7 +66,7 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget,
     connect(this, SIGNAL(startScan()),
             this, SLOT(slotStartScan()));
 
-    // Force the GUI thread's TrackInfoObject cache to be cleared when a library
+    // Force the GUI thread's Track cache to be cleared when a library
     // scan is finished, because we might have modified the database directly
     // when we detected moved files, and the TIOs corresponding to the moved
     // files would then have the wrong track location.
@@ -82,22 +81,21 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget,
                 dao, SLOT(databaseTracksChanged(QSet<TrackId>)));
     }
 
-    // Parented to pParentWidget so we don't need to delete it.
-    LibraryScannerDlg* pProgress = new LibraryScannerDlg(pParentWidget);
+    m_pProgressDlg.reset(new LibraryScannerDlg());
     connect(this, SIGNAL(progressLoading(QString)),
-            pProgress, SLOT(slotUpdate(QString)));
+            m_pProgressDlg.data(), SLOT(slotUpdate(QString)));
     connect(this, SIGNAL(progressHashing(QString)),
-            pProgress, SLOT(slotUpdate(QString)));
+            m_pProgressDlg.data(), SLOT(slotUpdate(QString)));
     connect(this, SIGNAL(scanStarted()),
-            pProgress, SLOT(slotScanStarted()));
+            m_pProgressDlg.data(), SLOT(slotScanStarted()));
     connect(this, SIGNAL(scanFinished()),
-            pProgress, SLOT(slotScanFinished()));
-    connect(pProgress, SIGNAL(scanCancelled()),
+            m_pProgressDlg.data(), SLOT(slotScanFinished()));
+    connect(m_pProgressDlg.data(), SIGNAL(scanCancelled()),
             this, SLOT(slotCancel()));
     connect(&m_trackDao, SIGNAL(progressVerifyTracksOutside(QString)),
-            pProgress, SLOT(slotUpdate(QString)));
+            m_pProgressDlg.data(), SLOT(slotUpdate(QString)));
     connect(&m_trackDao, SIGNAL(progressCoverArt(QString)),
-            pProgress, SLOT(slotUpdateCover(QString)));
+            m_pProgressDlg.data(), SLOT(slotUpdateCover(QString)));
 
     start();
 }
@@ -458,8 +456,8 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
             this, SLOT(slotDirectoryUnchanged(QString)));
     connect(pTask, SIGNAL(trackExists(QString)),
             this, SLOT(slotTrackExists(QString)));
-    connect(pTask, SIGNAL(addNewTrack(TrackPointer)),
-            this, SLOT(slotAddNewTrack(TrackPointer)));
+    connect(pTask, SIGNAL(addNewTrack(QString)),
+            this, SLOT(slotAddNewTrack(QString)));
 
     // Progress signals.
     // Pass directly to the main thread
@@ -508,21 +506,33 @@ void LibraryScanner::slotTrackExists(const QString& trackPath) {
     }
 }
 
-void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
-    //qDebug() << "LibraryScanner::slotAddNewTrack" << pTrack;
+void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
+    //qDebug() << "LibraryScanner::slotAddNewTrack" << trackPath;
     ScopedTimer timer("LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
-    if (m_scannerGlobal) {
-        m_scannerGlobal->trackAdded(pTrack->getLocation());
-    }
-    if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
-        // Successfully added. Signal the main instance of TrackDAO,
-        // that there is a new track in the database.
-        emit(trackAdded(pTrack));
-        emit(progressLoading(pTrack->getLocation()));
-    } else {
+    TrackPointer pTrack(m_trackDao.addTracksAddFile(trackPath, false));
+    if (pTrack.isNull()) {
+        // Acknowledge failed track addition
+        // TODO(XXX): Is it really intended to acknowledge a failed
+        // track addition with a trackAdded() signal??
+        if (m_scannerGlobal) {
+            m_scannerGlobal->trackAdded(trackPath);
+        }
         qWarning()
-                << "Track (" + pTrack->getLocation() + ") could not be added";
+                << "Failed to add track to library:"
+                << trackPath;
+    } else {
+        // The track's actual location might differ from the
+        // given trackPath
+        const QString trackLocation(pTrack->getLocation());
+        // Acknowledge successful track addition
+        if (m_scannerGlobal) {
+            m_scannerGlobal->trackAdded(trackLocation);
+        }
+        // Signal the main instance of TrackDAO, that there is
+        // a new track in the database.
+        emit(trackAdded(pTrack));
+        emit(progressLoading(trackLocation));
     }
 }
 

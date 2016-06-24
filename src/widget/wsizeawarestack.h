@@ -11,14 +11,13 @@ class SizeAwareLayout;
 class WSizeAwareStack : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    WSizeAwareStack(QWidget* pParent = NULL);
-    virtual ~WSizeAwareStack();
+    explicit WSizeAwareStack(QWidget* parent = nullptr);
 
-    int addWidget(QWidget* pWidget);
+    int addWidget(QWidget* widget);
 
   protected:
-    virtual void resizeEvent(QResizeEvent* event);
-    bool event(QEvent* pEvent);
+    void resizeEvent(QResizeEvent* event) override;
+    bool event(QEvent* pEvent) override;
 
   private:
     SizeAwareLayout* m_layout;

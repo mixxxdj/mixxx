@@ -10,10 +10,8 @@ namespace Mixxx {
 
 class SoundSourceOpus: public Mixxx::SoundSource {
 public:
-    static const SINT kSamplingRate;
-
-    explicit SoundSourceOpus(QUrl url);
-    ~SoundSourceOpus();
+    explicit SoundSourceOpus(const QUrl& url);
+    ~SoundSourceOpus() override;
 
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,
@@ -29,7 +27,7 @@ public:
             CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     OggOpusFile *m_pOggOpusFile;
 

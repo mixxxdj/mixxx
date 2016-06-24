@@ -10,11 +10,10 @@
 
 #include "util/types.h"
 #include "util/math.h"
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 
 class LoopingControl;
 class RateControl;
-class CachingReader;
 
 // ReadAheadManager is a tool for keeping track of the engine's current position
 // in a file. In the case that the engine needs to read ahead of the current

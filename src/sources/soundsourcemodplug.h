@@ -24,8 +24,8 @@ public:
     static void configure(unsigned int bufferSizeLimit,
             const ModPlug::ModPlug_Settings &settings);
 
-    explicit SoundSourceModPlug(QUrl url);
-    ~SoundSourceModPlug();
+    explicit SoundSourceModPlug(const QUrl& url);
+    ~SoundSourceModPlug() override;
 
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,
@@ -39,7 +39,7 @@ public:
             CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)
 

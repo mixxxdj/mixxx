@@ -5,8 +5,8 @@
 #include <QMutexLocker>
 
 #include "analyzer/analyzerqueue.h"
-#include "controlobject.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
+#include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
@@ -19,9 +19,10 @@
 #include "mixer/sampler.h"
 #include "mixer/samplerbank.h"
 #include "soundio/soundmanager.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/stat.h"
+#include "util/sleepableqthread.h"
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
@@ -32,8 +33,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pSoundManager(pSoundManager),
         m_pEffectsManager(pEffectsManager),
         m_pEngine(pEngine),
-        // NOTE(XXX) LegacySkinParser relies on these controls being COs and
-        // not COTMs listening to a CO.
+        // NOTE(XXX) LegacySkinParser relies on these controls being Controls
+        // and not ControlProxies.
         m_pAnalyzerQueue(NULL),
         m_pCONumDecks(new ControlObject(
             ConfigKey("[Master]", "num_decks"), true, true)),
@@ -81,15 +82,15 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
     Q_UNUSED(pSamplerBank);
 
     // register the engine's outputs
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER, 0, 2),
                                     m_pEngine);
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES, 0, 2),
                                     m_pEngine);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 0, o),
+        m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o),
                                         m_pEngine);
     }
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::SIDECHAIN),
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::SIDECHAIN, 0, 2),
                                     m_pEngine);
 }
 
@@ -151,9 +152,9 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
 unsigned int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlObjectSlave* pNumCO = NULL;
+    static ControlProxy* pNumCO = NULL;
     if (pNumCO == NULL) {
-        pNumCO = new ControlObjectSlave(ConfigKey("[Master]", "num_decks"));
+        pNumCO = new ControlProxy(ConfigKey("[Master]", "num_decks"));
         if (!pNumCO->valid()) {
             delete pNumCO;
             pNumCO = NULL;
@@ -200,9 +201,9 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlObjectSlave* pNumCO = NULL;
+    static ControlProxy* pNumCO = NULL;
     if (pNumCO == NULL) {
-        pNumCO = new ControlObjectSlave(ConfigKey("[Master]", "num_samplers"));
+        pNumCO = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
         if (!pNumCO->valid()) {
             delete pNumCO;
             pNumCO = NULL;
@@ -215,9 +216,9 @@ unsigned int PlayerManager::numSamplers() {
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlObjectSlave* pNumCO = NULL;
+    static ControlProxy* pNumCO = NULL;
     if (pNumCO == NULL) {
-        pNumCO = new ControlObjectSlave(
+        pNumCO = new ControlProxy(
                 ConfigKey("[Master]", "num_preview_decks"));
         if (!pNumCO->valid()) {
             delete pNumCO;
@@ -311,6 +312,7 @@ void PlayerManager::addDeck() {
     QMutexLocker locker(&m_mutex);
     addDeckInner();
     m_pCONumDecks->set((double)m_decks.count());
+    emit(numberOfDecksChanged(m_decks.count()));
 }
 
 void PlayerManager::addConfiguredDecks() {
@@ -337,6 +339,11 @@ void PlayerManager::addDeckInner() {
 
     Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
                            orientation, group);
+    connect(pDeck, SIGNAL(noPassthroughInputConfigured()),
+            this, SIGNAL(noDeckPassthroughInputConfigured()));
+    connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
+            this, SIGNAL(noVinylControlInputConfigured()));
+
     if (m_pAnalyzerQueue) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
@@ -347,12 +354,12 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
     m_pSoundManager->registerOutput(
-        AudioOutput(AudioOutput::DECK, 0, 0, number - 1), m_pEngine);
+            AudioOutput(AudioOutput::DECK, 0, 2, number - 1), m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
-        AudioInput(AudioInput::VINYLCONTROL, 0, 0, number - 1), pEngineDeck);
+            AudioInput(AudioInput::VINYLCONTROL, 0, 2, number - 1), pEngineDeck);
 
     // Setup equalizer rack for this deck.
     EqualizerRackPointer pEqRack = m_pEffectsManager->getEqualizerRack(0);
@@ -440,6 +447,8 @@ void PlayerManager::addMicrophoneInner() {
     QString group = groupForMicrophone(index);
     Microphone* pMicrophone = new Microphone(this, group, index, m_pSoundManager,
                                              m_pEngine, m_pEffectsManager);
+    connect(pMicrophone, SIGNAL(noMicrophoneInputConfigured()),
+            this, SIGNAL(noMicrophoneInputConfigured()));
     m_microphones.append(pMicrophone);
 }
 
@@ -517,11 +526,6 @@ Auxiliary* PlayerManager::getAuxiliary(unsigned int auxiliary) const {
     return m_auxiliaries[auxiliary - 1];
 }
 
-bool PlayerManager::hasVinylInput(int inputnum) const {
-    AudioInput vinyl_input(AudioInput::VINYLCONTROL, 0, 0, inputnum);
-    return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
-}
-
 void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
@@ -563,6 +567,9 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
         if (playControl && playControl->get() != 1.) {
             locker.unlock();
             pDeck->slotLoadTrack(pTrack, false);
+            // Test for a fixed race condition with fast loads
+            //SleepableQThread::sleep(1);
+            //pDeck->slotLoadTrack(TrackPointer(), false);
             return;
         }
         ++it;

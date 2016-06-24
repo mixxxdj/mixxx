@@ -20,7 +20,7 @@ namespace Mixxx {
 class SoundSourceM4A: public SoundSourcePlugin {
 public:
     explicit SoundSourceM4A(const QUrl& url);
-    ~SoundSourceM4A();
+    ~SoundSourceM4A() override;
 
     void close() override;
 
@@ -30,7 +30,7 @@ public:
             CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 

@@ -8,7 +8,7 @@
 
 #include <QCompleter>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
@@ -392,12 +392,12 @@ void DlgControllerLearning::visit(MidiController* pMidiController) {
 }
 
 void DlgControllerLearning::visit(HidController* pHidController) {
-    qDebug() << "ERROR: DlgControllerLearning does not support HID devices.";
+    qWarning() << "ERROR: DlgControllerLearning does not support HID devices.";
     Q_UNUSED(pHidController);
 }
 
 void DlgControllerLearning::visit(BulkController* pBulkController) {
-    qDebug() << "ERROR: DlgControllerLearning does not support Bulk devices.";
+    qWarning() << "ERROR: DlgControllerLearning does not support Bulk devices.";
     Q_UNUSED(pBulkController);
 }
 

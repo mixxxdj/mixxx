@@ -6,29 +6,28 @@
 #include <QMouseEvent>
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "widget/wlabel.h"
 
 class WTrackText : public WLabel {
     Q_OBJECT
   public:
-    WTrackText(const char* group, UserSettingsPointer pConfig, QWidget *parent);
-    virtual ~WTrackText();
+    WTrackText(const char* group, UserSettingsPointer pConfig, QWidget *pParent);
 
   signals:
     void trackDropped(QString fileName, QString group);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
-    void slotTrackUnloaded(TrackPointer track);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private slots:
-    void updateLabel(TrackInfoObject*);
+    void updateLabel(Track*);
 
   private:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
     const char* m_pGroup;
     UserSettingsPointer m_pConfig;

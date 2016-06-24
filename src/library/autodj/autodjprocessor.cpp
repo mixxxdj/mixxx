@@ -1,8 +1,8 @@
 #include "library/autodj/autodjprocessor.h"
 
 #include "library/trackcollection.h"
-#include "controlpushbutton.h"
-#include "controlobjectslave.h"
+#include "control/controlpushbutton.h"
+#include "control/controlproxy.h"
 #include "util/math.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
@@ -27,10 +27,10 @@ DeckAttributes::DeckAttributes(int index,
           m_pPlayer(pPlayer) {
     connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             this, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(m_pPlayer, SIGNAL(loadTrackFailed(TrackPointer)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer)));
-    connect(m_pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-            this, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+            this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+    connect(m_pPlayer, SIGNAL(playerEmpty()),
+            this, SLOT(slotPlayerEmpty()));
     m_playPos.connectValueChanged(this, SLOT(slotPlayPosChanged(double)));
     m_play.connectValueChanged(this, SLOT(slotPlayChanged(double)));
 }
@@ -50,12 +50,13 @@ void DeckAttributes::slotTrackLoaded(TrackPointer pTrack) {
     emit(trackLoaded(this, pTrack));
 }
 
-void DeckAttributes::slotTrackLoadFailed(TrackPointer pTrack) {
-    emit(trackLoadFailed(this, pTrack));
+void DeckAttributes::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    //qDebug() << "DeckAttributes::slotLoadingTrack";
+    emit(loadingTrack(this, pNewTrack, pOldTrack));
 }
 
-void DeckAttributes::slotTrackUnloaded(TrackPointer pTrack) {
-    emit(trackUnloaded(this, pTrack));
+void DeckAttributes::slotPlayerEmpty() {
+    emit(playerEmpty(this));
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
@@ -116,8 +117,8 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
     // Auto-DJ needs at least two decks
     DEBUG_ASSERT(m_decks.length() > 1);
 
-    m_pCOCrossfader = new ControlObjectSlave("[Master]", "crossfader");
-    m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
+    m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
+    m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
             ConfigKey(kConfigKey, kTransitionPreferenceName));
@@ -177,41 +178,41 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
     return ADJ_OK;
 }
 
-AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
+void AutoDJProcessor::fadeNow() {
     // Auto-DJ needs at least two decks
     DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
-        return ADJ_NOT_TWO_DECKS;
+        return;
     }
-    if (m_eState == ADJ_IDLE) {
-        double crossfader = getCrossfader();
-        DeckAttributes& leftDeck = *m_decks[0];
-        DeckAttributes& rightDeck = *m_decks[1];
-        if (crossfader <= 0.3 && leftDeck.isPlaying()) {
-            // left deck is playing and the crossfader is on the left
-
-            // Make sure leftDeck.fadeDuration is up to date.
-            calculateTransition(&leftDeck, &rightDeck);
-
-            // override posThreshold to start fade now
-            leftDeck.posThreshold = leftDeck.playPosition() -
-                    ((crossfader + 1.0) / 2 * (leftDeck.fadeDuration));
-            // Repeat is disabled by FadeNow but disables auto Fade
-            leftDeck.setRepeat(false);
-        } else if (crossfader >= -0.3 && rightDeck.isPlaying()) {
-            // right deck is playing and the crossfader is on the right
-
-            // Make sure rightDeck.fadeDuration is up to date.
-            calculateTransition(&rightDeck, &leftDeck);
-
-            // override posThreshold to start fade now
-            rightDeck.posThreshold = rightDeck.playPosition() -
-                    ((1.0 - crossfader) / 2 * (rightDeck.fadeDuration));
-            // Repeat is disabled by FadeNow but disables auto Fade
-            rightDeck.setRepeat(false);
-        }
-        // else { // do not know what to do  }
+    if (m_eState != ADJ_IDLE) {
+        // we cannot fade if AutoDj is disabled or already fading
+        return;
     }
-    return ADJ_OK;
+
+    double crossfader = getCrossfader();
+    DeckAttributes& leftDeck = *m_decks[0];
+    DeckAttributes& rightDeck = *m_decks[1];
+    if (leftDeck.isPlaying() &&
+            (!rightDeck.isPlaying() || crossfader < 0.0)) {
+        // Make sure leftDeck.fadeDuration is up to date.
+        calculateTransition(&leftDeck, &rightDeck);
+
+        // override posThreshold to start fade now
+        leftDeck.posThreshold = leftDeck.playPosition() -
+                ((crossfader + 1.0) / 2 * (leftDeck.fadeDuration));
+        // Repeat is disabled by FadeNow but disables auto Fade
+        leftDeck.setRepeat(false);
+    } else if (rightDeck.isPlaying()) {
+        // Make sure rightDeck.fadeDuration is up to date.
+        calculateTransition(&rightDeck, &leftDeck);
+
+        // override posThreshold to start fade now
+        rightDeck.posThreshold = rightDeck.playPosition() -
+                ((1.0 - crossfader) / 2 * (rightDeck.fadeDuration));
+        // Repeat is disabled by FadeNow but disables auto Fade
+        rightDeck.setRepeat(false);
+    }
+    //else {
+    //    No deck playing, do not know what to do
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
@@ -298,16 +299,15 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         connect(&rightDeck, SIGNAL(trackLoaded(DeckAttributes*, TrackPointer)),
                 this, SLOT(playerTrackLoaded(DeckAttributes*, TrackPointer)));
 
-        connect(&leftDeck, SIGNAL(trackUnloaded(DeckAttributes*, TrackPointer)),
-                this, SLOT(playerTrackUnloaded(DeckAttributes*, TrackPointer)));
-        connect(&rightDeck, SIGNAL(trackUnloaded(DeckAttributes*, TrackPointer)),
-                this, SLOT(playerTrackUnloaded(DeckAttributes*, TrackPointer)));
+        connect(&leftDeck, SIGNAL(loadingTrack(DeckAttributes*, TrackPointer, TrackPointer)),
+                this, SLOT(playerLoadingTrack(DeckAttributes*, TrackPointer, TrackPointer)));
+        connect(&rightDeck, SIGNAL(loadingTrack(DeckAttributes*, TrackPointer, TrackPointer)),
+                this, SLOT(playerLoadingTrack(DeckAttributes*, TrackPointer, TrackPointer)));
 
-        connect(&leftDeck, SIGNAL(trackLoadFailed(DeckAttributes*, TrackPointer)),
-                this, SLOT(playerTrackLoadFailed(DeckAttributes*, TrackPointer)));
-        connect(&rightDeck, SIGNAL(trackLoadFailed(DeckAttributes*, TrackPointer)),
-                this, SLOT(playerTrackLoadFailed(DeckAttributes*, TrackPointer)));
-
+        connect(&leftDeck, SIGNAL(playerEmpty(DeckAttributes*)),
+                this, SLOT(playerEmpty(DeckAttributes*)));
+        connect(&rightDeck, SIGNAL(playerEmpty(DeckAttributes*)),
+                this, SLOT(playerEmpty(DeckAttributes*)));
 
         if (!deck1Playing && !deck2Playing) {
             // Both decks are stopped. Load a track into deck 1 and start it
@@ -428,7 +428,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // for the playing deck).
             m_eState = ADJ_IDLE;
 
-            if (leftDeckPlaying && !rightDeckPlaying) {
+            if (!rightDeckPlaying) {
+                // Only left deck playing!
                 // In ADJ_ENABLE_P1LOADED mode we wait until the left deck
                 // successfully starts playing. We don't know in toggleAutoDJ
                 // whether the track will load successfully so we have to
@@ -445,6 +446,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // Set crossfade thresholds for left deck.
                 calculateTransition(&leftDeck, &rightDeck);
             } else {
+                // At least right Deck is playing
                 // Set crossfade thresholds for right deck.
                 calculateTransition(&rightDeck, &leftDeck);
             }
@@ -567,7 +569,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     int minAutoDJCrateTracks = m_pConfig->getValueString(
                 ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
-    // Incase we start off with < minimum tracks
+    // In case we start off with < minimum tracks
     if (randomQueueEnabled && (tracksToAdd > 0)) {
         emit(randomTrackRequested(tracksToAdd));
     }
@@ -766,11 +768,15 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     }
 }
 
-void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer pTrack) {
+void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
+        TrackPointer pNewTrack, TrackPointer pOldTrack) {
     if (sDebug) {
-        qDebug() << this << "playerTrackLoadFailed" << pDeck->group
-                 << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
+        qDebug() << this << "playerLoadingTrack" << pDeck->group
+                 << "new:"<< (pNewTrack.isNull() ? "(null)" : pNewTrack->getLocation())
+                 << "old:"<< (pOldTrack.isNull() ? "(null)" : pOldTrack->getLocation());
     }
+
+    // The Deck is loading an new track
 
     // There are four conditions under which we load a track.
     // 1) We are enabling AutoDJ and no decks are playing. Mode is
@@ -779,24 +785,32 @@ void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer 
     // 3) We are enabling AutoDJ and a single deck is playing. Mode is ADJ_IDLE.
     // 4) We have just completed fading from one deck to another. Mode is
     //    ADJ_IDLE.
-    // In all of these cases, it should be safe to skip the bad track in the
-    // queue and re-request a track load for the next track. The only case where
+
+    if (pNewTrack.isNull()) {
+        // If a track is ejected because of a manual eject command or a load failure
+        // this track seams to be undesired. Remove the bad track from the queue.
+        removeTrackFromTopOfQueue(pOldTrack);
+
+        // wait until the track is fully unloaded and the playerEmpty()
+        // slot is called before load an alternative track.
+    }
+}
+
+void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
+    if (sDebug) {
+        qDebug() << this << "playerEmpty()" << pDeck->group;
+    }
+
+    // The Deck has ejected a track and no new one is loaded
+    // This happens if loading fails or the user manually ejected the track
+    // and would normally stop the AutoDJ flow, which is not desired.
+    // It should be safe to load a new track from the queue. The only case where
     // we request a load-and-play is case #1 currently so we can easily test for
     // this based on the mode.
-
-    // Remove the bad track from the queue.
-    removeTrackFromTopOfQueue(pTrack);
 
     // Load the next track. If we are the first AutoDJ track
     // (ADJ_ENABLE_P1LOADED state) then play the track.
     loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
-}
-
-void AutoDJProcessor::playerTrackUnloaded(DeckAttributes* pDeck, TrackPointer pTrack) {
-    if (sDebug) {
-        qDebug() << this << "playerTrackUnloaded" << pDeck->group
-                 << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
-    }
 }
 
 void AutoDJProcessor::setTransitionTime(int time) {
@@ -852,4 +866,31 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
         }
     }
     return pOtherDeck;
+}
+
+bool AutoDJProcessor::nextTrackLoaded() {
+    if (m_eState == ADJ_DISABLED) {
+        // AutoDJ always loads the top track (again) if enabled
+        return false;
+    }
+
+    DeckAttributes& leftDeck = *m_decks[0];
+    DeckAttributes& rightDeck = *m_decks[1];
+    bool leftDeckPlaying = leftDeck.isPlaying();
+    bool rightDeckPlaying = rightDeck.isPlaying();
+
+
+    // Calculate idle deck
+    TrackPointer loadedTrack;
+    if (leftDeckPlaying && !rightDeckPlaying) {
+        loadedTrack = rightDeck.getLoadedTrack();
+    } else if (!leftDeckPlaying && rightDeckPlaying) {
+        loadedTrack = leftDeck.getLoadedTrack();
+    } else if (getCrossfader() < 0.0) {
+        loadedTrack = rightDeck.getLoadedTrack();
+    } else {
+        loadedTrack = leftDeck.getLoadedTrack();
+    }
+
+    return loadedTrack == getNextTrackFromQueue();
 }

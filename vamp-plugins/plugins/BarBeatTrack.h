@@ -56,6 +56,13 @@ protected:
     static float m_stepSecs;
     int m_bpb;
     FeatureSet barBeatTrack();
+
+    // MEPD new protected parameters to allow the user to control these advanced parameters of the beat tracker
+    // changes are as per the BeatTrack.h
+    double m_alpha;
+    double m_tightness;
+    double m_inputtempo;
+    bool m_constraintempo;
 };
 
 

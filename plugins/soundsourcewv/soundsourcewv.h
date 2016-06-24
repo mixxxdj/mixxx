@@ -12,7 +12,7 @@ namespace Mixxx {
 class SoundSourceWV: public SoundSourcePlugin {
   public:
     explicit SoundSourceWV(const QUrl& url);
-    ~SoundSourceWV();
+    ~SoundSourceWV() override;
 
     void close() override;
 
@@ -22,7 +22,7 @@ class SoundSourceWV: public SoundSourcePlugin {
             CSAMPLE* sampleBuffer) override;
 
   private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     static int32_t ReadBytesCallback(void* id, void* data, int bcount);
     static uint32_t GetPosCallback(void* id);

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-01-09 20:22+0000\n"
+"PO-Revision-Date: 2016-01-11 04:49+0000\n"
 "Last-Translator: Sébastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: French (France) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/fr_FR/)\n"
 "MIME-Version: 1.0\n"

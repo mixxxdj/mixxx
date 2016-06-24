@@ -36,7 +36,7 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* stages = manifest.addParameter();
     stages->setId("stages");
     stages->setName(QObject::tr("Stages"));
-    stages->setDescription("Sets number of stages.");
+    stages->setDescription(QObject::tr("Sets number of stages."));
     stages->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     stages->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     stages->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -47,7 +47,7 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("lfo_frequency");
     frequency->setName(QObject::tr("Rate"));
-    frequency->setDescription("Controls the speed of the low frequency oscilator.");
+    frequency->setDescription(QObject::tr("Controls the speed of the low frequency oscilator."));
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -69,7 +69,7 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* fb = manifest.addParameter();
     fb->setId("feedback");
     fb->setName(QObject::tr("Feedback"));
-    fb->setDescription("Controls how much of the output signal is looped");
+    fb->setDescription(QObject::tr("Controls how much of the output signal is looped"));
     fb->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     fb->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     fb->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -80,7 +80,7 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* range = manifest.addParameter();
     range->setId("range");
     range->setName(QObject::tr("Range"));
-    range->setDescription("Controls the frequency range across which the notches sweep.");
+    range->setDescription(QObject::tr("Controls the frequency range across which the notches sweep."));
     range->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     range->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     range->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);

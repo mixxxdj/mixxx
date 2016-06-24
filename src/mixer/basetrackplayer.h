@@ -2,18 +2,19 @@
 #define MIXER_BASETRACKPLAYER_H
 
 #include <QObject>
+#include <QScopedPointer>
 #include <QString>
 
 #include "preferences/usersettings.h"
 #include "engine/enginechannel.h"
 #include "engine/enginedeck.h"
 #include "mixer/baseplayer.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
-class ControlObjectSlave;
+class ControlProxy;
 class EffectsManager;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
@@ -37,10 +38,11 @@ class BaseTrackPlayer : public BasePlayer {
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay=false) = 0;
 
   signals:
-    void loadTrack(TrackPointer pTrack, bool bPlay=false);
-    void loadTrackFailed(TrackPointer pTrack);
     void newTrackLoaded(TrackPointer pLoadedTrack);
-    void unloadingTrack(TrackPointer pAboutToBeUnloaded);
+    void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void playerEmpty();
+    void noPassthroughInputConfigured();
+    void noVinylControlInputConfigured();
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -51,7 +53,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
                         EngineMaster* pMixingEngine,
                         EffectsManager* pEffectsManager,
                         EngineChannel::ChannelOrientation defaultOrientation,
-                        QString group,
+                        const QString& group,
                         bool defaultMaster,
                         bool defaultHeadphones);
     virtual ~BaseTrackPlayerImpl();
@@ -65,14 +67,19 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void setupEqControls();
 
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bPlay=false);
-    void slotFinishLoading(TrackPointer pTrackInfoObject);
-    void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
-    void slotUnloadTrack(TrackPointer track);
+    void slotLoadTrack(TrackPointer track, bool bPlay) override;
+    void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void slotLoadFailed(TrackPointer pTrack, QString reason);
     void slotSetReplayGain(Mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 
+  private slots:
+    void slotPassthroughEnabled(double v);
+    void slotVinylControlEnabled(double v);
+
   private:
+    void setReplayGain(double value);
+
     UserSettingsPointer m_pConfig;
     TrackPointer m_pLoadedTrack;
 
@@ -80,26 +87,30 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     ControlPotmeter* m_pWaveformZoom;
     ControlObject* m_pEndOfTrack;
 
-    ControlObjectSlave* m_pLoopInPoint;
-    ControlObjectSlave* m_pLoopOutPoint;
+    ControlProxy* m_pLoopInPoint;
+    ControlProxy* m_pLoopOutPoint;
     ControlObject* m_pDuration;
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    ControlObjectSlave* m_pBPM;
-    ControlObjectSlave* m_pKey;
+    ControlProxy* m_pBPM;
+    ControlProxy* m_pKey;
 
-    ControlObjectSlave* m_pReplayGain;
-    ControlObjectSlave* m_pPlay;
-    ControlObjectSlave* m_pLowFilter;
-    ControlObjectSlave* m_pMidFilter;
-    ControlObjectSlave* m_pHighFilter;
-    ControlObjectSlave* m_pLowFilterKill;
-    ControlObjectSlave* m_pMidFilterKill;
-    ControlObjectSlave* m_pHighFilterKill;
-    ControlObjectSlave* m_pPreGain;
-    ControlObjectSlave* m_pSpeed;
-    ControlObjectSlave* m_pPitchAdjust;
+    ControlProxy* m_pReplayGain;
+    ControlProxy* m_pPlay;
+    ControlProxy* m_pLowFilter;
+    ControlProxy* m_pMidFilter;
+    ControlProxy* m_pHighFilter;
+    ControlProxy* m_pLowFilterKill;
+    ControlProxy* m_pMidFilterKill;
+    ControlProxy* m_pHighFilterKill;
+    ControlProxy* m_pPreGain;
+    ControlProxy* m_pRateSlider;
+    ControlProxy* m_pPitchAdjust;
+    QScopedPointer<ControlProxy> m_pInputConfigured;
+    QScopedPointer<ControlProxy> m_pPassthroughEnabled;
+    QScopedPointer<ControlProxy> m_pVinylControlEnabled;
+    QScopedPointer<ControlProxy> m_pVinylControlStatus;
     EngineDeck* m_pChannel;
 
     bool m_replaygainPending;

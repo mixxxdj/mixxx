@@ -10,8 +10,8 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 
 class ControlModel : public QAbstractTableModel {
     Q_OBJECT
@@ -52,7 +52,7 @@ class ControlModel : public QAbstractTableModel {
         ConfigKey key;
         QString title;
         QString description;
-        ControlObjectSlave* pControl;
+        ControlProxy* pControl;
     };
 
     QVector<QHash<int, QVariant> > m_headerInfo;

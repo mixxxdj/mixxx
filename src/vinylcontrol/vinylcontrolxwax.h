@@ -46,6 +46,7 @@ class VinylControlXwax : public VinylControl {
     void enableConstantMode(double rate);
     bool uiUpdateTime(double time);
     void establishQuality(bool quality_sample);
+    double calcRateRatio() const;
 
     // Cache the position of the end of record
     unsigned int m_uiSafeZone;
@@ -116,8 +117,8 @@ class VinylControlXwax : public VinylControl {
     bool m_bTrackSelectMode;
 
     // Controls for manipulating the library.
-    ControlObjectSlave* m_pControlTrackSelector;
-    ControlObjectSlave* m_pControlTrackLoader;
+    ControlProxy* m_pControlTrackSelector;
+    ControlProxy* m_pControlTrackLoader;
 
     // The previous and current track select position. Used for track selection
     // using the control region.

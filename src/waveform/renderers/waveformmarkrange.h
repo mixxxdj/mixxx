@@ -5,7 +5,7 @@
 
 #include "skin/skincontext.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 class QDomNode;
 class WaveformSignalColors;
 
@@ -32,9 +32,9 @@ class WaveformMarkRange {
   private:
     void generateImage(int weidth, int height);
 
-    ControlObjectSlave* m_markStartPointControl;
-    ControlObjectSlave* m_markEndPointControl;
-    ControlObjectSlave* m_markEnabledControl;
+    ControlProxy* m_markStartPointControl;
+    ControlProxy* m_markEndPointControl;
+    ControlProxy* m_markEnabledControl;
 
     QColor m_activeColor;
     QColor m_disabledColor;

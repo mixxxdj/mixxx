@@ -26,7 +26,7 @@ bool BansheeDbConnection::open(const QString& databaseFile) {
     //Open the database connection in this thread.
     if (!m_database.open()) {
         m_database.setConnectOptions(); // clear options
-        qDebug() << "Failed to open Banshee database." << m_database.lastError();
+        qWarning() << "Failed to open Banshee database." << m_database.lastError();
         return false;
     } else {
         // TODO(DSC): Verify schema

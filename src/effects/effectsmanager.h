@@ -9,8 +9,8 @@
 #include <QPair>
 
 #include "preferences/usersettings.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "effects/effect.h"
 #include "effects/effectchain.h"
 #include "effects/effectchainmanager.h"

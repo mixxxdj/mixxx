@@ -13,9 +13,8 @@ class WEffect : public WLabel {
     Q_OBJECT
   public:
     WEffect(QWidget* pParent, EffectsManager* pEffectsManager);
-    virtual ~WEffect();
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
     void effectUpdated();

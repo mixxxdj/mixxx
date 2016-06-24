@@ -155,7 +155,7 @@ SoundSourceM4A::~SoundSourceM4A() {
     close();
 }
 
-Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(MP4_INVALID_FILE_HANDLE == m_hFile);
     // open MP4 file, check for >= ver 1.9.1
     // From mp4v2/file.h:
@@ -170,13 +170,13 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
 #endif
     if (MP4_INVALID_FILE_HANDLE == m_hFile) {
         qWarning() << "Failed to open file for reading:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     m_trackId = findFirstAudioTrackId(m_hFile, getLocalFileName());
     if (MP4_INVALID_TRACK_ID == m_trackId) {
         qWarning() << "No AAC track found:" << getUrlString();
-        return ERR;
+        return OpenResult::UNSUPPORTED_FORMAT;
     }
 
     // Read fixed sample duration.  If the sample duration is not
@@ -186,14 +186,14 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     m_framesPerSampleBlock = MP4GetTrackFixedSampleDuration(m_hFile, m_trackId);
     if (MP4_INVALID_DURATION == m_framesPerSampleBlock) {
       qWarning() << "Unable to decode tracks with non-fixed sample durations: " << getUrlString();
-      return ERR;
+      return OpenResult::UNSUPPORTED_FORMAT;
     }
 
     const MP4SampleId numberOfSamples =
             MP4GetTrackNumberOfSamples(m_hFile, m_trackId);
     if (0 >= numberOfSamples) {
         qWarning() << "Failed to read number of samples from file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
     m_maxSampleBlockId = kSampleBlockIdMin + (numberOfSamples - 1);
 
@@ -201,13 +201,20 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     // sample block for the selected track.
     const u_int32_t maxSampleBlockInputSize = MP4GetTrackMaxSampleSize(m_hFile,
             m_trackId);
+    if (maxSampleBlockInputSize > 1048576) { 
+        // Limit to an insane high value of 1 MB,
+        // we got 4278190742 in https://bugs.launchpad.net/mixxx/+bug/1594169
+        // TODO() set this to the mp4 maximum allowed block size, if there is one   
+        qWarning() << "maxSampleBlockInputSize is too big:" << maxSampleBlockInputSize << getUrlString();
+        return OpenResult::FAILED;    
+    }
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
 
     DEBUG_ASSERT(nullptr == m_hDecoder); // not already opened
     m_hDecoder = NeAACDecOpen();
     if (!m_hDecoder) {
         qWarning() << "Failed to open the AAC decoder!";
-        return ERR;
+        return OpenResult::FAILED;
     }
     NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
             m_hDecoder);
@@ -222,7 +229,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     pDecoderConfig->defObjectType = LC;
     if (!NeAACDecSetConfiguration(m_hDecoder, pDecoderConfig)) {
         qWarning() << "Failed to configure AAC decoder!";
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     u_int8_t* configBuffer = nullptr;
@@ -242,7 +249,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
                     &samplingRate, &channelCount)) {
         free(configBuffer);
         qWarning() << "Failed to initialize the AAC decoder!";
-        return ERR;
+        return OpenResult::FAILED;
     } else {
         free(configBuffer);
     }
@@ -269,7 +276,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     // (Re-)Start decoding at the beginning of the file
     seekSampleFrame(getMinFrameIndex());
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceM4A::close() {

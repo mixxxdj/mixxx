@@ -1,6 +1,6 @@
 #include "test/mixxxtest.h"
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 
 #ifdef __FFMPEGFILE__
 extern "C" {
@@ -12,7 +12,7 @@ extern "C" {
 // Static initialization
 QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
 
-MixxxTest::ApplicationScope::ApplicationScope(int argc, char** argv) {
+MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     DEBUG_ASSERT(!s_pApplication);
 
 #ifdef __FFMPEGFILE__

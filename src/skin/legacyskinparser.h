@@ -15,7 +15,7 @@
 
 class WBaseWidget;
 class Library;
-class MixxxKeyboard;
+class KeyboardEventFilter;
 class PlayerManager;
 class EffectsManager;
 class ControllerManager;
@@ -29,30 +29,30 @@ class LegacySkinParser : public QObject, public SkinParser {
   public:
     LegacySkinParser();
     LegacySkinParser(UserSettingsPointer pConfig,
-                     MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
+                     KeyboardEventFilter* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
                      Library* pLibrary, VinylControlManager* pVCMan,
                      EffectsManager* pEffectsManager);
     virtual ~LegacySkinParser();
 
-    virtual bool canParse(QString skinPath);
-    virtual QWidget* parseSkin(QString skinPath, QWidget* pParent);
+    virtual bool canParse(const QString& skinPath);
+    virtual QWidget* parseSkin(const QString& skinPath, QWidget* pParent);
 
-    LaunchImage* parseLaunchImage(QString skinPath, QWidget* pParent);
+    LaunchImage* parseLaunchImage(const QString& skinPath, QWidget* pParent);
 
     // Legacy support for looking up the scheme list.
-    static QList<QString> getSchemeList(QString qSkinPath);
+    static QList<QString> getSchemeList(const QString& qSkinPath);
     // Parse a skin manifest from the provided skin document root.
-    static mixxx::skin::SkinManifest getSkinManifest(QDomElement skinDocument);
+    static mixxx::skin::SkinManifest getSkinManifest(const QDomElement& skinDocument);
     static void freeChannelStrings();
 
-    static Qt::MouseButton parseButtonState(QDomNode node,
+    static Qt::MouseButton parseButtonState(const QDomNode& node,
                                             const SkinContext& context);
 
   private:
-    static QDomElement openSkin(QString skinPath);
+    static QDomElement openSkin(const QString& skinPath);
 
-    QList<QWidget*> parseNode(QDomElement node);
+    QList<QWidget*> parseNode(const QDomElement& node);
 
     // Load the given template from file and return its document element.
     QDomElement loadTemplate(const QString& path);
@@ -61,72 +61,73 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     // Most widgets can use parseStandardWidget.
     template <class T>
-    QWidget* parseStandardWidget(QDomElement element, bool timerListener=false);
+    QWidget* parseStandardWidget(const QDomElement& element, bool timerListener=false);
 
     // Label widgets.
     template <class T>
-    QWidget* parseLabelWidget(QDomElement element);
-    void setupLabelWidget(QDomElement element, WLabel* pLabel);
-    QWidget* parseText(QDomElement node);
-    QWidget* parseTrackProperty(QDomElement node);
-    QWidget* parseStarRating(QDomElement node);
-    QWidget* parseNumberRate(QDomElement node);
-    QWidget* parseNumberPos(QDomElement node);
-    QWidget* parseEngineKey(QDomElement node);
-    QWidget* parseEffectChainName(QDomElement node);
-    QWidget* parseEffectName(QDomElement node);
-    QWidget* parseEffectParameterName(QDomElement node);
-    QWidget* parseEffectButtonParameterName(QDomElement node);
-    QWidget* parseEffectPushButton(QDomElement node);
+    QWidget* parseLabelWidget(const QDomElement& element);
+    void setupLabelWidget(const QDomElement& element, WLabel* pLabel);
+    QWidget* parseText(const QDomElement& node);
+    QWidget* parseTrackProperty(const QDomElement& node);
+    QWidget* parseStarRating(const QDomElement& node);
+    QWidget* parseNumberRate(const QDomElement& node);
+    QWidget* parseNumberPos(const QDomElement& node);
+    QWidget* parseEngineKey(const QDomElement& node);
+    QWidget* parseEffectChainName(const QDomElement& node);
+    QWidget* parseEffectName(const QDomElement& node);
+    QWidget* parseEffectParameterName(const QDomElement& node);
+    QWidget* parseEffectButtonParameterName(const QDomElement& node);
+    QWidget* parseEffectPushButton(const QDomElement& node);
 
     // Legacy pre-1.12.0 skin support.
-    QWidget* parseBackground(QDomElement node, QWidget* pOuterWidget, QWidget* pInnerWidget);
+    QWidget* parseBackground(const QDomElement& node, QWidget* pOuterWidget, QWidget* pInnerWidget);
 
     // Grouping / layout.
-    QWidget* parseWidgetGroup(QDomElement node);
-    QWidget* parseWidgetStack(QDomElement node);
-    QWidget* parseSizeAwareStack(QDomElement node);
-    QWidget* parseSplitter(QDomElement node);
-    void parseSingletonDefinition(QDomElement node);
-    QWidget* parseSingletonContainer(QDomElement node);
+    QWidget* parseWidgetGroup(const QDomElement& node);
+    QWidget* parseWidgetStack(const QDomElement& node);
+    QWidget* parseSizeAwareStack(const QDomElement& node);
+    QWidget* parseSplitter(const QDomElement& node);
+    void parseSingletonDefinition(const QDomElement& node);
+    QWidget* parseSingletonContainer(const QDomElement& node);
 
     // Visual widgets.
-    QWidget* parseVisual(QDomElement node);
-    QWidget* parseOverview(QDomElement node);
-    QWidget* parseSpinny(QDomElement node);
+    QWidget* parseVisual(const QDomElement& node);
+    QWidget* parseOverview(const QDomElement& node);
+    QWidget* parseSpinny(const QDomElement& node);
 
     // Library widgets.
-    QWidget* parseTableView(QDomElement node);
-    QWidget* parseSearchBox(QDomElement node);
-    QWidget* parseLibrary(QDomElement node);
-    QWidget* parseLibrarySidebar(QDomElement node);
-    QWidget* parseCoverArt(QDomElement node);
+    QWidget* parseTableView(const QDomElement& node);
+    QWidget* parseSearchBox(const QDomElement& node);
+    QWidget* parseLibrary(const QDomElement& node);
+    QWidget* parseLibrarySidebar(const QDomElement& node);
+    QWidget* parseBattery(const QDomElement& node);
+    QWidget* parseCoverArt(const QDomElement& node);
 
     // Renders a template.
-    QList<QWidget*> parseTemplate(QDomElement node);
+    QList<QWidget*> parseTemplate(const QDomElement& node);
 
-    void commonWidgetSetup(QDomNode node, WBaseWidget* pBaseWidget,
+    void commonWidgetSetup(const QDomNode& node, WBaseWidget* pBaseWidget,
                            bool allowConnections=true);
-    void setupPosition(QDomNode node, QWidget* pWidget);
-    void setupSize(QDomNode node, QWidget* pWidget);
-    void setupBaseWidget(QDomNode node, WBaseWidget* pBaseWidget);
-    void setupWidget(QDomNode node, QWidget* pWidget,
+    void setupPosition(const QDomNode& node, QWidget* pWidget);
+    void setupSize(const QDomNode& node, QWidget* pWidget);
+    void setupBaseWidget(const QDomNode& node, WBaseWidget* pBaseWidget);
+    void setupWidget(const QDomNode& node, QWidget* pWidget,
                      bool setupPosition=true);
-    void setupConnections(QDomNode node, WBaseWidget* pWidget);
+    void setupConnections(const QDomNode& node, WBaseWidget* pWidget);
     void addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut, const QString& cmd);
-    QString getLibraryStyle(QDomNode node);
-    QString getStyleFromNode(QDomNode node);
+    QString getLibraryStyle(const QDomNode& node);
+    QString getStyleFromNode(const QDomNode& node);
 
-    QString lookupNodeGroup(QDomElement node);
-    static const char* safeChannelString(QString channelStr);
+    QString lookupNodeGroup(const QDomElement& node);
+    static const char* safeChannelString(const QString& channelStr);
     ControlObject* controlFromConfigNode(const QDomElement& element,
                                          const QString& nodeName,
                                          bool* created);
 
-    QString parseLaunchImageStyle(QDomNode node);
+    QString parseLaunchImageStyle(const QDomNode& node);
 
     UserSettingsPointer m_pConfig;
-    MixxxKeyboard* m_pKeyboard;
+    KeyboardEventFilter* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     ControllerManager* m_pControllerManager;
     Library* m_pLibrary;

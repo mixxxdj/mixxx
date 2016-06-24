@@ -11,7 +11,7 @@
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
 class SoundManager;
-class ControlObjectSlave;
+class ControlProxy;
 class EngineNetworkStream;
 class SoundDeviceNetworkThread;
 
@@ -46,7 +46,7 @@ class SoundDeviceNetwork : public SoundDevice {
     bool m_outputDrift;
     bool m_inputDrift;
 
-    ControlObjectSlave* m_pMasterAudioLatencyUsage;
+    ControlProxy* m_pMasterAudioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
     mixxx::Duration m_audioBufferTime;
     int m_framesSinceAudioLatencyUsageUpdate;

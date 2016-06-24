@@ -173,11 +173,6 @@ inline QString toQStringFirstNotEmpty(const TagLib::MP4::Item& mp4Item) {
     return toQStringFirstNotEmpty(mp4Item.toStringList());
 }
 
-// Returns an APE item as a string.
-inline QString toQString(const TagLib::APE::Item& apeItem) {
-    return toQString(apeItem.toString());
-}
-
 inline TagLib::String toTagLibString(const QString& str) {
     const QByteArray qba(str.toUtf8());
     return TagLib::String(qba.constData(), TagLib::String::UTF8);
@@ -945,7 +940,7 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
                 &trackNumber,
                 &trackTotal);
         if (!readXiphCommentField(tag, "TRACKTOTAL", &trackTotal)) { // recommended field
-            readXiphCommentField(tag, "TOTALTRACKS", &trackTotal); // alternative field
+            (void)readXiphCommentField(tag, "TOTALTRACKS", &trackTotal); // alternative field
         }
         pTrackMetadata->setTrackNumber(trackNumber);
         pTrackMetadata->setTrackTotal(trackTotal);

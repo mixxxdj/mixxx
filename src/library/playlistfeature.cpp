@@ -13,8 +13,8 @@
 #include "library/treeitem.h"
 #include "library/queryutil.h"
 #include "library/parser.h"
-#include "mixxxkeyboard.h"
-#include "soundsourceproxy.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/time.h"
 
@@ -49,6 +49,8 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     //Create the right-click menu
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
+    menu.addSeparator();
+    menu.addAction(m_pCreateImportPlaylistAction);
     menu.exec(globalPos);
 }
 
@@ -99,7 +101,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
         // library, then add the track to the library before adding it to the
         // playlist.
         // Adds track, does not insert duplicates, handles unremoving logic.
-        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+        trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
     }
 
     // remove tracks that could not be added

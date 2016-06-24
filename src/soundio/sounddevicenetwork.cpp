@@ -5,8 +5,8 @@
 #include "waveform/visualplayposition.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "controlobjectslave.h"
-#include "controlobject.h"
+#include "control/controlproxy.h"
+#include "control/controlobject.h"
 #include "util/denormalsarezero.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "float.h"
@@ -37,7 +37,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
     m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
 
-    m_pMasterAudioLatencyUsage = new ControlObjectSlave("[Master]",
+    m_pMasterAudioLatencyUsage = new ControlProxy("[Master]",
             "audio_latency_usage");
 }
 

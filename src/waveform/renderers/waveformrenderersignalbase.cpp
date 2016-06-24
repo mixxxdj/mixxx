@@ -4,8 +4,8 @@
 
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
@@ -73,19 +73,19 @@ bool WaveformRendererSignalBase::init() {
     deleteControls();
 
     //create controls
-    m_pEQEnabled = new ControlObjectSlave(
+    m_pEQEnabled = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterWaveformEnable");
-    m_pLowFilterControlObject = new ControlObjectSlave(
+    m_pLowFilterControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterLow");
-    m_pMidFilterControlObject = new ControlObjectSlave(
+    m_pMidFilterControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterMid");
-    m_pHighFilterControlObject = new ControlObjectSlave(
+    m_pHighFilterControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterHigh");
-    m_pLowKillControlObject = new ControlObjectSlave(
+    m_pLowKillControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterLowKill");
-    m_pMidKillControlObject = new ControlObjectSlave(
+    m_pMidKillControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterMidKill");
-    m_pHighKillControlObject = new ControlObjectSlave(
+    m_pHighKillControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterHighKill");
 
     return onInit();

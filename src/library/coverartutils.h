@@ -8,7 +8,7 @@
 #include <QFileInfo>
 #include <QLinkedList>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/sandbox.h"
 
 class CoverArtUtils {
@@ -16,8 +16,9 @@ class CoverArtUtils {
     static QString defaultCoverLocation();
 
     // Extracts the first cover art image embedded within the file at
-    // fileInfo. You must provide a security token for accessing
-    // fileInfo.
+    // fileInfo. If no security token is provided a new one is created.
+    static QImage extractEmbeddedCover(
+            const QFileInfo& fileInfo);
     static QImage extractEmbeddedCover(
             const QFileInfo& fileInfo,
             SecurityTokenPointer pToken);
@@ -51,7 +52,7 @@ class CoverArtUtils {
 
     // Selects an appropriate cover file from provided list of image files.
     static CoverArt selectCoverArtForTrack(
-            TrackInfoObject* pTrack,
+            Track* pTrack,
             const QLinkedList<QFileInfo>& covers);
 
     // Selects an appropriate cover file from provided list of image

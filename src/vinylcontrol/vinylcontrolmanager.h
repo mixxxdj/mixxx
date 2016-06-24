@@ -8,6 +8,7 @@
 #define VINYLCONTROLMANAGER_H
 
 #include <QObject>
+#include <QSignalMapper>
 #include <QString>
 #include <QTimerEvent>
 
@@ -15,7 +16,7 @@
 #include "preferences/usersettings.h"
 #include "vinylcontrol/vinylsignalquality.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 class ControlPushButton;
 class SoundManager;
 class VinylControl;
@@ -55,18 +56,24 @@ class VinylControlManager : public QObject {
 
   public slots:
     void requestReloadConfig();
+    void toggleVinylControl(int deck);
+
+  signals:
+    void vinylControlDeckEnabled(int deck, bool enabled);
 
   private slots:
     void slotNumDecksChanged(double);
+    void slotVinylControlEnabledChanged(int deck);
 
   private:
     UserSettingsPointer m_pConfig;
     QSet<VinylSignalQualityListener*> m_listeners;
     VinylControlProcessor* m_pProcessor;
     int m_iTimerId;
-    QList<ControlObjectSlave*> m_pVcEnabled;
-    ControlObjectSlave* m_pNumDecks;
+    QList<ControlProxy*> m_pVcEnabled;
+    ControlProxy* m_pNumDecks;
     int m_iNumConfiguredDecks;
+    QSignalMapper m_vinylControlEnabledMapper;
 };
 
 #endif // VINYLCONTROLMANAGER_H

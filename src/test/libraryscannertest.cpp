@@ -8,8 +8,7 @@
 class LibraryScannerTest : public MixxxTest {
   protected:
     virtual void SetUp() {
-        m_pParent = new QWidget();
-        m_pLibraryScanner = new LibraryScanner(m_pParent, NULL, config());
+        m_pLibraryScanner = new LibraryScanner(NULL, config());
     }
 
     virtual void TearDown() {
@@ -17,7 +16,6 @@ class LibraryScannerTest : public MixxxTest {
     }
 
     LibraryScanner* m_pLibraryScanner;
-    QWidget* m_pParent;
 
     FRIEND_TEST(FooTest, BarReturnsZeroOnNull);
 };
@@ -61,4 +59,3 @@ TEST_F(LibraryScannerTest, ScannerRoundtrip) {
     m_pLibraryScanner->changeScannerState(LibraryScanner::IDLE);
     EXPECT_EQ(m_pLibraryScanner->m_state, LibraryScanner::IDLE);
 }
-

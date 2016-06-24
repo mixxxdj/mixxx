@@ -36,7 +36,7 @@ class AudioInput;
 class AudioSource;
 class AudioDestination;
 class ControlObject;
-class ControlObjectSlave;
+class ControlProxy;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
@@ -156,8 +156,8 @@ class SoundManager : public QObject {
 
     QAtomicInt m_underflowHappened;
     int m_underflowUpdateCount;
-    ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
-    ControlObjectSlave* m_pMasterAudioLatencyOverload;
+    ControlProxy* m_pMasterAudioLatencyOverloadCount;
+    ControlProxy* m_pMasterAudioLatencyOverload;
 };
 
 #endif

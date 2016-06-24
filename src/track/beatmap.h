@@ -11,7 +11,7 @@
 #include <QObject>
 #include <QMutex>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
 #include "proto/beats.pb.h"
 
@@ -27,23 +27,25 @@ class BeatMap : public QObject, public Beats {
     // zero then the track's sample rate will be used. If a byte array is
     // provided then the BeatMap will be deserialized from the byte array.
     BeatMap(TrackPointer pTrack, int iSampleRate,
-            const QByteArray* pByteArray=NULL);
+            const QByteArray* pByteArray = nullptr);
     // Construct a BeatMap. iSampleRate may be provided if a more accurate
     // sample rate is known than the one associated with the Track. If it is
     // zero then the track's sample rate will be used. A list of beat locations
     // in audio frames may be provided.
     BeatMap(TrackPointer pTrack, int iSampleRate,
             const QVector<double>& beats);
+
     virtual ~BeatMap();
 
     // See method comments in beats.h
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
-                BEATSCAP_MOVEBEAT | BEATSCAP_SET;
+                BEATSCAP_MOVEBEAT;
     }
 
-    virtual QByteArray* toByteArray() const;
+    virtual QByteArray toByteArray() const;
+    BeatsPointer clone() const;
     virtual QString getVersion() const;
     virtual QString getSubVersion() const;
     virtual void setSubVersion(QString subVersion);
@@ -59,7 +61,7 @@ class BeatMap : public QObject, public Beats {
                                    double* dpNextBeatSamples) const;
     virtual double findClosestBeat(double dSamples) const;
     virtual double findNthBeat(double dSamples, int n) const;
-    virtual BeatIterator* findBeats(double startSample, double stopSample) const;
+    virtual std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const;
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
 
     virtual double getBpm() const;
@@ -74,15 +76,16 @@ class BeatMap : public QObject, public Beats {
     virtual void removeBeat(double dBeatSample);
     virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     virtual void translate(double dNumSamples);
-    virtual void scale(double dScalePercentage);
+    virtual void scale(enum BPMScale scale);
     virtual void setBpm(double dBpm);
 
   signals:
     void updated();
 
   private:
+    BeatMap (const BeatMap& other);
     void initialize(TrackPointer pTrack, int iSampleRate);
-    void readByteArray(const QByteArray* pByteArray);
+    bool readByteArray(const QByteArray& byteArray);
     void createFromBeatVector(const QVector<double>& beats);
     void onBeatlistChanged();
 
@@ -90,6 +93,12 @@ class BeatMap : public QObject, public Beats {
                         const mixxx::track::io::Beat& stopBeat) const;
     // For internal use only.
     bool isValid() const;
+
+    void scaleDouble();
+    void scaleTriple();
+    void scaleHalve();
+    void scaleThird();
+    void scaleFourth();
 
     mutable QMutex m_mutex;
     QString m_subVersion;
