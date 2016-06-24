@@ -84,7 +84,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     pTrackMetadata->setSampleRate(kSamplingRate);
     pTrackMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
     pTrackMetadata->setDuration(
-            op_pcm_total(l_ptrOpusFile, -1) / pTrackMetadata->getSampleRate());
+            double(op_pcm_total(l_ptrOpusFile, -1)) / double(pTrackMetadata->getSampleRate()));
 
     bool hasDate = false;
     for (i = 0; i < l_ptrOpusTags->comments; ++i) {

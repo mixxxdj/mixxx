@@ -11,7 +11,6 @@
 #include "track/trackmetadatataglib.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
-#include "util/duration.h"
 
 
 namespace {
@@ -373,21 +372,38 @@ void Track::setDateAdded(const QDateTime& dateAdded) {
     m_dateAdded = dateAdded;
 }
 
-void Track::setDuration(int iDuration) {
+void Track::setDuration(double duration) {
     QMutexLocker lock(&m_qMutex);
-    if (m_metadata.getDuration() != iDuration) {
-        m_metadata.setDuration(iDuration);
+    if (m_metadata.getDuration() != duration) {
+        m_metadata.setDuration(duration);
         markDirtyAndUnlock(&lock);
     }
 }
 
-int Track::getDuration() const {
+double Track::getDuration(DurationRounding rounding) const {
     QMutexLocker lock(&m_qMutex);
+    switch (rounding) {
+    case DurationRounding::SECONDS:
+        return std::round(m_metadata.getDuration());
+    case DurationRounding::NONE:
+        return m_metadata.getDuration();
+    }
+    // unreachable code / avoid compiler warnings
+    DEBUG_ASSERT(!"unhandled enum value");
     return m_metadata.getDuration();
 }
 
-QString Track::getDurationText() const {
-    return mixxx::Duration::formatSeconds(getDuration());
+QString Track::getDurationText(mixxx::Duration::Precision precision) const {
+    double duration;
+    if (precision == mixxx::Duration::Precision::SECONDS) {
+        // Round to full seconds before formatting for consistency:
+        // getDurationText() should always display the same number
+        // as getDuration(DurationRounding::SECONDS) = getDurationInt()
+        duration = getDuration(DurationRounding::SECONDS);
+    } else {
+        duration = getDuration(DurationRounding::NONE);
+    }
+    return mixxx::Duration::formatSeconds(duration, precision);
 }
 
 QString Track::getTitle() const {

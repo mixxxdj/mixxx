@@ -390,7 +390,7 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
             "("
             "artist,title,album,album_artist,year,genre,tracknumber,tracktotal,composer,"
-            "grouping,filetype,location,comment,url,duration,rating,key,key_id,"
+            "grouping,filetype,location,comment,url,duration,duration_real,rating,key,key_id,"
             "bitrate,samplerate,cuepoint,bpm,replaygain,replaygain_peak,wavesummaryhex,"
             "timesplayed,channels,mixxx_deleted,header_parsed,"
             "beats_version,beats_sub_version,beats,bpm_lock,"
@@ -398,7 +398,7 @@ void TrackDAO::addTracksPrepare() {
             "coverart_source,coverart_type,coverart_location,coverart_hash"
             ") VALUES ("
             ":artist,:title,:album,:album_artist,:year,:genre,:tracknumber,:tracktotal,:composer,"
-            ":grouping,:filetype,:location,:comment,:url,:duration,:rating,:key,:key_id,"
+            ":grouping,:filetype,:location,:comment,:url,:duration,:duration_real,:rating,:key,:key_id,"
             ":bitrate,:samplerate,:cuepoint,:bpm,:replaygain,:replaygain_peak,:wavesummaryhex,"
             ":timesplayed,:channels,:mixxx_deleted,:header_parsed,"
             ":beats_version,:beats_sub_version,:beats,:bpm_lock,"
@@ -465,7 +465,8 @@ namespace {
         pTrackLibraryQuery->bindValue(":filetype", track.getType());
         pTrackLibraryQuery->bindValue(":comment", track.getComment());
         pTrackLibraryQuery->bindValue(":url", track.getURL());
-        pTrackLibraryQuery->bindValue(":duration", track.getDuration());
+        pTrackLibraryQuery->bindValue(":duration", track.getDurationInt());
+        pTrackLibraryQuery->bindValue(":duration_real", track.getDuration());
         pTrackLibraryQuery->bindValue(":rating", track.getRating());
         pTrackLibraryQuery->bindValue(":bitrate", track.getBitrate());
         pTrackLibraryQuery->bindValue(":samplerate", track.getSampleRate());
@@ -1088,7 +1089,7 @@ bool setTrackUrl(const QSqlRecord& record, const int column,
 
 bool setTrackDuration(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
-    pTrack->setDuration(record.value(column).toInt());
+    pTrack->setDuration(record.value(column).toDouble());
     return false;
 }
 
@@ -1279,7 +1280,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         { "rating", setTrackRating },
         { "comment", setTrackComment },
         { "url", setTrackUrl },
-        { "duration", setTrackDuration },
+        { "duration_real", setTrackDuration },
         { "bitrate", setTrackBitrate },
         { "samplerate", setTrackSampleRate },
         { "cuepoint", setTrackCuePoint },
@@ -1542,6 +1543,7 @@ bool TrackDAO::updateTrack(Track* pTrack) {
             "comment=:comment,"
             "url=:url,"
             "duration=:duration,"
+            "duration_real=:duration_real,"
             "rating=:rating,"
             "key=:key,"
             "key_id=:key_id,"

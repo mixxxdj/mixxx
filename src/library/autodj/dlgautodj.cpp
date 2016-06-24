@@ -200,7 +200,7 @@ void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
 }
 
 void DlgAutoDJ::updateSelectionInfo() {
-    int duration = 0;
+    double duration = 0.0;
 
     QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
 
