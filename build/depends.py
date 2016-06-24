@@ -265,6 +265,11 @@ class Qt(Dependence):
         # Set qt_sqlite_plugin flag if we should package the Qt SQLite plugin.
         build.flags['qt_sqlite_plugin'] = util.get_flags(
             build.env, 'qt_sqlite_plugin', 0)
+            
+        # Link in SQLite library if Qt is compiled statically
+        if build.platform_is_windows and build.static_dependencies \
+           and build.flags['qt_sqlite_plugin'] == 0 :
+            conf.CheckLib('sqlite3');
 
         # Enable Qt include paths
         if build.platform_is_linux:
