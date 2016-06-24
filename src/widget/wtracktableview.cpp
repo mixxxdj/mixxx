@@ -1029,7 +1029,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
                 return;
             }
         } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
-                                                      "library", true, true)) {
+                                                      "", true, true)) {
             event->acceptProposedAction();
             return;
         }
