@@ -253,9 +253,10 @@ void readAudioProperties(TrackMetadata* pTrackMetadata,
     pTrackMetadata->setChannels(audioProperties.channels());
     pTrackMetadata->setSampleRate(audioProperties.sampleRate());
     pTrackMetadata->setBitrate(audioProperties.bitrate());
-    // Duration will be replaced by the actual length with
-    // sub-second precision later
-    pTrackMetadata->setDuration(audioProperties.length());
+    // Duration will be replaced by the actual length with a more
+    // precise value when reading the audio data.
+    pTrackMetadata->setDuration(
+            audioProperties.lengthInMilliseconds() / 1000.0);
 }
 
 bool readAudioProperties(TrackMetadata* pTrackMetadata,
