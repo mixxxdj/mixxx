@@ -711,6 +711,12 @@ def BuildRelease(target, source, env):
         else:
             print "    Found Windows SDK in " + WinSDK_path
 
+        if not os.path.isfile(WinSDK_path + '\wisubstg.vbs'):
+            raise Exception ('can not find' + WinSDK_path + '\wisubstg.vbs')
+
+        if not os.path.isfile(WinSDK_path + '\WiLangId.vbs'):
+            raise Exception ('can not find' + WinSDK_path + '\WiLangId.vbs')
+
         # The default language
         defaultLanguage="en-us"
         # The langIds contained in the installer. starting with LangId of the default language
@@ -784,7 +790,7 @@ def BuildRelease(target, source, env):
              'distdir': dist_dir}
             print "Using Command: " + command
             subprocess.check_call(command)
-            
+
             command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dSourceDir=%(distdir)s -arch %(arch)s -out build\wix\subdirs\mainPDB.wixobj build\wix\subdirs\mainPDB.wxs' % \
             {'wix': wix_path,
              'winlibpath': mixxx_winlib_path,
@@ -792,7 +798,7 @@ def BuildRelease(target, source, env):
              'distdir': dist_dir}
             print "Using Command: " + command
             subprocess.check_call(command)
-        
+
         # Compile main wix files
         command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -arch %(arch)s -out build\wix\warningDlg.wixobj build\wix\warningDlg.wxs' % \
             {'wix': wix_path,
@@ -877,8 +883,8 @@ def BuildRelease(target, source, env):
         # Everything is OK, now rename the msi to final name
         if os.path.isfile(exe_name):
             os.remove(exe_name)
-        os.rename('part.' + exe_name, exe_name)            
-        
+        os.rename('part.' + exe_name, exe_name)
+
         # Some cleaning before leaving
         for file in glob.glob('*.cab'):
             os.remove(file)
