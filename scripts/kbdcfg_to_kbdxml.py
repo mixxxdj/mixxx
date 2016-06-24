@@ -12,7 +12,7 @@ KBD_CFG_FILES_DIRECTORY = "/home/tomasito/Development/Mixxx/mixxx/res/keyboard"
 #
 # 2. Change the following string to the absolute path of the directory to
 #    you want to save the generated keyboard preset:
-TARGET_DIRECTORY = "/home/tomasito/Desktop/test"
+TARGET_DIRECTORY = "/home/tomasito/Development/Mixxx/mixxx/res/controllers"
 #
 # 3. Change the following string to the preset name. Name this whatever you
 #    like:
@@ -35,6 +35,7 @@ import re
 import collections
 import configparser
 import json
+from collections import defaultdict
 from xml.etree import ElementTree as ET
 from xml.dom import minidom
 
@@ -73,9 +74,26 @@ class KeyboardParser:
                                             "Neither does the parent. Not creating the folder.");
             print("Preset will be saved to: " + target_folder)
 
-
+            # List containing configparsers for each *.kbd.cfg file
             legacy_mappings = self.parse_multi_lang_config()
-            self.create_multi_lang_xml(legacy_mappings)
+
+            # XML root element containing mapping info for each language
+            xml = self.create_multi_lang_xml(legacy_mappings)
+
+            # Simplify XML by getting rid of key seqs
+            # shared by multiple keyboard layouts
+            #
+            # Example:
+            # <keyseq lang="en_US">f</keyseq>
+            # <keyseq lang="es_ES">f</keyseq>
+            #
+            # Simplified to:
+            # <keyseq lang="en_US, es_ES">f</keyseq>
+            #
+            # Note: If a keysequence is shared by all supported languages, the lang
+            #       attribute will not be added.
+            simplified_xml = self.simplify_multilang_xml(xml)
+            self.write_out(simplified_xml)
 
         else:
             # non multi-language parse not supported yet
@@ -198,8 +216,64 @@ class KeyboardParser:
                             keyseq_element.set('lang', mapping[0])
                             keyseq_element.text = this_keyseq
 
-        self.write_out(root)
+        return root
 
+    def simplify_multilang_xml(self, xml):
+        print("Simplifying XML")
+
+        # Retrieve which keyboard layouts are supported
+        supported_layouts = []
+        supported_layouts_element = xml.\
+            find('controller').\
+            find('keyboard-layouts')
+        for lang in supported_layouts_element.iter('lang'):
+            supported_layouts.append(lang.text)
+
+        # Iterate over all group blocks
+        for group in xml.iter('group'):
+            for control in group.iter('control'):
+
+                # Defaultdict with the default value being a list. Keyseqs will store
+                # information about all keyseqs in this particular control where:
+                #    key   = keysequence string
+                #    value = list, listing all kbd layouts thich this keyseq targets
+                keyseqs = defaultdict(list)
+
+                # Storing keyseq elements in list so that we can remove them later
+                keyseq_elements = list()
+
+                # Fill keyseqs
+                for keyseq_element in control.iter('keyseq'):
+                    keyseq = keyseq_element.text
+                    lang = keyseq_element.get('lang')
+                    keyseqs[keyseq_element.text].append(lang)
+                    keyseq_elements.append(keyseq_element)
+
+                # Remove all keyseq elements
+                for keyseq_element in keyseq_elements:
+                    control.remove(keyseq_element)
+
+                # Refill control block with keyseq elements
+                for keyseq, langs in keyseqs.items():
+                    # Number of languages that share this keyseq
+                    n_lang = len(langs)
+                    assert n_lang >= 1
+
+                    keyseq_element = ET.Element('keyseq')
+                    keyseq_element.text = keyseq
+
+                    if n_lang == 1:
+                        keyseq_element.set('lang', langs[0])
+                    else:
+                        shared_by_all_langs = True
+                        for lang in supported_layouts:
+                            if lang not in langs:
+                                shared_by_all_langs = False
+                                break
+                        if not shared_by_all_langs:
+                            keyseq_element.set('lang', ', '.join(langs))
+                    control.append(keyseq_element)
+        return xml
 
     def write_out(self, root):
         full_path = self.target_folder + "/" + self.name + self.xml_extension
