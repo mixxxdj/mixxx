@@ -1384,7 +1384,7 @@ WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 }
 
 /* Spacing between treeview and searchbar */
-QTreeView { margin: 10px 0px 0px 0px; }
+QTreeView { margin: 0px 0px 0px 0px; }
 
 /* triangle for closed/opened branches in treeview */
 QTreeView { show-decoration-selected: 0; background-color: #151515; } /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
