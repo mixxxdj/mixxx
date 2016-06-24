@@ -23,7 +23,7 @@
 #include "treeitem.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
-#include "util/time.h"
+#include "util/duration.h"
 
 CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
@@ -498,7 +498,7 @@ void CrateFeature::buildCrateList() {
             crateListTableModel.index(row, durationColumn)).toInt();
         m_crateList.append(qMakePair(id, QString("%1 (%2) %3")
                                      .arg(name, QString::number(count),
-                                          Time::formatSeconds(duration))));
+                                             mixxx::Duration::formatSeconds(duration))));
     }
 }
 

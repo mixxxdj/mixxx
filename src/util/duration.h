@@ -10,17 +10,9 @@
 #include "util/assert.h"
 
 namespace mixxx {
-namespace {
-
-const qint64 kMillisPerSecond = 1e3;
-const qint64 kMicrosPerSecond = 1e6;
-const qint64 kNanosPerSecond = 1e9;
-const qint64 kNanosPerMilli = 1e6;
-const qint64 kNanosPerMicro = 1e3;
-
-}  // namespace
 
 class DurationBase {
+
   public:
     enum Units {
         HEX,
@@ -71,10 +63,28 @@ class DurationBase {
         return static_cast<double>(m_durationNanos);
     }
 
+    enum class Precision {
+        SECONDS,
+        CENTISECONDS,
+        MILLISECONDS
+    };
+
+    // The standard way of formatting a floating-point duration in seconds.
+    // Used for display of track duration, etc.
+    static QString formatSeconds(
+            double dSeconds,
+            Precision precision = Precision::SECONDS);
+
   protected:
     DurationBase(qint64 durationNanos)
         : m_durationNanos(durationNanos) {
     }
+
+    static const qint64 kMillisPerSecond = 1000;
+    static const qint64 kMicrosPerSecond = kMillisPerSecond * 1000;
+    static const qint64 kNanosPerSecond  = kMicrosPerSecond * 1000;
+    static const qint64 kNanosPerMilli   = kNanosPerSecond / 1000;
+    static const qint64 kNanosPerMicro   = kNanosPerMilli / 1000;
 
     qint64 m_durationNanos;
 };

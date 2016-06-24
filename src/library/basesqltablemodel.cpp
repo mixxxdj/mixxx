@@ -16,7 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
-#include "util/time.h"
+#include "util/duration.h"
 #include "util/dnd.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
@@ -615,7 +615,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = Time::formatSeconds(duration);
+                    value = mixxx::Duration::formatSeconds(duration);
                 } else {
                     value = QString();
                 }

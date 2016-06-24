@@ -11,7 +11,7 @@
 #include "track/trackmetadatataglib.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
-#include "util/time.h"
+#include "util/duration.h"
 
 
 namespace {
@@ -387,7 +387,7 @@ int Track::getDuration() const {
 }
 
 QString Track::getDurationText() const {
-    return Time::formatSeconds(getDuration());
+    return mixxx::Duration::formatSeconds(getDuration());
 }
 
 QString Track::getTitle() const {
