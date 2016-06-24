@@ -876,6 +876,9 @@ class Opus(Feature):
             return
 
         build.env.Append(CPPDEFINES='__OPUS__')
+        
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES={'OPUS_EXPORT' : ''})
 
         if build.platform_is_linux or build.platform_is_bsd:
             build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
