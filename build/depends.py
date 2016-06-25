@@ -156,6 +156,7 @@ class SndFile(Dependence):
         
         if build.platform_is_windows and build.static_dependencies:
             build.env.Append(CPPDEFINES='FLAC__NO_DLL')
+            conf.CheckLib('g72x')
 
     def sources(self, build):
         return ['sources/soundsourcesndfile.cpp']
