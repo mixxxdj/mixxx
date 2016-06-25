@@ -1279,7 +1279,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         { "rating", setTrackRating },
         { "comment", setTrackComment },
         { "url", setTrackUrl },
-        { "duration_real", setTrackDuration },
+        { "duration", setTrackDuration },
         { "bitrate", setTrackBitrate },
         { "samplerate", setTrackSampleRate },
         { "cuepoint", setTrackCuePoint },
