@@ -5,6 +5,10 @@
 #include "util/assert.h"
 #include "util/memory.h"
 
+// TagLib has full support for MP4 atom types since version 1.8
+#define TAGLIB_HAS_MP4_ATOM_TYPES \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 8))
+
 // TagLib has support for the Ogg Opus file format since version 1.9
 #define TAGLIB_HAS_OPUSFILE \
     ((TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9)))
@@ -13,13 +17,13 @@
 #define TAGLIB_HAS_WAV_ID3V2TAG \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 
-// TagLib has full support for MP4 atom types since version 1.8
-#define TAGLIB_HAS_MP4_ATOM_TYPES \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 8))
-
 // TagLib has support for has<TagType>() style functions since version 1.9
 #define TAGLIB_HAS_TAG_CHECK \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+
+// TagLib has support for length in milliseconds since version 1.10
+#define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
 
 #ifdef _WIN32
 static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
@@ -250,13 +254,20 @@ void readAudioProperties(TrackMetadata* pTrackMetadata,
         const TagLib::AudioProperties& audioProperties) {
     DEBUG_ASSERT(pTrackMetadata);
 
+    // NOTE(uklotzde): All audio properties will be updated
+    // with the actual (and more precise) values when reading
+    // the audio data for this track. Often those properties
+    // stored in tags don't match with the corresponding
+    // audio data in the file.
     pTrackMetadata->setChannels(audioProperties.channels());
     pTrackMetadata->setSampleRate(audioProperties.sampleRate());
     pTrackMetadata->setBitrate(audioProperties.bitrate());
-    // Duration will be replaced by the actual length with a more
-    // precise value when reading the audio data.
-    pTrackMetadata->setDuration(
-            audioProperties.lengthInMilliseconds() / 1000.0);
+#if TAGLIB_HAS_LENGTH_IN_MILLISECONDS
+    double duration = audioProperties.lengthInMilliseconds() / 1000.0;
+#else
+    double duration = audioProperties.length();
+#endif
+    pTrackMetadata->setDuration(duration);
 }
 
 bool readAudioProperties(TrackMetadata* pTrackMetadata,
