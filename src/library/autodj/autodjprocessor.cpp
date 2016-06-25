@@ -9,7 +9,7 @@
 
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
-const int kTransitionPreferenceDefault = 10;
+const double kTransitionPreferenceDefault = 10.0;
 
 static const bool sDebug = false;
 
@@ -73,7 +73,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
           m_pPlayerManager(pPlayerManager),
           m_pAutoDJTableModel(NULL),
           m_eState(ADJ_DISABLED),
-          m_iTransitionTime(kTransitionPreferenceDefault),
+          m_transitionTime(kTransitionPreferenceDefault),
           m_nextTransitionTime(kTransitionPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                  "mixxx.db.model.autodj");
@@ -123,8 +123,8 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
     QString str_autoDjTransition = m_pConfig->getValueString(
             ConfigKey(kConfigKey, kTransitionPreferenceName));
     if (!str_autoDjTransition.isEmpty()) {
-        m_iTransitionTime = str_autoDjTransition.toInt();
-        m_nextTransitionTime =  m_iTransitionTime;
+        m_transitionTime = str_autoDjTransition.toDouble();
+        m_nextTransitionTime =  m_transitionTime;
     }
 }
 
@@ -707,13 +707,13 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         if (fromTrack) {
             // TODO(rryan): Duration is super inaccurate! We should be using
             // track_samples / track_samplerate instead.
-            int fromTrackDuration = fromTrack->getDuration();
+            double fromTrackDuration = fromTrack->getDuration();
             qDebug() << fromTrack->getLocation()
                     << "fromTrackDuration =" << fromTrackDuration;
 
             // The track might be shorter than the transition period. Use a
             // sensible cap.
-            m_nextTransitionTime = math_min(m_iTransitionTime,
+            m_nextTransitionTime = math_min(m_transitionTime,
                                             fromTrackDuration / 2);
 
             if (pToDeck) {
@@ -721,7 +721,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 if (toTrack) {
                     // TODO(rryan): Duration is super inaccurate! We should be using
                     // track_samples / track_samplerate instead.
-                    int toTrackDuration = toTrack->getDuration();
+                    double toTrackDuration = toTrack->getDuration();
                     qDebug() << toTrack->getLocation()
                             << "toTrackDuration = " << toTrackDuration;
                     m_nextTransitionTime = math_min(m_nextTransitionTime,
@@ -729,15 +729,13 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 }
             }
 
-            if (fromTrackDuration > 0) {
-                pFromDeck->fadeDuration =
-                        static_cast<double>(m_nextTransitionTime) /
-                        static_cast<double>(fromTrackDuration);
+            if (fromTrackDuration > 0.0) {
+                pFromDeck->fadeDuration = m_nextTransitionTime / fromTrackDuration;
             } else {
-                pFromDeck->fadeDuration = 0;
+                pFromDeck->fadeDuration = 0.0;
             }
 
-            if (m_nextTransitionTime > 0) {
+            if (m_nextTransitionTime > 0.0) {
                 pFromDeck->posThreshold = 1.0 - pFromDeck->fadeDuration;
             } else {
                 // in case of pause transition
@@ -826,7 +824,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
     // Update the transition time first.
     m_pConfig->set(ConfigKey(kConfigKey, kTransitionPreferenceName),
                    ConfigValue(time));
-    m_iTransitionTime = time;
+    m_transitionTime = time;
 
     // Then re-calculate fade thresholds for the decks.
     if (m_eState == ADJ_IDLE) {

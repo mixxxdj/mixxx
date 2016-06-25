@@ -123,8 +123,8 @@ class AutoDJProcessor : public QObject {
         return m_eState;
     }
 
-    int getTransitionTime() const {
-        return m_iTransitionTime;
+    double getTransitionTime() const {
+        return m_transitionTime;
     }
 
     PlaylistTableModel* getTableModel() const {
@@ -197,8 +197,8 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
-    int m_iTransitionTime; // the desired value set by the user
-    int m_nextTransitionTime; // the tweaked value actually used
+    double m_transitionTime; // the desired value set by the user
+    double m_nextTransitionTime; // the tweaked value actually used
 
     QList<DeckAttributes*> m_decks;
 

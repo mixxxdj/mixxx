@@ -10,7 +10,6 @@
 #include "library/browse/browsetablemodel.h"
 #include "sources/soundsourceproxy.h"
 #include "track/trackmetadata.h"
-#include "util/time.h"
 #include "util/trace.h"
 
 
@@ -213,7 +212,7 @@ void BrowseThread::populateModel() {
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_COMMENT, item);
 
-        QString duration = Time::formatSeconds(pTrack->getDuration());
+        QString duration = pTrack->getDurationText(mixxx::Duration::Precision::SECONDS);
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
