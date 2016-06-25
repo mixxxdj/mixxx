@@ -3,6 +3,7 @@
 #include "track/tracknumbers.h"
 
 #include "util/assert.h"
+#include "util/duration.h"
 #include "util/memory.h"
 
 // TagLib has full support for MP4 atom types since version 1.8
@@ -263,9 +264,11 @@ void readAudioProperties(TrackMetadata* pTrackMetadata,
     pTrackMetadata->setSampleRate(audioProperties.sampleRate());
     pTrackMetadata->setBitrate(audioProperties.bitrate());
 #if TAGLIB_HAS_LENGTH_IN_MILLISECONDS
-    double duration = audioProperties.lengthInMilliseconds() / 1000.0;
+    // Cast to double is required for duration with sub-second precision
+    const double dLengthInMilliseconds = audioProperties.lengthInMilliseconds();
+    const double duration = dLengthInMilliseconds / mixxx::Duration::kMillisPerSecond;
 #else
-    double duration = audioProperties.length();
+    const double duration = audioProperties.length();
 #endif
     pTrackMetadata->setDuration(duration);
 }

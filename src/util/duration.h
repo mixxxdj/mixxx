@@ -75,16 +75,16 @@ class DurationBase {
             double dSeconds,
             Precision precision = Precision::SECONDS);
 
-  protected:
-    DurationBase(qint64 durationNanos)
-        : m_durationNanos(durationNanos) {
-    }
-
     static const qint64 kMillisPerSecond = 1000;
     static const qint64 kMicrosPerSecond = kMillisPerSecond * 1000;
     static const qint64 kNanosPerSecond  = kMicrosPerSecond * 1000;
     static const qint64 kNanosPerMilli   = kNanosPerSecond / 1000;
     static const qint64 kNanosPerMicro   = kNanosPerMilli / 1000;
+
+  protected:
+    DurationBase(qint64 durationNanos)
+        : m_durationNanos(durationNanos) {
+    }
 
     qint64 m_durationNanos;
 };
