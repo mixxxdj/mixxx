@@ -714,7 +714,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             // The track might be shorter than the transition period. Use a
             // sensible cap.
             m_nextTransitionTime = math_min(m_transitionTime,
-                                            fromTrackDuration / 2.0);
+                                            fromTrackDuration / 2);
 
             if (pToDeck) {
                 TrackPointer toTrack = pToDeck->getLoadedTrack();
@@ -725,7 +725,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                     qDebug() << toTrack->getLocation()
                             << "toTrackDuration = " << toTrackDuration;
                     m_nextTransitionTime = math_min(m_nextTransitionTime,
-                                                    toTrackDuration / 2.0);
+                                                    toTrackDuration / 2);
                 }
             }
 
