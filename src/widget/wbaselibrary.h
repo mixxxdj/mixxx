@@ -21,14 +21,21 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
     
     int getShowFocus();
     
+    // Sets the widget to the focused state, it's not the same as Qt focus
     void setShowFocus(int sFocus);
-
+    
+  signals:
+  
+    void focused();
+    
   public slots:
 
     virtual void switchToView(const QString& name);
 
   protected:
-
+      
+    bool eventFilter(QObject*, QEvent* pEvent);
+    
     bool event(QEvent* pEvent) override;
 
     QMap<QString, QWidget*> m_viewMap;

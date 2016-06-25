@@ -34,7 +34,6 @@
 #include "effects/native/nativebackend.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
-#include "library/librarypanemanager.h"
 #include "library/library_preferences.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"

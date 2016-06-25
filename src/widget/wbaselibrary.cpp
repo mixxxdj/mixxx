@@ -19,6 +19,7 @@ bool WBaseLibrary::registerView(QString name, QWidget* view) {
         return false;
     }
 
+    view->installEventFilter(this);
     int index = addWidget(view);
     setCurrentIndex(index);
     m_currentViewName = name;
@@ -37,7 +38,7 @@ int WBaseLibrary::getShowFocus() {
 void WBaseLibrary::setShowFocus(int sFocus) {
     //qDebug() << "WBaseLibrary::setShowFocus" << sFocus << this;
     m_showFocus = sFocus;
-    
+
     style()->unpolish(this);
     style()->polish(this);
     update();
@@ -52,6 +53,14 @@ void WBaseLibrary::switchToView(const QString& name) {
         m_currentViewName = name;
         setCurrentWidget(widget);
     }
+}
+
+bool WBaseLibrary::eventFilter(QObject*, QEvent* pEvent) {
+    if (pEvent->type() == QEvent::FocusIn) {
+        //qDebug() << "WBaseLibrary::eventFilter FocusIn";
+        emit(focused());
+    }
+    return false;
 }
 
 bool WBaseLibrary::event(QEvent* pEvent) {

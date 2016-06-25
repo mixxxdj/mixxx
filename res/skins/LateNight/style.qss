@@ -1158,9 +1158,7 @@
 
 #LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
   background-color: #0f0f0f;
-  margin-right: 11px;
-
-  
+  margin-right: 11px; 
 }
 
 #LibrarySidebarExpanded QWidget {
@@ -1200,6 +1198,13 @@
   background-color: #232323;
 }
 
+#LibrarySidebarExpanded QTabBar::tab:focus {
+  border-top: 2px solid #8E5C00;
+  border-right: 2px solid #8E5C00;
+  border-left: 2px solid #8E5C00; 
+  background-color: #232323;
+}
+
 #LibrarySidebarExpanded QTabBar::tab:selected {
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
 }
@@ -1229,6 +1234,13 @@
   background-color: #232323;
   border-radius: 2px;
   color: #cfb32c;
+}
+
+#LibrarySidebarButtons:focus,
+#LibrarySidebarButtons QToolButton:focus,
+#LibrarySidebarExpanded > QWidget:focus,
+#LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus {
+  border: 1px solid #8E5C00;
 }
 
 #LibrarySidebarButtons, QTableView, QTextBrowser, QTreeView {
@@ -1409,12 +1421,12 @@ QTreeView::item:selected {
   color: #cfb32c;
 }
 
-WBaseLibrary[showFocus="0"] {
+WLibrary[showFocus="0"] {
   padding: 1px 0 0 0;
   border: none;
 }
 
-WBaseLibrary[showFocus="1"] {
+WLibrary[showFocus="1"] {
   padding: 1px 0 0 0;
   border-top: 1px solid #FF7100 !important;
 }

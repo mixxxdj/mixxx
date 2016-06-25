@@ -25,6 +25,8 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* libraryWidget,
 
     connect(this, SIGNAL(switchToView(const QString&)),
             m_pPaneWidget, SLOT(switchToView(const QString&)));
+    connect(m_pPaneWidget, SIGNAL(focused()),
+            this, SIGNAL(focused()));
 
     WLibrary* lib = qobject_cast<WLibrary*>(m_pPaneWidget);
     if (lib == nullptr) {
