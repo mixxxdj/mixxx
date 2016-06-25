@@ -108,7 +108,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_cmdLineArgs(args),
           m_pTouchShift(nullptr) {
     m_runtime_timer.start();
-    Time::start();
+    mixxx::Time::start();
 
     Version::logBuildDetails();
 

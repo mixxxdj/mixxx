@@ -1,10 +1,12 @@
-#ifndef UTIL_TIME_H
-#define UTIL_TIME_H
+#ifndef MIXXX_UTIL_TIME_H
+#define MIXXX_UTIL_TIME_H
 
 #include "util/performancetimer.h"
 #include "util/threadcputimer.h"
 #include "util/timer.h"
 #include "util/duration.h"
+
+namespace mixxx {
 
 #define LLTIMER PerformanceTimer
 //#define LLTIMER ThreadCpuTimer
@@ -41,4 +43,6 @@ class Time {
     static mixxx::Duration s_testElapsed;
 };
 
-#endif /* UTIL_TIME_H */
+} // namespace mixxx
+
+#endif /* MIXXX_UTIL_TIME_H */

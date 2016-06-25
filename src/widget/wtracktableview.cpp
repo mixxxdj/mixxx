@@ -147,7 +147,7 @@ void WTrackTableView::enableCachedOnly() {
         emit(onlyCachedCoverArt(true));
         m_loadCachedOnly = true;
     }
-    m_lastUserAction = Time::elapsed();
+    m_lastUserAction = mixxx::Time::elapsed();
 }
 
 void WTrackTableView::slotScrollValueChanged(int /*unused*/) {
@@ -164,7 +164,7 @@ void WTrackTableView::selectionChanged(const QItemSelection& selected,
 void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     // if the user is stopped in the same row for more than 0.1 s,
     // we load un-cached cover arts as well.
-    mixxx::Duration timeDelta = Time::elapsed() - m_lastUserAction;
+    mixxx::Duration timeDelta = mixxx::Time::elapsed() - m_lastUserAction;
     if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
 
         // Show the currently selected track in the large cover art view. Doing
