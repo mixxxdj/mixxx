@@ -26,3 +26,10 @@ QHash<QString, Creator*> LibraryFeatureFactory::getTable() {
     static QHash<QString, Creator*> table;
     return table;
 }
+
+LibraryFeature* LibraryFeatureFactory::create(const QString& name) {
+    if (getTable().contains(name)) {
+        return getTable()[name]->create();
+    }
+    return nullptr;
+}

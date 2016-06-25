@@ -40,6 +40,8 @@ public:
     static void registerF(const QString& name, Creator* pCreator);
     
     static QHash<QString, Creator*> getTable();
+    
+    static LibraryFeature* create(const QString& name);
 };
 
 #endif /* SRC_LIBRARY_LIBRARYFEATUREFACTORY_H_ */
