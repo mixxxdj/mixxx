@@ -9,12 +9,12 @@ namespace ModPlug {
 
 #include <vector>
 
-namespace Mixxx {
+namespace mixxx {
 
 // Class for reading tracker files using libmodplug.
 // The whole file is decoded at once and saved
 // in RAM to allow seeking and smooth operation in Mixxx.
-class SoundSourceModPlug: public Mixxx::SoundSource {
+class SoundSourceModPlug: public mixxx::SoundSource {
 public:
     static const SINT kChannelCount;
     static const SINT kSamplingRate;
@@ -63,6 +63,6 @@ public:
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEMODPLUG_H

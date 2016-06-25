@@ -15,7 +15,7 @@
 
 #include <vector>
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourceMp3: public SoundSource {
 public:
@@ -92,6 +92,6 @@ public:
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEMP3_H

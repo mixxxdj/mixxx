@@ -1,6 +1,6 @@
 #include "soundsourceproviderregistry.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 void SoundSourceProviderRegistry::registerProvider(
         const SoundSourceProviderPointer& pProvider) {

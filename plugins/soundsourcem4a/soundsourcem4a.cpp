@@ -19,7 +19,7 @@ typedef uint32_t SAMPLERATE_TYPE;
 typedef unsigned long SAMPLERATE_TYPE;
 #endif
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -546,17 +546,17 @@ SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
     return exportSoundSourcePlugin(new SoundSourceM4A(url));
 }
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderM4A is stateless and a single instance
     // can safely be shared
-    static Mixxx::SoundSourceProviderM4A singleton;
+    static mixxx::SoundSourceProviderM4A singleton;
     return &singleton;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
     // The statically allocated instance must not be deleted!
 }

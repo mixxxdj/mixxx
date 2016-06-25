@@ -174,8 +174,8 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
                 m_pKey, SLOT(set(double)));
 
         // Listen for updates to the file's Replay Gain
-        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(Mixxx::ReplayGain)),
-                this, SLOT(slotSetReplayGain(Mixxx::ReplayGain)));
+        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
+                this, SLOT(slotSetReplayGain(mixxx::ReplayGain)));
     }
 
     // Request a new track from EngineBuffer and wait for slotTrackLoaded()
@@ -316,7 +316,7 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
 
-void BaseTrackPlayerImpl::slotSetReplayGain(Mixxx::ReplayGain replayGain) {
+void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change
     if (m_pPlay->get() == 0.0) {

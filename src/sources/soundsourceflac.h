@@ -9,7 +9,7 @@
 
 #include <QFile>
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourceFLAC: public SoundSource {
 public:
@@ -72,6 +72,6 @@ public:
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEFLAC_H

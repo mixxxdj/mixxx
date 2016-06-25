@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -204,4 +204,4 @@ QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

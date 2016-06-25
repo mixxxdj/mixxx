@@ -1,6 +1,6 @@
 #include "sources/soundsourceopus.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -294,4 +294,4 @@ QStringList SoundSourceProviderOpus::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

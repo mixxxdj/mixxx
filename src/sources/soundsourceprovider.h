@@ -7,7 +7,7 @@
 
 #include "sources/soundsource.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // Providers for the same file extension are selected according
 // to the priority for which they have been registered. Only
@@ -52,6 +52,6 @@ public:
     virtual SoundSourcePointer newSoundSource(const QUrl& url) = 0;
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEPROVIDER_H

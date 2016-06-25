@@ -1621,7 +1621,7 @@ void WTrackTableView::slotReplayGainReset() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->setReplayGain(Mixxx::ReplayGain());
+            pTrack->setReplayGain(mixxx::ReplayGain());
         }
     }
 }

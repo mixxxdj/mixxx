@@ -4,7 +4,7 @@
 #include "sources/metadatasource.h"
 #include "sources/audiosource.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // Base class for sound sources.
 class SoundSource: public MetadataSource, public AudioSource {
@@ -77,6 +77,6 @@ private:
 
 typedef QSharedPointer<SoundSource> SoundSourcePointer;
 
-} //namespace Mixxx
+} //namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCE_H

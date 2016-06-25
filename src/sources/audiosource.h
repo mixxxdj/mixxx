@@ -8,7 +8,7 @@
 #include "util/result.h"
 #include "util/samplebuffer.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // forward declaration(s)
 class AudioSourceConfig;
@@ -233,6 +233,6 @@ class AudioSourceConfig : public AudioSignal {
 
 typedef QSharedPointer<AudioSource> AudioSourcePointer;
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_AUDIOSOURCE_H

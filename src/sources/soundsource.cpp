@@ -2,7 +2,7 @@
 
 #include "track/trackmetadatataglib.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 /*static*/ QString SoundSource::getFileExtensionFromUrl(const QUrl& url) {
     return url.toString().section(".", -1).toLower().trimmed();
@@ -51,4 +51,4 @@ Result SoundSource::writeTrackMetadata(
     return writeTrackMetadataIntoFile(trackMetadata, getLocalFileName());
 }
 
-} //namespace Mixxx
+} //namespace mixxx

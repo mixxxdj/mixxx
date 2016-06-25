@@ -6,7 +6,7 @@
 #include "track/trackmetadata.h"
 #include "util/result.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // Interface for parsing track metadata and cover art.
 class MetadataSource {
@@ -27,6 +27,6 @@ protected:
     virtual ~MetadataSource() {}
 };
 
-} //namespace Mixxx
+} //namespace mixxx
 
 #endif // MIXXX_METADATASOURCE_H

@@ -152,9 +152,9 @@ class Track : public QObject {
     bool isBpmLocked() const;
 
     // Set ReplayGain
-    void setReplayGain(const Mixxx::ReplayGain&);
+    void setReplayGain(const mixxx::ReplayGain&);
     // Returns ReplayGain
-    Mixxx::ReplayGain getReplayGain() const;
+    mixxx::ReplayGain getReplayGain() const;
 
     // Indicates if the metadata has been parsed from file tags.
     bool isHeaderParsed() const;
@@ -282,10 +282,10 @@ class Track : public QObject {
 
     // Set/get track metadata and cover art (optional) all at once.
     void setTrackMetadata(
-            const Mixxx::TrackMetadata& trackMetadata,
+            const mixxx::TrackMetadata& trackMetadata,
             bool parsedFromFile);
     void getTrackMetadata(
-            Mixxx::TrackMetadata* pTrackMetadata,
+            mixxx::TrackMetadata* pTrackMetadata,
             bool* pHeaderParsed) const;
 
     // Mark the track dirty if it isn't already.
@@ -314,7 +314,7 @@ class Track : public QObject {
     void beatsUpdated();
     void keyUpdated(double key);
     void keysUpdated();
-    void ReplayGainUpdated(Mixxx::ReplayGain replayGain);
+    void ReplayGainUpdated(mixxx::ReplayGain replayGain);
     void cuesUpdated();
     void changed(Track* pTrack);
     void dirty(Track* pTrack);
@@ -372,7 +372,7 @@ class Track : public QObject {
     QString m_sType;
 
     // Track metadata
-    Mixxx::TrackMetadata m_metadata;
+    mixxx::TrackMetadata m_metadata;
 
     // URL (used in promo track)
     QString m_sURL;
