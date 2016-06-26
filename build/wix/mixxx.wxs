@@ -240,13 +240,13 @@
     <?if $(var.Platform) = x86 ?>
     <SetProperty Id="MyWarningText3"
                  After="SetMyWarningText2"
-                 Value="!(loc.bitWidthMismatch64)">
+                 Value="!(loc.bitWidthMismatch32)">
        OTHERBITWIDTHINSTALLED
     </SetProperty>
     <?else?>
     <SetProperty Id="MyWarningText3"
                  After="SetMyWarningText2"
-                 Value="!(loc.bitWidthMismatch32)">
+                 Value="!(loc.bitWidthMismatch64)">
        OTHERBITWIDTHINSTALLED
     </SetProperty>
     <?endif?>
