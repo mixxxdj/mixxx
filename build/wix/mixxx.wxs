@@ -406,7 +406,7 @@
                Description="!(loc.FeaturePDBDescription)"
                AllowAdvertise='no'
                InstallDefault='local'
-               Level="1">
+               Level="10">
           <ComponentGroupRef Id='mainPDBCompGroup' />
         </Feature>
       <?endif?>
@@ -415,7 +415,7 @@
                Description="!(loc.FeatureDesktopShortcutDescription)"
                AllowAdvertise='no'
                InstallDefault='local'
-               Level="1">
+               Level="3">
         <ComponentRef Id="DesktopShortcutComp" />
       </Feature>
     </Feature>
