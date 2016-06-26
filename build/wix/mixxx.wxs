@@ -439,7 +439,7 @@
              Control ="Finish"
              Order   ="1"
              Event   ="DoAction"
-             Value   ="CA.StartAppOnExit">WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT</Publish>
+             Value   ="CA.StartAppOnExit">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
 
     <DialogRef Id="WarningDlg" />
 
