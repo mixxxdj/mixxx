@@ -102,7 +102,7 @@ public:
         case Qt::DisplayRole:
         {
             const QString year(QStandardItem::data(role).toString());
-            return Mixxx::TrackMetadata::formatCalendarYear(year);
+            return mixxx::TrackMetadata::formatCalendarYear(year);
         }
         default:
             return QStandardItem::data(role);
@@ -189,7 +189,7 @@ void BrowseThread::populateModel() {
         item = new YearItem(year);
         item->setToolTip(year);
         // The year column is sorted according to the numeric calendar year
-        item->setData(Mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
+        item->setData(mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
         row_data.insert(COLUMN_YEAR, item);
 
         item = new QStandardItem(pTrack->getGenre());
@@ -255,9 +255,9 @@ void BrowseThread::populateModel() {
         item->setData(creationTime, Qt::UserRole);
         row_data.insert(COLUMN_FILE_CREATION_TIME, item);
 
-        const Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+        const mixxx::ReplayGain replayGain(pTrack->getReplayGain());
         item = new QStandardItem(
-                Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
+                mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_REPLAYGAIN, item);

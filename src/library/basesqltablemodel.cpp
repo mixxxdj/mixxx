@@ -638,7 +638,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
-                value = Mixxx::TrackMetadata::formatCalendarYear(value.toString());
+                value = mixxx::TrackMetadata::formatCalendarYear(value.toString());
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
                 int track_number = value.toInt();
                 if (track_number <= 0) {
@@ -668,7 +668,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                     }
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
-                value = Mixxx::ReplayGain::ratioToString(value.toDouble());
+                value = mixxx::ReplayGain::ratioToString(value.toDouble());
             } // Otherwise, just use the column value.
 
             break;

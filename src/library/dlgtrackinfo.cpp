@@ -172,8 +172,8 @@ void DlgTrackInfo::populateFields(const Track& track) {
     txtBpm->setText(track.getBpmText());
     m_keysClone = track.getKeys();
     txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
-    const Mixxx::ReplayGain replayGain(track.getReplayGain());
-    txtReplayGain->setText(Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
+    const mixxx::ReplayGain replayGain(track.getReplayGain());
+    txtReplayGain->setText(mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
 
     reloadTrackBeats(track);
 

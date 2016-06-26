@@ -6,7 +6,7 @@
 #include "track/bpm.h"
 #include "track/replaygain.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // DTO for track metadata properties. Must not be subclassed (no virtual destructor)!
 class TrackMetadata {

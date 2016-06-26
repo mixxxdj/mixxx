@@ -26,7 +26,7 @@ extern "C" {
 // forward declaration
 class EncoderFfmpegResample;
 
-namespace Mixxx {
+namespace mixxx {
 
 struct ffmpegLocationObject {
     SINT pos;
@@ -106,6 +106,6 @@ class SoundSourceProviderFFmpeg: public SoundSourceProvider {
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEFFMPEG_H

@@ -1,5 +1,7 @@
 #include "util/time.h"
 
+namespace mixxx {
+
 // static
 LLTIMER Time::s_timer;
 
@@ -7,4 +9,6 @@ LLTIMER Time::s_timer;
 bool Time::s_testMode = false;
 
 // static
-mixxx::Duration Time::s_testElapsed = mixxx::Duration::fromNanos(0);
+Duration Time::s_testElapsed = Duration::fromNanos(0);
+
+} // namespace mixxx

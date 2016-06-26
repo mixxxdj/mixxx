@@ -60,7 +60,7 @@ template<class T> static void safeRelease(T **ppT) {
 
 } // anonymous namespace
 
-namespace Mixxx {
+namespace mixxx {
 
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
@@ -665,17 +665,17 @@ SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl
     return exportSoundSourcePlugin(new SoundSourceMediaFoundation(url));
 }
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderMediaFoundation is stateless and a single instance
     // can safely be shared
-    static Mixxx::SoundSourceProviderMediaFoundation singleton;
+    static mixxx::SoundSourceProviderMediaFoundation singleton;
     return &singleton;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
     // The statically allocated instance must not be deleted!
 }

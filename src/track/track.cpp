@@ -98,7 +98,7 @@ void Track::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration) {
 }
 
 void Track::setTrackMetadata(
-        const Mixxx::TrackMetadata& trackMetadata,
+        const mixxx::TrackMetadata& trackMetadata,
         bool parsedFromFile) {
     {
         // enter locking scope
@@ -125,7 +125,7 @@ void Track::setTrackMetadata(
     // Need to set BPM after sample rate since beat grid creation depends on
     // knowing the sample rate. Bug #1020438.
     if (trackMetadata.getBpm().hasValue() &&
-            ((nullptr == m_pBeats) || !Mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
+            ((nullptr == m_pBeats) || !mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
         // Only (re-)set the BPM if the beat grid is not valid.
         // Reason: The BPM value in the metadata might be normalized or rounded,
         // e.g. ID3v2 only supports integer values!
@@ -139,7 +139,7 @@ void Track::setTrackMetadata(
 }
 
 void Track::getTrackMetadata(
-        Mixxx::TrackMetadata* pTrackMetadata,
+        mixxx::TrackMetadata* pTrackMetadata,
         bool* pHeaderParsed) const {
     QMutexLocker lock(&m_qMutex);
     *pTrackMetadata = m_metadata;
@@ -213,12 +213,12 @@ bool Track::exists() const {
     return QFile::exists(m_fileInfo.absoluteFilePath());
 }
 
-Mixxx::ReplayGain Track::getReplayGain() const {
+mixxx::ReplayGain Track::getReplayGain() const {
     QMutexLocker lock(&m_qMutex);
     return m_metadata.getReplayGain();
 }
 
-void Track::setReplayGain(const Mixxx::ReplayGain& replayGain) {
+void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     QMutexLocker lock(&m_qMutex);
     if (m_metadata.getReplayGain() != replayGain) {
         m_metadata.setReplayGain(replayGain);
@@ -228,14 +228,14 @@ void Track::setReplayGain(const Mixxx::ReplayGain& replayGain) {
 }
 
 double Track::getBpm() const {
-    double bpm = Mixxx::Bpm::kValueUndefined;
+    double bpm = mixxx::Bpm::kValueUndefined;
     QMutexLocker lock(&m_qMutex);
     if (m_pBeats) {
         // BPM from beat grid overrides BPM from metadata
         // Reason: The BPM value in the metadata might be imprecise,
         // e.g. ID3v2 only supports integer values!
         double beatsBpm = m_pBeats->getBpm();
-        if (Mixxx::Bpm::isValidValue(beatsBpm)) {
+        if (mixxx::Bpm::isValidValue(beatsBpm)) {
             bpm = beatsBpm;
         }
     }
@@ -243,14 +243,14 @@ double Track::getBpm() const {
 }
 
 double Track::setBpm(double bpmValue) {
-    if (!Mixxx::Bpm::isValidValue(bpmValue)) {
+    if (!mixxx::Bpm::isValidValue(bpmValue)) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
         setBeats(BeatsPointer());
         return bpmValue;
     }
 
-    Mixxx::Bpm normalizedBpm(bpmValue);
+    mixxx::Bpm normalizedBpm(bpmValue);
     normalizedBpm.normalizeValue();
 
     QMutexLocker lock(&m_qMutex);
@@ -303,7 +303,7 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
         }
     }
 
-    Mixxx::Bpm bpm;
+    mixxx::Bpm bpm;
     double bpmValue = bpm.getValue();
 
     m_pBeats = pBeats;
@@ -333,7 +333,7 @@ BeatsPointer Track::getBeats() const {
 void Track::slotBeatsUpdated() {
     QMutexLocker lock(&m_qMutex);
     double bpmValue = m_pBeats->getBpm();
-    Mixxx::Bpm bpm(bpmValue);
+    mixxx::Bpm bpm(bpmValue);
     bpm.normalizeValue();
     m_metadata.setBpm(bpm);
     markDirtyAndUnlock(&lock);

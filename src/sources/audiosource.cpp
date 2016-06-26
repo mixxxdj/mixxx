@@ -2,7 +2,7 @@
 
 #include "util/sample.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 void AudioSource::clampFrameInterval(
         SINT* pMinFrameIndexOfInterval,

@@ -11,9 +11,9 @@
 #endif
 #include <sndfile.h>
 
-namespace Mixxx {
+namespace mixxx {
 
-class SoundSourceSndFile: public Mixxx::SoundSource {
+class SoundSourceSndFile: public mixxx::SoundSource {
 public:
     explicit SoundSourceSndFile(const QUrl& url);
     ~SoundSourceSndFile() override;
@@ -49,6 +49,6 @@ public:
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCESNDFILE_H

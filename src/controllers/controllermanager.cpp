@@ -320,14 +320,14 @@ void ControllerManager::pollDevices() {
         return;
     }
 
-    mixxx::Duration start = Time::elapsed();
+    mixxx::Duration start = mixxx::Time::elapsed();
     foreach (Controller* pDevice, m_controllers) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }
     }
 
-    mixxx::Duration duration = Time::elapsed() - start;
+    mixxx::Duration duration = mixxx::Time::elapsed() - start;
     if (duration > mixxx::Duration::fromMillis(kPollIntervalMillis)) {
         m_skipPoll = true;
     }

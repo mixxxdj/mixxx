@@ -55,7 +55,7 @@ static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size th
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -1287,7 +1287,7 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
     if (trackMetadata.getBpm().hasValue()) {
         // 16-bit integer value
         const int tmpoValue =
-                Mixxx::Bpm::valueToInteger(trackMetadata.getBpm().getValue());
+                mixxx::Bpm::valueToInteger(trackMetadata.getBpm().getValue());
         pTag->itemListMap()["tmpo"] = tmpoValue;
     } else {
         pTag->itemListMap().erase("tmpo");
@@ -1601,4 +1601,4 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
     return OK;
 }
 
-} //namespace Mixxx
+} //namespace mixxx

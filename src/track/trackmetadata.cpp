@@ -1,6 +1,6 @@
 #include "track/trackmetadata.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 /*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
 
@@ -95,4 +95,4 @@ bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
             (lhs.getReplayGain() == rhs.getReplayGain());
 }
 
-} //namespace Mixxx
+} //namespace mixxx

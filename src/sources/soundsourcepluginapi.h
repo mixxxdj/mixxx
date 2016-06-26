@@ -30,7 +30,7 @@
 
 // Function types and names of the public SoundSource plugin API
 
-namespace Mixxx {
+namespace mixxx {
 
 // extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion()
 
@@ -42,7 +42,7 @@ const char * const SoundSourcePluginAPI_getVersionFuncName = "Mixxx_SoundSourceP
 typedef SoundSourceProvider* (*SoundSourcePluginAPI_createSoundSourceProviderFunc)();
 const char* const SoundSourcePluginAPI_createSoundSourceProviderFuncName = "Mixxx_SoundSourcePluginAPI_createSoundSourceProvider";
 
-// extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*)
+// extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*)
 typedef void (*SoundSourcePluginAPI_destroySoundSourceProviderFunc)(SoundSourceProvider*);
 const char* const SoundSourcePluginAPI_destroySoundSourceProviderFuncName = "Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider";
 

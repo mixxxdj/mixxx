@@ -2,7 +2,7 @@
 #include "defs_version.h"
 
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -19,7 +19,7 @@ SoundSourcePointer exportSoundSourcePlugin(
     return SoundSourcePointer(pSoundSourcePlugin, deleteSoundSource);
 }
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion() {
     return VERSION;

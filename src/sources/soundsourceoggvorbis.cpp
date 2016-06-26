@@ -2,7 +2,7 @@
 
 #include <QFile>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -267,4 +267,4 @@ QStringList SoundSourceProviderOggVorbis::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

@@ -1,5 +1,5 @@
-#ifndef UTIL_DURATION_H
-#define UTIL_DURATION_H
+#ifndef MIXXX_UTIL_DURATION_H
+#define MIXXX_UTIL_DURATION_H
 
 #include <QMetaType>
 #include <QString>
@@ -273,4 +273,4 @@ class Duration : public DurationBase {
 
 Q_DECLARE_METATYPE(mixxx::Duration)
 
-#endif /* UTIL_DURATION_H */
+#endif /* MIXXX_UTIL_DURATION_H */
