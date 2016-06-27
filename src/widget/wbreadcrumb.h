@@ -13,7 +13,11 @@ class WBreadCrumb: public QLabel {
 	
   public slots:
     
-    void switchToView(TreeItem* pTree);  
+    void switchToView(TreeItem* pTree);
+    
+  private:
+    
+    QString getData(TreeItem* pTree);
 };
 
 #endif /* SRC_WIDGET_WBREADCRUMB_H_ */

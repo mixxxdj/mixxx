@@ -5,7 +5,7 @@
  *      Author: joan
  */
 
-#include <widget/wbreadcrumb.h>
+#include <wbreadcrumb.h>
 
 
 WBreadCrumb::WBreadCrumb(QWidget* parent) 
@@ -16,4 +16,8 @@ WBreadCrumb::WBreadCrumb(QWidget* parent)
 
 void WBreadCrumb::switchToView(TreeItem *pTree) {
     
+}
+
+QString WBreadCrumb::getData(TreeItem* pTree) {
+    QString text = pTree->data().toString();
 }
