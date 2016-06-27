@@ -211,32 +211,32 @@ class DlgKeyboard(Frame):
         keys = self.keys
         for key in keys:
             char = keyboardlayout.find(key.scancode)
-            if not char:
-                continue
-            key.config(text=char)
+            key.set_char(char)
 
 
 class DlgKeyboardKey(Button):
+    colors = {
+        "background_color": "#434A55",
+        "active_background_color": "#656D79",
+        "background_color_key_set": "#8FC238",
+        "active_background_color_key_set": "#A3D553",
+        "disabled_color": "#CCD1DA"
+    }
+
     def __init__(self, *args, scancode=None, width=2, char=None, **kwargs):
         Button.__init__(self, *args, width=width, height=2, command=self.set_listening, **kwargs)
-        self.config(text=char)
+        self.set_char(char)
         self.pack(side=LEFT)
-
         if not scancode:
             print("Warning: no scancode given for this DlgKeyboardKey")
-
         self.scancode = scancode
-        self.key_set = True if char else False
-
-        self.colors = {
-            "background_color": "#434A55",
-            "active_background_color": "#656D79",
-            "background_color_key_set": "#8FC238",
-            "active_background_color_key_set": "#A3D553",
-            "disabled_color": "#CCD1DA"
-        }
-        self.update_button_colors(self.key_set)
         self.bind("<KeyPress>", self.on_key_press)
+
+    def set_char(self, char):
+        if not char:
+            char = ""
+        self.config(text=char)
+        self.update_button_colors(bool(char))
 
     def set_listening(self):
         self.focus_set()
@@ -250,14 +250,14 @@ class DlgKeyboardKey(Button):
             self.configure(
                 fg="black",
                 activeforeground="black",
-                bg=self.colors["background_color_key_set"],
+                bg=DlgKeyboardKey.colors["background_color_key_set"],
                 activebackground=self.colors["active_background_color_key_set"]
             )
         else:
             self.configure(
                 fg="white",
                 activeforeground="white",
-                bg=self.colors["background_color"],
+                bg=DlgKeyboardKey.colors["background_color"],
                 activebackground=self.colors["active_background_color"]
             )
 
@@ -267,13 +267,10 @@ class DlgKeyboardKey(Button):
 
         # Check for DELETE key
         if e.keysym_num == 65535:
-            self.configure(text="")
-            self.key_set = False
+            self.set_char("")
         else:
-            self.configure(text=e.char)
-            self.key_set = True
+            self.set_char(e.char)
 
-        self.update_button_colors(self.key_set)
         self.tk_focusNext().focus_set()
 
 
