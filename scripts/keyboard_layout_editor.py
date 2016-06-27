@@ -1,6 +1,7 @@
 import os.path
 import re
 from tkinter import *
+from xml.dom import minidom
 from tkinter import filedialog
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement, tostring
@@ -107,6 +108,29 @@ class KeyboardLayoutEditor(Tk):
         # Update layout list in side bar
         self.sidebarframe.update_layout_list(self.layouts)
 
+    @staticmethod
+    def write_out(root):
+        # TODO(Tomasito) Pass path by parameter
+        full_path = "/home/tomasito/Development/Mixxx/scripts/keyboardlayouts_output.xml"
+        if os.path.isfile(full_path):
+            print("Warning: '" + full_path + "' already exists.\nOverriding that file assuming that it's ok :)\n")
+        print("Writing to file: " + full_path + "\n...")
+        xmlstr = minidom.parseString(tostring(root)).toprettyxml()
+        with open(full_path, "w") as f:
+            f.write(xmlstr)
+        print("Saved file to: " + full_path)
+
+    def create_xml(self):
+        # Create XML root element
+        root = Element('KeyboardLayoutTranslations')
+
+        # Create layouts block
+        layouts = SubElement(root, 'layouts')
+        for layout in self.layouts:
+            SubElement(layouts, 'lang').text = layout.name
+
+        return root
+
     def add_layout(self, name):
         if not KeyboardLayout.validate_layout_name(name):
             print("Layout name: " + name + " is not a valid language code name. Not loading this layout.")
@@ -141,6 +165,7 @@ class KeyboardLayoutEditor(Tk):
 class MainFrame(Frame):
     def __init__(self, *args, app=None, **kwargs):
         Frame.__init__(self, *args, **kwargs)
+        self.app = app
 
         # Setup main menu bar
         self.menubar = Menu(self)
@@ -148,7 +173,12 @@ class MainFrame(Frame):
         self.menubar.add_cascade(label="File", menu=menu)
         menu.add_command(label="New")
         menu.add_command(label="Open", command=app.open_file)
+        menu.add_command(label="Save", command=self.save_command)
         self.master.config(menu=self.menubar)
+
+    def save_command(self):
+        xml = self.app.create_xml()
+        self.app.write_out(xml)
 
 
 class SideBarFrame(Frame):
