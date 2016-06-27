@@ -566,7 +566,8 @@ if build.platform_is_windows:
         docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
         promotracks = env.Install(os.path.join(base_dist_dir, "promo/"), promotracks_files)
         #icon = env.Install(base_dist_dir+"", icon_files)
-        dlls = env.Install(base_dist_dir+"/", dll_files)
+        if not build.static_dependencies:
+            dlls = env.Install(base_dist_dir+"/", dll_files)
         soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"),
                                           soundsource_plugin_files)
         vamp_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "vamp/"),
@@ -581,19 +582,20 @@ if build.platform_is_windows:
         env.Alias('mixxx', keyboardmappings)
         env.Alias('mixxx', promotracks)
         env.Alias('mixxx', docs)
-        env.Alias('mixxx', dlls)
+        if not build.static_dependencies:
+            env.Alias('mixxx', dlls)
         env.Alias('mixxx', soundsource_plugins)
         env.Alias('mixxx', vamp_plugins)
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
 
         # imageformats DLL
-        if imgfmtdll_files:
+        if imgfmtdll_files and not build.static_dependencies:
                 imageformats_dll = env.Install(os.path.join(base_dist_dir, "imageformats"), imgfmtdll_files)
                 env.Alias('mixxx', imageformats_dll)
 
         # QSQLite DLL
-        if sqldll_files:
+        if sqldll_files and not build.static_dependencies:
                 sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
                 env.Alias('mixxx', sql_dlls)
 
