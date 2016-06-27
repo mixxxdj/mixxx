@@ -132,7 +132,11 @@ class SideBarFrame(Frame):
 
     def on_listbox_item_selected(self, e):
         widget = e.widget
-        index = int(widget.curselection()[0])
+        index = 0
+        try:
+            index = int(widget.curselection()[0])
+        except IndexError:
+            return
         layout_name = widget.get(index)
         self.app.select_layout(layout_name)
 
