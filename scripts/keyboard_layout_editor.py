@@ -117,6 +117,10 @@ class SideBarFrame(Frame):
         for layout in layouts:
             self.listbox.insert(END, layout.name)
 
+        if self.listbox.size() > 0:
+            self.listbox.select_set(0)
+            self.listbox.event_generate("<<ListboxSelect>>")
+
     def on_listbox_item_selected(self, e):
         widget = e.widget
         index = int(widget.curselection()[0])
