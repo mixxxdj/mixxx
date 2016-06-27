@@ -115,7 +115,7 @@ class KeyboardLayoutEditor(Tk):
         if os.path.isfile(full_path):
             print("Warning: '" + full_path + "' already exists.\nOverriding that file assuming that it's ok :)\n")
         print("Writing to file: " + full_path + "\n...")
-        xmlstr = minidom.parseString(tostring(root)).toprettyxml()
+        xmlstr = minidom.parseString(tostring(root)).toprettyxml(indent="  ")
         with open(full_path, "w") as f:
             f.write(xmlstr)
         print("Saved file to: " + full_path)
@@ -128,6 +128,25 @@ class KeyboardLayoutEditor(Tk):
         layouts = SubElement(root, 'layouts')
         for layout in self.layouts:
             SubElement(layouts, 'lang').text = layout.name
+
+        # Retrieve all key scan codes, used by all layouts
+        scancodes = set()
+        for layout in self.layouts:
+            scancodes.update(
+                layout.get_scancodes()
+            )
+
+        for scancode in scancodes:
+            key_element = SubElement(root, 'key')
+            key_element.set('scancode', str(scancode))
+
+            for layout in self.layouts:
+                layout_name = layout.name
+                char = layout.find(scancode)
+
+                char_element = SubElement(key_element, 'char')
+                char_element.text = char
+                char_element.set('lang', layout_name)
 
         return root
 
@@ -296,6 +315,12 @@ class KeyboardLayout:
 
     def update_key(self, scancode, char):
         self._data[int(scancode)] = char
+
+    def get_scancodes(self):
+        scancodes = set()
+        for scancode, char in self._data.items():
+            scancodes.add(scancode)
+        return scancodes
 
 
 class WorkspaceFrame(Frame):
