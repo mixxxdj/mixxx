@@ -21,6 +21,7 @@ class LibraryFeature;
 
 
 class Creator {
+  public:
     virtual ~Creator() = 0;
     virtual LibraryFeature* create() = 0;
 };
