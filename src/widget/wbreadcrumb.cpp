@@ -14,10 +14,19 @@ WBreadCrumb::WBreadCrumb(QWidget* parent)
     
 }
 
-void WBreadCrumb::switchToView(TreeItem *pTree) {
-    
+void WBreadCrumb::setBreadText(TreeItem *pTree) {
+    QString text = getData(pTree);
+    setText(text);
 }
 
-QString WBreadCrumb::getData(TreeItem* pTree) {
+QString& WBreadCrumb::getData(TreeItem* pTree) {
+    // Base case
+    if (pTree == nullptr) {
+        return "";
+    }
+    
+    // Recursive case
     QString text = pTree->data().toString();
+    QString next = getData(pTree->parent());
+    return (next == "" ? text : next + " > " + text);
 }
