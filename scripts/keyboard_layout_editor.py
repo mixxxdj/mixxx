@@ -1,4 +1,5 @@
 import os.path
+import re
 from tkinter import *
 from tkinter import filedialog
 from xml.etree import ElementTree
@@ -74,6 +75,9 @@ class KeyboardLayoutEditor(Tk):
 
         for layout in layouts_element.iter('lang'):
             name = layout.text
+            if not KeyboardLayout.validate_layout_name(name):
+                print("Layout name: " + name + " is not a valid language code name. Not loading this layout.")
+                continue
             self.layouts.append(
                 KeyboardLayout(name=name, root=root)
             )
@@ -134,9 +138,20 @@ class SideBarFrame(Frame):
 
 
 class KeyboardLayout:
+    NAME_VALIDATION_PATTERN = re.compile("^[a-z]{2}_[A-Z]{2,3}$")
+
+    @staticmethod
+    # Check if name has the correct format, described here: http://doc.qt.io/qt-4.8/qlocale.html#QLocale-2
+    # Name has to start with a two letter ISO 639-1 language code ...
+    # ... followed by an underscore ...
+    # ... followed by a three letter uppercase ISO 3166 country code
+    #
+    # Note: This validation is not full-prove: qw_ZXC will pass.
+    def validate_layout_name(name):
+        return KeyboardLayout.NAME_VALIDATION_PATTERN.match(name)
+
     def __init__(self, name="", root=None):
         # Keyboard layout name
-        # TODO(Tomasito) Validate layout name as described here: http://doc.qt.io/qt-4.8/qlocale.html#QLocale-2
         self.name = name
 
         # Dictionary containing layout data, where:
