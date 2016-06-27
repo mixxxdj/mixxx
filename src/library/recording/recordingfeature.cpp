@@ -12,11 +12,13 @@
 
 const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
 
-RecordingFeature::RecordingFeature(Library* pLibrary,
+RecordingFeature::RecordingFeature(
                                    UserSettingsPointer pConfig,
+                                   Library* pLibrary,
+                                   QObject* parent,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary),
+        : LibraryFeature(pConfig, pLibrary, parent),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),

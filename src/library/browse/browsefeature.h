@@ -27,8 +27,9 @@ class TrackCollection;
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BrowseFeature(QObject* parent,
-                  UserSettingsPointer pConfig,
+    BrowseFeature(UserSettingsPointer pConfig,
+                  Library* pLibrary,
+                  QObject* parent,
                   TrackCollection* pTrackCollection,
                   RecordingManager* pRec);
     virtual ~BrowseFeature();

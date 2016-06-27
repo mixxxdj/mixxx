@@ -22,10 +22,11 @@
 
 const QString MixxxLibraryFeature::m_sMixxxLibraryViewName = "MixxxLibraryFeature";
 
-MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-                                         TrackCollection* pTrackCollection,
-                                         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary),
+MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
+                                         Library* pLibrary,
+                                         QObject* parent,
+                                         TrackCollection* pTrackCollection)
+        : LibraryFeature(pConfig, pLibrary, parent),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
           kLibraryTitle(tr("Library")),

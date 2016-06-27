@@ -12,7 +12,10 @@ class TrackCollection;
 class BaseExternalLibraryFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BaseExternalLibraryFeature(QObject* pParent, TrackCollection* pCollection);
+    BaseExternalLibraryFeature(UserSettingsPointer pConfig, 
+                               Library* pLibrary, 
+                               QObject* pParent,
+                               TrackCollection* pCollection);
     virtual ~BaseExternalLibraryFeature();
 
   public slots:

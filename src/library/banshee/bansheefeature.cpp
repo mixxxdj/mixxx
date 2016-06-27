@@ -14,10 +14,11 @@ const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 const QString BansheeFeature::m_sBansheeViewName = "BANSHEE_VIEW";
 QString BansheeFeature::m_databaseFile;
 
-BansheeFeature::BansheeFeature(QObject* parent,
-                               TrackCollection* pTrackCollection,
-                               UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
+BansheeFeature::BansheeFeature(UserSettingsPointer pConfig,
+                               Library* pLibrary,
+                               QObject* parent,
+                               TrackCollection* pTrackCollection)
+        : BaseExternalLibraryFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false) {
     Q_UNUSED(pConfig);

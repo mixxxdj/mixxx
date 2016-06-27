@@ -12,8 +12,11 @@
 
 const QString RhythmboxFeature::m_sRhythmBoxViewName = QString("RHYTHMBOX_VIEW");
 
-RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
+RhythmboxFeature::RhythmboxFeature(UserSettingsPointer pConfig,
+                                   Library* pLibrary, 
+                                   QObject* parent, 
+                                   TrackCollection* pTrackCollection)
+        : BaseExternalLibraryFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false) {
     QString tableName = "rhythmbox_library";

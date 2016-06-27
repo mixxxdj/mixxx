@@ -29,8 +29,11 @@ QString localhost_token() {
 #endif
 }
 
-ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
+ITunesFeature::ITunesFeature(UserSettingsPointer pConfig,
+                             Library* pLibrary,
+                             QObject* parent,
+                             TrackCollection* pTrackCollection)
+        : BaseExternalLibraryFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false) {
     QString tableName = "itunes_library";

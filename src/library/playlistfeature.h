@@ -20,8 +20,10 @@ class TreeItem;
 class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
   public:
-    PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection,
-                    UserSettingsPointer pConfig);
+    PlaylistFeature(UserSettingsPointer pConfig, 
+                    Library* pLibrary,
+                    QObject* parent, 
+                    TrackCollection* pTrackCollection);
     virtual ~PlaylistFeature();
 
     QVariant title();

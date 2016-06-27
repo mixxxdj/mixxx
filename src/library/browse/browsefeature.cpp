@@ -24,11 +24,12 @@ const QString kQuickLinksSeparator = "-+-";
 
 const QString BrowseFeature::m_sBrowseViewName = QString("BROWSEHOME");
 
-BrowseFeature::BrowseFeature(QObject* parent,
-                             UserSettingsPointer pConfig,
+BrowseFeature::BrowseFeature(UserSettingsPointer pConfig,
+                             Library* pLibrary,
+                             QObject* parent,
                              TrackCollection* pTrackCollection,
                              RecordingManager* pRecordingManager)
-        : LibraryFeature(parent),
+        : LibraryFeature(pConfig, pLibrary, parent),
           m_pConfig(pConfig),
           m_browseModel(this, pTrackCollection, pRecordingManager),
           m_proxyModel(&m_browseModel),

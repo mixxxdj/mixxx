@@ -29,9 +29,10 @@ class TrackCollection;
 class MixxxLibraryFeature : public LibraryFeature {
     Q_OBJECT
     public:
-    MixxxLibraryFeature(Library* pLibrary,
-                        TrackCollection* pTrackCollection,
-                        UserSettingsPointer pConfig);
+    MixxxLibraryFeature(UserSettingsPointer pConfig,
+                        Library* pLibrary,
+                        QObject* parent,
+                        TrackCollection* pTrackCollection);
     virtual ~MixxxLibraryFeature();
 
     QVariant title();

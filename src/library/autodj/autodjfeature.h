@@ -32,8 +32,9 @@ class AutoDJProcessor;
 class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AutoDJFeature(Library* pLibrary,
-                  UserSettingsPointer pConfig,
+    AutoDJFeature(UserSettingsPointer pConfig,
+                  Library* pLibrary,
+                  QObject* parent,
                   PlayerManagerInterface* pPlayerManager,
                   TrackCollection* pTrackCollection);
     virtual ~AutoDJFeature();

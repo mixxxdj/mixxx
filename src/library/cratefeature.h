@@ -24,9 +24,10 @@ class TrackCollection;
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(Library* pLibrary,
-                 TrackCollection* pTrackCollection,
-                 UserSettingsPointer pConfig);
+    CrateFeature(UserSettingsPointer pConfig,
+                 Library* pLibrary,
+                 QObject* parent,
+                 TrackCollection* pTrackCollection);
     virtual ~CrateFeature();
 
     QVariant title();

@@ -25,8 +25,9 @@ class TreeItem;
 class BasePlaylistFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BasePlaylistFeature(QObject* parent,
-                        UserSettingsPointer pConfig,
+    BasePlaylistFeature(UserSettingsPointer pConfig,
+                        Library* pLibrary,
+                        QObject* parent,
                         TrackCollection* pTrackCollection,
                         QString rootViewName);
     virtual ~BasePlaylistFeature();

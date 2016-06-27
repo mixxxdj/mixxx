@@ -27,10 +27,11 @@
 
 const QString CrateFeature::m_sCrateViewName = QString("CRATEHOME");
 
-CrateFeature::CrateFeature(Library* pLibrary,
-                           TrackCollection* pTrackCollection,
-                           UserSettingsPointer pConfig)
-        : LibraryFeature(pConfig),
+CrateFeature::CrateFeature(UserSettingsPointer pConfig,
+                           Library* pLibrary,
+                           QObject* parent,
+                           TrackCollection* pTrackCollection)
+        : LibraryFeature(pConfig, pLibrary, parent),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection) {

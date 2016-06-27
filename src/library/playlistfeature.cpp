@@ -18,10 +18,11 @@
 #include "util/dnd.h"
 #include "util/time.h"
 
-PlaylistFeature::PlaylistFeature(QObject* parent,
-                                 TrackCollection* pTrackCollection,
-                                 UserSettingsPointer pConfig)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection,
+PlaylistFeature::PlaylistFeature(UserSettingsPointer pConfig,
+                                 Library* pLibrary,
+                                 QObject* parent,
+                                 TrackCollection* pTrackCollection)
+        : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection,
                               "PLAYLISTHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.playlist");

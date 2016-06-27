@@ -16,7 +16,9 @@ class TreeItem;
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
 public:
-    SetlogFeature(QObject* parent, UserSettingsPointer pConfig,
+    SetlogFeature(UserSettingsPointer pConfig,
+                  Library* pLibrary,
+                  QObject* parent, 
                   TrackCollection* pTrackCollection);
     virtual ~SetlogFeature();
 

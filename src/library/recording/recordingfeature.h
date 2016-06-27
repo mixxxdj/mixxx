@@ -20,8 +20,10 @@ class TrackCollection;
 class RecordingFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    RecordingFeature(Library* parent,
+    RecordingFeature(
                      UserSettingsPointer pConfig,
+                     Library* pLibrary,
+                     QObject* parent,
                      TrackCollection* pTrackCollection,
                      RecordingManager* pRecordingManager);
     virtual ~RecordingFeature();

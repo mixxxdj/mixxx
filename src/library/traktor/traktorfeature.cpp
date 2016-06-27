@@ -52,8 +52,10 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
-TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
+TraktorFeature::TraktorFeature(UserSettingsPointer pConfig,
+                               Library* pLibrary, 
+                               QObject* parent, TrackCollection* pTrackCollection)
+        : BaseExternalLibraryFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false) {
     QString tableName = "traktor_library";

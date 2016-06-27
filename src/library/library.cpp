@@ -210,6 +210,9 @@ void Library::addFeature(LibraryFeature* feature) {
     m_featuresMap.insert(feature->getViewName(), feature);
     
     m_pSidebarModel->addLibraryFeature(feature);
+    
+    // TODO(jmigual): this should be removed and add a direct interaction
+    // between the LibraryFeature and the Library
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
             this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
     connect(feature, SIGNAL(switchToView(const QString&)),
@@ -495,16 +498,16 @@ LibraryPaneManager *Library::getFocusedPane() {
 }
 
 void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface* pPlayerManager) {
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(pConfig, this, this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
 
-    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));
-    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
+    addFeature(new AutoDJFeature(pConfig, this, this, pPlayerManager, m_pTrackCollection));
+    m_pPlaylistFeature = new PlaylistFeature(pConfig, this, this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);
-    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
+    m_pCrateFeature = new CrateFeature(pConfig, this, this, m_pTrackCollection);
     addFeature(m_pCrateFeature);
     BrowseFeature* browseFeature = new BrowseFeature(
-        this, pConfig, m_pTrackCollection, m_pRecordingManager);
+        pConfig, this, this, m_pTrackCollection, m_pRecordingManager);
     connect(browseFeature, SIGNAL(scanLibrary()),
             &m_scanner, SLOT(scan()));
     connect(&m_scanner, SIGNAL(scanStarted()),
@@ -513,9 +516,9 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
             browseFeature, SLOT(slotLibraryScanFinished()));
 
     addFeature(browseFeature);
-    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
-    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
+    addFeature(new RecordingFeature(pConfig, this, this, m_pTrackCollection, m_pRecordingManager));
+    addFeature(new SetlogFeature(pConfig, this, this, m_pTrackCollection));
+    m_pAnalysisFeature = new AnalysisFeature(m_pTrackCollection, pConfig, this, this);//this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
@@ -526,22 +529,22 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
-        addFeature(new RhythmboxFeature(this, m_pTrackCollection));
+        addFeature(new RhythmboxFeature(pConfig, this, this, m_pTrackCollection));
     }
 
     if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
-            addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
+            addFeature(new BansheeFeature(pConfig, this, this, m_pTrackCollection));
         }
     }
     if (ITunesFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
-        addFeature(new ITunesFeature(this, m_pTrackCollection));
+        addFeature(new ITunesFeature(pConfig, this, this, m_pTrackCollection));
     }
     if (TraktorFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
-        addFeature(new TraktorFeature(this, m_pTrackCollection));
+        addFeature(new TraktorFeature(pConfig, this, this, m_pTrackCollection));
     }
 }
 

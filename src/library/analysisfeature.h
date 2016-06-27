@@ -23,9 +23,10 @@ class TrackCollection;
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AnalysisFeature(QObject* parent,
+    AnalysisFeature(TrackCollection* pTrackCollection,
                     UserSettingsPointer pConfig,
-                    TrackCollection* pTrackCollection);
+                    Library* pLibrary,
+                    QObject* parent);
     virtual ~AnalysisFeature();
 
     QVariant title();

@@ -19,11 +19,12 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "util/assert.h"
 
-BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
-                                         UserSettingsPointer pConfig,
+BasePlaylistFeature::BasePlaylistFeature(UserSettingsPointer pConfig,
+                                         Library* pLibrary,
+                                         QObject* parent,
                                          TrackCollection* pTrackCollection,
                                          QString rootViewName)
-        : LibraryFeature(pConfig, parent),
+        : LibraryFeature(pConfig, pLibrary, parent),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
@@ -92,7 +93,6 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
 
-    Library* pLibrary = static_cast<Library*>(parent);
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
             this, SLOT(slotTrackSelected(TrackPointer)));
     connect(pLibrary, SIGNAL(switchToView(const QString&)),

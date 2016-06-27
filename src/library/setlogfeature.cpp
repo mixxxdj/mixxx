@@ -11,10 +11,11 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 
-SetlogFeature::SetlogFeature(QObject* parent,
-                             UserSettingsPointer pConfig,
+SetlogFeature::SetlogFeature(UserSettingsPointer pConfig,
+                             Library* pLibrary,
+                             QObject* parent,
                              TrackCollection* pTrackCollection)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
+        : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
