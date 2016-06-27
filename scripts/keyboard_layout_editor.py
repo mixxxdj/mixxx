@@ -3,6 +3,7 @@ import re
 from tkinter import *
 from tkinter import filedialog
 from xml.etree import ElementTree
+from xml.etree.ElementTree import Element, SubElement, tostring
 
 
 def main():
@@ -45,7 +46,7 @@ class KeyboardLayoutEditor(Tk):
         self.tree = None
 
         # Root element
-        self.root = None
+        self.root = Element('KeyboardLayoutTranslations')
 
         # List of instances of KeyboardLayout
         self.layouts = []
@@ -115,15 +116,26 @@ class KeyboardLayoutEditor(Tk):
         )
         self.sidebarframe.update_layout_list(self.layouts)
 
-    def select_layout(self, layout_name):
+    def get_layout(self, layout_name):
         for layout in self.layouts:
             if layout.name == layout_name:
-                self.dlgkeyboard.update_keys(layout)
-                self.selected_layout = layout
-                self.dlgkeyboard.keyboard_layout = layout
-                print("Selected layout: " + layout_name)
-                return
+                return layout
         print("No such layout: " + layout_name)
+        return None
+
+    def remove_layout(self, layout):
+        self.layouts.remove(layout)
+        self.sidebarframe.update_layout_list(self.layouts)
+
+    def select_layout(self, layout_name):
+        layout = self.get_layout(layout_name)
+        if not bool(layout):
+            return
+
+        self.dlgkeyboard.update_keys(layout)
+        self.selected_layout = layout
+        self.dlgkeyboard.keyboard_layout = layout
+        print("Selected layout: " + layout_name)
 
 
 class MainFrame(Frame):
@@ -158,8 +170,9 @@ class SideBarFrame(Frame):
         d = LayoutNameDialog(self)
         self.wait_window(d.top)
 
-    def on_remove_button_clicked(self, e):
-        pass
+    def on_remove_button_clicked(self, e=None):
+        selected_layout = self.app.selected_layout
+        self.app.remove_layout(selected_layout)
 
     def update_layout_list(self, layouts):
         self.listbox.delete(0, END)
