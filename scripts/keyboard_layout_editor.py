@@ -12,16 +12,10 @@ def main():
 class KeyboardLayoutEditor(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
-
         self.wm_title("Keyboard layouts editor")
 
-        # self.minsize(
-        #     width=1000,
-        #     height=270
-        # )
-
         self.mainframe = MainFrame(self, app=self)
-        self.sidebarframe = SideBarFrame(self.mainframe)
+        self.sidebarframe = SideBarFrame(self.mainframe, app=self)
         self.workspaceframe = WorkspaceFrame(self.mainframe)
         self.dlgkeyboard = DlgKeyboard(self.workspaceframe)
         self.pack()
@@ -32,8 +26,11 @@ class KeyboardLayoutEditor(Tk):
         # Element tree of current XML file
         self.tree = None
 
+        # List of instances of KeyboardLayout
+        self.layouts = []
+
     def pack(self):
-        self.sidebarframe.pack()
+        self.sidebarframe.pack(side=LEFT)
         self.workspaceframe.pack()
         self.mainframe.pack()
         self.dlgkeyboard.pack()
@@ -47,13 +44,47 @@ class KeyboardLayoutEditor(Tk):
         if self.file_name == ():
             return
 
-        if os.path.isfile(self.file_name):
-            print("Opening file: " + self.file_name)
-            with open(self.file_name, 'rt') as f:
-                self.tree = ElementTree.parse(f)
-        else:
+        if not os.path.isfile(self.file_name):
             print("File doesn't exist: " + self.file_name)
             self.file_name = None
+            return
+
+        print("Opening file: " + self.file_name)
+        with open(self.file_name, 'rt') as f:
+            self.tree = ElementTree.parse(f)
+
+        # Get KeyboardLayoutTranslations element, which holds all
+        # information and is basically the root element
+        root = None
+        for element in self.tree.getroot().iter():
+            if element.tag == 'KeyboardLayoutTranslations':
+                root = element
+                break
+
+        # Retrieve layouts element
+        layouts_element = root.find('layouts')
+
+        if not layouts_element:
+            print("Couldn't retrieve layout list, no <layouts> element "
+                  "in loaded XML. Pleas load in an other XML file.")
+            return
+
+        for layout in layouts_element.iter('lang'):
+            name = layout.text
+            self.layouts.append(
+                KeyboardLayout(name=name, root=root)
+            )
+
+        # Update layout list in side bar
+        self.sidebarframe.update_layout_list(self.layouts)
+
+    def select_layout(self, layout_name):
+        for layout in self.layouts:
+            if layout.name == layout_name:
+                self.dlgkeyboard.update_keys(layout)
+                print("Selected layout: " + layout_name)
+                return
+        print("No such layout: " + layout_name)
 
 
 class MainFrame(Frame):
@@ -70,8 +101,64 @@ class MainFrame(Frame):
 
 
 class SideBarFrame(Frame):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, app=None, **kwargs):
         Frame.__init__(self, *args, **kwargs)
+        self.app = app
+
+        Button(self, text="Add").pack()
+        Button(self, text="Remove").pack()
+
+        self.listbox = Listbox(self)
+        self.listbox.pack()
+
+        self.listbox.bind('<<ListboxSelect>>', self.on_listbox_item_selected)
+
+    def update_layout_list(self, layouts):
+        for layout in layouts:
+            self.listbox.insert(END, layout.name)
+
+    def on_listbox_item_selected(self, e):
+        widget = e.widget
+        index = int(widget.curselection()[0])
+        layout_name = widget.get(index)
+        self.app.select_layout(layout_name)
+
+
+class KeyboardLayout:
+    def __init__(self, name="", root=None):
+        # Keyboard layout name
+        # TODO(Tomasito) Validate layout name as described here: http://doc.qt.io/qt-4.8/qlocale.html#QLocale-2
+        self.name = name
+
+        # Dictionary containing layout data, where:
+        #   key   = scan code (as described here http://www.barcodeman.com/altek/mule/kb102.gif)
+        #   value = character bound to this key
+        self._data = {}
+
+        # Parse XML and store it into self.data
+        self.parse_xml(root)
+
+    def parse_xml(self, root):
+        for key in root.iter('key'):
+            scancode = key.get('scancode')
+            if not scancode:
+                print(
+                    "Skipping key, no scan code defined. Make sure that all key "
+                    "elements have a 'scancode' attribute telling the scancode as "
+                    "described here: http://www.barcodeman.com/altek/mule/kb102.gif")
+                break
+
+            for char in key.iter('char'):
+                lang = char.get('lang')
+                if lang == self.name:
+                    self._data[int(scancode)] = char.text
+
+    def find(self, scancode):
+        data = self._data
+        if scancode in data:
+            return self._data[scancode]
+        else:
+            return None
 
 
 class WorkspaceFrame(Frame):
@@ -82,34 +169,47 @@ class WorkspaceFrame(Frame):
 class DlgKeyboard(Frame):
     def __init__(self, *args, **kwargs):
         Frame.__init__(self, *args, **kwargs)
-        # Scancodes based on http://www.barcodeman.com/altek/mule/kb102.gif
+
+        self.keys = []
 
         # Numeric keys
         row_1 = Frame(self)
         for i in range(1, 14):
-            DlgKeyboardKey(row_1, scancode=i)
+            key = DlgKeyboardKey(row_1, scancode=i)
+            self.keys.append(key)
         row_1.grid(row=1, column=1, sticky='we')
 
         # Character keys (qwertyuiop[] on en_US)
         row_2 = Frame(self)
         DlgKeyboardKey(row_2, scancode=16, width=4, char="Tab", state=DISABLED)
         for i in range(17, 29):
-            DlgKeyboardKey(row_2, scancode=i)
+            key = DlgKeyboardKey(row_2, scancode=i)
+            self.keys.append(key)
         row_2.grid(row=2, column=1, sticky='we')
 
         # Character keys (asdfghjkl;'\ on en_US)
         row_3 = Frame(self)
         DlgKeyboardKey(row_3, scancode=16, width=6, char="Caps Lock", state=DISABLED)
         for i in range(31, 43):
-            DlgKeyboardKey(row_3, scancode=i)
+            key = DlgKeyboardKey(row_3, scancode=i)
+            self.keys.append(key)
         row_3.grid(row=3, column=1, sticky='we')
 
         # Character keys (\zxcvbnm,./ on en_US)
         row_4 = Frame(self)
         DlgKeyboardKey(row_4, scancode=16, char="Shift", state=DISABLED)
         for i in range(45, 56):
-            DlgKeyboardKey(row_4, scancode=i)
+            key = DlgKeyboardKey(row_4, scancode=i)
+            self.keys.append(key)
         row_4.grid(row=4, column=1, sticky='we')
+
+    def update_keys(self, keyboardlayout):
+        keys = self.keys
+        for key in keys:
+            char = keyboardlayout.find(key.scancode)
+            if not char:
+                continue
+            key.config(text=char)
 
 
 class DlgKeyboardKey(Button):
