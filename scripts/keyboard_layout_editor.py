@@ -17,7 +17,7 @@ class KeyboardLayoutEditor(Tk):
         self.mainframe = MainFrame(self, app=self)
         self.sidebarframe = SideBarFrame(self.mainframe, app=self)
         self.workspaceframe = WorkspaceFrame(self.mainframe)
-        self.dlgkeyboard = DlgKeyboard(self.workspaceframe)
+        self.dlgkeyboard = DlgKeyboard(self.workspaceframe, app=self)
         self.pack()
 
         # File name of current XML file
@@ -28,6 +28,9 @@ class KeyboardLayoutEditor(Tk):
 
         # List of instances of KeyboardLayout
         self.layouts = []
+
+        # The layout that is currently selected and displayed
+        self.selected_layout = None
 
     def pack(self):
         self.sidebarframe.pack(side=LEFT)
@@ -82,6 +85,8 @@ class KeyboardLayoutEditor(Tk):
         for layout in self.layouts:
             if layout.name == layout_name:
                 self.dlgkeyboard.update_keys(layout)
+                self.selected_layout = layout
+                self.dlgkeyboard.keyboard_layout = layout
                 print("Selected layout: " + layout_name)
                 return
         print("No such layout: " + layout_name)
@@ -164,6 +169,10 @@ class KeyboardLayout:
         else:
             return None
 
+    def update_key(self, scancode, char):
+        self._data[int(scancode)] = char
+
+
 
 class WorkspaceFrame(Frame):
     def __init__(self, *args, **kwargs):
@@ -171,15 +180,15 @@ class WorkspaceFrame(Frame):
 
 
 class DlgKeyboard(Frame):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, app=None, **kwargs):
         Frame.__init__(self, *args, **kwargs)
-
         self.keys = []
+        self.app = app
 
         # Numeric keys
         row_1 = Frame(self)
         for i in range(1, 14):
-            key = DlgKeyboardKey(row_1, scancode=i)
+            key = DlgKeyboardKey(row_1, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
         row_1.grid(row=1, column=1, sticky='we')
 
@@ -187,7 +196,7 @@ class DlgKeyboard(Frame):
         row_2 = Frame(self)
         DlgKeyboardKey(row_2, scancode=16, width=4, char="Tab", state=DISABLED)
         for i in range(17, 29):
-            key = DlgKeyboardKey(row_2, scancode=i)
+            key = DlgKeyboardKey(row_2, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
         row_2.grid(row=2, column=1, sticky='we')
 
@@ -195,7 +204,7 @@ class DlgKeyboard(Frame):
         row_3 = Frame(self)
         DlgKeyboardKey(row_3, scancode=16, width=6, char="Caps Lock", state=DISABLED)
         for i in range(31, 43):
-            key = DlgKeyboardKey(row_3, scancode=i)
+            key = DlgKeyboardKey(row_3, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
         row_3.grid(row=3, column=1, sticky='we')
 
@@ -203,7 +212,7 @@ class DlgKeyboard(Frame):
         row_4 = Frame(self)
         DlgKeyboardKey(row_4, scancode=16, char="Shift", state=DISABLED)
         for i in range(45, 56):
-            key = DlgKeyboardKey(row_4, scancode=i)
+            key = DlgKeyboardKey(row_4, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
         row_4.grid(row=4, column=1, sticky='we')
 
@@ -215,7 +224,7 @@ class DlgKeyboard(Frame):
 
 
 class DlgKeyboardKey(Button):
-    colors = {
+    COLORS = {
         "background_color": "#434A55",
         "active_background_color": "#656D79",
         "background_color_key_set": "#8FC238",
@@ -223,13 +232,14 @@ class DlgKeyboardKey(Button):
         "disabled_color": "#CCD1DA"
     }
 
-    def __init__(self, *args, scancode=None, width=2, char=None, **kwargs):
+    def __init__(self, *args, scancode=None, width=2, char=None, dlg_keyboard=None, **kwargs):
         Button.__init__(self, *args, width=width, height=2, command=self.set_listening, **kwargs)
         self.set_char(char)
         self.pack(side=LEFT)
         if not scancode:
             print("Warning: no scancode given for this DlgKeyboardKey")
         self.scancode = scancode
+        self.dlg_keyboard = dlg_keyboard
         self.bind("<KeyPress>", self.on_key_press)
 
     def set_char(self, char):
@@ -250,28 +260,48 @@ class DlgKeyboardKey(Button):
             self.configure(
                 fg="black",
                 activeforeground="black",
-                bg=DlgKeyboardKey.colors["background_color_key_set"],
-                activebackground=self.colors["active_background_color_key_set"]
+                bg=DlgKeyboardKey.COLORS["background_color_key_set"],
+                activebackground=self.COLORS["active_background_color_key_set"]
             )
         else:
             self.configure(
                 fg="white",
                 activeforeground="white",
-                bg=DlgKeyboardKey.colors["background_color"],
-                activebackground=self.colors["active_background_color"]
+                bg=DlgKeyboardKey.COLORS["background_color"],
+                activebackground=self.COLORS["active_background_color"]
             )
 
     def on_key_press(self, e):
-        if not e.char.strip():
+        char = e.char
+
+        if not char.strip():
             return
 
         # Check for DELETE key
         if e.keysym_num == 65535:
             self.set_char("")
         else:
-            self.set_char(e.char)
+            self.set_char(char)
 
-        self.tk_focusNext().focus_set()
+        scancode = self.scancode
+        if not scancode:
+            print("This key was not assigned a scancode and the key: " +
+                  char + "can not be saved to the current keyboard layout")
+            self.set_char("")
+            return
+
+        app = self.dlg_keyboard.app
+        layout = app.selected_layout
+        if not layout:
+            print("Layout is None, not setting key")
+            self.set_char("")
+            return
+
+        set_successfully = layout.update_key(scancode, char)
+
+        # If the keyboard layout was successfully updated, move focus to next key
+        if set_successfully:
+            self.tk_focusNext().focus_set()
 
 
 main()
