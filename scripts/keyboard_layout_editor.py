@@ -11,6 +11,17 @@ def main():
 
 
 class KeyboardLayoutEditor(Tk):
+    WIDTH = 775
+    HEIGHT = 170
+
+    @staticmethod
+    def center_widget_to_screen(widget, width, height):
+        ws = widget.winfo_screenwidth()
+        hs = widget.winfo_screenheight()
+        widget.geometry('%dx%d+%d+%d' % (width, height,
+                                         (ws / 2) - (width / 2),
+                                         (hs / 2) - (height / 2)))
+
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
         self.wm_title("Keyboard layouts editor")
@@ -21,11 +32,20 @@ class KeyboardLayoutEditor(Tk):
         self.dlgkeyboard = DlgKeyboard(self.workspaceframe, app=self)
         self.pack()
 
+        KeyboardLayoutEditor.center_widget_to_screen(
+            self,
+            width=KeyboardLayoutEditor.WIDTH,
+            height=KeyboardLayoutEditor.HEIGHT
+        )
+
         # File name of current XML file
         self.file_name = None
 
         # Element tree of current XML file
         self.tree = None
+
+        # Root element
+        self.root = None
 
         # List of instances of KeyboardLayout
         self.layouts = []
@@ -64,6 +84,7 @@ class KeyboardLayoutEditor(Tk):
             if element.tag == 'KeyboardLayoutTranslations':
                 root = element
                 break
+        self.root = root
 
         # Retrieve layouts element
         layouts_element = root.find('layouts')
@@ -83,6 +104,15 @@ class KeyboardLayoutEditor(Tk):
             )
 
         # Update layout list in side bar
+        self.sidebarframe.update_layout_list(self.layouts)
+
+    def add_layout(self, name):
+        if not KeyboardLayout.validate_layout_name(name):
+            print("Layout name: " + name + " is not a valid language code name. Not loading this layout.")
+            return
+        self.layouts.append(
+            KeyboardLayout(name=name, root=self.root)
+        )
         self.sidebarframe.update_layout_list(self.layouts)
 
     def select_layout(self, layout_name):
@@ -114,15 +144,25 @@ class SideBarFrame(Frame):
         Frame.__init__(self, *args, **kwargs)
         self.app = app
 
-        Button(self, text="Add").pack()
-        Button(self, text="Remove").pack()
+        buttons = Frame(self)
+        Button(buttons, command=self.on_add_button_clicked, text="Add").pack(side=LEFT)
+        Button(buttons, command=self.on_remove_button_clicked, text="Remove").pack(side=LEFT)
+        buttons.pack(fill=BOTH)
 
         self.listbox = Listbox(self)
         self.listbox.pack()
 
         self.listbox.bind('<<ListboxSelect>>', self.on_listbox_item_selected)
 
+    def on_add_button_clicked(self, e=None):
+        d = LayoutNameDialog(self)
+        self.wait_window(d.top)
+
+    def on_remove_button_clicked(self, e):
+        pass
+
     def update_layout_list(self, layouts):
+        self.listbox.delete(0, END)
         for layout in layouts:
             self.listbox.insert(END, layout.name)
 
@@ -139,6 +179,29 @@ class SideBarFrame(Frame):
             return
         layout_name = widget.get(index)
         self.app.select_layout(layout_name)
+
+
+class LayoutNameDialog:
+    def __init__(self, parent):
+        self.app = parent.app
+        top = self.top = Toplevel(parent)
+        KeyboardLayoutEditor.center_widget_to_screen(top, 250, 75)
+        Label(top, text="Layout name:").pack(fill=BOTH)
+        self.entry = Entry(top)
+        self.entry.pack(padx=5)
+        self.entry.bind('<Return>', self.ok)
+        Button(top, text="OK", command=self.ok).pack(pady=3)
+
+    def ok(self, e=None):
+        name = self.entry.get()
+        if not KeyboardLayout.validate_layout_name(name):
+            print("The entered name: '" + name + "' is not valid. Please enter a name language code starting with a "
+                                                 "two letter ISO 639-1 language code, followed by an underscore, "
+                                                 "ending with two or three letter uppercase ISO 3166 country code.\n"
+                                                 "Example: 'en_US', or 'es_ES'")
+            return
+        self.app.add_layout(name)
+        self.top.destroy()
 
 
 class KeyboardLayout:
@@ -190,7 +253,6 @@ class KeyboardLayout:
 
     def update_key(self, scancode, char):
         self._data[int(scancode)] = char
-
 
 
 class WorkspaceFrame(Frame):
@@ -315,12 +377,8 @@ class DlgKeyboardKey(Button):
             print("Layout is None, not setting key")
             self.set_char("")
             return
-
-        set_successfully = layout.update_key(scancode, char)
-
-        # If the keyboard layout was successfully updated, move focus to next key
-        if set_successfully:
-            self.tk_focusNext().focus_set()
+        layout.update_key(scancode, char)
+        self.tk_focusNext().focus_set()
 
 
 main()
