@@ -461,7 +461,8 @@ class DlgKeyboardKey(Button):
 
         # Check for DELETE key
         if e.keysym_num == 65535:
-            self.set_char("")
+            char = ""
+            self.set_char(char)
         else:
             self.set_char(char)
 
