@@ -96,6 +96,9 @@ class KeyboardLayoutEditor(Tk):
                   "in loaded XML. Pleas load in an other XML file.")
             return
 
+        # Reset previous layouts
+        self.layouts = []
+
         for layout in layouts_element.iter('lang'):
             name = layout.text
             if not KeyboardLayout.validate_layout_name(name):
