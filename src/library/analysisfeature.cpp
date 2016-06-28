@@ -78,6 +78,22 @@ void AnalysisFeature::bindPaneWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(m_sAnalysisViewName, pTable);
 }
 
+QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
+                                           int paneId) {
+    
+    WAnalysisLibraryTableView* pTable = new WAnalysisLibraryTableView(nullptr,
+                m_pConfig,
+                m_pTrackCollection);
+    pTable->installEventFilter(pKeyboard);
+
+    if (m_pAnalysisView) {
+        m_pAnalysisView->setAnalysisTableView(pTable, paneId);
+    } else {
+        m_analysisTables[paneId] = pTable;
+    }
+    return pTable;
+}
+
 void AnalysisFeature::bindSidebarWidget(WBaseLibrary* libraryWidget,
                                         KeyboardEventFilter* pKeyboard) {
     

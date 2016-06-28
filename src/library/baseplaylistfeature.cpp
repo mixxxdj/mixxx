@@ -595,14 +595,24 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
 }
 
 void BasePlaylistFeature::bindPaneWidget(WLibrary* libraryWidget,
-                                     KeyboardEventFilter* keyboard, int) {
-    Q_UNUSED(keyboard);
+                                         KeyboardEventFilter* , 
+                                         int) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
     connect(edit, SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
     libraryWidget->registerView(m_rootViewName, edit);
+}
+
+QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter*,
+                                               int) {
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(nullptr);
+    edit->setHtml(getRootViewHtml());
+    edit->setOpenLinks(false);
+    connect(edit, SIGNAL(anchorClicked(const QUrl)),
+            this, SLOT(htmlLinkClicked(const QUrl)));
+    return edit;
 }
 
 void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {

@@ -556,3 +556,7 @@ void Library::handleFocus() {
         }
     }
 }
+
+void Library::slotSwitchToView(LibraryFeature* pFeature) {
+    
+}

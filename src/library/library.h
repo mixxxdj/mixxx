@@ -92,6 +92,7 @@ public:
     void slotHoverFeature(const QString& featureName);
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
+    void slotSwitchToView(LibraryFeature* pFeature);
     void slotSwitchToViewChild(const QString& view);
     void slotSwitchToNotFocusedView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);

@@ -24,7 +24,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ {
     virtual ~DlgAutoDJ();
     
     void onShow();
-    void setTrackTableView(WTrackTableView* pTrackTableView, int pane);
+    void setTrackTableView(WTrackTableView* pTrackTableView, int paneId);
     void setFocusedPane(int focusedPane);
 
   public slots:
@@ -50,7 +50,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ {
     
     int m_focusedPane;
     
-    QMap<int, WTrackTableView*> m_trackTables;
+    QHash<int, WTrackTableView*> m_trackTables;
 };
 
 #endif //DLGAUTODJ_H

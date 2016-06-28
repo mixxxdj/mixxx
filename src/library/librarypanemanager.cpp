@@ -1,8 +1,9 @@
 #include <QDebug>
 
 #include "librarypanemanager.h"
-#include "widget/wbuttonbar.h"
 #include "library/libraryfeature.h"
+#include "widget/wtracktableview.h"
+#include "widget/wbuttonbar.h"
 #include "util/assert.h"
 
 const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
@@ -17,11 +18,10 @@ LibraryPaneManager::LibraryPaneManager(int paneId, QObject* parent)
 LibraryPaneManager::~LibraryPaneManager() {
 }
 
-void LibraryPaneManager::bindPaneWidget(WBaseLibrary* libraryWidget,
+void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
                                         KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
-
-    m_pPaneWidget = libraryWidget;
+    m_pPaneWidget = pLibraryWidget;
 
     connect(this, SIGNAL(switchToView(const QString&)),
             m_pPaneWidget, SLOT(switchToView(const QString&)));

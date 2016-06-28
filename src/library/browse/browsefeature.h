@@ -38,8 +38,8 @@ class BrowseFeature : public LibraryFeature {
     QIcon getIcon();
     virtual QString getViewName();
 
-    void bindPaneWidget(WLibrary* libraryWidget,
-                        KeyboardEventFilter* keyboard, int);
+    void bindPaneWidget(WLibrary* libraryWidget, KeyboardEventFilter*, int);
+    QWidget* createPaneWidget(KeyboardEventFilter*, int);
 
     TreeItemModel* getChildModel();
 

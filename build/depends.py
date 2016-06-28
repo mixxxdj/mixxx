@@ -814,6 +814,7 @@ class MixxxCore(Feature):
                    "widget/wmainmenubar.cpp",
                    "widget/wbuttonbar.cpp",
                    "widget/wfeatureclickbutton.cpp",
+                   "widget/wlibrarystack.cpp",
 
                    "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",

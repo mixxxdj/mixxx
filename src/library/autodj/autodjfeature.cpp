@@ -126,6 +126,25 @@ void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
     }
 }
 
+QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
+    WTrackTableView* pTrackTableView = new WTrackTableView(nullptr, 
+                m_pConfig, m_pTrackCollection, false);
+        
+    pTrackTableView->installEventFilter(pKeyboard);
+
+    connect(m_pLibrary, SIGNAL(setTrackTableFont(const QFont&)),
+            pTrackTableView, SLOT(setTrackTableFont(const QFont&)));
+    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+
+    if (m_pAutoDJView) {
+        m_pAutoDJView->setTrackTableView(pTrackTableView, paneId);
+    } else {
+        m_trackTables[paneId] = pTrackTableView;
+    }
+    return pTrackTableView;
+}
+
 void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget, 
                                       KeyboardEventFilter*) {
     qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
@@ -165,7 +184,7 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 }
 
 void AutoDJFeature::activate() {
-    qDebug() << "AutoDJFeature::activate()";
+    //qDebug() << "AutoDJFeature::activate()";
     m_pAutoDJView->setFocusedPane(m_featureFocus);
     m_pAutoDJView->onShow();
     emit(switchToView(m_sAutoDJViewName));

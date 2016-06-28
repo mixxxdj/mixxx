@@ -34,8 +34,9 @@ class BasePlaylistFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-    void bindPaneWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard, int);
+    void bindPaneWidget(WLibrary* libraryWidget, KeyboardEventFilter*, int);
+    
+    QWidget* createPaneWidget(KeyboardEventFilter*, int);
     
     QString getViewName() { 
         return m_rootViewName; 

@@ -47,6 +47,7 @@ class AutoDJFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
 
     void bindPaneWidget(WLibrary* pLibraryWidget, KeyboardEventFilter*pKeyboard, int paneId);
+    QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId);
     void bindSidebarWidget(WBaseLibrary *pSidebarWidget, KeyboardEventFilter*);
 
     TreeItemModel* getChildModel();
@@ -69,7 +70,6 @@ class AutoDJFeature : public LibraryFeature {
     const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
     QPointer<DlgAutoDJ> m_pAutoDJView;
-    //QList<WTrackTableView*> m_trackTables;
     QHash<int, WTrackTableView*> m_trackTables;
 
     // Initialize the list of crates loaded into the auto-DJ queue.

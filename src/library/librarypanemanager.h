@@ -23,7 +23,7 @@ class LibraryPaneManager : public QObject {
     bool initialize();
 
     // All features must be added before adding a pane
-    virtual void bindPaneWidget(WBaseLibrary* libraryWidget,
+    virtual void bindPaneWidget(WBaseLibrary* pLibraryWidget,
                                 KeyboardEventFilter* pKeyboard);
     void bindSearchBar(WSearchLineEdit* pSearchLine);
 
@@ -62,13 +62,14 @@ class LibraryPaneManager : public QObject {
 
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
+    void slotSwitchToView(LibraryFeature* pFeature);
     void slotRestoreSearch(const QString& text);
 
   protected:
 
     WBaseLibrary* m_pPaneWidget;
-    
     QList<LibraryFeature*> m_features;
+    QHash<LibraryFeature*, int> m_featuresWidget;
 
   private:
 

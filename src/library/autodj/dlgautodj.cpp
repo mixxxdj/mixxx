@@ -61,10 +61,10 @@ void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
 }
 
-void DlgAutoDJ::setTrackTableView(WTrackTableView* pTrackTableView, int pane) {
+void DlgAutoDJ::setTrackTableView(WTrackTableView* pTrackTableView, int paneId) {
     pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
     
-    m_trackTables[pane] = pTrackTableView;
+    m_trackTables[paneId] = pTrackTableView;
     
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));

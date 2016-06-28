@@ -215,11 +215,16 @@ TreeItemModel* BrowseFeature::getChildModel() {
 }
 
 void BrowseFeature::bindPaneWidget(WLibrary* libraryWidget,
-                               KeyboardEventFilter* keyboard, int) {
-    Q_UNUSED(keyboard);
+                                   KeyboardEventFilter*, 
+                                   int) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     libraryWidget->registerView(m_sBrowseViewName, edit);
+}
+
+QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter*, int) {
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(nullptr);
+    edit->setHtml(getRootViewHtml());
 }
 
 void BrowseFeature::activate() {

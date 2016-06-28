@@ -12,6 +12,7 @@
 #include "treeitemmodel.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
+#include "preferences/usersettings.h"
 
 class TrackModel;
 class WBaseLibrary;
@@ -60,6 +61,11 @@ class LibraryFeature : public QObject {
     virtual void bindPaneWidget(WLibrary* /* libraryWidget */,
                                 KeyboardEventFilter* /* keyboard */,
                                 int /* paneId */) {
+    }
+    
+    virtual QWidget* createPaneWidget(KeyboardEventFilter* /* keyboard */, 
+                                      int /* paneId */) {
+        return nullptr;
     }
     
     // Reimplement this to register custom views with the library widget,
