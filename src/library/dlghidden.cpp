@@ -5,13 +5,10 @@
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
-                     TrackCollection* pTrackCollection,
-                     KeyboardEventFilter* pKeyboard)
+DlgHidden::DlgHidden(QWidget* parent, TrackCollection* pTrackCollection)
          : QWidget(parent),
            Ui::DlgHidden(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+           m_focusedPane(-1) {
     setupUi(this);
     
     connect(btnPurge, SIGNAL(clicked()), this, SLOT(clicked()));
@@ -30,10 +27,6 @@ void DlgHidden::onShow() {
     m_pHiddenTableModel->select();
     // no buttons can be selected
     activateButtons(false);
-}
-
-void DlgHidden::onSearch(const QString& text) {
-    m_pHiddenTableModel->search(text);
 }
 
 void DlgHidden::setTrackTable(Library* pLibrary, WTrackTableView *pTrackTableView, int paneId) {
@@ -74,8 +67,7 @@ void DlgHidden::activateButtons(bool enable) {
     btnUnhide->setEnabled(enable);
 }
 
-void DlgHidden::selectionChanged(const QItemSelection &selected,
-                                 const QItemSelection &deselected) {
-    Q_UNUSED(deselected);
+void DlgHidden::selectionChanged(const QItemSelection& selected,
+                                 const QItemSelection&) {
     activateButtons(!selected.indexes().isEmpty());
 }

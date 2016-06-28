@@ -11,17 +11,16 @@
 class WTrackTableView;
 class MissingTableModel;
 
-class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
+class DlgMissing : public QWidget, public Ui::DlgMissing {
     Q_OBJECT
   public:
-    DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
-               Library* pLibrary, TrackCollection* pTrackCollection,
-               KeyboardEventFilter* pKeyboard);
+    DlgMissing(QWidget* parent, TrackCollection* pTrackCollection);
     virtual ~DlgMissing();
 
     void onShow();
-    void onSearch(const QString& text);
-    void setTrackTable(WTrackTableView* pTrackTableView, int paneId);
+    void setTrackTable(Library *pLibrary, 
+                       WTrackTableView* pTrackTableView, 
+                       int paneId);
     inline void setFocusedPane(int focusedPane) { 
         m_focusedPane = focusedPane;
     }
@@ -30,14 +29,13 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     void clicked();
     void selectAll();
     void selectionChanged(const QItemSelection&, const QItemSelection&);
-    void setTrackTableFont(const QFont& font);
-    void setTrackTableRowHeight(int rowHeight);
 
   signals:
     void trackSelected(TrackPointer pTrack);
 
   private:
     void activateButtons(bool enable);
+    
     MissingTableModel* m_pMissingTableModel;
     QHash<int, WTrackTableView*> m_trackTableView;
     int m_focusedPane;

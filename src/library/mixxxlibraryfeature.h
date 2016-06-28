@@ -10,9 +10,9 @@
 #include <QIcon>
 #include <QModelIndex>
 #include <QList>
-#include <QString>
 #include <QSharedPointer>
-#include <QObject>
+#include <QString>
+#include <QStackedWidget>
 #include <QPointer>
 
 #include "library/libraryfeature.h"
@@ -43,11 +43,10 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
     void bindPaneWidget(WLibrary* pLibrary,
-                        KeyboardEventFilter* pKeyboard, int);
+                        KeyboardEventFilter* pKeyboard, int paneId);
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId);
     void bindSidebarWidget(WBaseLibrary* pLibraryWidget, 
-                           KeyboardEventFilter*,
-                           int paneId);
+                           KeyboardEventFilter*);
     
     inline QString getViewName() {
         return m_sMixxxLibraryViewName;
@@ -59,22 +58,28 @@ class MixxxLibraryFeature : public LibraryFeature {
     void refreshLibraryModels();
 
   private:
-    const QString kMissingTitle;
-    const QString kHiddenTitle;
     const QString kLibraryTitle;
+    const QString kHiddenTitle;
+    const QString kMissingTitle;
     QPointer<DlgHidden> m_pHiddenView;
     QPointer<DlgMissing> m_pMissingView;
-    QHash<int, int> m_hiddenPaneId;
-    QHash<int, int> m_missingPaneId;
     QHash<int, WTrackTableView*> m_hiddenPane;
     QHash<int, WTrackTableView*> m_missingPane;
     
-    Library* m_pLibrary;
+    // This is needed to select the correct widget in the 2 size widget stack
+    // for the hidden and missing widgets.
+    QHash<int, int> m_hiddenPaneId;
+    QHash<int, int> m_missingPaneId;
+    int m_hiddenExpandedId;
+    int m_missingExpandedId;
+    
+    QStackedWidget* m_pPaneStack;
+    QStackedWidget* m_pExpandedStack;
+    
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
     TreeItemModel m_childModel;
     TrackDAO& m_trackDao;
-    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
     static const QString m_sMixxxLibraryViewName;
 };

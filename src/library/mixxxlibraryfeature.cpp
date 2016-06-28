@@ -19,6 +19,7 @@
 #include "sources/soundsourceproxy.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarystack.h"
+#include "widget/wlibrarysidebar.h"
 #include "util/dnd.h"
 
 const QString MixxxLibraryFeature::m_sMixxxLibraryViewName = "MixxxLibraryFeature";
@@ -28,14 +29,12 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          QObject* parent,
                                          TrackCollection* pTrackCollection)
         : LibraryFeature(pConfig, pLibrary, parent),
-          kMissingTitle(tr("Missing Tracks")),
-          kHiddenTitle(tr("Hidden Tracks")),
           kLibraryTitle(tr("Library")),
-          m_pLibrary(pLibrary),
-          m_pMissingView(NULL),
-          m_pHiddenView(NULL),
+          kHiddenTitle(tr("Hidden Tracks")),
+          kMissingTitle(tr("Missing Tracks")),
+          m_pHiddenView(nullptr),
+          m_pMissingView(nullptr),
           m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
@@ -133,23 +132,10 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 }
 
 void MixxxLibraryFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                                     KeyboardEventFilter* pKeyboard, int) {
-    m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
-                                  m_pTrackCollection, pKeyboard);
-    pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);
-    connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-
-    m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
-                                    m_pTrackCollection, pKeyboard);
-    pLibraryWidget->registerView(kMissingTitle, m_pMissingView);
-    connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-}
-
-QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
-                                               int paneId) {
-    WLibraryStack* pStack = new WLibraryStack(nullptr);
+                                         KeyboardEventFilter* pKeyboard,
+                                         int paneId) {
+    WLibraryStack* pStack = new WLibraryStack(pLibraryWidget);
+    m_pPaneStack = pStack;
     
     WTrackTableView* pHiddenTable = 
             new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
@@ -165,26 +151,96 @@ QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     WTrackTableView* pMissingTable = 
             new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
     pMissingTable->installEventFilter(pKeyboard);
-    m_missingPane[paneId] = pMissingTable;
-    m_missingPaneId[paneId] = pStack->addWidget(pMissingTable);   
+    m_missingPaneId[paneId] = pStack->addWidget(pMissingTable);
+    
+    if (m_pMissingView) {
+        m_pMissingView->setTrackTable(m_pLibrary, pMissingTable, paneId);
+    } else {
+        m_missingPane[paneId] = pMissingTable;
+    }
+    pLibraryWidget->registerView(m_sMixxxLibraryViewName, pStack);
+}
+
+QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                               int paneId) {
+    WLibraryStack* pStack = new WLibraryStack(nullptr);
+    m_pPaneStack = pStack;
+    
+    WTrackTableView* pHiddenTable = 
+            new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
+    pHiddenTable->installEventFilter(pKeyboard);
+    m_hiddenPaneId[paneId] = pStack->addWidget(pHiddenTable);
+    
+    if (m_pHiddenView) {
+        m_pHiddenView->setTrackTable(m_pLibrary, pHiddenTable, paneId);
+    } else {
+        m_hiddenPane[paneId] = pHiddenTable;
+    }
+    
+    WTrackTableView* pMissingTable = 
+            new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
+    pMissingTable->installEventFilter(pKeyboard);
+    m_missingPaneId[paneId] = pStack->addWidget(pMissingTable);
+    
+    if (m_pMissingView) {
+        m_pMissingView->setTrackTable(m_pLibrary, pMissingTable, paneId);
+    } else {
+        m_missingPane[paneId] = pMissingTable;
+    }
     
     return pStack;
 }
 
 void MixxxLibraryFeature::bindSidebarWidget(WBaseLibrary* pLibraryWidget,
-                                            KeyboardEventFilter*,
-                                            int paneId) {
-    m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
-                                  m_pTrackCollection, pKeyboard);
-    pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);
+                                            KeyboardEventFilter*) {
+    QTabWidget* pTab = new QTabWidget(pLibraryWidget);
+    
+    // Create tree
+    WLibrarySidebar* pSidebar = new WLibrarySidebar(pTab);
+    pSidebar->setModel(&m_childModel);
+    
+    // Tree connections
+    connect(pSidebar, SIGNAL(clicked(const QModelIndex&)),
+            this, SLOT(activateChild(const QModelIndex&)));
+    connect(pSidebar, SIGNAL(doubleClicked(const QModelIndex&)),
+            this, SLOT(onLazyChildExpandation(const QModelIndex&)));
+    connect(pSidebar, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
+            this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
+    connect(pSidebar, SIGNAL(expanded(const QModelIndex&)),
+            this, SLOT(onLazyChildExpandation(const QModelIndex&)));
+    
+    pTab->addTab(pSidebar, tr("Tree"));
+    
+    // Create tabs
+    QStackedWidget* pStack = new QStackedWidget(pTab);
+    m_pExpandedStack = pStack;
+    
+    // Create Hidden View controls
+    m_pHiddenView = new DlgHidden(pLibraryWidget, m_pTrackCollection);
+    m_hiddenExpandedId = pStack->addWidget(m_pHiddenView);
     connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+    
+    // Add Track tables to Hidden view
+    for (auto it = m_hiddenPane.begin(); it != m_hiddenPane.end(); ++it) {
+        m_pHiddenView->setTrackTable(m_pLibrary, it.value(), it.key());
+    }
+    m_hiddenPane.clear();
 
-    m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
-                                    m_pTrackCollection, pKeyboard);
-    pLibraryWidget->registerView(kMissingTitle, m_pMissingView);
+    // Create Missing View controls
+    m_pMissingView = new DlgMissing(pLibraryWidget, m_pTrackCollection);
+    m_missingExpandedId = pStack->addWidget(m_pMissingView);
     connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+    
+    // Add Track tables to Missing view
+    for (auto it = m_missingPane.begin(); it != m_missingPane.end(); ++it) {
+        m_pMissingView->setTrackTable(m_pLibrary, it.value(), it.key());
+    }
+    m_missingPane.clear();
+    
+    pTab->addTab(pStack, tr("Controls"));
+    pLibraryWidget->registerView(m_sMixxxLibraryViewName, pTab);
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -214,7 +270,7 @@ void MixxxLibraryFeature::refreshLibraryModels() {
 void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
     m_pHiddenView->setFocusedPane(m_featureFocus);
-    
+    m_pMissingView->setFocusedPane(m_featureFocus);
     
     emit(switchToView(m_sMixxxLibraryViewName));
     emit(showTrackModel(m_pLibraryTableModel));
@@ -225,11 +281,11 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data(TreeItemModel::kDataPathRole).toString();
     if (itemName == m_sMixxxLibraryViewName) {
         activate();
-        return;
+    } else if (itemName == kHiddenTitle) {
+        
+    } else if (itemName == kMissingTitle) {
+        
     }
-    
-    emit(switchToView(itemName));
-    emit(enableCoverArtDisplay(true));
 }
 
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {

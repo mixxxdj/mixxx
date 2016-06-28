@@ -12,15 +12,13 @@ class WTrackTableView;
 class HiddenTableModel;
 class QItemSelection;
 
-class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
+class DlgHidden : public QWidget, public Ui::DlgHidden {
     Q_OBJECT
   public:
-    DlgHidden(QWidget* parent, UserSettingsPointer pConfig, TrackCollection* pTrackCollection,
-              KeyboardEventFilter* pKeyboard);
+    DlgHidden(QWidget* parent, TrackCollection *pTrackCollection);
     virtual ~DlgHidden();
 
     void onShow();
-    void onSearch(const QString& text);
     void setTrackTable(Library* pLibrary, WTrackTableView* pTrackTableView, int paneId);
     inline void setFocusedPane(int focusedPane) { 
         m_focusedPane = focusedPane;

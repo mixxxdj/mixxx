@@ -97,6 +97,10 @@ void LibraryPaneManager::slotSwitchToView(const QString& view) {
     m_pPaneWidget->setFocus();
 }
 
+void LibraryPaneManager::slotSwitchToView(LibraryFeature *pFeature) {
+    
+}
+
 void LibraryPaneManager::slotRestoreSearch(const QString& text) {
     emit(restoreSearch(text));
 }

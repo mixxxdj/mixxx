@@ -4,13 +4,10 @@
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
-                       Library* pLibrary,
-                       TrackCollection* pTrackCollection, KeyboardEventFilter* pKeyboard)
+DlgMissing::DlgMissing(QWidget* parent, TrackCollection *pTrackCollection)
          : QWidget(parent),
            Ui::DlgMissing(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+           m_focusedPane(-1) {
     setupUi(this);    
     m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
  
@@ -34,11 +31,9 @@ void DlgMissing::clicked() {
     onShow();
 }
 
-void DlgMissing::onSearch(const QString& text) {
-    m_pMissingTableModel->search(text);
-}
-
-void DlgMissing::setTrackTable(WTrackTableView* pTrackTableView, int paneId) {
+void DlgMissing::setTrackTable(Library* pLibrary, 
+                               WTrackTableView* pTrackTableView, 
+                               int paneId) {
     connect(btnPurge, SIGNAL(clicked()),
             pTrackTableView, SLOT(slotPurge()));
     connect(pTrackTableView->selectionModel(),
