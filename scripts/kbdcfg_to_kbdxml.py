@@ -4,7 +4,9 @@ import os
 import re
 import ntpath
 import configparser
+from tkinter import *
 from xml.dom import minidom
+from tkinter import filedialog
 from collections import defaultdict
 from xml.etree import ElementTree as ET
 
@@ -36,6 +38,11 @@ PRESET_NAME = "Default-mapping"
 # 4. Run this file. (with PYTHON3 or higher!!)
 
 
+def main():
+    app = Gui(None)
+    app.mainloop()
+
+
 class KeyboardParser:
     NAME_VALIDATION_PATTERN = re.compile("^[a-z]{2}_[A-Z]{2,3}$")
 
@@ -49,12 +56,11 @@ class KeyboardParser:
     def validate_name(name):
         return KeyboardParser.NAME_VALIDATION_PATTERN.match(name)
 
-    def __init__(self, legacy_folder=None, target_folder=None, name="",
+    def __init__(self, legacy_folder=None, name="",
                  multilang=True, legacy_file=None, target_file=None,
                  mixxx_version="2.1.0+", author="kbdcfg_to_kbdxml.py"):
 
         self.legacy_folder = legacy_folder
-        self.target_folder = target_folder
         self.name = name
         self.multilang = multilang
         self.legacy_file = legacy_file
@@ -65,6 +71,11 @@ class KeyboardParser:
         self.author = author
         self.description = "This preset was generated using kbdcfg_to_kbdxml.py"
 
+        if not target_file:
+            raise ValueError("Given target file is empty, please provide a path to save the *kbd.xml file")
+
+        print("Preset will be saved to: " + target_file)
+
         if multilang:
             print("kbdcfg_to_kbdxml in multi-lang mode")
             if not name:
@@ -72,18 +83,6 @@ class KeyboardParser:
             if not os.path.exists(legacy_folder):
                 raise ValueError("Given legacy folder does not exist: \'" + legacy_folder + "\'")
             print("Reading legacy files from: " + legacy_folder)
-
-            if not os.path.exists(target_folder):
-                parent_folder = os.path.dirname(target_folder)
-                if os.path.exists(parent_folder):
-                    print(
-                        "Warning: Given target folder does not exist: \'" + target_folder + "\'. Creating new folder...")
-                    os.makedirs(target_folder)
-                    print("Successfully created new folder: \'" + target_folder + "\'")
-                else:
-                    raise FileNotFoundError("Given target folder does not exist: \'" + target_folder + "\'" +
-                                            "Neither does the parent. Not creating the folder.");
-            print("Preset will be saved to: " + target_folder)
 
             # List containing configparsers for each *.kbd.cfg file
             legacy_mappings = self.parse_multi_lang_config()
@@ -112,8 +111,6 @@ class KeyboardParser:
                 raise ValueError("Given legacy file is empty, please provide a path to a *.kbd.cfg file")
             if not os.path.isfile(legacy_file):
                 raise FileNotFoundError("Given legacy file does not exist: " + legacy_file)
-            if not target_file:
-                raise ValueError("Given target file is empty, please provide a path to save the *kbd.xml file")
 
             # Configparser for legacy file
             legacy_mapping = self.parse_single_config()
@@ -369,29 +366,50 @@ class KeyboardParser:
         return xml
 
     def write_out(self, root):
-        if self.multilang:
-            full_path = self.target_folder + "/" + self.name + self.xml_extension
-        else:
-            full_path = self.target_file
+        full_path = self.target_file
         if os.path.isfile(full_path):
             print("Warning: '" + full_path + "' already exists.\nOverriding that file assuming that it's ok :)\n")
         print("Writing to file: " + full_path + "\n...")
         xmlstr = minidom.parseString(ET.tostring(root)).toprettyxml()
         with open(full_path, "w") as f:
             f.write(xmlstr)
+        print("Saved successfully!")
 
 
-# -----------------------------------------------
-# Change the strings bellow and run this script
-# -----------------------------------------------
-# KeyboardParser(
-#     KBD_CFG_FILES_DIRECTORY,  # <--- Path to legacy files like en_US.kbd.cfg
-#     TARGET_DIRECTORY,  # <--- Target path. The kbd.xml file will be stored here
-#     PRESET_NAME  # <--- Preset name
-# )
+class Gui(Tk):
+    TITLE = "kbd.cfg to kbd.xml converter"
 
-KeyboardParser(
-    legacy_file=KBD_CFG_FILES_DIRECTORY + "/en_US.kbd.cfg",
-    target_file=TARGET_DIRECTORY + "/en_US.kbd.xml",
-    multilang=False
-)
+    def __init__(self, *args, **kwargs):
+        Tk.__init__(self, *args, **kwargs)
+        self.wm_title(Gui.TITLE)
+
+        Button(self,
+               text="Convert single kbd.cfg file to single kbd.xml file",
+               command=lambda: self.open_single_dialog()).pack()
+
+        Button(self,
+               text="Convert multiple kbd.cfg files to single multi-lang kbd.xml file",
+               command=lambda: self.open_multi_dialog()).pack()
+
+    @staticmethod
+    def open_single_dialog():
+        legacy_file = filedialog.askopenfilename(
+            filetypes=(("Keyboard config files", ".kbd.cfg"), ("All Files", "*")),
+            title="Choose a legacy kbd.cfg file"
+        )
+        target_file = filedialog.asksaveasfile(
+            mode='w',
+            defaultextension=".kbd.xml", title="Where to save the kbd.xml file").name
+        KeyboardParser(multilang=False, legacy_file=legacy_file, target_file=target_file)
+
+    @staticmethod
+    def open_multi_dialog():
+        legacy_folder = filedialog.askdirectory(
+            title="Choose a folder containing kbd.cfg files")
+        target_file = filedialog.asksaveasfile(
+            mode='w',
+            defaultextension=".kbd.xml", title="Where to save the kbd.xml file").name
+        KeyboardParser(multilang=True, legacy_folder=legacy_folder, target_file=target_file, name=target_file)
+
+
+main()
