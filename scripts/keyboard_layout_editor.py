@@ -1,5 +1,6 @@
 import os.path
 import re
+import ntpath
 from tkinter import *
 from xml.dom import minidom
 from tkinter import filedialog
@@ -13,6 +14,7 @@ def main():
 
 
 class KeyboardLayoutEditor(Tk):
+    TITLE = "Keyboard layouts editor"
     WIDTH = 775
     HEIGHT = 170
 
@@ -26,7 +28,7 @@ class KeyboardLayoutEditor(Tk):
 
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
-        self.wm_title("Keyboard layouts editor")
+        self.wm_title(KeyboardLayoutEditor.TITLE)
 
         self.mainframe = MainFrame(self, app=self)
         self.sidebarframe = SideBarFrame(self.mainframe, app=self)
@@ -40,20 +42,26 @@ class KeyboardLayoutEditor(Tk):
             height=KeyboardLayoutEditor.HEIGHT
         )
 
-        # File name of current XML file
+        # Full path of current XML file
+        self.file_path = None
+
+        # Name of current XML file
         self.file_name = None
 
         # Element tree of current XML file
         self.tree = None
 
         # Root element
-        self.root = Element('KeyboardLayoutTranslations')
+        self.root = None
 
         # List of instances of KeyboardLayout
-        self.layouts = []
+        self.layouts = None
 
         # The layout that is currently selected and displayed
         self.selected_layout = None
+
+        # Load new file and init all member variables
+        self.new_file()
 
     def pack(self):
         self.sidebarframe.pack(side=LEFT)
@@ -61,22 +69,33 @@ class KeyboardLayoutEditor(Tk):
         self.mainframe.pack()
         self.dlgkeyboard.pack()
 
+    def new_file(self):
+        self.file_path = None
+        self.file_name = "Untitled.xml"
+        self.tree = None
+        self.root = Element('KeyboardLayoutTranslations')
+        self.layouts = []
+        self.selected_layout = None
+        self.wm_title(KeyboardLayoutEditor.TITLE + " - " + self.file_name)
+        self.dlgkeyboard.clear_all()
+        self.sidebarframe.update_layout_list(self.layouts)
+
     def open_file(self):
-        self.file_name = filedialog.askopenfilename(
+        self.file_path = filedialog.askopenfilename(
             filetypes=(("XML Files", ".xml"), ("All Files", "*")),
             title="Choose a keyboard layout XML file"
         )
 
-        if self.file_name == ():
+        if self.file_path == ():
             return
 
-        if not os.path.isfile(self.file_name):
-            print("File doesn't exist: " + self.file_name)
-            self.file_name = None
+        if not os.path.isfile(self.file_path):
+            print("File doesn't exist: " + self.file_path)
+            self.file_path = None
             return
 
-        print("Opening file: " + self.file_name)
-        with open(self.file_name, 'rt') as f:
+        print("Opening file: " + self.file_path)
+        with open(self.file_path, 'rt') as f:
             self.tree = ElementTree.parse(f)
 
         # Get KeyboardLayoutTranslations element, which holds all
@@ -95,6 +114,9 @@ class KeyboardLayoutEditor(Tk):
             print("Couldn't retrieve layout list, no <layouts> element "
                   "in loaded XML. Pleas load in an other XML file.")
             return
+
+        file_name = self.file_path
+        self.wm_title(KeyboardLayoutEditor.TITLE + ' - ' + ntpath.basename(file_name))
 
         # Reset previous layouts
         self.layouts = []
@@ -122,13 +144,14 @@ class KeyboardLayoutEditor(Tk):
         print("Saved file to: " + full_path)
 
     def save_file(self):
-        path = self.file_name
+        path = self.file_path
         xml = self.create_xml()
         if not path:
-            # File dialog
-            pass
-        else:
-            self.write_out(xml, path)
+            path = filedialog.asksaveasfile(mode='w', defaultextension=".xml").name
+            if not path:
+                return
+            print(path)
+        self.write_out(xml, path)
 
     def create_xml(self):
         # Create XML root element
@@ -200,13 +223,10 @@ class MainFrame(Frame):
         self.menubar = Menu(self)
         menu = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="File", menu=menu)
-        menu.add_command(label="New")
-        menu.add_command(label="Open", command=app.open_file)
-        menu.add_command(label="Save", command=self.save_command)
+        menu.add_command(label="New", command=lambda: app.new_file())
+        menu.add_command(label="Open", command=lambda: app.open_file())
+        menu.add_command(label="Save", command=lambda: app.save_file())
         self.master.config(menu=self.menubar)
-
-    def save_command(self):
-        self.app.save_file()
 
 
 class SideBarFrame(Frame):
@@ -379,6 +399,10 @@ class DlgKeyboard(Frame):
         for key in keys:
             char = keyboardlayout.find(key.scancode)
             key.set_char(char)
+
+    def clear_all(self):
+        for key in self.keys:
+            key.set_char("")
 
 
 class DlgKeyboardKey(Button):
