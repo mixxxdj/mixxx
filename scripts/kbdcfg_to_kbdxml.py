@@ -2,10 +2,11 @@
 
 import os
 import re
+import ntpath
 import configparser
+from xml.dom import minidom
 from collections import defaultdict
 from xml.etree import ElementTree as ET
-from xml.dom import minidom
 
 # README
 #
@@ -36,8 +37,20 @@ PRESET_NAME = "Default-mapping"
 
 
 class KeyboardParser:
-    def __init__(self, legacy_folder, target_folder, name="",
-                 multilang=True, legacy_file=None,
+    NAME_VALIDATION_PATTERN = re.compile("^[a-z]{2}_[A-Z]{2,3}$")
+
+    @staticmethod
+    # Check if name has the correct format, described here: http://doc.qt.io/qt-4.8/qlocale.html#QLocale-2
+    # Name has to start with a two letter ISO 639-1 language code ...
+    # ... followed by an underscore ...
+    # ... followed by a three letter uppercase ISO 3166 country code
+    #
+    # Note: This validation is not full-prove: qw_ZXC will pass.
+    def validate_name(name):
+        return KeyboardParser.NAME_VALIDATION_PATTERN.match(name)
+
+    def __init__(self, legacy_folder=None, target_folder=None, name="",
+                 multilang=True, legacy_file=None, target_file=None,
                  mixxx_version="2.1.0+", author="kbdcfg_to_kbdxml.py"):
 
         self.legacy_folder = legacy_folder
@@ -46,15 +59,14 @@ class KeyboardParser:
         self.multilang = multilang
         self.legacy_file = legacy_file
         self.legacy_extension = ".kbd.cfg"
+        self.target_file = target_file
         self.xml_extension = ".kbd.xml"
         self.mixxx_version = mixxx_version
         self.author = author
         self.description = "This preset was generated using kbdcfg_to_kbdxml.py"
 
-        if not multilang and legacy_file is None:
-            raise ValueError("Multilang is false, but legacy_file path is not given")
-
         if multilang:
+            print("kbdcfg_to_kbdxml in multi-lang mode")
             if not name:
                 raise ValueError("Given name is empty, please enter a valid preset name.")
             if not os.path.exists(legacy_folder):
@@ -95,15 +107,42 @@ class KeyboardParser:
             self.write_out(simplified_xml)
 
         else:
+            print("kbdcfg_to_kbdxml in single-file mode")
+            if not legacy_file:
+                raise ValueError("Given legacy file is empty, please provide a path to a *.kbd.cfg file")
+            if not os.path.isfile(legacy_file):
+                raise FileNotFoundError("Given legacy file does not exist: " + legacy_file)
+            if not target_file:
+                raise ValueError("Given target file is empty, please provide a path to save the *kbd.xml file")
 
-            pass
+            # Configparser for legacy file
+            legacy_mapping = self.parse_single_config()
+
+            # XML root element containing mapping info
+            xml = self.create_xml(legacy_mapping)
+
+            self.write_out(xml)
+
+    def parse_single_config(self):
+        legacy_file = self.legacy_file
+        legacy_extension = self.legacy_extension
+
+        file_name = ntpath.basename(legacy_file)
+        base_name = file_name[:-len(legacy_extension)]
+
+        if KeyboardParser.validate_name(base_name):
+            print("Parsing " + legacy_file + "...")
+            parser = configparser.ConfigParser(allow_no_value=True)
+            parser.optionxform = str
+            parser.read(legacy_file)
+            return parser
+        else:
+            print("Skipping " + legacy_file +
+                  ". The filename did not pass the name validation test.")
 
     def parse_multi_lang_config(self):
         legacy_folder = self.legacy_folder
         legacy_extension = self.legacy_extension
-
-        # Following the ISO 639-1 language code standard
-        language_code_pattern = re.compile("^[a-z]{2}_[A-Z]{2}$")
 
         # Keys will hold the language code, values will hold config parsers
         # for the config file corresponding to that language code
@@ -117,7 +156,7 @@ class KeyboardParser:
 
                 # Parse file and store it in multi_lang_mappings if filename
                 # ends with kbd.cfg and starts with a valid language code
-                if language_code_pattern.match(base_name):
+                if KeyboardParser.validate_name(base_name):
                     print("Parsing " + file_name + "...")
                     parser = configparser.ConfigParser(allow_no_value=True)
                     parser.optionxform = str
@@ -125,28 +164,78 @@ class KeyboardParser:
                     multi_lang_mappings[base_name] = parser
                 else:
                     print("Skipping " + file_name +
-                          ". The filename doesn't match the ISO "
-                          "639 1 language code standard")
+                          ". The filename did not pass the name validation test.")
 
         return multi_lang_mappings
 
-    def create_multi_lang_xml(self, mappings):
-        if not type(mappings) is dict:
-            raise TypeError("Expected dictionary, but got " + type(mappings).__name__)
+    def _create_empty_xml(self):
+        elements = {}
 
         # Create XML root element
         root = ET.Element('MixxxKeyboardPreset')
         root.set('schemaVersion', '1')
         root.set('mixxxVersion', self.mixxx_version)
+        elements['root'] = root
 
         # Create info block
         info = ET.SubElement(root, 'info')
         ET.SubElement(info, 'name').text = self.name
         ET.SubElement(info, 'author').text = self.author
         ET.SubElement(info, 'description').text = self.description
+        elements['info'] = info
 
         # Create controller block
-        controller = ET.SubElement(root, 'controller')
+        elements['controller'] = ET.SubElement(root, 'controller')
+
+        return elements
+
+    def create_xml(self, parser):
+        if not type(parser):
+            raise TypeError("Expected configparser, but got a " + type(parser).__name__)
+
+        # Retrieve base name of file (hence, language code)
+        file_name = ntpath.basename(self.legacy_file)
+        base_name = file_name[:-len(self.legacy_extension)]
+
+        # Create empty preset file and store dictionary holding basic elements
+        elements = self._create_empty_xml()
+        controller = elements['controller']
+        root = elements['root']
+
+        groups = parser.sections()
+
+        # Iterate over all groups specified in the legacy file
+        for group in groups:
+            group_element = ET.SubElement(controller, 'group')
+            group_element.set('name', group)
+
+            # Iterate over all controls
+            for control in parser.items(group):
+                stripped_control = control[0].split()
+                action = stripped_control[0]
+                try:
+                    keyseq = stripped_control[1]
+                except:
+                    keyseq = ""
+
+                # Create control element node inside of group block
+                control_element = ET.SubElement(group_element, 'control')
+                control_element.set('action', action)
+
+                # Create keyseq element node inside of group block
+                keyseq_element = ET.SubElement(control_element, 'keyseq')
+                keyseq_element.set('lang', base_name)
+                keyseq_element.text = keyseq
+
+        return root
+
+    def create_multi_lang_xml(self, mappings):
+        if not type(mappings) is dict:
+            raise TypeError("Expected dictionary, but got a " + type(mappings).__name__)
+
+        elements = self._create_empty_xml()
+        controller = elements['controller']
+        root = elements['root']
 
         # Create keyboard layouts block
         keyboard_layouts = ET.SubElement(controller, 'keyboard-layouts')
@@ -280,7 +369,10 @@ class KeyboardParser:
         return xml
 
     def write_out(self, root):
-        full_path = self.target_folder + "/" + self.name + self.xml_extension
+        if self.multilang:
+            full_path = self.target_folder + "/" + self.name + self.xml_extension
+        else:
+            full_path = self.target_file
         if os.path.isfile(full_path):
             print("Warning: '" + full_path + "' already exists.\nOverriding that file assuming that it's ok :)\n")
         print("Writing to file: " + full_path + "\n...")
@@ -292,8 +384,14 @@ class KeyboardParser:
 # -----------------------------------------------
 # Change the strings bellow and run this script
 # -----------------------------------------------
+# KeyboardParser(
+#     KBD_CFG_FILES_DIRECTORY,  # <--- Path to legacy files like en_US.kbd.cfg
+#     TARGET_DIRECTORY,  # <--- Target path. The kbd.xml file will be stored here
+#     PRESET_NAME  # <--- Preset name
+# )
+
 KeyboardParser(
-    KBD_CFG_FILES_DIRECTORY,  # <--- Path to legacy files like en_US.kbd.cfg
-    TARGET_DIRECTORY,  # <--- Target path. The kbd.xml file will be stored here
-    PRESET_NAME  # <--- Preset name
+    legacy_file=KBD_CFG_FILES_DIRECTORY + "/en_US.kbd.cfg",
+    target_file=TARGET_DIRECTORY + "/en_US.kbd.xml",
+    multilang=False
 )
