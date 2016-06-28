@@ -21,6 +21,10 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
 
     void onShow();
     void onSearch(const QString& text);
+    void setTrackTable(WTrackTableView* pTrackTableView, int paneId);
+    inline void setFocusedPane(int focusedPane) { 
+        m_focusedPane = focusedPane;
+    }
 
   public slots:
     void clicked();
@@ -34,8 +38,9 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
 
   private:
     void activateButtons(bool enable);
-    WTrackTableView* m_pTrackTableView;
     MissingTableModel* m_pMissingTableModel;
+    QHash<int, WTrackTableView*> m_trackTableView;
+    int m_focusedPane;
 };
 
 #endif //DLGMISSING_H
