@@ -1,18 +1,24 @@
 #!/usr/bin/python3
 
+import os
+import re
+import configparser
+from collections import defaultdict
+from xml.etree import ElementTree as ET
+from xml.dom import minidom
 
 # README
 #
 # 1. Change the following string to the absolute path of the directory
 #    containing the *kbd.cfg files:
-KBD_CFG_FILES_DIRECTORY = "/home/tomasito/Development/Mixxx/mixxx/res/keyboard"
+KBD_CFG_FILES_DIRECTORY = "/home/tomasito/Development/Mixxx/res/keyboard"
 #
 #    Note: Only files with a valid language language code as filename will be
 #          parsed. For example: en_US.kbd.cfg, es_ES.kbd.cfg or de_CH.kbd.cfg
 #
 # 2. Change the following string to the absolute path of the directory to
 #    you want to save the generated keyboard preset:
-TARGET_DIRECTORY = "/home/tomasito/Development/Mixxx/mixxx/res/controllers"
+TARGET_DIRECTORY = "/home/tomasito/Development/Mixxx/scripts/"
 #
 # 3. Change the following string to the preset name. Name this whatever you
 #    like:
@@ -29,20 +35,10 @@ PRESET_NAME = "Default-mapping"
 # 4. Run this file. (with PYTHON3 or higher!!)
 
 
-import sys
-import os
-import re
-import collections
-import configparser
-import json
-from collections import defaultdict
-from xml.etree import ElementTree as ET
-from xml.dom import minidom
-
 class KeyboardParser:
-    def __init__(self, legacy_folder, target_folder, name,
-                 multilang = True, legacy_file = None,
-                 mixxx_version = "2.1.0+", author = "kbdcfg_to_kbdxml.py"):
+    def __init__(self, legacy_folder, target_folder, name="",
+                 multilang=True, legacy_file=None,
+                 mixxx_version="2.1.0+", author="kbdcfg_to_kbdxml.py"):
 
         self.legacy_folder = legacy_folder
         self.target_folder = target_folder
@@ -59,6 +55,8 @@ class KeyboardParser:
             raise ValueError("Multilang is false, but legacy_file path is not given")
 
         if multilang:
+            if not name:
+                raise ValueError("Given name is empty, please enter a valid preset name.")
             if not os.path.exists(legacy_folder):
                 raise ValueError("Given legacy folder does not exist: \'" + legacy_folder + "\'")
             print("Reading legacy files from: " + legacy_folder)
@@ -66,7 +64,8 @@ class KeyboardParser:
             if not os.path.exists(target_folder):
                 parent_folder = os.path.dirname(target_folder)
                 if os.path.exists(parent_folder):
-                    print("Warning: Given target folder does not exist: \'" + target_folder + "\'. Creating new folder...")
+                    print(
+                        "Warning: Given target folder does not exist: \'" + target_folder + "\'. Creating new folder...")
                     os.makedirs(target_folder)
                     print("Successfully created new folder: \'" + target_folder + "\'")
                 else:
@@ -96,7 +95,7 @@ class KeyboardParser:
             self.write_out(simplified_xml)
 
         else:
-            # non multi-language parse not supported yet
+
             pass
 
     def parse_multi_lang_config(self):
@@ -197,8 +196,10 @@ class KeyboardParser:
                     parser = mapping[1]
 
                     # TODO(Tomasito) Don't build logic on exception catching!
-                    try: parser.items(group)
-                    except configparser.NoSectionError: continue
+                    try:
+                        parser.items(group)
+                    except configparser.NoSectionError:
+                        continue
 
                     # Iterate through all actions in the group and see
                     # if the current action is defined in the current
@@ -208,8 +209,10 @@ class KeyboardParser:
                         this_action = stripped_action_in_this_group[0]
                         this_keyseq = None
 
-                        try: this_keyseq = stripped_action_in_this_group[1]
-                        except: this_keyseq = ""
+                        try:
+                            this_keyseq = stripped_action_in_this_group[1]
+                        except:
+                            this_keyseq = ""
 
                         if action == action_in_this_group[0].split()[0]:
                             keyseq_element = ET.SubElement(control_element, 'keyseq')
@@ -218,13 +221,14 @@ class KeyboardParser:
 
         return root
 
-    def simplify_multilang_xml(self, xml):
+    @staticmethod
+    def simplify_multilang_xml(xml):
         print("Simplifying XML")
 
         # Retrieve which keyboard layouts are supported
         supported_layouts = []
-        supported_layouts_element = xml.\
-            find('controller').\
+        supported_layouts_element = xml. \
+            find('controller'). \
             find('keyboard-layouts')
         for lang in supported_layouts_element.iter('lang'):
             supported_layouts.append(lang.text)
@@ -284,11 +288,12 @@ class KeyboardParser:
         with open(full_path, "w") as f:
             f.write(xmlstr)
 
-#-----------------------------------------------
+
+# -----------------------------------------------
 # Change the strings bellow and run this script
-#-----------------------------------------------
+# -----------------------------------------------
 KeyboardParser(
-    KBD_CFG_FILES_DIRECTORY, # <--- Path to legacy files like en_US.kbd.cfg
-    TARGET_DIRECTORY,        # <--- Target path. The kbd.xml file will be stored here
-    PRESET_NAME              # <--- Preset name
+    KBD_CFG_FILES_DIRECTORY,  # <--- Path to legacy files like en_US.kbd.cfg
+    TARGET_DIRECTORY,  # <--- Target path. The kbd.xml file will be stored here
+    PRESET_NAME  # <--- Preset name
 )
