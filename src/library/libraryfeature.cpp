@@ -11,10 +11,12 @@
 #include <QTreeView>
 
 #include "library/libraryfeature.h"
+#include "widget/wbaselibrary.h"
+#include "widget/wlibrarysidebar.h"
 
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!
 // The reason for this is that LibraryFeature uses slots/signals and for this
-// to work the code has to be precompiles by moc
+// to work the code has to be precompiled by moc
 LibraryFeature::LibraryFeature(UserSettingsPointer pConfig, 
                                Library* pLibrary,
                                QObject* parent)

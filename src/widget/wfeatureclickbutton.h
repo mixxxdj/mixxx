@@ -4,6 +4,7 @@
 #include <library/libraryfeature.h>
 #include <QToolButton>
 #include <QMouseEvent>
+#include <QBasicTimer>
 
 class WFeatureClickButton : public QToolButton
 {

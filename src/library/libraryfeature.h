@@ -6,16 +6,15 @@
 
 #include <QFileDialog>
 #include <QString>
+#include <QUrl>
 
 #include "track/track.h"
 #include "treeitemmodel.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
-#include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 
 class TrackModel;
-class WLibrarySidebar;
+class WBaseLibrary;
 class WLibrary;
 class KeyboardEventFilter;
 class Library;
@@ -106,7 +105,7 @@ class LibraryFeature : public QObject {
     void showTrackModel(QAbstractItemModel* model);
     
     // The difference between switchToView and switchToViewChild is that the 
-    // second will never change the sidebar Expanded view, it's usefull when 
+    // second will never change the sidebar Expanded view, it's useful when 
     // selecting an item from the sidebar Expanded view
     void switchToView(const QString&);
     void switchToViewChild(const QString&);
