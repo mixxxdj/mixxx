@@ -28,7 +28,7 @@ class WLibraryStack : public QStackedWidget, public LibraryView {
 
   private:
     
-    bool checkAndWarning();
+    bool checkAndWarning(QWidget *w);
 };
 
 #endif /* WLIBRARYSTACK_H */

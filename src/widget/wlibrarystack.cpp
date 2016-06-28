@@ -13,12 +13,13 @@ WLibraryStack::~WLibraryStack() {
 }
 
 int WLibraryStack::addWidget(QWidget* w) {
-    checkAndWarning();
+    qDebug() << "WLibraryStack::addWidget" << w;
+    checkAndWarning(w);
     return QStackedWidget::addWidget(w);
 }
 
 int WLibraryStack::insertWidget(int index, QWidget* w) {
-    checkAndWarning();
+    checkAndWarning(w);
     return QStackedWidget::insertWidget(index, w);
 }
 
@@ -58,7 +59,7 @@ void WLibraryStack::slotSendToAutoDJTop() {
     }
 }
 
-bool WLibraryStack::checkAndWarning() {
+bool WLibraryStack::checkAndWarning(QWidget* w) {
     if (!dynamic_cast<LibraryView*>(w)) {
         qDebug() << "WARNING: Attempted to register a view with WLibraryStack"
                  << "that does not implement the LibraryView interface.";
