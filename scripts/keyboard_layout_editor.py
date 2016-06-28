@@ -109,9 +109,7 @@ class KeyboardLayoutEditor(Tk):
         self.sidebarframe.update_layout_list(self.layouts)
 
     @staticmethod
-    def write_out(root):
-        # TODO(Tomasito) Pass path by parameter
-        full_path = "/home/tomasito/Development/Mixxx/scripts/keyboardlayouts_output.xml"
+    def write_out(root, full_path):
         if os.path.isfile(full_path):
             print("Warning: '" + full_path + "' already exists.\nOverriding that file assuming that it's ok :)\n")
         print("Writing to file: " + full_path + "\n...")
@@ -119,6 +117,15 @@ class KeyboardLayoutEditor(Tk):
         with open(full_path, "w") as f:
             f.write(xmlstr)
         print("Saved file to: " + full_path)
+
+    def save_file(self):
+        path = self.file_name
+        xml = self.create_xml()
+        if not path:
+            # File dialog
+            pass
+        else:
+            self.write_out(xml, path)
 
     def create_xml(self):
         # Create XML root element
@@ -196,8 +203,7 @@ class MainFrame(Frame):
         self.master.config(menu=self.menubar)
 
     def save_command(self):
-        xml = self.app.create_xml()
-        self.app.write_out(xml)
+        self.app.save_file()
 
 
 class SideBarFrame(Frame):
