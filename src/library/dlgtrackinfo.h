@@ -15,6 +15,15 @@
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 
+// TODO(XXX): All unapplied edits in dialog fields are lost when
+// reloading metadata from file tags or when fetching metadata
+// from MusicBrainz. The reloaded/fetched metadata is applied
+// immediately to the actual track instead of only loaded into
+// the dialog's fields.
+// Fixing this unexpected behavior requires that the dialog and
+// all subtasks (reload, fetch) operate on a deep copy of the
+// actual track. A major refactoring is required to achieve this
+// goal.
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
