@@ -48,12 +48,6 @@ void DlgAnalysis::onShow() {
     m_pAnalysisLibraryTableModel->select();
 }
 
-void DlgAnalysis::tableSelectionChanged(const QItemSelection&,
-                                       const QItemSelection&) {
-    bool tracksSelected = m_analysisTable[m_focusedPane]->selectionModel()->hasSelection();
-    pushButtonAnalyze->setEnabled(tracksSelected || m_bAnalysisActive);
-}
-
 void DlgAnalysis::selectAll() {
     m_analysisTable[m_focusedPane]->selectAll();
 }
@@ -64,8 +58,7 @@ void DlgAnalysis::analyze() {
         emit(stopAnalysis());
     } else {
         QList<TrackId> trackIds;
-        QModelIndexList selectedIndexes = m_analysisTable[m_focusedPane]->selectionModel()->selectedRows();
-        for (QModelIndex selectedIndex : selectedIndexes) {
+        for (QModelIndex selectedIndex : m_selectedIndexes) {
             TrackId trackId(selectedIndex.sibling(
                 selectedIndex.row(),
                 m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data());
@@ -115,22 +108,14 @@ int DlgAnalysis::getNumTracks() {
     return m_tracksInQueue;
 }
 
-void DlgAnalysis::setAnalysisTableView(WAnalysisLibraryTableView* pTable, int pane) {
-    m_analysisTable[pane] = pTable;
-    
-    connect(pTable, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pTable, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-
-    connect(pTable, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-    
+void DlgAnalysis::setAnalysisTableView(WAnalysisLibraryTableView* pTable) {
     pTable->loadTrackModel(m_pAnalysisLibraryTableModel);
-    connect(pTable->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
-            this,
-            SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+}
+
+void DlgAnalysis::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
+    m_selectedIndexes = selectedIndexes;
+    pushButtonAnalyze->setEnabled(m_selectedIndexes.size() > 0 ||
+                                  m_bAnalysisActive);
 }
 
 void DlgAnalysis::trackAnalysisStarted(int size) {

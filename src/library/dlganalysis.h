@@ -13,8 +13,11 @@ class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
 
 class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
+    
     Q_OBJECT
+    
   public:
+    
     DlgAnalysis(QWidget *parent,
                TrackCollection* pTrackCollection);
     virtual ~DlgAnalysis();
@@ -25,14 +28,14 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
     }
     int getNumTracks();
     
-    void setAnalysisTableView(WAnalysisLibraryTableView* pTable, int pane);
+    void setAnalysisTableView(WAnalysisLibraryTableView* pTable);
     inline void setFocusedPane(int pane) {
     	m_focusedPane = pane;
     }
+    void setSelectedIndexes(const QModelIndexList& selectedIndexes);
 
   public slots:
-    void tableSelectionChanged(const QItemSelection&,
-                               const QItemSelection&);
+    
     void selectAll();
     void analyze();
     void trackAnalysisFinished(int size);
@@ -43,11 +46,9 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
     void analysisActive(bool bActive);
 
   signals:
-    void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString player);
+    
     void analyzeTracks(QList<TrackId> trackIds);
     void stopAnalysis();
-    void trackSelected(TrackPointer pTrack);
 
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file
@@ -57,9 +58,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
     AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;
     int m_tracksInQueue;
     int m_currentTrack;
-    int m_focusedPane;
     
-    QHash<int, WAnalysisLibraryTableView*> m_analysisTable;
+    QModelIndexList m_selectedIndexes;
 };
 
 #endif //DLGTRIAGE_H

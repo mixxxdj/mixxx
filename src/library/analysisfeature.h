@@ -42,7 +42,7 @@ class AnalysisFeature : public LibraryFeature {
     QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId);
     void bindSidebarWidget(WBaseLibrary* libraryWidget,
                            KeyboardEventFilter*pKeyboard);
-
+    QWidget* createSidebarWidget(KeyboardEventFilter* pKeyboard);
     
     TreeItemModel* getChildModel();
     void refreshLibraryModels();
@@ -59,6 +59,8 @@ class AnalysisFeature : public LibraryFeature {
     void slotProgressUpdate(int num_left);
     void stopAnalysis();
     void cleanupAnalyzer();
+    void tableSelectionChanged(const QItemSelection&,
+                               const QItemSelection&);
 
   private:
     // Sets the title of this feature to the default name, given by
