@@ -34,6 +34,10 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
     }
     for (LibraryFeature* f : m_features) {
         f->bindPaneWidget(lib, pKeyboard, m_paneId);
+        
+        //QWidget* pPane = f->createPaneWidget(pKeyboard, m_paneId);
+        //pPane->setParent(lib);
+        //lib->registerView(f->getViewName(), pPane);
     }
 }
 
@@ -97,8 +101,13 @@ void LibraryPaneManager::slotSwitchToView(const QString& view) {
     m_pPaneWidget->setFocus();
 }
 
-void LibraryPaneManager::slotSwitchToView(LibraryFeature *pFeature) {
+void LibraryPaneManager::slotSwitchToView(LibraryFeature* pFeature) {
+    if (!m_featuresWidget.contains(pFeature)) {
+        return;
+    }
     
+    int widgetId = m_featuresWidget[pFeature];
+    m_pPaneWidget->setCurrentIndex(widgetId);
 }
 
 void LibraryPaneManager::slotRestoreSearch(const QString& text) {

@@ -251,6 +251,19 @@ void Library::slotSwitchToView(const QString& view) {
     emit(switchToView(view));
 }
 
+void Library::slotSwitchToView(LibraryFeature* pFeature) {
+    m_pSidebarExpanded->slotSwitchToView(pFeature);
+    
+    WBaseLibrary* pWLibrary = m_panes[m_focusedPane]->getPaneWidget();
+    // Only change the current pane if it's not shown already
+    if (pWLibrary->getCurrentViewName() != pFeature->getViewName()) {
+        m_panes[m_focusedPane]->slotSwitchToView(pFeature);
+    }
+    
+    handleFocus();
+}
+
+
 void Library::slotSwitchToViewChild(const QString &view) {
     //qDebug() << "Library::slotSwitchToViewChild";
     m_panes[m_focusedPane]->slotSwitchToView(view);
@@ -555,8 +568,4 @@ void Library::handleFocus() {
             it.value()->clearFocus();
         }
     }
-}
-
-void Library::slotSwitchToView(LibraryFeature* pFeature) {
-    
 }
