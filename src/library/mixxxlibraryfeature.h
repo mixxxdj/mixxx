@@ -47,8 +47,9 @@ class MixxxLibraryFeature : public LibraryFeature {
     void bindPaneWidget(WLibrary* pLibrary,
                         KeyboardEventFilter* pKeyboard, int paneId);
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId);
-    void bindSidebarWidget(WBaseLibrary* pLibraryWidget, 
-                           KeyboardEventFilter*);
+    
+    void bindSidebarWidget(WBaseLibrary* pSidebarWidget, KeyboardEventFilter* pKeyboard);
+    QWidget* createSidebarWidget(KeyboardEventFilter *pKeyboard);
     
     inline QString getViewName() {
         return m_sMixxxLibraryViewName;

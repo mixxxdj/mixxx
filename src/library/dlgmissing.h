@@ -17,7 +17,6 @@ class DlgMissing : public QWidget, public Ui::DlgMissing {
     DlgMissing(QWidget* parent);
     virtual ~DlgMissing();
 
-    void setTrackTable(WTrackTableView* pTrackTableView);
     void setSelectedIndexes(const QModelIndexList& selectedIndexes);
     void setTableModel(MissingTableModel* pTableModel);
 

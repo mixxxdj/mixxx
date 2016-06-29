@@ -25,12 +25,6 @@ void DlgMissing::onShow() {
     activateButtons(false);
 }
 
-void DlgMissing::setTrackTable(WTrackTableView* pTrackTableView) {
-    pTrackTableView->loadTrackModel(m_pMissingTableModel);
-    
-    connect(btnPurge, SIGNAL(clicked()), pTrackTableView, SLOT(slotPurge()));
-}
-
 void DlgMissing::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
     activateButtons(!selectedIndexes.isEmpty());
 }
