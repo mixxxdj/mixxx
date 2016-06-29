@@ -4,13 +4,13 @@
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgMissing::DlgMissing(QWidget* parent, TrackCollection *pTrackCollection)
+DlgMissing::DlgMissing(QWidget* parent)
          : QWidget(parent),
            Ui::DlgMissing() {
     setupUi(this);    
-    m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
  
     connect(btnPurge, SIGNAL(clicked()), this, SLOT(onShow()));
+    connect(btnPurge, SIGNAL(clicked()), this, SIGNAL(purge()));
     connect(btnSelect, SIGNAL(clicked()), this, SIGNAL(selectAll()));
 }
 
@@ -33,6 +33,10 @@ void DlgMissing::setTrackTable(WTrackTableView* pTrackTableView) {
 
 void DlgMissing::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
     activateButtons(!selectedIndexes.isEmpty());
+}
+
+void DlgMissing::setTableModel(MissingTableModel* pTableModel) {
+    m_pMissingTableModel = pTableModel;
 }
 
 void DlgMissing::activateButtons(bool enable) {

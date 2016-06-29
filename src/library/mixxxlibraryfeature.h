@@ -27,10 +27,12 @@ class BaseTrackCache;
 class LibraryTableModel;
 class TrackCollection;
 class WTrackTableView;
+class HiddenTableModel;
+class MissingTableModel;
 
 class MixxxLibraryFeature : public LibraryFeature {
     Q_OBJECT
-    public:
+  public:
     MixxxLibraryFeature(UserSettingsPointer pConfig,
                         Library* pLibrary,
                         QObject* parent,
@@ -62,6 +64,12 @@ class MixxxLibraryFeature : public LibraryFeature {
     
     void selectAllHidden();
     void selectAllMissing();
+    
+    
+  signals:
+    void unhideHidden();
+    void purgeHidden();
+    void purgeMissing();
 
   private:
     const QString kLibraryTitle;
@@ -78,6 +86,9 @@ class MixxxLibraryFeature : public LibraryFeature {
     QHash<int, int> m_missingPaneId;
     int m_hiddenExpandedId;
     int m_missingExpandedId;
+    
+    QPointer<HiddenTableModel> m_pHiddenTableModel;
+    QPointer<MissingTableModel> m_pMissingTableModel;
     
     QHash<int, QStackedWidget*> m_paneStack;
     QStackedWidget* m_pExpandedStack;

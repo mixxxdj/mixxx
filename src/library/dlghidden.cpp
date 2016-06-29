@@ -5,15 +5,15 @@
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgHidden::DlgHidden(QWidget* parent, TrackCollection* pTrackCollection)
+DlgHidden::DlgHidden(QWidget* parent)
          : QWidget(parent),
            Ui::DlgHidden() {
     setupUi(this);
     
     connect(btnPurge, SIGNAL(clicked()), this, SLOT(onShow()));
     connect(btnSelect, SIGNAL(clicked()), this, SIGNAL(selectAll()));
-
-    m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
+    connect(btnPurge, SIGNAL(clicked()), this, SIGNAL(purge()));
+    connect(btnUnhide, SIGNAL(clicked()), this, SIGNAL(unhide()));
 }
 
 DlgHidden::~DlgHidden() {
@@ -28,15 +28,12 @@ void DlgHidden::onShow() {
     activateButtons(false);
 }
 
-void DlgHidden::setTrackTable(WTrackTableView *pTrackTableView) {
-    pTrackTableView->loadTrackModel(m_pHiddenTableModel);
-    
-    connect(btnUnhide, SIGNAL(clicked()), pTrackTableView, SLOT(slotUnhide()));
-    connect(btnPurge, SIGNAL(clicked()), pTrackTableView, SLOT(slotPurge()));
-}
-
 void DlgHidden::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
     activateButtons(!selectedIndexes.empty());
+}
+
+void DlgHidden::setTableModel(HiddenTableModel* pTableModel) {
+    m_pHiddenTableModel = pTableModel;
 }
 
 void DlgHidden::activateButtons(bool enable) {

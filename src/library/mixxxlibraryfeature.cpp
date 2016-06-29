@@ -156,17 +156,22 @@ QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     
     m_hiddenPaneId[paneId] = pStack->addWidget(pHiddenTable);
     m_hiddenPane[paneId] = pHiddenTable;
-    
-    if (m_pHiddenView) {
-        m_pHiddenView->setTrackTable(pHiddenTable);
-        
-        connect(pHiddenTable->selectionModel(),
-                SIGNAL(selectionChanged(const QItemSelection&, 
-                                        const QItemSelection&)),
-                this,
-                SLOT(hiddenSelectionChanged(const QItemSelection&, 
-                                            const QItemSelection&)));
+    if (m_pHiddenTableModel.isNull()) {
+        m_pHiddenTableModel = new HiddenTableModel(this, m_pTrackCollection);
     }
+    pHiddenTable->loadTrackModel(m_pHiddenTableModel);
+    
+    connect(pHiddenTable->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection&, 
+                                    const QItemSelection&)),
+            this,
+            SLOT(hiddenSelectionChanged(const QItemSelection&, 
+                                        const QItemSelection&)));
+    
+    connect(this, SIGNAL(unhideHidden()),
+            pHiddenTable, SLOT(slotUnhide()));
+    connect(this, SIGNAL(purgeHidden()),
+            pHiddenTable, SLOT(slotPurge()));
     
     // Create the missing table
     WTrackTableView* pMissingTable = 
@@ -180,16 +185,19 @@ QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     
     m_missingPaneId[paneId] = pStack->addWidget(pMissingTable);
     m_missingPane[paneId] = pMissingTable;
+    if (m_pMissingTableModel.isNull()) {
+        m_pMissingTableModel = new MissingTableModel(this, m_pTrackCollection);
+    }
+    pMissingTable->loadTrackModel(m_pMissingTableModel);
     
+    connect(pMissingTable->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection&, 
+                                    const QItemSelection&)),
+            this,
+            SLOT(missingSelectionChanged(const QItemSelection&, 
+                                         const QItemSelection&)));
     if (m_pMissingView) {
-        m_pMissingView->setTrackTable(pMissingTable);
-        
-        connect(pMissingTable->selectionModel(),
-                SIGNAL(selectionChanged(const QItemSelection&, 
-                                        const QItemSelection&)),
-                this,
-                SLOT(missingSelectionChanged(const QItemSelection&, 
-                                             const QItemSelection&)));
+        m_pMissingView->setTrackTable(pMissingTable);    
     }
     
     return pStack;
@@ -217,37 +225,34 @@ void MixxxLibraryFeature::bindSidebarWidget(WBaseLibrary* pLibraryWidget,
     
     // Create tabs
     m_pExpandedStack = new QStackedWidget(pTab);
-    
+     
     // Create Hidden View controls
-    m_pHiddenView = new DlgHidden(pLibraryWidget, m_pTrackCollection);
-    m_hiddenExpandedId = m_pExpandedStack->addWidget(m_pHiddenView);
-    
-    // Add Track tables to Hidden view
-    for (WTrackTableView* pTable : m_hiddenPane) {
-        m_pHiddenView->setTrackTable(pTable);
-        
-        connect(pTable->selectionModel(),
-                SIGNAL(selectionChanged(const QItemSelection&, 
-                                        const QItemSelection&)),
-                this,
-                SLOT(missingSelectionChanged(const QItemSelection&, 
-                                             const QItemSelection&)));
+    if (m_pHiddenTableModel.isNull()) {
+        m_pHiddenTableModel = new HiddenTableModel(this, m_pTrackCollection);
     }
+    m_pHiddenView = new DlgHidden(pLibraryWidget);    
+    m_pHiddenView->setTableModel(m_pHiddenTableModel);
+    connect(m_pHiddenView, SIGNAL(unhide()), 
+            this, SIGNAL(unhideHidden()));
+    connect(m_pHiddenView, SIGNAL(purge()),
+            this, SIGNAL(purgeHidden()));
+    
+    m_hiddenExpandedId = m_pExpandedStack->addWidget(m_pHiddenView);
 
     // Create Missing View controls
-    m_pMissingView = new DlgMissing(pLibraryWidget, m_pTrackCollection);
+    if (m_pMissingTableModel.isNull()) {
+        m_pMissingTableModel = new MissingTableModel(this, m_pTrackCollection);
+    }
+    m_pMissingView = new DlgMissing(pLibraryWidget);
+    m_pMissingView->setTableModel(m_pMissingTableModel);
+    connect(m_pMissingView, SIGNAL(purge()), 
+            this, SIGNAL(purgeMissing()));
+    
     m_missingExpandedId = m_pExpandedStack->addWidget(m_pMissingView);
     
     // Add Track tables to Missing view
     for (WTrackTableView* pTable : m_missingPane) {
         m_pMissingView->setTrackTable(pTable);
-        
-        connect(pTable->selectionModel(),
-                SIGNAL(selectionChanged(const QItemSelection&, 
-                                        const QItemSelection&)),
-                this,
-                SLOT(missingSelectionChanged(const QItemSelection&, 
-                                             const QItemSelection&)));
     }
     
     pTab->addTab(m_pExpandedStack, tr("Controls"));

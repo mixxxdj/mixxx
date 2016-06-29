@@ -15,17 +15,19 @@ class QItemSelection;
 class DlgHidden : public QWidget, public Ui::DlgHidden {
     Q_OBJECT
   public:
-    DlgHidden(QWidget* parent, TrackCollection *pTrackCollection);
+    DlgHidden(QWidget* parent);
     virtual ~DlgHidden();
 
-    void setTrackTable(WTrackTableView* pTrackTableView);
     void setSelectedIndexes(const QModelIndexList& selectedIndexes);
+    void setTableModel(HiddenTableModel* pTableModel);
 
   public slots:
     void onShow();
 
   signals:
     void selectAll();  
+    void unhide();
+    void purge();
     void trackSelected(TrackPointer pTrack);
 
   private:

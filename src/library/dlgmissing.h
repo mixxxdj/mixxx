@@ -14,16 +14,18 @@ class MissingTableModel;
 class DlgMissing : public QWidget, public Ui::DlgMissing {
     Q_OBJECT
   public:
-    DlgMissing(QWidget* parent, TrackCollection* pTrackCollection);
+    DlgMissing(QWidget* parent);
     virtual ~DlgMissing();
 
     void setTrackTable(WTrackTableView* pTrackTableView);
     void setSelectedIndexes(const QModelIndexList& selectedIndexes);
+    void setTableModel(MissingTableModel* pTableModel);
 
   public slots:
     void onShow();
 
   signals:
+    void purge();
     void selectAll();
     void trackSelected(TrackPointer pTrack);
 
