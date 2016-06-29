@@ -7,12 +7,11 @@
 
 DlgHidden::DlgHidden(QWidget* parent, TrackCollection* pTrackCollection)
          : QWidget(parent),
-           Ui::DlgHidden(),
-           m_focusedPane(-1) {
+           Ui::DlgHidden() {
     setupUi(this);
     
-    connect(btnPurge, SIGNAL(clicked()), this, SLOT(clicked()));
-    connect(btnSelect, SIGNAL(clicked()), this, SLOT(selectAll()));
+    connect(btnPurge, SIGNAL(clicked()), this, SLOT(onShow()));
+    connect(btnSelect, SIGNAL(clicked()), this, SIGNAL(selectAll()));
 
     m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
 }
@@ -29,46 +28,18 @@ void DlgHidden::onShow() {
     activateButtons(false);
 }
 
-void DlgHidden::setTrackTable(Library* pLibrary, WTrackTableView *pTrackTableView, int paneId) {
+void DlgHidden::setTrackTable(WTrackTableView *pTrackTableView) {
     pTrackTableView->loadTrackModel(m_pHiddenTableModel);
     
-    connect(btnUnhide, SIGNAL(clicked()),
-            pTrackTableView, SLOT(slotUnhide()));
-    connect(btnUnhide, SIGNAL(clicked()),
-            this, SLOT(clicked()));
-    connect(btnPurge, SIGNAL(clicked()),
-            pTrackTableView, SLOT(slotPurge()));
-    connect(pTrackTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-            this, 
-            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    
-    m_trackTableView[paneId] = pTrackTableView;
+    connect(btnUnhide, SIGNAL(clicked()), pTrackTableView, SLOT(slotUnhide()));
+    connect(btnPurge, SIGNAL(clicked()), pTrackTableView, SLOT(slotPurge()));
 }
 
-void DlgHidden::clicked() {
-    // all marked tracks are gone now anyway
-    onShow();
-}
-
-void DlgHidden::selectAll() {
-    if (m_trackTableView.contains(m_focusedPane)) {
-        m_trackTableView[m_focusedPane]->selectAll();
-    }
+void DlgHidden::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
+    activateButtons(!selectedIndexes.empty());
 }
 
 void DlgHidden::activateButtons(bool enable) {
     btnPurge->setEnabled(enable);
     btnUnhide->setEnabled(enable);
-}
-
-void DlgHidden::selectionChanged(const QItemSelection& selected,
-                                 const QItemSelection&) {
-    activateButtons(!selected.indexes().isEmpty());
 }

@@ -18,25 +18,19 @@ class DlgHidden : public QWidget, public Ui::DlgHidden {
     DlgHidden(QWidget* parent, TrackCollection *pTrackCollection);
     virtual ~DlgHidden();
 
-    void onShow();
-    void setTrackTable(Library* pLibrary, WTrackTableView* pTrackTableView, int paneId);
-    inline void setFocusedPane(int focusedPane) { 
-        m_focusedPane = focusedPane;
-    }
+    void setTrackTable(WTrackTableView* pTrackTableView);
+    void setSelectedIndexes(const QModelIndexList& selectedIndexes);
 
   public slots:
-    void clicked();
-    void selectAll();
-    void selectionChanged(const QItemSelection&, const QItemSelection&);    
+    void onShow();
 
   signals:
+    void selectAll();  
     void trackSelected(TrackPointer pTrack);
 
   private:
     void activateButtons(bool enable);
     HiddenTableModel* m_pHiddenTableModel;
-    QHash<int, WTrackTableView*> m_trackTableView;
-    int m_focusedPane;
 };
 
 #endif //DLGHIDDEN_H

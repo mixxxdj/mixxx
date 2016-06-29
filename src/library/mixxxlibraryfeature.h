@@ -56,6 +56,12 @@ class MixxxLibraryFeature : public LibraryFeature {
     void activate();
     void activateChild(const QModelIndex& index);
     void refreshLibraryModels();
+    
+    void hiddenSelectionChanged(const QItemSelection&, const QItemSelection&);
+    void missingSelectionChanged(const QItemSelection&, const QItemSelection&);
+    
+    void selectAllHidden();
+    void selectAllMissing();
 
   private:
     const QString kLibraryTitle;

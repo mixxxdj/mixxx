@@ -6,13 +6,12 @@
 
 DlgMissing::DlgMissing(QWidget* parent, TrackCollection *pTrackCollection)
          : QWidget(parent),
-           Ui::DlgMissing(),
-           m_focusedPane(-1) {
+           Ui::DlgMissing() {
     setupUi(this);    
     m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
  
-    connect(btnPurge, SIGNAL(clicked()), this, SLOT(clicked()));
-    connect(btnSelect, SIGNAL(clicked()), this, SLOT(selectAll()));
+    connect(btnPurge, SIGNAL(clicked()), this, SLOT(onShow()));
+    connect(btnSelect, SIGNAL(clicked()), this, SIGNAL(selectAll()));
 }
 
 DlgMissing::~DlgMissing() {
@@ -26,44 +25,16 @@ void DlgMissing::onShow() {
     activateButtons(false);
 }
 
-void DlgMissing::clicked() {
-    // all marked tracks are gone now anyway
-    onShow();
-}
-
-void DlgMissing::setTrackTable(Library* pLibrary, 
-                               WTrackTableView* pTrackTableView, 
-                               int paneId) {
+void DlgMissing::setTrackTable(WTrackTableView* pTrackTableView) {
     pTrackTableView->loadTrackModel(m_pMissingTableModel);
-    connect(btnPurge, SIGNAL(clicked()),
-            pTrackTableView, SLOT(slotPurge()));
-    connect(pTrackTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-            this,
-            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
     
-    m_trackTableView[paneId] = pTrackTableView;
+    connect(btnPurge, SIGNAL(clicked()), pTrackTableView, SLOT(slotPurge()));
 }
 
-void DlgMissing::selectAll() {    
-    if (m_trackTableView.contains(m_focusedPane)) {
-        m_trackTableView[m_focusedPane]->selectAll();
-    }
+void DlgMissing::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
+    activateButtons(!selectedIndexes.isEmpty());
 }
 
 void DlgMissing::activateButtons(bool enable) {
     btnPurge->setEnabled(enable);
-}
-
-void DlgMissing::selectionChanged(const QItemSelection &selected,
-                                  const QItemSelection &deselected) {
-    Q_UNUSED(deselected);
-    activateButtons(!selected.indexes().isEmpty());
 }

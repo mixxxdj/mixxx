@@ -147,10 +147,16 @@ QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     WTrackTableView* pHiddenTable = 
             new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
     pHiddenTable->installEventFilter(pKeyboard);
+    
+    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            pHiddenTable, SLOT(setTrackTableFont(QFont)));
+    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            pHiddenTable, SLOT(setTrackTableRowHeight(int)));
+    
     m_hiddenPaneId[paneId] = pStack->addWidget(pHiddenTable);
     
     if (m_pHiddenView) {
-        m_pHiddenView->setTrackTable(m_pLibrary, pHiddenTable, paneId);
+        m_pHiddenView->setTrackTable(pHiddenTable);
     } else {
         m_hiddenPane[paneId] = pHiddenTable;
     }
@@ -158,10 +164,16 @@ QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     WTrackTableView* pMissingTable = 
             new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
     pMissingTable->installEventFilter(pKeyboard);
+    
+    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            pMissingTable, SLOT(setTrackTableFont(QFont)));
+    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            pMissingTable, SLOT(setTrackTableRowHeight(int)));
+    
     m_missingPaneId[paneId] = pStack->addWidget(pMissingTable);
     
     if (m_pMissingView) {
-        m_pMissingView->setTrackTable(m_pLibrary, pMissingTable, paneId);
+        m_pMissingView->setTrackTable(pMissingTable);
     } else {
         m_missingPane[paneId] = pMissingTable;
     }
@@ -195,26 +207,20 @@ void MixxxLibraryFeature::bindSidebarWidget(WBaseLibrary* pLibraryWidget,
     // Create Hidden View controls
     m_pHiddenView = new DlgHidden(pLibraryWidget, m_pTrackCollection);
     m_hiddenExpandedId = m_pExpandedStack->addWidget(m_pHiddenView);
-    connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
     
     // Add Track tables to Hidden view
-    for (auto it = m_hiddenPane.begin(); it != m_hiddenPane.end(); ++it) {
-        m_pHiddenView->setTrackTable(m_pLibrary, it.value(), it.key());
+    for (WTrackTableView* pTable : m_hiddenPane) {
+        m_pHiddenView->setTrackTable(pTable);
     }
-    m_hiddenPane.clear();
 
     // Create Missing View controls
     m_pMissingView = new DlgMissing(pLibraryWidget, m_pTrackCollection);
     m_missingExpandedId = m_pExpandedStack->addWidget(m_pMissingView);
-    connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
     
     // Add Track tables to Missing view
-    for (auto it = m_missingPane.begin(); it != m_missingPane.end(); ++it) {
-        m_pMissingView->setTrackTable(m_pLibrary, it.value(), it.key());
+    for (WTrackTableView* pTable : m_missingPane) {
+        m_pMissingView->setTrackTable(pTable);
     }
-    m_missingPane.clear();
     
     pTab->addTab(m_pExpandedStack, tr("Controls"));
     pLibraryWidget->registerView(m_sMixxxLibraryViewName, pTab);
@@ -244,10 +250,34 @@ void MixxxLibraryFeature::refreshLibraryModels() {
     }
 }
 
+void MixxxLibraryFeature::hiddenSelectionChanged(const QItemSelection&,
+                                                 const QItemSelection&) {
+    WTrackTableView* pTable = m_hiddenPane[m_featureFocus];
+    const QModelIndexList& selection = pTable->selectionModel()->selectedIndexes();
+    m_pHiddenView->setSelectedIndexes(selection);
+}
+
+void MixxxLibraryFeature::missingSelectionChanged(const QItemSelection&,
+                                                  const QItemSelection&) {
+    WTrackTableView* pTable = m_missingPane[m_featureFocus];
+    const QModelIndexList& selection = pTable->selectionModel()->selectedIndexes();
+    m_pMissingView->setSelectedIndexes(selection);
+}
+
+void MixxxLibraryFeature::selectAllHidden() {
+    if (m_hiddenPane.contains(m_featureFocus)) {
+        m_hiddenPane[m_featureFocus]->selectAll();
+    }
+}
+
+void MixxxLibraryFeature::selectAllMissing() {
+    if (m_missingPane.contains(m_featureFocus)) {
+        m_missingPane[m_featureFocus]->selectAll();
+    }
+}
+
 void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
-    m_pHiddenView->setFocusedPane(m_featureFocus);
-    m_pMissingView->setFocusedPane(m_featureFocus);
     
     emit(switchToView(m_sMixxxLibraryViewName));
     emit(showTrackModel(m_pLibraryTableModel));
@@ -259,11 +289,13 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     if (itemName == m_sMixxxLibraryViewName) {
         activate();
     } else if (itemName == kHiddenTitle) {
+        m_pHiddenView->onShow();
         m_paneStack[m_featureFocus]->setCurrentIndex(m_hiddenPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_hiddenExpandedId);
         emit(switchToView(m_sMixxxLibraryViewName));
         emit(enableCoverArtDisplay(true));
     } else if (itemName == kMissingTitle) {
+        m_pMissingView->onShow();
         m_paneStack[m_featureFocus]->setCurrentIndex(m_missingPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_missingExpandedId);
         emit(switchToView(m_sMixxxLibraryViewName));
