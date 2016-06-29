@@ -12,17 +12,15 @@
 
 const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
 
-RecordingFeature::RecordingFeature(
-                                   UserSettingsPointer pConfig,
+RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,
                                    Library* pLibrary,
                                    QObject* parent,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
         : LibraryFeature(pConfig, pLibrary, parent),
-          m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager) {
+          m_pRecordingManager(pRecordingManager),
+          m_pRecordingView(nullptr) {
 }
 
 RecordingFeature::~RecordingFeature() {
@@ -41,34 +39,66 @@ TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 void RecordingFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                                  KeyboardEventFilter *keyboard, int) {
-    //The view will be deleted by LibraryWidget
-    DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,
-                                                    m_pConfig,
-                                                    m_pLibrary,
-                                                    m_pTrackCollection,
-                                                    m_pRecordingManager,
-                                                    keyboard);
-
-    pRecordingView->installEventFilter(keyboard);
-    pLibraryWidget->registerView(m_sRecordingViewName, pRecordingView);
-    connect(pRecordingView, SIGNAL(loadTrack(TrackPointer)),
+                                      KeyboardEventFilter *pKeyboard, int) {
+    
+    WTrackTableView* pTrackTableView = 
+            new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection, false); // No sorting
+    pTrackTableView->installEventFilter(pKeyboard);
+    
+    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    
+    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)));
+    
+    pLibraryWidget->registerView(m_sRecordingViewName, pTrackTableView);
+    
+    if (m_pRecordingView) {
+        m_pRecordingView->setTrackTable(pTrackTableView);
+    }
+}
+
+QWidget *RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
+    WTrackTableView* pTrackTableView = 
+            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, false); // No sorting
+    pTrackTableView->installEventFilter(pKeyboard);
+    
+    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    
+    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)));
+    
+    if (m_pRecordingView) {
+        m_pRecordingView->setTrackTable(pTrackTableView);
+    }
+    
+    return pTrackTableView;
+}
+
+void RecordingFeature::bindSidebarWidget(WBaseLibrary* pBaseLibrary,
+                                         KeyboardEventFilter* pKeyboard) {
+    m_pRecordingView = new DlgRecording(nullptr, 
+                                        m_pTrackCollection,
+                                        m_pRecordingManager);
+    m_pRecordingView->installEventFilter(pKeyboard);
+    
     connect(this, SIGNAL(refreshBrowseModel()),
-            pRecordingView, SLOT(refreshBrowseModel()));
-    connect(this, SIGNAL(requestRestoreSearch()),
-            pRecordingView, SLOT(slotRestoreSearch()));
-    connect(pRecordingView, SIGNAL(restoreSearch(QString)),
-            this, SIGNAL(restoreSearch(QString)));
+            m_pRecordingView, SLOT(refreshBrowseModel()));
+    pBaseLibrary->registerView(m_sRecordingViewName, m_pRecordingView);
 }
 
 
 void RecordingFeature::activate() {
-    emit(refreshBrowseModel());
+    m_pRecordingView->refreshBrowseModel();
     emit(switchToView(m_sRecordingViewName));
-    // Ask the view to emit a restoreSearch signal.
-    emit(requestRestoreSearch());
     emit(enableCoverArtDisplay(false));
 }

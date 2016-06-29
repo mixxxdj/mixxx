@@ -14,14 +14,14 @@
 #include "library/proxytrackmodel.h"
 #include "recording/recordingmanager.h"
 
-class Library;
 class TrackCollection;
+class WTrackTableView;
+class DlgRecording;
 
 class RecordingFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    RecordingFeature(
-                     UserSettingsPointer pConfig,
+    RecordingFeature(UserSettingsPointer pConfig,
                      Library* pLibrary,
                      QObject* parent,
                      TrackCollection* pTrackCollection,
@@ -32,10 +32,13 @@ class RecordingFeature : public LibraryFeature {
     QIcon getIcon();
 
     void bindPaneWidget(WLibrary* libraryWidget,
-                        KeyboardEventFilter* keyboard, int);
+                        KeyboardEventFilter* pKeyboard, int);
+    QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int);
     inline QString getViewName() {
         return m_sRecordingViewName;
     }
+    void bindSidebarWidget(WBaseLibrary* pBaseLibrary, 
+                           KeyboardEventFilter* pKeyboard);
 
     TreeItemModel* getChildModel();
 
@@ -44,16 +47,15 @@ class RecordingFeature : public LibraryFeature {
 
   signals:
     void setRootIndex(const QModelIndex&);
-    void requestRestoreSearch();
-    void refreshBrowseModel();
 
   private:
-    UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     const static QString m_sRecordingViewName;
     RecordingManager* m_pRecordingManager;
+    
+    QHash<int, WTrackTableView*> m_trackTables;
+    QPointer<DlgRecording> m_pRecordingView;
 };
 
 #endif
