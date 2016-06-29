@@ -64,6 +64,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotReloadCoverArt();
 
   private:
+    void cacheCoverArt();
+
     void populateFields(const Track& track);
     void reloadTrackBeats(const Track& track);
     void populateCues(TrackPointer pTrack);

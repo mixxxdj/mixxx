@@ -149,6 +149,17 @@ void DlgTrackInfo::cueDelete() {
     }
 }
 
+void DlgTrackInfo::cacheCoverArt() {
+    const TrackId trackId(m_pLoadedTrack->getId());
+    if (trackId.isValid()) {
+        CoverArtCache* const pCache = CoverArtCache::instance();
+        if (pCache != nullptr) {
+            // TODO(rryan) don't use track ID as a reference
+            pCache->requestCover(m_loadedCoverInfo, this, trackId.toInt());
+        }
+    }
+}
+
 void DlgTrackInfo::populateFields(const Track& track) {
     setWindowTitle(track.getArtist() % " - " % track.getTitle());
 
@@ -178,13 +189,10 @@ void DlgTrackInfo::populateFields(const Track& track) {
     reloadTrackBeats(track);
 
     m_loadedCoverInfo = track.getCoverInfo();
-    int reference = track.getId().toInt();
     m_loadedCoverInfo.trackLocation = track.getLocation();
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo.trackLocation, m_loadedCoverInfo, QPixmap());
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        pCache->requestCover(m_loadedCoverInfo, this, reference);
-    }
+
+    cacheCoverArt();
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
@@ -253,16 +261,8 @@ void DlgTrackInfo::slotReloadCoverArt() {
 void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
     qDebug() << "DlgTrackInfo::slotCoverArtSelected" << art;
     m_loadedCoverInfo = art.info;
-    // TODO(rryan) don't use track ID as a reference
-    int reference = 0;
-    if (m_pLoadedTrack) {
-        reference = m_pLoadedTrack->getId().toInt();
-        m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
-    }
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        pCache->requestCover(m_loadedCoverInfo, this, reference);
-    }
+    m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
+    cacheCoverArt();
 }
 
 void DlgTrackInfo::slotOpenInFileBrowser() {
