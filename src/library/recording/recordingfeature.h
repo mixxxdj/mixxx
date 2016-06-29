@@ -30,13 +30,13 @@ class RecordingFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    inline QString getViewName() {
+        return m_sRecordingViewName;
+    }
 
     void bindPaneWidget(WLibrary* libraryWidget,
                         KeyboardEventFilter* pKeyboard, int);
     QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int);
-    inline QString getViewName() {
-        return m_sRecordingViewName;
-    }
     void bindSidebarWidget(WBaseLibrary* pBaseLibrary, 
                            KeyboardEventFilter* pKeyboard);
 
@@ -54,7 +54,7 @@ class RecordingFeature : public LibraryFeature {
     const static QString m_sRecordingViewName;
     RecordingManager* m_pRecordingManager;
     
-    QHash<int, WTrackTableView*> m_trackTables;
+    QList<WTrackTableView*> m_trackTables;
     QPointer<DlgRecording> m_pRecordingView;
 };
 

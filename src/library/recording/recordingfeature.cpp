@@ -38,6 +38,7 @@ QIcon RecordingFeature::getIcon() {
 TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
+
 void RecordingFeature::bindPaneWidget(WLibrary* pLibraryWidget,
                                       KeyboardEventFilter *pKeyboard, int) {
     
@@ -59,12 +60,16 @@ void RecordingFeature::bindPaneWidget(WLibrary* pLibraryWidget,
     
     if (m_pRecordingView) {
         m_pRecordingView->setTrackTable(pTrackTableView);
+    } else {
+        m_trackTables.append(pTrackTableView);
     }
 }
 
 QWidget *RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
-    WTrackTableView* pTrackTableView = 
-            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, false); // No sorting
+    WTrackTableView* pTrackTableView = new WTrackTableView(nullptr, 
+                                                           m_pConfig, 
+                                                           m_pTrackCollection, 
+                                                           false); // No sorting
     pTrackTableView->installEventFilter(pKeyboard);
     
     connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
@@ -79,6 +84,8 @@ QWidget *RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int)
     
     if (m_pRecordingView) {
         m_pRecordingView->setTrackTable(pTrackTableView);
+    } else {
+        m_trackTables.append(pTrackTableView);
     }
     
     return pTrackTableView;
@@ -93,6 +100,12 @@ void RecordingFeature::bindSidebarWidget(WBaseLibrary* pBaseLibrary,
     
     connect(this, SIGNAL(refreshBrowseModel()),
             m_pRecordingView, SLOT(refreshBrowseModel()));
+    
+    for (WTrackTableView* pTable : m_trackTables) {
+        m_pRecordingView->setTrackTable(pTable);
+    }
+    m_trackTables.clear();
+    
     pBaseLibrary->registerView(m_sRecordingViewName, m_pRecordingView);
 }
 
@@ -100,5 +113,6 @@ void RecordingFeature::bindSidebarWidget(WBaseLibrary* pBaseLibrary,
 void RecordingFeature::activate() {
     m_pRecordingView->refreshBrowseModel();
     emit(switchToView(m_sRecordingViewName));
+    emit(restoreSearch(""));
     emit(enableCoverArtDisplay(false));
 }
