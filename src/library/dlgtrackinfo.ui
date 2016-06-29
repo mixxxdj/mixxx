@@ -25,9 +25,6 @@
   <property name="windowTitle">
    <string>Track Editor</string>
   </property>
-  <property name="toolTip">
-   <string>Sets the BPM to 50% of the detected BPM.</string>
-  </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
   </property>
