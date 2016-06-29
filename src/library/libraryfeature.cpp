@@ -30,17 +30,22 @@ LibraryFeature::~LibraryFeature() {
     
 }
 
-void LibraryFeature::bindSidebarWidget(WBaseLibrary *pSidebarWidget, KeyboardEventFilter *) {
-    TreeItemModel* pTreeModel = getChildModel();
-    //qDebug() << "LibraryFeature::bindSidebarWidget" << pTreeModel->rowCount();    
-    WLibrarySidebar* pSidebar = new WLibrarySidebar(pSidebarWidget);
-    pSidebarWidget->registerView(getViewName(), pSidebar);
-    //qDebug() << getViewName() << pTreeModel << pTreeModel->hasChildren();
-    
-    if (pTreeModel == nullptr) {
+void LibraryFeature::bindSidebarWidget(WBaseLibrary *pSidebarWidget, 
+                                       KeyboardEventFilter* pKeyboard) {    
+    QWidget* pSidebar = createSidebarWidget(pKeyboard);
+    if (pSidebar == nullptr) {
         return;
     }
-   
+    
+    pSidebar->setParent(pSidebarWidget);
+    pSidebarWidget->registerView(getViewName(), pSidebar);
+}
+
+QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
+    //qDebug() << "LibraryFeature::bindSidebarWidget";
+    TreeItemModel* pTreeModel = getChildModel();
+    WLibrarySidebar* pSidebar = new WLibrarySidebar(nullptr);
+    pSidebar->installEventFilter(pKeyboard);
     pSidebar->setModel(pTreeModel);
     
     connect(pSidebar, SIGNAL(clicked(const QModelIndex&)),
@@ -51,6 +56,8 @@ void LibraryFeature::bindSidebarWidget(WBaseLibrary *pSidebarWidget, KeyboardEve
             this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
     connect(pSidebar, SIGNAL(expanded(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
+    
+    return pSidebar;
 }
 
 void LibraryFeature::setFeatureFocus(int focus) {
@@ -63,14 +70,16 @@ QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
     QFileDialog dialogg(NULL,
-                     tr("Import Playlist"),
-                     lastPlaylistDirectory,
-                     tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+                        tr("Import Playlist"),
+                        lastPlaylistDirectory,
+                        tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     dialogg.setAcceptMode(QFileDialog::AcceptOpen);
     dialogg.setFileMode(mode);
     dialogg.setModal(true);
 
     // If the user refuses return
-    if (! dialogg.exec()) return QStringList();
+    if (!dialogg.exec()) {
+        return QStringList();
+    }
     return dialogg.selectedFiles();
 }

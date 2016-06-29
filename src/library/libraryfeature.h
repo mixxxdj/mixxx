@@ -65,7 +65,7 @@ class LibraryFeature : public QObject {
                                 int /* paneId */) {
     }
     
-    virtual QWidget* createPaneWidget(KeyboardEventFilter* /* keyboard */, 
+    virtual QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                       int /* paneId */) {
         return nullptr;
     }
@@ -73,7 +73,8 @@ class LibraryFeature : public QObject {
     // Reimplement this to register custom views with the library widget,
     // at the sidebar expanded pane
     virtual void bindSidebarWidget(WBaseLibrary *pSidebarWidget,
-                                   KeyboardEventFilter*);
+                                   KeyboardEventFilter*pKeyboard);
+    virtual QWidget* createSidebarWidget(KeyboardEventFilter* /* keyboard */);
     
     virtual TreeItemModel* getChildModel() = 0;
     
