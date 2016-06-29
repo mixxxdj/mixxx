@@ -135,7 +135,7 @@ void MixxxLibraryFeature::bindPaneWidget(WLibrary* pLibraryWidget,
                                          KeyboardEventFilter* pKeyboard,
                                          int paneId) {
     WLibraryStack* pStack = new WLibraryStack(pLibraryWidget);
-    m_pPaneStack = pStack;
+    m_paneStack[paneId] = pStack;
     
     WTrackTableView* pHiddenTable = 
             new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
@@ -164,7 +164,7 @@ void MixxxLibraryFeature::bindPaneWidget(WLibrary* pLibraryWidget,
 QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                                int paneId) {
     WLibraryStack* pStack = new WLibraryStack(nullptr);
-    m_pPaneStack = pStack;
+    m_paneStack[paneId] = pStack;
     
     WTrackTableView* pHiddenTable = 
             new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
@@ -212,12 +212,11 @@ void MixxxLibraryFeature::bindSidebarWidget(WBaseLibrary* pLibraryWidget,
     pTab->addTab(pSidebar, tr("Tree"));
     
     // Create tabs
-    QStackedWidget* pStack = new QStackedWidget(pTab);
-    m_pExpandedStack = pStack;
+    m_pExpandedStack = new QStackedWidget(pTab);
     
     // Create Hidden View controls
     m_pHiddenView = new DlgHidden(pLibraryWidget, m_pTrackCollection);
-    m_hiddenExpandedId = pStack->addWidget(m_pHiddenView);
+    m_hiddenExpandedId = m_pExpandedStack->addWidget(m_pHiddenView);
     connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
     
@@ -229,7 +228,7 @@ void MixxxLibraryFeature::bindSidebarWidget(WBaseLibrary* pLibraryWidget,
 
     // Create Missing View controls
     m_pMissingView = new DlgMissing(pLibraryWidget, m_pTrackCollection);
-    m_missingExpandedId = pStack->addWidget(m_pMissingView);
+    m_missingExpandedId = m_pExpandedStack->addWidget(m_pMissingView);
     connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
     
@@ -239,7 +238,7 @@ void MixxxLibraryFeature::bindSidebarWidget(WBaseLibrary* pLibraryWidget,
     }
     m_missingPane.clear();
     
-    pTab->addTab(pStack, tr("Controls"));
+    pTab->addTab(m_pExpandedStack, tr("Controls"));
     pLibraryWidget->registerView(m_sMixxxLibraryViewName, pTab);
 }
 
@@ -282,9 +281,15 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     if (itemName == m_sMixxxLibraryViewName) {
         activate();
     } else if (itemName == kHiddenTitle) {
-        
+        m_paneStack[m_featureFocus]->setCurrentIndex(m_hiddenPaneId[m_featureFocus]);
+        m_pExpandedStack->setCurrentIndex(m_hiddenExpandedId);
+        emit(switchToView(m_sMixxxLibraryViewName));
+        emit(enableCoverArtDisplay(true));
     } else if (itemName == kMissingTitle) {
-        
+        m_paneStack[m_featureFocus]->setCurrentIndex(m_missingPaneId[m_featureFocus]);
+        m_pExpandedStack->setCurrentIndex(m_missingExpandedId);
+        emit(switchToView(m_sMixxxLibraryViewName));
+        emit(enableCoverArtDisplay(true));
     }
 }
 

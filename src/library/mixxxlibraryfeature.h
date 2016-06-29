@@ -73,7 +73,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     int m_hiddenExpandedId;
     int m_missingExpandedId;
     
-    QStackedWidget* m_pPaneStack;
+    QHash<int, QStackedWidget*> m_paneStack;
     QStackedWidget* m_pExpandedStack;
     
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
