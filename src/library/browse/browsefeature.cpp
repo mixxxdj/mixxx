@@ -222,9 +222,11 @@ void BrowseFeature::bindPaneWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(m_sBrowseViewName, edit);
 }
 
-QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter*, int) {
+QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(nullptr);
     edit->setHtml(getRootViewHtml());
+    edit->installEventFilter(pKeyboard);
+    return edit;
 }
 
 void BrowseFeature::activate() {

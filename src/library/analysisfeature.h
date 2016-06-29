@@ -52,6 +52,7 @@ class AnalysisFeature : public LibraryFeature {
     void trackAnalysisStarted(int size);
 
   public slots:
+    void selectAll();
     void activate();
     void analyzeTracks(QList<TrackId> trackIds);
 

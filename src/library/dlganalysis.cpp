@@ -13,8 +13,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
           m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
           m_tracksInQueue(0),
-          m_currentTrack(0),
-		  m_focusedPane(-1) {
+          m_currentTrack(0) {
     setupUi(this);
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
@@ -36,7 +35,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             this, SLOT(analyze()));
 
     connect(pushButtonSelectAll, SIGNAL(clicked()),
-            this, SLOT(selectAll()));
+            this, SIGNAL(selectAll()));
 }
 
 DlgAnalysis::~DlgAnalysis() {
@@ -46,10 +45,6 @@ void DlgAnalysis::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
     m_pAnalysisLibraryTableModel->select();
-}
-
-void DlgAnalysis::selectAll() {
-    m_analysisTable[m_focusedPane]->selectAll();
 }
 
 void DlgAnalysis::analyze() {

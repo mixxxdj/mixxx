@@ -29,14 +29,10 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
     int getNumTracks();
     
     void setAnalysisTableView(WAnalysisLibraryTableView* pTable);
-    inline void setFocusedPane(int pane) {
-    	m_focusedPane = pane;
-    }
     void setSelectedIndexes(const QModelIndexList& selectedIndexes);
 
   public slots:
     
-    void selectAll();
     void analyze();
     void trackAnalysisFinished(int size);
     void trackAnalysisProgress(int progress);
@@ -49,6 +45,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
     
     void analyzeTracks(QList<TrackId> trackIds);
     void stopAnalysis();
+    void selectAll();
 
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file

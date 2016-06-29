@@ -83,9 +83,6 @@ QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
             this, SIGNAL(trackSelected(TrackPointer)));
 
     m_analysisTables[paneId] = pTable;
-    if (m_pAnalysisView) {
-        m_pAnalysisView->setAnalysisTableView(pTable, paneId);
-    }
     return pTable;
 }
 
@@ -103,6 +100,8 @@ QWidget* AnalysisFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
             this, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
             this, SLOT(stopAnalysis()));
+    connect(m_pAnalysisView, SIGNAL(selectAll()),
+            this, SLOT(selectAll()));
 
     connect(this, SIGNAL(analysisActive(bool)),
             m_pAnalysisView, SLOT(analysisActive(bool)));
@@ -111,13 +110,11 @@ QWidget* AnalysisFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
 
     m_pAnalysisView->installEventFilter(pKeyboard);
     
-    for (auto it = m_analysisTables.begin(); it != m_analysisTables.end(); ++it) {
-        m_pAnalysisView->setAnalysisTableView(it.value(), it.key());
-    }
-    
     // Let the DlgAnalysis know whether or not analysis is active.
     bool bAnalysisActive = m_pAnalyzerQueue != NULL;
     emit(analysisActive(bAnalysisActive));
+    
+    return m_pAnalysisView;
 }
 
 TreeItemModel* AnalysisFeature::getChildModel() {
@@ -130,11 +127,14 @@ void AnalysisFeature::refreshLibraryModels() {
     }
 }
 
+void AnalysisFeature::selectAll() {
+    m_analysisTables[m_featureFocus]->selectAll();
+}
+
 void AnalysisFeature::activate() {
     //qDebug() << "AnalysisFeature::activate()";
     emit(switchToView(m_sAnalysisViewName));
     if (m_pAnalysisView) {
-    	m_pAnalysisView->setFocusedPane(m_featureFocus);
         emit(restoreSearch(m_pAnalysisView->currentSearch()));
     }
     emit(enableCoverArtDisplay(true));

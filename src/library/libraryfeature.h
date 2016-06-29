@@ -8,16 +8,16 @@
 #include <QString>
 #include <QUrl>
 
-#include "track/track.h"
-#include "treeitemmodel.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
 #include "preferences/usersettings.h"
+#include "track/track.h"
+#include "treeitemmodel.h"
 
 class TrackModel;
 class WBaseLibrary;
 class WLibrary;
-class KeyboardEventFilter;
 class Library;
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
@@ -65,7 +65,7 @@ class LibraryFeature : public QObject {
                                 int /* paneId */) {
     }
     
-    virtual QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, 
+    virtual QWidget* createPaneWidget(KeyboardEventFilter* /* keyboard */, 
                                       int /* paneId */) {
         return nullptr;
     }
@@ -74,7 +74,7 @@ class LibraryFeature : public QObject {
     // at the sidebar expanded pane
     virtual void bindSidebarWidget(WBaseLibrary *pSidebarWidget,
                                    KeyboardEventFilter*pKeyboard);
-    virtual QWidget* createSidebarWidget(KeyboardEventFilter* /* keyboard */);
+    virtual QWidget* createSidebarWidget(KeyboardEventFilter* pKeyboard);
     
     virtual TreeItemModel* getChildModel() = 0;
     
