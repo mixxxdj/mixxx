@@ -2,6 +2,7 @@
 #define DLGANALYSIS_H
 
 #include <QItemSelection>
+#include <QButtonGroup>
 
 #include "preferences/usersettings.h"
 #include "library/analysislibrarytablemodel.h"
@@ -30,6 +31,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
     
     void setAnalysisTableView(WAnalysisLibraryTableView* pTable);
     void setSelectedIndexes(const QModelIndexList& selectedIndexes);
+    void setTableModel(AnalysisLibraryTableModel* pTableModel);
 
   public slots:
     

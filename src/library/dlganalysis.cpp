@@ -18,16 +18,10 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pTrackCollection);
-
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
             this,  SLOT(showRecentSongs()));
     connect(radioButtonAllSongs, SIGNAL(clicked()),
             this,  SLOT(showAllSongs()));
-
-    // TODO(rryan): This triggers a library search before the UI has even
-    // started up. Accounts for 0.2% of skin creation time. Get rid of this!
-    radioButtonRecentlyAdded->click();
 
     labelProgress->setText("");
     pushButtonAnalyze->setEnabled(false);
@@ -45,6 +39,10 @@ void DlgAnalysis::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
     m_pAnalysisLibraryTableModel->select();
+    
+    // TODO(rryan): This triggers a library search before the UI has even
+    // started up. Accounts for 0.2% of skin creation time. Get rid of this!
+    radioButtonRecentlyAdded->click();
 }
 
 void DlgAnalysis::analyze() {
@@ -67,7 +65,7 @@ void DlgAnalysis::analyze() {
 }
 
 void DlgAnalysis::analysisActive(bool bActive) {
-    qDebug() << this << "analysisActive" << bActive;
+    //qDebug() << this << "analysisActive" << bActive;
     m_bAnalysisActive = bActive;
     if (bActive) {
         pushButtonAnalyze->setEnabled(true);
@@ -108,9 +106,14 @@ void DlgAnalysis::setAnalysisTableView(WAnalysisLibraryTableView* pTable) {
 }
 
 void DlgAnalysis::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
+    qDebug() << "DlgAnalysis::setSelectedIndexes" << selectedIndexes;
     m_selectedIndexes = selectedIndexes;
     pushButtonAnalyze->setEnabled(m_selectedIndexes.size() > 0 ||
                                   m_bAnalysisActive);
+}
+
+void DlgAnalysis::setTableModel(AnalysisLibraryTableModel *pTableModel) {
+    m_pAnalysisLibraryTableModel = pTableModel;
 }
 
 void DlgAnalysis::trackAnalysisStarted(int size) {

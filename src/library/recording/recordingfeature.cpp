@@ -40,32 +40,13 @@ TreeItemModel* RecordingFeature::getChildModel() {
 }
 
 void RecordingFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                                      KeyboardEventFilter *pKeyboard, int) {
-    
-    WTrackTableView* pTrackTableView = 
-            new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection, false); // No sorting
-    pTrackTableView->installEventFilter(pKeyboard);
-    
-    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)));
-    
-    pLibraryWidget->registerView(m_sRecordingViewName, pTrackTableView);
-    
-    if (m_pRecordingView) {
-        m_pRecordingView->setTrackTable(pTrackTableView);
-    } else {
-        m_trackTables.append(pTrackTableView);
-    }
+                                      KeyboardEventFilter *pKeyboard, int paneId) {    
+    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
+    pPane->setParent(pLibraryWidget);
+    pLibraryWidget->registerView(m_sRecordingViewName, pPane);
 }
 
-QWidget *RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
+QWidget* RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
     WTrackTableView* pTrackTableView = new WTrackTableView(nullptr, 
                                                            m_pConfig, 
                                                            m_pTrackCollection, 
@@ -76,11 +57,6 @@ QWidget *RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int)
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)));
     
     if (m_pRecordingView) {
         m_pRecordingView->setTrackTable(pTrackTableView);

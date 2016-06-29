@@ -133,32 +133,10 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 
 void MixxxLibraryFeature::bindPaneWidget(WLibrary* pLibraryWidget,
                                          KeyboardEventFilter* pKeyboard,
-                                         int paneId) {
-    WLibraryStack* pStack = new WLibraryStack(pLibraryWidget);
-    m_paneStack[paneId] = pStack;
-    
-    WTrackTableView* pHiddenTable = 
-            new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
-    pHiddenTable->installEventFilter(pKeyboard);
-    m_hiddenPaneId[paneId] = pStack->addWidget(pHiddenTable);
-    
-    if (m_pHiddenView) {
-        m_pHiddenView->setTrackTable(m_pLibrary, pHiddenTable, paneId);
-    } else {
-        m_hiddenPane[paneId] = pHiddenTable;
-    }
-    
-    WTrackTableView* pMissingTable = 
-            new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
-    pMissingTable->installEventFilter(pKeyboard);
-    m_missingPaneId[paneId] = pStack->addWidget(pMissingTable);
-    
-    if (m_pMissingView) {
-        m_pMissingView->setTrackTable(m_pLibrary, pMissingTable, paneId);
-    } else {
-        m_missingPane[paneId] = pMissingTable;
-    }
-    pLibraryWidget->registerView(m_sMixxxLibraryViewName, pStack);
+                                         int paneId) {    
+    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
+    pPane->setParent(pLibraryWidget);
+    pLibraryWidget->registerView(m_sMixxxLibraryViewName, pPane);
 }
 
 QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 

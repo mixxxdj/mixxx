@@ -48,10 +48,6 @@ void DlgRecording::onShow() {
 }
 
 void DlgRecording::setTrackTable(WTrackTableView* pTrackTableView) {
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     pTrackTableView->loadTrackModel(&m_proxyModel);
 }
 

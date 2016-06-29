@@ -30,6 +30,8 @@ void DlgHidden::onShow() {
 }
 
 void DlgHidden::setTrackTable(Library* pLibrary, WTrackTableView *pTrackTableView, int paneId) {
+    pTrackTableView->loadTrackModel(m_pHiddenTableModel);
+    
     connect(btnUnhide, SIGNAL(clicked()),
             pTrackTableView, SLOT(slotUnhide()));
     connect(btnUnhide, SIGNAL(clicked()),
@@ -46,7 +48,6 @@ void DlgHidden::setTrackTable(Library* pLibrary, WTrackTableView *pTrackTableVie
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    pTrackTableView->loadTrackModel(m_pHiddenTableModel);
     
     m_trackTableView[paneId] = pTrackTableView;
 }

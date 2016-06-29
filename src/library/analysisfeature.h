@@ -84,6 +84,7 @@ class AnalysisFeature : public LibraryFeature {
     const static QString m_sAnalysisViewName;
     QString m_analysisTitleName;
     QPointer<DlgAnalysis> m_pAnalysisView;
+    QPointer<AnalysisLibraryTableModel> m_pAnalysisLibraryTableModel;
     QHash<int, WAnalysisLibraryTableView*> m_analysisTables;
 };
 

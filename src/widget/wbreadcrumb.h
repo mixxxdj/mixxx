@@ -14,10 +14,6 @@ class WBreadCrumb: public QLabel {
   public slots:
     
     void setBreadText(TreeItem* pTree);
-    
-  private:
-    
-    static QString& getData(TreeItem* pTree);
 };
 
 #endif /* SRC_WIDGET_WBREADCRUMB_H_ */

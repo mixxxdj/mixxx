@@ -75,13 +75,27 @@ QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
             new WAnalysisLibraryTableView(nullptr, m_pConfig, m_pTrackCollection);
     pTable->installEventFilter(pKeyboard);
     
+    if (m_pAnalysisLibraryTableModel) {
+        pTable->setModel(m_pAnalysisLibraryTableModel);
+        
+        connect(pTable->selectionModel(), 
+                SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+                this, 
+                SLOT(tableSelectionChanged(const QItemSelection&, const QItemSelection&)));
+    }
+    
     connect(pTable, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(pTable, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)));
     connect(pTable, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+    
 
+    if (m_pAnalysisLibraryTableModel) {
+        pTable->setModel(m_pAnalysisLibraryTableModel);
+    }
+    
     m_analysisTables[paneId] = pTable;
     return pTable;
 }
@@ -95,6 +109,19 @@ void AnalysisFeature::bindSidebarWidget(WBaseLibrary* libraryWidget,
 
 QWidget* AnalysisFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     m_pAnalysisView = new DlgAnalysis(nullptr, m_pTrackCollection);
+    
+    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, m_pTrackCollection);
+    
+    for (WAnalysisLibraryTableView* pTable : m_analysisTables) {
+        pTable->setModel(m_pAnalysisLibraryTableModel);
+        
+        connect(pTable->selectionModel(), 
+                SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+                this, 
+                SLOT(tableSelectionChanged(const QItemSelection&, const QItemSelection&)));
+    }
+    
+    m_pAnalysisView->setTableModel(m_pAnalysisLibraryTableModel);
     
     connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<TrackId>)),
             this, SLOT(analyzeTracks(QList<TrackId>)));
@@ -111,8 +138,9 @@ QWidget* AnalysisFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     m_pAnalysisView->installEventFilter(pKeyboard);
     
     // Let the DlgAnalysis know whether or not analysis is active.
-    bool bAnalysisActive = m_pAnalyzerQueue != NULL;
+    bool bAnalysisActive = m_pAnalyzerQueue != nullptr;
     emit(analysisActive(bAnalysisActive));
+    m_pAnalysisView->onShow();
     
     return m_pAnalysisView;
 }
@@ -185,7 +213,7 @@ void AnalysisFeature::slotProgressUpdate(int num_left) {
 
 void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
-    if (m_pAnalyzerQueue != NULL) {
+    if (m_pAnalyzerQueue != nullptr) {
         m_pAnalyzerQueue->stop();
     }
 }
@@ -193,10 +221,10 @@ void AnalysisFeature::stopAnalysis() {
 void AnalysisFeature::cleanupAnalyzer() {
     setTitleDefault();
     emit(analysisActive(false));
-    if (m_pAnalyzerQueue != NULL) {
+    if (m_pAnalyzerQueue != nullptr) {
         m_pAnalyzerQueue->stop();
         m_pAnalyzerQueue->deleteLater();
-        m_pAnalyzerQueue = NULL;
+        m_pAnalyzerQueue = nullptr;
         // Restore old BPM detection setting for preferences...
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
     }
@@ -204,6 +232,7 @@ void AnalysisFeature::cleanupAnalyzer() {
 
 void AnalysisFeature::tableSelectionChanged(const QItemSelection&,
                                             const QItemSelection&) {
+    qDebug() << "AnalysisFeature::tableSelectionChanged" << sender();
     WTrackTableView* pCurrent = m_analysisTables[m_featureFocus];
     const QModelIndexList &indexes = pCurrent->selectionModel()->selectedIndexes();
     m_pAnalysisView->setSelectedIndexes(indexes);

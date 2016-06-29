@@ -34,6 +34,7 @@ void DlgMissing::clicked() {
 void DlgMissing::setTrackTable(Library* pLibrary, 
                                WTrackTableView* pTrackTableView, 
                                int paneId) {
+    pTrackTableView->loadTrackModel(m_pMissingTableModel);
     connect(btnPurge, SIGNAL(clicked()),
             pTrackTableView, SLOT(slotPurge()));
     connect(pTrackTableView->selectionModel(),
@@ -48,7 +49,6 @@ void DlgMissing::setTrackTable(Library* pLibrary,
     connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
     
-    pTrackTableView->loadTrackModel(m_pMissingTableModel);
     m_trackTableView[paneId] = pTrackTableView;
 }
 

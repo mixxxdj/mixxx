@@ -35,7 +35,7 @@ class RecordingFeature : public LibraryFeature {
     }
 
     void bindPaneWidget(WLibrary* libraryWidget,
-                        KeyboardEventFilter* pKeyboard, int);
+                        KeyboardEventFilter* pKeyboard, int paneId);
     QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int);
     void bindSidebarWidget(WBaseLibrary* pBaseLibrary, 
                            KeyboardEventFilter* pKeyboard);
