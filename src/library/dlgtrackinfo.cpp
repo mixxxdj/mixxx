@@ -170,8 +170,8 @@ void DlgTrackInfo::populateFields(const Track& track) {
     txtType->setText(track.getType());
     txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr("kbps"));
     txtBpm->setText(track.getBpmText());
-    m_keysClone = track.getKeys();
-    txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
+    m_keys = track.getKeys();
+    txtKey->setText(KeyUtils::getGlobalKeyText(m_keys));
     const mixxx::ReplayGain replayGain(track.getReplayGain());
     txtReplayGain->setText(mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
 
@@ -383,7 +383,7 @@ void DlgTrackInfo::saveTrack() {
     // invalid then the change will be rejected.
     slotKeyTextChanged();
 
-    m_pLoadedTrack->setKeys(m_keysClone);
+    m_pLoadedTrack->setKeys(m_keys);
 
     QSet<int> updatedRows;
     for (int row = 0; row < cueTable->rowCount(); ++row) {
@@ -468,7 +468,7 @@ void DlgTrackInfo::clear() {
     txtComment->setPlainText("");
     spinBpm->setValue(0.0);
     m_pBeatsClone.clear();
-    m_keysClone = Keys();
+    m_keys = Keys();
 
     txtDuration->setText("");
     txtType->setText("");
@@ -596,17 +596,17 @@ void DlgTrackInfo::slotKeyTextChanged() {
 
     // If the new key string is invalid and not empty them reject the new key.
     if (globalKey == mixxx::track::io::key::INVALID && !newKeyText.isEmpty()) {
-        txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
+        txtKey->setText(KeyUtils::getGlobalKeyText(m_keys));
         return;
     }
 
     // If the new key is the same as the old key, reject the change.
-    if (globalKey == m_keysClone.getGlobalKey()) {
+    if (globalKey == m_keys.getGlobalKey()) {
         return;
     }
 
     // Otherwise, accept.
-    m_keysClone = newKeys;
+    m_keys = newKeys;
 }
 
 void DlgTrackInfo::reloadTrackMetadata() {

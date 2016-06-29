@@ -74,7 +74,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     QHash<int, CuePointer> m_cueMap;
     TrackPointer m_pLoadedTrack;
     BeatsPointer m_pBeatsClone;
-    Keys m_keysClone;
+    Keys m_keys;
     bool m_trackHasBeatMap;
 
     QScopedPointer<TapFilter> m_pTapFilter;
