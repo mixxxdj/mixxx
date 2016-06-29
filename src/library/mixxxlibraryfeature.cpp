@@ -144,6 +144,7 @@ QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     WLibraryStack* pStack = new WLibraryStack(nullptr);
     m_paneStack[paneId] = pStack;
     
+    // Create the hidden table
     WTrackTableView* pHiddenTable = 
             new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
     pHiddenTable->installEventFilter(pKeyboard);
@@ -154,13 +155,20 @@ QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
             pHiddenTable, SLOT(setTrackTableRowHeight(int)));
     
     m_hiddenPaneId[paneId] = pStack->addWidget(pHiddenTable);
+    m_hiddenPane[paneId] = pHiddenTable;
     
     if (m_pHiddenView) {
         m_pHiddenView->setTrackTable(pHiddenTable);
-    } else {
-        m_hiddenPane[paneId] = pHiddenTable;
+        
+        connect(pHiddenTable->selectionModel(),
+                SIGNAL(selectionChanged(const QItemSelection&, 
+                                        const QItemSelection&)),
+                this,
+                SLOT(hiddenSelectionChanged(const QItemSelection&, 
+                                            const QItemSelection&)));
     }
     
+    // Create the missing table
     WTrackTableView* pMissingTable = 
             new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
     pMissingTable->installEventFilter(pKeyboard);
@@ -171,11 +179,17 @@ QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
             pMissingTable, SLOT(setTrackTableRowHeight(int)));
     
     m_missingPaneId[paneId] = pStack->addWidget(pMissingTable);
+    m_missingPane[paneId] = pMissingTable;
     
     if (m_pMissingView) {
         m_pMissingView->setTrackTable(pMissingTable);
-    } else {
-        m_missingPane[paneId] = pMissingTable;
+        
+        connect(pMissingTable->selectionModel(),
+                SIGNAL(selectionChanged(const QItemSelection&, 
+                                        const QItemSelection&)),
+                this,
+                SLOT(missingSelectionChanged(const QItemSelection&, 
+                                             const QItemSelection&)));
     }
     
     return pStack;
@@ -211,6 +225,13 @@ void MixxxLibraryFeature::bindSidebarWidget(WBaseLibrary* pLibraryWidget,
     // Add Track tables to Hidden view
     for (WTrackTableView* pTable : m_hiddenPane) {
         m_pHiddenView->setTrackTable(pTable);
+        
+        connect(pTable->selectionModel(),
+                SIGNAL(selectionChanged(const QItemSelection&, 
+                                        const QItemSelection&)),
+                this,
+                SLOT(missingSelectionChanged(const QItemSelection&, 
+                                             const QItemSelection&)));
     }
 
     // Create Missing View controls
@@ -220,6 +241,13 @@ void MixxxLibraryFeature::bindSidebarWidget(WBaseLibrary* pLibraryWidget,
     // Add Track tables to Missing view
     for (WTrackTableView* pTable : m_missingPane) {
         m_pMissingView->setTrackTable(pTable);
+        
+        connect(pTable->selectionModel(),
+                SIGNAL(selectionChanged(const QItemSelection&, 
+                                        const QItemSelection&)),
+                this,
+                SLOT(missingSelectionChanged(const QItemSelection&, 
+                                             const QItemSelection&)));
     }
     
     pTab->addTab(m_pExpandedStack, tr("Controls"));
@@ -288,12 +316,14 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data(TreeItemModel::kDataPathRole).toString();
     if (itemName == m_sMixxxLibraryViewName) {
         activate();
+        
     } else if (itemName == kHiddenTitle) {
         m_pHiddenView->onShow();
         m_paneStack[m_featureFocus]->setCurrentIndex(m_hiddenPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_hiddenExpandedId);
         emit(switchToView(m_sMixxxLibraryViewName));
         emit(enableCoverArtDisplay(true));
+        
     } else if (itemName == kMissingTitle) {
         m_pMissingView->onShow();
         m_paneStack[m_featureFocus]->setCurrentIndex(m_missingPaneId[m_featureFocus]);
