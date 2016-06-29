@@ -15,8 +15,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
           m_pAutoDJProcessor(pProcessor),
           // no sorting
           m_pAutoDJTableModel(nullptr),
-          m_pLibrary(pLibrary),
-          m_focusedPane(-1) {
+          m_pLibrary(pLibrary) {
     setupUi(this);
 
     // We do _NOT_ take ownership of this from AutoDJProcessor.
@@ -26,19 +25,14 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
 
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
             this, SLOT(shufflePlaylistButton(bool)));
-
     connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
             this, SLOT(skipNextButton(bool)));
-
     connect(pushButtonAddRandom, SIGNAL(clicked(bool)),
             this, SIGNAL(addRandomButton(bool)));
-
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
             this, SLOT(fadeNowButton(bool)));
-
     connect(spinBoxTransition, SIGNAL(valueChanged(int)),
             this, SLOT(transitionSliderChanged(int)));
-
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this, SLOT(toggleAutoDJButton(bool)));
 
@@ -61,25 +55,9 @@ void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
 }
 
-void DlgAutoDJ::setTrackTableView(WTrackTableView* pTrackTableView, int paneId) {
-    pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
-    
-    m_trackTables[paneId] = pTrackTableView;
-    
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(updateSelectionInfo()));
-    
+void DlgAutoDJ::setSelectedRows(const QModelIndexList& selectedRows) {
+    m_selectedRows = selectedRows;
     updateSelectionInfo();
-}
-
-void DlgAutoDJ::setFocusedPane(int focusedPane) {
-    m_focusedPane = focusedPane;
 }
 
 void DlgAutoDJ::shufflePlaylistButton(bool) {    
@@ -163,34 +141,23 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
 }
 
 void DlgAutoDJ::updateSelectionInfo() {
-    if (!m_trackTables.contains(m_focusedPane)) {
+    if (m_selectedRows.isEmpty()) {
         labelSelectionInfo->setText("");
         labelSelectionInfo->setEnabled(false);
         return;
     }
     
     int duration = 0;
-    WTrackTableView* pTrackTable = m_trackTables[m_focusedPane];
-    if (!pTrackTable) {
-        return;
-    }
-    
-    QModelIndexList indices = pTrackTable->selectionModel()->selectedRows();
-    for (int i = 0; i < indices.size(); ++i) {
-        TrackPointer pTrack = m_pAutoDJTableModel->getTrack(indices.at(i));
+    for (const QModelIndex& mIndex : m_selectedRows) {
+        TrackPointer pTrack = m_pAutoDJTableModel->getTrack(mIndex);
         if (pTrack) {
             duration += pTrack->getDuration();
         }
     }
 
     QString label;
-    if (!indices.isEmpty()) {
-        label.append(Time::formatSeconds(duration));
-        label.append(QString(" (%1)").arg(indices.size()));
-        labelSelectionInfo->setText(label);
-        labelSelectionInfo->setEnabled(true);
-    } else {
-        labelSelectionInfo->setText("");
-        labelSelectionInfo->setEnabled(false);
-    }
+    label.append(Time::formatSeconds(duration));
+    label.append(QString(" (%1)").arg(m_selectedRows.size()));
+    labelSelectionInfo->setText(label);
+    labelSelectionInfo->setEnabled(true);
 }

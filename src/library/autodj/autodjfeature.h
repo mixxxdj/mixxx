@@ -59,8 +59,6 @@ class AutoDJFeature : public LibraryFeature {
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
   private:
-    UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
     PlaylistDAO& m_playlistDao;
@@ -123,6 +121,7 @@ class AutoDJFeature : public LibraryFeature {
     // of tracks in the playlist
     void slotRandomQueue(int);
 
+    void selectionChanged(const QItemSelection&, const QItemSelection&);
 };
 
 

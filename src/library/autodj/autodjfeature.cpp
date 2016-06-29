@@ -32,8 +32,6 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
                              PlayerManagerInterface* pPlayerManager,
                              TrackCollection* pTrackCollection)
         : LibraryFeature(pConfig, pLibrary, parent),
-          m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
@@ -105,30 +103,14 @@ QString AutoDJFeature::getViewName() {
 void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
                                    KeyboardEventFilter* pKeyboard,
                                    int paneId) {
-    //qDebug() << "AutoDJFeature::bindPaneWidget" << pLibraryWidget;
-	
-	
-    WTrackTableView* pTrackTableView = new WTrackTableView(pLibraryWidget, 
-            m_pConfig, m_pTrackCollection, false);
-    
-    pTrackTableView->installEventFilter(pKeyboard);
-    pLibraryWidget->registerView(m_sAutoDJViewName, pTrackTableView);
-    
-    connect(m_pLibrary, SIGNAL(setTrackTableFont(const QFont&)),
-            pTrackTableView, SLOT(setTrackTableFont(const QFont&)));
-    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    
-    if (m_pAutoDJView) {
-        m_pAutoDJView->setTrackTableView(pTrackTableView, paneId);
-    } else {
-        m_trackTables[paneId] = pTrackTableView;
-    }
+    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
+    pPane->setParent(pLibraryWidget);
+    pLibraryWidget->registerView(m_sAutoDJViewName, pPane);
 }
 
 QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
-    WTrackTableView* pTrackTableView = new WTrackTableView(nullptr, 
-                m_pConfig, m_pTrackCollection, false);
+    WTrackTableView* pTrackTableView = 
+            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, false);
         
     pTrackTableView->installEventFilter(pKeyboard);
 
@@ -136,12 +118,15 @@ QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int pan
             pTrackTableView, SLOT(setTrackTableFont(const QFont&)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    m_trackTables[paneId] = pTrackTableView;
 
-    if (m_pAutoDJView) {
-        m_pAutoDJView->setTrackTableView(pTrackTableView, paneId);
-    } else {
-        m_trackTables[paneId] = pTrackTableView;
-    }
+    pTrackTableView->loadTrackModel(m_pAutoDJProcessor->getTableModel());
+    
+    connect(pTrackTableView->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+            this, 
+            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+    
     return pTrackTableView;
 }
 
@@ -151,19 +136,13 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
     
     QTabWidget* pContainer = new QTabWidget(pSidebarWidget);
     
+    // Add drop target
     WLibrarySidebar* pSidebar = new WLibrarySidebar(pContainer);
     pSidebar->setModel(&m_childModel);
-    pContainer->addTab(pSidebar, tr("Drop target"));
+    pContainer->addTab(pSidebar, tr("Track source"));
     
     m_pAutoDJView = new DlgAutoDJ(pContainer, m_pLibrary, m_pAutoDJProcessor);
     pContainer->addTab(m_pAutoDJView, tr("controls"));
-    
-    connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(m_pAutoDJView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
 
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested(int)),
@@ -172,11 +151,6 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
             this, SLOT(slotAddRandomTrack(bool)));
     
     pSidebarWidget->registerView(m_sAutoDJViewName, pContainer);
-    
-    for (auto it = m_trackTables.begin(); it != m_trackTables.end(); ++it) {
-        m_pAutoDJView->setTrackTableView(it.value(), it.key());
-    }
-    m_trackTables.clear();
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
@@ -185,7 +159,6 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    m_pAutoDJView->setFocusedPane(m_featureFocus);
     m_pAutoDJView->onShow();
     emit(switchToView(m_sAutoDJViewName));
     emit(restoreSearch(QString())); //Null String disables search box
@@ -435,4 +408,10 @@ void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
         slotAddRandomTrack(true);
         tracksToAdd -= 1;
     }
+}
+
+void AutoDJFeature::selectionChanged(const QItemSelection&, const QItemSelection&) {
+    WTrackTableView* pTable = m_trackTables[m_featureFocus];
+    const QModelIndexList& selectedRows = pTable->selectionModel()->selectedRows();
+    m_pAutoDJView->setSelectedRows(selectedRows);
 }

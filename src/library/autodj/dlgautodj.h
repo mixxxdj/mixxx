@@ -24,8 +24,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ {
     virtual ~DlgAutoDJ();
     
     void onShow();
-    void setTrackTableView(WTrackTableView* pTrackTableView, int paneId);
-    void setFocusedPane(int focusedPane);
+    void setSelectedRows(const QModelIndexList& selectedRows);
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);
@@ -39,18 +38,13 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ {
 
   signals:
     void addRandomButton(bool buttonChecked);
-    void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group, bool);
-    void trackSelected(TrackPointer pTrack);
-
+    
   private:
     AutoDJProcessor* m_pAutoDJProcessor;
     PlaylistTableModel* m_pAutoDJTableModel;
     Library* m_pLibrary;
     
-    int m_focusedPane;
-    
-    QHash<int, WTrackTableView*> m_trackTables;
+    QModelIndexList m_selectedRows;
 };
 
 #endif //DLGAUTODJ_H
