@@ -58,6 +58,8 @@ void LibraryPaneManager::addFeature(LibraryFeature* feature) {
     DEBUG_ASSERT_AND_HANDLE(feature) {
         return;
     }
+    connect(feature, SIGNAL(restoreSearch(const QString&)),
+            this, SIGNAL(restoreSearch(const QString&)));
 
     m_features.append(feature);
 }
