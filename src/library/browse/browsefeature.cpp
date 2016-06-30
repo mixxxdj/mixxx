@@ -1,24 +1,26 @@
 // browsefeature.cpp
 // Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QStringList>
-#include <QTreeView>
-#include <QDirModel>
-#include <QStringList>
-#include <QFileInfo>
-#include <QDesktopServices>
 #include <QAction>
+#include <QDesktopServices>
+#include <QDirModel>
+#include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
+#include <QStringList>
+#include <QStringList>
+#include <QTreeView>
 
-#include "track/track.h"
-#include "library/treeitem.h"
-#include "library/browse/browsefeature.h"
-#include "library/trackcollection.h"
-#include "widget/wlibrarytextbrowser.h"
-#include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/browse/browsefeature.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/treeitem.h"
+#include "track/track.h"
 #include "util/sandbox.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarytextbrowser.h"
+
 
 const QString kQuickLinksSeparator = "-+-";
 
@@ -58,6 +60,7 @@ BrowseFeature::BrowseFeature(UserSettingsPointer pConfig,
 
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
+    rootItem->setLibraryFeature(this);
 
     m_pQuickLinkItem = new TreeItem(tr("Quick Links"), QUICK_LINK_NODE, this, rootItem);
     rootItem->appendChild(m_pQuickLinkItem);
@@ -230,8 +233,10 @@ QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
 }
 
 void BrowseFeature::activate() {
-    emit(switchToView(m_sBrowseViewName));
-    emit(restoreSearch(QString()));
+    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->slotRestoreSearch(QString());
+    
     emit(enableCoverArtDisplay(false));
 }
 
@@ -260,7 +265,9 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         }
         m_browseModel.setPath(dir);
     }
-    emit(showTrackModel(&m_proxyModel));
+    m_pLibrary->slotShowBreadCrumb(item);
+    m_pLibrary->slotShowTrackModel(&m_proxyModel);
+    
     emit(enableCoverArtDisplay(false));
 }
 

@@ -7,8 +7,9 @@
 
 #include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
-#include "library/treeitem.h"
+#include "library/library.h"
 #include "library/queryutil.h"
+#include "library/treeitem.h"
 
 const QString RhythmboxFeature::m_sRhythmBoxViewName = QString("RHYTHMBOX_VIEW");
 
@@ -113,7 +114,7 @@ TreeItemModel* RhythmboxFeature::getChildModel() {
 }
 
 void RhythmboxFeature::activate() {
-    qDebug() << "RhythmboxFeature::activate()";
+    //qDebug() << "RhythmboxFeature::activate()";
 
     if (!m_isActivated) {
         m_isActivated =  true;
@@ -132,8 +133,10 @@ void RhythmboxFeature::activate() {
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
         emit (featureIsLoading(this, true));
     }
-    emit(switchToView(m_sRhythmBoxViewName));
-    emit(showTrackModel(m_pRhythmboxTrackModel));
+    
+    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotShowTrackModel(m_pRhythmboxTrackModel);
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     emit(enableCoverArtDisplay(false));
 }
 
@@ -142,7 +145,9 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
-    emit(showTrackModel(m_pRhythmboxPlaylistModel));
+    
+    m_pLibrary->slotShowBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+    m_pLibrary->slotShowTrackModel(m_pRhythmboxPlaylistModel);
     emit(enableCoverArtDisplay(false));
 }
 
@@ -441,6 +446,7 @@ void RhythmboxFeature::clearTable(QString table_name) {
 
 void RhythmboxFeature::onTrackCollectionLoaded() {
     TreeItem* root = m_track_future.result();
+    root->setLibraryFeature(this);
     if (root) {
         m_childModel.setRootItem(root);
 

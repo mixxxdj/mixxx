@@ -14,6 +14,7 @@
 #include "library/dao/settingsdao.h"
 #include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
+#include "library/library.h"
 #include "library/queryutil.h"
 #include "util/lcs.h"
 #include "util/sandbox.h"
@@ -151,7 +152,8 @@ void ITunesFeature::activate(bool forceReload) {
                 NULL, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
             QFileInfo dbFile(m_dbfile);
             if (m_dbfile.isEmpty() || !dbFile.exists()) {
-                emit(showTrackModel(m_pITunesTrackModel));
+                m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+                m_pLibrary->slotShowTrackModel(m_pITunesTrackModel);
                 return;
             }
 
@@ -181,7 +183,8 @@ void ITunesFeature::activate(bool forceReload) {
         emit (featureIsLoading(this, true));
     }
 
-    emit(showTrackModel(m_pITunesTrackModel));
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->slotShowTrackModel(m_pITunesTrackModel);
     emit(enableCoverArtDisplay(false));
 }
 
@@ -190,7 +193,9 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
-    emit(showTrackModel(m_pITunesPlaylistModel));
+    
+    m_pLibrary->slotShowBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+    m_pLibrary->slotShowTrackModel(m_pITunesPlaylistModel);
     emit(enableCoverArtDisplay(false));
 }
 
@@ -743,6 +748,7 @@ void ITunesFeature::clearTable(QString table_name) {
 
 void ITunesFeature::onTrackCollectionLoaded() {
     TreeItem* root = m_future.result();
+    root->setLibraryFeature(this);
     if (root) {
         m_childModel.setRootItem(root);
 

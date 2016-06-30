@@ -10,6 +10,7 @@
 
 #include "library/traktor/traktorfeature.h"
 
+#include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
 #include "library/queryutil.h"
@@ -143,7 +144,7 @@ void TraktorFeature::refreshLibraryModels() {
 }
 
 void TraktorFeature::activate() {
-    qDebug() << "TraktorFeature::activate()";
+    //qDebug() << "TraktorFeature::activate()";
 
     if (!m_isActivated) {
         m_isActivated =  true;
@@ -164,8 +165,9 @@ void TraktorFeature::activate() {
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this, true));
     }
-
-    emit(showTrackModel(m_pTraktorTableModel));
+    
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->slotShowTrackModel(m_pTraktorTableModel);
     emit(enableCoverArtDisplay(false));
 }
 
@@ -179,7 +181,8 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     if (item->isPlaylist()) {
         qDebug() << "Activate Traktor Playlist: " << item->dataPath().toString();
         m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
-        emit(showTrackModel(m_pTraktorPlaylistModel));
+        m_pLibrary->slotShowBreadCrumb(item);
+        m_pLibrary->slotShowTrackModel(m_pTraktorPlaylistModel);
         emit(enableCoverArtDisplay(false));
     }
 }
@@ -610,17 +613,19 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
 void TraktorFeature::onTrackCollectionLoaded() {
     TreeItem* root = m_future.result();
+    root->setLibraryFeature(this);
     if (root) {
         m_childModel.setRootItem(root);
         // Tell the traktor track source that it should re-build its index.
         m_trackSource->buildIndex();
 
         //m_pTraktorTableModel->select();
-        emit(showTrackModel(m_pTraktorTableModel));
+        m_pLibrary->slotShowBreadCrumb(root);
+        m_pLibrary->slotShowTrackModel(m_pTraktorTableModel);
         qDebug() << "Traktor library loaded successfully";
     } else {
         QMessageBox::warning(
-            NULL,
+            nullptr,
             tr("Error Loading Traktor Library"),
             tr("There was an error loading your Traktor library. Some of "
                "your Traktor tracks or playlists may not have loaded."));

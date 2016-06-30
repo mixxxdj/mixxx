@@ -8,6 +8,7 @@
 #include "library/dao/settingsdao.h"
 #include "library/baseexternalplaylistmodel.h"
 #include "library/banshee/bansheeplaylistmodel.h"
+#include "library/library.h"
 
 
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
@@ -97,7 +98,8 @@ void BansheeFeature::activate() {
 
         m_isActivated =  true;
 
-        TreeItem* playlist_root = new TreeItem();
+        TreeItem* playlistRoot = new TreeItem();
+        playlistRoot->setLibraryFeature(this);
 
         QList<struct BansheeDbConnection::Playlist> list = m_connection.getPlaylists();
 
@@ -105,12 +107,12 @@ void BansheeFeature::activate() {
         foreach (playlist, list) {
             qDebug() << playlist.name;
             // append the playlist to the child model
-            TreeItem *item = new TreeItem(playlist.name, playlist.playlistId, this, playlist_root);
-            playlist_root->appendChild(item);
+            TreeItem *item = new TreeItem(playlist.name, playlist.playlistId, this, playlistRoot);
+            playlistRoot->appendChild(item);
         }
 
-        if (playlist_root) {
-            m_childModel.setRootItem(playlist_root);
+        if (playlistRoot) {
+            m_childModel.setRootItem(playlistRoot);
             if (m_isActivated) {
                 activate();
             }
@@ -123,7 +125,9 @@ void BansheeFeature::activate() {
     }
 
     m_pBansheePlaylistModel->setTableModel(0); // Gets the master playlist
-    emit(showTrackModel(m_pBansheePlaylistModel));
+    
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->slotShowTrackModel(m_pBansheePlaylistModel);
     emit(enableCoverArtDisplay(false));
 }
 
@@ -135,7 +139,8 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
     if (playlistID > 0) {
         qDebug() << "Activating " << item->data().toString();
         m_pBansheePlaylistModel->setTableModel(playlistID);
-        emit(showTrackModel(m_pBansheePlaylistModel));
+        m_pLibrary->slotShowBreadCrumb(item);
+        m_pLibrary->slotShowTrackModel(m_pBansheePlaylistModel);
         emit(enableCoverArtDisplay(false));
     }
 }
