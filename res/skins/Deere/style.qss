@@ -167,6 +167,12 @@ WBaseLibrary[showFocus="1"] {
   margin-right: 13px;
 }
 
+#LibraryBreadCrumb {
+  margin: 4px 4px;
+  font-size: 12px;
+  color: #FFFFFF;
+}
+
 #LibraryCoverArtSplitter QTabWidget {
   border: none;
 }
@@ -379,14 +385,6 @@ WBaseLibrary QSpinBox {
 WBaseLibrary QSpinBox:editable {
   background: transparent;
   color:#d2d2d2;
-}
-
-/* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
-WBaseLibrary QLabel, WBaseLibrary QRadioButton {
-  /* same as QTreeview */
-  color: #d2d2d2;
-  font-size: 10px;
-  margin: 9px 10px 6px 0px;
 }
 
 WBaseLibrary QRadioButton::indicator {

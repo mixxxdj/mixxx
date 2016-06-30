@@ -176,6 +176,10 @@
                   <SearchBox>
                     <Id>1</Id>
                   </SearchBox>
+                  <LibraryBreadCrumb>
+                    <ObjectName>LibraryBreadCrumb</ObjectName>
+                    <Id>1</Id>
+                  </LibraryBreadCrumb>
                   <LibraryPane>
                     <Id>1</Id>
                   </LibraryPane>
@@ -189,6 +193,10 @@
                   <SearchBox>
                     <Id>2</Id>
                   </SearchBox>
+                  <LibraryBreadCrumb>
+                    <ObjectName>LibraryBreadCrumb</ObjectName>
+                    <Id>2</Id>
+                  </LibraryBreadCrumb>
                   <LibraryPane>
                     <Id>2</Id>
                   </LibraryPane>
