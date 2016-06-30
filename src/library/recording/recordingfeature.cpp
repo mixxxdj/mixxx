@@ -20,7 +20,9 @@ RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,
         : LibraryFeature(pConfig, pLibrary, parent),
           m_pTrackCollection(pTrackCollection),
           m_pRecordingManager(pRecordingManager),
-          m_pRecordingView(nullptr) {
+          m_pRecordingView(nullptr),
+          m_pBrowseModel(nullptr),
+          m_pProxyModel(nullptr) {
 }
 
 RecordingFeature::~RecordingFeature() {
@@ -57,13 +59,7 @@ QWidget* RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int)
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    pTrackTableView->loadTrackModel(m_pProxyModel);
-    
-    if (m_pRecordingView) {
-        m_pRecordingView->setTrackTable(pTrackTableView);
-    } else {
-        m_trackTables.append(pTrackTableView);
-    }
+    pTrackTableView->loadTrackModel(getProxyTrackModel());
     
     return pTrackTableView;
 }
@@ -90,8 +86,9 @@ QWidget *RecordingFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard) {
 
 void RecordingFeature::activate() {
     m_pRecordingView->refreshBrowseModel();
-    emit(switchToView(m_sRecordingViewName));
-    emit(restoreSearch(""));
+    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotRestoreSearch("");
+    
     emit(enableCoverArtDisplay(false));
 }
 

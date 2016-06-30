@@ -59,7 +59,6 @@ class RecordingFeature : public LibraryFeature {
     const static QString m_sRecordingViewName;
     RecordingManager* m_pRecordingManager;
     
-    QList<WTrackTableView*> m_trackTables;
     QPointer<DlgRecording> m_pRecordingView;
     BrowseTableModel* m_pBrowseModel;
     ProxyTrackModel* m_pProxyModel;

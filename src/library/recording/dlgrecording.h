@@ -38,10 +38,9 @@ class DlgRecording : public QFrame, public Ui::DlgRecording {
     void refreshLabel();
     
     TrackCollection* m_pTrackCollection;
-    BrowseTableModel m_pBrowseModel;
-    ProxyTrackModel m_pProxyModel;
+    BrowseTableModel* m_pBrowseModel;
+    ProxyTrackModel* m_pProxyModel;
     QString m_recordingDir;
-    QHash<int, WTrackTableView*> m_TrackTableView;
 
     QString m_bytesRecordedStr;
     QString m_durationRecordedStr;

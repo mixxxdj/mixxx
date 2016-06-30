@@ -28,11 +28,6 @@ DlgRecording::DlgRecording(QWidget* parent, TrackCollection* pTrackCollection,
 
     m_recordingDir = m_pRecordingManager->getRecordingDir();
 
-    m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
-
-    m_browseModel.setPath(m_recordingDir);
-
     connect(pushButtonRecording, SIGNAL(toggled(bool)),
             this,  SLOT(toggleRecording(bool)));
     label->setText("");
@@ -44,11 +39,23 @@ DlgRecording::~DlgRecording() {
 
 void DlgRecording::onShow() {
     m_recordingDir = m_pRecordingManager->getRecordingDir();
-    m_browseModel.setPath(m_recordingDir);
+    m_pBrowseModel->setPath(m_recordingDir);
+}
+
+void DlgRecording::setProxyTrackModel(ProxyTrackModel* pProxyModel) {
+    m_pProxyModel = pProxyModel;
+    
+    m_pProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_pProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+}
+
+void DlgRecording::setBrowseTableModel(BrowseTableModel* pBrowseModel) {
+    m_pBrowseModel = pBrowseModel;
+    m_pBrowseModel->setPath(m_recordingDir);
 }
 
 void DlgRecording::refreshBrowseModel() {
-     m_browseModel.setPath(m_recordingDir);
+     m_pBrowseModel->setPath(m_recordingDir);
 }
 
 void DlgRecording::toggleRecording(bool toggle) {
@@ -75,7 +82,7 @@ void DlgRecording::slotRecordingEnabled(bool isRecording) {
         label->setEnabled(false);
     }
     //This will update the recorded track table view
-    m_browseModel.setPath(m_recordingDir);
+    m_pBrowseModel->setPath(m_recordingDir);
 }
 
 // gets number of recorded bytes and update label
