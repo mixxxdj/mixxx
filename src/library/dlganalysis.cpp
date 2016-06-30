@@ -18,11 +18,6 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
-            this,  SLOT(showRecentSongs()));
-    connect(radioButtonAllSongs, SIGNAL(clicked()),
-            this,  SLOT(showAllSongs()));
-
     labelProgress->setText("");
     pushButtonAnalyze->setEnabled(false);
     connect(pushButtonAnalyze, SIGNAL(clicked()),
@@ -101,12 +96,8 @@ int DlgAnalysis::getNumTracks() {
     return m_tracksInQueue;
 }
 
-void DlgAnalysis::setAnalysisTableView(WAnalysisLibraryTableView* pTable) {
-    pTable->loadTrackModel(m_pAnalysisLibraryTableModel);
-}
-
 void DlgAnalysis::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
-    qDebug() << "DlgAnalysis::setSelectedIndexes" << selectedIndexes;
+    //qDebug() << "DlgAnalysis::setSelectedIndexes" << selectedIndexes;
     m_selectedIndexes = selectedIndexes;
     pushButtonAnalyze->setEnabled(m_selectedIndexes.size() > 0 ||
                                   m_bAnalysisActive);
@@ -114,16 +105,13 @@ void DlgAnalysis::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
 
 void DlgAnalysis::setTableModel(AnalysisLibraryTableModel *pTableModel) {
     m_pAnalysisLibraryTableModel = pTableModel;
+    
+    connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
+            m_pAnalysisLibraryTableModel, SLOT(showRecentSongs()));
+    connect(radioButtonAllSongs, SIGNAL(clicked()),
+            m_pAnalysisLibraryTableModel, SLOT(showAllSongs()));
 }
 
 void DlgAnalysis::trackAnalysisStarted(int size) {
     m_tracksInQueue = size;
-}
-
-void DlgAnalysis::showRecentSongs() {
-    m_pAnalysisLibraryTableModel->showRecentSongs();
-}
-
-void DlgAnalysis::showAllSongs() {
-    m_pAnalysisLibraryTableModel->showAllSongs();
 }

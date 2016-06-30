@@ -279,27 +279,36 @@ void MixxxLibraryFeature::refreshLibraryModels() {
 
 void MixxxLibraryFeature::hiddenSelectionChanged(const QItemSelection&,
                                                  const QItemSelection&) {
-    WTrackTableView* pTable = m_hiddenPane[m_featureFocus];
-    const QModelIndexList& selection = pTable->selectionModel()->selectedIndexes();
+    auto it = m_hiddenPane.find(m_featureFocus);
+    if (it == m_hiddenPane.end()) {
+        return;
+    }
+    
+    const QModelIndexList& selection = (*it)->selectionModel()->selectedIndexes();
     m_pHiddenView->setSelectedIndexes(selection);
 }
 
 void MixxxLibraryFeature::missingSelectionChanged(const QItemSelection&,
                                                   const QItemSelection&) {
-    WTrackTableView* pTable = m_missingPane[m_featureFocus];
-    const QModelIndexList& selection = pTable->selectionModel()->selectedIndexes();
+    auto it = m_missingPane.find(m_featureFocus);
+    if (it == m_missingPane.end()) {
+        return;
+    }
+    const QModelIndexList& selection = (*it)->selectionModel()->selectedIndexes();
     m_pMissingView->setSelectedIndexes(selection);
 }
 
 void MixxxLibraryFeature::selectAllHidden() {
-    if (m_hiddenPane.contains(m_featureFocus)) {
-        m_hiddenPane[m_featureFocus]->selectAll();
+    auto it = m_hiddenPane.find(m_featureFocus);
+    if (it != m_hiddenPane.end()) {
+        (*it)->selectAll();
     }
 }
 
 void MixxxLibraryFeature::selectAllMissing() {
-    if (m_missingPane.contains(m_featureFocus)) {
-        m_missingPane[m_featureFocus]->selectAll();
+    auto it = m_missingPane.find(m_featureFocus);
+    if (it != m_missingPane.end()) {
+        (*it)->selectAll();
     }
 }
 

@@ -20,7 +20,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
   public:
     
     DlgAnalysis(QWidget *parent,
-               TrackCollection* pTrackCollection);
+                TrackCollection* pTrackCollection);
     virtual ~DlgAnalysis();
 
     virtual void onShow();
@@ -29,7 +29,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
     }
     int getNumTracks();
     
-    void setAnalysisTableView(WAnalysisLibraryTableView* pTable);
+    // The selected indexes are always from the focused pane
     void setSelectedIndexes(const QModelIndexList& selectedIndexes);
     void setTableModel(AnalysisLibraryTableModel* pTableModel);
 
@@ -39,8 +39,6 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
     void trackAnalysisFinished(int size);
     void trackAnalysisProgress(int progress);
     void trackAnalysisStarted(int size);
-    void showRecentSongs();
-    void showAllSongs();
     void analysisActive(bool bActive);
 
   signals:

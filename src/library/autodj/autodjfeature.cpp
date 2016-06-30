@@ -411,7 +411,11 @@ void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
 }
 
 void AutoDJFeature::selectionChanged(const QItemSelection&, const QItemSelection&) {
-    WTrackTableView* pTable = m_trackTables[m_featureFocus];
-    const QModelIndexList& selectedRows = pTable->selectionModel()->selectedRows();
+    auto it = m_trackTables.find(m_featureFocus);
+    if (it == m_trackTables.end()) {
+        return;
+    }
+    
+    const QModelIndexList& selectedRows = (*it)->selectionModel()->selectedRows();
     m_pAutoDJView->setSelectedRows(selectedRows);
 }

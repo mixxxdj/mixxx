@@ -48,7 +48,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
-    qDebug() << "~DlgAutoDJ()";
+    //qDebug() << "~DlgAutoDJ()";
 }
 
 void DlgAutoDJ::onShow() {

@@ -17,6 +17,7 @@ class DlgMissing : public QWidget, public Ui::DlgMissing {
     DlgMissing(QWidget* parent);
     virtual ~DlgMissing();
 
+    // The indexes are always from the Focused pane
     void setSelectedIndexes(const QModelIndexList& selectedIndexes);
     void setTableModel(MissingTableModel* pTableModel);
 

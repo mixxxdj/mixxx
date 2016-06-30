@@ -146,7 +146,10 @@ void AnalysisFeature::refreshLibraryModels() {
 }
 
 void AnalysisFeature::selectAll() {
-    m_analysisTables[m_featureFocus]->selectAll();
+    auto it = m_analysisTables.find(m_featureFocus);
+    if (it != m_analysisTables.end()) {
+        (*it)->selectAll();
+    }
 }
 
 void AnalysisFeature::activate() {
@@ -222,9 +225,13 @@ void AnalysisFeature::cleanupAnalyzer() {
 
 void AnalysisFeature::tableSelectionChanged(const QItemSelection&,
                                             const QItemSelection&) {
-    qDebug() << "AnalysisFeature::tableSelectionChanged" << sender();
-    WTrackTableView* pCurrent = m_analysisTables[m_featureFocus];
-    const QModelIndexList &indexes = pCurrent->selectionModel()->selectedIndexes();
+    //qDebug() << "AnalysisFeature::tableSelectionChanged" << sender();
+    auto it = m_analysisTables.find(m_featureFocus);
+    if (it == m_analysisTables.end()) {
+        return;
+    }
+    
+    const QModelIndexList &indexes = (*it)->selectionModel()->selectedIndexes();
     m_pAnalysisView->setSelectedIndexes(indexes);
 }
 

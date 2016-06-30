@@ -24,6 +24,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ {
     virtual ~DlgAutoDJ();
     
     void onShow();
+    
+    // These seleced rows are always from the focused pane
     void setSelectedRows(const QModelIndexList& selectedRows);
 
   public slots:
