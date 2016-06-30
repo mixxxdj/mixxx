@@ -28,7 +28,7 @@
 #include "library/playlistfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
-#include "library/setlogfeature.h"
+#include "library/historyfeature.h"
 #include "util/sandbox.h"
 #include "util/assert.h"
 
@@ -540,7 +540,7 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
 
     addFeature(browseFeature);
     addFeature(new RecordingFeature(pConfig, this, this, m_pTrackCollection, m_pRecordingManager));
-    addFeature(new SetlogFeature(pConfig, this, this, m_pTrackCollection));
+    addFeature(new HistoryFeature(pConfig, this, this, m_pTrackCollection));
     m_pAnalysisFeature = new AnalysisFeature(m_pTrackCollection, pConfig, this, this);//this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));

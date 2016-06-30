@@ -18,7 +18,7 @@
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
-#include "library/setlogfeature.h"
+#include "library/historyfeature.h"
 #include "library/scanner/libraryscanner.h"
 
 #include "widget/wtracktableview.h"

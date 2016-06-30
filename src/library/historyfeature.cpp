@@ -2,7 +2,7 @@
 #include <QMenu>
 #include <QDateTime>
 
-#include "library/setlogfeature.h"
+#include "library/historyfeature.h"
 
 #include "control/controlobject.h"
 #include "library/playlisttablemodel.h"
@@ -11,7 +11,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 
-SetlogFeature::SetlogFeature(UserSettingsPointer pConfig,
+HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
                              Library* pLibrary,
                              QObject* parent,
                              TrackCollection* pTrackCollection)
@@ -39,7 +39,7 @@ SetlogFeature::SetlogFeature(UserSettingsPointer pConfig,
             this, SLOT(slotPlayingTrackChanged(TrackPointer)));
 }
 
-SetlogFeature::~SetlogFeature() {
+HistoryFeature::~HistoryFeature() {
     // If the history playlist we created doesn't have any tracks in it then
     // delete it so we don't end up with tons of empty playlists. This is mostly
     // for developers since they regularly open Mixxx without loading a track.
@@ -49,15 +49,15 @@ SetlogFeature::~SetlogFeature() {
     }
 }
 
-QVariant SetlogFeature::title() {
+QVariant HistoryFeature::title() {
     return tr("History");
 }
 
-QIcon SetlogFeature::getIcon() {
+QIcon HistoryFeature::getIcon() {
     return QIcon(":/images/library/ic_library_history.png");
 }
 
-void SetlogFeature::onRightClick(const QPoint& globalPos) {
+void HistoryFeature::onRightClick(const QPoint& globalPos) {
     Q_UNUSED(globalPos);
     m_lastRightClickedIndex = QModelIndex();
 
@@ -68,7 +68,7 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
     // menu.exec(globalPos);
 }
 
-void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void HistoryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
@@ -109,7 +109,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 }
 
 
-void SetlogFeature::buildPlaylistList() {
+void HistoryFeature::buildPlaylistList() {
     m_playlistList.clear();
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
@@ -134,7 +134,7 @@ void SetlogFeature::buildPlaylistList() {
     }
 }
 
-void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
+void HistoryFeature::decorateChild(TreeItem* item, int playlist_id) {
     if (playlist_id == m_playlistId) {
         item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
     } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
@@ -144,7 +144,7 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
     }
 }
 
-void SetlogFeature::slotGetNewPlaylist() {
+void HistoryFeature::slotGetNewPlaylist() {
     //qDebug() << "slotGetNewPlaylist() succesfully triggered !";
 
     // create a new playlist for today
@@ -173,7 +173,7 @@ void SetlogFeature::slotGetNewPlaylist() {
     emit(showTrackModel(m_pPlaylistTableModel));
 }
 
-void SetlogFeature::slotJoinWithPrevious() {
+void HistoryFeature::slotJoinWithPrevious() {
     //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
@@ -225,7 +225,7 @@ void SetlogFeature::slotJoinWithPrevious() {
     }
 }
 
-void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
+void HistoryFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     if (!currentPlayingTrack) {
         return;
     }
@@ -271,7 +271,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     }
 }
 
-void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
+void HistoryFeature::slotPlaylistTableChanged(int playlistId) {
     if (!m_pPlaylistTableModel) {
         return;
     }
@@ -285,7 +285,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     }
 }
 
-void SetlogFeature::slotPlaylistContentChanged(int playlistId) {
+void HistoryFeature::slotPlaylistContentChanged(int playlistId) {
     if (!m_pPlaylistTableModel) {
         return;
     }
@@ -298,7 +298,7 @@ void SetlogFeature::slotPlaylistContentChanged(int playlistId) {
     }
 }
 
-void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
+void HistoryFeature::slotPlaylistTableRenamed(int playlistId,
                                              QString /* a_strName */) {
     if (!m_pPlaylistTableModel) {
         return;
@@ -316,7 +316,7 @@ void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
     }
 }
 
-QString SetlogFeature::getRootViewHtml() const {
+QString HistoryFeature::getRootViewHtml() const {
     QString playlistsTitle = tr("History");
     QString playlistsSummary = tr("The history section automatically keeps a list of tracks you play in your DJ sets.");
     QString playlistsSummary2 = tr("This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.");

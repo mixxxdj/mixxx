@@ -858,7 +858,7 @@ class MixxxCore(Feature):
                    "library/mixxxlibraryfeature.cpp",
                    "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
-                   "library/setlogfeature.cpp",
+                   "library/historyfeature.cpp",
                    "library/autodj/dlgautodj.cpp",
                    "library/dlganalysis.cpp",
                    "library/dlgcoverartfullsize.cpp",

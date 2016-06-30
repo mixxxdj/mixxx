@@ -13,14 +13,14 @@
 class TrackCollection;
 class TreeItem;
 
-class SetlogFeature : public BasePlaylistFeature {
+class HistoryFeature : public BasePlaylistFeature {
     Q_OBJECT
 public:
-    SetlogFeature(UserSettingsPointer pConfig,
+    HistoryFeature(UserSettingsPointer pConfig,
                   Library* pLibrary,
                   QObject* parent, 
                   TrackCollection* pTrackCollection);
-    virtual ~SetlogFeature();
+    virtual ~HistoryFeature();
 
     QVariant title();
     QIcon getIcon();
