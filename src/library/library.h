@@ -20,26 +20,28 @@
 #include "library/coverartcache.h"
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
-#include "library/librarysidebarexpandedmanager.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wfeatureclickbutton.h"
 
+class CrateFeature;
+class KeyboardEventFilter;
 class LibraryPaneManager;
-class TrackModel;
-class TrackCollection;
-class SidebarModel;
+class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
-class WLibrarySidebar;
-class WLibrary;
-class WSearchLineEdit;
+class LibrarySidebarExpandedManager;
 class MixxxLibraryFeature;
 class PlaylistFeature;
-class CrateFeature;
-class LibraryControl;
-class KeyboardEventFilter;
 class PlayerManagerInterface;
+class SidebarModel;
+class TrackModel;
+class TrackCollection;
+class WLibrary;
+class WLibrarySidebar;
+class WLibraryBreadCrumb;
+class WButtonBar;
+class WSearchLineEdit;
 
 class Library : public QObject {
     Q_OBJECT
@@ -56,6 +58,7 @@ public:
                         KeyboardEventFilter* pKeyboard, int id);
     void bindSidebarExpanded(WBaseLibrary* expandedPane, 
                              KeyboardEventFilter* pKeyboard);
+    void bindBreadCrumb(WLibraryBreadCrumb *pBreadCrumb, int paneId);
 
     void destroyInterface();
     LibraryView* getActiveView();
@@ -92,7 +95,8 @@ public:
     void slotHoverFeature(const QString& featureName);
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
-    void slotSwitchToView(LibraryFeature* pFeature);
+    void slotSwitchToViewFeature(LibraryFeature* pFeature);
+    void slotShowBreadCrumb(TreeItem* pTree);
     void slotSwitchToViewChild(const QString& view);
     void slotSwitchToNotFocusedView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
@@ -133,8 +137,8 @@ public:
 
   private:
     
-    void createPane(int id);
-    
+    // If the pane exists returns it, otherwise it creates the pane
+    LibraryPaneManager *getPane(int id);
     LibraryPaneManager* getFocusedPane();
     
     UserSettingsPointer m_pConfig;

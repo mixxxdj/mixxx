@@ -4,6 +4,7 @@
 #include "library/libraryfeature.h"
 #include "widget/wtracktableview.h"
 #include "widget/wbuttonbar.h"
+#include "widget/wlibrarybreadcrumb.h"
 #include "util/assert.h"
 
 const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
@@ -11,6 +12,7 @@ const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
 LibraryPaneManager::LibraryPaneManager(int paneId, QObject* parent)
         : QObject(parent),
           m_pPaneWidget(nullptr),
+          m_pBreadCrumb(nullptr),
           m_paneId(paneId) {
     qApp->installEventFilter(this);
 }
@@ -33,11 +35,12 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
         return;
     }
     for (LibraryFeature* f : m_features) {
-        f->bindPaneWidget(lib, pKeyboard, m_paneId);
+        //f->bindPaneWidget(lib, pKeyboard, m_paneId);
         
-        //QWidget* pPane = f->createPaneWidget(pKeyboard, m_paneId);
-        //pPane->setParent(lib);
-        //lib->registerView(f->getViewName(), pPane);
+        QWidget* pPane = f->createPaneWidget(pKeyboard, m_paneId);
+        pPane->setParent(lib);
+        lib->registerView(f->getViewName(), pPane);
+        m_featuresWidget[f] = lib->indexOf(pPane);
     }
 }
 
@@ -52,6 +55,10 @@ void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchLine) {
             this, SIGNAL(searchStarting()));
     connect(this, SIGNAL(restoreSearch(const QString&)),
             pSearchLine, SLOT(restoreSearch(const QString&)));
+}
+
+void LibraryPaneManager::setBreadCrumb(WLibraryBreadCrumb *pBreadCrumb) {
+    m_pBreadCrumb = pBreadCrumb;
 }
 
 void LibraryPaneManager::addFeature(LibraryFeature* feature) {
@@ -103,7 +110,7 @@ void LibraryPaneManager::slotSwitchToView(const QString& view) {
     m_pPaneWidget->setFocus();
 }
 
-void LibraryPaneManager::slotSwitchToView(LibraryFeature* pFeature) {
+void LibraryPaneManager::slotSwitchToViewFeature(LibraryFeature* pFeature) {
     if (!m_featuresWidget.contains(pFeature)) {
         return;
     }
@@ -114,6 +121,10 @@ void LibraryPaneManager::slotSwitchToView(LibraryFeature* pFeature) {
 
 void LibraryPaneManager::slotRestoreSearch(const QString& text) {
     emit(restoreSearch(text));
+}
+
+void LibraryPaneManager::slotShowBreadCrumb(TreeItem *pTree) {
+    m_pBreadCrumb->showBreadCrumb(pTree);
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {

@@ -10,6 +10,8 @@
 
 class LibraryFeature;
 class WButtonBar;
+class WLibraryBreadCrumb;
+class TreeItem;
 
 class LibraryPaneManager : public QObject {
     Q_OBJECT
@@ -26,6 +28,7 @@ class LibraryPaneManager : public QObject {
     virtual void bindPaneWidget(WBaseLibrary* pLibraryWidget,
                                 KeyboardEventFilter* pKeyboard);
     void bindSearchBar(WSearchLineEdit* pSearchLine);
+    void setBreadCrumb(WLibraryBreadCrumb* pBreadCrumb);
 
     void addFeature(LibraryFeature* feature);
     void addFeatures(const QList<LibraryFeature*>& features);
@@ -62,14 +65,16 @@ class LibraryPaneManager : public QObject {
 
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
-    void slotSwitchToView(LibraryFeature* pFeature);
+    void slotSwitchToViewFeature(LibraryFeature* pFeature);
     void slotRestoreSearch(const QString& text);
+    void slotShowBreadCrumb(TreeItem* pTree);
 
   protected:
 
     WBaseLibrary* m_pPaneWidget;
     QList<LibraryFeature*> m_features;
     QHash<LibraryFeature*, int> m_featuresWidget;
+    WLibraryBreadCrumb* m_pBreadCrumb;
 
   private:
 

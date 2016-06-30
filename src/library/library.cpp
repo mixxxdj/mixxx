@@ -13,6 +13,7 @@
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/librarypanemanager.h"
+#include "library/librarysidebarexpandedmanager.h"
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
@@ -107,11 +108,9 @@ Library::~Library() {
 }
 
 void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
-    if (!m_panes.contains(id)) {
-        createPane(id);
-    }
-    
-    m_panes[id]->bindSearchBar(searchLine);
+    // Get the value once to avoid searching again in the hash
+    LibraryPaneManager* pPane = getPane(id);
+    pPane->bindSearchBar(searchLine);
 }
 
 void Library::bindSidebarWidget(WButtonBar* sidebar) {    
@@ -148,19 +147,18 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
     
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
     
-    if (! m_panes.contains(id)) {
-        createPane(id);
-    }
+    // Get the value once to avoid searching again in the hash
+    LibraryPaneManager* pPane = getPane(id);
     
-    m_panes[id]->bindPaneWidget(pLibraryWidget, pKeyboard);
+    pPane->bindPaneWidget(pLibraryWidget, pKeyboard);
     
-    connect(m_panes[id], SIGNAL(showTrackModel(QAbstractItemModel*)),
+    connect(pPane, SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
-    connect(m_panes[id], SIGNAL(searchStarting()),
+    connect(pPane, SIGNAL(searchStarting()),
             pTrackTableView, SLOT(onSearchStarting()));
-    connect(m_panes[id], SIGNAL(searchCleared()),
+    connect(pPane, SIGNAL(searchCleared()),
             pTrackTableView, SLOT(onSearchCleared()));
-    connect(m_panes[id], SIGNAL(search(const QString&)),
+    connect(pPane, SIGNAL(search(const QString&)),
             pLibraryWidget, SLOT(search(const QString&)));    
     
     // Set the current font and row height on all the WTrackTableViews that were
@@ -177,6 +175,12 @@ void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
             this, SLOT(slotPaneFocused()));
     m_pSidebarExpanded->addFeatures(m_features);    
     m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard);
+}
+
+void Library::bindBreadCrumb(WLibraryBreadCrumb* pBreadCrumb, int paneId) {
+    // Get the value once to avoid searching again in the hash
+    LibraryPaneManager* pPane = getPane(paneId);
+    pPane->setBreadCrumb(pBreadCrumb);
 }
 
 void Library::destroyInterface() {
@@ -251,16 +255,20 @@ void Library::slotSwitchToView(const QString& view) {
     emit(switchToView(view));
 }
 
-void Library::slotSwitchToView(LibraryFeature* pFeature) {
-    m_pSidebarExpanded->slotSwitchToView(pFeature);
+void Library::slotSwitchToViewFeature(LibraryFeature* pFeature) {
+    m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
     
     WBaseLibrary* pWLibrary = m_panes[m_focusedPane]->getPaneWidget();
     // Only change the current pane if it's not shown already
     if (pWLibrary->getCurrentViewName() != pFeature->getViewName()) {
-        m_panes[m_focusedPane]->slotSwitchToView(pFeature);
+        m_panes[m_focusedPane]->slotSwitchToViewFeature(pFeature);
     }
     
     handleFocus();
+}
+
+void Library::slotShowBreadCrumb(TreeItem *pTree) {
+    m_panes[m_focusedPane]->slotShowBreadCrumb(pTree);
 }
 
 
@@ -484,19 +492,21 @@ void Library::slotPaneFocused() {
 }
 
 
-void Library::createPane(int id) {
+LibraryPaneManager* Library::getPane(int id) {
     //qDebug() << "Library::createPane" << id;
-    
-    if (m_panes.contains(id)) {
-        return;
+    // Get the value once to avoid searching again in the hash
+    auto it = m_panes.find(id);
+    if (it != m_panes.end()) {
+        return *it;
     }
-    LibraryPaneManager* pane = new LibraryPaneManager(id);
-    pane->addFeatures(m_features);
-    m_panes.insert(id, pane);
     
-    connect(pane, SIGNAL(focused()),
-            this, SLOT(slotPaneFocused()));
+    LibraryPaneManager* pPane = new LibraryPaneManager(id);
+    pPane->addFeatures(m_features);
+    m_panes.insert(id, pPane);
+    
+    connect(pPane, SIGNAL(focused()), this, SLOT(slotPaneFocused()));
     m_focusedPane = id;
+    return pPane;
 }
 
 LibraryPaneManager *Library::getFocusedPane() {
@@ -562,8 +572,11 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
 }
 
 void Library::handleFocus() {
+    // Changes the visual focus effect, removes the existing one and adds the
+    // new focus
     m_panes[m_focusedPane]->setFocus();
     for (auto it = m_panes.begin(); it != m_panes.end(); ++it) {
+        // Remove the focus from not focused panes
         if (it.key() != m_focusedPane) {
             it.value()->clearFocus();
         }

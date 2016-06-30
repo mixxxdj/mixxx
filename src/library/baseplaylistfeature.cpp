@@ -607,6 +607,7 @@ QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(nullptr);
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
+    edit->installEventFilter(pKeyboard);
     connect(edit, SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
     return edit;
