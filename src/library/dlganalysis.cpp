@@ -9,7 +9,7 @@
 
 DlgAnalysis::DlgAnalysis(QWidget* parent,
                          TrackCollection* pTrackCollection)
-        : QWidget(parent),
+        : QFrame(parent),
           m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
           m_tracksInQueue(0),

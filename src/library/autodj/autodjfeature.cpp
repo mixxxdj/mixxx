@@ -135,7 +135,7 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
     //qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
     QWidget* pSidebar = createSidebarWidget(pKeyboard);
     pSidebar->setParent(pSidebarWidget);    
-    pSidebarWidget->registerView(m_sAutoDJViewName, pContainer);
+    pSidebarWidget->registerView(m_sAutoDJViewName, pSidebar);
 }
 
 QWidget* AutoDJFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {

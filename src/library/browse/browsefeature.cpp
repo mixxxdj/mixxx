@@ -219,7 +219,7 @@ void BrowseFeature::bindPaneWidget(WLibrary* pPaneWidget,
                                    int paneId) {
     QWidget* pPane = createPaneWidget(pKeyboard, paneId);
     pPane->setParent(pPaneWidget);
-    pPaneWidget->registerView(m_sBrowseViewName, pPaneWidget);
+    pPaneWidget->registerView(m_sBrowseViewName, pPane);
 }
 
 QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {

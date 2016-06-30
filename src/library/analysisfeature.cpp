@@ -8,6 +8,7 @@
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
+#include "library/library.h"
 #include "widget/wlibrary.h"
 #include "widget/wanalysislibrarytableview.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -154,7 +155,10 @@ void AnalysisFeature::selectAll() {
 
 void AnalysisFeature::activate() {
     //qDebug() << "AnalysisFeature::activate()";
-    emit(switchToView(m_sAnalysisViewName));
+    //m_pLibrary->switchToView(m_sAnalysisViewName);
+    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    
     if (m_pAnalysisView) {
         emit(restoreSearch(m_pAnalysisView->currentSearch()));
     }
