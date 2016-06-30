@@ -38,6 +38,9 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
         //f->bindPaneWidget(lib, pKeyboard, m_paneId);
         
         QWidget* pPane = f->createPaneWidget(pKeyboard, m_paneId);
+        if (pPane == nullptr) {
+            continue;
+        }
         pPane->setParent(lib);
         lib->registerView(f->getViewName(), pPane);
         m_featuresWidget[f] = lib->indexOf(pPane);
