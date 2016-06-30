@@ -2,7 +2,7 @@
 #define WLIBRARYSIDEBAREXPANDED_H
 #include <QStackedWidget>
 #include <QMutex>
-#include <QMap>
+#include <QHash>
 
 #include "widget/wbasewidget.h"
 
@@ -31,13 +31,15 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
   public slots:
 
     virtual void switchToView(const QString& name);
+    
+    void setCurrentIndex(int index);
 
   protected:
       
     bool eventFilter(QObject*, QEvent* pEvent);
     bool event(QEvent* pEvent) override;
 
-    QMap<QString, QWidget*> m_viewMap;
+    QHash<QString, QWidget*> m_viewMap;
 
   private:
     

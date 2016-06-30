@@ -55,6 +55,12 @@ void WBaseLibrary::switchToView(const QString& name) {
     }
 }
 
+void WBaseLibrary::setCurrentIndex(int index) {
+    QWidget* pWidget = widget(index);
+    m_currentViewName = m_viewMap.key(pWidget);
+    QStackedWidget::setCurrentIndex(index);
+}
+
 bool WBaseLibrary::eventFilter(QObject*, QEvent* pEvent) {
     if (pEvent->type() == QEvent::FocusIn) {
         //qDebug() << "WBaseLibrary::eventFilter FocusIn";
