@@ -4,16 +4,16 @@
 #include <QLabel>
 #include "library/treeitem.h"
 
-class WBreadCrumb: public QLabel {
+class WLibraryBreadCrumb: public QLabel {
 	Q_OBJECT
 	
   public:
 	
-    WBreadCrumb(QWidget* parent = nullptr);
+    WLibraryBreadCrumb(QWidget* parent = nullptr);
 	
   public slots:
     
-    void setBreadText(TreeItem* pTree);
+    void showBreadCrumb(TreeItem* pTree);
 };
 
 #endif /* SRC_WIDGET_WBREADCRUMB_H_ */
