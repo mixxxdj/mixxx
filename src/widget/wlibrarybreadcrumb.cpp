@@ -6,7 +6,7 @@ namespace {
 
 QString getPathString(TreeItem* pTree) {    
     // Base case
-    if (pTree == nullptr) {
+    if (pTree == nullptr || pTree->getFeature() == nullptr) {
         return QString();
     }
     else if (pTree->parent() == nullptr) {

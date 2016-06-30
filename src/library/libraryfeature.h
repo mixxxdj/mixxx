@@ -22,7 +22,7 @@ class Library;
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {
-  Q_OBJECT
+    Q_OBJECT
   public:
 
     // The parent does not necessary be the Library

@@ -317,6 +317,8 @@ void MixxxLibraryFeature::selectAllMissing() {
 void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
     
+    // To change the sidebar
+    m_pLibrary->slotSwitchToViewFeature(this);
     m_pLibrary->slotShowTrackModel(m_pLibraryTableModel);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     
