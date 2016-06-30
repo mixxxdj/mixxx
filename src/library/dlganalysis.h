@@ -13,7 +13,7 @@
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
 
-class DlgAnalysis : public QWidget, public Ui::DlgAnalysis {
+class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
     
     Q_OBJECT
     

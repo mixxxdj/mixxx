@@ -5,7 +5,7 @@
 #include "util/assert.h"
 
 DlgMissing::DlgMissing(QWidget* parent)
-         : QWidget(parent),
+         : QFrame(parent),
            Ui::DlgMissing() {
     setupUi(this);    
  

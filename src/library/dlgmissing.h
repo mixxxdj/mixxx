@@ -11,7 +11,7 @@
 class WTrackTableView;
 class MissingTableModel;
 
-class DlgMissing : public QWidget, public Ui::DlgMissing {
+class DlgMissing : public QFrame, public Ui::DlgMissing {
     Q_OBJECT
   public:
     DlgMissing(QWidget* parent);

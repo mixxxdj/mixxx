@@ -17,7 +17,7 @@
 class PlaylistTableModel;
 class WTrackTableView;
 
-class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ {
+class DlgAutoDJ : public QFrame, public Ui::DlgAutoDJ {
     Q_OBJECT
   public:
     DlgAutoDJ(QWidget* parent, Library *pLibrary, AutoDJProcessor* pProcessor);

@@ -10,7 +10,7 @@
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      Library* pLibrary,
                      AutoDJProcessor* pProcessor)
-        : QWidget(parent),
+        : QFrame(parent),
           Ui::DlgAutoDJ(),
           m_pAutoDJProcessor(pProcessor),
           // no sorting

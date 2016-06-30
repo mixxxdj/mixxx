@@ -6,7 +6,7 @@
 #include "util/assert.h"
 
 DlgHidden::DlgHidden(QWidget* parent)
-         : QWidget(parent),
+         : QFrame(parent),
            Ui::DlgHidden() {
     setupUi(this);
     

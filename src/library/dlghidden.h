@@ -12,7 +12,7 @@ class WTrackTableView;
 class HiddenTableModel;
 class QItemSelection;
 
-class DlgHidden : public QWidget, public Ui::DlgHidden {
+class DlgHidden : public QFrame, public Ui::DlgHidden {
     Q_OBJECT
   public:
     DlgHidden(QWidget* parent);
