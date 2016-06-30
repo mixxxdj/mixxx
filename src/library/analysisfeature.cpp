@@ -9,6 +9,7 @@
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
 #include "library/library.h"
+#include "library/treeitem.h"
 #include "widget/wlibrary.h"
 #include "widget/wanalysislibrarytableview.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -30,6 +31,8 @@ AnalysisFeature::AnalysisFeature(TrackCollection* pTrackCollection,
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(nullptr){
+    
+    m_childModel.setRootItem(new TreeItem("$root", "$root", this, nullptr));
     setTitleDefault();
 }
 

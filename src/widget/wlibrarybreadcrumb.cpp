@@ -6,14 +6,14 @@ namespace {
 
 QString getPathString(TreeItem* pTree) {
     // Base case
-    if (pTree == nullptr) {
-        return QString();
+    if (pTree->parent() == nullptr) {
+        return pTree->getFeature()->title().toString();
     }
     
     // Recursive case
     QString text = pTree->data().toString();
     QString next = getPathString(pTree->parent());
-    return (next.isEmpty() ? text : next % QLatin1Literal(" > ") % text);
+    return next % QLatin1Literal(" > ") % text;
 }
 
 } // NAMESPACE

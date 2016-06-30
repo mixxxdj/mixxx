@@ -132,7 +132,10 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 
 void BasePlaylistFeature::activate() {
     m_featureFocus = -1;
-    emit(switchToView(m_rootViewName));
+    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    
+    //emit(switchToView(m_rootViewName));
     emit(restoreSearch(QString())); // Null String disables search box
     emit(enableCoverArtDisplay(true));
 }
@@ -628,6 +631,7 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
 */
 QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     buildPlaylistList();
+    m_childModel.setRootItem(new TreeItem("$root", "$root", this, nullptr));
     QList<TreeItem*> data_list;
     int selected_row = -1;
     // Access the invisible root item
