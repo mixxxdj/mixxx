@@ -131,17 +131,24 @@ QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int pan
 }
 
 void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget, 
-                                      KeyboardEventFilter*) {
-    qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
-    
-    QTabWidget* pContainer = new QTabWidget(pSidebarWidget);
+                                      KeyboardEventFilter*pKeyboard) {
+    //qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
+    QWidget* pSidebar = createSidebarWidget(pKeyboard);
+    pSidebar->setParent(pSidebarWidget);    
+    pSidebarWidget->registerView(m_sAutoDJViewName, pContainer);
+}
+
+QWidget* AutoDJFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
+    QTabWidget* pContainer = new QTabWidget(nullptr);
     
     // Add drop target
     WLibrarySidebar* pSidebar = new WLibrarySidebar(pContainer);
     pSidebar->setModel(&m_childModel);
+    pSidebar->installEventFilter(pKeyboard);
     pContainer->addTab(pSidebar, tr("Track source"));
     
     m_pAutoDJView = new DlgAutoDJ(pContainer, m_pLibrary, m_pAutoDJProcessor);
+    m_pAutoDJView->installEventFilter(pKeyboard);
     pContainer->addTab(m_pAutoDJView, tr("controls"));
 
     // Be informed when the user wants to add another random track.
@@ -150,7 +157,7 @@ void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
     
-    pSidebarWidget->registerView(m_sAutoDJViewName, pContainer);
+    return pContainer;
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {

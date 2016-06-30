@@ -200,7 +200,7 @@ void MixxxLibraryFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
                                             KeyboardEventFilter*pKeyboard) {
     QWidget* pSidebar = createSidebarWidget(pKeyboard);
     pSidebar->setParent(pSidebarWidget);
-    pLibraryWidget->registerView(m_sMixxxLibraryViewName, pSidebar);
+    pSidebarWidget->registerView(m_sMixxxLibraryViewName, pSidebar);
 }
 
 QWidget *MixxxLibraryFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard) {
@@ -228,7 +228,7 @@ QWidget *MixxxLibraryFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard
     if (m_pHiddenTableModel.isNull()) {
         m_pHiddenTableModel = new HiddenTableModel(this, m_pTrackCollection);
     }
-    m_pHiddenView = new DlgHidden(pLibraryWidget);    
+    m_pHiddenView = new DlgHidden(pSidebar);    
     m_pHiddenView->setTableModel(m_pHiddenTableModel);
     m_pHiddenView->installEventFilter(pKeyboard);
     
@@ -241,7 +241,7 @@ QWidget *MixxxLibraryFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard
     if (m_pMissingTableModel.isNull()) {
         m_pMissingTableModel = new MissingTableModel(this, m_pTrackCollection);
     }
-    m_pMissingView = new DlgMissing(pLibraryWidget);
+    m_pMissingView = new DlgMissing(pSidebar);
     m_pMissingView->setTableModel(m_pMissingTableModel);
     m_pMissingView->installEventFilter(pKeyboard);
     

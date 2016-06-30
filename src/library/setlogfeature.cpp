@@ -34,6 +34,9 @@ SetlogFeature::SetlogFeature(UserSettingsPointer pConfig,
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
     constructChildModel(-1);
+    
+    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
+            this, SLOT(slotPlayingTrackChanged(TrackPointer)));
 }
 
 SetlogFeature::~SetlogFeature() {
@@ -52,14 +55,6 @@ QVariant SetlogFeature::title() {
 
 QIcon SetlogFeature::getIcon() {
     return QIcon(":/images/library/ic_library_history.png");
-}
-
-void SetlogFeature::bindPaneWidget(WLibrary* libraryWidget,
-                               KeyboardEventFilter* keyboard, int paneId) {
-    BasePlaylistFeature::bindPaneWidget(libraryWidget,
-                                        keyboard, paneId);
-    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
-            this, SLOT(slotPlayingTrackChanged(TrackPointer)));
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {

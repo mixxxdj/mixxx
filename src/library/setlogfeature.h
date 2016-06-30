@@ -25,9 +25,6 @@ public:
     QVariant title();
     QIcon getIcon();
 
-    virtual void bindPaneWidget(WLibrary* libraryWidget,
-                                KeyboardEventFilter* keyboard, int paneId);
-
   public slots:
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);

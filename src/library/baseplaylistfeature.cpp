@@ -594,18 +594,15 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BasePlaylistFeature::bindPaneWidget(WLibrary* libraryWidget,
-                                         KeyboardEventFilter* , 
-                                         int) {
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(getRootViewHtml());
-    edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)),
-            this, SLOT(htmlLinkClicked(const QUrl)));
-    libraryWidget->registerView(m_rootViewName, edit);
+void BasePlaylistFeature::bindPaneWidget(WLibrary* pPaneWidget,
+                                         KeyboardEventFilter* pKeyboard, 
+                                         int paneId) {    
+    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
+    pPane->setParent(pPaneWidget);
+    pPaneWidget->registerView(m_rootViewName, pPane);
 }
 
-QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter*,
+QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
                                                int) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(nullptr);
     edit->setHtml(getRootViewHtml());

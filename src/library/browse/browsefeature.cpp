@@ -214,12 +214,12 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BrowseFeature::bindPaneWidget(WLibrary* libraryWidget,
-                                   KeyboardEventFilter*, 
-                                   int) {
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(getRootViewHtml());
-    libraryWidget->registerView(m_sBrowseViewName, edit);
+void BrowseFeature::bindPaneWidget(WLibrary* pPaneWidget,
+                                   KeyboardEventFilter* pKeyboard, 
+                                   int paneId) {
+    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
+    pPane->setParent(pPaneWidget);
+    pPaneWidget->registerView(m_sBrowseViewName, pPaneWidget);
 }
 
 QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
