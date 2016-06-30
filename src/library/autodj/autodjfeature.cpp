@@ -57,6 +57,8 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
 
     // Create the "Crates" tree-item under the root item.
     TreeItem* root = m_childModel.getItem(QModelIndex());
+    root->setLibraryFeature(this);
+    
     m_pCratesTreeItem = new TreeItem(tr("Crates"), "", this, root);
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
     root->appendChild(m_pCratesTreeItem);
@@ -118,6 +120,12 @@ QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int pan
             pTrackTableView, SLOT(setTrackTableFont(const QFont&)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    
+    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            m_pLibrary, SIGNAL(trackSelected(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SLOT(prova()));
+    
     m_trackTables[paneId] = pTrackTableView;
 
     pTrackTableView->loadTrackModel(m_pAutoDJProcessor->getTableModel());
@@ -167,8 +175,11 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
     m_pAutoDJView->onShow();
-    emit(switchToView(m_sAutoDJViewName));
-    emit(restoreSearch(QString())); //Null String disables search box
+    
+    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->slotRestoreSearch(QString()); //Null String disables search box
+    
     emit(enableCoverArtDisplay(true));
 }
 

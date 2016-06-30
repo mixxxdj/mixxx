@@ -49,6 +49,8 @@ class TreeItem {
     bool isFolder() const;
     /* Returns the Library feature object to which an item belongs to */
     LibraryFeature* getFeature();
+    
+    void setLibraryFeature(LibraryFeature* pFeature);
 
     void setBold(bool bold) {
         m_bold = bold;
@@ -65,7 +67,7 @@ class TreeItem {
     QList<TreeItem*> m_childItems;
     QString m_dataPath;
     QString m_data;
-    LibraryFeature* m_feature;
+    LibraryFeature* m_pFeature;
     bool m_bold;
 
     TreeItem *m_parentItem;
