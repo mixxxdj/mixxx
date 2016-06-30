@@ -24,7 +24,8 @@ class DlgRecording : public QFrame, public Ui::DlgRecording {
     virtual ~DlgRecording();
 
     virtual void onShow();
-    void setTrackTable(WTrackTableView* pTrackTableView);
+    void setProxyTrackModel(ProxyTrackModel* pProxyModel);
+    void setBrowseTableModel(BrowseTableModel* pBrowseModel);
 
   public slots:
     void toggleRecording(bool toggle);
@@ -37,8 +38,8 @@ class DlgRecording : public QFrame, public Ui::DlgRecording {
     void refreshLabel();
     
     TrackCollection* m_pTrackCollection;
-    BrowseTableModel m_browseModel;
-    ProxyTrackModel m_proxyModel;
+    BrowseTableModel m_pBrowseModel;
+    ProxyTrackModel m_pProxyModel;
     QString m_recordingDir;
     QHash<int, WTrackTableView*> m_TrackTableView;
 

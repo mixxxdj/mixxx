@@ -145,7 +145,12 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     int playlistId = playlistIdFromIndex(index);
     if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
-        emit(showTrackModel(m_pPlaylistTableModel));
+        m_pLibrary->slotShowTrackModel(m_pPlaylistTableModel);
+        TreeItem* pTree = static_cast<TreeItem*> (index.internalPointer());
+        if (pTree)  {
+            m_pLibrary->slotShowBreadCrumb(pTree);
+        }
+                
         emit(enableCoverArtDisplay(true));
     }
 }

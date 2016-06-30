@@ -113,6 +113,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
 
     TreeItem* pRootItem = new TreeItem();
+    pRootItem->setLibraryFeature(this);
+    
     TreeItem* pLibraryChildItem = new TreeItem(kLibraryTitle, m_sMixxxLibraryViewName,
                                                this, pRootItem);
     pLibraryChildItem->setIcon(getIcon());
@@ -315,13 +317,16 @@ void MixxxLibraryFeature::selectAllMissing() {
 void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
     
-    emit(switchToView(m_sMixxxLibraryViewName));
-    emit(showTrackModel(m_pLibraryTableModel));
+    m_pLibrary->slotShowTrackModel(m_pLibraryTableModel);
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    
     emit(enableCoverArtDisplay(true));
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data(TreeItemModel::kDataPathRole).toString();
+    TreeItem* pTree = static_cast<TreeItem*> (index.internalPointer());
+    
     if (itemName == m_sMixxxLibraryViewName) {
         activate();
         
@@ -329,14 +334,16 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
         m_pHiddenView->onShow();
         m_paneStack[m_featureFocus]->setCurrentIndex(m_hiddenPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_hiddenExpandedId);
-        emit(switchToView(m_sMixxxLibraryViewName));
+        m_pLibrary->slotSwitchToViewFeature(this);
+        m_pLibrary->slotShowBreadCrumb(pTree);
         emit(enableCoverArtDisplay(true));
         
     } else if (itemName == kMissingTitle) {
         m_pMissingView->onShow();
         m_paneStack[m_featureFocus]->setCurrentIndex(m_missingPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_missingExpandedId);
-        emit(switchToView(m_sMixxxLibraryViewName));
+        m_pLibrary->slotSwitchToViewFeature(this);
+        m_pLibrary->slotShowBreadCrumb(pTree);
         emit(enableCoverArtDisplay(true));
     }
 }

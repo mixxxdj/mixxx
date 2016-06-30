@@ -12,8 +12,8 @@ DlgRecording::DlgRecording(QWidget* parent, TrackCollection* pTrackCollection,
                            RecordingManager* pRecordingManager)
         : QFrame(parent),
           m_pTrackCollection(pTrackCollection),
-          m_browseModel(this, m_pTrackCollection, pRecordingManager),
-          m_proxyModel(&m_browseModel),
+          m_pBrowseModel(nullptr),
+          m_pProxyModel(nullptr),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
           m_pRecordingManager(pRecordingManager) {
@@ -45,10 +45,6 @@ DlgRecording::~DlgRecording() {
 void DlgRecording::onShow() {
     m_recordingDir = m_pRecordingManager->getRecordingDir();
     m_browseModel.setPath(m_recordingDir);
-}
-
-void DlgRecording::setTrackTable(WTrackTableView* pTrackTableView) {
-    pTrackTableView->loadTrackModel(&m_proxyModel);
 }
 
 void DlgRecording::refreshBrowseModel() {

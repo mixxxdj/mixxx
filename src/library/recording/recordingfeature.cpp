@@ -57,6 +57,7 @@ QWidget* RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int)
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    pTrackTableView->loadTrackModel(m_pProxyModel);
     
     if (m_pRecordingView) {
         m_pRecordingView->setTrackTable(pTrackTableView);
@@ -69,17 +70,21 @@ QWidget* RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int)
 
 void RecordingFeature::bindSidebarWidget(WBaseLibrary* pBaseLibrary,
                                          KeyboardEventFilter* pKeyboard) {
+    
+    QWidget* pSidebar = createSidebarWidget(pKeyboard);
+    pSidebar->setParent(pBaseLibrary);
+    pBaseLibrary->registerView(m_sRecordingViewName, m_pRecordingView);
+}
+
+QWidget *RecordingFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard) {
     m_pRecordingView = new DlgRecording(nullptr, 
                                         m_pTrackCollection,
                                         m_pRecordingManager);
     m_pRecordingView->installEventFilter(pKeyboard);
+    m_pRecordingView->setBrowseTableModel(getBrowseTableModel());
+    m_pRecordingView->setProxyTrackModel(getProxyTrackModel());
     
-    for (WTrackTableView* pTable : m_trackTables) {
-        m_pRecordingView->setTrackTable(pTable);
-    }
-    m_trackTables.clear();
-    
-    pBaseLibrary->registerView(m_sRecordingViewName, m_pRecordingView);
+    return m_pRecordingView;
 }
 
 
@@ -88,4 +93,20 @@ void RecordingFeature::activate() {
     emit(switchToView(m_sRecordingViewName));
     emit(restoreSearch(""));
     emit(enableCoverArtDisplay(false));
+}
+
+BrowseTableModel* RecordingFeature::getBrowseTableModel() {
+    if (!m_pBrowseModel) {
+        m_pBrowseModel = new BrowseTableModel(this, m_pTrackCollection, m_pRecordingManager);
+    }
+    
+    return m_pBrowseModel;
+}
+
+ProxyTrackModel* RecordingFeature::getProxyTrackModel() {
+    if (!m_pProxyModel) {
+        m_pProxyModel = new ProxyTrackModel(getBrowseTableModel());
+    }
+    
+    return m_pProxyModel;
 }

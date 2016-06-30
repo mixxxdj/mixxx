@@ -39,6 +39,7 @@ class RecordingFeature : public LibraryFeature {
     QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int);
     void bindSidebarWidget(WBaseLibrary* pBaseLibrary, 
                            KeyboardEventFilter* pKeyboard);
+    QWidget* createSidebarWidget(KeyboardEventFilter *pKeyboard);
 
     TreeItemModel* getChildModel();
 
@@ -49,6 +50,10 @@ class RecordingFeature : public LibraryFeature {
     void setRootIndex(const QModelIndex&);
 
   private:
+    
+    BrowseTableModel* getBrowseTableModel();
+    ProxyTrackModel* getProxyTrackModel();
+    
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     const static QString m_sRecordingViewName;
@@ -56,6 +61,8 @@ class RecordingFeature : public LibraryFeature {
     
     QList<WTrackTableView*> m_trackTables;
     QPointer<DlgRecording> m_pRecordingView;
+    BrowseTableModel* m_pBrowseModel;
+    ProxyTrackModel* m_pProxyModel;
 };
 
 #endif

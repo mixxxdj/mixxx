@@ -4,9 +4,12 @@
 
 namespace {
 
-QString getPathString(TreeItem* pTree) {
+QString getPathString(TreeItem* pTree) {    
     // Base case
-    if (pTree->parent() == nullptr) {
+    if (pTree == nullptr) {
+        return QString();
+    }
+    else if (pTree->parent() == nullptr) {
         return pTree->getFeature()->title().toString();
     }
     

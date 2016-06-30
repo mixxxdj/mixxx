@@ -123,8 +123,6 @@ QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int pan
     
     connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             m_pLibrary, SIGNAL(trackSelected(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(prova()));
     
     m_trackTables[paneId] = pTrackTableView;
 

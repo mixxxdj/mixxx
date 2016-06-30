@@ -97,8 +97,9 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
             this, SLOT(slotCrateTableChanged(int)));
 
     // construct child model
-    TreeItem *rootItem = new TreeItem();
-    m_childModel.setRootItem(rootItem);
+    TreeItem *pRootItem = new TreeItem();
+    pRootItem->setLibraryFeature(this);
+    m_childModel.setRootItem(pRootItem);
     constructChildModel(-1);
 
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
@@ -130,7 +131,7 @@ QIcon CrateFeature::getIcon() {
 
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-    if (item == NULL) {
+    if (item == nullptr) {
         return -1;
     }
 
@@ -188,14 +189,20 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void CrateFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                              KeyboardEventFilter* keyboard, int) {
-    Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(pLibraryWidget);
-    edit->setHtml(getRootViewHtml());
-    edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)),
+                                  KeyboardEventFilter* pKeyboard, int paneId) {
+    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
+    pPane->setParent(pLibraryWidget);
+    pLibraryWidget->registerView(m_sCrateViewName, pPane);
+}
+
+QWidget* CrateFeature::createPaneWidget(KeyboardEventFilter *pKeyboard, int) {
+    WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(nullptr);
+    pEdit->setHtml(getRootViewHtml());
+    pEdit->setOpenLinks(false);
+    pEdit->installEventFilter(pKeyboard);
+    connect(pEdit, SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
-    pLibraryWidget->registerView(m_sCrateViewName, edit);
+    return pEdit;
 }
 
 TreeItemModel* CrateFeature::getChildModel() {
@@ -204,20 +211,26 @@ TreeItemModel* CrateFeature::getChildModel() {
 
 void CrateFeature::activate() {
     m_featureFocus = -1;
+    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    
     emit(switchToView(m_sCrateViewName));
     emit(restoreSearch(QString())); //disable search on crate home
     emit(enableCoverArtDisplay(true));
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return;
+    }
     int crateId = crateIdFromIndex(index);
     if (crateId == -1) {
         return;
     }
     m_crateTableModel.setTableModel(crateId);
-    emit(showTrackModel(&m_crateTableModel));
+    
+    m_pLibrary->slotShowTrackModel(&m_crateTableModel);
+    m_pLibrary->slotShowBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
     emit(enableCoverArtDisplay(true));
 }
 

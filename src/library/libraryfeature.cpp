@@ -1,14 +1,17 @@
 // libraryfeature.cpp
 // Created 8/17/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QtDebug>
-#include <QIcon>
-#include <QModelIndex>
-#include <QVariant>
+#include <QDebug>
 #include <QAbstractItemModel>
-#include <QUrl>
 #include <QDesktopServices>
+#include <QIcon>
+#include <QLabel>
+#include <QModelIndex>
 #include <QTreeView>
+#include <QUrl>
+#include <QVariant>
+#include <QVBoxLayout>
+
 
 #include "library/libraryfeature.h"
 #include "widget/wbaselibrary.h"
@@ -43,8 +46,17 @@ void LibraryFeature::bindSidebarWidget(WBaseLibrary *pSidebarWidget,
 
 QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryFeature::bindSidebarWidget";
+    QFrame* pContainer = new QFrame(nullptr);
+    pContainer->setContentsMargins(0,0,0,0);
+    
+    QVBoxLayout* pLayout = new QVBoxLayout(pContainer);
+    pContainer->setLayout(pLayout);
+    
+    QLabel* pTitle = new QLabel(title().toString(), pContainer);
+    pLayout->addWidget(pTitle);
+    
     TreeItemModel* pTreeModel = getChildModel();
-    WLibrarySidebar* pSidebar = new WLibrarySidebar(nullptr);
+    WLibrarySidebar* pSidebar = new WLibrarySidebar(pContainer);
     pSidebar->installEventFilter(pKeyboard);
     pSidebar->setModel(pTreeModel);
     
@@ -56,8 +68,9 @@ QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
             this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
     connect(pSidebar, SIGNAL(expanded(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
+    pLayout->addWidget(pSidebar);
     
-    return pSidebar;
+    return pContainer;
 }
 
 void LibraryFeature::setFeatureFocus(int focus) {
