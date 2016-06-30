@@ -35,7 +35,6 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
   protected:
       
     bool eventFilter(QObject*, QEvent* pEvent);
-    
     bool event(QEvent* pEvent) override;
 
     QMap<QString, QWidget*> m_viewMap;

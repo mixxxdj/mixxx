@@ -5,11 +5,11 @@
 #include <QVariant>
 #include <QIcon>
 #include <QPushButton>
+#include <QFrame>
 
-#include "widget/wwidget.h"
 #include "widget/wfeatureclickbutton.h"
 
-class WButtonBar : public WWidget
+class WButtonBar : public QFrame
 {
     Q_OBJECT
   public:

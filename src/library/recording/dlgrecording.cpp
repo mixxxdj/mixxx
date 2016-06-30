@@ -10,7 +10,7 @@
 
 DlgRecording::DlgRecording(QWidget* parent, TrackCollection* pTrackCollection,
                            RecordingManager* pRecordingManager)
-        : QWidget(parent),
+        : QFrame(parent),
           m_pTrackCollection(pTrackCollection),
           m_browseModel(this, m_pTrackCollection, pRecordingManager),
           m_proxyModel(&m_browseModel),

@@ -74,9 +74,6 @@ void RecordingFeature::bindSidebarWidget(WBaseLibrary* pBaseLibrary,
                                         m_pRecordingManager);
     m_pRecordingView->installEventFilter(pKeyboard);
     
-    connect(this, SIGNAL(refreshBrowseModel()),
-            m_pRecordingView, SLOT(refreshBrowseModel()));
-    
     for (WTrackTableView* pTable : m_trackTables) {
         m_pRecordingView->setTrackTable(pTable);
     }
