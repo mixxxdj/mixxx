@@ -26,6 +26,7 @@
                 <SetVariable name="control">[Library],show_library</SetVariable>
               </Template>
               <LibrarySidebarButtons>
+                <SizePolicy>min,me</SizePolicy>
                 <ObjectName>LibrarySidebarButtons</ObjectName>
               </LibrarySidebarButtons>
             </Children>
@@ -152,6 +153,7 @@
                     <Collapsible>0,0</Collapsible>
                     <Children>
                       <LibrarySidebarExpanded>
+                        <ObjectName>LibrarySidebarExpanded</ObjectName>
                       </LibrarySidebarExpanded>
 
                       <CoverArt>

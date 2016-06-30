@@ -162,15 +162,21 @@ WBaseLibrary[showFocus="1"] {
   image: url(:/images/library/ic_library_unchecked.png);
 }
 
+#LibrarySidebarButtons {
+  margin-top: 5px;
+}
+
 #LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
   background-color: #222222;
   margin-right: 13px;
 }
 
-#LibraryBreadCrumb {
+#LibraryBreadCrumb,
+WBaseLibrary QLabel {
   margin: 4px 4px;
   font-size: 12px;
-  color: #FFFFFF;
+  font-weight: bold;
+  color: #B3B3B3;
 }
 
 #LibraryCoverArtSplitter QTabWidget {
@@ -181,13 +187,14 @@ WBaseLibrary[showFocus="1"] {
   border: 1px solid #1A1A1A;
 }
 
-#LibraryCoverArtSplitter QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
+#LibraryCoverArtSplitter QTabWidget QTreeView, #DlgAutoDJ {
   margin: 0;
   border: none;
 }
 
-#DlgAutoDJ QLabel {
-  margin: 2px 4px 2px 4px;
+#DlgAutoDJ #scrollAreaWidgetContents {
+  background-color: #222222;
+  border: none;
 }
 
 #LibraryCoverArtSplitter QTabBar::tab {
@@ -211,16 +218,12 @@ WBaseLibrary[showFocus="1"] {
   border-right: 0px solid #5F5F5F;
   border-left: 0px solid #5F5F5F;
   color: #D2D2D2;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #5F5F5F,
-                                      stop: 1 #5F5F5F);
+  background-color: #5F5F5F;
 }
 
 #LibraryCoverArtSplitter QTabBar::tab:selected {
   color: #FDFDFD;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #006596,
-                                    stop: 1 #006596);
+  background-color: #006596;
   border: 0px solid #006596;
 }
 
@@ -407,52 +410,32 @@ WButtonBar QAbstractButton {
 
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ  QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
+WBaseLibrary QPushButton {
   margin: 2px 3px 2px 3px;
   padding: 2px;
   color: #D2D2D2;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #4B4B4B,
-                                    stop: 1 #4B4B4B);
+
+  background-color: #4B4B4B;
   border: 1px solid #4B4B4B;
   border-radius: 2px;
   outline: none;
 }
 
-#DlgMissing > QPushButton:!enabled,
-#DlgHidden > QPushButton:!enabled,
-#DlgAutoDJ  QPushButton:!enabled,
-#DlgAnalysis > QPushButton:!enabled {
+WBaseLibrary QPushButton:!enabled {
   /* buttons in "disabled" (not click-able) state. They are nearly invisible
      by default QT palette, so style accordingly */
   color: #808080; /* Default #A3A3A3 -90L HSL*/
-  background-color: qlineargradient(spread:pad,
-                                    x1:0, y1:0, x2:1, y2:0,
-                                    stop:0 rgba(95, 95, 95, 127),
-                                    stop:1 rgba(95, 95, 95, 127));
-                                    /* 50% #5F5F5F = RGBA#5F5F5F7F */
+  background-color: rgba(95, 95, 95, 127);
   border: 0px solid #5F5F5F;
 }
 
-#DlgMissing > QPushButton:hover,
-#DlgHidden > QPushButton:hover,
-#DlgAutoDJ  QPushButton:hover,
-#DlgRecording > QPushButton:hover,
-#DlgAnalysis > QPushButton:hover {
+WBaseLibrary QPushButton:hover {
   color: #D2D2D2;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #5F5F5F,
-                                    stop: 1 #5F5F5F);
+  background-color: #5F5F5F;
   border: 0px solid #5F5F5F;
 }
 
-#DlgAutoDJ  QPushButton:checked,
-#DlgRecording > QPushButton:checked,
-#DlgAnalysis > QPushButton:checked {
+WBaseLibrary QPushButton:checked {
   /* checkbuttons in active state */
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -461,9 +444,7 @@ WButtonBar QAbstractButton {
   border: 0px solid #006596;
 }
 
-#DlgAutoDJ > QPushButton:checked:hover,
-#DlgRecording > QPushButton:checked:hover,
-#DlgAnalysis > QPushButton:checked:hover {
+WBaseLibrary QPushButton:checked:hover {
   /* checkbuttons hovered over in "active" state */
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -472,23 +453,13 @@ WButtonBar QAbstractButton {
   border: 0px solid #0080BE;
 }
 
-#DlgMissing > QPushButton:pressed,
-#DlgHidden > QPushButton:pressed,
-#DlgAutoDJ > QPushButton:pressed,
-#DlgAnalysis > QPushButton:pressed {
+WBaseLibrary QPushButton:pressed {
   /* pushbuttons in "down" state */
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                     stop: 0 #006596,
                                     stop: 1 #006596);
   border: 0px solid #006596;
-}
-
-/* Additional space for the first and the last QPushButton in the row */
-#DlgMissing > QPushButton#btnPurge,
-#DlgHidden > QPushButton#btnUnhide,
-#DlgRecording > QPushButton#pushButtonRecording {
-  margin: 9px 12px 6px 3px;
 }
 
 /* Scroll bars */
@@ -540,10 +511,6 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
 
 QScrollArea {
   border: 1px solid #1A1A1A;
-  background-color: #222222;
-}
-
-WBaseLibrary QWidget {
   background-color: #222222;
 }
 
@@ -611,8 +578,11 @@ WBaseLibrary QWidget {
 
 WWidget, QLabel {
   font-family: "Open Sans";
-  font-size: 8px;
   text-transform: uppercase;
+}
+
+WWidget {
+  font-size: 8px;
 }
 
 /* Start spacing for Deck overview row (small waveform, option grid) */

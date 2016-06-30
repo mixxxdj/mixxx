@@ -50,6 +50,8 @@ QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     pContainer->setContentsMargins(0,0,0,0);
     
     QVBoxLayout* pLayout = new QVBoxLayout(pContainer);
+    pLayout->setContentsMargins(0,0,0,0);
+    pLayout->setSpacing(0);
     pContainer->setLayout(pLayout);
     
     QLabel* pTitle = new QLabel(title().toString(), pContainer);
