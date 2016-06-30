@@ -135,7 +135,6 @@ void BasePlaylistFeature::activate() {
     m_pLibrary->slotSwitchToViewFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     
-    //emit(switchToView(m_rootViewName));
     emit(restoreSearch(QString())); // Null String disables search box
     emit(enableCoverArtDisplay(true));
 }

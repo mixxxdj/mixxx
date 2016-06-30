@@ -268,7 +268,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     m_pLibrary->slotShowBreadCrumb(item);
     m_pLibrary->slotShowTrackModel(&m_proxyModel);
     
-    emit(enableCoverArtDisplay(false));
+    emit(enableCoverArtDisplay(true));
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {

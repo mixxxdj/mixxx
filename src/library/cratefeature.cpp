@@ -104,8 +104,6 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
 
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
             this, SLOT(slotTrackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotResetSelectedTrack()));
 }
 
 CrateFeature::~CrateFeature() {
@@ -213,9 +211,8 @@ void CrateFeature::activate() {
     m_featureFocus = -1;
     m_pLibrary->slotSwitchToViewFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->slotRestoreSearch(QString()); //disable search on crate home
     
-    emit(switchToView(m_sCrateViewName));
-    emit(restoreSearch(QString())); //disable search on crate home
     emit(enableCoverArtDisplay(true));
 }
 

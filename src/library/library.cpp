@@ -149,7 +149,6 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
     
     // Get the value once to avoid searching again in the hash
     LibraryPaneManager* pPane = getPane(id);
-    
     pPane->bindPaneWidget(pLibraryWidget, pKeyboard);
     
     connect(pPane, SIGNAL(showTrackModel(QAbstractItemModel*)),
@@ -221,8 +220,6 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
     connect(feature, SIGNAL(switchToView(const QString&)),
             this, SLOT(slotSwitchToView(const QString&)));
-    connect(feature, SIGNAL(switchToViewChild(const QString&)),
-            this, SLOT(slotSwitchToViewChild(const QString&)));
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -251,8 +248,6 @@ void Library::slotSwitchToView(const QString& view) {
     }
     
     handleFocus();
-    
-    emit(switchToView(view));
 }
 
 void Library::slotSwitchToViewFeature(LibraryFeature* pFeature) {
@@ -269,12 +264,6 @@ void Library::slotSwitchToViewFeature(LibraryFeature* pFeature) {
 
 void Library::slotShowBreadCrumb(TreeItem *pTree) {
     m_panes[m_focusedPane]->slotShowBreadCrumb(pTree);
-}
-
-
-void Library::slotSwitchToViewChild(const QString &view) {
-    //qDebug() << "Library::slotSwitchToViewChild";
-    m_panes[m_focusedPane]->slotSwitchToView(view);
 }
 
 void Library::slotSwitchToNotFocusedView(const QString &view) {
@@ -337,7 +326,7 @@ void Library::onSkinLoadFinished() {
         // Assign a feature to show on each pane unless there are more panes
         // than features
         while (itP != m_panes.end() && itF != m_features.end()) {
-            qDebug() << (*itF)->getViewName() << itP.key();
+            //qDebug() << (*itF)->getViewName() << itP.key();
             m_focusedPane = itP.key();
             
             (*itF)->setFeatureFocus(itP.key());
@@ -346,6 +335,11 @@ void Library::onSkinLoadFinished() {
             ++itP;
             ++itF;
         }
+        
+        // The first pane always shows the Mixxx Library feature on start
+        m_focusedPane = m_panes.begin().key();
+        (*m_features.begin())->setFeatureFocus(m_focusedPane);
+        (*m_features.begin())->activate();
     }
     else {
         qDebug() << "Library::onSkinLoadFinished No Panes loaded!";

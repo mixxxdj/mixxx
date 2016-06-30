@@ -97,7 +97,6 @@ public:
     void slotSwitchToView(const QString& view);
     void slotSwitchToViewFeature(LibraryFeature* pFeature);
     void slotShowBreadCrumb(TreeItem* pTree);
-    void slotSwitchToViewChild(const QString& view);
     void slotSwitchToNotFocusedView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
@@ -132,8 +131,6 @@ public:
     // Emitted when a library scan starts and finishes.
     void scanStarted();
     void scanFinished();
-    
-    void switchToView(const QString&);
 
   private:
     

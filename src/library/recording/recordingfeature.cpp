@@ -23,6 +23,10 @@ RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,
           m_pRecordingView(nullptr),
           m_pBrowseModel(nullptr),
           m_pProxyModel(nullptr) {
+    
+    TreeItem* pRoot = new TreeItem();
+    pRoot->setLibraryFeature(this);
+    m_childModel.setRootItem(pRoot);
 }
 
 RecordingFeature::~RecordingFeature() {
@@ -87,6 +91,7 @@ QWidget *RecordingFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard) {
 void RecordingFeature::activate() {
     m_pRecordingView->refreshBrowseModel();
     m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->slotRestoreSearch("");
     
     emit(enableCoverArtDisplay(false));

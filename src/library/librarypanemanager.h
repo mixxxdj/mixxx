@@ -54,7 +54,6 @@ class LibraryPaneManager : public QObject {
     void focused();
 
     void showTrackModel(QAbstractItemModel* model);
-    void switchToView(const QString&);
 
     void restoreSearch(const QString&);
     void search(const QString& text);

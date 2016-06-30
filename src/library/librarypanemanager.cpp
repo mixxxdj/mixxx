@@ -103,13 +103,13 @@ void LibraryPaneManager::slotShowTrackModel(QAbstractItemModel* model) {
         return;
     }
     emit(showTrackModel(model));
-    emit(switchToView(m_sTrackViewName));
+    m_pPaneWidget->switchToView(m_sTrackViewName);
     emit(restoreSearch(trackModel->currentSearch()));
 }
 
 void LibraryPaneManager::slotSwitchToView(const QString& view) {
     //qDebug() << "LibraryPaneManager::slotSwitchToView" << view;
-    emit(switchToView(view));
+    m_pPaneWidget->switchToView(view);
     m_pPaneWidget->setFocus();
 }
 

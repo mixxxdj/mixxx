@@ -112,12 +112,7 @@ class LibraryFeature : public QObject {
     
   signals:
     void showTrackModel(QAbstractItemModel* model);
-    
-    // The difference between switchToView and switchToViewChild is that the 
-    // second will never change the sidebar Expanded view, it's useful when 
-    // selecting an item from the sidebar Expanded view
     void switchToView(const QString&);
-    void switchToViewChild(const QString&);
     
     void loadTrack(TrackPointer);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
