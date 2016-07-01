@@ -131,7 +131,6 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 }
 
 void BasePlaylistFeature::activate() {
-    m_featureFocus = -1;
     m_pLibrary->slotSwitchToViewFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     
@@ -144,11 +143,10 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     int playlistId = playlistIdFromIndex(index);
     if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
+        
+        m_pLibrary->slotSwitchToViewFeature(this);
         m_pLibrary->slotShowTrackModel(m_pPlaylistTableModel);
-        TreeItem* pTree = static_cast<TreeItem*> (index.internalPointer());
-        if (pTree)  {
-            m_pLibrary->slotShowBreadCrumb(pTree);
-        }
+        m_pLibrary->slotShowBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
                 
         emit(enableCoverArtDisplay(true));
     }

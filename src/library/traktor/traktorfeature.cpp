@@ -181,6 +181,8 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     if (item->isPlaylist()) {
         qDebug() << "Activate Traktor Playlist: " << item->dataPath().toString();
         m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
+        
+        m_pLibrary->slotSwitchToViewFeature(this);
         m_pLibrary->slotShowBreadCrumb(item);
         m_pLibrary->slotShowTrackModel(m_pTraktorPlaylistModel);
         emit(enableCoverArtDisplay(false));

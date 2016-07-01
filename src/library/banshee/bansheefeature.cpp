@@ -139,6 +139,8 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
     if (playlistID > 0) {
         qDebug() << "Activating " << item->data().toString();
         m_pBansheePlaylistModel->setTableModel(playlistID);
+        
+        m_pLibrary->slotSwitchToViewFeature(this);
         m_pLibrary->slotShowBreadCrumb(item);
         m_pLibrary->slotShowTrackModel(m_pBansheePlaylistModel);
         emit(enableCoverArtDisplay(false));

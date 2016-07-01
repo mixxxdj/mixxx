@@ -252,6 +252,9 @@ void Library::slotSwitchToView(const QString& view) {
 
 void Library::slotSwitchToViewFeature(LibraryFeature* pFeature) {
     m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
+    if (pFeature->getFeatureFocus() >= 0) {
+        m_focusedPane = pFeature->getFeatureFocus();
+    }
     
     WBaseLibrary* pWLibrary = m_panes[m_focusedPane]->getPaneWidget();
     // Only change the current pane if it's not shown already

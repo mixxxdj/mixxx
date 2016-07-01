@@ -265,6 +265,8 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         }
         m_browseModel.setPath(dir);
     }
+    
+    m_pLibrary->slotSwitchToViewFeature(this);
     m_pLibrary->slotShowBreadCrumb(item);
     m_pLibrary->slotShowTrackModel(&m_proxyModel);
     
