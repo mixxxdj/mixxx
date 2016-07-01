@@ -32,10 +32,8 @@ class CrateFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    QString getViewName() override;
     
-    inline QString getViewName() { return m_sCrateViewName; }
-    
-    inline bool hasSearch() { return false; }
     void onSearch(QString&) {}
 
     bool dragMoveAccept(QUrl url);
@@ -111,7 +109,6 @@ class CrateFeature : public LibraryFeature {
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;
     QSet<int> m_cratesSelectedTrackIsIn;
-    UserSettingsPointer m_pConfig;
     const static QString m_sCrateViewName;
 };
 

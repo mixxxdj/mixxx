@@ -109,6 +109,10 @@ QIcon RhythmboxFeature::getIcon() {
     return QIcon(":/images/library/ic_library_rhythmbox.png");
 }
 
+QString RhythmboxFeature::getViewName() {
+    return m_sRhythmBoxViewName;
+}
+
 TreeItemModel* RhythmboxFeature::getChildModel() {
     return &m_childModel;
 }

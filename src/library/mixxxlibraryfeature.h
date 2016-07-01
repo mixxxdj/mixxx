@@ -41,6 +41,8 @@ class MixxxLibraryFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    QString getViewName() override;
+    
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
@@ -50,10 +52,6 @@ class MixxxLibraryFeature : public LibraryFeature {
     
     void bindSidebarWidget(WBaseLibrary* pSidebarWidget, KeyboardEventFilter* pKeyboard);
     QWidget* createSidebarWidget(KeyboardEventFilter *pKeyboard);
-    
-    inline QString getViewName() {
-        return m_sMixxxLibraryViewName;
-    }
 
   public slots:
     void activate();
@@ -78,21 +76,23 @@ class MixxxLibraryFeature : public LibraryFeature {
     const QString kMissingTitle;
     QPointer<DlgHidden> m_pHiddenView;
     QPointer<DlgMissing> m_pMissingView;
-    QHash<int, WTrackTableView*> m_hiddenPane;
-    QHash<int, WTrackTableView*> m_missingPane;
+    QHash<int, QPointer<WTrackTableView> > m_hiddenPane;
+    QHash<int, QPointer<WTrackTableView> > m_missingPane;
     
     // This is needed to select the correct widget in the 2 size widget stack
     // for the hidden and missing widgets.
     QHash<int, int> m_hiddenPaneId;
     QHash<int, int> m_missingPaneId;
+    
+    // SidebarExpanded pane's ids
     int m_hiddenExpandedId;
     int m_missingExpandedId;
     
     QPointer<HiddenTableModel> m_pHiddenTableModel;
     QPointer<MissingTableModel> m_pMissingTableModel;
     
-    QHash<int, QStackedWidget*> m_paneStack;
-    QStackedWidget* m_pExpandedStack;
+    QHash<int, QPointer<QStackedWidget> > m_paneStack;
+    QPointer<QStackedWidget> m_pExpandedStack;
     
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;

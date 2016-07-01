@@ -25,7 +25,6 @@ AnalysisFeature::AnalysisFeature(TrackCollection* pTrackCollection,
                                  Library* pLibrary,
                                  QObject* parent) :
         LibraryFeature(pConfig, pLibrary, parent),
-        m_pConfig(pConfig),
         m_pTrackCollection(pTrackCollection),
         m_pAnalyzerQueue(nullptr),
         m_iOldBpmEnabled(0),
@@ -62,6 +61,10 @@ QVariant AnalysisFeature::title() {
 
 QIcon AnalysisFeature::getIcon() {
     return QIcon(":/images/library/ic_library_prepare.png");
+}
+
+QString AnalysisFeature::getViewName() {
+    return m_sAnalysisViewName;
 }
 
 void AnalysisFeature::bindPaneWidget(WLibrary* libraryWidget,
@@ -151,7 +154,7 @@ void AnalysisFeature::refreshLibraryModels() {
 
 void AnalysisFeature::selectAll() {
     auto it = m_analysisTables.find(m_featureFocus);
-    if (it != m_analysisTables.end()) {
+    if (it != m_analysisTables.end() && !it->isNull()) {
         (*it)->selectAll();
     }
 }

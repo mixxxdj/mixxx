@@ -34,6 +34,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
           kMissingTitle(tr("Missing Tracks")),
           m_pHiddenView(nullptr),
           m_pMissingView(nullptr),
+          m_hiddenPaneId(-1),
+          m_missingPaneId(-1),
+          m_pHiddenTableModel(nullptr),
+          m_pMissingTableModel(nullptr),
+          m_pExpandedStack(nullptr),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pTrackCollection(pTrackCollection) {
     QStringList columns;
@@ -263,6 +268,10 @@ QIcon MixxxLibraryFeature::getIcon() {
     return QIcon(":/images/library/ic_library_library.png");
 }
 
+QString MixxxLibraryFeature::getViewName() {
+    return m_sMixxxLibraryViewName;
+}
+
 TreeItemModel* MixxxLibraryFeature::getChildModel() {
     return &m_childModel;
 }
@@ -271,10 +280,10 @@ void MixxxLibraryFeature::refreshLibraryModels() {
     if (m_pLibraryTableModel) {
         m_pLibraryTableModel->select();
     }
-    if (m_pMissingView) {
+    if (!m_pMissingView.isNull()) {
         m_pMissingView->onShow();
     }
-    if (m_pHiddenView) {
+    if (!m_pHiddenView.isNull()) {
         m_pHiddenView->onShow();
     }
 }
@@ -282,7 +291,11 @@ void MixxxLibraryFeature::refreshLibraryModels() {
 void MixxxLibraryFeature::hiddenSelectionChanged(const QItemSelection&,
                                                  const QItemSelection&) {
     auto it = m_hiddenPane.find(m_featureFocus);
-    if (it == m_hiddenPane.end()) {
+    if (it == m_hiddenPane.end() || it->isNull()) {
+        return;
+    }
+    
+    DEBUG_ASSERT_AND_HANDLE(!m_pHiddenView.isNull()) {
         return;
     }
     
@@ -293,23 +306,28 @@ void MixxxLibraryFeature::hiddenSelectionChanged(const QItemSelection&,
 void MixxxLibraryFeature::missingSelectionChanged(const QItemSelection&,
                                                   const QItemSelection&) {
     auto it = m_missingPane.find(m_featureFocus);
-    if (it == m_missingPane.end()) {
+    if (it == m_missingPane.end() || it->isNull()) {
         return;
     }
+    
+    DEBUG_ASSERT_AND_HANDLE(!m_pMissingView.isNull()) {
+        return;
+    }
+    
     const QModelIndexList& selection = (*it)->selectionModel()->selectedIndexes();
     m_pMissingView->setSelectedIndexes(selection);
 }
 
 void MixxxLibraryFeature::selectAllHidden() {
     auto it = m_hiddenPane.find(m_featureFocus);
-    if (it != m_hiddenPane.end()) {
+    if (it != m_hiddenPane.end() && !it->isNull()) {
         (*it)->selectAll();
     }
 }
 
 void MixxxLibraryFeature::selectAllMissing() {
     auto it = m_missingPane.find(m_featureFocus);
-    if (it != m_missingPane.end()) {
+    if (it != m_missingPane.end() && !it->isNull()) {
         (*it)->selectAll();
     }
 }
@@ -332,14 +350,30 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
         activate();
         
     } else if (itemName == kHiddenTitle) {
+        auto it = m_paneStack.find(m_featureFocus);
+        DEBUG_ASSERT_AND_HANDLE(!m_pHiddenView.isNull() && 
+                                !m_pExpandedStack.isNull() && 
+                                it != m_paneStack.end() &&
+                                !it->isNull()) {
+            return;
+        }
+        
         m_pHiddenView->onShow();
-        m_paneStack[m_featureFocus]->setCurrentIndex(m_hiddenPaneId[m_featureFocus]);
+        (*it)->setCurrentIndex(m_hiddenPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_hiddenExpandedId);
         m_pLibrary->slotSwitchToViewFeature(this);
         m_pLibrary->slotShowBreadCrumb(pTree);
         emit(enableCoverArtDisplay(true));
         
     } else if (itemName == kMissingTitle) {
+        auto it = m_paneStack.find(m_featureFocus);
+        DEBUG_ASSERT_AND_HANDLE(!m_pMissingView.isNull() && 
+                                !m_pExpandedStack.isNull() && 
+                                it != m_paneStack.end() && 
+                                !it->isNull()) {
+            return;
+        }
+        
         m_pMissingView->onShow();
         m_paneStack[m_featureFocus]->setCurrentIndex(m_missingPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_missingExpandedId);

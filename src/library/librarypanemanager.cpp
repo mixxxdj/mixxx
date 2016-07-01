@@ -88,6 +88,10 @@ void LibraryPaneManager::setFocusedFeature(const QString& featureName) {
 
 void LibraryPaneManager::setFocus() {
     //qDebug() << "LibraryPaneManager::setFocus";
+    DEBUG_ASSERT_AND_HANDLE(m_pPaneWidget) {
+        return;
+    }
+    
     m_pPaneWidget->setProperty("showFocus", 1);
 }
 
@@ -99,7 +103,7 @@ void LibraryPaneManager::clearFocus() {
 void LibraryPaneManager::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "LibraryPaneManager::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+    DEBUG_ASSERT_AND_HANDLE(trackModel && !m_pPaneWidget.isNull()) {
         return;
     }
     emit(showTrackModel(model));
@@ -109,12 +113,20 @@ void LibraryPaneManager::slotShowTrackModel(QAbstractItemModel* model) {
 
 void LibraryPaneManager::slotSwitchToView(const QString& view) {
     //qDebug() << "LibraryPaneManager::slotSwitchToView" << view;
+    DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull()) {
+        return;
+    }
+    
     m_pPaneWidget->switchToView(view);
     m_pPaneWidget->setFocus();
 }
 
 void LibraryPaneManager::slotSwitchToViewFeature(LibraryFeature* pFeature) {
     if (!m_featuresWidget.contains(pFeature)) {
+        return;
+    }
+    
+    DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull()) {
         return;
     }
     
@@ -127,11 +139,15 @@ void LibraryPaneManager::slotRestoreSearch(const QString& text) {
 }
 
 void LibraryPaneManager::slotShowBreadCrumb(TreeItem *pTree) {
+    DEBUG_ASSERT_AND_HANDLE(!m_pBreadCrumb.isNull()) {
+        return;
+    }
+    
     m_pBreadCrumb->showBreadCrumb(pTree);
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
-    if (m_pPaneWidget == nullptr) {
+    if (m_pPaneWidget.isNull()) {
         return false;
     }
 

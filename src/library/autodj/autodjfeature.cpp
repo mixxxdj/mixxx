@@ -172,6 +172,10 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
+    DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+        return;
+    }
+    
     m_pAutoDJView->onShow();
     
     m_pLibrary->slotSwitchToViewFeature(this);
@@ -314,6 +318,10 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                 TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(trackId);
                 if(addedTrack->exists()) {
                     playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
+                    DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+                        return;
+                    }
+                    
                     m_pAutoDJView->onShow();
                     return;
                 } else {
@@ -334,6 +342,10 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                 if(addedTrack->exists()) {
                     if(!addedTrack->getPlayCounter().isPlayed()) {
                         playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
+                        DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+                            return;
+                        }
+                        
                         m_pAutoDJView->onShow();
                         return;
                     }
@@ -427,8 +439,12 @@ void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
 }
 
 void AutoDJFeature::selectionChanged(const QItemSelection&, const QItemSelection&) {
+    DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+        return;
+    }
+    
     auto it = m_trackTables.find(m_featureFocus);
-    if (it == m_trackTables.end()) {
+    if (it == m_trackTables.end() || it->isNull()) {
         return;
     }
     

@@ -30,7 +30,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    virtual QString getViewName();
+    QString getViewName() override;
 
     TreeItemModel* getChildModel();
 

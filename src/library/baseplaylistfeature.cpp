@@ -617,6 +617,10 @@ QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     return edit;
 }
 
+QString BasePlaylistFeature::getViewName() {
+    return m_rootViewName;
+}
+
 void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path()) == "create") {
         slotCreatePlaylist();

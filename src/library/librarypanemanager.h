@@ -70,10 +70,10 @@ class LibraryPaneManager : public QObject {
 
   protected:
 
-    WBaseLibrary* m_pPaneWidget;
+    QPointer<WBaseLibrary> m_pPaneWidget;
     QList<LibraryFeature*> m_features;
     QHash<LibraryFeature*, int> m_featuresWidget;
-    WLibraryBreadCrumb* m_pBreadCrumb;
+    QPointer<WLibraryBreadCrumb> m_pBreadCrumb;
 
   private:
 

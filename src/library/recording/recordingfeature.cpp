@@ -41,6 +41,10 @@ QIcon RecordingFeature::getIcon() {
     return QIcon(":/images/library/ic_library_recordings.png");
 }
 
+QString RecordingFeature::getViewName() {
+    return m_sRecordingViewName;
+}
+
 TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
@@ -89,6 +93,10 @@ QWidget *RecordingFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard) {
 
 
 void RecordingFeature::activate() {
+    DEBUG_ASSERT_AND_HANDLE(!m_pRecordingView.isNull()) {
+        return;
+    }
+    
     m_pRecordingView->refreshBrowseModel();
     m_pLibrary->slotSwitchToViewFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
@@ -98,7 +106,7 @@ void RecordingFeature::activate() {
 }
 
 BrowseTableModel* RecordingFeature::getBrowseTableModel() {
-    if (!m_pBrowseModel) {
+    if (m_pBrowseModel.isNull()) {
         m_pBrowseModel = new BrowseTableModel(this, m_pTrackCollection, m_pRecordingManager);
     }
     
@@ -106,7 +114,7 @@ BrowseTableModel* RecordingFeature::getBrowseTableModel() {
 }
 
 ProxyTrackModel* RecordingFeature::getProxyTrackModel() {
-    if (!m_pProxyModel) {
+    if (m_pProxyModel.isNull()) {
         m_pProxyModel = new ProxyTrackModel(getBrowseTableModel());
     }
     

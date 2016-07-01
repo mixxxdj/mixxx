@@ -41,7 +41,7 @@ class AutoDJFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    virtual QString getViewName();
+    QString getViewName() override;
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
@@ -71,7 +71,7 @@ class AutoDJFeature : public LibraryFeature {
     const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
     QPointer<DlgAutoDJ> m_pAutoDJView;
-    QHash<int, WTrackTableView*> m_trackTables;
+    QHash<int, QPointer<WTrackTableView> > m_trackTables;
 
     // Initialize the list of crates loaded into the auto-DJ queue.
     void constructCrateChildModel();

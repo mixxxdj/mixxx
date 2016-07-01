@@ -36,7 +36,7 @@ class BrowseFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    virtual QString getViewName();
+    QString getViewName() override;
 
     void bindPaneWidget(WLibrary* pPaneWidget, KeyboardEventFilter*pKeyboard, int paneId);
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int);
@@ -66,7 +66,6 @@ class BrowseFeature : public LibraryFeature {
     void saveQuickLinks();
     void loadQuickLinks();
 
-    UserSettingsPointer m_pConfig;
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
     TrackCollection* m_pTrackCollection;

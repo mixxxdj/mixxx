@@ -30,7 +30,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
 
     virtual QVariant title();
     virtual QIcon getIcon();
-    virtual QString getViewName();
+    QString getViewName() override;
 
     virtual TreeItemModel* getChildModel();
 

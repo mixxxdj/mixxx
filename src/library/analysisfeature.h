@@ -31,9 +31,7 @@ class AnalysisFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    inline QString getViewName() { 
-        return m_sAnalysisViewName; 
-    }
+    QString getViewName() override;
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
@@ -73,7 +71,6 @@ class AnalysisFeature : public LibraryFeature {
     // tracks in the job
     void setTitleProgress(int trackNum, int totalNum);
 
-    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
     AnalyzerQueue* m_pAnalyzerQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyse
@@ -85,7 +82,7 @@ class AnalysisFeature : public LibraryFeature {
     QString m_analysisTitleName;
     QPointer<DlgAnalysis> m_pAnalysisView;
     QPointer<AnalysisLibraryTableModel> m_pAnalysisLibraryTableModel;
-    QHash<int, WAnalysisLibraryTableView*> m_analysisTables;
+    QHash<int, QPointer<WAnalysisLibraryTableView> > m_analysisTables;
 };
 
 

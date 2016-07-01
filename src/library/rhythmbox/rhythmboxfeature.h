@@ -30,9 +30,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    inline QString getViewName() {
-        return m_sRhythmBoxViewName;
-    }
+    QString getViewName() override;
 
     TreeItemModel* getChildModel();
     // processes the music collection

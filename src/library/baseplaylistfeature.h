@@ -36,10 +36,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
     void bindPaneWidget(WLibrary* pPaneWidget, KeyboardEventFilter*, int paneId);
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int);
-    
-    QString getViewName() { 
-        return m_rootViewName; 
-    }
+    QString getViewName() override;
 
   signals:
     void showPage(const QUrl& page);

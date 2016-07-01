@@ -30,9 +30,7 @@ class RecordingFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    inline QString getViewName() {
-        return m_sRecordingViewName;
-    }
+    QString getViewName() override;
 
     void bindPaneWidget(WLibrary* libraryWidget,
                         KeyboardEventFilter* pKeyboard, int paneId);
@@ -60,8 +58,8 @@ class RecordingFeature : public LibraryFeature {
     RecordingManager* m_pRecordingManager;
     
     QPointer<DlgRecording> m_pRecordingView;
-    BrowseTableModel* m_pBrowseModel;
-    ProxyTrackModel* m_pProxyModel;
+    QPointer<BrowseTableModel> m_pBrowseModel;
+    QPointer<ProxyTrackModel> m_pProxyModel;
 };
 
 #endif
