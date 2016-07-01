@@ -102,14 +102,6 @@ QString AutoDJFeature::getViewName() {
     return m_sAutoDJViewName;
 }
 
-void AutoDJFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                                   KeyboardEventFilter* pKeyboard,
-                                   int paneId) {
-    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
-    pPane->setParent(pLibraryWidget);
-    pLibraryWidget->registerView(m_sAutoDJViewName, pPane);
-}
-
 QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
     WTrackTableView* pTrackTableView = 
             new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, false);

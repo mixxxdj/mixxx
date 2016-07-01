@@ -598,14 +598,6 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BasePlaylistFeature::bindPaneWidget(WLibrary* pPaneWidget,
-                                         KeyboardEventFilter* pKeyboard, 
-                                         int paneId) {    
-    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
-    pPane->setParent(pPaneWidget);
-    pPaneWidget->registerView(m_rootViewName, pPane);
-}
-
 QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
                                                int) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(nullptr);

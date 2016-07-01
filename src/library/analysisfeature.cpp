@@ -67,14 +67,6 @@ QString AnalysisFeature::getViewName() {
     return m_sAnalysisViewName;
 }
 
-void AnalysisFeature::bindPaneWidget(WLibrary* libraryWidget,
-                                     KeyboardEventFilter* pKeyboard,
-									 int paneId) {    
-    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
-    pPane->setParent(libraryWidget);
-    libraryWidget->registerView(m_sAnalysisViewName, pPane);
-}
-
 QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
                                            int paneId) {
     if (!m_pAnalysisLibraryTableModel) {

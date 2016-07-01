@@ -190,13 +190,6 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return !locked && formatSupported;
 }
 
-void CrateFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                                  KeyboardEventFilter* pKeyboard, int paneId) {
-    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
-    pPane->setParent(pLibraryWidget);
-    pLibraryWidget->registerView(m_sCrateViewName, pPane);
-}
-
 QWidget* CrateFeature::createPaneWidget(KeyboardEventFilter *pKeyboard, int) {
     WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(nullptr);
     pEdit->setHtml(getRootViewHtml());

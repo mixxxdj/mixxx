@@ -216,14 +216,6 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BrowseFeature::bindPaneWidget(WLibrary* pPaneWidget,
-                                   KeyboardEventFilter* pKeyboard, 
-                                   int paneId) {
-    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
-    pPane->setParent(pPaneWidget);
-    pPaneWidget->registerView(m_sBrowseViewName, pPane);
-}
-
 QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(nullptr);
     edit->setHtml(getRootViewHtml());

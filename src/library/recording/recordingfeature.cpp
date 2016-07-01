@@ -49,13 +49,6 @@ TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 
-void RecordingFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                                      KeyboardEventFilter *pKeyboard, int paneId) {    
-    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
-    pPane->setParent(pLibraryWidget);
-    pLibraryWidget->registerView(m_sRecordingViewName, pPane);
-}
-
 QWidget* RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
     WTrackTableView* pTrackTableView = new WTrackTableView(nullptr, 
                                                            m_pConfig, 

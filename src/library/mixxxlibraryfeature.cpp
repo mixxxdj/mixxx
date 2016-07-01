@@ -138,14 +138,6 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
     delete m_pLibraryTableModel;
 }
 
-void MixxxLibraryFeature::bindPaneWidget(WLibrary* pLibraryWidget,
-                                         KeyboardEventFilter* pKeyboard,
-                                         int paneId) {    
-    QWidget* pPane = createPaneWidget(pKeyboard, paneId);
-    pPane->setParent(pLibraryWidget);
-    pLibraryWidget->registerView(m_sMixxxLibraryViewName, pPane);
-}
-
 QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                                int paneId) {
     WLibraryStack* pStack = new WLibraryStack(nullptr);

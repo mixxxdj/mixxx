@@ -46,8 +46,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
-    void bindPaneWidget(WLibrary* pLibrary,
-                        KeyboardEventFilter* pKeyboard, int paneId);
+    
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId);
     
     void bindSidebarWidget(WBaseLibrary* pSidebarWidget, KeyboardEventFilter* pKeyboard);

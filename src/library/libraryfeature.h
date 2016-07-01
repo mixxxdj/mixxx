@@ -55,16 +55,9 @@ class LibraryFeature : public QObject {
                                      QUrl /* url */) {
         return false;
     }
-
+    
     // Reimplement this to register custom views with the library widget
     // at the right pane.
-    // TODO(jmigual): This function should be removed and replaced by the
-    // createPaneWidget function
-    virtual void bindPaneWidget(WLibrary* /* libraryWidget */,
-                                KeyboardEventFilter* /* keyboard */,
-                                int /* paneId */) {
-    }
-    
     virtual QWidget* createPaneWidget(KeyboardEventFilter* /* keyboard */, 
                                       int /* paneId */) {
         return nullptr;
