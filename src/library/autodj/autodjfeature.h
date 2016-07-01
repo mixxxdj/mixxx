@@ -47,9 +47,6 @@ class AutoDJFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
 
     QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId);
-    
-    void bindSidebarWidget(WBaseLibrary *pSidebarWidget, 
-                           KeyboardEventFilter* pKeyboard);
     QWidget* createSidebarWidget(KeyboardEventFilter *pKeyboard);
 
     TreeItemModel* getChildModel();

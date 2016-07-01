@@ -37,8 +37,6 @@ class AnalysisFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     
     QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId);
-    void bindSidebarWidget(WBaseLibrary* libraryWidget,
-                           KeyboardEventFilter*pKeyboard);
     QWidget* createSidebarWidget(KeyboardEventFilter* pKeyboard);
     
     TreeItemModel* getChildModel();

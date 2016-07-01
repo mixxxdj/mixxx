@@ -238,6 +238,8 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel *model, LibraryFeature *pFeature) {
+    m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
+    
     slotUpdateFocus(pFeature);
     slotShowTrackModel(model);
 }

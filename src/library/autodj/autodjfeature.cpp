@@ -128,14 +128,6 @@ QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int pan
     return pTrackTableView;
 }
 
-void AutoDJFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget, 
-                                      KeyboardEventFilter*pKeyboard) {
-    //qDebug() << "AutoDJFeature::bindSidebarWidget" << pSidebarWidget;
-    QWidget* pSidebar = createSidebarWidget(pKeyboard);
-    pSidebar->setParent(pSidebarWidget);    
-    pSidebarWidget->registerView(m_sAutoDJViewName, pSidebar);
-}
-
 QWidget* AutoDJFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     QTabWidget* pContainer = new QTabWidget(nullptr);
     

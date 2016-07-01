@@ -195,13 +195,6 @@ QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     return pStack;
 }
 
-void MixxxLibraryFeature::bindSidebarWidget(WBaseLibrary* pSidebarWidget,
-                                            KeyboardEventFilter*pKeyboard) {
-    QWidget* pSidebar = createSidebarWidget(pKeyboard);
-    pSidebar->setParent(pSidebarWidget);
-    pSidebarWidget->registerView(m_sMixxxLibraryViewName, pSidebar);
-}
-
 QWidget *MixxxLibraryFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard) {
     QTabWidget* pTab = new QTabWidget(nullptr);
     

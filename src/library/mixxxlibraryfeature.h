@@ -48,8 +48,6 @@ class MixxxLibraryFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
     
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId);
-    
-    void bindSidebarWidget(WBaseLibrary* pSidebarWidget, KeyboardEventFilter* pKeyboard);
     QWidget* createSidebarWidget(KeyboardEventFilter *pKeyboard);
 
   public slots:

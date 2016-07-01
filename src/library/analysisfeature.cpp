@@ -95,13 +95,6 @@ QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     return pTable;
 }
 
-void AnalysisFeature::bindSidebarWidget(WBaseLibrary* libraryWidget,
-                                        KeyboardEventFilter* pKeyboard) {
-    QWidget* pSidebar = createSidebarWidget(pKeyboard);
-    pSidebar->setParent(libraryWidget);
-    libraryWidget->registerView(m_sAnalysisViewName, pSidebar);
-}
-
 QWidget* AnalysisFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     m_pAnalysisView = new DlgAnalysis(nullptr, m_pTrackCollection);
     

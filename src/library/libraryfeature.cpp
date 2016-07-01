@@ -33,17 +33,6 @@ LibraryFeature::~LibraryFeature() {
     
 }
 
-void LibraryFeature::bindSidebarWidget(WBaseLibrary *pSidebarWidget, 
-                                       KeyboardEventFilter* pKeyboard) {    
-    QWidget* pSidebar = createSidebarWidget(pKeyboard);
-    if (pSidebar == nullptr) {
-        return;
-    }
-    
-    pSidebar->setParent(pSidebarWidget);
-    pSidebarWidget->registerView(getViewName(), pSidebar);
-}
-
 QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryFeature::bindSidebarWidget";
     QFrame* pContainer = new QFrame(nullptr);

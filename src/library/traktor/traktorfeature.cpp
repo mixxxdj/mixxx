@@ -166,8 +166,8 @@ void TraktorFeature::activate() {
         emit (featureIsLoading(this, true));
     }
     
+    m_pLibrary->slotShowTrackModel(m_pTraktorTableModel, this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
-    m_pLibrary->slotShowTrackModel(m_pTraktorTableModel);
     emit(enableCoverArtDisplay(false));
 }
 

@@ -138,7 +138,6 @@ void RhythmboxFeature::activate() {
         emit (featureIsLoading(this, true));
     }
     
-    m_pLibrary->slotSwitchToViewFeature(this);
     m_pLibrary->slotShowTrackModel(m_pRhythmboxTrackModel, this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     emit(enableCoverArtDisplay(false));
