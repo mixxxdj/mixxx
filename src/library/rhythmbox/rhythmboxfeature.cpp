@@ -138,6 +138,7 @@ void RhythmboxFeature::activate() {
         emit (featureIsLoading(this, true));
     }
     
+    m_pLibrary->slotSwitchToViewFeature(this);
     m_pLibrary->slotShowTrackModel(m_pRhythmboxTrackModel, this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     emit(enableCoverArtDisplay(false));
@@ -162,12 +163,12 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
     if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
         if (!db.exists()) {
-            return NULL;
+            return nullptr;
         }
     }
 
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
-        return NULL;
+        return nullptr;
 
     //Delete all table entries of Traktor feature
     ScopedTransaction transaction(m_database);

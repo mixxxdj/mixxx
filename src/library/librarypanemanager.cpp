@@ -24,9 +24,7 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
                                         KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
     m_pPaneWidget = pLibraryWidget;
-
-    connect(this, SIGNAL(switchToView(const QString&)),
-            m_pPaneWidget, SLOT(switchToView(const QString&)));
+    
     connect(m_pPaneWidget, SIGNAL(focused()),
             this, SIGNAL(focused()));
 
