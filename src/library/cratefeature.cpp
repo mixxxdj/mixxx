@@ -225,8 +225,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     }
     m_crateTableModel.setTableModel(crateId);
     
-    m_pLibrary->slotSwitchToViewFeature(this);
-    m_pLibrary->slotShowTrackModel(&m_crateTableModel);
+    m_pLibrary->slotShowTrackModel(&m_crateTableModel, this);
     m_pLibrary->slotShowBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
     emit(enableCoverArtDisplay(true));
 }

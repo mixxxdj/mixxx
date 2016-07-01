@@ -183,8 +183,8 @@ void ITunesFeature::activate(bool forceReload) {
         emit (featureIsLoading(this, true));
     }
 
+    m_pLibrary->slotShowTrackModel(m_pITunesTrackModel, this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
-    m_pLibrary->slotShowTrackModel(m_pITunesTrackModel);
     emit(enableCoverArtDisplay(false));
 }
 
@@ -194,9 +194,8 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
     
-    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotShowTrackModel(m_pITunesPlaylistModel, this);
     m_pLibrary->slotShowBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
-    m_pLibrary->slotShowTrackModel(m_pITunesPlaylistModel);
     emit(enableCoverArtDisplay(false));
 }
 

@@ -95,7 +95,11 @@ public:
     void slotHoverFeature(const QString& featureName);
     
     // It uses the current focus, it needs to be updated before calling it
+    // avoid this function
     void slotShowTrackModel(QAbstractItemModel* model);
+    
+    // Updates the focus from the feature before changing the view
+    void slotShowTrackModel(QAbstractItemModel *model, LibraryFeature* pFeature);
     
     // It uses the current focus, avoid using this function
     void slotSwitchToView(const QString& view);

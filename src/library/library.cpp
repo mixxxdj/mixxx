@@ -127,7 +127,7 @@ void Library::bindSidebarWidget(WButtonBar* sidebar) {
 }
 
 void Library::bindPaneWidget(WLibrary* pLibraryWidget,
-                         KeyboardEventFilter* pKeyboard, int id) {
+                             KeyboardEventFilter* pKeyboard, int id) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pTrackTableView->installEventFilter(pKeyboard);
@@ -237,6 +237,11 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
     m_panes[m_focusedPane]->slotShowTrackModel(model);
 }
 
+void Library::slotShowTrackModel(QAbstractItemModel *model, LibraryFeature *pFeature) {
+    slotUpdateFocus(pFeature);
+    slotShowTrackModel(model);
+}
+
 void Library::slotSwitchToView(const QString& view) {
     //qDebug() << "Library::slotSwitchToView" << view;
     m_pSidebarExpanded->slotSwitchToView(view);
@@ -328,7 +333,7 @@ void Library::onSkinLoadFinished() {
         // The first pane always shows the Mixxx Library feature on start
         m_focusedPane = m_panes.begin().key();
         (*m_features.begin())->setFeatureFocus(m_focusedPane);
-        (*m_features.begin())->activate();
+        slotActivateFeature((*m_features.begin())->getViewName());
     }
     else {
         qDebug() << "Library::onSkinLoadFinished No Panes loaded!";

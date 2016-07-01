@@ -144,8 +144,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         
-        m_pLibrary->slotSwitchToViewFeature(this);
-        m_pLibrary->slotShowTrackModel(m_pPlaylistTableModel);
+        m_pLibrary->slotShowTrackModel(m_pPlaylistTableModel, this);
         m_pLibrary->slotShowBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
                 
         emit(enableCoverArtDisplay(true));
