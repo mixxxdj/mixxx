@@ -252,9 +252,7 @@ void Library::slotSwitchToView(const QString& view) {
 
 void Library::slotSwitchToViewFeature(LibraryFeature* pFeature) {
     m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
-    if (pFeature->getFeatureFocus() >= 0) {
-        m_focusedPane = pFeature->getFeatureFocus();
-    }
+    slotUpdateFocus(pFeature);
     
     WBaseLibrary* pWLibrary = m_panes[m_focusedPane]->getPaneWidget();
     // Only change the current pane if it's not shown already
@@ -267,18 +265,6 @@ void Library::slotSwitchToViewFeature(LibraryFeature* pFeature) {
 
 void Library::slotShowBreadCrumb(TreeItem *pTree) {
     m_panes[m_focusedPane]->slotShowBreadCrumb(pTree);
-}
-
-void Library::slotSwitchToNotFocusedView(const QString &view) {
-    
-    // Search for the view not being shown already
-    for (LibraryPaneManager* p : m_panes) {
-        if (p->getPaneWidget()->getCurrentViewName() == view) {
-            return;
-        }
-    }
-    
-    m_panes[m_focusedPane]->slotSwitchToView(view);
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
@@ -486,6 +472,12 @@ void Library::slotPaneFocused() {
     }
     
     //qDebug() << "Library::slotPaneFocused" << m_focusedPane;
+}
+
+void Library::slotUpdateFocus(LibraryFeature *pFeature) {
+    if (pFeature->getFeatureFocus() >= 0) {
+        m_focusedPane = pFeature->getFeatureFocus();
+    }
 }
 
 

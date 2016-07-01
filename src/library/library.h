@@ -93,11 +93,16 @@ public:
   public slots:
     void slotActivateFeature(const QString& featureName);
     void slotHoverFeature(const QString& featureName);
+    
+    // It uses the current focus, it needs to be updated before calling it
     void slotShowTrackModel(QAbstractItemModel* model);
+    
+    // It uses the current focus, avoid using this function
     void slotSwitchToView(const QString& view);
+    
+    // Updates the focus from the feature before changing the view
     void slotSwitchToViewFeature(LibraryFeature* pFeature);
     void slotShowBreadCrumb(TreeItem* pTree);
-    void slotSwitchToNotFocusedView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
@@ -112,6 +117,9 @@ public:
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
     void slotPaneFocused();
+    
+    // Updates with the focus feature
+    void slotUpdateFocus(LibraryFeature* pFeature);
 
     void scan() {
         m_scanner.scan();
