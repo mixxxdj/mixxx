@@ -383,43 +383,57 @@ class DlgKeyboard(Frame):
         self.configure(
             background=DlgKeyboard.BG_COLOR,
             highlightbackground=DlgKeyboard.BG_COLOR,
-            borderwidth=1,
-            )
+            borderwidth=3
+        )
+
+        # F-keys
+        f_keys_row = Frame(self)
+        f_keys_row.configure(background=DlgKeyboard.BG_COLOR)
+        DlgKeyboardKey(f_keys_row, scancode=110, char="ESC", state=DISABLED)
+        for i in range(112, 124):
+            char = "F" + str(i - 111)
+            key = DlgKeyboardKey(f_keys_row, scancode=i, width=4, char=char, state=DISABLED)
+        f_keys_row.grid(row=1, column=1, sticky='we')
+
 
         # Numeric keys
-        row_1 = Frame(self)
-        row_1.configure(background=DlgKeyboard.BG_COLOR)
+        numeric_keys_row = Frame(self)
+        numeric_keys_row.configure(background=DlgKeyboard.BG_COLOR)
         for i in range(1, 14):
-            key = DlgKeyboardKey(row_1, scancode=i, dlg_keyboard=self)
+            key = DlgKeyboardKey(numeric_keys_row, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
-        row_1.grid(row=1, column=1, sticky='we')
+        DlgKeyboardKey(numeric_keys_row, scancode=15, width=9, char="Backspace", state=DISABLED)
+        numeric_keys_row.grid(row=2, column=1, sticky='we')
 
         # Character keys (qwertyuiop[] on en_US)
-        row_2 = Frame(self)
-        row_2.configure(background=DlgKeyboard.BG_COLOR)
-        DlgKeyboardKey(row_2, scancode=16, width=5, char="Tab", state=DISABLED)
+        letters_keys_row_1 = Frame(self)
+        letters_keys_row_1.configure(background=DlgKeyboard.BG_COLOR)
+        DlgKeyboardKey(letters_keys_row_1, scancode=16, width=5, char="Tab", state=DISABLED)
         for i in range(17, 29):
-            key = DlgKeyboardKey(row_2, scancode=i, dlg_keyboard=self)
+            key = DlgKeyboardKey(letters_keys_row_1, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
-        row_2.grid(row=2, column=1, sticky='we')
+        self.keys.append(DlgKeyboardKey(letters_keys_row_1, scancode=29, width=7, dlg_keyboard=self))
+        letters_keys_row_1.grid(row=3, column=1, sticky='we')
 
         # Character keys (asdfghjkl;'\ on en_US)
-        row_3 = Frame(self)
-        row_3.configure(background=DlgKeyboard.BG_COLOR)
-        DlgKeyboardKey(row_3, scancode=16, width=7, char="Caps Lock", state=DISABLED)
+        letters_keys_row_2 = Frame(self)
+        letters_keys_row_2.configure(background=DlgKeyboard.BG_COLOR)
+        DlgKeyboardKey(letters_keys_row_2, scancode=16, width=7, char="Caps Lock", state=DISABLED)
         for i in range(31, 43):
-            key = DlgKeyboardKey(row_3, scancode=i, dlg_keyboard=self)
+            key = DlgKeyboardKey(letters_keys_row_2, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
-        row_3.grid(row=3, column=1, sticky='we')
+        DlgKeyboardKey(letters_keys_row_2, scancode=43, width=5, char="Enter", state=DISABLED)
+        letters_keys_row_2.grid(row=4, column=1, sticky='we')
 
         # Character keys (\zxcvbnm,./ on en_US)
-        row_4 = Frame(self)
-        row_4.configure(background=DlgKeyboard.BG_COLOR)
-        DlgKeyboardKey(row_4, scancode=16, char="Shift", state=DISABLED)
+        letters_keys_row_3 = Frame(self)
+        letters_keys_row_3.configure(background=DlgKeyboard.BG_COLOR)
+        DlgKeyboardKey(letters_keys_row_3, scancode=44, width=5, char="Shift", state=DISABLED)
         for i in range(45, 56):
-            key = DlgKeyboardKey(row_4, scancode=i, dlg_keyboard=self)
+            key = DlgKeyboardKey(letters_keys_row_3, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
-        row_4.grid(row=4, column=1, sticky='we')
+        DlgKeyboardKey(letters_keys_row_3, scancode=57, width=11, char="Shift", state=DISABLED)
+        letters_keys_row_3.grid(row=5, column=1, sticky='we')
 
     def update_keys(self, keyboardlayout):
         keys = self.keys
@@ -449,7 +463,8 @@ class DlgKeyboardKey(Button):
     def __init__(self, *args, scancode=None, width=SIZE['width'], char=None, dlg_keyboard=None, **kwargs):
         Button.__init__(self, *args, width=width, height=DlgKeyboardKey.SIZE['height'], command=self.set_listening, **kwargs)
         self.set_char(char)
-        self.pack(side=LEFT, padx=1, pady=1)
+        self.pack_propagate(0)
+        self.pack(side=LEFT, padx=1, pady=1, expand=1)
         if not scancode:
             print("Warning: no scancode given for this DlgKeyboardKey")
         self.scancode = scancode
