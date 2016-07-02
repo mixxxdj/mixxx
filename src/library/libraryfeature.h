@@ -5,7 +5,7 @@
 #define LIBRARYFEATURE_H
 
 #include <QFileDialog>
-#include <QList>
+#include <QHash>
 #include <QPointer>
 #include <QString>
 #include <QUrl>
@@ -31,7 +31,7 @@ class LibraryFeature : public QObject {
 
     // The parent does not necessary be the Library
     LibraryFeature(UserSettingsPointer pConfig,
-                   Library* pLibrary, 
+                   Library* pLibrary, TrackCollection *pTrackCollection, 
                    QObject* parent = nullptr);
     
     virtual ~LibraryFeature();
@@ -62,7 +62,8 @@ class LibraryFeature : public QObject {
     
     // Reimplement this to register custom views with the library widget
     // at the right pane.
-    virtual QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId);
+    virtual QWidget *createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                      int paneId);
     
     // Reimplement this to register custom views with the library widget,
     // at the sidebar expanded pane
@@ -79,8 +80,13 @@ class LibraryFeature : public QObject {
   protected:
     inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
     inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
+    WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
+                                       int paneId);
     
     void showTrackModel(QAbstractItemModel *model);
+    void switchToFeature();
+    
+    WTrackTableView* getFocusedTable();
     
     UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
@@ -124,8 +130,7 @@ class LibraryFeature : public QObject {
 
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);
-    
-    QList<QPointer<WTrackTableView> > m_tables;
+    QHash<int, QPointer<WTrackTableView> > m_trackTables;
 };
 
 #endif /* LIBRARYFEATURE_H */

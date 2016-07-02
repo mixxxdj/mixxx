@@ -51,17 +51,17 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
     }
 }
 
-void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchLine) {
-    pSearchLine->installEventFilter(this);
+void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchBar) {
+    pSearchBar->installEventFilter(this);
 
-    connect(pSearchLine, SIGNAL(search(const QString&)),
+    connect(pSearchBar, SIGNAL(search(const QString&)),
             this, SIGNAL(search(const QString&)));
-    connect(pSearchLine, SIGNAL(searchCleared()),
+    connect(pSearchBar, SIGNAL(searchCleared()),
             this, SIGNAL(searchCleared()));
-    connect(pSearchLine, SIGNAL(searchStarting()),
+    connect(pSearchBar, SIGNAL(searchStarting()),
             this, SIGNAL(searchStarting()));
-    connect(this, SIGNAL(restoreSearch(const QString&)),
-            pSearchLine, SLOT(restoreSearch(const QString&)));
+    
+    m_pSearchBar = pSearchBar;
 }
 
 void LibraryPaneManager::setBreadCrumb(WLibraryBreadCrumb *pBreadCrumb) {
@@ -108,17 +108,6 @@ void LibraryPaneManager::clearFocus() {
     m_pPaneWidget->setProperty("showFocus", 0);
 }
 
-void LibraryPaneManager::slotShowTrackModel(QAbstractItemModel* model) {
-    //qDebug() << "LibraryPaneManager::slotShowTrackModel" << model;
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    DEBUG_ASSERT_AND_HANDLE(trackModel && !m_pPaneWidget.isNull()) {
-        return;
-    }
-    emit(showTrackModel(model));
-    m_pPaneWidget->switchToView(m_sTrackViewName);
-    emit(restoreSearch(trackModel->currentSearch()));
-}
-
 void LibraryPaneManager::slotSwitchToView(const QString& view) {
     //qDebug() << "LibraryPaneManager::slotSwitchToView" << view;
     DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull()) {
@@ -143,7 +132,9 @@ void LibraryPaneManager::slotSwitchToViewFeature(LibraryFeature* pFeature) {
 }
 
 void LibraryPaneManager::slotRestoreSearch(const QString& text) {
-    emit(restoreSearch(text));
+    if (!m_pSearchBar.isNull()) {
+        m_pSearchBar->restoreSearch(text);
+    }
 }
 
 void LibraryPaneManager::slotShowBreadCrumb(TreeItem *pTree) {

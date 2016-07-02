@@ -165,8 +165,8 @@ void AutoDJFeature::activate() {
     
     m_pAutoDJView->onShow();
     
-    m_pLibrary->slotSwitchToFeature(this);
-    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->switchToFeature(this);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->slotRestoreSearch(QString()); //Null String disables search box
     
     emit(enableCoverArtDisplay(true));

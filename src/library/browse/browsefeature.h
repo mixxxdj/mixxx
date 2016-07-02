@@ -8,6 +8,7 @@
 #include <QSortFilterProxyModel>
 #include <QObject>
 #include <QVariant>
+#include <QHash>
 #include <QIcon>
 #include <QModelIndex>
 #include <QPoint>
@@ -23,6 +24,7 @@
 #define DEVICE_NODE "::mixxx_device_node::"
 
 class TrackCollection;
+class WLibraryStack;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
@@ -38,7 +40,7 @@ class BrowseFeature : public LibraryFeature {
     QIcon getIcon();
     QString getFeatureName() override;
 
-    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int);
+    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId);
 
     TreeItemModel* getChildModel();
 
@@ -76,6 +78,10 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
     static const QString m_sBrowseViewName;
+    
+    QHash<int, QPointer<WLibraryStack> > m_panes;
+    QHash<int, int> m_idBrowse;
+    QHash<int, int> m_idTable;
 };
 
 #endif // BROWSEFEATURE_H

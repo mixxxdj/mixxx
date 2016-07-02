@@ -108,8 +108,8 @@ class CrateFeature : public LibraryFeature {
     TrackPointer m_pSelectedTrack;
     QSet<int> m_cratesSelectedTrackIsIn;
     QHash<int, QPointer<QStackedWidget> > m_panes;
-    int m_idBrowse;
-    int m_idTable;
+    QHash<int,int> m_idBrowse;
+    QHash<int,int> m_idTable;
     
     const static QString m_sCrateViewName;
 };

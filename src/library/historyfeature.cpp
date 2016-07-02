@@ -170,7 +170,7 @@ void HistoryFeature::slotGetNewPlaylist() {
     }
 
     slotPlaylistTableChanged(m_playlistId); // For moving selection
-    emit(showTrackModel(m_pPlaylistTableModel));
+    showTrackModel(m_pPlaylistTableModel);
 }
 
 void HistoryFeature::slotJoinWithPrevious() {
@@ -218,7 +218,7 @@ void HistoryFeature::slotJoinWithPrevious() {
                 if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
                     m_playlistDao.deletePlaylist(currentPlaylistId);
                     slotPlaylistTableChanged(previousPlaylistId); // For moving selection
-                    emit(showTrackModel(m_pPlaylistTableModel));
+                    showTrackModel(m_pPlaylistTableModel);
                 }
             }
         }

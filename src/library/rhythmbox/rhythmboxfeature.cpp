@@ -138,8 +138,8 @@ void RhythmboxFeature::activate() {
         emit (featureIsLoading(this, true));
     }
     
-    m_pLibrary->slotShowTrackModel(m_pRhythmboxTrackModel, this);
-    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    showTrackModel(m_pRhythmboxTrackModel);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     emit(enableCoverArtDisplay(false));
 }
 
@@ -149,8 +149,8 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
     
-    m_pLibrary->slotShowTrackModel(m_pRhythmboxPlaylistModel, this);
-    m_pLibrary->slotShowBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+    showTrackModel(m_pRhythmboxPlaylistModel);
+    m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
     emit(enableCoverArtDisplay(false));
 }
 

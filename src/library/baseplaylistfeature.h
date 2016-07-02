@@ -16,11 +16,12 @@
 #include "library/dao/trackdao.h"
 #include "track/track.h"
 
-class WLibrary;
 class KeyboardEventFilter;
 class PlaylistTableModel;
 class TrackCollection;
 class TreeItem;
+class WLibrary;
+class WLibraryStack;
 
 class BasePlaylistFeature : public LibraryFeature {
     Q_OBJECT
@@ -34,7 +35,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int);
+    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId);
     QString getFeatureName() override;
 
   signals:
@@ -110,6 +111,10 @@ class BasePlaylistFeature : public LibraryFeature {
 
     QSet<int> m_playlistsSelectedTrackIsIn;
     QString m_rootViewName;
+    
+    QHash<int, QPointer<WLibraryStack> > m_panes;
+    QHash<int, int> m_idBrowse;
+    QHash<int, int> m_idTable;
 };
 
 #endif /* BASEPLAYLISTFEATURE_H */

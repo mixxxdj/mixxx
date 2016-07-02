@@ -166,8 +166,8 @@ void TraktorFeature::activate() {
         emit (featureIsLoading(this, true));
     }
     
-    m_pLibrary->slotShowTrackModel(m_pTraktorTableModel, this);
-    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    showTrackModel(m_pTraktorTableModel);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     emit(enableCoverArtDisplay(false));
 }
 
@@ -182,9 +182,8 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
         qDebug() << "Activate Traktor Playlist: " << item->dataPath().toString();
         m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
         
-        m_pLibrary->slotSwitchToFeature(this);
-        m_pLibrary->slotShowBreadCrumb(item);
-        m_pLibrary->slotShowTrackModel(m_pTraktorPlaylistModel);
+        showTrackModel(m_pTraktorPlaylistModel);
+        m_pLibrary->showBreadCrumb(item);
         emit(enableCoverArtDisplay(false));
     }
 }
@@ -622,8 +621,8 @@ void TraktorFeature::onTrackCollectionLoaded() {
         m_trackSource->buildIndex();
 
         //m_pTraktorTableModel->select();
-        m_pLibrary->slotShowBreadCrumb(root);
-        m_pLibrary->slotShowTrackModel(m_pTraktorTableModel);
+        showTrackModel(m_pTraktorTableModel);
+        m_pLibrary->showBreadCrumb(root);
         qDebug() << "Traktor library loaded successfully";
     } else {
         QMessageBox::warning(

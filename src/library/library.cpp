@@ -127,36 +127,12 @@ void Library::bindSidebarWidget(WButtonBar* sidebar) {
 }
 
 void Library::bindPaneWidget(WLibrary* pLibraryWidget,
-                             KeyboardEventFilter* pKeyboard, int id) {
-    WTrackTableView* pTrackTableView =
-            new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
-    pTrackTableView->installEventFilter(pKeyboard);
-    
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
-    
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-
-    connect(this, SIGNAL(setTrackTableFont(QFont)),
-            pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(this, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    
-    pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
+                             KeyboardEventFilter* pKeyboard, int paneId) {
     
     // Get the value once to avoid searching again in the hash
-    LibraryPaneManager* pPane = getPane(id);
+    LibraryPaneManager* pPane = getPane(paneId);
     pPane->bindPaneWidget(pLibraryWidget, pKeyboard);
     
-    connect(pPane, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
-    connect(pPane, SIGNAL(searchStarting()),
-            pTrackTableView, SLOT(onSearchStarting()));
-    connect(pPane, SIGNAL(searchCleared()),
-            pTrackTableView, SLOT(onSearchCleared()));
     connect(pPane, SIGNAL(search(const QString&)),
             pLibraryWidget, SLOT(search(const QString&)));    
     
@@ -216,8 +192,6 @@ void Library::addFeature(LibraryFeature* feature) {
     
     // TODO(jmigual): this should be removed and add a direct interaction
     // between the LibraryFeature and the Library
-    connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -230,19 +204,7 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SIGNAL(trackSelected(TrackPointer)));
 }
 
-void Library::slotShowTrackModel(QAbstractItemModel* model) {
-    //qDebug() << "Library::slotShowTrackModel" << m_focusedPane;
-    m_panes[m_focusedPane]->slotShowTrackModel(model);
-}
-
-void Library::slotShowTrackModel(QAbstractItemModel *model, LibraryFeature *pFeature) {
-    m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
-    
-    slotUpdateFocus(pFeature);
-    slotShowTrackModel(model);
-}
-
-void Library::slotSwitchToFeature(LibraryFeature* pFeature) {
+void Library::switchToFeature(LibraryFeature* pFeature) {
     m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
     slotUpdateFocus(pFeature);
     
@@ -255,7 +217,7 @@ void Library::slotSwitchToFeature(LibraryFeature* pFeature) {
     handleFocus();
 }
 
-void Library::slotShowBreadCrumb(TreeItem *pTree) {
+void Library::showBreadCrumb(TreeItem *pTree) {
     m_panes[m_focusedPane]->slotShowBreadCrumb(pTree);
 }
 

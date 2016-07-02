@@ -12,7 +12,7 @@
 #include <QVariant>
 #include <QVBoxLayout>
 
-
+#include "library/library.h"
 #include "library/libraryfeature.h"
 #include "widget/wbaselibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -23,10 +23,12 @@
 // to work the code has to be precompiled by moc
 LibraryFeature::LibraryFeature(UserSettingsPointer pConfig, 
                                Library* pLibrary,
+                               TrackCollection* pTrackCollection,
                                QObject* parent)
         : QObject(parent),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
+          m_pTrackCollection(pTrackCollection),
           m_featureFocus(-1) {
 }
 
@@ -36,26 +38,7 @@ LibraryFeature::~LibraryFeature() {
 
 QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                           int paneId) {
-    WTrackTableView* pTrackTable = 
-            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection);
-    
-    pTrackTable->installEventFilter(pKeyboard);
-    
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-    
-    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    
-    m_tables.append(pTrackTable);
-    
-    return pTrackTable;
+    return createTableWidget(pKeyboard, paneId);
 }
 
 QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
@@ -93,12 +76,48 @@ void LibraryFeature::setFeatureFocus(int focus) {
     m_featureFocus = focus;
 }
 
+WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboard,
+                                                   int paneId) {
+    WTrackTableView* pTrackTableView = 
+            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection);
+    
+    pTrackTableView->installEventFilter(pKeyboard);
+    
+    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
+    
+    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    m_trackTables[paneId] = pTrackTableView;
+    
+    return pTrackTableView;
+}
+
 void LibraryFeature::showTrackModel(QAbstractItemModel *model) {
-    for (QPointer<WTrackTableView> pTable : m_tables) {
-        if (!pTable.isNull()) {
-            pTable->loadTrackModel(model);
-        }
+    auto it = m_trackTables.find(m_featureFocus);
+    if (it == m_trackTables.end() || it->isNull()) {
+        return;
     }
+    (*it)->loadTrackModel(model);
+    switchToFeature();
+}
+
+void LibraryFeature::switchToFeature() {
+    m_pLibrary->switchToFeature(this);
+}
+
+WTrackTableView *LibraryFeature::getFocusedTable() {
+    auto it = m_trackTables.find(m_featureFocus);
+    if (it == m_trackTables.end() || it->isNull()) {
+        return nullptr;
+    }
+    return *it;
 }
 
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {

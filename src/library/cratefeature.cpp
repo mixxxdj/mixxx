@@ -35,9 +35,7 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
         : LibraryFeature(pConfig, pLibrary, parent),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
-          m_crateTableModel(this, pTrackCollection),
-          m_idBrowse(-1), 
-          m_idTable(-1) {
+          m_crateTableModel(this, pTrackCollection) {
 
     m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
@@ -205,10 +203,10 @@ QWidget* CrateFeature::createPaneWidget(KeyboardEventFilter *pKeyboard,
     connect(pEdit, SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
     
-    m_idBrowse = pContainer->addWidget(pEdit);
+    m_idBrowse[paneId] = pContainer->addWidget(pEdit);
     
     QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId);
-    m_idTable = pContainer->addWidget(pTable);
+    m_idTable[paneId] = pContainer->addWidget(pTable);
     
     return pContainer;
 }
@@ -219,14 +217,15 @@ TreeItemModel* CrateFeature::getChildModel() {
 
 void CrateFeature::activate() {
     auto it = m_panes.find(m_featureFocus);
-    if (it == m_panes.end() || it->isNull()) {
+    auto itId = m_idBrowse.find(m_featureFocus);
+    if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
         return;
     }
     
-    (*it)->setCurrentIndex(m_idBrowse);
-    asda hsdflkja hfdsa
-    m_pLibrary->slotSwitchToFeature(this);
-    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    (*it)->setCurrentIndex(*itId);
+    
+    m_pLibrary->switchToFeature(this);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->slotRestoreSearch(QString()); //disable search on crate home
     
     emit(enableCoverArtDisplay(true));
@@ -240,10 +239,18 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     if (crateId == -1) {
         return;
     }
+    
+    auto it = m_panes.find(m_featureFocus);
+    auto itId = m_idTable.find(m_featureFocus);
+    if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
+        return;
+    }
+    
+    (*it)->setCurrentIndex(*itId);
     m_crateTableModel.setTableModel(crateId);
     
-    m_pLibrary->slotShowTrackModel(&m_crateTableModel, this);
-    m_pLibrary->slotShowBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+    showTrackModel(&m_crateTableModel);
+    m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
     emit(enableCoverArtDisplay(true));
 }
 

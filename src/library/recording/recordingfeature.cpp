@@ -83,8 +83,8 @@ void RecordingFeature::activate() {
     }
     
     m_pRecordingView->refreshBrowseModel();
-    m_pLibrary->slotSwitchToFeature(this);
-    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->switchToFeature(this);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->slotRestoreSearch("");
     
     emit(enableCoverArtDisplay(false));

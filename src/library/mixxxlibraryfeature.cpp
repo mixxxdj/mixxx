@@ -36,8 +36,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
           m_pMissingView(nullptr),
           m_hiddenExpandedId(-1),
           m_missingExpandedId(-1),
-          m_pHiddenTableModel(nullptr),
-          m_pMissingTableModel(nullptr),
+          m_pHiddenTableModel(new HiddenTableModel(this, pTrackCollection)),
+          m_pMissingTableModel(new MissingTableModel(this, pTrackCollection)),
           m_pExpandedStack(nullptr),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pTrackCollection(pTrackCollection) {
@@ -140,59 +140,20 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 
 QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                                int paneId) {
-    WLibraryStack* pStack = new WLibraryStack(nullptr);
-    m_paneStack[paneId] = pStack;
+    WTrackTableView* pTable = LibraryFeature::createTableWidget(pKeyboard, paneId);
     
-    // Create the hidden table
-    WTrackTableView* pHiddenTable = 
-            new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
-    pHiddenTable->installEventFilter(pKeyboard);
-    
-    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            pHiddenTable, SLOT(setTrackTableFont(QFont)));
-    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pHiddenTable, SLOT(setTrackTableRowHeight(int)));
-    
-    m_hiddenPaneId[paneId] = pStack->addWidget(pHiddenTable);
-    m_hiddenPane[paneId] = pHiddenTable;
-    
-    if (m_pHiddenTableModel.isNull()) {
-        m_pHiddenTableModel = new HiddenTableModel(this, m_pTrackCollection);
-    }
-    pHiddenTable->loadTrackModel(m_pHiddenTableModel);
+    /*pHiddenTable->loadTrackModel(m_pHiddenTableModel);
     
     connect(pHiddenTable->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
-            SLOT(hiddenSelectionChanged(const QItemSelection&, const QItemSelection&)));
+            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&))); */
     
-    connect(this, SIGNAL(unhideHidden()), pHiddenTable, SLOT(slotUnhide()));
-    connect(this, SIGNAL(purgeHidden()), pHiddenTable, SLOT(slotPurge()));
+    connect(this, SIGNAL(unhideHidden()), pTable, SLOT(slotUnhide()));
+    connect(this, SIGNAL(purgeHidden()), pTable, SLOT(slotPurge()));
+    connect(this, SIGNAL(purgeMissing()), pTable, SLOT(slotPurge()));
     
-    // Create the missing table
-    WTrackTableView* pMissingTable = 
-            new WTrackTableView(pStack, m_pConfig, m_pTrackCollection, false);
-    pMissingTable->installEventFilter(pKeyboard);
-    
-    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            pMissingTable, SLOT(setTrackTableFont(QFont)));
-    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pMissingTable, SLOT(setTrackTableRowHeight(int)));
-    
-    m_missingPaneId[paneId] = pStack->addWidget(pMissingTable);
-    m_missingPane[paneId] = pMissingTable;
-    
-    if (m_pMissingTableModel.isNull()) {
-        m_pMissingTableModel = new MissingTableModel(this, m_pTrackCollection);
-    }
-    pMissingTable->loadTrackModel(m_pMissingTableModel);
-    
-    connect(pMissingTable->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-            this,
-            SLOT(missingSelectionChanged(const QItemSelection&, const QItemSelection&)));
-    
-    return pStack;
+    return pTable;
 }
 
 QWidget *MixxxLibraryFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard) {
@@ -217,28 +178,22 @@ QWidget *MixxxLibraryFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard
     m_pExpandedStack = new QStackedWidget(pTab);
      
     // Create Hidden View controls
-    if (m_pHiddenTableModel.isNull()) {
-        m_pHiddenTableModel = new HiddenTableModel(this, m_pTrackCollection);
-    }
     m_pHiddenView = new DlgHidden(pSidebar);    
     m_pHiddenView->setTableModel(m_pHiddenTableModel);
     m_pHiddenView->installEventFilter(pKeyboard);
     
     connect(m_pHiddenView, SIGNAL(unhide()), this, SIGNAL(unhideHidden()));
     connect(m_pHiddenView, SIGNAL(purge()), this, SIGNAL(purgeHidden()));
-    
+    connect(m_pHiddenView, SIGNAL(selectAll()), this, SLOT(selectAll()));
     m_hiddenExpandedId = m_pExpandedStack->addWidget(m_pHiddenView);
 
     // Create Missing View controls
-    if (m_pMissingTableModel.isNull()) {
-        m_pMissingTableModel = new MissingTableModel(this, m_pTrackCollection);
-    }
     m_pMissingView = new DlgMissing(pSidebar);
     m_pMissingView->setTableModel(m_pMissingTableModel);
     m_pMissingView->installEventFilter(pKeyboard);
     
     connect(m_pMissingView, SIGNAL(purge()), this, SIGNAL(purgeMissing()));
-    
+    connect(m_pMissingView, SIGNAL(selectAll()), this, SLOT(selectAll()));
     m_missingExpandedId = m_pExpandedStack->addWidget(m_pMissingView);
     
     pTab->addTab(m_pExpandedStack, tr("Controls"));
@@ -273,56 +228,45 @@ void MixxxLibraryFeature::refreshLibraryModels() {
     }
 }
 
-void MixxxLibraryFeature::hiddenSelectionChanged(const QItemSelection&,
-                                                 const QItemSelection&) {
-    auto it = m_hiddenPane.find(m_featureFocus);
-    if (it == m_hiddenPane.end() || it->isNull()) {
+void MixxxLibraryFeature::selectionChanged(const QItemSelection&,
+                                           const QItemSelection&) {
+    WTrackTableView* pTable = getFocusedTable();
+    if (pTable == nullptr) {
         return;
     }
     
-    DEBUG_ASSERT_AND_HANDLE(!m_pHiddenView.isNull()) {
+    auto it = m_idPaneCurrent.find(m_featureFocus);
+    if (it == m_idPaneCurrent.end()) {
         return;
     }
     
-    const QModelIndexList& selection = (*it)->selectionModel()->selectedIndexes();
-    m_pHiddenView->setSelectedIndexes(selection);
-}
-
-void MixxxLibraryFeature::missingSelectionChanged(const QItemSelection&,
-                                                  const QItemSelection&) {
-    auto it = m_missingPane.find(m_featureFocus);
-    if (it == m_missingPane.end() || it->isNull()) {
-        return;
-    }
-    
-    DEBUG_ASSERT_AND_HANDLE(!m_pMissingView.isNull()) {
-        return;
-    }
-    
-    const QModelIndexList& selection = (*it)->selectionModel()->selectedIndexes();
-    m_pMissingView->setSelectedIndexes(selection);
-}
-
-void MixxxLibraryFeature::selectAllHidden() {
-    auto it = m_hiddenPane.find(m_featureFocus);
-    if (it != m_hiddenPane.end() && !it->isNull()) {
-        (*it)->selectAll();
+    const QModelIndexList& selection = pTable->selectionModel()->selectedIndexes();
+    switch (*it) {
+        case Panes::Hidden:
+            m_pHiddenView->setSelectedIndexes(selection);
+            break;
+        case Panes::Missing:
+            m_pMissingView->setSelectedIndexes(selection);
+            break;
+        default:
+            break;
     }
 }
 
-void MixxxLibraryFeature::selectAllMissing() {
-    auto it = m_missingPane.find(m_featureFocus);
-    if (it != m_missingPane.end() && !it->isNull()) {
-        (*it)->selectAll();
+void MixxxLibraryFeature::selectAll() {
+    QPointer<WTrackTableView> pTable = getFocusedTable();
+    if (!pTable.isNull()) {
+        pTable->selectAll();
     }
 }
+
 
 void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
     
-    // To change the sidebar
-    m_pLibrary->slotShowTrackModel(m_pLibraryTableModel, this);
-    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_idPaneCurrent[m_featureFocus] = Panes::MixxxLibrary;
+    showTrackModel(m_pLibraryTableModel);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     
     emit(enableCoverArtDisplay(true));
 }
@@ -330,40 +274,57 @@ void MixxxLibraryFeature::activate() {
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data(TreeItemModel::kDataPathRole).toString();
     TreeItem* pTree = static_cast<TreeItem*> (index.internalPointer());
+    QPointer<WTrackTableView> pTable = getFocusedTable();    
     
     if (itemName == m_sMixxxLibraryViewName) {
         activate();
         
-    } else if (itemName == kHiddenTitle) {
-        auto it = m_paneStack.find(m_featureFocus);
+    } else if (itemName == kHiddenTitle) {        
         DEBUG_ASSERT_AND_HANDLE(!m_pHiddenView.isNull() && 
-                                !m_pExpandedStack.isNull() && 
-                                it != m_paneStack.end() &&
-                                !it->isNull()) {
+                                !m_pExpandedStack.isNull() &&
+                                !pTable.isNull()) {
             return;
         }
         
+        m_idPaneCurrent[m_featureFocus] = Panes::Hidden;
+        pTable->loadTrackModel(m_pHiddenTableModel);
+        
+        // This is the only way to get the selection signal changing the track
+        // models, every time the model changes the selection model changes too
+        // so we need to reconnect
+        connect(pTable->selectionModel(),
+                SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+                this,
+                SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+        
         m_pHiddenView->onShow();
-        (*it)->setCurrentIndex(m_hiddenPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_hiddenExpandedId);
-        m_pLibrary->slotSwitchToFeature(this);
-        m_pLibrary->slotShowBreadCrumb(pTree);
+        switchToFeature();
+        m_pLibrary->showBreadCrumb(pTree);
         emit(enableCoverArtDisplay(true));
         
     } else if (itemName == kMissingTitle) {
-        auto it = m_paneStack.find(m_featureFocus);
         DEBUG_ASSERT_AND_HANDLE(!m_pMissingView.isNull() && 
                                 !m_pExpandedStack.isNull() && 
-                                it != m_paneStack.end() && 
-                                !it->isNull()) {
+                                !pTable.isNull()) {
             return;
         }
         
+        m_idPaneCurrent[m_featureFocus] = Panes::Missing;
+        pTable->loadTrackModel(m_pMissingTableModel);
+        
+        // This is the only way to get the selection signal changing the track
+        // models, every time the model changes the selection model changes too
+        // so we need to reconnect
+        connect(pTable->selectionModel(),
+                SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+                this,
+                SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+        
         m_pMissingView->onShow();
-        m_paneStack[m_featureFocus]->setCurrentIndex(m_missingPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_missingExpandedId);
-        m_pLibrary->slotSwitchToFeature(this);
-        m_pLibrary->slotShowBreadCrumb(pTree);
+        switchToFeature();
+        m_pLibrary->showBreadCrumb(pTree);
         emit(enableCoverArtDisplay(true));
     }
 }

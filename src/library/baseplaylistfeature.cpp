@@ -16,6 +16,7 @@
 #include "library/treeitem.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarystack.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "util/assert.h"
 
@@ -28,7 +29,7 @@ BasePlaylistFeature::BasePlaylistFeature(UserSettingsPointer pConfig,
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pPlaylistTableModel(NULL),
+          m_pPlaylistTableModel(nullptr),
           m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
@@ -131,8 +132,15 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 }
 
 void BasePlaylistFeature::activate() {
-    m_pLibrary->slotSwitchToFeature(this);
-    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    auto it = m_panes.find(m_featureFocus);
+    auto itId = m_idBrowse.find(m_featureFocus);
+    if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
+        return;
+    }
+    
+    (*it)->setCurrentIndex(*itId);
+    switchToFeature();
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     
     emit(restoreSearch(QString())); // Null String disables search box
     emit(enableCoverArtDisplay(true));
@@ -144,8 +152,15 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         
-        m_pLibrary->slotShowTrackModel(m_pPlaylistTableModel, this);
-        m_pLibrary->slotShowBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+        auto it = m_panes.find(m_featureFocus);
+        auto itId = m_idTable.find(m_featureFocus);
+        if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
+            return;
+        }
+        
+        (*it)->setCurrentIndex(*itId);
+        showTrackModel(m_pPlaylistTableModel);
+        m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
                 
         emit(enableCoverArtDisplay(true));
     }
@@ -156,7 +171,7 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     QModelIndex index = indexFromPlaylistId(playlistId);
     if (playlistId != -1 && index.isValid() && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
-        emit(showTrackModel(m_pPlaylistTableModel));
+        showTrackModel(m_pPlaylistTableModel);
         emit(enableCoverArtDisplay(true));
         // Update selection
         emit(featureSelect(this, m_lastRightClickedIndex));
@@ -599,14 +614,23 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
 }
 
 QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
-                                               int) {
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(nullptr);
+                                               int paneId) {
+    WLibraryStack* pStack = new WLibraryStack(nullptr);
+    m_panes[paneId] = pStack;
+    
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(pStack);
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
     edit->installEventFilter(pKeyboard);
     connect(edit, SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
-    return edit;
+    m_idBrowse[paneId] = pStack->addWidget(edit);
+    
+    QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId);
+    pTable->setParent(pStack);
+    m_idTable[paneId] = pStack->addWidget(pTable);
+    
+    return pStack;
 }
 
 QString BasePlaylistFeature::getFeatureName() {

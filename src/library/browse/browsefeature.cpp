@@ -19,6 +19,7 @@
 #include "track/track.h"
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarystack.h"
 #include "widget/wlibrarytextbrowser.h"
 
 
@@ -216,16 +217,33 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(nullptr);
-    edit->setHtml(getRootViewHtml());
-    edit->installEventFilter(pKeyboard);
-    return edit;
+QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                         int paneId) {
+    WLibraryStack* pStack = new WLibraryStack(nullptr);
+    m_panes[paneId] = pStack;
+    
+    WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(nullptr);
+    pEdit->setHtml(getRootViewHtml());
+    pEdit->installEventFilter(pKeyboard);
+    m_idBrowse[paneId] = pStack->addWidget(pEdit);
+    
+    QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId);
+    pTable->setParent(pStack);
+    m_idTable[paneId] = pStack->addWidget(pTable);
+    
+    return pStack;
 }
 
 void BrowseFeature::activate() {
-    m_pLibrary->slotSwitchToFeature(this);
-    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    auto it = m_panes.find(m_featureFocus);
+    auto itId = m_idBrowse.find(m_featureFocus);
+    if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
+        return;
+    }
+    
+    (*it)->setCurrentIndex(*itId);
+    switchToFeature();
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->slotRestoreSearch(QString());
     
     emit(enableCoverArtDisplay(false));
@@ -257,8 +275,8 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         m_browseModel.setPath(dir);
     }
     
-    m_pLibrary->slotShowTrackModel(&m_proxyModel, this);
-    m_pLibrary->slotShowBreadCrumb(item);
+    showTrackModel(&m_proxyModel);
+    m_pLibrary->showBreadCrumb(item);
     
     emit(enableCoverArtDisplay(true));
 }

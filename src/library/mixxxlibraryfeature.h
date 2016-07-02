@@ -55,11 +55,9 @@ class MixxxLibraryFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index);
     void refreshLibraryModels();
     
-    void hiddenSelectionChanged(const QItemSelection&, const QItemSelection&);
-    void missingSelectionChanged(const QItemSelection&, const QItemSelection&);
+    void selectionChanged(const QItemSelection&, const QItemSelection&);
     
-    void selectAllHidden();
-    void selectAllMissing();
+    void selectAll();
     
     
   signals:
@@ -68,27 +66,26 @@ class MixxxLibraryFeature : public LibraryFeature {
     void purgeMissing();
 
   private:
+    enum Panes {
+        MixxxLibrary = 1,
+        Hidden = 2,
+        Missing = 3
+    };
+    
     const QString kLibraryTitle;
     const QString kHiddenTitle;
     const QString kMissingTitle;
     QPointer<DlgHidden> m_pHiddenView;
     QPointer<DlgMissing> m_pMissingView;
-    QHash<int, QPointer<WTrackTableView> > m_hiddenPane;
-    QHash<int, QPointer<WTrackTableView> > m_missingPane;
-    
-    // This is needed to select the correct widget in the 2 size widget stack
-    // for the hidden and missing widgets.
-    QHash<int, int> m_hiddenPaneId;
-    QHash<int, int> m_missingPaneId;
+    QHash<int, Panes> m_idPaneCurrent;
     
     // SidebarExpanded pane's ids
     int m_hiddenExpandedId;
     int m_missingExpandedId;
     
-    QPointer<HiddenTableModel> m_pHiddenTableModel;
-    QPointer<MissingTableModel> m_pMissingTableModel;
+    HiddenTableModel* m_pHiddenTableModel;
+    MissingTableModel* m_pMissingTableModel;
     
-    QHash<int, QPointer<QStackedWidget> > m_paneStack;
     QPointer<QStackedWidget> m_pExpandedStack;
     
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;

@@ -129,11 +129,11 @@ void AnalysisFeature::selectAll() {
 void AnalysisFeature::activate() {
     //qDebug() << "AnalysisFeature::activate()";
     //m_pLibrary->switchToView(m_sAnalysisViewName);
-    m_pLibrary->slotSwitchToFeature(this);
-    m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->switchToFeature(this);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     
     if (!m_pAnalysisView.isNull()) {
-        emit(restoreSearch(m_pAnalysisView->currentSearch()));
+        m_pLibrary->slotRestoreSearch(m_pAnalysisView->currentSearch());
     }
     emit(enableCoverArtDisplay(true));
 }

@@ -46,6 +46,14 @@ class WSearchLineEdit;
 class Library : public QObject {
     Q_OBJECT
 public:
+    enum RemovalType {
+        LeaveTracksUnchanged = 0,
+        HideTracks,
+        PurgeTracks
+    };
+    
+    static const int kDefaultRowHeightPx;
+    
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
@@ -55,7 +63,7 @@ public:
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
     void bindSidebarWidget(WButtonBar* sidebar);
     void bindPaneWidget(WLibrary* libraryWidget,
-                        KeyboardEventFilter* pKeyboard, int id);
+                        KeyboardEventFilter* pKeyboard, int paneId);
     void bindSidebarExpanded(WBaseLibrary* expandedPane, 
                              KeyboardEventFilter* pKeyboard);
     void bindBreadCrumb(WLibraryBreadCrumb *pBreadCrumb, int paneId);
@@ -84,30 +92,16 @@ public:
     inline const QFont& getTrackTableFont() const {
         return m_trackTableFont;
     }
-
-    enum RemovalType {
-        LeaveTracksUnchanged = 0,
-        HideTracks,
-        PurgeTracks
-    };
-
-    static const int kDefaultRowHeightPx;
+    
+    void switchToFeature(LibraryFeature* pFeature);
+    void showBreadCrumb(TreeItem* pTree);
 
   public slots:
     
     void slotActivateFeature(LibraryFeature* pFeature);
     void slotHoverFeature(LibraryFeature* pFeature);
     
-    // It uses the current focus, it needs to be updated before calling it
-    // avoid this function
-    void slotShowTrackModel(QAbstractItemModel* model);
-    
     // Updates the focus from the feature before changing the view
-    void slotShowTrackModel(QAbstractItemModel *model, LibraryFeature* pFeature);
-    
-    // Updates the focus from the feature before changing the view
-    void slotSwitchToFeature(LibraryFeature* pFeature);
-    void slotShowBreadCrumb(TreeItem* pTree);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
