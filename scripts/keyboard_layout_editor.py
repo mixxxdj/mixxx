@@ -386,7 +386,7 @@ class DlgKeyboard(Frame):
 
         # Character keys (qwertyuiop[] on en_US)
         row_2 = Frame(self)
-        DlgKeyboardKey(row_2, scancode=16, width=4, char="Tab", state=DISABLED)
+        DlgKeyboardKey(row_2, scancode=16, width=5, char="Tab", state=DISABLED)
         for i in range(17, 29):
             key = DlgKeyboardKey(row_2, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
@@ -394,7 +394,7 @@ class DlgKeyboard(Frame):
 
         # Character keys (asdfghjkl;'\ on en_US)
         row_3 = Frame(self)
-        DlgKeyboardKey(row_3, scancode=16, width=6, char="Caps Lock", state=DISABLED)
+        DlgKeyboardKey(row_3, scancode=16, width=7, char="Caps Lock", state=DISABLED)
         for i in range(31, 43):
             key = DlgKeyboardKey(row_3, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
@@ -421,7 +421,7 @@ class DlgKeyboard(Frame):
 
 class DlgKeyboardKey(Button):
     SIZE = {
-        "width": 2,
+        "width": 3,
         "height": 2
     }
 
@@ -433,8 +433,8 @@ class DlgKeyboardKey(Button):
         "disabled_color": "#CCD1DA"
     }
 
-    def __init__(self, *args, scancode=None, width=2, char=None, dlg_keyboard=None, **kwargs):
-        Button.__init__(self, *args, width=width, height=2, command=self.set_listening, **kwargs)
+    def __init__(self, *args, scancode=None, width=SIZE['width'], char=None, dlg_keyboard=None, **kwargs):
+        Button.__init__(self, *args, width=width, height=DlgKeyboardKey.SIZE['height'], command=self.set_listening, **kwargs)
         self.set_char(char)
         self.pack(side=LEFT)
         if not scancode:
