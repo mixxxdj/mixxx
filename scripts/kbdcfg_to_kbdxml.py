@@ -7,6 +7,7 @@ import configparser
 from tkinter import *
 from xml.dom import minidom
 from tkinter import filedialog
+from tkinter import simpledialog
 from collections import defaultdict
 from xml.etree import ElementTree as ET
 
@@ -384,28 +385,12 @@ class Gui(Tk):
         self.wm_title(Gui.TITLE)
 
         Button(self,
-               text="Convert single kbd.cfg file to single kbd.xml file",
-               command=lambda: self.open_single_dialog()).pack()
+               text="Single file conversion",
+               command=lambda: SingleFileConversionDialog(self)).pack()
 
         Button(self,
                text="Convert multiple kbd.cfg files to single multi-lang kbd.xml file",
                command=lambda: self.open_multi_dialog()).pack()
-
-    @staticmethod
-    def open_single_dialog():
-        legacy_file = filedialog.askopenfilename(
-            filetypes=(("Keyboard config files", ".kbd.cfg"), ("All Files", "*")),
-            title="Choose a legacy kbd.cfg file"
-        )
-        if not legacy_file:
-            return
-        try:
-            target_file = filedialog.asksaveasfile(
-                mode='w',
-                defaultextension=".kbd.xml", title="Where to save the kbd.xml file").name
-        except AttributeError:
-            return
-        KeyboardParser(multilang=False, legacy_file=legacy_file, target_file=target_file)
 
     @staticmethod
     def open_multi_dialog():
@@ -420,6 +405,75 @@ class Gui(Tk):
         except AttributeError:
             return
         KeyboardParser(multilang=True, legacy_folder=legacy_folder, target_file=target_file, name=target_file)
+
+
+class SingleFileConversionDialog(simpledialog.Dialog):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.legacy_file = None
+        self.target_file = None
+
+    def body(self, master):
+        self.wm_title("Single file conversion")
+
+        Label(master, text="Transform one single .kbd.cfg file to one kbd.xml file. \n"
+                           "Please note that tha given filename must follow the QLocale \n"
+                           "name format: 'language[_country]', where:\n"
+                           "- language is a lowercase, two-letter, ISO 639 language code\n"
+                           "- country is an uppercase, two- or three-letter, ISO 3166 country code", justify=LEFT,
+              bg='#388E3C', fg='white').pack()
+
+        body = Frame(master)
+        Grid.columnconfigure(body, 0, weight=1)
+        Grid.columnconfigure(body, 1, weight=1)
+        Grid.rowconfigure(body, 0, weight=1)
+        Grid.rowconfigure(body, 1, weight=1)
+
+        Label(body, text="Legacy file:").grid(row=0, sticky='w')
+        Label(body, text="Save to:").grid(row=1, sticky='w')
+
+        self.legacy_file = Entry(body)
+        self.target_file = Entry(body)
+
+        self.legacy_file.grid(row=0, column=1, sticky='nsew')
+        self.target_file.grid(row=1, column=1, sticky='nsew')
+
+        Button(body, text="Browse", command=lambda: self._browse_legacy_file()).grid(row=0, column=2, sticky='nsew', padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_target_file()).grid(row=1, column=2, sticky='nsew', padx=3)
+
+        body.pack(fill=BOTH, expand=1, pady=10)
+
+        # Set first focus
+        return self.legacy_file
+
+    def _browse_legacy_file(self):
+        legacy_file = filedialog.askopenfilename(
+            filetypes=(("Keyboard config files", ".kbd.cfg"), ("All Files", "*")),
+            title="Choose a legacy kbd.cfg file"
+        )
+        if not legacy_file:
+            return None
+
+        self.legacy_file.delete(0, END)
+        self.legacy_file.insert(0, legacy_file)
+
+    def _browse_target_file(self):
+        try:
+            target_file = filedialog.asksaveasfilename(
+                defaultextension=".kbd.xml",
+                title="Where to save the kbd.xml file")
+        except AttributeError:
+            return
+
+        self.target_file.delete(0, END)
+        self.target_file.insert(0, target_file)
+
+    def apply(self):
+        KeyboardParser(
+            multilang=False,
+            legacy_file=self.legacy_file.get(),
+            target_file=self.target_file.get()
+        )
 
 
 main()
