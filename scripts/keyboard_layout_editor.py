@@ -373,13 +373,22 @@ class WorkspaceFrame(Frame):
 
 
 class DlgKeyboard(Frame):
+    BG_COLOR = '#1abc9c'
+
     def __init__(self, *args, app=None, **kwargs):
         Frame.__init__(self, *args, **kwargs)
         self.keys = []
         self.app = app
 
+        self.configure(
+            background=DlgKeyboard.BG_COLOR,
+            highlightbackground=DlgKeyboard.BG_COLOR,
+            borderwidth=1,
+            )
+
         # Numeric keys
         row_1 = Frame(self)
+        row_1.configure(background=DlgKeyboard.BG_COLOR)
         for i in range(1, 14):
             key = DlgKeyboardKey(row_1, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
@@ -387,6 +396,7 @@ class DlgKeyboard(Frame):
 
         # Character keys (qwertyuiop[] on en_US)
         row_2 = Frame(self)
+        row_2.configure(background=DlgKeyboard.BG_COLOR)
         DlgKeyboardKey(row_2, scancode=16, width=5, char="Tab", state=DISABLED)
         for i in range(17, 29):
             key = DlgKeyboardKey(row_2, scancode=i, dlg_keyboard=self)
@@ -395,6 +405,7 @@ class DlgKeyboard(Frame):
 
         # Character keys (asdfghjkl;'\ on en_US)
         row_3 = Frame(self)
+        row_3.configure(background=DlgKeyboard.BG_COLOR)
         DlgKeyboardKey(row_3, scancode=16, width=7, char="Caps Lock", state=DISABLED)
         for i in range(31, 43):
             key = DlgKeyboardKey(row_3, scancode=i, dlg_keyboard=self)
@@ -403,6 +414,7 @@ class DlgKeyboard(Frame):
 
         # Character keys (\zxcvbnm,./ on en_US)
         row_4 = Frame(self)
+        row_4.configure(background=DlgKeyboard.BG_COLOR)
         DlgKeyboardKey(row_4, scancode=16, char="Shift", state=DISABLED)
         for i in range(45, 56):
             key = DlgKeyboardKey(row_4, scancode=i, dlg_keyboard=self)
@@ -437,7 +449,7 @@ class DlgKeyboardKey(Button):
     def __init__(self, *args, scancode=None, width=SIZE['width'], char=None, dlg_keyboard=None, **kwargs):
         Button.__init__(self, *args, width=width, height=DlgKeyboardKey.SIZE['height'], command=self.set_listening, **kwargs)
         self.set_char(char)
-        self.pack(side=LEFT)
+        self.pack(side=LEFT, padx=1, pady=1)
         if not scancode:
             print("Warning: no scancode given for this DlgKeyboardKey")
         self.scancode = scancode
