@@ -15,8 +15,6 @@ def main():
 
 class KeyboardLayoutEditor(Tk):
     TITLE = "Keyboard layouts editor"
-    WIDTH = 775
-    HEIGHT = 170
 
     @staticmethod
     def center_widget_to_screen(widget, width, height):
@@ -34,12 +32,14 @@ class KeyboardLayoutEditor(Tk):
         self.sidebarframe = SideBarFrame(self.mainframe, app=self)
         self.workspaceframe = WorkspaceFrame(self.mainframe)
         self.dlgkeyboard = DlgKeyboard(self.workspaceframe, app=self)
+
         self.pack()
+        self.update_idletasks()
 
         KeyboardLayoutEditor.center_widget_to_screen(
             self,
-            width=KeyboardLayoutEditor.WIDTH,
-            height=KeyboardLayoutEditor.HEIGHT
+            width=self.winfo_width(),
+            height=self.winfo_height()
         )
 
         # Full path of current XML file
@@ -64,10 +64,11 @@ class KeyboardLayoutEditor(Tk):
         self.new_file()
 
     def pack(self):
-        self.sidebarframe.pack(side=LEFT)
-        self.workspaceframe.pack()
-        self.mainframe.pack()
-        self.dlgkeyboard.pack()
+        self.sidebarframe.pack(side=LEFT, pady=0, fill=Y, expand=1)
+        self.workspaceframe.pack(side=RIGHT)
+        self.dlgkeyboard.pack(padx=18, pady=18)
+        self.mainframe.pack(pady=0, padx=0)
+
 
     def new_file(self):
         self.file_path = None
@@ -235,8 +236,8 @@ class SideBarFrame(Frame):
         self.app = app
 
         buttons = Frame(self)
-        Button(buttons, command=self.on_add_button_clicked, text="Add").pack(side=LEFT)
-        Button(buttons, command=self.on_remove_button_clicked, text="Remove").pack(side=LEFT)
+        Button(buttons, command=self.on_add_button_clicked, text="Add").pack(side=LEFT, fill=X, expand=1)
+        Button(buttons, command=self.on_remove_button_clicked, text="Remove").pack(side=LEFT, fill=X, expand=1)
         buttons.pack(fill=BOTH)
 
         self.listbox = Listbox(self)
@@ -273,15 +274,26 @@ class SideBarFrame(Frame):
 
 
 class LayoutNameDialog:
+    TITLE = "Add layout"
+
     def __init__(self, parent):
         self.app = parent.app
         top = self.top = Toplevel(parent)
-        KeyboardLayoutEditor.center_widget_to_screen(top, 250, 75)
+        top.wm_title(LayoutNameDialog.TITLE)
+
         Label(top, text="Layout name:").pack(fill=BOTH)
         self.entry = Entry(top)
-        self.entry.pack(padx=5)
+        self.entry.pack(padx=75)
+
         self.entry.bind('<Return>', self.ok)
         Button(top, text="OK", command=self.ok).pack(pady=3)
+
+        top.update_idletasks()
+        KeyboardLayoutEditor.center_widget_to_screen(
+            top,
+            width=top.winfo_width(),
+            height=top.winfo_height()
+        )
 
     def ok(self, e=None):
         name = self.entry.get()
@@ -356,6 +368,8 @@ class WorkspaceFrame(Frame):
     def __init__(self, *args, **kwargs):
         Frame.__init__(self, *args, **kwargs)
 
+        self.configure(background='#16a085')
+
 
 class DlgKeyboard(Frame):
     def __init__(self, *args, app=None, **kwargs):
@@ -406,6 +420,11 @@ class DlgKeyboard(Frame):
 
 
 class DlgKeyboardKey(Button):
+    SIZE = {
+        "width": 2,
+        "height": 2
+    }
+
     COLORS = {
         "background_color": "#434A55",
         "active_background_color": "#656D79",
@@ -456,15 +475,13 @@ class DlgKeyboardKey(Button):
     def on_key_press(self, e):
         char = e.char
 
-        if not char.strip():
+        # Check for DELETE key
+        if e.keysym_num == 65535 or e.keysym_num == 65439:
+            char = ""
+        elif not char.strip():
             return
 
-        # Check for DELETE key
-        if e.keysym_num == 65535:
-            char = ""
-            self.set_char(char)
-        else:
-            self.set_char(char)
+        self.set_char(char)
 
         scancode = self.scancode
         if not scancode:
