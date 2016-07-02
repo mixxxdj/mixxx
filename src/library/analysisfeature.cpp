@@ -63,7 +63,7 @@ QIcon AnalysisFeature::getIcon() {
     return QIcon(":/images/library/ic_library_prepare.png");
 }
 
-QString AnalysisFeature::getViewName() {
+QString AnalysisFeature::getFeatureName() {
     return m_sAnalysisViewName;
 }
 
@@ -90,7 +90,7 @@ QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
 }
 
 QWidget* AnalysisFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    m_pAnalysisView = new DlgAnalysis(nullptr, m_pTrackCollection);
+    m_pAnalysisView = new DlgAnalysis(nullptr, this, m_pTrackCollection);
     
     m_pAnalysisView->setTableModel(getAnalysisTableModel());
     
@@ -129,7 +129,7 @@ void AnalysisFeature::selectAll() {
 void AnalysisFeature::activate() {
     //qDebug() << "AnalysisFeature::activate()";
     //m_pLibrary->switchToView(m_sAnalysisViewName);
-    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotSwitchToFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     
     if (!m_pAnalysisView.isNull()) {

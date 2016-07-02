@@ -40,7 +40,7 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
             continue;
         }
         pPane->setParent(lib);
-        lib->registerView(f->getViewName(), pPane);
+        lib->registerView(f->getFeatureName(), pPane);
         m_featuresWidget[f] = lib->indexOf(pPane);
     }
 }
@@ -80,8 +80,20 @@ WBaseLibrary* LibraryPaneManager::getPaneWidget() {
     return m_pPaneWidget;
 }
 
-void LibraryPaneManager::setFocusedFeature(const QString& featureName) {
-    m_focusedFeature = featureName;
+void LibraryPaneManager::setFocusedFeatureName(const QString& featureName) {
+    m_focusedFeatureName = featureName;
+}
+
+const QString& LibraryPaneManager::getFocusedFeatureName() const {
+    return m_focusedFeatureName;
+}
+
+void LibraryPaneManager::setFocusedFeature(LibraryFeature* pFeature) {
+    m_pFocusedFeature = pFeature;
+}
+
+LibraryFeature *LibraryPaneManager::getFocusedFeature() const {
+    return m_pFocusedFeature;
 }
 
 void LibraryPaneManager::setFocus() {

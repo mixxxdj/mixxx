@@ -131,7 +131,7 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 }
 
 void BasePlaylistFeature::activate() {
-    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotSwitchToFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     
     emit(restoreSearch(QString())); // Null String disables search box
@@ -609,7 +609,7 @@ QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     return edit;
 }
 
-QString BasePlaylistFeature::getViewName() {
+QString BasePlaylistFeature::getFeatureName() {
     return m_rootViewName;
 }
 

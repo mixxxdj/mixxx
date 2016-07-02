@@ -41,7 +41,7 @@ class MixxxLibraryFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getViewName() override;
+    QString getFeatureName() override;
     
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);

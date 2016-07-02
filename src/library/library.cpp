@@ -117,10 +117,10 @@ void Library::bindSidebarWidget(WButtonBar* sidebar) {
     for (LibraryFeature* f : m_features) {
         WFeatureClickButton* button = sidebar->addButton(f);
         
-        connect(button, SIGNAL(clicked(const QString&)),
-                this, SLOT(slotActivateFeature(const QString&)));
-        connect(button, SIGNAL(hoverShow(const QString&)),
-                this, SLOT(slotHoverFeature(const QString&)));
+        connect(button, SIGNAL(clicked(LibraryFeature*)),
+                this, SLOT(slotActivateFeature(LibraryFeature*)));
+        connect(button, SIGNAL(hoverShow(LibraryFeature*)),
+                this, SLOT(slotHoverFeature(LibraryFeature*)));
         connect(button, SIGNAL(rightClicked(const QPoint&)),
                 f, SLOT(onRightClick(const QPoint&)));
     }
@@ -210,7 +210,7 @@ void Library::addFeature(LibraryFeature* feature) {
         return;
     }
     m_features.append(feature);
-    m_featuresMap.insert(feature->getViewName(), feature);
+    m_featuresMap.insert(feature->getFeatureName(), feature);
     
     m_pSidebarModel->addLibraryFeature(feature);
     
@@ -218,8 +218,6 @@ void Library::addFeature(LibraryFeature* feature) {
     // between the LibraryFeature and the Library
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
             this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
-    connect(feature, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotSwitchToView(const QString&)));
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -244,26 +242,13 @@ void Library::slotShowTrackModel(QAbstractItemModel *model, LibraryFeature *pFea
     slotShowTrackModel(model);
 }
 
-void Library::slotSwitchToView(const QString& view) {
-    //qDebug() << "Library::slotSwitchToView" << view;
-    m_pSidebarExpanded->slotSwitchToView(view);
-    
-    WBaseLibrary* wLibrary = m_panes[m_focusedPane]->getPaneWidget();
-    // Only change the current pane if it's not shown already
-    if (wLibrary->getCurrentViewName() != view) {
-        m_panes[m_focusedPane]->slotSwitchToView(view);
-    }
-    
-    handleFocus();
-}
-
-void Library::slotSwitchToViewFeature(LibraryFeature* pFeature) {
+void Library::slotSwitchToFeature(LibraryFeature* pFeature) {
     m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
     slotUpdateFocus(pFeature);
     
     WBaseLibrary* pWLibrary = m_panes[m_focusedPane]->getPaneWidget();
     // Only change the current pane if it's not shown already
-    if (pWLibrary->getCurrentViewName() != pFeature->getViewName()) {
+    if (pWLibrary->getCurrentViewName() != pFeature->getFeatureName()) {
         m_panes[m_focusedPane]->slotSwitchToViewFeature(pFeature);
     }
     
@@ -335,7 +320,7 @@ void Library::onSkinLoadFinished() {
         // The first pane always shows the Mixxx Library feature on start
         m_focusedPane = m_panes.begin().key();
         (*m_features.begin())->setFeatureFocus(m_focusedPane);
-        slotActivateFeature((*m_features.begin())->getViewName());
+        slotActivateFeature(*m_features.begin());
     }
     else {
         qDebug() << "Library::onSkinLoadFinished No Panes loaded!";
@@ -416,12 +401,10 @@ QStringList Library::getDirs() {
     return m_pTrackCollection->getDirectoryDAO().getDirs();
 }
 
-void Library::slotActivateFeature(const QString &featureName) {
-    LibraryFeature* pFeature = m_featuresMap[featureName];
-    
+void Library::slotActivateFeature(LibraryFeature *pFeature) {
     // The feature is being shown currently in the focused pane
-    if (m_panes[m_focusedPane]->getFocusedFeature() == featureName) {
-        m_pSidebarExpanded->slotSwitchToView(featureName);
+    if (m_panes[m_focusedPane]->getFocusedFeature() == pFeature) {
+        m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
         return;
     }
 
@@ -436,22 +419,21 @@ void Library::slotActivateFeature(const QString &featureName) {
     } else {
     	// The feature is shown in some pane
         m_focusedPane = pFeature->getFeatureFocus();
-		m_pSidebarExpanded->slotSwitchToView(featureName);
+        m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
 		handleFocus();
 		return;
     }
     
-    m_panes[m_focusedPane]->setFocusedFeature(featureName);
+    m_panes[m_focusedPane]->setFocusedFeature(pFeature);
     pFeature->setFeatureFocus(m_focusedPane);    
     pFeature->activate();
     handleFocus();
 }
 
-void Library::slotHoverFeature(const QString &featureName) {
+void Library::slotHoverFeature(LibraryFeature *pFeature) {
     // This function only changes the sidebar expanded to allow dropping items
     // directly in some features sidebar panes
-    
-    m_pSidebarExpanded->slotSwitchToView(featureName);
+    m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
 }
 
 void Library::slotSetTrackTableFont(const QFont& font) {

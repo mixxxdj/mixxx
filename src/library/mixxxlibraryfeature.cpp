@@ -253,7 +253,7 @@ QIcon MixxxLibraryFeature::getIcon() {
     return QIcon(":/images/library/ic_library_library.png");
 }
 
-QString MixxxLibraryFeature::getViewName() {
+QString MixxxLibraryFeature::getFeatureName() {
     return m_sMixxxLibraryViewName;
 }
 
@@ -346,7 +346,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
         m_pHiddenView->onShow();
         (*it)->setCurrentIndex(m_hiddenPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_hiddenExpandedId);
-        m_pLibrary->slotSwitchToViewFeature(this);
+        m_pLibrary->slotSwitchToFeature(this);
         m_pLibrary->slotShowBreadCrumb(pTree);
         emit(enableCoverArtDisplay(true));
         
@@ -362,7 +362,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
         m_pMissingView->onShow();
         m_paneStack[m_featureFocus]->setCurrentIndex(m_missingPaneId[m_featureFocus]);
         m_pExpandedStack->setCurrentIndex(m_missingExpandedId);
-        m_pLibrary->slotSwitchToViewFeature(this);
+        m_pLibrary->slotSwitchToFeature(this);
         m_pLibrary->slotShowBreadCrumb(pTree);
         emit(enableCoverArtDisplay(true));
     }

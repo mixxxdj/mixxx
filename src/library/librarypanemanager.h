@@ -34,12 +34,9 @@ class LibraryPaneManager : public QObject {
     void addFeatures(const QList<LibraryFeature*>& features);
 
     WBaseLibrary* getPaneWidget();
-
-    void setFocusedFeature(const QString& featureName);
-
-    QString getFocusedFeature() {
-        return m_focusedFeature;
-    }
+    
+    void setFocusedFeature(LibraryFeature* pFeature);
+    LibraryFeature* getFocusedFeature() const;
 
     void setFocus();
 
@@ -79,7 +76,8 @@ class LibraryPaneManager : public QObject {
 
     const static QString m_sTrackViewName;
 
-    QString m_focusedFeature;
+    QString m_focusedFeatureName;
+    LibraryFeature* m_pFocusedFeature;
     
     int m_paneId;
 

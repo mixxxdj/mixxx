@@ -109,7 +109,7 @@ QIcon RhythmboxFeature::getIcon() {
     return QIcon(":/images/library/ic_library_rhythmbox.png");
 }
 
-QString RhythmboxFeature::getViewName() {
+QString RhythmboxFeature::getFeatureName() {
     return m_sRhythmBoxViewName;
 }
 

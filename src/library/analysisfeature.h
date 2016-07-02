@@ -31,7 +31,7 @@ class AnalysisFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getViewName() override;
+    QString getFeatureName() override;
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
@@ -41,6 +41,7 @@ class AnalysisFeature : public LibraryFeature {
     
     TreeItemModel* getChildModel();
     void refreshLibraryModels();
+    void stopAnalysis();
 
   signals:
     void analysisActive(bool bActive);
@@ -53,7 +54,6 @@ class AnalysisFeature : public LibraryFeature {
 
   private slots:
     void slotProgressUpdate(int num_left);
-    void stopAnalysis();
     void cleanupAnalyzer();
     void tableSelectionChanged(const QItemSelection&,
                                const QItemSelection&);

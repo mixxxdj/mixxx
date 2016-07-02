@@ -32,7 +32,7 @@ class CrateFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getViewName() override;
+    QString getFeatureName() override;
     
     void onSearch(QString&) {}
 

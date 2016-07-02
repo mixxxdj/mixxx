@@ -41,7 +41,7 @@ QIcon RecordingFeature::getIcon() {
     return QIcon(":/images/library/ic_library_recordings.png");
 }
 
-QString RecordingFeature::getViewName() {
+QString RecordingFeature::getFeatureName() {
     return m_sRecordingViewName;
 }
 
@@ -83,7 +83,7 @@ void RecordingFeature::activate() {
     }
     
     m_pRecordingView->refreshBrowseModel();
-    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotSwitchToFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->slotRestoreSearch("");
     

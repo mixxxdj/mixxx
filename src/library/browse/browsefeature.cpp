@@ -208,7 +208,7 @@ QIcon BrowseFeature::getIcon() {
     return QIcon(":/images/library/ic_library_browse.png");
 }
 
-QString BrowseFeature::getViewName() {
+QString BrowseFeature::getFeatureName() {
     return m_sBrowseViewName;
 }
 
@@ -224,7 +224,7 @@ QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
 }
 
 void BrowseFeature::activate() {
-    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotSwitchToFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->slotRestoreSearch(QString());
     

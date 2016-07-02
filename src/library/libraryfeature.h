@@ -37,7 +37,7 @@ class LibraryFeature : public QObject {
     
     // Must be a unique name for each feature, it must be a unique name for each
     // different feature
-    virtual QString getViewName() = 0;
+    virtual QString getFeatureName() = 0;
 
     virtual bool dropAccept(QList<QUrl> /* urls */, 
                             QObject* /* pSource */) {
@@ -103,7 +103,6 @@ class LibraryFeature : public QObject {
     
   signals:
     void showTrackModel(QAbstractItemModel* model);
-    void switchToView(const QString&);
     
     void loadTrack(TrackPointer);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);

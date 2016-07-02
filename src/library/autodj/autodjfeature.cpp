@@ -98,7 +98,7 @@ QIcon AutoDJFeature::getIcon() {
     return QIcon(":/images/library/ic_library_autodj.png");
 }
 
-QString AutoDJFeature::getViewName() {
+QString AutoDJFeature::getFeatureName() {
     return m_sAutoDJViewName;
 }
 
@@ -162,7 +162,7 @@ void AutoDJFeature::activate() {
     
     m_pAutoDJView->onShow();
     
-    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotSwitchToFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->slotRestoreSearch(QString()); //Null String disables search box
     

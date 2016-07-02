@@ -8,21 +8,15 @@ LibrarySidebarExpandedManager::LibrarySidebarExpandedManager(QObject* parent)
 
 void LibrarySidebarExpandedManager::bindPaneWidget(WBaseLibrary* sidebarWidget,
                                                    KeyboardEventFilter* pKeyboard) {
-
     m_pPaneWidget = sidebarWidget;
 
-    connect(this, SIGNAL(switchToView(const QString&)),
-            m_pPaneWidget, SLOT(switchToView(const QString&)));
-
-    for (LibraryFeature* f : m_features) {
-        //f->bindSidebarWidget(m_pPaneWidget, pKeyboard);
-        
+    for (LibraryFeature* f : m_features) {        
         QWidget* pPane = f->createSidebarWidget(pKeyboard);
         if (pPane == nullptr) {
             continue;
         }
         pPane->setParent(sidebarWidget);
-        sidebarWidget->registerView(f->getViewName(), pPane);
+        sidebarWidget->registerView(f->getFeatureName(), pPane);
         m_featuresWidget[f] = sidebarWidget->indexOf(pPane);
     }
 }

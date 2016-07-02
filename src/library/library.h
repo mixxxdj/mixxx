@@ -91,8 +91,9 @@ public:
     static const int kDefaultRowHeightPx;
 
   public slots:
-    void slotActivateFeature(const QString& featureName);
-    void slotHoverFeature(const QString& featureName);
+    
+    void slotActivateFeature(LibraryFeature* pFeature);
+    void slotHoverFeature(LibraryFeature* pFeature);
     
     // It uses the current focus, it needs to be updated before calling it
     // avoid this function
@@ -101,11 +102,8 @@ public:
     // Updates the focus from the feature before changing the view
     void slotShowTrackModel(QAbstractItemModel *model, LibraryFeature* pFeature);
     
-    // It uses the current focus, avoid using this function
-    void slotSwitchToView(const QString& view);
-    
     // Updates the focus from the feature before changing the view
-    void slotSwitchToViewFeature(LibraryFeature* pFeature);
+    void slotSwitchToFeature(LibraryFeature* pFeature);
     void slotShowBreadCrumb(TreeItem* pTree);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);

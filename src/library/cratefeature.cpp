@@ -127,7 +127,7 @@ QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
 }
 
-QString CrateFeature::getViewName() {
+QString CrateFeature::getFeatureName() {
     return m_sCrateViewName;
 }
 
@@ -205,7 +205,7 @@ TreeItemModel* CrateFeature::getChildModel() {
 }
 
 void CrateFeature::activate() {
-    m_pLibrary->slotSwitchToViewFeature(this);
+    m_pLibrary->slotSwitchToFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->slotRestoreSearch(QString()); //disable search on crate home
     

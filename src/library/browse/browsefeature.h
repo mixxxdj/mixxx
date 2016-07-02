@@ -36,7 +36,7 @@ class BrowseFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getViewName() override;
+    QString getFeatureName() override;
 
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int);
 

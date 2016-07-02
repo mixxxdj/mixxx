@@ -63,7 +63,7 @@ QIcon BansheeFeature::getIcon() {
     return QIcon(":/images/library/ic_library_banshee.png");
 }
 
-QString BansheeFeature::getViewName() {
+QString BansheeFeature::getFeatureName() {
     return m_sBansheeViewName;
 }
 

@@ -117,7 +117,7 @@ QIcon ITunesFeature::getIcon() {
     return QIcon(":/images/library/ic_library_itunes.png");
 }
 
-QString ITunesFeature::getViewName() {
+QString ITunesFeature::getFeatureName() {
     return m_sItunesView;
 }
 

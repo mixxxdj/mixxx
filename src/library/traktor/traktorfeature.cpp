@@ -128,7 +128,7 @@ QIcon TraktorFeature::getIcon() {
     return QIcon(":/images/library/ic_library_traktor.png");
 }
 
-QString TraktorFeature::getViewName() {
+QString TraktorFeature::getFeatureName() {
     return m_sTraktorViewName;
 }
 
@@ -182,7 +182,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
         qDebug() << "Activate Traktor Playlist: " << item->dataPath().toString();
         m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
         
-        m_pLibrary->slotSwitchToViewFeature(this);
+        m_pLibrary->slotSwitchToFeature(this);
         m_pLibrary->slotShowBreadCrumb(item);
         m_pLibrary->slotShowTrackModel(m_pTraktorPlaylistModel);
         emit(enableCoverArtDisplay(false));
