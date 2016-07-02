@@ -5,7 +5,7 @@
 class LibrarySidebarExpandedManager : public LibraryPaneManager
 {
   public:
-    LibrarySidebarExpandedManager(QObject* parent = nullptr);
+    LibrarySidebarExpandedManager(Library* pLibrary, QObject* parent = nullptr);
 
     void bindPaneWidget(WBaseLibrary* sidebarWidget,
                         KeyboardEventFilter* pKeyboard) override;

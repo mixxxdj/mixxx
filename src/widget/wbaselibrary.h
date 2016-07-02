@@ -27,6 +27,8 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
   signals:
   
     void focused();
+    void collapsed();
+    void uncollapsed();    
     
   public slots:
 
@@ -38,16 +40,16 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
       
     bool eventFilter(QObject*, QEvent* pEvent);
     bool event(QEvent* pEvent) override;
+    void resizeEvent(QResizeEvent* pEvent);
 
     QHash<QString, QWidget*> m_viewMap;
 
   private:
     
     QString m_currentViewName;
-
     QMutex m_mutex;
-    
     int m_showFocus;
+    bool m_isCollapsed;
 };
 
 #endif // WLIBRARYSIDEBAREXPANDED_H

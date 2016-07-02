@@ -12,13 +12,14 @@ class LibraryFeature;
 class WButtonBar;
 class WLibraryBreadCrumb;
 class TreeItem;
+class Library;
 
 class LibraryPaneManager : public QObject {
     Q_OBJECT
 
   public:
 
-    LibraryPaneManager(int paneId, QObject* parent = nullptr);
+    LibraryPaneManager(int paneId, Library* pLibrary, QObject* parent = nullptr);
 
     ~LibraryPaneManager();
 
@@ -64,6 +65,8 @@ class LibraryPaneManager : public QObject {
     void slotSwitchToViewFeature(LibraryFeature* pFeature);
     void slotRestoreSearch(const QString& text);
     void slotShowBreadCrumb(TreeItem* pTree);
+    void slotPaneCollapsed();
+    void slotPaneUncollapsed();
 
   protected:
 
@@ -75,11 +78,10 @@ class LibraryPaneManager : public QObject {
   private:
 
     const static QString m_sTrackViewName;
-
-    QString m_focusedFeatureName;
-    LibraryFeature* m_pFocusedFeature;
     
+    LibraryFeature* m_pFocusedFeature;
     int m_paneId;
+    Library* m_pLibrary;
 
   private slots:
 

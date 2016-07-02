@@ -65,6 +65,9 @@ public:
     
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
+    
+    void paneCollapsed(int paneId);
+    void paneUncollapsed(int paneId);
 
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
     // waveform widgets can signal to a player to load a track. This can be
@@ -145,7 +148,7 @@ public:
   private:
     
     // If the pane exists returns it, otherwise it creates the pane
-    LibraryPaneManager *getPane(int id);
+    LibraryPaneManager *getPane(int paneId);
     LibraryPaneManager* getFocusedPane();
     
     UserSettingsPointer m_pConfig;
@@ -167,6 +170,7 @@ public:
     LibraryPaneManager* m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
     QHash<QString, LibraryFeature*> m_featuresMap;
+    QSet<int> m_collapsedPanes;
     
     // Can be any integer as it's used with a HashMap
     int m_focusedPane;

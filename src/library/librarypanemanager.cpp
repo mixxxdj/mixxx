@@ -1,19 +1,21 @@
 #include <QDebug>
 
-#include "librarypanemanager.h"
 #include "library/libraryfeature.h"
-#include "widget/wtracktableview.h"
+#include "library/library.h"
+#include "library/librarypanemanager.h"
+#include "util/assert.h"
 #include "widget/wbuttonbar.h"
 #include "widget/wlibrarybreadcrumb.h"
-#include "util/assert.h"
+#include "widget/wtracktableview.h"
 
 const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
 
-LibraryPaneManager::LibraryPaneManager(int paneId, QObject* parent)
+LibraryPaneManager::LibraryPaneManager(int paneId, Library *pLibrary, QObject* parent)
         : QObject(parent),
           m_pPaneWidget(nullptr),
           m_pBreadCrumb(nullptr),
-          m_paneId(paneId) {
+          m_paneId(paneId),
+          m_pLibrary(pLibrary) {
     qApp->installEventFilter(this);
 }
 
@@ -27,6 +29,10 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
     
     connect(m_pPaneWidget, SIGNAL(focused()),
             this, SIGNAL(focused()));
+    connect(m_pPaneWidget, SIGNAL(collapsed()),
+            this, SLOT(slotPaneCollapsed()));
+    connect(m_pPaneWidget, SIGNAL(uncollapsed()),
+            this, SLOT(slotPaneUncollapsed()));
 
     WLibrary* lib = qobject_cast<WLibrary*>(m_pPaneWidget);
     if (lib == nullptr) {
@@ -146,6 +152,14 @@ void LibraryPaneManager::slotShowBreadCrumb(TreeItem *pTree) {
     }
     
     m_pBreadCrumb->showBreadCrumb(pTree);
+}
+
+void LibraryPaneManager::slotPaneCollapsed() {
+    m_pLibrary->paneCollapsed(m_paneId);
+}
+
+void LibraryPaneManager::slotPaneUncollapsed() {
+    m_pLibrary->paneUncollapsed(m_paneId);
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {

@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QMutexLocker>
 #include <QEvent>
+#include <QResizeEvent>
 #include <QStyle>
 
 #include "wbaselibrary.h"
@@ -75,5 +76,17 @@ bool WBaseLibrary::event(QEvent* pEvent) {
     }
 
     return QStackedWidget::event(pEvent);
+}
+
+void WBaseLibrary::resizeEvent(QResizeEvent *pEvent) {
+    
+    // Detect whether the library is collapsed to change the focus behaviour
+    if (pEvent->size().isEmpty()) {
+        m_isCollapsed = true;
+        emit(collapsed());
+    } else if (m_isCollapsed) {
+        m_isCollapsed = false;
+        emit(uncollapsed());
+    }
 }
 

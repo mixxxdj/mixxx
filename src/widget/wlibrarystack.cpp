@@ -13,7 +13,7 @@ WLibraryStack::~WLibraryStack() {
 }
 
 int WLibraryStack::addWidget(QWidget* w) {
-    qDebug() << "WLibraryStack::addWidget" << w;
+    //qDebug() << "WLibraryStack::addWidget" << w;
     checkAndWarning(w);
     return QStackedWidget::addWidget(w);
 }

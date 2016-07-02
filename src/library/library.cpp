@@ -169,7 +169,7 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
 void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
     //qDebug() << "Library::bindSidebarExpanded";
-    m_pSidebarExpanded = new LibrarySidebarExpandedManager;
+    m_pSidebarExpanded = new LibrarySidebarExpandedManager(this);
     connect(m_pSidebarExpanded, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
     m_pSidebarExpanded->addFeatures(m_features);    
@@ -401,15 +401,35 @@ QStringList Library::getDirs() {
     return m_pTrackCollection->getDirectoryDAO().getDirs();
 }
 
+void Library::paneCollapsed(int paneId) {
+    m_collapsedPanes.insert(paneId);
+    
+    // Automatically switch the focus to a non collapsed pane
+    m_panes[paneId]->clearFocus();
+    
+    for (LibraryPaneManager* pPane : m_panes) {
+        if (!m_collapsedPanes.contains(pPane->getPaneId())) {
+            m_focusedPane = pPane->getPaneId();
+            pPane->setFocus();
+            break;
+        }
+    }
+}
+
+void Library::paneUncollapsed(int paneId) {
+    m_collapsedPanes.remove(paneId);
+}
+
 void Library::slotActivateFeature(LibraryFeature *pFeature) {
     // The feature is being shown currently in the focused pane
     if (m_panes[m_focusedPane]->getFocusedFeature() == pFeature) {
         m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
         return;
     }
+    int featureFocus = pFeature->getFeatureFocus();
 
     // The feature is not focused anywhere
-    if (pFeature->getFeatureFocus() < 0) {
+    if (featureFocus < 0 || m_collapsedPanes.contains(featureFocus)) {
         // Remove the previous focused feature in this pane
         for (LibraryFeature* f : m_features) {
             if (f->getFeatureFocus() == m_focusedPane) {
@@ -417,8 +437,8 @@ void Library::slotActivateFeature(LibraryFeature *pFeature) {
             }
         }
     } else {
-    	// The feature is shown in some pane
-        m_focusedPane = pFeature->getFeatureFocus();
+    	// The feature is shown in some not collapsed pane
+        m_focusedPane = featureFocus;
         m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
 		handleFocus();
 		return;
@@ -470,20 +490,20 @@ void Library::slotUpdateFocus(LibraryFeature *pFeature) {
 }
 
 
-LibraryPaneManager* Library::getPane(int id) {
+LibraryPaneManager* Library::getPane(int paneId) {
     //qDebug() << "Library::createPane" << id;
     // Get the value once to avoid searching again in the hash
-    auto it = m_panes.find(id);
+    auto it = m_panes.find(paneId);
     if (it != m_panes.end()) {
         return *it;
     }
     
-    LibraryPaneManager* pPane = new LibraryPaneManager(id);
+    LibraryPaneManager* pPane = new LibraryPaneManager(paneId, this);
     pPane->addFeatures(m_features);
-    m_panes.insert(id, pPane);
+    m_panes.insert(paneId, pPane);
     
     connect(pPane, SIGNAL(focused()), this, SLOT(slotPaneFocused()));
-    m_focusedPane = id;
+    m_focusedPane = paneId;
     return pPane;
 }
 
