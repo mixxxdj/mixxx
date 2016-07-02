@@ -69,7 +69,6 @@ class KeyboardLayoutEditor(Tk):
         self.dlgkeyboard.pack(padx=18, pady=18)
         self.mainframe.pack(pady=0, padx=0)
 
-
     def new_file(self):
         self.file_path = None
         self.file_name = "Untitled.xml"
@@ -264,7 +263,6 @@ class SideBarFrame(Frame):
 
     def on_listbox_item_selected(self, e):
         widget = e.widget
-        index = 0
         try:
             index = int(widget.curselection()[0])
         except IndexError:
@@ -442,6 +440,17 @@ class DlgKeyboardKey(Button):
         self.scancode = scancode
         self.dlg_keyboard = dlg_keyboard
         self.bind("<KeyPress>", self.on_key_press)
+
+        self.scancode_label = Label(self, text=scancode, font=("Helvetica", 6))
+
+        self.bind("<Enter>", lambda e: self.show_scancode())
+        self.bind("<Leave>", lambda e: self.hide_scancode())
+
+    def show_scancode(self):
+        self.scancode_label.place(x=0, y=0)
+
+    def hide_scancode(self):
+        self.scancode_label.place_forget()
 
     def set_char(self, char):
         if not char:
