@@ -392,9 +392,8 @@ class DlgKeyboard(Frame):
         DlgKeyboardKey(f_keys_row, scancode=110, char="ESC", state=DISABLED)
         for i in range(112, 124):
             char = "F" + str(i - 111)
-            key = DlgKeyboardKey(f_keys_row, scancode=i, width=4, char=char, state=DISABLED)
+            DlgKeyboardKey(f_keys_row, scancode=i, width=4, char=char, state=DISABLED)
         f_keys_row.grid(row=1, column=1, sticky='we')
-
 
         # Numeric keys
         numeric_keys_row = Frame(self)
@@ -402,7 +401,8 @@ class DlgKeyboard(Frame):
         for i in range(1, 14):
             key = DlgKeyboardKey(numeric_keys_row, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
-        DlgKeyboardKey(numeric_keys_row, scancode=15, width=9, char="Backspace", state=DISABLED)
+        self.keys.append(DlgKeyboardKey(numeric_keys_row, scancode=42, dlg_keyboard=self))
+        DlgKeyboardKey(numeric_keys_row, scancode=15, width=5, char="Backspace", state=DISABLED)
         numeric_keys_row.grid(row=2, column=1, sticky='we')
 
         # Character keys (qwertyuiop[] on en_US)
@@ -412,13 +412,13 @@ class DlgKeyboard(Frame):
         for i in range(17, 29):
             key = DlgKeyboardKey(letters_keys_row_1, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
-        self.keys.append(DlgKeyboardKey(letters_keys_row_1, scancode=29, width=7, dlg_keyboard=self))
+        self.keys.append(DlgKeyboardKey(letters_keys_row_1, scancode=42, width=7, dlg_keyboard=self))
         letters_keys_row_1.grid(row=3, column=1, sticky='we')
 
         # Character keys (asdfghjkl;'\ on en_US)
         letters_keys_row_2 = Frame(self)
         letters_keys_row_2.configure(background=DlgKeyboard.BG_COLOR)
-        DlgKeyboardKey(letters_keys_row_2, scancode=16, width=7, char="Caps Lock", state=DISABLED)
+        DlgKeyboardKey(letters_keys_row_2, scancode=30, width=7, char="Caps Lock", state=DISABLED)
         for i in range(31, 43):
             key = DlgKeyboardKey(letters_keys_row_2, scancode=i, dlg_keyboard=self)
             self.keys.append(key)
@@ -444,6 +444,12 @@ class DlgKeyboard(Frame):
     def clear_all(self):
         for key in self.keys:
             key.set_char("")
+
+    def set_keys_with_same_scancode_as(self, p_key):
+        char = p_key.cget('text')
+        for i_key in self.keys:
+            if i_key.scancode == p_key.scancode and i_key != p_key:
+                i_key.set_char(char)
 
 
 class DlgKeyboardKey(Button):
@@ -485,7 +491,7 @@ class DlgKeyboardKey(Button):
     def set_char(self, char):
         if not char:
             char = ""
-        self.config(text=char)
+        self.config(text=char, font=("Helvetica", 12))
         self.update_button_colors(bool(char))
 
     def set_listening(self):
@@ -536,6 +542,7 @@ class DlgKeyboardKey(Button):
             self.set_char("")
             return
         layout.update_key(scancode, char)
+        self.dlg_keyboard.set_keys_with_same_scancode_as(self)
         self.tk_focusNext().focus_set()
 
 
