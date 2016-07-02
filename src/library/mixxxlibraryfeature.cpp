@@ -28,7 +28,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          Library* pLibrary,
                                          QObject* parent,
                                          TrackCollection* pTrackCollection)
-        : LibraryFeature(pConfig, pLibrary, parent),
+        : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           kLibraryTitle(tr("Library")),
           kHiddenTitle(tr("Hidden Tracks")),
           kMissingTitle(tr("Missing Tracks")),

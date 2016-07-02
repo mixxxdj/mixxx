@@ -32,7 +32,7 @@ BrowseFeature::BrowseFeature(UserSettingsPointer pConfig,
                              QObject* parent,
                              TrackCollection* pTrackCollection,
                              RecordingManager* pRecordingManager)
-        : LibraryFeature(pConfig, pLibrary, parent),
+        : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_browseModel(this, pTrackCollection, pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection),

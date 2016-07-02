@@ -23,9 +23,9 @@ class TrackCollection;
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AnalysisFeature(TrackCollection* pTrackCollection,
-                    UserSettingsPointer pConfig,
+    AnalysisFeature(UserSettingsPointer pConfig,
                     Library* pLibrary,
+                    TrackCollection* pTrackCollection,
                     QObject* parent);
     virtual ~AnalysisFeature();
 
@@ -70,7 +70,6 @@ class AnalysisFeature : public LibraryFeature {
     
     AnalysisLibraryTableModel* getAnalysisTableModel();
 
-    TrackCollection* m_pTrackCollection;
     AnalyzerQueue* m_pAnalyzerQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyse
     int m_iOldBpmEnabled;

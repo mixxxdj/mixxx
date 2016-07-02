@@ -20,12 +20,10 @@
 
 const QString AnalysisFeature::m_sAnalysisViewName = "AnalysisView";
 
-AnalysisFeature::AnalysisFeature(TrackCollection* pTrackCollection,
-                                 UserSettingsPointer pConfig,
-                                 Library* pLibrary,
+AnalysisFeature::AnalysisFeature(UserSettingsPointer pConfig,
+                                 Library* pLibrary, TrackCollection* pTrackCollection,
                                  QObject* parent) :
-        LibraryFeature(pConfig, pLibrary, parent),
-        m_pTrackCollection(pTrackCollection),
+        LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
         m_pAnalyzerQueue(nullptr),
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),

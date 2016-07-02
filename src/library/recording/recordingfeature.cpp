@@ -17,7 +17,7 @@ RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,
                                    QObject* parent,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : LibraryFeature(pConfig, pLibrary, parent),
+        : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_pTrackCollection(pTrackCollection),
           m_pRecordingManager(pRecordingManager),
           m_pRecordingView(nullptr),

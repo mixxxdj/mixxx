@@ -32,7 +32,7 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
                            Library* pLibrary,
                            QObject* parent,
                            TrackCollection* pTrackCollection)
-        : LibraryFeature(pConfig, pLibrary, parent),
+        : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection) {

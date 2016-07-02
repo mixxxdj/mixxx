@@ -31,7 +31,7 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
                              QObject* parent,
                              PlayerManagerInterface* pPlayerManager,
                              TrackCollection* pTrackCollection)
-        : LibraryFeature(pConfig, pLibrary, parent),
+        : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),

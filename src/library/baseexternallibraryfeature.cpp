@@ -8,8 +8,7 @@ BaseExternalLibraryFeature::BaseExternalLibraryFeature(UserSettingsPointer pConf
                                                        Library* pLibrary,
                                                        QObject* pParent,
                                                        TrackCollection* pCollection)
-        : LibraryFeature(pConfig, pLibrary, pParent),
-          m_pTrackCollection(pCollection) {
+        : LibraryFeature(pConfig, pLibrary, pCollection, pParent) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));

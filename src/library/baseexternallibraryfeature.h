@@ -41,7 +41,6 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   private:
     void addToAutoDJ(bool bTop);
 
-    TrackCollection* m_pTrackCollection;
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;
     QAction* m_pImportAsMixxxPlaylistAction;

@@ -501,7 +501,7 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
     addFeature(browseFeature);
     addFeature(new RecordingFeature(pConfig, this, this, m_pTrackCollection, m_pRecordingManager));
     addFeature(new HistoryFeature(pConfig, this, this, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(m_pTrackCollection, pConfig, this, this);//this, pConfig, m_pTrackCollection);
+    m_pAnalysisFeature = new AnalysisFeature(pConfig, this, m_pTrackCollection, this);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
