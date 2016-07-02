@@ -14,33 +14,30 @@ WLibrary::WLibrary(QWidget* parent)
     
 }
 
-bool WLibrary::registerView(QString name, QWidget* view) {
+bool WLibrary::registerView(LibraryFeature *pFeature, QWidget* pView) {
     QMutexLocker lock(&m_mutex);
-    //qDebug() << "WLibrary::registerView" << name;
-    if (dynamic_cast<LibraryView*>(view) == nullptr) {
+    if (pFeature == nullptr || dynamic_cast<LibraryView*>(pView) == nullptr) {
         qDebug() << "WARNING: Attempted to register a view with WLibrary "
                  << "that does not implement the LibraryView interface. "
                  << "Ignoring.";
         return false;
     }
-    return WBaseLibrary::registerView(name, view);
+    return WBaseLibrary::registerView(pFeature, pView);
 }
 
-void WLibrary::switchToView(const QString& name) {
+void WLibrary::switchToFeature(LibraryFeature *pFeature) {
     QMutexLocker lock(&m_mutex);
-    //qDebug() << "WLibrary::switchToView" << name;
-    QWidget* widget = m_viewMap.value(name, nullptr);
-    if (widget != nullptr) {
-        LibraryView * lview = dynamic_cast<LibraryView*>(widget);
-        if (lview == nullptr) {
+    auto it = m_featureMap.find(pFeature);
+    if (it != m_featureMap.end()) {
+        LibraryView* pView = dynamic_cast<LibraryView*>(*it);
+        if (pView == nullptr) {
             qDebug() << "WARNING: Attempted to register a view with WLibrary "
                      << "that does not implement the LibraryView interface. "
                      << "Ignoring.";
             return;
         }
-        
-        WBaseLibrary::switchToView(name);
-        lview->onShow();
+        WBaseLibrary::switchToFeature(pFeature);
+        pView->onShow();
     }
 }
 

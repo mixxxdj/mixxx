@@ -8,8 +8,6 @@
 #include "widget/wlibrarybreadcrumb.h"
 #include "widget/wtracktableview.h"
 
-const QString LibraryPaneManager::m_sTrackViewName = QString("WTrackTableView");
-
 LibraryPaneManager::LibraryPaneManager(int paneId, Library *pLibrary, QObject* parent)
         : QObject(parent),
           m_pPaneWidget(nullptr),
@@ -46,8 +44,7 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
             continue;
         }
         pPane->setParent(lib);
-        lib->registerView(f->getFeatureName(), pPane);
-        m_featuresWidget[f] = lib->indexOf(pPane);
+        lib->registerView(f, pPane);
     }
 }
 
@@ -106,27 +103,12 @@ void LibraryPaneManager::clearFocus() {
     m_pPaneWidget->setProperty("showFocus", 0);
 }
 
-void LibraryPaneManager::slotSwitchToView(const QString& view) {
-    //qDebug() << "LibraryPaneManager::slotSwitchToView" << view;
+void LibraryPaneManager::switchToFeature(LibraryFeature* pFeature) {
     DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull()) {
         return;
     }
     
-    m_pPaneWidget->switchToView(view);
-    m_pPaneWidget->setFocus();
-}
-
-void LibraryPaneManager::slotSwitchToViewFeature(LibraryFeature* pFeature) {
-    if (!m_featuresWidget.contains(pFeature)) {
-        return;
-    }
-    
-    DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull()) {
-        return;
-    }
-    
-    int widgetId = m_featuresWidget[pFeature];
-    m_pPaneWidget->setCurrentIndex(widgetId);
+    m_pPaneWidget->switchToFeature(pFeature);
 }
 
 void LibraryPaneManager::restoreSearch(const QString& text) {
@@ -135,7 +117,7 @@ void LibraryPaneManager::restoreSearch(const QString& text) {
     }
 }
 
-void LibraryPaneManager::slotShowBreadCrumb(TreeItem *pTree) {
+void LibraryPaneManager::showBreadCrumb(TreeItem *pTree) {
     DEBUG_ASSERT_AND_HANDLE(!m_pBreadCrumb.isNull()) {
         return;
     }

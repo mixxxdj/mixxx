@@ -37,10 +37,6 @@
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 
-// This is is the name which we use to register the WTrackTableView with the
-// WLibrary
-const QString Library::m_sTrackViewName = QString("WTrackTableView");
-
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
 
@@ -186,7 +182,6 @@ void Library::addFeature(LibraryFeature* feature) {
         return;
     }
     m_features.append(feature);
-    m_featuresMap.insert(feature->getFeatureName(), feature);
     
     m_pSidebarModel->addLibraryFeature(feature);
     
@@ -203,20 +198,20 @@ void Library::addFeature(LibraryFeature* feature) {
 }
 
 void Library::switchToFeature(LibraryFeature* pFeature) {
-    m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
+    m_pSidebarExpanded->switchToFeature(pFeature);
     slotUpdateFocus(pFeature);
     
     WBaseLibrary* pWLibrary = m_panes[m_focusedPane]->getPaneWidget();
     // Only change the current pane if it's not shown already
-    if (pWLibrary->getCurrentViewName() != pFeature->getFeatureName()) {
-        m_panes[m_focusedPane]->slotSwitchToViewFeature(pFeature);
+    if (pWLibrary->getCurrentFeature() != pFeature) {
+        m_panes[m_focusedPane]->switchToFeature(pFeature);
     }
     
     handleFocus();
 }
 
 void Library::showBreadCrumb(TreeItem *pTree) {
-    m_panes[m_focusedPane]->slotShowBreadCrumb(pTree);
+    m_panes[m_focusedPane]->showBreadCrumb(pTree);
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
@@ -267,7 +262,6 @@ void Library::onSkinLoadFinished() {
         // Assign a feature to show on each pane unless there are more panes
         // than features
         while (itP != m_panes.end() && itF != m_features.end()) {
-            //qDebug() << (*itF)->getViewName() << itP.key();
             m_focusedPane = itP.key();
             
             (*itF)->setFeatureFocus(itP.key());
@@ -383,7 +377,7 @@ void Library::paneUncollapsed(int paneId) {
 void Library::slotActivateFeature(LibraryFeature *pFeature) {
     // The feature is being shown currently in the focused pane
     if (m_panes[m_focusedPane]->getFocusedFeature() == pFeature) {
-        m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
+        m_pSidebarExpanded->switchToFeature(pFeature);
         return;
     }
     int featureFocus = pFeature->getFeatureFocus();
@@ -399,7 +393,7 @@ void Library::slotActivateFeature(LibraryFeature *pFeature) {
     } else {
     	// The feature is shown in some not collapsed pane
         m_focusedPane = featureFocus;
-        m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
+        m_pSidebarExpanded->switchToFeature(pFeature);
 		handleFocus();
 		return;
     }
@@ -413,7 +407,7 @@ void Library::slotActivateFeature(LibraryFeature *pFeature) {
 void Library::slotHoverFeature(LibraryFeature *pFeature) {
     // This function only changes the sidebar expanded to allow dropping items
     // directly in some features sidebar panes
-    m_pSidebarExpanded->slotSwitchToViewFeature(pFeature);
+    m_pSidebarExpanded->switchToFeature(pFeature);
 }
 
 void Library::slotSetTrackTableFont(const QFont& font) {

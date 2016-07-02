@@ -43,6 +43,8 @@ class LibraryPaneManager : public QObject {
     void clearFocus();
     
     void restoreSearch(const QString& text);
+    void switchToFeature(LibraryFeature* pFeature);
+    void showBreadCrumb(TreeItem* pTree);
     
     inline int getPaneId() { 
         return m_paneId;
@@ -58,9 +60,6 @@ class LibraryPaneManager : public QObject {
 
   public slots:
 
-    void slotSwitchToView(const QString& view);
-    void slotSwitchToViewFeature(LibraryFeature* pFeature);
-    void slotShowBreadCrumb(TreeItem* pTree);
     void slotPaneCollapsed();
     void slotPaneUncollapsed();
 
@@ -68,13 +67,10 @@ class LibraryPaneManager : public QObject {
 
     QPointer<WBaseLibrary> m_pPaneWidget;
     QList<LibraryFeature*> m_features;
-    QHash<LibraryFeature*, int> m_featuresWidget;
     QPointer<WLibraryBreadCrumb> m_pBreadCrumb;
     QPointer<WSearchLineEdit> m_pSearchBar;
 
   private:
-
-    const static QString m_sTrackViewName;
     
     LibraryFeature* m_pFocusedFeature;
     int m_paneId;

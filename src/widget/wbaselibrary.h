@@ -6,6 +6,8 @@
 
 #include "widget/wbasewidget.h"
 
+class LibraryFeature;
+
 class WBaseLibrary : public QStackedWidget, public WBaseWidget
 {
     Q_OBJECT
@@ -13,9 +15,9 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
 
     WBaseLibrary(QWidget* parent = nullptr);
 
-    virtual bool registerView(QString name, QWidget* view);
+    virtual bool registerView(LibraryFeature* pFeature, QWidget* view);
     
-    QString getCurrentViewName();
+    LibraryFeature* getCurrentFeature();
     
     Q_PROPERTY(int showFocus READ getShowFocus WRITE setShowFocus)
     
@@ -32,9 +34,7 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
     
   public slots:
 
-    virtual void switchToView(const QString& name);
-    
-    void setCurrentIndex(int index);
+    virtual void switchToFeature(LibraryFeature* pFeature);
 
   protected:
       
@@ -42,11 +42,11 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
     bool event(QEvent* pEvent) override;
     void resizeEvent(QResizeEvent* pEvent);
 
-    QHash<QString, QWidget*> m_viewMap;
+    QHash<LibraryFeature*, QWidget*> m_featureMap;
 
   private:
     
-    QString m_currentViewName;
+    LibraryFeature* m_pCurrentFeature;
     QMutex m_mutex;
     int m_showFocus;
     bool m_isCollapsed;

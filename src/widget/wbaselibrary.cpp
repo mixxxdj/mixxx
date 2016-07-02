@@ -4,7 +4,8 @@
 #include <QResizeEvent>
 #include <QStyle>
 
-#include "wbaselibrary.h"
+#include "library/libraryfeature.h"
+#include "widget/wbaselibrary.h"
 
 WBaseLibrary::WBaseLibrary(QWidget* parent)
         : QStackedWidget(parent),
@@ -14,22 +15,22 @@ WBaseLibrary::WBaseLibrary(QWidget* parent)
 
 }
 
-bool WBaseLibrary::registerView(QString name, QWidget* view) {
+bool WBaseLibrary::registerView(LibraryFeature *pFeature, QWidget *view) {
     QMutexLocker lock(&m_mutex);
-    if (m_viewMap.contains(name)) {
+    if (m_featureMap.contains(pFeature)) {
         return false;
     }
 
     view->installEventFilter(this);
     int index = addWidget(view);
     setCurrentIndex(index);
-    m_currentViewName = name;
-    m_viewMap[name] = view;
+    m_pCurrentFeature = pFeature;
+    m_featureMap[pFeature] = view;
     return true;
 }
 
-QString WBaseLibrary::getCurrentViewName() {
-    return m_currentViewName;
+LibraryFeature *WBaseLibrary::getCurrentFeature() {
+    return m_pCurrentFeature;
 }
 
 int WBaseLibrary::getShowFocus() {
@@ -45,21 +46,12 @@ void WBaseLibrary::setShowFocus(int sFocus) {
     update();
 }
 
-void WBaseLibrary::switchToView(const QString& name) {
-    QMutexLocker lock(&m_mutex);
-    //qDebug() << "WBaseLibrary::switchToView" << name;
-    QWidget* widget = m_viewMap.value(name, nullptr);
-    if (widget != nullptr && currentWidget() != widget) {
-        //qDebug() << "WBaseLibrary::setCurrentWidget" << name;
-        m_currentViewName = name;
-        setCurrentWidget(widget);
+void WBaseLibrary::switchToFeature(LibraryFeature *pFeature) {
+    auto it = m_featureMap.find(pFeature);
+    if (it != m_featureMap.end() && currentWidget() != (*it)) {
+        m_pCurrentFeature = pFeature;
+        setCurrentWidget(*it);
     }
-}
-
-void WBaseLibrary::setCurrentIndex(int index) {
-    QWidget* pWidget = widget(index);
-    m_currentViewName = m_viewMap.key(pWidget);
-    QStackedWidget::setCurrentIndex(index);
 }
 
 bool WBaseLibrary::eventFilter(QObject*, QEvent* pEvent) {

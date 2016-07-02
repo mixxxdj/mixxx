@@ -26,7 +26,7 @@ class WLibrary : public WBaseLibrary {
     // the view and is in charge of deleting it. Returns whether or not the
     // registration was successful. Registered widget must implement the
     // LibraryView interface.
-    bool registerView(QString name, QWidget* view);
+    bool registerView(LibraryFeature* pFeature, QWidget *pView);
 
     LibraryView* getActiveView() const;
     
@@ -34,7 +34,7 @@ class WLibrary : public WBaseLibrary {
     // Show the view registered with the given name. Does nothing if the current
     // view is the specified view, or if the name does not specify any
     // registered view.
-    void switchToView(const QString& name);
+    void switchToFeature(LibraryFeature* pFeature);
 
     void search(const QString&);
 

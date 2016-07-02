@@ -145,11 +145,13 @@ public:
     LibraryPaneManager *getPane(int paneId);
     LibraryPaneManager* getFocusedPane();
     
+    void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
+    
+    void handleFocus();
+    
     UserSettingsPointer m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
-    const static QString m_sTrackViewName;
-    const static QString m_sAutoDJViewName;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
@@ -163,15 +165,10 @@ public:
     QHash<int, LibraryPaneManager*> m_panes;
     LibraryPaneManager* m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
-    QHash<QString, LibraryFeature*> m_featuresMap;
     QSet<int> m_collapsedPanes;
     
     // Can be any integer as it's used with a HashMap
     int m_focusedPane;
-    
-    void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
-    
-    void handleFocus();
 };
 
 #endif /* LIBRARY_H */

@@ -17,8 +17,7 @@ void LibrarySidebarExpandedManager::bindPaneWidget(WBaseLibrary* sidebarWidget,
             continue;
         }
         pPane->setParent(sidebarWidget);
-        sidebarWidget->registerView(f->getFeatureName(), pPane);
-        m_featuresWidget[f] = sidebarWidget->indexOf(pPane);
+        sidebarWidget->registerView(f, pPane);
     }
 }
 
