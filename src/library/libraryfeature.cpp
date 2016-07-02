@@ -73,17 +73,17 @@ QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
-    QFileDialog dialogg(NULL,
-                        tr("Import Playlist"),
-                        lastPlaylistDirectory,
-                        tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
-    dialogg.setAcceptMode(QFileDialog::AcceptOpen);
-    dialogg.setFileMode(mode);
-    dialogg.setModal(true);
+    QFileDialog dialog(nullptr,
+                       tr("Import Playlist"),
+                       lastPlaylistDirectory,
+                       tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    dialog.setFileMode(mode);
+    dialog.setModal(true);
 
     // If the user refuses return
-    if (!dialogg.exec()) {
+    if (!dialog.exec()) {
         return QStringList();
     }
-    return dialogg.selectedFiles();
+    return dialog.selectedFiles();
 }
