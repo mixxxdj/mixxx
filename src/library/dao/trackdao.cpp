@@ -1160,6 +1160,12 @@ bool setTrackDateAdded(const QSqlRecord& record, const int column,
     return false;
 }
 
+bool setTrackDateLastPlayed(const QSqlRecord& record, const int column,
+                       TrackPointer pTrack) {
+    pTrack->setDateLastPlayed(record.value(column).toDateTime());
+    return false;
+}
+
 bool setTrackFiletype(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
     pTrack->setType(record.value(column).toString());
@@ -1289,6 +1295,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         { "timesplayed", setTrackTimesPlayed },
         { "played", setTrackPlayed },
         { "datetime_added", setTrackDateAdded },
+        { "datetime_last_played", setTrackDateLastPlayed },
         { "header_parsed", setTrackHeaderParsed },
 
         // Beat detection columns are handled by setTrackBeats. Do not change
@@ -1565,11 +1572,13 @@ bool TrackDAO::updateTrack(Track* pTrack) {
             "coverart_source=:coverart_source,"
             "coverart_type=:coverart_type,"
             "coverart_location=:coverart_location,"
-            "coverart_hash=:coverart_hash"
+            "coverart_hash=:coverart_hash,"
+            "datetime_last_played=:datetime_last_played"
             " WHERE id=:track_id");
 
     query.bindValue(":track_id", trackId.toVariant());
     bindTrackLibraryValues(&query, *pTrack);
+    query.bindValue(":datetime_last_played", pTrack->getDateLastPlayed());
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

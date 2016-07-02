@@ -51,6 +51,7 @@ Track::Track(
           m_iRating(0),
           m_fCuePoint(0.0f),
           m_dateAdded(QDateTime::currentDateTime()),
+          m_dateLastPlayed(QDateTime::currentDateTime()),
           m_bHeaderParsed(false),
           m_bBpmLocked(false),
           m_analyzerProgress(-1) {
@@ -371,6 +372,16 @@ QDateTime Track::getDateAdded() const {
 void Track::setDateAdded(const QDateTime& dateAdded) {
     QMutexLocker lock(&m_qMutex);
     m_dateAdded = dateAdded;
+}
+
+QDateTime Track::getDateLastPlayed() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_dateLastPlayed;
+}
+
+void Track::setDateLastPlayed(const QDateTime &dateLastPlayed) {
+    QMutexLocker lock(&m_qMutex);
+    m_dateLastPlayed = dateLastPlayed;
 }
 
 void Track::setDuration(int iDuration) {
@@ -889,4 +900,9 @@ void Track::setCoverArt(const CoverArt& coverArt) {
 CoverArt Track::getCoverArt() const {
     QMutexLocker lock(&m_qMutex);
     return m_coverArt;
+}
+
+void Track::updateLastTimePlayed() {
+    QMutexLocker lock(&m_qMutex);
+    m_dateLastPlayed = QDateTime::currentDateTime();
 }

@@ -44,6 +44,7 @@ const QString LIBRARYTABLE_WAVESUMMARYHEX = "wavesummaryhex";
 const QString LIBRARYTABLE_CHANNELS = "channels";
 const QString LIBRARYTABLE_MIXXXDELETED = "mixxx_deleted";
 const QString LIBRARYTABLE_DATETIMEADDED = "datetime_added";
+const QString LIBRARYTABLE_DATETIME_LAST_PLAYED = "datetime_last_played";
 const QString LIBRARYTABLE_HEADERPARSED = "header_parsed";
 const QString LIBRARYTABLE_TIMESPLAYED = "timesplayed";
 const QString LIBRARYTABLE_PLAYED = "played";

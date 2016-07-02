@@ -416,4 +416,12 @@ METADATA
       ALTER TABLE library ADD COLUMN tracktotal TEXT DEFAULT '//';
     </sql>
   </revision>
+  <revision version="27" min_compatible="3">
+    <description>
+      Add column for tracking Last Time Played datetime
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN datetime_last_played DATETIME DEFAULT NULL;
+    </sql>
+    </revision>
 </schema>

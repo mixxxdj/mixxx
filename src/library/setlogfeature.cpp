@@ -259,6 +259,9 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     // played and update its playcount.
     currentPlayingTrack->updatePlayCounter();
 
+    // Updating last time played
+    currentPlayingTrack->updateLastTimePlayed();
+
     // We can only add tracks that are Mixxx library tracks, not external
     // sources.
     if (!currentPlayingTrackId.isValid()) {

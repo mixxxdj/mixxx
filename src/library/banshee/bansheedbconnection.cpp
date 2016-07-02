@@ -111,7 +111,8 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
             "CoreTracks.Composer, "       // 18
             "CoreTracks.Grouping, "       // 19
             "CoreAlbums.ArtistID, "       // 20
-            "AlbumArtists.Name "          // 21
+            "AlbumArtists.Name, "         // 21
+            "CoreTracks.DateLastPlayed "  // 22
             "FROM CoreTracks "
             "INNER JOIN CoreArtists ON CoreArtists.ArtistID = CoreTracks.ArtistID "
             "INNER JOIN CoreArtists AlbumArtists ON AlbumArtists.ArtistID = CoreAlbums.ArtistID "
@@ -141,7 +142,8 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
             "CoreTracks.Composer, "           // 18
             "CoreTracks.Grouping, "           // 19
             "CoreAlbums.ArtistID, "           // 20
-            "AlbumArtists.Name "              // 21
+            "AlbumArtists.Name, "             // 21
+            "CoreTracks.DateLastPlayed "	  // 22
             "FROM CorePlaylistEntries "
             "INNER JOIN CoreTracks ON CoreTracks.TrackID = CorePlaylistEntries.TrackID "
             "INNER JOIN CoreArtists ON CoreArtists.ArtistID = CoreTracks.ArtistID "
@@ -173,6 +175,7 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
             m_trackMap[entry.trackId].grouping = query.value(19).toString();
             m_trackMap[entry.trackId].tracknumber = query.value(12).toInt();
             m_trackMap[entry.trackId].dateadded = query.value(13).toInt();
+            m_trackMap[entry.trackId].dateLastPlayed = query.value(22).toInt(),
             m_trackMap[entry.trackId].bpm = query.value(14).toInt();
             m_trackMap[entry.trackId].bitrate = query.value(15).toInt();
             m_trackMap[entry.trackId].comment = query.value(16).toString();

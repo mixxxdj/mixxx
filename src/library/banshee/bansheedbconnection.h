@@ -23,6 +23,7 @@ public:
         QString grouping;
         int tracknumber;
         int dateadded;
+        int dateLastPlayed;
         int bpm;
         int bitrate;
         QString comment;

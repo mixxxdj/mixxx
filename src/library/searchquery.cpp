@@ -19,6 +19,8 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
         return pTrack->getYear();
     } else if (column == LIBRARYTABLE_DATETIMEADDED) {
         return pTrack->getDateAdded();
+    } else if(column == LIBRARYTABLE_DATETIME_LAST_PLAYED) {
+        return pTrack->getDateLastPlayed();
     } else if (column == LIBRARYTABLE_GENRE) {
         return pTrack->getGenre();
     } else if (column == LIBRARYTABLE_COMPOSER) {

@@ -24,6 +24,7 @@
 #define CLM_GROUPING "grouping"
 #define CLM_TRACKNUMBER "tracknumber"
 #define CLM_DATEADDED "datetime_added"
+#define CLM_DATE_LAST_PLAYED "datetime_last_played"
 #define CLM_BPM "bpm"
 #define CLM_BITRATE "bitrate"
 #define CLM_COMMENT "comment"
@@ -77,6 +78,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
                  CLM_GROUPING " TEXT, "
                  CLM_TRACKNUMBER " INTEGER, "
                  CLM_DATEADDED " INTEGER, "
+                 CLM_DATE_LAST_PLAYED " INTEGER, "
                  CLM_BPM " INTEGER, "
                  CLM_BITRATE " INTEGER, "
                  CLM_COMMENT " TEXT, "
@@ -101,6 +103,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
                      CLM_GROUPING ", "
                      CLM_TRACKNUMBER ", "
                      CLM_DATEADDED ", "
+                     CLM_DATE_LAST_PLAYED ", "
                      CLM_BPM ", "
                      CLM_BITRATE ", "
                      CLM_COMMENT ", "
@@ -120,6 +123,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
                      CLM_GROUPING ", :"
                      CLM_TRACKNUMBER ", :"
                      CLM_DATEADDED ", :"
+                     CLM_DATE_LAST_PLAYED ", :"
                      CLM_BPM ", :"
                      CLM_BITRATE ", :"
                      CLM_COMMENT ", :"
@@ -149,6 +153,9 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
                 QDateTime timeAdded;
                 timeAdded.setTime_t(entry.pTrack->dateadded);
                 query.bindValue(":" CLM_DATEADDED, timeAdded.toString(Qt::ISODate));
+                QDateTime timeLastPlayed;
+                timeLastPlayed.setTime_t(entry.pTrack->dateLastPlayed);
+                query.bindValue(":" CLM_DATE_LAST_PLAYED, timeLastPlayed.toString(Qt::ISODate));
                 query.bindValue(":" CLM_BPM, entry.pTrack->bpm);
                 query.bindValue(":" CLM_BITRATE, entry.pTrack->bitrate);
                 query.bindValue(":" CLM_COMMENT, entry.pTrack->comment);
@@ -183,6 +190,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
          << CLM_GROUPING
          << CLM_TRACKNUMBER
          << CLM_DATEADDED
+         << CLM_DATE_LAST_PLAYED
          << CLM_BPM
          << CLM_BITRATE
          << CLM_COMMENT

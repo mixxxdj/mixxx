@@ -56,6 +56,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_REPLAYGAIN
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_DATETIMEADDED
+            << "library." + LIBRARYTABLE_DATETIME_LAST_PLAYED
             << "track_locations.location"
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT

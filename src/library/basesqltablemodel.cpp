@@ -96,6 +96,8 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Track #"), 10);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED,
                         tr("Date Added"), 90);
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_DATETIME_LAST_PLAYED,
+                        tr("Date Last Played"), 110);
     setHeaderProperties(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION,
                         tr("#"), 30);
     setHeaderProperties(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED,
@@ -640,6 +642,14 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 QDateTime gmtDate = value.toDateTime();
                 gmtDate.setTimeSpec(Qt::UTC);
                 value = gmtDate.toLocalTime();
+            } else if(column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIME_LAST_PLAYED)) {
+                if(!value.isNull()) {
+                    QDateTime date = value.toDateTime();
+                    date.setTimeSpec(Qt::UTC);
+                    value = date.toLocalTime();
+                } else {
+                    value = QString();
+                }
             } else if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
                 QDateTime gmtDate = value.toDateTime();
                 gmtDate.setTimeSpec(Qt::UTC);
@@ -785,6 +795,7 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIME_LAST_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
         return defaultFlags;

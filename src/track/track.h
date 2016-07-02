@@ -146,6 +146,9 @@ class Track : public QObject {
     void setDateAdded(const QDateTime& dateAdded);
     QDateTime getDateAdded() const;
 
+    void setDateLastPlayed(const QDateTime& dateLastPlayed);
+    QDateTime getDateLastPlayed() const;
+
     // Getter/Setter methods for metadata
     // Return title
     QString getTitle() const;
@@ -284,6 +287,9 @@ class Track : public QObject {
     // destroyed.
     void setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration);
 
+    // Update time when track played last time
+    void updateLastTimePlayed();
+
   public slots:
     void slotCueUpdated();
 
@@ -360,6 +366,8 @@ class Track : public QObject {
     float m_fCuePoint;
     // Date the track was added to the library
     QDateTime m_dateAdded;
+    // Date when the track was last time played
+    QDateTime m_dateLastPlayed;
 
     PlayCounter m_playCounter;
 
