@@ -397,18 +397,28 @@ class Gui(Tk):
             filetypes=(("Keyboard config files", ".kbd.cfg"), ("All Files", "*")),
             title="Choose a legacy kbd.cfg file"
         )
-        target_file = filedialog.asksaveasfile(
-            mode='w',
-            defaultextension=".kbd.xml", title="Where to save the kbd.xml file").name
+        if not legacy_file:
+            return
+        try:
+            target_file = filedialog.asksaveasfile(
+                mode='w',
+                defaultextension=".kbd.xml", title="Where to save the kbd.xml file").name
+        except AttributeError:
+            return
         KeyboardParser(multilang=False, legacy_file=legacy_file, target_file=target_file)
 
     @staticmethod
     def open_multi_dialog():
         legacy_folder = filedialog.askdirectory(
             title="Choose a folder containing kbd.cfg files")
-        target_file = filedialog.asksaveasfile(
-            mode='w',
-            defaultextension=".kbd.xml", title="Where to save the kbd.xml file").name
+        if not legacy_folder:
+            return
+        try:
+            target_file = filedialog.asksaveasfile(
+                mode='w',
+                defaultextension=".kbd.xml", title="Where to save the kbd.xml file").name
+        except AttributeError:
+            return
         KeyboardParser(multilang=True, legacy_folder=legacy_folder, target_file=target_file, name=target_file)
 
 
