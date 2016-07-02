@@ -4,19 +4,20 @@
 
 #include <QtDebug>
 
+#include "analyzer/analyzerqueue.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/analysisfeature.h"
-#include "library/librarytablemodel.h"
-#include "library/trackcollection.h"
 #include "library/dlganalysis.h"
 #include "library/library.h"
+#include "library/librarytablemodel.h"
+#include "library/trackcollection.h"
 #include "library/treeitem.h"
-#include "widget/wlibrary.h"
-#include "widget/wanalysislibrarytableview.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "analyzer/analyzerqueue.h"
 #include "sources/soundsourceproxy.h"
-#include "util/dnd.h"
 #include "util/debug.h"
+#include "util/dnd.h"
+#include "widget/wanalysislibrarytableview.h"
+#include "widget/wlibrary.h"
+#include "widget/wtracktableview.h"
 
 const QString AnalysisFeature::m_sAnalysisViewName = "AnalysisView";
 
@@ -66,24 +67,14 @@ QString AnalysisFeature::getFeatureName() {
 }
 
 QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
-                                           int paneId) {    
-    WAnalysisLibraryTableView* pTable = 
-            new WAnalysisLibraryTableView(nullptr, m_pConfig, m_pTrackCollection);
-    pTable->installEventFilter(pKeyboard);
+                                           int paneId) {        
+    WTrackTableView* pTable = LibraryFeature::createTableWidget(pKeyboard, paneId);
     pTable->loadTrackModel(getAnalysisTableModel());
-    
     connect(pTable->selectionModel(), 
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, 
             SLOT(tableSelectionChanged(const QItemSelection&, const QItemSelection&)));
-    connect(pTable, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pTable, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)));
-    connect(pTable, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
     
-    m_analysisTables[paneId] = pTable;
     return pTable;
 }
 
@@ -118,9 +109,9 @@ void AnalysisFeature::refreshLibraryModels() {
 }
 
 void AnalysisFeature::selectAll() {
-    auto it = m_analysisTables.find(m_featureFocus);
-    if (it != m_analysisTables.end() && !it->isNull()) {
-        (*it)->selectAll();
+    QPointer<WTrackTableView> pTable = LibraryFeature::getFocusedTable();
+    if (!pTable.isNull()) {
+        pTable->selectAll();
     }
 }
 
@@ -201,12 +192,12 @@ void AnalysisFeature::cleanupAnalyzer() {
 void AnalysisFeature::tableSelectionChanged(const QItemSelection&,
                                             const QItemSelection&) {
     //qDebug() << "AnalysisFeature::tableSelectionChanged" << sender();
-    auto it = m_analysisTables.find(m_featureFocus);
-    if (it == m_analysisTables.end() || it->isNull()) {
+    QPointer<WTrackTableView> pTable = LibraryFeature::getFocusedTable();
+    if (pTable.isNull()) {
         return;
     }
     
-    const QModelIndexList &indexes = (*it)->selectionModel()->selectedIndexes();
+    const QModelIndexList &indexes = pTable->selectionModel()->selectedIndexes();
     m_pAnalysisView->setSelectedIndexes(indexes);
 }
 

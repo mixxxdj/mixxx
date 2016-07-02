@@ -80,7 +80,6 @@ class AnalysisFeature : public LibraryFeature {
     QString m_analysisTitleName;
     QPointer<DlgAnalysis> m_pAnalysisView;
     QPointer<AnalysisLibraryTableModel> m_pAnalysisLibraryTableModel;
-    QHash<int, QPointer<WAnalysisLibraryTableView> > m_analysisTables;
 };
 
 
