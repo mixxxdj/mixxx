@@ -756,7 +756,7 @@ void ITunesFeature::onTrackCollectionLoaded() {
         m_trackSource->buildIndex();
 
         //m_pITunesTrackModel->select();
-        emit(showTrackModel(m_pITunesTrackModel));
+        showTrackModel(m_pITunesTrackModel);
         qDebug() << "Itunes library loaded: success";
     } else {
         QMessageBox::warning(

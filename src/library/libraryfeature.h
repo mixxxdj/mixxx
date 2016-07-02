@@ -5,6 +5,8 @@
 #define LIBRARYFEATURE_H
 
 #include <QFileDialog>
+#include <QList>
+#include <QPointer>
 #include <QString>
 #include <QUrl>
 
@@ -15,10 +17,12 @@
 #include "track/track.h"
 #include "treeitemmodel.h"
 
+class Library;
+class TrackCollection;
 class TrackModel;
 class WBaseLibrary;
 class WLibrary;
-class Library;
+class WTrackTableView;
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {
@@ -58,10 +62,7 @@ class LibraryFeature : public QObject {
     
     // Reimplement this to register custom views with the library widget
     // at the right pane.
-    virtual QWidget* createPaneWidget(KeyboardEventFilter* /* keyboard */, 
-                                      int /* paneId */) {
-        return nullptr;
-    }
+    virtual QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId);
     
     // Reimplement this to register custom views with the library widget,
     // at the sidebar expanded pane
@@ -78,8 +79,12 @@ class LibraryFeature : public QObject {
   protected:
     inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
     inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
+    
+    void showTrackModel(QAbstractItemModel *model);
+    
     UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
+    TrackCollection* m_pTrackCollection;
     
     int m_featureFocus;
 
@@ -102,7 +107,6 @@ class LibraryFeature : public QObject {
     }
     
   signals:
-    void showTrackModel(QAbstractItemModel* model);
     
     void loadTrack(TrackPointer);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -120,7 +124,8 @@ class LibraryFeature : public QObject {
 
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);
-
+    
+    QList<QPointer<WTrackTableView> > m_tables;
 };
 
 #endif /* LIBRARYFEATURE_H */

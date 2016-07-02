@@ -16,6 +16,7 @@
 #include "library/libraryfeature.h"
 #include "widget/wbaselibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wtracktableview.h"
 
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!
 // The reason for this is that LibraryFeature uses slots/signals and for this
@@ -31,6 +32,30 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
 
 LibraryFeature::~LibraryFeature() {
     
+}
+
+QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                          int paneId) {
+    WTrackTableView* pTrackTable = 
+            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection);
+    
+    pTrackTable->installEventFilter(pKeyboard);
+    
+    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
+            this, SLOT(slotLoadTrack(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
+    
+    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    
+    m_tables.append(pTrackTable);
+    
+    return pTrackTable;
 }
 
 QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
@@ -66,6 +91,14 @@ QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
 
 void LibraryFeature::setFeatureFocus(int focus) {
     m_featureFocus = focus;
+}
+
+void LibraryFeature::showTrackModel(QAbstractItemModel *model) {
+    for (QPointer<WTrackTableView> pTable : m_tables) {
+        if (!pTable.isNull()) {
+            pTable->loadTrackModel(model);
+        }
+    }
 }
 
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {

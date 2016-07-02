@@ -41,7 +41,7 @@ class CrateFeature : public LibraryFeature {
                          QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    QWidget *createPaneWidget(KeyboardEventFilter* pKeyboard, int);
+    QWidget *createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId);
     
     TreeItemModel* getChildModel();
 
@@ -107,6 +107,10 @@ class CrateFeature : public LibraryFeature {
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;
     QSet<int> m_cratesSelectedTrackIsIn;
+    QHash<int, QPointer<QStackedWidget> > m_panes;
+    int m_idBrowse;
+    int m_idTable;
+    
     const static QString m_sCrateViewName;
 };
 
