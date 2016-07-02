@@ -243,7 +243,7 @@ class SideBarFrame(Frame):
         buttons.pack(fill=BOTH)
 
         self.listbox = Listbox(self)
-        self.listbox.pack()
+        self.listbox.pack(fill=BOTH, expand=1)
 
         self.listbox.bind('<<ListboxSelect>>', self.on_listbox_item_selected)
 
