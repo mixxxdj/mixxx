@@ -153,6 +153,9 @@ class KeyboardLayoutEditor(Tk):
             print(path)
         self.write_out(xml, path)
 
+        self.file_path = path
+        self.wm_title(KeyboardLayoutEditor.TITLE + ' - ' + ntpath.basename(self.file_path))
+
     def create_xml(self):
         # Create XML root element
         root = Element('KeyboardLayoutTranslations')
