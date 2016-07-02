@@ -80,14 +80,6 @@ WBaseLibrary* LibraryPaneManager::getPaneWidget() {
     return m_pPaneWidget;
 }
 
-void LibraryPaneManager::setFocusedFeatureName(const QString& featureName) {
-    m_focusedFeatureName = featureName;
-}
-
-const QString& LibraryPaneManager::getFocusedFeatureName() const {
-    return m_focusedFeatureName;
-}
-
 void LibraryPaneManager::setFocusedFeature(LibraryFeature* pFeature) {
     m_pFocusedFeature = pFeature;
 }
