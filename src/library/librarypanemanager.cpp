@@ -72,8 +72,6 @@ void LibraryPaneManager::addFeature(LibraryFeature* feature) {
     DEBUG_ASSERT_AND_HANDLE(feature) {
         return;
     }
-    connect(feature, SIGNAL(restoreSearch(const QString&)),
-            this, SIGNAL(restoreSearch(const QString&)));
 
     m_features.append(feature);
 }
@@ -131,7 +129,7 @@ void LibraryPaneManager::slotSwitchToViewFeature(LibraryFeature* pFeature) {
     m_pPaneWidget->setCurrentIndex(widgetId);
 }
 
-void LibraryPaneManager::slotRestoreSearch(const QString& text) {
+void LibraryPaneManager::restoreSearch(const QString& text) {
     if (!m_pSearchBar.isNull()) {
         m_pSearchBar->restoreSearch(text);
     }

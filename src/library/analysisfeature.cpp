@@ -131,7 +131,7 @@ void AnalysisFeature::activate() {
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     
     if (!m_pAnalysisView.isNull()) {
-        m_pLibrary->slotRestoreSearch(m_pAnalysisView->currentSearch());
+        m_pLibrary->restoreSearch(m_pAnalysisView->currentSearch());
     }
     emit(enableCoverArtDisplay(true));
 }

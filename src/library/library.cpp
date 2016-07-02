@@ -196,8 +196,6 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(feature, SIGNAL(restoreSearch(const QString&)),
-            this, SLOT(slotRestoreSearch(const QString&)));
     connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
             this, SIGNAL(enableCoverArtDisplay(bool)));
     connect(feature, SIGNAL(trackSelected(TrackPointer)),
@@ -237,12 +235,12 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
     emit(loadTrackToPlayer(pTrack, group, play));
 }
 
-void Library::slotRestoreSearch(const QString& text) {
+void Library::restoreSearch(const QString& text) {
     LibraryPaneManager* pane = getFocusedPane();
     DEBUG_ASSERT_AND_HANDLE(pane) {
         return;
     }
-    pane->slotRestoreSearch(text);
+    pane->restoreSearch(text);
 }
 
 void Library::slotRefreshLibraryModels() {

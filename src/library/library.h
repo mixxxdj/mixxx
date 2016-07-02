@@ -95,6 +95,7 @@ public:
     
     void switchToFeature(LibraryFeature* pFeature);
     void showBreadCrumb(TreeItem* pTree);
+    void restoreSearch(const QString& text);
 
   public slots:
     
@@ -105,7 +106,6 @@ public:
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
-    void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();

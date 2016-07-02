@@ -41,6 +41,7 @@ void WFeatureClickButton::dragLeaveEvent(QDragLeaveEvent*) {
 }
 
 void WFeatureClickButton::dropEvent(QDropEvent* event) {
+    m_hoverTimer.stop();
     event->acceptProposedAction();
     if (!event->mimeData()->hasUrls() || event->source() == this) {
         event->ignore();

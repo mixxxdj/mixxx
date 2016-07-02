@@ -40,8 +40,9 @@ class LibraryPaneManager : public QObject {
     LibraryFeature* getFocusedFeature() const;
 
     void setFocus();
-
     void clearFocus();
+    
+    void restoreSearch(const QString& text);
     
     inline int getPaneId() { 
         return m_paneId;
@@ -59,7 +60,6 @@ class LibraryPaneManager : public QObject {
 
     void slotSwitchToView(const QString& view);
     void slotSwitchToViewFeature(LibraryFeature* pFeature);
-    void slotRestoreSearch(const QString& text);
     void slotShowBreadCrumb(TreeItem* pTree);
     void slotPaneCollapsed();
     void slotPaneUncollapsed();

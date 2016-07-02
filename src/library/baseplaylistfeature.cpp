@@ -141,7 +141,7 @@ void BasePlaylistFeature::activate() {
     switchToFeature();
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     
-    emit(restoreSearch(QString())); // Null String disables search box
+    m_pLibrary->restoreSearch(QString()); // Null String disables search box
     emit(enableCoverArtDisplay(true));
 }
 
@@ -159,6 +159,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
         
         (*it)->setCurrentIndex(*itId);
         showTrackModel(m_pPlaylistTableModel);
+        m_pLibrary->restoreSearch("");
         m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
                 
         emit(enableCoverArtDisplay(true));
@@ -171,6 +172,7 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     if (playlistId != -1 && index.isValid() && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         showTrackModel(m_pPlaylistTableModel);
+        //m_pPlaylistTableModel->select();
         emit(enableCoverArtDisplay(true));
         // Update selection
         emit(featureSelect(this, m_lastRightClickedIndex));

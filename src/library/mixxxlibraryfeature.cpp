@@ -265,7 +265,7 @@ void MixxxLibraryFeature::activate() {
     
     pTable->setSortingEnabled(true);
     showTrackModel(m_pLibraryTableModel);
-    m_pLibraryTableModel->select();
+    m_pLibrary->restoreSearch("");
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     
     emit(enableCoverArtDisplay(true));
@@ -301,6 +301,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
         m_pHiddenView->onShow();
         m_pExpandedStack->setCurrentIndex(m_hiddenExpandedId);
         switchToFeature();
+        m_pLibrary->restoreSearch("");
         m_pLibrary->showBreadCrumb(pTree);
         emit(enableCoverArtDisplay(true));
         
@@ -326,6 +327,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
         m_pMissingView->onShow();
         m_pExpandedStack->setCurrentIndex(m_missingExpandedId);
         switchToFeature();
+        m_pLibrary->restoreSearch("");
         m_pLibrary->showBreadCrumb(pTree);
         emit(enableCoverArtDisplay(true));
     }

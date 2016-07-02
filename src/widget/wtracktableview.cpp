@@ -355,6 +355,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
+    trackModel->select();
 }
 
 void WTrackTableView::createActions() {

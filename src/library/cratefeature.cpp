@@ -226,7 +226,7 @@ void CrateFeature::activate() {
     
     m_pLibrary->switchToFeature(this);
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
-    m_pLibrary->slotRestoreSearch(QString()); //disable search on crate home
+    m_pLibrary->restoreSearch(QString()); //disable search on crate home
     
     emit(enableCoverArtDisplay(true));
 }
@@ -250,6 +250,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     m_crateTableModel.setTableModel(crateId);
     
     showTrackModel(&m_crateTableModel);
+    m_pLibrary->restoreSearch("");
     m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
     emit(enableCoverArtDisplay(true));
 }

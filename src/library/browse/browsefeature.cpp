@@ -244,7 +244,7 @@ void BrowseFeature::activate() {
     (*it)->setCurrentIndex(*itId);
     switchToFeature();
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
-    m_pLibrary->slotRestoreSearch(QString());
+    m_pLibrary->restoreSearch(QString());
     
     emit(enableCoverArtDisplay(false));
 }
