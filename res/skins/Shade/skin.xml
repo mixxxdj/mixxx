@@ -460,21 +460,10 @@
 						background: transparent;
 						color: #C1C1C1;}
 
-					<!--Additional space for QRadionButtons and QLabels-->
-					WBaseLibrary QRadioButton, WBaseLibrary QLabel { margin: 9px 3px 6px 3px; }
-
-					<!--Additional space for the first QRadionButton in the row-->
-					WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
-
 					<!--Additional space for the QPushButtons-->
-					#DlgMissing > QPushButton,
-					#DlgHidden > QPushButton,
-					#DlgAutoDJ > QPushButton,
-					#DlgRecording > QPushButton,
-					#DlgAnalysis > QPushButton {
-					    margin: 3px 3px 3px 3px;
+					WBaseLibrary QPushButton {
+					    margin: 2px 3px;
 					    padding: 3px 3px;
-					    min-width: 65px;
 					}
 					
 					WBaseLibrary QScrollArea,
@@ -492,7 +481,7 @@
 						border: 1px solid #646464;
 					}
 
-					QScrollArea QPushButton {
+					WBaseLibrary QPushButton {
 						border: 1px solid black;
 						background-color: #aab2b7;
 					}
@@ -527,15 +516,9 @@
 						border-top: 2px solid aqua;
 					}
 
-					<!--Additional space for the first QPushButton in the row-->
-					/*#DlgMissing > QPushButton#btnPurge,
-					#DlgHidden > QPushButton#btnUnhide,
-					#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
-					#DlgRecording > QPushButton#pushButtonRecording,
-					#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }*/
-
-					<!--Additional space for the last QPushButton in the row-->
-					/*#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; } */
+					WLibraryBreadCrumb {
+						margin: 2px 4px;
+					}
 
 					<!--Spacing between treeview and searchbar-->
 					QTreeView { margin: 0px 0px 0px 5px; }
@@ -777,38 +760,32 @@
 											</Connection>
 										</WidgetGroup>
 										<!--Library Tree View-->
-						 				<Splitter>
-											<Size>e,me</Size>
-											<SplitSizes>1,e</SplitSizes>
-                                            <Collapsible>0,0</Collapsible>
+										<WidgetGroup>
+											<Layout>horizontal</Layout>
 											<Children>
-												<WidgetGroup>
-													<Layout>horizontal</Layout>
+												<LibrarySidebarButtons>
+													<ObjectName>LibrarySidebarButtons</ObjectName>
+												</LibrarySidebarButtons>
+												<Splitter>
+													<Orientation>vertical</Orientation>
+													<SplitSizes>8,2</SplitSizes>
 													<Children>
-														<LibrarySidebarButtons>
-															<ObjectName>LibrarySidebarButtons</ObjectName>
-														</LibrarySidebarButtons>
-														<WidgetGroup>
-															<Layout>vertical</Layout>
-															<Children>
-																<LibrarySidebarExpanded>
-					                                            	<ObjectName>LibrarySidebarExpanded</ObjectName>
-					                                            </LibrarySidebarExpanded>
-																<!--Cover Art-->
-																<CoverArt>
-																	<MinimumSize>16,16</MinimumSize>
-																	<SizePolicy>me,me</SizePolicy>
-																	<Connection>
-																		<ConfigKey>[Library],show_coverart</ConfigKey>
-																		<BindProperty>visible</BindProperty>
-																	</Connection>
-																</CoverArt>
-															</Children>
-														</WidgetGroup>
+														<LibrarySidebarExpanded>
+			                                            	<ObjectName>LibrarySidebarExpanded</ObjectName>
+			                                            </LibrarySidebarExpanded>
+														<!--Cover Art-->
+														<CoverArt>
+															<MinimumSize>30,30</MinimumSize>
+															<SizePolicy>me,me</SizePolicy>
+															<Connection>
+																<ConfigKey>[Library],show_coverart</ConfigKey>
+																<BindProperty>visible</BindProperty>
+															</Connection>
+														</CoverArt>
 													</Children>
-												</WidgetGroup>
+												</Splitter>
 											</Children>
-										</Splitter>
+										</WidgetGroup>
 									</Children>
 								</WidgetGroup>
 								<WidgetGroup>
@@ -817,6 +794,9 @@
 										<SearchBox>
 											<Id>1</Id>
 										</SearchBox>
+										<LibraryBreadCrumb>
+											<Id>1</Id>
+										</LibraryBreadCrumb>
 										<LibraryPane>
 											<Id>1</Id>
 										</LibraryPane>
@@ -828,6 +808,9 @@
 										<SearchBox>
 											<Id>2</Id>
 										</SearchBox>
+										<LibraryBreadCrumb>
+											<Id>2</Id>
+										</LibraryBreadCrumb>
 										<LibraryPane>
 											<Id>2</Id>
 										</LibraryPane>

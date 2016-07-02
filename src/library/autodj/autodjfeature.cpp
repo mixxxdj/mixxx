@@ -139,7 +139,10 @@ QWidget* AutoDJFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     
     m_pAutoDJView = new DlgAutoDJ(pContainer, m_pLibrary, m_pAutoDJProcessor);
     m_pAutoDJView->installEventFilter(pKeyboard);
-    pContainer->addTab(m_pAutoDJView, tr("controls"));
+    QScrollArea* pScroll = new QScrollArea(pContainer);
+    pScroll->setWidget(m_pAutoDJView);
+    pScroll->setWidgetResizable(true);
+    pContainer->addTab(pScroll, tr("controls"));
 
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested(int)),

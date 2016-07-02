@@ -850,7 +850,6 @@ class MixxxCore(Feature):
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
-                   "library/libraryfeaturefactory.cpp",
                    "library/analysisfeature.cpp",
                    "library/autodj/autodjfeature.cpp",
                    "library/autodj/autodjprocessor.cpp",
