@@ -16,6 +16,21 @@ def main():
 class KeyboardLayoutEditor(Tk):
     TITLE = "Keyboard layouts editor"
 
+    SHORTCUTS = {
+        "new": {
+            "event_name": "<Control-n>",
+            "accelerator": "Ctrl+N"},
+        "open": {
+            "event_name": "<Control-o>",
+            "accelerator": "Ctrl+O"},
+        "save": {
+            "event_name": "<Control-s>",
+            "accelerator": "Ctrl+S"},
+        "quit": {
+            "event_name": "<Control-q>",
+            "accelerator": "Ctrl+Q"}
+    }
+
     @staticmethod
     def center_widget_to_screen(widget, width, height):
         ws = widget.winfo_screenwidth()
@@ -62,6 +77,16 @@ class KeyboardLayoutEditor(Tk):
 
         # Load new file and init all member variables
         self.new_file()
+
+        # Set shortcuts
+        self.bind_all(KeyboardLayoutEditor.SHORTCUTS['new']['event_name'], lambda e: self.new_file())
+        self.bind_all(KeyboardLayoutEditor.SHORTCUTS['save']['event_name'], lambda e: self.save_file())
+        self.bind_all(KeyboardLayoutEditor.SHORTCUTS['open']['event_name'], lambda e: self.open_file())
+        self.bind_all(KeyboardLayoutEditor.SHORTCUTS['quit']['event_name'], lambda e: self.quit())
+
+    def quit(self):
+        print("Quitting...")
+        sys.exit(0)
 
     def pack(self):
         self.sidebarframe.pack(side=LEFT, pady=0, fill=Y, expand=1)
@@ -147,7 +172,10 @@ class KeyboardLayoutEditor(Tk):
         path = self.file_path
         xml = self.create_xml()
         if not path:
-            path = filedialog.asksaveasfile(mode='w', defaultextension=".xml").name
+            try:
+                path = filedialog.asksaveasfile(mode='w', defaultextension=".xml").name
+            except AttributeError:
+                return
             if not path:
                 return
             print(path)
@@ -226,9 +254,24 @@ class MainFrame(Frame):
         self.menubar = Menu(self)
         menu = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="File", menu=menu)
-        menu.add_command(label="New", command=lambda: app.new_file())
-        menu.add_command(label="Open", command=lambda: app.open_file())
-        menu.add_command(label="Save", command=lambda: app.save_file())
+
+        menu.add_command(
+            label="New", command=lambda: app.new_file(),
+            accelerator=KeyboardLayoutEditor.SHORTCUTS['new']['accelerator']
+        )
+        menu.add_command(
+            label="Open", command=lambda: app.open_file(),
+            accelerator=KeyboardLayoutEditor.SHORTCUTS['open']['accelerator']
+        )
+        menu.add_command(
+            label="Save", command=lambda: app.save_file(),
+            accelerator=KeyboardLayoutEditor.SHORTCUTS['save']['accelerator']
+        )
+        menu.add_command(
+            label="Quit", command=lambda: app.quit(),
+            accelerator=KeyboardLayoutEditor.SHORTCUTS['quit']['accelerator']
+        )
+
         self.master.config(menu=self.menubar)
 
 
