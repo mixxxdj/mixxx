@@ -72,6 +72,9 @@ class MixxxLibraryFeature : public LibraryFeature {
         Missing = 3
     };
     
+    HiddenTableModel* getHiddenTableModel();
+    MissingTableModel* getMissingTableModel();
+    
     const QString kLibraryTitle;
     const QString kHiddenTitle;
     const QString kMissingTitle;
@@ -83,8 +86,8 @@ class MixxxLibraryFeature : public LibraryFeature {
     int m_hiddenExpandedId;
     int m_missingExpandedId;
     
-    HiddenTableModel* m_pHiddenTableModel;
-    MissingTableModel* m_pMissingTableModel;
+    QPointer<HiddenTableModel> m_pHiddenTableModel;
+    QPointer<MissingTableModel> m_pMissingTableModel;
     
     QPointer<QStackedWidget> m_pExpandedStack;
     
