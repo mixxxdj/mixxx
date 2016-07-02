@@ -1,17 +1,19 @@
 #include <QSqlTableModel>
 
-#include "widget/wwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wanalysislibrarytableview.h"
-#include "library/trackcollection.h"
+#include "library/analysisfeature.h"
 #include "library/dlganalysis.h"
+#include "library/trackcollection.h"
 #include "util/assert.h"
+#include "widget/wanalysislibrarytableview.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 
-DlgAnalysis::DlgAnalysis(QWidget* parent,
+DlgAnalysis::DlgAnalysis(QWidget* parent, AnalysisFeature *pAnalysis,
                          TrackCollection* pTrackCollection)
         : QFrame(parent),
           m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
+          m_pAnalysis(pAnalysis),
           m_tracksInQueue(0),
           m_currentTrack(0) {
     setupUi(this);
@@ -24,7 +26,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             this, SLOT(analyze()));
 
     connect(pushButtonSelectAll, SIGNAL(clicked()),
-            this, SIGNAL(selectAll()));
+            m_pAnalysis, SLOT(selectAll()));
 }
 
 DlgAnalysis::~DlgAnalysis() {
@@ -43,7 +45,7 @@ void DlgAnalysis::onShow() {
 void DlgAnalysis::analyze() {
     //qDebug() << this << "analyze()";
     if (m_bAnalysisActive) {
-        emit(stopAnalysis());
+        m_pAnalysis->stopAnalysis();
     } else {
         QList<TrackId> trackIds;
         for (QModelIndex selectedIndex : m_selectedIndexes) {
@@ -55,7 +57,7 @@ void DlgAnalysis::analyze() {
             }
         }
         m_currentTrack = 1;
-        emit(analyzeTracks(trackIds));
+        m_pAnalysis->analyzeTracks(trackIds);
     }
 }
 
@@ -75,7 +77,7 @@ void DlgAnalysis::analysisActive(bool bActive) {
 
 // slot
 void DlgAnalysis::trackAnalysisFinished(int size) {
-    qDebug() << "Analysis finished" << size << "tracks left";
+    //qDebug() << "Analysis finished" << size << "tracks left";
     if (size > 0) {
         m_currentTrack = m_tracksInQueue - size + 1;
     }

@@ -67,6 +67,8 @@ class AnalysisFeature : public LibraryFeature {
     // where x is the current track being analyzed and y is the total number of
     // tracks in the job
     void setTitleProgress(int trackNum, int totalNum);
+    
+    AnalysisLibraryTableModel* getAnalysisTableModel();
 
     TrackCollection* m_pTrackCollection;
     AnalyzerQueue* m_pAnalyzerQueue;

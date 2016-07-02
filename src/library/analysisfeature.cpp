@@ -68,22 +68,16 @@ QString AnalysisFeature::getViewName() {
 }
 
 QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
-                                           int paneId) {
-    if (!m_pAnalysisLibraryTableModel) {
-        m_pAnalysisLibraryTableModel = 
-                new AnalysisLibraryTableModel(this, m_pTrackCollection);
-    }    
-    
+                                           int paneId) {    
     WAnalysisLibraryTableView* pTable = 
             new WAnalysisLibraryTableView(nullptr, m_pConfig, m_pTrackCollection);
     pTable->installEventFilter(pKeyboard);
-    pTable->setModel(m_pAnalysisLibraryTableModel);
+    pTable->loadTrackModel(getAnalysisTableModel());
     
     connect(pTable->selectionModel(), 
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, 
             SLOT(tableSelectionChanged(const QItemSelection&, const QItemSelection&)));
-    
     connect(pTable, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(pTable, SIGNAL(loadTrackToPlayer(TrackPointer,QString,bool)),
@@ -98,20 +92,8 @@ QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
 QWidget* AnalysisFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     m_pAnalysisView = new DlgAnalysis(nullptr, m_pTrackCollection);
     
-    if (!m_pAnalysisLibraryTableModel) {
-        m_pAnalysisLibraryTableModel = 
-                new AnalysisLibraryTableModel(this, m_pTrackCollection);
-    }
+    m_pAnalysisView->setTableModel(getAnalysisTableModel());
     
-    m_pAnalysisView->setTableModel(m_pAnalysisLibraryTableModel);
-    
-    connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<TrackId>)),
-            this, SLOT(analyzeTracks(QList<TrackId>)));
-    connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
-            this, SLOT(stopAnalysis()));
-    connect(m_pAnalysisView, SIGNAL(selectAll()),
-            this, SLOT(selectAll()));
-
     connect(this, SIGNAL(analysisActive(bool)),
             m_pAnalysisView, SLOT(analysisActive(bool)));
     connect(this, SIGNAL(trackAnalysisStarted(int)),
@@ -132,7 +114,7 @@ TreeItemModel* AnalysisFeature::getChildModel() {
 }
 
 void AnalysisFeature::refreshLibraryModels() {
-    if (m_pAnalysisView) {
+    if (!m_pAnalysisView.isNull()) {
         m_pAnalysisView->onShow();
     }
 }
@@ -150,7 +132,7 @@ void AnalysisFeature::activate() {
     m_pLibrary->slotSwitchToViewFeature(this);
     m_pLibrary->slotShowBreadCrumb(m_childModel.getItem(QModelIndex()));
     
-    if (m_pAnalysisView) {
+    if (!m_pAnalysisView.isNull()) {
         emit(restoreSearch(m_pAnalysisView->currentSearch()));
     }
     emit(enableCoverArtDisplay(true));
@@ -222,7 +204,7 @@ void AnalysisFeature::tableSelectionChanged(const QItemSelection&,
                                             const QItemSelection&) {
     //qDebug() << "AnalysisFeature::tableSelectionChanged" << sender();
     auto it = m_analysisTables.find(m_featureFocus);
-    if (it == m_analysisTables.end()) {
+    if (it == m_analysisTables.end() || it->isNull()) {
         return;
     }
     
@@ -241,4 +223,13 @@ bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 
 bool AnalysisFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isUrlSupported(url);
+}
+
+AnalysisLibraryTableModel* AnalysisFeature::getAnalysisTableModel() {
+    if (m_pAnalysisLibraryTableModel.isNull()) {
+        m_pAnalysisLibraryTableModel = 
+                new AnalysisLibraryTableModel(this, m_pTrackCollection);
+    }
+    
+    return m_pAnalysisLibraryTableModel;
 }
