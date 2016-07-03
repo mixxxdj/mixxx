@@ -193,6 +193,7 @@ class KeyboardParser:
 
         # Retrieve base name of file (hence, language code)
         file_name = ntpath.basename(self.legacy_file)
+        print(file_name)
         base_name = file_name[:-len(self.legacy_extension)]
 
         # Create empty preset file and store dictionary holding basic elements
@@ -386,11 +387,11 @@ class Gui(Tk):
 
         Button(self,
                text="Single file conversion",
-               command=lambda: SingleFileConversionDialog(self)).pack()
+               command=lambda: SingleFileConversionDialog(self)).pack(padx=5, pady=5, fill=BOTH, expand=1)
 
         Button(self,
-               text="Convert multiple kbd.cfg files to single multi-lang kbd.xml file",
-               command=lambda: self.open_multi_dialog()).pack()
+               text="Multi-lang conversion",
+               command=lambda: MultiLangConversionDialog(self)).pack(padx=5, pady=5, fill=BOTH, expand=1)
 
     @staticmethod
     def open_multi_dialog():
@@ -476,4 +477,82 @@ class SingleFileConversionDialog(simpledialog.Dialog):
         )
 
 
+class MultiLangConversionDialog(simpledialog.Dialog):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.legacy_folder = None
+        self.target_file = None
+        self.preset_name = None
+
+    def body(self, master):
+        self.wm_title("Multi-language conversion")
+
+        Label(master, text="Convert multiple kbd.cfg files into one kbd.xml file. "
+                           "Please \nnote that only the files will be converted of "
+                           "which the filename \nfollows the QLocale "
+                           "name format: 'language[_country]', where:\n"
+                           "- language is a lowercase, two-letter, ISO 639 language code\n"
+                           "- country is an uppercase, two- or three-letter, ISO 3166 country code", justify=LEFT,
+              bg='#388E3C', fg='white').pack()
+
+        body = Frame(master)
+        Grid.columnconfigure(body, 0, weight=1)
+        Grid.columnconfigure(body, 1, weight=1)
+        Grid.rowconfigure(body, 0, weight=1)
+        Grid.rowconfigure(body, 1, weight=1)
+        Grid.rowconfigure(body, 2, weight=1)
+
+        Label(body, text="Legacy folder:").grid(row=0, sticky='w')
+        Label(body, text="Save to:").grid(row=1, sticky='w')
+        Label(body, text="Preset name:").grid(row=2, sticky='w')
+
+        self.legacy_folder = Entry(body)
+        self.target_file = Entry(body)
+        self.preset_name = Entry(body)
+
+        self.legacy_folder.grid(row=0, column=1, sticky='nsew')
+        self.target_file.grid(row=1, column=1, sticky='nsew')
+        self.preset_name.grid(row=2, column=1, sticky='nsew')
+
+        Button(body, text="Browse", command=lambda: self._browse_legacy_folder()).grid(row=0, column=2, sticky='nsew', padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_target_file()).grid(row=1, column=2, sticky='nsew', padx=3)
+
+        body.pack(fill=BOTH, expand=1, pady=10)
+
+        # Set first focus
+        return self.legacy_folder
+
+    def _browse_legacy_folder(self):
+        legacy_folder = filedialog.askdirectory(
+            title="Choose a folder containing kbd.cfg files")
+        if not legacy_folder:
+            return
+
+        if not self.preset_name.get():
+            folder_name = os.path.basename(
+                os.path.normpath(legacy_folder)
+            )
+            self.preset_name.insert(0, folder_name)
+
+        self.legacy_folder.delete(0, END)
+        self.legacy_folder.insert(0, legacy_folder)
+
+    def _browse_target_file(self):
+        try:
+            target_file = filedialog.asksaveasfilename(
+                defaultextension=".kbd.xml",
+                title="Where to save the kbd.xml file")
+        except AttributeError:
+            return
+
+        self.target_file.delete(0, END)
+        self.target_file.insert(0, target_file)
+
+    def apply(self):
+        KeyboardParser(
+            multilang=True,
+            legacy_folder=self.legacy_folder.get(),
+            target_file=self.target_file.get(),
+            name=self.preset_name.get()
+        )
 main()
