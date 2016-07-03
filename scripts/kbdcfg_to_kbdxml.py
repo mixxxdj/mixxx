@@ -9,60 +9,36 @@ from xml.dom import minidom
 from tkinter import filedialog
 from tkinter import simpledialog
 from collections import defaultdict
-from xml.etree import ElementTree as ET
+from xml.etree import ElementTree
+from xml.etree.ElementTree import Element, SubElement, tostring
+
 
 # README
 #
-# 1. Change the following string to the absolute path of the directory
-#    containing the *kbd.cfg files:
-KBD_CFG_FILES_DIRECTORY = "/home/tomasito/Development/Mixxx/res/keyboard"
+# 1. Run this file. (with PYTHON3 or higher!!)
 #
-#    Note: Only files with a valid language language code as filename will be
-#          parsed. For example: en_US.kbd.cfg, es_ES.kbd.cfg or de_CH.kbd.cfg
-#
-# 2. Change the following string to the absolute path of the directory to
-#    you want to save the generated keyboard preset:
-TARGET_DIRECTORY = "/home/tomasito/Development/Mixxx/scripts/"
-#
-# 3. Change the following string to the preset name. Name this whatever you
-#    like:
-PRESET_NAME = "Default-mapping"
-#
-#    Note: The preset name will be the name you will see when the preset is
-#          listed in Mixxx under preferences -> controllers -> keyboard ->
-#          presets.
-#
-#          The preset name will be also reflected in the filename. If your
-#          preset name is "foo", the generated file will be:
-#          {TARGET_DIRECTORY}/"foo.kbd.xml"
-#
-# 4. Run this file. (with PYTHON3 or higher!!)
+# Note: Parsing cz_CH.kbd.cfg and ru_RU.kbd.cfg fails on Windows.
 
 
 def main():
-    app = Gui(None)
-    app.mainloop()
+    # app = Gui(None)
+    # app.mainloop()
+    KeyboardParser(
+        multilang=False,
+        legacy_file="C:/Users/jordi/Development/mixxx/mixxx/res/keyboard/de_DE.kbd.cfg",
+        target_file="C:/Users/jordi/Development/mixxx/mixxx/scripts/test.kbd.xml",
+        layouts_path="C:/Users/jordi/Desktop/layouts.xml"
+    )
 
 
 class KeyboardParser:
-    NAME_VALIDATION_PATTERN = re.compile("^[a-z]{2}_[A-Z]{2,3}$")
-
-    @staticmethod
-    # Check if name has the correct format, described here: http://doc.qt.io/qt-4.8/qlocale.html#QLocale-2
-    # Name has to start with a two letter ISO 639-1 language code ...
-    # ... followed by an underscore ...
-    # ... followed by a three letter uppercase ISO 3166 country code
-    #
-    # Note: This validation is not full-prove: qw_ZXC will pass.
-    def validate_name(name):
-        return KeyboardParser.NAME_VALIDATION_PATTERN.match(name)
-
-    def __init__(self, legacy_folder=None, name="",
+    def __init__(self, legacy_folder=None, name="", layouts_path=None,
                  multilang=True, legacy_file=None, target_file=None,
                  mixxx_version="2.1.0+", author="kbdcfg_to_kbdxml.py"):
 
         self.legacy_folder = legacy_folder
         self.name = name
+        self.layouts = []
         self.multilang = multilang
         self.legacy_file = legacy_file
         self.legacy_extension = ".kbd.cfg"
@@ -74,8 +50,9 @@ class KeyboardParser:
 
         if not target_file:
             raise ValueError("Given target file is empty, please provide a path to save the *kbd.xml file")
-
         print("Preset will be saved to: " + target_file)
+
+        self.open_layouts_file(layouts_path)
 
         if multilang:
             print("kbdcfg_to_kbdxml in multi-lang mode")
@@ -121,6 +98,44 @@ class KeyboardParser:
 
             self.write_out(xml)
 
+    def open_layouts_file(self, path):
+        if not path:
+            print("Layouts file is not given, key scancodes won't be set.")
+            return
+
+        if not os.path.isfile(path):
+            print("Layouts file doesn't exist: " + path + "\nKey scancodes won't be set")
+            return
+
+        print("Parsing layouts from " + path + "...")
+        with open(path, 'rt') as f:
+            tree = ElementTree.parse(f)
+
+        # Get KeyboardLayoutTranslations element, which holds all
+        # information and is basically the root element
+        root = None
+        for element in tree.getroot().iter():
+            if element.tag == 'KeyboardLayoutTranslations':
+                root = element
+                break
+
+        # Retrieve layouts element
+        layouts_element = root.find('layouts')
+
+        if not layouts_element:
+            print("Couldn't retrieve layout list, no <layouts> element "
+                  "in loaded XML. Pleas load in an other XML file.")
+            return
+
+        for layout in layouts_element.iter('lang'):
+            name = layout.text
+            if not KeyboardLayout.validate_layout_name(name):
+                print("Layout name: " + name + " is not a valid language code name. Not loading this layout.")
+                continue
+            self.layouts.append(
+                KeyboardLayout(name=name, root=root)
+            )
+
     def parse_single_config(self):
         legacy_file = self.legacy_file
         legacy_extension = self.legacy_extension
@@ -128,7 +143,7 @@ class KeyboardParser:
         file_name = ntpath.basename(legacy_file)
         base_name = file_name[:-len(legacy_extension)]
 
-        if KeyboardParser.validate_name(base_name):
+        if KeyboardLayout.validate_layout_name(base_name):
             print("Parsing " + legacy_file + "...")
             parser = configparser.ConfigParser(allow_no_value=True)
             parser.optionxform = str
@@ -154,7 +169,7 @@ class KeyboardParser:
 
                 # Parse file and store it in multi_lang_mappings if filename
                 # ends with kbd.cfg and starts with a valid language code
-                if KeyboardParser.validate_name(base_name):
+                if KeyboardLayout.validate_layout_name(base_name):
                     print("Parsing " + file_name + "...")
                     parser = configparser.ConfigParser(allow_no_value=True)
                     parser.optionxform = str
@@ -170,20 +185,20 @@ class KeyboardParser:
         elements = {}
 
         # Create XML root element
-        root = ET.Element('MixxxKeyboardPreset')
+        root = Element('MixxxKeyboardPreset')
         root.set('schemaVersion', '1')
         root.set('mixxxVersion', self.mixxx_version)
         elements['root'] = root
 
         # Create info block
-        info = ET.SubElement(root, 'info')
-        ET.SubElement(info, 'name').text = self.name
-        ET.SubElement(info, 'author').text = self.author
-        ET.SubElement(info, 'description').text = self.description
+        info = SubElement(root, 'info')
+        SubElement(info, 'name').text = self.name
+        SubElement(info, 'author').text = self.author
+        SubElement(info, 'description').text = self.description
         elements['info'] = info
 
         # Create controller block
-        elements['controller'] = ET.SubElement(root, 'controller')
+        elements['controller'] = SubElement(root, 'controller')
 
         return elements
 
@@ -194,7 +209,7 @@ class KeyboardParser:
         # Retrieve base name of file (hence, language code)
         file_name = ntpath.basename(self.legacy_file)
         print(file_name)
-        base_name = file_name[:-len(self.legacy_extension)]
+        lang = file_name[:-len(self.legacy_extension)]
 
         # Create empty preset file and store dictionary holding basic elements
         elements = self._create_empty_xml()
@@ -205,7 +220,7 @@ class KeyboardParser:
 
         # Iterate over all groups specified in the legacy file
         for group in groups:
-            group_element = ET.SubElement(controller, 'group')
+            group_element = SubElement(controller, 'group')
             group_element.set('name', group)
 
             # Iterate over all controls
@@ -217,13 +232,22 @@ class KeyboardParser:
                 except:
                     keyseq = ""
 
+                # Retrieve scancode
+                layout = self.get_layout_with_name(lang)
+                scancode = layout.get_scancode(keyseq) if layout else "TODO: Set scancode (layout" \
+                                                                      " was not found for '" + lang + "')"
+
+                if action == "cue_default":
+                    print(keyseq)
+
                 # Create control element node inside of group block
-                control_element = ET.SubElement(group_element, 'control')
+                control_element = SubElement(group_element, 'control')
                 control_element.set('action', action)
 
                 # Create keyseq element node inside of group block
-                keyseq_element = ET.SubElement(control_element, 'keyseq')
-                keyseq_element.set('lang', base_name)
+                keyseq_element = SubElement(control_element, 'keyseq')
+                keyseq_element.set('lang', lang)
+                keyseq_element.set('scancode', str(scancode))
                 keyseq_element.text = keyseq
 
         return root
@@ -237,9 +261,9 @@ class KeyboardParser:
         root = elements['root']
 
         # Create keyboard layouts block
-        keyboard_layouts = ET.SubElement(controller, 'keyboard-layouts')
+        keyboard_layouts = SubElement(controller, 'keyboard-layouts')
         for layout in sorted(mappings.items()):
-            ET.SubElement(keyboard_layouts, 'lang').text = layout[0]
+            SubElement(keyboard_layouts, 'lang').text = layout[0]
 
         # Retrieve which groups and actions are defined and store them in
         # actions dictionary, where:
@@ -254,7 +278,8 @@ class KeyboardParser:
             groups_in_this_mapping = parser.sections()
 
             for group in groups_in_this_mapping:
-                if group not in actions: actions[group] = set()
+                if group not in actions:
+                    actions[group] = set()
 
                 # Retrieve all actions in this group
                 actions_in_this_group = set()
@@ -268,14 +293,14 @@ class KeyboardParser:
         # Add group blocks
         print("Adding groups...")
         for group in sorted(actions):
-            group_element = ET.SubElement(controller, 'group')
+            group_element = SubElement(controller, 'group')
             group_element.set('name', '[' + group + ']')
             print("\t" + '[' + group + ']')
 
             # Iterate over actions in this group
             for action in sorted(actions[group]):
                 # Add control element node to current group node
-                control_element = ET.SubElement(group_element, 'control')
+                control_element = SubElement(group_element, 'control')
                 control_element.set('action', action)
 
                 # Iterate over all keyboard layouts and find if
@@ -294,16 +319,13 @@ class KeyboardParser:
                     # parser. (hence, the current keyboard layout)
                     for action_in_this_group in parser.items(group):
                         stripped_action_in_this_group = action_in_this_group[0].split()
-                        this_action = stripped_action_in_this_group[0]
-                        this_keyseq = None
-
                         try:
                             this_keyseq = stripped_action_in_this_group[1]
                         except:
                             this_keyseq = ""
 
                         if action == action_in_this_group[0].split()[0]:
-                            keyseq_element = ET.SubElement(control_element, 'keyseq')
+                            keyseq_element = SubElement(control_element, 'keyseq')
                             keyseq_element.set('lang', mapping[0])
                             keyseq_element.text = this_keyseq
 
@@ -336,7 +358,6 @@ class KeyboardParser:
 
                 # Fill keyseqs
                 for keyseq_element in control.iter('keyseq'):
-                    keyseq = keyseq_element.text
                     lang = keyseq_element.get('lang')
                     keyseqs[keyseq_element.text].append(lang)
                     keyseq_elements.append(keyseq_element)
@@ -351,7 +372,7 @@ class KeyboardParser:
                     n_lang = len(langs)
                     assert n_lang >= 1
 
-                    keyseq_element = ET.Element('keyseq')
+                    keyseq_element = Element('keyseq')
                     keyseq_element.text = keyseq
 
                     if n_lang == 1:
@@ -372,10 +393,16 @@ class KeyboardParser:
         if os.path.isfile(full_path):
             print("Warning: '" + full_path + "' already exists.\nOverriding that file assuming that it's ok :)\n")
         print("Writing to file: " + full_path + "\n...")
-        xmlstr = minidom.parseString(ET.tostring(root)).toprettyxml()
+        xmlstr = minidom.parseString(tostring(root)).toprettyxml()
         with open(full_path, "w") as f:
             f.write(xmlstr)
         print("Saved successfully!")
+
+    def get_layout_with_name(self, name):
+        for layout in self.layouts:
+            if layout.name == name:
+                return layout
+        return None
 
 
 class Gui(Tk):
@@ -393,26 +420,13 @@ class Gui(Tk):
                text="Multi-lang conversion",
                command=lambda: MultiLangConversionDialog(self)).pack(padx=5, pady=5, fill=BOTH, expand=1)
 
-    @staticmethod
-    def open_multi_dialog():
-        legacy_folder = filedialog.askdirectory(
-            title="Choose a folder containing kbd.cfg files")
-        if not legacy_folder:
-            return
-        try:
-            target_file = filedialog.asksaveasfile(
-                mode='w',
-                defaultextension=".kbd.xml", title="Where to save the kbd.xml file").name
-        except AttributeError:
-            return
-        KeyboardParser(multilang=True, legacy_folder=legacy_folder, target_file=target_file, name=target_file)
-
 
 class SingleFileConversionDialog(simpledialog.Dialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.legacy_file = None
         self.target_file = None
+        self.layouts_file = None
 
     def body(self, master):
         self.wm_title("Single file conversion")
@@ -427,20 +441,27 @@ class SingleFileConversionDialog(simpledialog.Dialog):
         body = Frame(master)
         Grid.columnconfigure(body, 0, weight=1)
         Grid.columnconfigure(body, 1, weight=1)
-        Grid.rowconfigure(body, 0, weight=1)
-        Grid.rowconfigure(body, 1, weight=1)
+        for i in range(0, 3):
+            Grid.rowconfigure(body, i, weight=1)
 
         Label(body, text="Legacy file:").grid(row=0, sticky='w')
         Label(body, text="Save to:").grid(row=1, sticky='w')
+        Label(body, text="Layouts file:").grid(row=2, sticky='w')
 
         self.legacy_file = Entry(body)
         self.target_file = Entry(body)
+        self.layouts_file = Entry(body)
 
         self.legacy_file.grid(row=0, column=1, sticky='nsew')
         self.target_file.grid(row=1, column=1, sticky='nsew')
+        self.layouts_file.grid(row=2, column=1, sticky='nsew')
 
-        Button(body, text="Browse", command=lambda: self._browse_legacy_file()).grid(row=0, column=2, sticky='nsew', padx=3)
-        Button(body, text="Browse", command=lambda: self._browse_target_file()).grid(row=1, column=2, sticky='nsew', padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_legacy_file()).\
+            grid(row=0, column=2, sticky='nsew', padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_target_file()).\
+            grid(row=1, column=2, sticky='nsew', padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_layouts_file()).\
+            grid(row=2, column=2, sticky='nsew', padx=3)
 
         body.pack(fill=BOTH, expand=1, pady=10)
 
@@ -469,11 +490,23 @@ class SingleFileConversionDialog(simpledialog.Dialog):
         self.target_file.delete(0, END)
         self.target_file.insert(0, target_file)
 
+    def _browse_layouts_file(self):
+        layouts_file = filedialog.askopenfilename(
+            filetypes=(("XML Files", ".xml"), ("All Files", "*")),
+            title="Choose a layouts xml file"
+        )
+        if not layouts_file:
+            return None
+
+        self.layouts_file.delete(0, END)
+        self.layouts_file.insert(0, layouts_file)
+
     def apply(self):
         KeyboardParser(
             multilang=False,
             legacy_file=self.legacy_file.get(),
-            target_file=self.target_file.get()
+            target_file=self.target_file.get(),
+            layouts_path=self.layouts_file.get()
         )
 
 
@@ -482,40 +515,46 @@ class MultiLangConversionDialog(simpledialog.Dialog):
         super().__init__(*args, **kwargs)
         self.legacy_folder = None
         self.target_file = None
+        self.layouts_file = None
         self.preset_name = None
 
     def body(self, master):
         self.wm_title("Multi-language conversion")
 
-        Label(master, text="Convert multiple kbd.cfg files into one kbd.xml file. "
-                           "Please \nnote that only the files will be converted of "
-                           "which the filename \nfollows the QLocale "
-                           "name format: 'language[_country]', where:\n"
+        Label(master, text="Convert multiple kbd.cfg files into one kbd.xml file. Please \n"
+                           "note that only the files will be converted of which the filename \n"
+                           "follows the QLocale name format: 'language[_country]', where:\n"
                            "- language is a lowercase, two-letter, ISO 639 language code\n"
-                           "- country is an uppercase, two- or three-letter, ISO 3166 country code", justify=LEFT,
-              bg='#388E3C', fg='white').pack()
+                           "- country is an uppercase, two- or three-letter, ISO 3166 country code",
+              justify=LEFT, bg='#388E3C', fg='white').pack()
 
         body = Frame(master)
         Grid.columnconfigure(body, 0, weight=1)
         Grid.columnconfigure(body, 1, weight=1)
-        Grid.rowconfigure(body, 0, weight=1)
-        Grid.rowconfigure(body, 1, weight=1)
-        Grid.rowconfigure(body, 2, weight=1)
+        for i in range(0, 4):
+            Grid.rowconfigure(body, i, weight=1)
 
         Label(body, text="Legacy folder:").grid(row=0, sticky='w')
         Label(body, text="Save to:").grid(row=1, sticky='w')
-        Label(body, text="Preset name:").grid(row=2, sticky='w')
+        Label(body, text="Layouts file:").grid(row=2, sticky='w')
+        Label(body, text="Preset name:").grid(row=3, sticky='w')
 
         self.legacy_folder = Entry(body)
         self.target_file = Entry(body)
         self.preset_name = Entry(body)
+        self.layouts_file = Entry(body)
 
         self.legacy_folder.grid(row=0, column=1, sticky='nsew')
         self.target_file.grid(row=1, column=1, sticky='nsew')
-        self.preset_name.grid(row=2, column=1, sticky='nsew')
+        self.layouts_file.grid(row=2, column=1, sticky='nsew')
+        self.preset_name.grid(row=3, column=1, sticky='nsew')
 
-        Button(body, text="Browse", command=lambda: self._browse_legacy_folder()).grid(row=0, column=2, sticky='nsew', padx=3)
-        Button(body, text="Browse", command=lambda: self._browse_target_file()).grid(row=1, column=2, sticky='nsew', padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_legacy_folder()).grid(row=0, column=2, sticky='nsew',
+                                                                                       padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_target_file()).grid(row=1, column=2, sticky='nsew',
+                                                                                     padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_layouts_file()).grid(row=2, column=2, sticky='nsew',
+                                                                                      padx=3)
 
         body.pack(fill=BOTH, expand=1, pady=10)
 
@@ -527,13 +566,11 @@ class MultiLangConversionDialog(simpledialog.Dialog):
             title="Choose a folder containing kbd.cfg files")
         if not legacy_folder:
             return
-
         if not self.preset_name.get():
             folder_name = os.path.basename(
                 os.path.normpath(legacy_folder)
             )
             self.preset_name.insert(0, folder_name)
-
         self.legacy_folder.delete(0, END)
         self.legacy_folder.insert(0, legacy_folder)
 
@@ -544,15 +581,115 @@ class MultiLangConversionDialog(simpledialog.Dialog):
                 title="Where to save the kbd.xml file")
         except AttributeError:
             return
-
         self.target_file.delete(0, END)
         self.target_file.insert(0, target_file)
+
+    def _browse_layouts_file(self):
+        layouts_file = filedialog.askopenfilename(
+            filetypes=(("XML Files", ".xml"), ("All Files", "*")),
+            title="Choose a layouts xml file"
+        )
+        if not layouts_file:
+            return None
+        self.layouts_file.delete(0, END)
+        self.layouts_file.insert(0, layouts_file)
 
     def apply(self):
         KeyboardParser(
             multilang=True,
             legacy_folder=self.legacy_folder.get(),
             target_file=self.target_file.get(),
-            name=self.preset_name.get()
+            name=self.preset_name.get(),
+            layouts_path=self.layouts_file.get()
         )
-main()
+
+
+class KeyboardLayout:
+    NAME_VALIDATION_PATTERN = re.compile("^[a-z]{2}_[A-Z]{2,3}$")
+
+    @staticmethod
+    # Check if name has the correct format, described here: http://doc.qt.io/qt-4.8/qlocale.html#QLocale-2
+    # Name has to start with a two letter ISO 639-1 language code ...
+    # ... followed by an underscore ...
+    # ... followed by a three letter uppercase ISO 3166 country code
+    #
+    # Note: This validation is not full-prove: qw_ZXC will pass.
+    def validate_layout_name(name):
+        return KeyboardLayout.NAME_VALIDATION_PATTERN.match(name)
+
+    def __init__(self, name="", root=None):
+        # Keyboard layout name
+        self.name = name
+
+        # Dictionary containing layout data, where:
+        #   key   = scan code (as described here http://www.barcodeman.com/altek/mule/kb102.gif)
+        #   value = character bound to this key
+        self._data = {}
+
+        # Parse XML and store it into self.data
+        self.parse_xml(root)
+
+    def parse_xml(self, root):
+        for key in root.iter('key'):
+            scancode = key.get('scancode')
+            if not scancode:
+                print(
+                    "Skipping key, no scan code defined. Make sure that all key "
+                    "elements have a 'scancode' attribute telling the scancode as "
+                    "described here: http://www.barcodeman.com/altek/mule/kb102.gif")
+                break
+
+            for char in key.iter('char'):
+                lang = char.get('lang')
+                if lang == self.name:
+                    self._data[int(scancode)] = char.text
+
+    def find(self, scancode):
+        data = self._data
+        if scancode in data:
+            return self._data[scancode]
+        else:
+            return None
+
+    def update_key(self, scancode, char):
+        self._data[int(scancode)] = char
+
+    def get_scancodes(self):
+        scancodes = set()
+        for scancode, char in self._data.items():
+            scancodes.add(scancode)
+        return scancodes
+
+    def get_scancode(self, keyseq):
+        # Retrieve scancode
+        split_keyseq = keyseq.split('+')
+        char = split_keyseq[-1] if split_keyseq else ""
+
+        scancodes = []
+        for scancode, i_char in self._data.items():
+            if i_char == char:
+                scancodes.append(scancode)
+        scancode = scancodes[0] if len(scancodes) == 1 else "TODO: Set scancode for " + char
+
+        # Check if this key is universal (for example: F-keys or Space)
+        if KeyboardLayout.is_universal_key(char):
+            scancode = "universal_key"
+
+        return scancode
+
+    @staticmethod
+    def is_universal_key(key):
+        universal_keys = [
+            "LEFT", "UP", "RIGHT", "DOWN",
+            "SPACE", "RETURN", "F1", "F2",
+            "F3", "F4", "F5", "F6", "F7",
+            "F8", "F9", "F10", "F11", "F12"]
+
+        if key.upper() in universal_keys:
+            return True
+        else:
+            return False
+
+
+if __name__ == '__main__':
+    main()

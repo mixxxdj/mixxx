@@ -407,6 +407,36 @@ class KeyboardLayout:
             scancodes.add(scancode)
         return scancodes
 
+    def get_scancode(self, keyseq):
+        # Retrieve scancode
+        split_keyseq = keyseq.split('+')
+        char = split_keyseq[-1] if split_keyseq else ""
+
+        scancodes = []
+        for scancode, i_char in self._data.items():
+            if i_char == char:
+                scancodes.append(scancode)
+        scancode = scancodes[0] if len(scancodes) == 1 else "TODO: Set scancode for " + char
+
+        # Check if this key is universal (for example: F-keys or Space)
+        if KeyboardLayout.is_universal_key(char):
+            scancode = "universal_key"
+
+        return scancode
+
+    @staticmethod
+    def is_universal_key(key):
+        universal_keys = [
+            "LEFT", "UP", "RIGHT", "DOWN",
+            "SPACE", "RETURN", "F1", "F2",
+            "F3", "F4", "F5", "F6", "F7",
+            "F8", "F9", "F10", "F11", "F12"]
+
+        if key.upper() in universal_keys:
+            return True
+        else:
+            return False
+
 
 class WorkspaceFrame(Frame):
     def __init__(self, *args, **kwargs):
@@ -588,5 +618,5 @@ class DlgKeyboardKey(Button):
         self.dlg_keyboard.set_keys_with_same_scancode_as(self)
         self.tk_focusNext().focus_set()
 
-
-main()
+if __name__ == '__main__':
+    main()
