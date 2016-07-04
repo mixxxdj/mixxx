@@ -511,9 +511,13 @@ class KeyboardLayout:
         split_keyseq = keyseq.split('+')
         char = split_keyseq[-1] if split_keyseq else ""
 
+        # Make sure that the character is a lower-case character if shift is not pressed and
+        # is an upper-case character when shift is pressed so that it can be found in _data
+        char = char.upper() if modifier == KeyboardKey.MODIFIERS.SHIFT else char.lower()
+
         scancodes = []
         for key in self._data:
-            if key.get_char(modifier) == char:
+            if key.get_char(modifier).char == char:
                 scancodes.append(key.scancode)
         scancode = scancodes[0] if len(scancodes) == 1 \
             else "TODO: Set scancode for " + char + " (please choose between one of these: " + str(scancodes) + ")"

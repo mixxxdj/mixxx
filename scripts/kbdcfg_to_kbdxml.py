@@ -21,14 +21,16 @@ from xml.etree.ElementTree import Element, SubElement, tostring
 
 
 def main():
-    # app = Gui(None)
-    # app.mainloop()
-    KeyboardParser(
-        multilang=False,
-        legacy_file="C:/Users/jordi/Development/mixxx/mixxx/res/keyboard/de_DE.kbd.cfg",
-        target_file="C:/Users/jordi/Development/mixxx/mixxx/scripts/test.kbd.xml",
-        layouts_path="C:/Users/jordi/Desktop/layouts.xml"
-    )
+    app = Gui(None)
+    app.mainloop()
+
+    # TEST
+    # KeyboardParser(
+    #     multilang=False,
+    #     legacy_file="C:/Users/jordi/Development/mixxx/mixxx/res/keyboard/de_DE.kbd.cfg",
+    #     target_file="C:/Users/jordi/Development/mixxx/mixxx/scripts/test.kbd.xml",
+    #     layouts_path="C:/Users/jordi/Desktop/layouts.xml"
+    # )
 
 
 class KeyboardParser:
@@ -232,10 +234,14 @@ class KeyboardParser:
                 except:
                     keyseq = ""
 
+                # Retrieve modifiers
+                modifiers = KeyboardParser.get_modifiers(keyseq)
+
                 # Retrieve scancode
                 layout = self.get_layout_with_name(lang)
-                scancode = layout.get_scancode(keyseq) if layout else "TODO: Set scancode (layout" \
-                                                                      " was not found for '" + lang + "')"
+                modifier_int = KeyboardKey.MODIFIERS.SHIFT if modifiers == {"SHIFT"} else KeyboardKey.MODIFIERS.NONE
+                scancode = layout.get_scancode(keyseq=keyseq, modifier=modifier_int) if layout else\
+                    "TODO: Set scancode (layout was not found for '" + lang + "')"
 
                 # Create control element node inside of group block
                 control_element = SubElement(group_element, 'control')
@@ -248,6 +254,18 @@ class KeyboardParser:
                 keyseq_element.text = keyseq
 
         return root
+
+    MODIFIERS = ["SHIFT", "CTRL", "ALT", "META"]
+
+    @staticmethod
+    def get_modifiers(keyseq):
+        modifiers = set()
+        split_keyseq = keyseq.split('+')
+        for key in split_keyseq:
+            key = key.strip().upper()
+            if key in KeyboardParser.MODIFIERS:
+                modifiers.add(key)
+        return modifiers
 
     def create_multi_lang_xml(self, mappings):
         if not type(mappings) is dict:
@@ -709,7 +727,8 @@ class KeyboardLayout:
                     self.update_key(
                         scancode=int(scancode),
                         modifier=int(modifier),
-                        char=char.text
+                        char=char.text,
+                        verbose=False
                     )
 
     def find(self, scancode):
@@ -718,11 +737,12 @@ class KeyboardLayout:
                 return key
         return None
 
-    def update_key(self, scancode, modifier, char):
+    def update_key(self, scancode, modifier, char, verbose=True):
         key = self.find(scancode)
         if not key:
-            print("Can't update key with scancode '" + str(scancode) +
-                  "'. Scancode doesnt't exist. Creating new one...")
+            if verbose:
+                print("Can't update key with scancode '" + str(scancode) +
+                      "'. Scancode doesnt't exist. Creating new one...")
             key = KeyboardKey(scancode)
             self._data.append(key)
         key.set_key_char(modifier=modifier, char=char)
@@ -738,9 +758,13 @@ class KeyboardLayout:
         split_keyseq = keyseq.split('+')
         char = split_keyseq[-1] if split_keyseq else ""
 
+        # Make sure that the character is a lower-case character if shift is not pressed and
+        # is an upper-case character when shift is pressed so that it can be found in _data
+        char = char.upper() if modifier == KeyboardKey.MODIFIERS.SHIFT else char.lower()
+
         scancodes = []
         for key in self._data:
-            if key.get_char(modifier) == char:
+            if key.get_char(modifier).char == char:
                 scancodes.append(key.scancode)
         scancode = scancodes[0] if len(scancodes) == 1 \
             else "TODO: Set scancode for " + char + " (please choose between one of these: " + str(scancodes) + ")"
