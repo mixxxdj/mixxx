@@ -4,6 +4,7 @@ import ntpath
 from tkinter import *
 from xml.dom import minidom
 from tkinter import filedialog
+from sys import platform as _platform
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement, tostring
 
@@ -84,8 +85,18 @@ class KeyboardLayoutEditor(Tk):
         self.bind_all(KeyboardLayoutEditor.SHORTCUTS['open']['event_name'], lambda e: self.open_file())
         self.bind_all(KeyboardLayoutEditor.SHORTCUTS['quit']['event_name'], lambda e: self.quit())
 
+        if _platform == "linux" or _platform == "linux2":
+            os.system('xset r off')
+
+        self.protocol("WM_DELETE_WINDOW", self.quit)
+
     def quit(self):
         print("Quitting...")
+        self.destroy()
+
+        if _platform == "linux" or _platform == "linux2":
+            os.system('xset r on')
+
         sys.exit(0)
 
     def pack(self):
@@ -239,9 +250,9 @@ class KeyboardLayoutEditor(Tk):
         if not bool(layout):
             return
 
-        self.dlgkeyboard.update_keys(layout)
         self.selected_layout = layout
         self.dlgkeyboard.keyboard_layout = layout
+        self.dlgkeyboard.update_keys()
         print("Selected layout: " + layout_name)
 
 
@@ -352,8 +363,16 @@ class LayoutNameDialog:
 
 
 class KeyboardKey:
+    """ Class representing one physical character key as seen here:
+    https://en.wikipedia.org/wiki/Keyboard_layout#/media/File:ISO_keyboard_(105)_QWERTY_UK.svg
+
+    This class contains information about which character is bound
+    to this keyboard key, also for different modifiers"""
+
     class MODIFIERS:
-        NONE, SHIFT = range(1, 3)
+        """ Modifier enum, following the Qt::KeyboardModifier standard, found here:
+        http://doc.qt.io/qt-5/qt.html#KeyboardModifier-enum """
+        NONE, SHIFT, CTRL, ALT, META, KEYPAD = range(1, 7)
 
         @staticmethod
         def is_valid_modifier(modifier):
@@ -383,8 +402,8 @@ class KeyboardKey:
                 return key_char
 
         if verbose:
-            print("Keyboard key with scancode '" + self.scancode +
-                  "' has not a key char set with modifier: " + modifier)
+            print("Keyboard key with scancode '" + str(self.scancode) +
+                  "' has not a key char set with modifier: " + str(modifier))
         return None
 
     def set_key_char(self, modifier, char):
@@ -421,12 +440,10 @@ class KeyboardLayout:
         # Keyboard layout name
         self.name = name
 
-        # Dictionary containing layout data, where:
-        #   key   = scan code (as described here http://www.barcodeman.com/altek/mule/kb102.gif)
-        #   value = list of
-        self._data = {}
+        # Mapping data for this keyboard layout, contains instances of KeyboardKey.
+        self._data = []
 
-        # Parse XML and store it into self.data
+        # Parse XML and store it into self._data
         self.parse_xml(root)
 
     def parse_xml(self, root):
@@ -445,31 +462,37 @@ class KeyboardLayout:
                     self._data[int(scancode)] = char.text
 
     def find(self, scancode):
-        data = self._data
-        if scancode in data:
-            return self._data[scancode]
-        else:
-            return None
+        for key in self._data:
+            if key.scancode == scancode:
+                return key
+        return None
 
-    def update_key(self, scancode, char):
-        self._data[int(scancode)] = char
+    def update_key(self, scancode, modifier, char):
+        key = self.find(scancode)
+        if not key:
+            print("Can't update key with scancode '" + str(scancode) +
+                  "'. Scancode doesnt't exist. Creating new one...")
+            key = KeyboardKey(scancode)
+            self._data.append(key)
+        key.set_key_char(modifier=modifier, char=char)
 
     def get_scancodes(self):
         scancodes = set()
-        for scancode, char in self._data.items():
-            scancodes.add(scancode)
+        for key in self._data:
+            scancodes.add(key.scancode)
         return scancodes
 
-    def get_scancode(self, keyseq):
+    def get_scancode(self, keyseq, modifier):
         # Retrieve scancode
         split_keyseq = keyseq.split('+')
         char = split_keyseq[-1] if split_keyseq else ""
 
         scancodes = []
-        for scancode, i_char in self._data.items():
-            if i_char == char:
-                scancodes.append(scancode)
-        scancode = scancodes[0] if len(scancodes) == 1 else "TODO: Set scancode for " + char
+        for key in self._data:
+            if key.get_char(modifier) == char:
+                scancodes.append(key.scancode)
+        scancode = scancodes[0] if len(scancodes) == 1 \
+            else "TODO: Set scancode for " + char + " (please choose between one of these: " + str(scancodes) + ")"
 
         # Check if this key is universal (for example: F-keys or Space)
         if KeyboardLayout.is_universal_key(char):
@@ -561,11 +584,18 @@ class DlgKeyboard(Frame):
         DlgKeyboardKey(letters_keys_row_3, scancode=57, width=11, char="Shift", state=DISABLED)
         letters_keys_row_3.grid(row=5, column=1, sticky='we')
 
-    def update_keys(self, keyboardlayout):
-        keys = self.keys
-        for key in keys:
-            char = keyboardlayout.find(key.scancode)
-            key.set_char(char)
+        self.shift_pressed = False
+
+    def update_keys(self):
+        layout = self.app.selected_layout
+        for dlg_key in self.keys:
+            modifier = KeyboardKey.MODIFIERS.SHIFT if self.shift_pressed else KeyboardKey.MODIFIERS.NONE
+            key = layout.find(dlg_key.scancode)
+            if not key:
+                continue
+            key_char = key.get_char(modifier)
+            char = key_char.char if key_char else ""
+            dlg_key.set_char(char)
 
     def clear_all(self):
         for key in self.keys:
@@ -601,10 +631,18 @@ class DlgKeyboardKey(Button):
             print("Warning: no scancode given for this DlgKeyboardKey")
         self.scancode = scancode
         self.dlg_keyboard = dlg_keyboard
-        self.bind("<KeyPress>", self.on_key_press)
-
         self.scancode_label = Label(self, text=scancode, font=("Helvetica", 6))
 
+        # Shift pressed / released check
+        self.bind("<KeyPress-Shift_R>", lambda e: self.update_shift_state(True))
+        self.bind("<KeyPress-Shift_L>", lambda e: self.update_shift_state(True))
+        self.bind("<KeyRelease-Shift_R>", lambda e: self.update_shift_state(False))
+        self.bind("<KeyRelease-Shift_L>", lambda e: self.update_shift_state(False))
+
+        # Bind all other key-press events
+        self.bind("<KeyPress>", self.on_key_press)
+
+        # Show or hide scancode when mouse hover
         self.bind("<Enter>", lambda e: self.show_scancode())
         self.bind("<Leave>", lambda e: self.hide_scancode())
 
@@ -613,6 +651,12 @@ class DlgKeyboardKey(Button):
 
     def hide_scancode(self):
         self.scancode_label.place_forget()
+
+    def update_shift_state(self, pressed):
+        if self.dlg_keyboard.shift_pressed == pressed:
+            return
+        self.dlg_keyboard.shift_pressed = pressed
+        self.dlg_keyboard.update_keys()
 
     def set_char(self, char):
         if not char:
@@ -667,9 +711,18 @@ class DlgKeyboardKey(Button):
             print("Layout is None, not setting key")
             self.set_char("")
             return
-        layout.update_key(scancode, char)
+
+        modifier = KeyboardKey.MODIFIERS.SHIFT if self.dlg_keyboard.shift_pressed else KeyboardKey.MODIFIERS.NONE
+        layout.update_key(scancode=scancode, modifier=modifier, char=char)
         self.dlg_keyboard.set_keys_with_same_scancode_as(self)
         self.tk_focusNext().focus_set()
+
+        # If we don't invoke a shift down event on the next key, it won't
+        # detect shift release event when we release the shift key
+        if self.dlg_keyboard.shift_pressed:
+            self.tk_focusNext().event_generate("<KeyPress-Shift_L>")
+            self.tk_focusNext().event_generate("<KeyPress-Shift_R>")
+
 
 if __name__ == '__main__':
     main()
