@@ -471,7 +471,19 @@ class KeyboardLayout:
             for char in key.iter('char'):
                 lang = char.get('lang')
                 if lang == self.name:
-                    self._data[int(scancode)] = char.text
+                    modifier_attr = char.get('modifier')
+                    if modifier_attr == "NONE":
+                        modifier = KeyboardKey.MODIFIERS.NONE
+                    elif modifier_attr == "SHIFT":
+                        modifier = KeyboardKey.MODIFIERS.SHIFT
+                    else:
+                        modifier = -1
+
+                    self.update_key(
+                        scancode=int(scancode),
+                        modifier=int(modifier),
+                        char=char.text
+                    )
 
     def find(self, scancode):
         for key in self._data:
