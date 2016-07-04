@@ -237,9 +237,6 @@ class KeyboardParser:
                 scancode = layout.get_scancode(keyseq) if layout else "TODO: Set scancode (layout" \
                                                                       " was not found for '" + lang + "')"
 
-                if action == "cue_default":
-                    print(keyseq)
-
                 # Create control element node inside of group block
                 control_element = SubElement(group_element, 'control')
                 control_element.set('action', action)
@@ -549,12 +546,12 @@ class MultiLangConversionDialog(simpledialog.Dialog):
         self.layouts_file.grid(row=2, column=1, sticky='nsew')
         self.preset_name.grid(row=3, column=1, sticky='nsew')
 
-        Button(body, text="Browse", command=lambda: self._browse_legacy_folder()).grid(row=0, column=2, sticky='nsew',
-                                                                                       padx=3)
-        Button(body, text="Browse", command=lambda: self._browse_target_file()).grid(row=1, column=2, sticky='nsew',
-                                                                                     padx=3)
-        Button(body, text="Browse", command=lambda: self._browse_layouts_file()).grid(row=2, column=2, sticky='nsew',
-                                                                                      padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_legacy_folder()).grid(
+            row=0, column=2, sticky='nsew', padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_target_file()).grid(
+            row=1, column=2, sticky='nsew', padx=3)
+        Button(body, text="Browse", command=lambda: self._browse_layouts_file()).grid(
+            row=2, column=2, sticky='nsew', padx=3)
 
         body.pack(fill=BOTH, expand=1, pady=10)
 
@@ -604,6 +601,67 @@ class MultiLangConversionDialog(simpledialog.Dialog):
         )
 
 
+class KeyboardKey:
+    """ Class representing one physical character key as seen here:
+    https://en.wikipedia.org/wiki/Keyboard_layout#/media/File:ISO_keyboard_(105)_QWERTY_UK.svg
+
+    This class contains information about which character is bound
+    to this keyboard key, also for different modifiers"""
+
+    class MODIFIERS:
+        """ Modifier enum, following the Qt::KeyboardModifier standard, found here:
+        http://doc.qt.io/qt-5/qt.html#KeyboardModifier-enum """
+        NONE, SHIFT, CTRL, ALT, META, KEYPAD = range(1, 7)
+
+        @staticmethod
+        def is_valid_modifier(modifier):
+            return modifier in range(1, 3)
+
+    class KeyChar:
+        def __init__(self, modifier, char):
+            self.modifier = modifier
+            self.char = char
+
+    def __init__(self, scancode):
+        self.scancode = scancode
+
+        # A list containing KeyChar objects. For example, for the a key, it will contain:
+        #   - One KeyChar with modifier == NONE and char = 'a'
+        #   - One KeyChar with modifier == SHIFT and char = 'A'
+        self._key_chars = []
+
+    def get_char(self, modifier, verbose=True):
+        if not KeyboardKey.MODIFIERS.is_valid_modifier(modifier):
+            if verbose:
+                print("Given modifier: " + modifier + " is not valid.")
+            return
+
+        for key_char in self._key_chars:
+            if key_char.modifier == modifier:
+                return key_char
+
+        if verbose:
+            print("Keyboard key with scancode '" + str(self.scancode) +
+                  "' has not a key char set with modifier: " + str(modifier))
+        return None
+
+    def set_key_char(self, modifier, char):
+        if not KeyboardKey.MODIFIERS.is_valid_modifier(modifier):
+            print("Given modifier: " + modifier + " is not valid.")
+            return
+
+        # Check if there is already a KeyChar with the given modifier
+        key_char = self.get_char(modifier=modifier, verbose=False)
+
+        if key_char:
+            key_char.char = char
+        else:
+            self._key_chars.append(KeyboardKey.KeyChar(
+                modifier=modifier,
+                char=char
+            ))
+
+
 class KeyboardLayout:
     NAME_VALIDATION_PATTERN = re.compile("^[a-z]{2}_[A-Z]{2,3}$")
 
@@ -621,12 +679,10 @@ class KeyboardLayout:
         # Keyboard layout name
         self.name = name
 
-        # Dictionary containing layout data, where:
-        #   key   = scan code (as described here http://www.barcodeman.com/altek/mule/kb102.gif)
-        #   value = character bound to this key
-        self._data = {}
+        # Mapping data for this keyboard layout, contains instances of KeyboardKey.
+        self._data = []
 
-        # Parse XML and store it into self.data
+        # Parse XML and store it into self._data
         self.parse_xml(root)
 
     def parse_xml(self, root):
@@ -642,34 +698,52 @@ class KeyboardLayout:
             for char in key.iter('char'):
                 lang = char.get('lang')
                 if lang == self.name:
-                    self._data[int(scancode)] = char.text
+                    modifier_attr = char.get('modifier')
+                    if modifier_attr == "NONE":
+                        modifier = KeyboardKey.MODIFIERS.NONE
+                    elif modifier_attr == "SHIFT":
+                        modifier = KeyboardKey.MODIFIERS.SHIFT
+                    else:
+                        modifier = -1
+
+                    self.update_key(
+                        scancode=int(scancode),
+                        modifier=int(modifier),
+                        char=char.text
+                    )
 
     def find(self, scancode):
-        data = self._data
-        if scancode in data:
-            return self._data[scancode]
-        else:
-            return None
+        for key in self._data:
+            if key.scancode == scancode:
+                return key
+        return None
 
-    def update_key(self, scancode, char):
-        self._data[int(scancode)] = char
+    def update_key(self, scancode, modifier, char):
+        key = self.find(scancode)
+        if not key:
+            print("Can't update key with scancode '" + str(scancode) +
+                  "'. Scancode doesnt't exist. Creating new one...")
+            key = KeyboardKey(scancode)
+            self._data.append(key)
+        key.set_key_char(modifier=modifier, char=char)
 
     def get_scancodes(self):
         scancodes = set()
-        for scancode, char in self._data.items():
-            scancodes.add(scancode)
+        for key in self._data:
+            scancodes.add(key.scancode)
         return scancodes
 
-    def get_scancode(self, keyseq):
+    def get_scancode(self, keyseq, modifier):
         # Retrieve scancode
         split_keyseq = keyseq.split('+')
         char = split_keyseq[-1] if split_keyseq else ""
 
         scancodes = []
-        for scancode, i_char in self._data.items():
-            if i_char == char:
-                scancodes.append(scancode)
-        scancode = scancodes[0] if len(scancodes) == 1 else "TODO: Set scancode for " + char
+        for key in self._data:
+            if key.get_char(modifier) == char:
+                scancodes.append(key.scancode)
+        scancode = scancodes[0] if len(scancodes) == 1 \
+            else "TODO: Set scancode for " + char + " (please choose between one of these: " + str(scancodes) + ")"
 
         # Check if this key is universal (for example: F-keys or Space)
         if KeyboardLayout.is_universal_key(char):
