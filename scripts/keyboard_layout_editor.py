@@ -217,11 +217,23 @@ class KeyboardLayoutEditor(Tk):
 
             for layout in self.layouts:
                 layout_name = layout.name
-                char = layout.find(scancode)
+                keyboard_key = layout.find(scancode)
 
-                char_element = SubElement(key_element, 'char')
-                char_element.text = char
-                char_element.set('lang', layout_name)
+                key_char = keyboard_key.get_char(modifier=KeyboardKey.MODIFIERS.NONE)
+                if key_char:
+                    char = key_char.char
+                    char_element = SubElement(key_element, 'char')
+                    char_element.text = char
+                    char_element.set('lang', layout_name)
+                    char_element.set('modifier', 'NONE')
+
+                key_char_shift = keyboard_key.get_char(modifier=KeyboardKey.MODIFIERS.SHIFT)
+                if key_char_shift:
+                    char = key_char_shift.char
+                    key_char_shift = SubElement(key_element, 'char')
+                    key_char_shift.text = char
+                    key_char_shift.set('lang', layout_name)
+                    key_char_shift.set('modifier', 'SHIFT')
 
         return root
 
@@ -591,10 +603,11 @@ class DlgKeyboard(Frame):
         for dlg_key in self.keys:
             modifier = KeyboardKey.MODIFIERS.SHIFT if self.shift_pressed else KeyboardKey.MODIFIERS.NONE
             key = layout.find(dlg_key.scancode)
-            if not key:
-                continue
-            key_char = key.get_char(modifier)
-            char = key_char.char if key_char else ""
+            if key:
+                key_char = key.get_char(modifier)
+                char = key_char.char if key_char else ""
+            else:
+                char = ""
             dlg_key.set_char(char)
 
     def clear_all(self):
@@ -694,6 +707,10 @@ class DlgKeyboardKey(Button):
         if e.keysym_num == 65535 or e.keysym_num == 65439:
             char = ""
         elif not char.strip():
+            return
+
+        # Check for CTRL key
+        if e.keysym_num == 65507 or e.keysym_num == 65508:
             return
 
         self.set_char(char)
