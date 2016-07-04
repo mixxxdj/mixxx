@@ -351,6 +351,59 @@ class LayoutNameDialog:
         self.top.destroy()
 
 
+class KeyboardKey:
+    class MODIFIERS:
+        NONE, SHIFT = range(1, 3)
+
+        @staticmethod
+        def is_valid_modifier(modifier):
+            return modifier in range(1, 3)
+
+    class KeyChar:
+        def __init__(self, modifier, char):
+            self.modifier = modifier
+            self.char = char
+
+    def __init__(self, scancode):
+        self.scancode = scancode
+
+        # A list containing KeyChar objects. For example, for the a key, it will contain:
+        #   - One KeyChar with modifier == NONE and char = 'a'
+        #   - One KeyChar with modifier == SHIFT and char = 'A'
+        self._key_chars = []
+
+    def get_char(self, modifier, verbose=True):
+        if not KeyboardKey.MODIFIERS.is_valid_modifier(modifier):
+            if verbose:
+                print("Given modifier: " + modifier + " is not valid.")
+            return
+
+        for key_char in self._key_chars:
+            if key_char.modifier == modifier:
+                return key_char
+
+        if verbose:
+            print("Keyboard key with scancode '" + self.scancode +
+                  "' has not a key char set with modifier: " + modifier)
+        return None
+
+    def set_key_char(self, modifier, char):
+        if not KeyboardKey.MODIFIERS.is_valid_modifier(modifier):
+            print("Given modifier: " + modifier + " is not valid.")
+            return
+
+        # Check if there is already a KeyChar with the given modifier
+        key_char = self.get_char(modifier=modifier, verbose=False)
+
+        if key_char:
+            key_char.char = char
+        else:
+            self._key_chars.append(KeyboardKey.KeyChar(
+                modifier=modifier,
+                char=char
+            ))
+
+
 class KeyboardLayout:
     NAME_VALIDATION_PATTERN = re.compile("^[a-z]{2}_[A-Z]{2,3}$")
 
@@ -370,7 +423,7 @@ class KeyboardLayout:
 
         # Dictionary containing layout data, where:
         #   key   = scan code (as described here http://www.barcodeman.com/altek/mule/kb102.gif)
-        #   value = character bound to this key
+        #   value = list of
         self._data = {}
 
         # Parse XML and store it into self.data
