@@ -1,6 +1,7 @@
 import os.path
 import re
 import ntpath
+import codecs
 from tkinter import *
 from xml.dom import minidom
 from tkinter import filedialog
@@ -131,7 +132,7 @@ class KeyboardLayoutEditor(Tk):
             return
 
         print("Opening file: " + self.file_path)
-        with open(self.file_path, 'rt') as f:
+        with codecs.open(self.file_path, 'r', "utf-16") as f:
             self.tree = ElementTree.parse(f)
 
         # Get KeyboardLayoutTranslations element, which holds all
@@ -175,7 +176,7 @@ class KeyboardLayoutEditor(Tk):
             print("Warning: '" + full_path + "' already exists.\nOverriding that file assuming that it's ok :)\n")
         print("Writing to file: " + full_path + "\n...")
         xmlstr = minidom.parseString(tostring(root)).toprettyxml(indent="  ")
-        with open(full_path, "w") as f:
+        with codecs.open(full_path, "w", "utf-16") as f:
             f.write(xmlstr)
         print("Saved file to: " + full_path)
 
