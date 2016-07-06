@@ -275,6 +275,15 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         m_browseModel.setPath(dir);
     }
     
+    auto itId = m_idTable.find(m_featureFocus);
+    auto it = m_panes.find(m_featureFocus);
+    
+    if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
+        qDebug() << "BrowseFeature::activateChild item not found";
+        return;
+    }
+    
+    (*it)->setCurrentIndex(*itId);
     showTrackModel(&m_proxyModel);
     m_pLibrary->showBreadCrumb(item);
     

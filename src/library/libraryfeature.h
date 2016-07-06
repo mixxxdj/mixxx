@@ -22,6 +22,7 @@ class TrackCollection;
 class TrackModel;
 class WBaseLibrary;
 class WLibrary;
+class WLibrarySidebar;
 class WTrackTableView;
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
@@ -62,7 +63,7 @@ class LibraryFeature : public QObject {
     
     // Reimplement this to register custom views with the library widget
     // at the right pane.
-    virtual QWidget *createPaneWidget(KeyboardEventFilter* pKeyboard, 
+    virtual QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                       int paneId);
     
     // Reimplement this to register custom views with the library widget,
@@ -80,8 +81,18 @@ class LibraryFeature : public QObject {
   protected:
     inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
     inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
+    
+    // Creates a table widget with no model
     WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
                                        int paneId);
+    
+    // Override this function to create a custom inner widget for the sidebar,
+    // the default widget is a WLibrarySidebar widget
+    virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
+    
+    // Creates a WLibrarySidebar widget with the getChildModel() function as
+    // model
+    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter* pKeyboard);
     
     void showTrackModel(QAbstractItemModel *model);
     void switchToFeature();

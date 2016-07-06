@@ -153,6 +153,10 @@ class SndFile(Dependence):
             raise Exception(
                 "Did not find libsndfile or it\'s development headers")
         build.env.Append(CPPDEFINES='__SNDFILE__')
+        
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES='FLAC__NO_DLL')
+            conf.CheckLib('g72x')
 
     def sources(self, build):
         return ['sources/soundsourcesndfile.cpp']
@@ -248,8 +252,13 @@ class Qt(Dependence):
 
         qt5 = Qt.qt5_enabled(build)
         # Emit various Qt defines
-        build.env.Append(CPPDEFINES=['QT_SHARED',
-                                     'QT_TABLET_SUPPORT'])
+        build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
+        
+        if build.static_dependencies:
+            build.env.Append(CPPDEFINES='QT_NODLL')
+        else:
+            build.env.Append(CPPDEFINES='QT_SHARED')
+        
         if qt5:
             # Enable qt4 support.
             build.env.Append(CPPDEFINES='QT_DISABLE_DEPRECATED_BEFORE')
@@ -257,6 +266,11 @@ class Qt(Dependence):
         # Set qt_sqlite_plugin flag if we should package the Qt SQLite plugin.
         build.flags['qt_sqlite_plugin'] = util.get_flags(
             build.env, 'qt_sqlite_plugin', 0)
+            
+        # Link in SQLite library if Qt is compiled statically
+        if build.platform_is_windows and build.static_dependencies \
+           and build.flags['qt_sqlite_plugin'] == 0 :
+            conf.CheckLib('sqlite3');
 
         # Enable Qt include paths
         if build.platform_is_linux:
@@ -345,26 +359,26 @@ class Qt(Dependence):
                                            staticdeps=build.static_dependencies,
                                            debug=build.build_is_debug)
 
-            # if build.static_dependencies:
-                # # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
-                # # QtCore
-                # build.env.Append(LIBS = 'kernel32')
-                # build.env.Append(LIBS = 'user32') # QtGui, QtOpenGL, libHSS1394
-                # build.env.Append(LIBS = 'shell32')
-                # build.env.Append(LIBS = 'uuid')
-                # build.env.Append(LIBS = 'ole32') # QtGui,
-                # build.env.Append(LIBS = 'advapi32') # QtGui, portaudio, portmidi
-                # build.env.Append(LIBS = 'ws2_32')   # QtGui, QtNetwork, libshout
-                # # QtGui
-                # build.env.Append(LIBS = 'gdi32') #QtOpenGL
-                # build.env.Append(LIBS = 'comdlg32')
-                # build.env.Append(LIBS = 'oleaut32')
-                # build.env.Append(LIBS = 'imm32')
-                # build.env.Append(LIBS = 'winmm')
-                # build.env.Append(LIBS = 'winspool')
-                # # QtOpenGL
-                # build.env.Append(LIBS = 'glu32')
-                # build.env.Append(LIBS = 'opengl32')
+            if build.static_dependencies:
+                # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
+                # QtCore
+                build.env.Append(LIBS = 'kernel32')
+                build.env.Append(LIBS = 'user32') # QtGui, QtOpenGL, libHSS1394
+                build.env.Append(LIBS = 'shell32')
+                build.env.Append(LIBS = 'uuid')
+                build.env.Append(LIBS = 'ole32') # QtGui,
+                build.env.Append(LIBS = 'advapi32') # QtGui, portaudio, portmidi
+                build.env.Append(LIBS = 'ws2_32')   # QtGui, QtNetwork, libshout
+                # QtGui
+                build.env.Append(LIBS = 'gdi32') #QtOpenGL
+                build.env.Append(LIBS = 'comdlg32')
+                build.env.Append(LIBS = 'oleaut32')
+                build.env.Append(LIBS = 'imm32')
+                build.env.Append(LIBS = 'winmm')
+                build.env.Append(LIBS = 'winspool')
+                # QtOpenGL
+                build.env.Append(LIBS = 'glu32')
+                build.env.Append(LIBS = 'opengl32')
 
         # Set the rpath for linux/bsd/osx.
         # This is not supported on OS X before the 10.5 SDK.
@@ -1038,6 +1052,7 @@ class MixxxCore(Feature):
                    "util/statsmanager.cpp",
                    "util/stat.cpp",
                    "util/statmodel.cpp",
+                   "util/duration.cpp",
                    "util/time.cpp",
                    "util/timer.cpp",
                    "util/performancetimer.cpp",

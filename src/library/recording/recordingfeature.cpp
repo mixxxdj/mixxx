@@ -65,7 +65,7 @@ QWidget* RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int)
     return pTrackTableView;
 }
 
-QWidget *RecordingFeature::createSidebarWidget(KeyboardEventFilter *pKeyboard) {
+QWidget *RecordingFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
     m_pRecordingView = new DlgRecording(nullptr, 
                                         m_pTrackCollection,
                                         m_pRecordingManager);

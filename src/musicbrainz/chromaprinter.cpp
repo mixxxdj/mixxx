@@ -17,9 +17,9 @@ namespace
     // on their server so we need only a fingerprint of the first two minutes
     // --kain88 July 2012
     const SINT kFingerprintDuration = 120; // in seconds
-    const SINT kFingerprintChannels = Mixxx::AudioSource::kChannelCountStereo;
+    const SINT kFingerprintChannels = mixxx::AudioSource::kChannelCountStereo;
 
-    QString calcFingerprint(const Mixxx::AudioSourcePointer& pAudioSource) {
+    QString calcFingerprint(const mixxx::AudioSourcePointer& pAudioSource) {
 
         SINT numFrames =
                 kFingerprintDuration * pAudioSource->getSamplingRate();
@@ -99,9 +99,9 @@ ChromaPrinter::ChromaPrinter(QObject* parent)
 
 QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
     SoundSourceProxy soundSourceProxy(pTrack);
-    Mixxx::AudioSourceConfig audioSrcCfg;
+    mixxx::AudioSourceConfig audioSrcCfg;
     audioSrcCfg.setChannelCount(kFingerprintChannels);
-    Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+    mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
     if (pAudioSource.isNull()) {
         qDebug() << "Skipping invalid file:" << pTrack->getLocation();
         return QString();

@@ -78,7 +78,7 @@ QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     return pTable;
 }
 
-QWidget* AnalysisFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
+QWidget* AnalysisFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
     m_pAnalysisView = new DlgAnalysis(nullptr, this, m_pTrackCollection);
     
     m_pAnalysisView->setTableModel(getAnalysisTableModel());

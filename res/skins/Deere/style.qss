@@ -192,6 +192,24 @@ WBaseLibrary QLabel {
   border: none;
 }
 
+#LibraryCoverArtSplitter::handle {
+  image: url(skin:/image/style_handle_vertical_unchecked.svg);
+  background: none;
+}
+
+#LibraryCoverArtSplitter::handle:pressed {
+  image: url(skin:/image/style_handle_vertical_checked.svg);
+  background: none;
+}
+
+#LibraryCoverArtSplitter::handle:horizontal {
+  width: 6px;
+}
+
+#LibraryCoverArtSplitter::handle:vertical {
+  height: 6px;
+}
+
 #DlgAutoDJ #scrollAreaWidgetContents {
   background-color: #222222;
   border: none;
@@ -219,6 +237,11 @@ WBaseLibrary QLabel {
   border-left: 0px solid #5F5F5F;
   color: #D2D2D2;
   background-color: #5F5F5F;
+}
+
+#LibraryCoverArtSplitter QTabBar::tab:!enabled {
+  color: #969696;
+  background-color: #525252;
 }
 
 #LibraryCoverArtSplitter QTabBar::tab:selected {
@@ -353,21 +376,21 @@ QTreeView::branch:open:has-children:has-siblings {
 }
 
 /* QSplitter between LibrarySidebar and Library */
-QSplitter::handle {
+#LibrarySplitter::handle {
   image: url(skin:/image/style_handle_horizontal_unchecked.svg);
   background: none;
 }
 
-QSplitter::handle:pressed {
+#LibrarySplitter::handle:pressed {
   image: url(skin:/image/style_handle_horizontal_checked.svg);
   background: none;
 }
 
-QSplitter::handle:horizontal {
+#LibrarySplitter::handle:horizontal {
   width: 6px;
 }
 
-QSplitter::handle:vertical {
+#LibrarySplitter::handle:vertical {
   height: 6px;
 }
 
@@ -388,6 +411,10 @@ WBaseLibrary QSpinBox {
 WBaseLibrary QSpinBox:editable {
   background: transparent;
   color:#d2d2d2;
+}
+
+WBaseLibrary QLabel, WBaseLibrary QRadioButton {
+  color: #d2d2d2;
 }
 
 WBaseLibrary QRadioButton::indicator {

@@ -5,7 +5,7 @@
 
 #include <id3tag.h>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -718,4 +718,4 @@ QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

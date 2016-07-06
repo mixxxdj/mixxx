@@ -41,7 +41,7 @@ class CrateFeature : public LibraryFeature {
                          QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    QWidget *createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId);
+    QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) override;
     
     TreeItemModel* getChildModel();
 

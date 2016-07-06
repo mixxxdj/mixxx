@@ -1088,7 +1088,7 @@ bool setTrackUrl(const QSqlRecord& record, const int column,
 
 bool setTrackDuration(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
-    pTrack->setDuration(record.value(column).toInt());
+    pTrack->setDuration(record.value(column).toDouble());
     return false;
 }
 
@@ -1118,7 +1118,7 @@ bool setTrackCuePoint(const QSqlRecord& record, const int column,
 
 bool setTrackReplayGainRatio(const QSqlRecord& record, const int column,
                         TrackPointer pTrack) {
-    Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+    mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     replayGain.setRatio(record.value(column).toDouble());
     pTrack->setReplayGain(replayGain);
     return false;
@@ -1126,7 +1126,7 @@ bool setTrackReplayGainRatio(const QSqlRecord& record, const int column,
 
 bool setTrackReplayGainPeak(const QSqlRecord& record, const int column,
                         TrackPointer pTrack) {
-    Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+    mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     replayGain.setPeak(record.value(column).toDouble());
     pTrack->setReplayGain(replayGain);
     return false;

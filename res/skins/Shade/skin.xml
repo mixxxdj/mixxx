@@ -1,3 +1,4 @@
+
 	<!--
 	Shade, Skin for Mixxx 1.12.x
 	www.mixxx.org
@@ -769,6 +770,7 @@
 												<Splitter>
 													<Orientation>vertical</Orientation>
 													<SplitSizes>8,2</SplitSizes>
+													<SizePolicy>me,me</SizePolicy>
 													<Children>
 														<LibrarySidebarExpanded>
 			                                            	<ObjectName>LibrarySidebarExpanded</ObjectName>

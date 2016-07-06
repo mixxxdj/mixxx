@@ -47,8 +47,8 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
     
-    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId);
-    QWidget* createSidebarWidget(KeyboardEventFilter *pKeyboard);
+    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
+    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
 
   public slots:
     void activate();
@@ -83,13 +83,16 @@ class MixxxLibraryFeature : public LibraryFeature {
     QHash<int, Panes> m_idPaneCurrent;
     
     // SidebarExpanded pane's ids
-    int m_hiddenExpandedId;
-    int m_missingExpandedId;
+    int m_idExpandedHidden;
+    int m_idExpandedMissing;
+    int m_idExpandedControls;
+    int m_idExpandedTree;
     
     QPointer<HiddenTableModel> m_pHiddenTableModel;
     QPointer<MissingTableModel> m_pMissingTableModel;
     
     QPointer<QStackedWidget> m_pExpandedStack;
+    QPointer<QTabWidget> m_pSidebarTab;
     
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;

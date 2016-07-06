@@ -40,7 +40,7 @@ class BrowseFeature : public LibraryFeature {
     QIcon getIcon();
     QString getFeatureName() override;
 
-    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId);
+    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
 
     TreeItemModel* getChildModel();
 

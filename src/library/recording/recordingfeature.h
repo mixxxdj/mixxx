@@ -32,8 +32,8 @@ class RecordingFeature : public LibraryFeature {
     QIcon getIcon();
     QString getFeatureName() override;
 
-    QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int);
-    QWidget* createSidebarWidget(KeyboardEventFilter *pKeyboard);
+    QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int) override;
+    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
 
     TreeItemModel* getChildModel();
 

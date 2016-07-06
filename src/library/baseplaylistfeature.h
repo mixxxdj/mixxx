@@ -35,7 +35,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId);
+    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
     QString getFeatureName() override;
 
   signals:

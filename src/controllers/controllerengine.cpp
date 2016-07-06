@@ -1160,7 +1160,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm,
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchTick(int deck, int interval) {
-    m_lastMovement[deck] = Time::elapsed();
+    m_lastMovement[deck] = mixxx::Time::elapsed();
     m_intervalAccumulator[deck] += interval;
 }
 
@@ -1186,7 +1186,7 @@ void ControllerEngine::scratchProcess(int timerId) {
     // If we're ramping to end scratching and the wheel hasn't been turned very
     // recently (spinback after lift-off,) feed fixed data
     if (m_ramp[deck] &&
-        ((Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
+        ((mixxx::Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
         filter->observation(m_rampTo[deck] * m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
@@ -1269,7 +1269,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
         m_rampTo[deck] = getDeckRate(group);
     }
 
-    m_lastMovement[deck] = Time::elapsed();
+    m_lastMovement[deck] = mixxx::Time::elapsed();
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
 

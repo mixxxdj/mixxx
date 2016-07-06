@@ -1195,6 +1195,12 @@
   background-color: #232323;
 }
 
+#LibrarySidebarExpanded QTabBar::tab:!enabled {
+  color: #7A6919;
+  background-color: #191919;
+}
+
+
 #LibrarySidebarExpanded QTabBar::tab:focus {
   border-top: 2px solid #8E5C00;
   border-right: 2px solid #8E5C00;

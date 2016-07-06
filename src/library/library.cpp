@@ -59,9 +59,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     // Refresh the library models when the library (re)scan is finished.
     connect(&m_scanner, SIGNAL(scanFinished()),
             this, SLOT(slotRefreshLibraryModels()));
-
-    // TODO(rryan) -- turn this construction / adding of features into a static
-    // method or something -- CreateDefaultLibrary
+    
     createFeatures(pConfig, pPlayerManager);
 
     // On startup we need to check if all of the user's library folders are

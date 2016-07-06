@@ -19,7 +19,7 @@ typedef uint32_t SAMPLERATE_TYPE;
 typedef unsigned long SAMPLERATE_TYPE;
 #endif
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -39,6 +39,16 @@ const SINT kNumberOfPrefetchFrames = 2112;
 
 // The TrackId is a 1-based index of the tracks in an MP4 file
 const u_int32_t kMinTrackId = 1;
+
+// According to various references DecoderConfigDescriptor.bufferSizeDB
+// is a 24-bit unsigned integer value.
+// MP4 atom:
+//   trak.mdia.minf.stbl.stsd.*.esds.decConfigDescr.bufferSizeDB
+// References:
+//   https://github.com/sannies/mp4parser/blob/master/isoparser/src/main/java/org/mp4parser/boxes/iso14496/part1/objectdescriptors/DecoderConfigDescriptor.java
+//   http://mutagen-specs.readthedocs.io/en/latest/mp4/
+//   http://perso.telecom-paristech.fr/~dufourd/mpeg-4/tools.html
+const u_int32_t kMaxSampleBlockInputSizeLimit = (u_int32_t(1) << 24) - 1;
 
 inline
 u_int32_t getMaxTrackId(MP4FileHandle hFile) {
@@ -201,6 +211,23 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     // sample block for the selected track.
     const u_int32_t maxSampleBlockInputSize = MP4GetTrackMaxSampleSize(m_hFile,
             m_trackId);
+    if (maxSampleBlockInputSize == 0) {
+        qWarning() << "Failed to read MP4 DecoderConfigDescriptor.bufferSizeDB:"
+                << getUrlString();
+        return OpenResult::FAILED;
+    }
+    if (maxSampleBlockInputSize > kMaxSampleBlockInputSizeLimit) {
+        // Workaround for a possible bug in libmp4v2 2.0.0 (Ubuntu 16.04)
+        // that returns 4278190742 when opening a corrupt file.
+        // https://bugs.launchpad.net/mixxx/+bug/1594169
+        qWarning() << "MP4 DecoderConfigDescriptor.bufferSizeDB ="
+                << maxSampleBlockInputSize
+                << ">"
+                << kMaxSampleBlockInputSizeLimit
+                << "exceeds limit:"
+                << getUrlString();
+        return OpenResult::FAILED;    
+    }
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
 
     DEBUG_ASSERT(nullptr == m_hDecoder); // not already opened
@@ -519,17 +546,17 @@ SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
     return exportSoundSourcePlugin(new SoundSourceM4A(url));
 }
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderM4A is stateless and a single instance
     // can safely be shared
-    static Mixxx::SoundSourceProviderM4A singleton;
+    static mixxx::SoundSourceProviderM4A singleton;
     return &singleton;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
     // The statically allocated instance must not be deleted!
 }

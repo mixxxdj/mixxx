@@ -305,7 +305,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
     if (pTrack && !track_already_in_library) {
         pTrack->setArtist(getFieldString(index, CLM_ARTIST));
         pTrack->setTitle(getFieldString(index, CLM_TITLE));
-        pTrack->setDuration(getFieldString(index, CLM_DURATION).toInt());
+        pTrack->setDuration(getFieldString(index, CLM_DURATION).toDouble());
         pTrack->setAlbum(getFieldString(index, CLM_ALBUM));
         pTrack->setAlbumArtist(getFieldString(index, CLM_ALBUM_ARTIST));
         pTrack->setYear(getFieldString(index, CLM_YEAR));

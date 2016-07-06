@@ -16,7 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
-#include "util/time.h"
+#include "util/duration.h"
 #include "util/dnd.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
@@ -42,9 +42,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
           m_database(pTrackCollection->getDatabase()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_bInitialized(false),
-          m_currentSearch(""),
-          m_trackSourceSortColumn(kIdColumn),
-          m_trackSourceSortOrder(Qt::AscendingOrder) {
+          m_currentSearch("") {
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
     connect(&m_trackDAO, SIGNAL(forceModelUpdate()),
@@ -270,8 +268,8 @@ void BaseSqlTableModel::select() {
         m_trackSource->filterAndSort(trackIds, m_currentSearch,
                                      m_currentSearchFilter,
                                      m_trackSourceOrderBy,
-                                     m_trackSourceSortColumn,
-                                     m_trackSourceSortOrder,
+                                     m_sortColumns,
+                                     m_tableColumns.size() - 1,
                                      &m_trackSortOrder);
 
         // Re-sort the track IDs since filterAndSort can change their order or mark
@@ -476,8 +474,6 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     // reset the old order by clauses
     m_trackSourceOrderBy.clear();
     m_tableOrderBy.clear();
-    m_trackSourceSortColumn = 0;
-    m_trackSourceSortOrder = Qt::AscendingOrder;
 
     if (column > 0 && column < m_tableColumns.size()) {
         // Table sorting, no history
@@ -507,7 +503,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                         fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
                     sort_field = "RANDOM()";
                 } else {
-                    // we cant sort by other table columns here since primary sort is a track 
+                    // we can't sort by other table columns here since primary sort is a track
                     // column: skip   
                     continue;
                 }
@@ -515,13 +511,8 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                 // + 1 to skip id column
                 int ccColumn = sc.m_column - m_tableColumns.size() + 1;
                 sort_field = m_trackSource->columnSortForFieldIndex(ccColumn);
-                if (first) {
-                    // first cycle: main sort criteria
-                    m_trackSourceSortColumn = ccColumn;
-                    m_trackSourceSortOrder = sc.m_order;
-                }
             }
-            DEBUG_ASSERT_AND_HANDLE(!sort_field.isEmpty()){
+            DEBUG_ASSERT_AND_HANDLE(!sort_field.isEmpty()) {
                 continue;
             }
 
@@ -624,7 +615,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = Time::formatSeconds(duration);
+                    value = mixxx::Duration::formatSeconds(duration);
                 } else {
                     value = QString();
                 }
@@ -647,7 +638,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
-                value = Mixxx::TrackMetadata::formatCalendarYear(value.toString());
+                value = mixxx::TrackMetadata::formatCalendarYear(value.toString());
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
                 int track_number = value.toInt();
                 if (track_number <= 0) {
@@ -677,7 +668,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                     }
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
-                value = Mixxx::ReplayGain::ratioToString(value.toDouble());
+                value = mixxx::ReplayGain::ratioToString(value.toDouble());
             } // Otherwise, just use the column value.
 
             break;

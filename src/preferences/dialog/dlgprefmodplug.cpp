@@ -125,11 +125,11 @@ void DlgPrefModplug::applySettings() {
     // Currently this is fixed to 16bit 44.1kHz stereo
 
     // Number of channels - 1 for mono or 2 for stereo
-    settings.mChannels = Mixxx::SoundSourceModPlug::kChannelCount;
+    settings.mChannels = mixxx::SoundSourceModPlug::kChannelCount;
     // Bits per sample - 8, 16, or 32
-    settings.mBits = Mixxx::SoundSourceModPlug::kBitsPerSample;
+    settings.mBits = mixxx::SoundSourceModPlug::kBitsPerSample;
     // Sampling rate - 11025, 22050, or 44100
-    settings.mFrequency = Mixxx::SoundSourceModPlug::kSamplingRate;
+    settings.mFrequency = mixxx::SoundSourceModPlug::kSamplingRate;
 
     // enabled features flags
     settings.mFlags = 0;
@@ -180,5 +180,5 @@ void DlgPrefModplug::applySettings() {
     settings.mLoopCount = 0;
 
     // apply modplug settings
-    Mixxx::SoundSourceModPlug::configure(bufferSizeLimit, settings);
+    mixxx::SoundSourceModPlug::configure(bufferSizeLimit, settings);
 }

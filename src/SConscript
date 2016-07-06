@@ -74,6 +74,12 @@ elif build.platform_is_osx:
 else:
         mixxx_bin = env.Program('mixxx', sources)
 
+# Make sure soundsource and mixxxminimal plugins are built before
+# mixxx_bin. This fixes a race where when building with multiple threads the
+# packaging step starts before the plugins are built.
+Depends(mixxx_bin, mixxxminimal_plugins)
+Depends(mixxx_bin, soundsource_plugins)
+
 # For convenience, copy the Mixxx binary out of the build directory to the
 # root. Don't do it on windows because the binary can't run on its own and needs
 # the DLLs present with it.
@@ -312,12 +318,13 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
 qt_modules = depends.Qt.enabled_modules(build)
 qt5 = depends.Qt.qt5_enabled(build)
 
-if qt5:
+if build.platform_is_windows and not build.static_dependencies:
+    if qt5:
         suffix = 'd.dll' if build.build_is_debug else '.dll'
         qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
                       for module in qt_modules]
         dll_files.extend(qt_modules)
-else:
+    else:
         suffix = 'd4.dll' if build.build_is_debug else '4.dll'
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
         dll_files.extend(qt_modules)

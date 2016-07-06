@@ -3,7 +3,7 @@
 #include "util/math.h"
 #include "util/sample.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -521,4 +521,4 @@ QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

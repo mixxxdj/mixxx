@@ -161,7 +161,7 @@ void Version::logBuildDetails() {
     qDebug() << applicationName() << version << buildInfoFormatted << "is starting...";
 
     QStringList depVersions = dependencyVersions();
-    qDebug() << "Library versions:";
+    qDebug() << "Compile time library versions:";
     foreach (const QString& depVersion, depVersions) {
         qDebug() << qPrintable(depVersion);
     }

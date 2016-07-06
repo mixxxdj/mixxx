@@ -54,6 +54,8 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
             this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
     connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
+
 
     // Create the "Crates" tree-item under the root item.
     TreeItem* root = m_childModel.getItem(QModelIndex());
@@ -128,7 +130,7 @@ QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int pan
     return pTrackTableView;
 }
 
-QWidget* AutoDJFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
+QWidget* AutoDJFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
     QTabWidget* pContainer = new QTabWidget(nullptr);
     
     // Add controls
@@ -143,6 +145,10 @@ QWidget* AutoDJFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     WLibrarySidebar* pSidebar = new WLibrarySidebar(pContainer);
     pSidebar->setModel(&m_childModel);
     pSidebar->installEventFilter(pKeyboard);
+    
+    connect(pSidebar, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
+            this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
+    
     pContainer->addTab(pSidebar, tr("Track source"));
 
     // Be informed when the user wants to add another random track.

@@ -54,19 +54,8 @@ QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     QLabel* pTitle = new QLabel(title().toString(), pContainer);
     pLayout->addWidget(pTitle);
     
-    TreeItemModel* pTreeModel = getChildModel();
-    WLibrarySidebar* pSidebar = new WLibrarySidebar(pContainer);
-    pSidebar->installEventFilter(pKeyboard);
-    pSidebar->setModel(pTreeModel);
-    
-    connect(pSidebar, SIGNAL(clicked(const QModelIndex&)),
-            this, SLOT(activateChild(const QModelIndex&)));
-    connect(pSidebar, SIGNAL(doubleClicked(const QModelIndex&)),
-            this, SLOT(onLazyChildExpandation(const QModelIndex&)));
-    connect(pSidebar, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
-            this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
-    connect(pSidebar, SIGNAL(expanded(const QModelIndex&)),
-            this, SLOT(onLazyChildExpandation(const QModelIndex&)));
+    QWidget* pSidebar = createInnerSidebarWidget(pKeyboard);
+    pSidebar->setParent(pContainer);
     pLayout->addWidget(pSidebar);
     
     return pContainer;
@@ -97,6 +86,26 @@ WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboar
     m_trackTables[paneId] = pTrackTableView;
     
     return pTrackTableView;
+}
+
+QWidget* LibraryFeature::createInnerSidebarWidget(KeyboardEventFilter *pKeyboard) {
+    return createLibrarySidebarWidget(pKeyboard);
+}
+
+WLibrarySidebar *LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter *pKeyboard) {
+    WLibrarySidebar* pSidebar = new WLibrarySidebar(nullptr);
+    pSidebar->installEventFilter(pKeyboard);
+    pSidebar->setModel(getChildModel());
+    
+    connect(pSidebar, SIGNAL(clicked(const QModelIndex&)),
+            this, SLOT(activateChild(const QModelIndex&)));
+    connect(pSidebar, SIGNAL(doubleClicked(const QModelIndex&)),
+            this, SLOT(onLazyChildExpandation(const QModelIndex&)));
+    connect(pSidebar, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
+            this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
+    connect(pSidebar, SIGNAL(expanded(const QModelIndex&)),
+            this, SLOT(onLazyChildExpandation(const QModelIndex&)));
+    return pSidebar;
 }
 
 void LibraryFeature::showTrackModel(QAbstractItemModel *model) {

@@ -8,7 +8,7 @@
 #include "util/result.h"
 #include "util/samplebuffer.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // forward declaration(s)
 class AudioSourceConfig;
@@ -47,9 +47,9 @@ class AudioSource: public UrlResource, public AudioSignal {
     inline bool hasDuration() const {
         return isValid();
     }
-    inline SINT getDuration() const {
+    inline double getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero
-        return getFrameCount() / getSamplingRate();
+        return double(getFrameCount()) / double(getSamplingRate());
     }
 
     // The bitrate is measured in kbit/s (kbps).
@@ -233,6 +233,6 @@ class AudioSourceConfig : public AudioSignal {
 
 typedef QSharedPointer<AudioSource> AudioSourcePointer;
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_AUDIOSOURCE_H

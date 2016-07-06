@@ -1,5 +1,5 @@
-#ifndef UTIL_DURATION_H
-#define UTIL_DURATION_H
+#ifndef MIXXX_UTIL_DURATION_H
+#define MIXXX_UTIL_DURATION_H
 
 #include <QMetaType>
 #include <QString>
@@ -10,17 +10,9 @@
 #include "util/assert.h"
 
 namespace mixxx {
-namespace {
-
-const qint64 kMillisPerSecond = 1e3;
-const qint64 kMicrosPerSecond = 1e6;
-const qint64 kNanosPerSecond = 1e9;
-const qint64 kNanosPerMilli = 1e6;
-const qint64 kNanosPerMicro = 1e3;
-
-}  // namespace
 
 class DurationBase {
+
   public:
     enum Units {
         HEX,
@@ -70,6 +62,24 @@ class DurationBase {
     inline qint64 toDoubleNanos() const {
         return static_cast<double>(m_durationNanos);
     }
+
+    enum class Precision {
+        SECONDS,
+        CENTISECONDS,
+        MILLISECONDS
+    };
+
+    // The standard way of formatting a floating-point duration in seconds.
+    // Used for display of track duration, etc.
+    static QString formatSeconds(
+            double dSeconds,
+            Precision precision = Precision::SECONDS);
+
+    static const qint64 kMillisPerSecond = 1000;
+    static const qint64 kMicrosPerSecond = kMillisPerSecond * 1000;
+    static const qint64 kNanosPerSecond  = kMicrosPerSecond * 1000;
+    static const qint64 kNanosPerMilli   = kNanosPerSecond / 1000;
+    static const qint64 kNanosPerMicro   = kNanosPerMilli / 1000;
 
   protected:
     DurationBase(qint64 durationNanos)
@@ -263,4 +273,4 @@ class Duration : public DurationBase {
 
 Q_DECLARE_METATYPE(mixxx::Duration)
 
-#endif /* UTIL_DURATION_H */
+#endif /* MIXXX_UTIL_DURATION_H */

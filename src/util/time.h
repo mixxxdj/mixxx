@@ -1,23 +1,18 @@
-#ifndef UTIL_TIME_H
-#define UTIL_TIME_H
-
-#include <QString>
+#ifndef MIXXX_UTIL_TIME_H
+#define MIXXX_UTIL_TIME_H
 
 #include "util/performancetimer.h"
 #include "util/threadcputimer.h"
 #include "util/timer.h"
 #include "util/duration.h"
 
+namespace mixxx {
+
 #define LLTIMER PerformanceTimer
 //#define LLTIMER ThreadCpuTimer
 
 class Time {
   public:
-    static const int kMillisPerSecond = 1000;
-    static const int kSecondsPerMinute = 60;
-    static const int kSecondsPerHour = 60 * kSecondsPerMinute;
-    static const int kSecondsPerDay = 24 * kSecondsPerHour;
-
     static void start() {
         s_timer.start();
     }
@@ -40,17 +35,6 @@ class Time {
         s_testElapsed = elapsed;
     }
 
-    enum class Precision {
-        SECONDS,
-        CENTISECONDS,
-        MILLISECONDS
-    };
-
-    // The standard way of formatting a time in seconds. Used for display
-    // of track duration, etc.
-    static QString formatSeconds(double dSeconds,
-                                 Precision precision = Time::Precision::SECONDS);
-
   private:
     static LLTIMER s_timer;
 
@@ -59,4 +43,6 @@ class Time {
     static mixxx::Duration s_testElapsed;
 };
 
-#endif /* UTIL_TIME_H */
+} // namespace mixxx
+
+#endif /* MIXXX_UTIL_TIME_H */
