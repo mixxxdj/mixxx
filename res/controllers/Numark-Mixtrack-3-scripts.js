@@ -157,7 +157,7 @@ var loopsize = [1, 2, 4, 8, 0.125, 0.25, 0.5, 16];
  *            - added spacing in numerous place for easier reading
  *2016-04-08 (1.4 ) - Stéphane Morin -
  *            - Adjusted mapping of AutoLoop to be same as Serato and Virtual DJ, 
- *              (1,2,4,8 if not shifted, 0.125, 0.25, 0.5, 16 if shifted
+ *              1,2,4,8 if not shifted, previously 0.125, 0.25, 0.5, 16 if shifted
  *
  *
  * To do - (maybe..)
