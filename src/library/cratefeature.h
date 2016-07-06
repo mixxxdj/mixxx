@@ -87,6 +87,8 @@ class CrateFeature : public LibraryFeature {
     // Get the QModelIndex of a crate based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromCrateId(int crateId);
+    
+    QPointer<CrateTableModel> getTableModel(int paneId);
 
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
@@ -102,7 +104,8 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pExportTrackFilesAction;
     QAction *m_pAnalyzeCrateAction;
     QList<QPair<int, QString> > m_crateList;
-    CrateTableModel m_crateTableModel;
+    QHash<int, QPointer<CrateTableModel> > m_crateTableModel;
+    CrateTableModel* m_pCrateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;

@@ -36,7 +36,7 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
-          m_crateTableModel(this, pTrackCollection) {
+          m_pCrateTableModel(nullptr) {
 
     m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
@@ -228,7 +228,7 @@ void CrateFeature::activate() {
     m_pLibrary->switchToFeature(this);
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->restoreSearch(QString()); //disable search on crate home
-    
+    m_featureFocus = -1;
     emit(enableCoverArtDisplay(true));
 }
 
@@ -241,16 +241,22 @@ void CrateFeature::activateChild(const QModelIndex& index) {
         return;
     }
     
-    auto it = m_panes.find(m_featureFocus);
-    auto itId = m_idTable.find(m_featureFocus);
+    m_pCrateTableModel = getTableModel(m_focusedPane);
+    auto it = m_panes.find(m_focusedPane);
+    auto itId = m_idTable.find(m_focusedPane);
     if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
         return;
     }
     
     (*it)->setCurrentIndex(*itId);
-    m_crateTableModel.setTableModel(crateId);
+    m_pCrateTableModel->setTableModel(crateId);
     
-    showTrackModel(&m_crateTableModel);
+    // Set the feature Focus for a moment to allow the LibraryFeature class
+    // to find the focused WTrackTable
+    m_featureFocus = m_focusedPane;
+    showTrackModel(m_pCrateTableModel);
+    m_featureFocus = -1;
+    
     m_pLibrary->restoreSearch("");
     m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
     emit(enableCoverArtDisplay(true));
@@ -258,10 +264,12 @@ void CrateFeature::activateChild(const QModelIndex& index) {
 
 void CrateFeature::activateCrate(int crateId) {
     //qDebug() << "CrateFeature::activateCrate()" << crateId;
+    m_pCrateTableModel = getTableModel(m_focusedPane);
+    
     QModelIndex index = indexFromCrateId(crateId);
     if (crateId != -1 && index.isValid()) {
-        m_crateTableModel.setTableModel(crateId);
-        showTrackModel(&m_crateTableModel);
+        m_pCrateTableModel->setTableModel(crateId);
+        showTrackModel(m_pCrateTableModel);
         emit(enableCoverArtDisplay(true));
         // Update selection
         emit(featureSelect(this, m_lastRightClickedIndex));
@@ -272,7 +280,7 @@ void CrateFeature::activateCrate(int crateId) {
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
-    QMenu menu(NULL);
+    QMenu menu(nullptr);
     menu.addAction(m_pCreateCrateAction);
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
@@ -652,7 +660,7 @@ void CrateFeature::slotImportPlaylistFile(const QString &playlist_file) {
       //qDebug() << "Size of Imported Playlist: " << entries.size();
 
       //Iterate over the List that holds URLs of playlist entires
-      m_crateTableModel.addTracks(QModelIndex(), entries);
+      m_pCrateTableModel->addTracks(QModelIndex(), entries);
 
       //delete the parser object
       delete playlist_parser;
@@ -700,7 +708,7 @@ void CrateFeature::slotCreateImportCrate() {
         lastCrateId = m_crateDao.createCrate(name);
 
         if (lastCrateId != -1) {
-            m_crateTableModel.setTableModel(lastCrateId);
+            m_pCrateTableModel->setTableModel(lastCrateId);
         }
         else {
                 QMessageBox::warning(NULL,
@@ -726,7 +734,7 @@ void CrateFeature::slotAnalyzeCrate() {
 }
 
 void CrateFeature::slotExportPlaylist() {
-    int crateId = m_crateTableModel.getCrate();
+    int crateId = m_pCrateTableModel->getCrate();
     QString crateName = m_crateDao.crateName(crateId);
     qDebug() << "Export crate" << crateId << crateName;
 
@@ -764,7 +772,7 @@ void CrateFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
+    pCrateTableModel->setTableModel(m_pCrateTableModel->getCrate());
     pCrateTableModel->select();
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
@@ -776,8 +784,8 @@ void CrateFeature::slotExportPlaylist() {
         QList<QString> playlist_items;
         int rows = pCrateTableModel->rowCount();
         for (int i = 0; i < rows; ++i) {
-            QModelIndex index = m_crateTableModel.index(i, 0);
-            playlist_items << m_crateTableModel.getTrackLocation(index);
+            QModelIndex index = m_pCrateTableModel->index(i, 0);
+            playlist_items << m_pCrateTableModel->getTrackLocation(index);
         }
 
         if (file_location.endsWith(".pls", Qt::CaseInsensitive)) {
@@ -801,14 +809,14 @@ void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
+    pCrateTableModel->setTableModel(m_pCrateTableModel->getCrate());
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();
     QList<TrackPointer> trackpointers;
     for (int i = 0; i < rows; ++i) {
-        QModelIndex index = m_crateTableModel.index(i, 0);
-        trackpointers.push_back(m_crateTableModel.getTrack(index));
+        QModelIndex index = m_pCrateTableModel->index(i, 0);
+        trackpointers.push_back(m_pCrateTableModel->getTrack(index));
     }
 
     TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
@@ -904,4 +912,13 @@ QModelIndex CrateFeature::indexFromCrateId(int crateId) {
         }
     }
     return QModelIndex();
+}
+
+QPointer<CrateTableModel> CrateFeature::getTableModel(int paneId) {
+    auto it = m_crateTableModel.find(paneId);
+    if (it == m_crateTableModel.end() || it->isNull()) {
+        it = m_crateTableModel.insert(paneId,
+                                      new CrateTableModel(this, m_pTrackCollection));
+    }
+    return *it;
 }
