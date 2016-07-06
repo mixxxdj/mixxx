@@ -32,6 +32,7 @@ class MissingTableModel;
 
 class MixxxLibraryFeature : public LibraryFeature {
     Q_OBJECT
+    
   public:
     MixxxLibraryFeature(UserSettingsPointer pConfig,
                         Library* pLibrary,
