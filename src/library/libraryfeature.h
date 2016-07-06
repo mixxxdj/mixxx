@@ -72,11 +72,10 @@ class LibraryFeature : public QObject {
     
     virtual TreeItemModel* getChildModel() = 0;
     
-    void setFeatureFocus(int focus);
+    virtual void setFeatureFocus(int focus);
+    virtual int getFeatureFocus();
     
-    int getFeatureFocus() {
-        return m_featureFocus;
-    }
+    virtual void setFocusedPane(int paneId);
 
   protected:
     inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
@@ -86,13 +85,13 @@ class LibraryFeature : public QObject {
     WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
                                        int paneId);
     
-    // Override this function to create a custom inner widget for the sidebar,
-    // the default widget is a WLibrarySidebar widget
-    virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
-    
     // Creates a WLibrarySidebar widget with the getChildModel() function as
     // model
     WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter* pKeyboard);
+    
+    // Override this function to create a custom inner widget for the sidebar,
+    // the default widget is a WLibrarySidebar widget
+    virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
     
     void showTrackModel(QAbstractItemModel *model);
     void switchToFeature();
@@ -104,6 +103,7 @@ class LibraryFeature : public QObject {
     TrackCollection* m_pTrackCollection;
     
     int m_featureFocus;
+    int m_focusedPane;
 
   public slots:
     // called when you single click on the root item

@@ -34,6 +34,7 @@ public:
   protected:
     void buildPlaylistList();
     void decorateChild(TreeItem *pChild, int playlist_id);
+    PlaylistTableModel* constructTableModel();
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);

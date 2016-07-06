@@ -17,9 +17,6 @@ HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1) {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.setlog",
-                                                   true); //show all tracks
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
@@ -142,6 +139,11 @@ void HistoryFeature::decorateChild(TreeItem* item, int playlist_id) {
     } else {
         item->setIcon(QIcon());
     }
+}
+
+PlaylistTableModel* HistoryFeature::constructTableModel() {
+    return new PlaylistTableModel(this, m_pTrackCollection, 
+                                  "mixxx.db.model.setlog", true);
 }
 
 void HistoryFeature::slotGetNewPlaylist() {

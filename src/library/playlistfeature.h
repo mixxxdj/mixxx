@@ -45,6 +45,7 @@ class PlaylistFeature : public BasePlaylistFeature {
  protected:
     void buildPlaylistList();
     void decorateChild(TreeItem *pChild, int playlist_id);
+    PlaylistTableModel* constructTableModel();
 
   private:
     QString getRootViewHtml() const;

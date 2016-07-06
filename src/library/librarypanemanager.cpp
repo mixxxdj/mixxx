@@ -81,12 +81,12 @@ WBaseLibrary* LibraryPaneManager::getPaneWidget() {
     return m_pPaneWidget;
 }
 
-void LibraryPaneManager::setFocusedFeature(LibraryFeature* pFeature) {
-    m_pFocusedFeature = pFeature;
+void LibraryPaneManager::setCurrentFeature(LibraryFeature* pFeature) {
+    m_pCurrentFeature = pFeature;
 }
 
-LibraryFeature *LibraryPaneManager::getFocusedFeature() const {
-    return m_pFocusedFeature;
+LibraryFeature *LibraryPaneManager::getCurrentFeature() const {
+    return m_pCurrentFeature;
 }
 
 void LibraryPaneManager::setFocus() {
@@ -104,10 +104,11 @@ void LibraryPaneManager::clearFocus() {
 }
 
 void LibraryPaneManager::switchToFeature(LibraryFeature* pFeature) {
-    DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull()) {
+    DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull() && pFeature) {
         return;
     }
     
+    m_pCurrentFeature = pFeature;
     m_pPaneWidget->switchToFeature(pFeature);
 }
 
@@ -140,7 +141,7 @@ bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
 
     if (event->type() == QEvent::MouseButtonPress &&
         m_pPaneWidget->underMouse()) {
-        emit(focused());
+        m_pLibrary->slotPaneFocused(this);
     }
 
     // Since this event filter is for the entire application (to handle the

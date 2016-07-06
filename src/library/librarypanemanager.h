@@ -36,8 +36,8 @@ class LibraryPaneManager : public QObject {
 
     WBaseLibrary* getPaneWidget();
     
-    void setFocusedFeature(LibraryFeature* pFeature);
-    LibraryFeature* getFocusedFeature() const;
+    void setCurrentFeature(LibraryFeature* pFeature);
+    LibraryFeature* getCurrentFeature() const;
 
     void setFocus();
     void clearFocus();
@@ -51,8 +51,6 @@ class LibraryPaneManager : public QObject {
     }
 
   signals:
-
-    void focused();
 
     void search(const QString& text);
     void searchCleared();
@@ -72,7 +70,7 @@ class LibraryPaneManager : public QObject {
 
   private:
     
-    LibraryFeature* m_pFocusedFeature;
+    LibraryFeature* m_pCurrentFeature;
     int m_paneId;
     Library* m_pLibrary;
 

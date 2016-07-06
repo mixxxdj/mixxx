@@ -115,7 +115,7 @@ public:
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
-    void slotPaneFocused();
+    void slotPaneFocused(LibraryPaneManager *pPane);
     
     // Updates with the focus feature
     void slotUpdateFocus(LibraryFeature* pFeature);
@@ -146,6 +146,7 @@ public:
     LibraryPaneManager* getFocusedPane();
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
+    void setFocusedPane();
     
     void handleFocus();
     

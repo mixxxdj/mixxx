@@ -140,8 +140,6 @@ void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
     //qDebug() << "Library::bindSidebarExpanded";
     m_pSidebarExpanded = new LibrarySidebarExpandedManager(this);
-    connect(m_pSidebarExpanded, SIGNAL(focused()),
-            this, SLOT(slotPaneFocused()));
     m_pSidebarExpanded->addFeatures(m_features);    
     m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard);
 }
@@ -362,6 +360,7 @@ void Library::paneCollapsed(int paneId) {
     for (LibraryPaneManager* pPane : m_panes) {
         if (!m_collapsedPanes.contains(pPane->getPaneId())) {
             m_focusedPane = pPane->getPaneId();
+            setFocusedPane();
             pPane->setFocus();
             break;
         }
@@ -374,8 +373,9 @@ void Library::paneUncollapsed(int paneId) {
 
 void Library::slotActivateFeature(LibraryFeature *pFeature) {
     // The feature is being shown currently in the focused pane
-    if (m_panes[m_focusedPane]->getFocusedFeature() == pFeature) {
+    if (m_panes[m_focusedPane]->getCurrentFeature() == pFeature) {
         m_pSidebarExpanded->switchToFeature(pFeature);
+        handleFocus();
         return;
     }
     int featureFocus = pFeature->getFeatureFocus();
@@ -391,12 +391,13 @@ void Library::slotActivateFeature(LibraryFeature *pFeature) {
     } else {
     	// The feature is shown in some not collapsed pane
         m_focusedPane = featureFocus;
+        setFocusedPane();
         m_pSidebarExpanded->switchToFeature(pFeature);
 		handleFocus();
 		return;
     }
     
-    m_panes[m_focusedPane]->setFocusedFeature(pFeature);
+    m_panes[m_focusedPane]->setCurrentFeature(pFeature);
     pFeature->setFeatureFocus(m_focusedPane);    
     pFeature->activate();
     handleFocus();
@@ -418,17 +419,18 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::slotPaneFocused() {
-    LibraryPaneManager* pane = qobject_cast<LibraryPaneManager*>(sender());
-    DEBUG_ASSERT_AND_HANDLE(pane) {
+void Library::slotPaneFocused(LibraryPaneManager* pPane) {
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
         return;
     }
     
-    if (pane != m_pSidebarExpanded) {
-        m_focusedPane = m_panes.key(pane, -1);
+    if (pPane != m_pSidebarExpanded) {
+        m_focusedPane = pPane->getPaneId();
+        pPane->getCurrentFeature()->setFeatureFocus(m_focusedPane);
         DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
             return;
         }
+        setFocusedPane();
         handleFocus();
     }
     
@@ -438,6 +440,7 @@ void Library::slotPaneFocused() {
 void Library::slotUpdateFocus(LibraryFeature *pFeature) {
     if (pFeature->getFeatureFocus() >= 0) {
         m_focusedPane = pFeature->getFeatureFocus();
+        setFocusedPane();
     }
 }
 
@@ -454,8 +457,8 @@ LibraryPaneManager* Library::getPane(int paneId) {
     pPane->addFeatures(m_features);
     m_panes.insert(paneId, pPane);
     
-    connect(pPane, SIGNAL(focused()), this, SLOT(slotPaneFocused()));
     m_focusedPane = paneId;
+    setFocusedPane();
     return pPane;
 }
 
@@ -518,6 +521,12 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
     if (TraktorFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(pConfig, this, this, m_pTrackCollection));
+    }
+}
+
+void Library::setFocusedPane() {
+    for (LibraryFeature* pFeature : m_features) {
+        pFeature->setFocusedPane(m_focusedPane);
     }
 }
 

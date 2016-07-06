@@ -100,7 +100,8 @@ BasePlaylistFeature::BasePlaylistFeature(UserSettingsPointer pConfig,
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
-    delete m_pPlaylistTableModel;
+    qDeleteAll(m_playlistTableModel);
+    m_playlistTableModel.clear();
     delete m_pCreatePlaylistAction;
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
@@ -130,6 +131,14 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
     return playlistId;
 }
 
+QPointer<PlaylistTableModel> BasePlaylistFeature::getPlaylistTableModel(int paneId) {
+    auto it = m_playlistTableModel.find(paneId);
+    if (it == m_playlistTableModel.end() || it->isNull()) {
+        return constructTableModel();
+    }
+    return *it;
+}
+
 void BasePlaylistFeature::activate() {
     auto it = m_panes.find(m_featureFocus);
     auto itId = m_idBrowse.find(m_featureFocus);
@@ -143,22 +152,31 @@ void BasePlaylistFeature::activate() {
     
     m_pLibrary->restoreSearch(QString()); // Null String disables search box
     emit(enableCoverArtDisplay(true));
+    m_featureFocus = -1;
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
+    m_pPlaylistTableModel = getPlaylistTableModel(m_focusedPane);
+    
     if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         
-        auto it = m_panes.find(m_featureFocus);
-        auto itId = m_idTable.find(m_featureFocus);
+        auto it = m_panes.find(m_focusedPane);
+        auto itId = m_idTable.find(m_focusedPane);
         if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
             return;
         }
         
         (*it)->setCurrentIndex(*itId);
+        
+        // Set the feature Focus for a moment to allow the LibraryFeature class
+        // to find the focused WTrackTable
+        m_featureFocus = m_focusedPane;
         showTrackModel(m_pPlaylistTableModel);
+        m_featureFocus = -1;
+        
         m_pLibrary->restoreSearch("");
         m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
                 
@@ -329,6 +347,11 @@ void BasePlaylistFeature::slotCreatePlaylist() {
                              tr("An unknown error occurred while creating playlist: ")
                               + name);
     }
+}
+
+void BasePlaylistFeature::setFeatureFocus(int focus) {
+    m_pPlaylistTableModel = getPlaylistTableModel(focus);
+    LibraryFeature::setFeatureFocus(focus);
 }
 
 void BasePlaylistFeature::slotDeletePlaylist() {

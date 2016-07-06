@@ -65,6 +65,14 @@ void LibraryFeature::setFeatureFocus(int focus) {
     m_featureFocus = focus;
 }
 
+int LibraryFeature::getFeatureFocus() {
+    return m_featureFocus;
+}
+
+void LibraryFeature::setFocusedPane(int paneId) {
+    m_focusedPane = paneId;
+}
+
 WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboard,
                                                    int paneId) {
     WTrackTableView* pTrackTableView = 

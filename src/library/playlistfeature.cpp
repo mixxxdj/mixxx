@@ -24,9 +24,6 @@ PlaylistFeature::PlaylistFeature(UserSettingsPointer pConfig,
                                  TrackCollection* pTrackCollection)
         : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection,
                               "PLAYLISTHOME") {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.playlist");
-
     //construct child model
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
@@ -48,7 +45,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 
     //Create the right-click menu
-    QMenu menu(NULL);
+    QMenu menu(nullptr);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
@@ -188,6 +185,10 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
     } else {
         item->setIcon(QIcon());
     }
+}
+
+PlaylistTableModel* PlaylistFeature::constructTableModel() {
+    return new PlaylistTableModel(this, m_pTrackCollection, "mixxx.db.model.playlist");
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {

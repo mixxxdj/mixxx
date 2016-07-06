@@ -52,6 +52,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void slotPlaylistContentChanged(int playlistId) = 0;
     virtual void slotPlaylistTableRenamed(int playlistId, QString a_strName) = 0;
     void slotCreatePlaylist();
+    void setFeatureFocus(int focus);
 
   protected slots:
     void slotDeletePlaylist();
@@ -77,6 +78,9 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void addToAutoDJ(bool bTop);
 
     int playlistIdFromIndex(QModelIndex index);
+    QPointer<PlaylistTableModel> getPlaylistTableModel(int paneId);
+    virtual PlaylistTableModel* constructTableModel() = 0;
+    
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
@@ -84,6 +88,7 @@ class BasePlaylistFeature : public LibraryFeature {
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
     PlaylistTableModel* m_pPlaylistTableModel;
+    QHash<int, QPointer<PlaylistTableModel> > m_playlistTableModel;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
     QAction *m_pAddToAutoDJAction;
