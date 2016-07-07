@@ -60,6 +60,7 @@ class LibraryPaneManager : public QObject {
 
     void slotPaneCollapsed();
     void slotPaneUncollapsed();
+    void slotPaneFocused();
 
   protected:
 

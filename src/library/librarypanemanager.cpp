@@ -26,7 +26,7 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
     m_pPaneWidget = pLibraryWidget;
     
     connect(m_pPaneWidget, SIGNAL(focused()),
-            this, SIGNAL(focused()));
+            this, SLOT(slotPaneFocused()));
     connect(m_pPaneWidget, SIGNAL(collapsed()),
             this, SLOT(slotPaneCollapsed()));
     connect(m_pPaneWidget, SIGNAL(uncollapsed()),
@@ -132,6 +132,10 @@ void LibraryPaneManager::slotPaneCollapsed() {
 
 void LibraryPaneManager::slotPaneUncollapsed() {
     m_pLibrary->paneUncollapsed(m_paneId);
+}
+
+void LibraryPaneManager::slotPaneFocused() {
+    m_pLibrary->slotPaneFocused(this);
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
