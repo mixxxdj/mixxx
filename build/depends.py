@@ -879,6 +879,7 @@ class MixxxCore(Feature):
                    "library/dlgmissing.cpp",
                    "library/dlgtagfetcher.cpp",
                    "library/dlgtrackinfo.cpp",
+                   "library/maintenancefeature.cpp",
 
                    "library/browse/browsetablemodel.cpp",
                    "library/browse/browsethread.cpp",

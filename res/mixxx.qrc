@@ -108,5 +108,6 @@
         <file>translations/mixxx_uz.qm</file>
         <file>translations/mixxx_zh_CN.qm</file>
         <file>translations/mixxx_zh_TW.qm</file>
+        <file>images/library/ic_library_maintenance.png</file>
     </qresource>
 </RCC>
