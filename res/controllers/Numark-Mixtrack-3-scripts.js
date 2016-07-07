@@ -62,6 +62,13 @@ var intervalsPerRev = 1200,
     rpm = 33 + 1 / 3,  //Like a real vinyl !!! :)
     alpha = 1.0 / 8,   //Adjust to suit.
     beta = alpha / 32; //Adjust to suit.
+	
+/**************************
+ * Loop Size array 
+ * first 4 values used for Autoloop Not shifted
+ * last 4 values used for Autoloop Shifted
+ **************************/	
+var loopsize = [1, 2, 4, 8, 0.125, 0.25, 0.5, 16];
 
 /************************  GPL v2 licence  *****************************
  * Numark Mixtrack Pro 3 controller script
@@ -148,6 +155,10 @@ var intervalsPerRev = 1200,
  *            - removed trailing empty lines at end of script
  *            - line 1749, change .75 to 0.75 in var gammaOutputRange 
  *            - added spacing in numerous place for easier reading
+ *2016-04-08 (1.4 ) - Stéphane Morin -
+ *            - Adjusted mapping of AutoLoop to be same as Serato and Virtual DJ, 
+ *              1,2,4,8 if not shifted, previously 0.125, 0.25, 0.5, 16 if shifted
+ *
  *
  * To do - (maybe..)
  * ----------------
@@ -1177,7 +1188,6 @@ NumarkMixtrack3.init = function(id,debug) {
     engine.connectControl("[Channel1]", "sync_enabled", "NumarkMixtrack3.OnSyncButtonChange");
     engine.connectControl("[Channel2]", "sync_enabled", "NumarkMixtrack3.OnSyncButtonChange");
     
-    var loopsize = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
     var l;
         for (l=0;l<loopsize.length;l++) {  
         engine.connectControl("[Channel1]", "beatloop_" + loopsize[l] + "_enabled", "NumarkMixtrack3.OnPADLoopButtonChange");
@@ -1372,7 +1382,6 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
 NumarkMixtrack3.PadModeButton = function(channel, control, value, status, group) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
-    var loopsize = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
     var i;
 
 NumarkMixtrack3.PadModeButton = !NumarkMixtrack3.PadModeButton;
@@ -1812,13 +1821,13 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
     var padindex = control - leds.PADloop1 + 1;
-    var loopsize = 1;
     var trueFalse;
+    var loopsizeNew
     
-    if (deck.shiftKey) {
-        loopsize = Math.pow(2, padindex);
+	if (deck.shiftKey) {
+        loopsizeNew = loopsize[padindex + 3];
     } else {
-        loopsize = Math.pow(2, padindex - 4);
+        loopsizeNew = loopsize[padindex -1];
     }
     
     var loopCommand1; //verify if loop is active
@@ -1826,13 +1835,13 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
     var loopCommand3; //stop loop
     
     if (beatlooprollActivate) {
-        loopCommand1 = "beatlooproll_" + loopsize + "_activate";
-        loopCommand2 = "beatlooproll_" + loopsize + "_activate";
-        loopCommand3 = "beatlooproll_" + loopsize + "_activate";
+        loopCommand1 = "beatlooproll_" + loopsizeNew + "_activate";
+        loopCommand2 = "beatlooproll_" + loopsizeNew + "_activate";
+        loopCommand3 = "beatlooproll_" + loopsizeNew + "_activate";
         trueFalse = false;
     } else {
-        loopCommand1 = "beatloop_" + loopsize + "_enabled";
-        loopCommand2 = "beatloop_" + loopsize + "_toggle";
+        loopCommand1 = "beatloop_" + loopsizeNew + "_enabled";
+        loopCommand2 = "beatloop_" + loopsizeNew + "_toggle";
         loopCommand3 = "reloop_exit";
         trueFalse = true;
     }
@@ -2315,7 +2324,6 @@ NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
 };
 
 NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {   
-    var loopsize = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
     var l;
