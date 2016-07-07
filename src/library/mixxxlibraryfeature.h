@@ -46,16 +46,11 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
-    
-    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
-    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
 
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
     void refreshLibraryModels();
-    
-    void selectionChanged(const QItemSelection&, const QItemSelection&);
     
     void selectAll();
     
@@ -72,27 +67,7 @@ class MixxxLibraryFeature : public LibraryFeature {
         Missing = 3
     };
     
-    HiddenTableModel* getHiddenTableModel();
-    MissingTableModel* getMissingTableModel();
-    
     const QString kLibraryTitle;
-    const QString kHiddenTitle;
-    const QString kMissingTitle;
-    QPointer<DlgHidden> m_pHiddenView;
-    QPointer<DlgMissing> m_pMissingView;
-    QHash<int, Panes> m_idPaneCurrent;
-    
-    // SidebarExpanded pane's ids
-    int m_idExpandedHidden;
-    int m_idExpandedMissing;
-    int m_idExpandedControls;
-    int m_idExpandedTree;
-    
-    QPointer<HiddenTableModel> m_pHiddenTableModel;
-    QPointer<MissingTableModel> m_pMissingTableModel;
-    
-    QPointer<QStackedWidget> m_pExpandedStack;
-    QPointer<QTabWidget> m_pSidebarTab;
     
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;

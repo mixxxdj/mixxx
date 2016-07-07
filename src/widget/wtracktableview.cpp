@@ -564,6 +564,8 @@ void WTrackTableView::slotHide() {
 }
 
 void WTrackTableView::slotUnhide() {
+    qDebug() << "WTrackTableView::slotUnhide" << selectionModel();
+    
     QModelIndexList indices = selectionModel()->selectedRows();
 
     if (indices.size() > 0) {

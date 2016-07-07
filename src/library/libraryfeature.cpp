@@ -76,7 +76,7 @@ void LibraryFeature::setFocusedPane(int paneId) {
 WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboard,
                                                    int paneId) {
     WTrackTableView* pTrackTableView = 
-            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection);
+            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, true);
     
     pTrackTableView->installEventFilter(pKeyboard);
     
@@ -127,6 +127,18 @@ void LibraryFeature::showTrackModel(QAbstractItemModel *model) {
 
 void LibraryFeature::switchToFeature() {
     m_pLibrary->switchToFeature(this);
+}
+
+void LibraryFeature::restoreSearch(const QString& search) {
+    m_pLibrary->restoreSearch(search);
+}
+
+void LibraryFeature::showBreadCrumb(TreeItem *pTree) {
+    m_pLibrary->showBreadCrumb(pTree);
+}
+
+void LibraryFeature::showBreadCrumb(const QString &text) {
+    m_pLibrary->showBreadCrumb(text);
 }
 
 WTrackTableView *LibraryFeature::getFocusedTable() {
