@@ -48,6 +48,10 @@ void WLibraryBreadCrumb::showBreadCrumb(TreeItem *pTree) {
     setText(getPathString(pTree));
 }
 
+void WLibraryBreadCrumb::showBreadCrumb(const QString &text) {
+    setText(text);
+}
+
 void WLibraryBreadCrumb::resizeEvent(QResizeEvent *pEvent) {
     QLabel::resizeEvent(pEvent);
     setText(m_longText);

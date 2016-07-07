@@ -126,6 +126,13 @@ void LibraryPaneManager::showBreadCrumb(TreeItem *pTree) {
     m_pBreadCrumb->showBreadCrumb(pTree);
 }
 
+void LibraryPaneManager::showBreadCrumb(const QString &text) {
+    DEBUG_ASSERT_AND_HANDLE(!m_pBreadCrumb.isNull()) {
+        return;
+    }
+    m_pBreadCrumb->showBreadCrumb(text);
+}
+
 void LibraryPaneManager::slotPaneCollapsed() {
     m_pLibrary->paneCollapsed(m_paneId);
 }

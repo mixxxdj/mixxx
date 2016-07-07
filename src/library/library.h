@@ -95,6 +95,7 @@ public:
     
     void switchToFeature(LibraryFeature* pFeature);
     void showBreadCrumb(TreeItem* pTree);
+    void showBreadCrumb(const QString& text);
     void restoreSearch(const QString& text);
 
   public slots:

@@ -7,30 +7,32 @@
 #include <QDir>
 #include <QDebug>
 
-#include "mixer/playermanager.h"
-#include "library/library.h"
-#include "library/library_preferences.h"
+#include "library/autodj/autodjfeature.h"
+#include "library/banshee/bansheefeature.h"
+#include "library/browse/browsefeature.h"
+#include "library/cratefeature.h"
+#include "library/historyfeature.h"
+#include "library/itunes/itunesfeature.h"
+#include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
-#include "library/librarytablemodel.h"
+#include "library/library.h"
 #include "library/librarypanemanager.h"
+#include "library/library_preferences.h"
 #include "library/librarysidebarexpandedmanager.h"
+#include "library/librarytablemodel.h"
+#include "library/maintenancefeature.h"
+#include "library/mixxxlibraryfeature.h"
+#include "library/playlistfeature.h"
+#include "library/recording/recordingfeature.h"
+#include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
-#include "library/browse/browsefeature.h"
-#include "library/cratefeature.h"
-#include "library/rhythmbox/rhythmboxfeature.h"
-#include "library/banshee/bansheefeature.h"
-#include "library/recording/recordingfeature.h"
-#include "library/itunes/itunesfeature.h"
-#include "library/mixxxlibraryfeature.h"
-#include "library/autodj/autodjfeature.h"
-#include "library/playlistfeature.h"
 #include "library/traktor/traktorfeature.h"
-#include "library/librarycontrol.h"
-#include "library/historyfeature.h"
-#include "util/sandbox.h"
+#include "mixer/playermanager.h"
 #include "util/assert.h"
+#include "util/sandbox.h"
+
 
 #include "widget/wlibrarysidebar.h"
 #include "widget/wbuttonbar.h"
@@ -208,6 +210,10 @@ void Library::switchToFeature(LibraryFeature* pFeature) {
 
 void Library::showBreadCrumb(TreeItem *pTree) {
     m_panes[m_focusedPane]->showBreadCrumb(pTree);
+}
+
+void Library::showBreadCrumb(const QString &text) {
+    m_panes[m_focusedPane]->showBreadCrumb(text);
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
@@ -478,10 +484,13 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
     addFeature(m_pMixxxLibraryFeature);
 
     addFeature(new AutoDJFeature(pConfig, this, this, pPlayerManager, m_pTrackCollection));
+    
     m_pPlaylistFeature = new PlaylistFeature(pConfig, this, this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);
+    
     m_pCrateFeature = new CrateFeature(pConfig, this, this, m_pTrackCollection);
     addFeature(m_pCrateFeature);
+    
     BrowseFeature* browseFeature = new BrowseFeature(
         pConfig, this, this, m_pTrackCollection, m_pRecordingManager);
     connect(browseFeature, SIGNAL(scanLibrary()),
@@ -490,16 +499,19 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
             browseFeature, SLOT(slotLibraryScanStarted()));
     connect(&m_scanner, SIGNAL(scanFinished()),
             browseFeature, SLOT(slotLibraryScanFinished()));
-
     addFeature(browseFeature);
+
     addFeature(new RecordingFeature(pConfig, this, this, m_pTrackCollection, m_pRecordingManager));
+    
     addFeature(new HistoryFeature(pConfig, this, this, m_pTrackCollection));
+    
     m_pAnalysisFeature = new AnalysisFeature(pConfig, this, m_pTrackCollection, this);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     addFeature(m_pAnalysisFeature);
+    
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
@@ -522,6 +534,8 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
         pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(pConfig, this, this, m_pTrackCollection));
     }
+    
+    addFeature(new MaintenanceFeature(pConfig, this, this, m_pTrackCollection));
 }
 
 void Library::setFocusedPane() {

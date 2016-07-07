@@ -19,6 +19,7 @@ class WLibraryBreadCrumb : public QLabel {
   public slots:
 
     void showBreadCrumb(TreeItem* pTree);
+    void showBreadCrumb(const QString& text);
 
   protected:
     
