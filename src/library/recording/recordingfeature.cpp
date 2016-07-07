@@ -10,8 +10,6 @@
 #include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 
-const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
-
 RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,
                                    Library* pLibrary,
                                    QObject* parent,
@@ -39,10 +37,6 @@ QVariant RecordingFeature::title() {
 
 QIcon RecordingFeature::getIcon() {
     return QIcon(":/images/library/ic_library_recordings.png");
-}
-
-QString RecordingFeature::getFeatureName() {
-    return m_sRecordingViewName;
 }
 
 TreeItemModel* RecordingFeature::getChildModel() {

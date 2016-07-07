@@ -39,10 +39,6 @@ class LibraryFeature : public QObject {
 
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
-    
-    // Must be a unique name for each feature, it must be a unique name for each
-    // different feature
-    virtual QString getFeatureName() = 0;
 
     virtual bool dropAccept(QList<QUrl> /* urls */, 
                             QObject* /* pSource */) {

@@ -25,8 +25,6 @@
 
 const QString kQuickLinksSeparator = "-+-";
 
-const QString BrowseFeature::m_sBrowseViewName = QString("BROWSEHOME");
-
 BrowseFeature::BrowseFeature(UserSettingsPointer pConfig,
                              Library* pLibrary,
                              QObject* parent,
@@ -207,10 +205,6 @@ void BrowseFeature::slotRemoveQuickLink() {
 
 QIcon BrowseFeature::getIcon() {
     return QIcon(":/images/library/ic_library_browse.png");
-}
-
-QString BrowseFeature::getFeatureName() {
-    return m_sBrowseViewName;
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {

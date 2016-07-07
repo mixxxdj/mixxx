@@ -11,8 +11,6 @@
 #include "library/queryutil.h"
 #include "library/treeitem.h"
 
-const QString RhythmboxFeature::m_sRhythmBoxViewName = QString("RHYTHMBOX_VIEW");
-
 RhythmboxFeature::RhythmboxFeature(UserSettingsPointer pConfig,
                                    Library* pLibrary, 
                                    QObject* parent, 
@@ -107,10 +105,6 @@ QVariant RhythmboxFeature::title() {
 
 QIcon RhythmboxFeature::getIcon() {
     return QIcon(":/images/library/ic_library_rhythmbox.png");
-}
-
-QString RhythmboxFeature::getFeatureName() {
-    return m_sRhythmBoxViewName;
 }
 
 TreeItemModel* RhythmboxFeature::getChildModel() {

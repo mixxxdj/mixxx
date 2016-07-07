@@ -27,8 +27,6 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrarystack.h"
 
-const QString CrateFeature::m_sCrateViewName = QString("CRATEHOME");
-
 CrateFeature::CrateFeature(UserSettingsPointer pConfig,
                            Library* pLibrary,
                            QObject* parent,
@@ -127,10 +125,6 @@ QVariant CrateFeature::title() {
 
 QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
-}
-
-QString CrateFeature::getFeatureName() {
-    return m_sCrateViewName;
 }
 
 int CrateFeature::crateIdFromIndex(QModelIndex index) {

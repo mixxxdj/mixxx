@@ -22,8 +22,7 @@ PlaylistFeature::PlaylistFeature(UserSettingsPointer pConfig,
                                  Library* pLibrary,
                                  QObject* parent,
                                  TrackCollection* pTrackCollection)
-        : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection,
-                              "PLAYLISTHOME") {
+        : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection) {
     //construct child model
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);

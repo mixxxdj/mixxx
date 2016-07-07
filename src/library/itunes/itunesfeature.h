@@ -30,7 +30,6 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getFeatureName() override;
 
     TreeItemModel* getChildModel();
 
@@ -72,7 +71,6 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QString m_dbItunesRoot;
     QString m_mixxxItunesRoot;
-    static const QString m_sItunesView;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
 

@@ -42,7 +42,6 @@ class MixxxLibraryFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getFeatureName() override;
     
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
@@ -100,7 +99,6 @@ class MixxxLibraryFeature : public LibraryFeature {
     TreeItemModel m_childModel;
     TrackDAO& m_trackDao;
     TrackCollection* m_pTrackCollection;
-    static const QString m_sMixxxLibraryViewName;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

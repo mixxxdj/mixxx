@@ -41,7 +41,6 @@ class AutoDJFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getFeatureName() override;
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
@@ -64,7 +63,6 @@ class AutoDJFeature : public LibraryFeature {
     // The id of the AutoDJ playlist.
     int m_iAutoDJPlaylistId;
     AutoDJProcessor* m_pAutoDJProcessor;
-    const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
     QPointer<DlgAutoDJ> m_pAutoDJView;
     QHash<int, QPointer<WTrackTableView> > m_trackTables;

@@ -23,13 +23,11 @@
 BasePlaylistFeature::BasePlaylistFeature(UserSettingsPointer pConfig,
                                          Library* pLibrary,
                                          QObject* parent,
-                                         TrackCollection* pTrackCollection,
-                                         QString rootViewName)
+                                         TrackCollection* pTrackCollection)
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pPlaylistTableModel(nullptr),
-          m_rootViewName(rootViewName) {
+          m_pPlaylistTableModel(nullptr) {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
@@ -655,10 +653,6 @@ QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     m_idTable[paneId] = pStack->addWidget(pTable);
     
     return pStack;
-}
-
-QString BasePlaylistFeature::getFeatureName() {
-    return m_rootViewName;
 }
 
 void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {

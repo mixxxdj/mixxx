@@ -23,7 +23,6 @@
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 
-const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 static const int kMaxRetrieveAttempts = 3;
 
 AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
@@ -98,10 +97,6 @@ QVariant AutoDJFeature::title() {
 
 QIcon AutoDJFeature::getIcon() {
     return QIcon(":/images/library/ic_library_autodj.png");
-}
-
-QString AutoDJFeature::getFeatureName() {
-    return m_sAutoDJViewName;
 }
 
 QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {

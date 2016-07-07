@@ -22,8 +22,6 @@
 #include "widget/wlibrarysidebar.h"
 #include "util/dnd.h"
 
-const QString MixxxLibraryFeature::m_sMixxxLibraryViewName = "MixxxLibraryFeature";
-
 MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          Library* pLibrary,
                                          QObject* parent,
@@ -123,7 +121,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
     TreeItem* pRootItem = new TreeItem();
     pRootItem->setLibraryFeature(this);
     
-    TreeItem* pLibraryChildItem = new TreeItem(kLibraryTitle, m_sMixxxLibraryViewName,
+    TreeItem* pLibraryChildItem = new TreeItem(kLibraryTitle, kLibraryTitle,
                                                this, pRootItem);
     pLibraryChildItem->setIcon(getIcon());
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
@@ -192,10 +190,6 @@ QVariant MixxxLibraryFeature::title() {
 
 QIcon MixxxLibraryFeature::getIcon() {
     return QIcon(":/images/library/ic_library_library.png");
-}
-
-QString MixxxLibraryFeature::getFeatureName() {
-    return m_sMixxxLibraryViewName;
 }
 
 TreeItemModel* MixxxLibraryFeature::getChildModel() {
@@ -270,7 +264,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     TreeItem* pTree = static_cast<TreeItem*> (index.internalPointer());
     QPointer<WTrackTableView> pTable = getFocusedTable();    
     
-    if (itemName == m_sMixxxLibraryViewName) {
+    if (itemName == kLibraryTitle) {
         activate();
         return;
     } 

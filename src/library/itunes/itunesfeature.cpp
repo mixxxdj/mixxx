@@ -20,7 +20,6 @@
 #include "util/sandbox.h"
 
 const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
-const QString ITunesFeature::m_sItunesView = "ITUNES_VIEW";
 
 QString localhost_token() {
 #if defined(__WINDOWS__)
@@ -115,10 +114,6 @@ QVariant ITunesFeature::title() {
 
 QIcon ITunesFeature::getIcon() {
     return QIcon(":/images/library/ic_library_itunes.png");
-}
-
-QString ITunesFeature::getFeatureName() {
-    return m_sItunesView;
 }
 
 void ITunesFeature::activate() {

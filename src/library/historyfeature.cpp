@@ -15,7 +15,7 @@ HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
                              Library* pLibrary,
                              QObject* parent,
                              TrackCollection* pTrackCollection)
-        : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection, "SETLOGHOME"),
+        : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_playlistId(-1) {
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),

@@ -31,7 +31,6 @@ class AnalysisFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getFeatureName() override;
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
@@ -76,7 +75,6 @@ class AnalysisFeature : public LibraryFeature {
     // The title returned by title()
     QVariant m_Title;
     TreeItemModel m_childModel;
-    const static QString m_sAnalysisViewName;
     QString m_analysisTitleName;
     QPointer<DlgAnalysis> m_pAnalysisView;
     QPointer<AnalysisLibraryTableModel> m_pAnalysisLibraryTableModel;

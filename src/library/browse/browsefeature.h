@@ -38,7 +38,6 @@ class BrowseFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getFeatureName() override;
 
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
 
@@ -77,7 +76,6 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
-    static const QString m_sBrowseViewName;
     
     QHash<int, QPointer<WLibraryStack> > m_panes;
     QHash<int, int> m_idBrowse;

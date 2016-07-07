@@ -18,8 +18,6 @@
 #include "library/treeitem.h"
 #include "util/sandbox.h"
 
-const QString TraktorFeature::m_sTraktorViewName = "TRAKTOR_VIEW";
-
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
                                      QSharedPointer<BaseTrackCache> trackSource)
@@ -126,10 +124,6 @@ QVariant TraktorFeature::title() {
 
 QIcon TraktorFeature::getIcon() {
     return QIcon(":/images/library/ic_library_traktor.png");
-}
-
-QString TraktorFeature::getFeatureName() {
-    return m_sTraktorViewName;
 }
 
 bool TraktorFeature::isSupported() {

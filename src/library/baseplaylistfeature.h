@@ -29,14 +29,12 @@ class BasePlaylistFeature : public LibraryFeature {
     BasePlaylistFeature(UserSettingsPointer pConfig,
                         Library* pLibrary,
                         QObject* parent,
-                        TrackCollection* pTrackCollection,
-                        QString rootViewName);
+                        TrackCollection* pTrackCollection);
     virtual ~BasePlaylistFeature();
 
     TreeItemModel* getChildModel();
 
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
-    QString getFeatureName() override;
 
   signals:
     void showPage(const QUrl& page);
@@ -114,7 +112,6 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual QString getRootViewHtml() const = 0;
 
     QSet<int> m_playlistsSelectedTrackIsIn;
-    QString m_rootViewName;
     
     QHash<int, QPointer<WLibraryStack> > m_panes;
     QHash<int, int> m_idBrowse;

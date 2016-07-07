@@ -19,8 +19,6 @@
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 
-const QString AnalysisFeature::m_sAnalysisViewName = "AnalysisView";
-
 AnalysisFeature::AnalysisFeature(UserSettingsPointer pConfig,
                                  Library* pLibrary, TrackCollection* pTrackCollection,
                                  QObject* parent) :
@@ -60,10 +58,6 @@ QVariant AnalysisFeature::title() {
 
 QIcon AnalysisFeature::getIcon() {
     return QIcon(":/images/library/ic_library_prepare.png");
-}
-
-QString AnalysisFeature::getFeatureName() {
-    return m_sAnalysisViewName;
 }
 
 QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,

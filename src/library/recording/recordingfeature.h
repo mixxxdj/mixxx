@@ -30,7 +30,6 @@ class RecordingFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getFeatureName() override;
 
     QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int) override;
     QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
@@ -50,7 +49,6 @@ class RecordingFeature : public LibraryFeature {
     
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
-    const static QString m_sRecordingViewName;
     RecordingManager* m_pRecordingManager;
     
     QPointer<DlgRecording> m_pRecordingView;

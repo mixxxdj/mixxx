@@ -32,7 +32,6 @@ class CrateFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getFeatureName() override;
     
     void onSearch(QString&) {}
 
@@ -113,8 +112,6 @@ class CrateFeature : public LibraryFeature {
     QHash<int, QPointer<QStackedWidget> > m_panes;
     QHash<int,int> m_idBrowse;
     QHash<int,int> m_idTable;
-    
-    const static QString m_sCrateViewName;
 };
 
 #endif /* CRATEFEATURE_H */

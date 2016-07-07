@@ -30,7 +30,6 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    QString getFeatureName() override;
 
     TreeItemModel* getChildModel();
     // processes the music collection
@@ -67,8 +66,6 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     bool m_cancelImport;
 
     QSharedPointer<BaseTrackCache>  m_trackSource;
-    
-    static const QString m_sRhythmBoxViewName;
 };
 
 #endif // RHYTHMBOXFEATURE_H

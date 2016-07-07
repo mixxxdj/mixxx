@@ -12,7 +12,6 @@
 
 
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
-const QString BansheeFeature::m_sBansheeViewName = "BANSHEE_VIEW";
 QString BansheeFeature::m_databaseFile;
 
 BansheeFeature::BansheeFeature(UserSettingsPointer pConfig,
@@ -61,10 +60,6 @@ QVariant BansheeFeature::title() {
 
 QIcon BansheeFeature::getIcon() {
     return QIcon(":/images/library/ic_library_banshee.png");
-}
-
-QString BansheeFeature::getFeatureName() {
-    return m_sBansheeViewName;
 }
 
 void BansheeFeature::activate() {
