@@ -81,8 +81,8 @@ void LibraryTreeModel::createTracksTree() {
                 }
                 
                 // Check if a header must be added
-                if (!uknown && lastHeader != value.at(0)) {
-                    lastHeader = value.at(0);
+                if (!uknown && lastHeader != value.at(0).toUpper()) {
+                    lastHeader = value.at(0).toUpper();
                     TreeItem* pTree = 
                         new TreeItem(lastHeader, lastHeader, m_pFeature, parent[0]);
                     pTree->setDivider(true);
