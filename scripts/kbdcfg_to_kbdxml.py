@@ -2,6 +2,7 @@
 
 import os
 import re
+import codecs
 import ntpath
 import configparser
 from tkinter import *
@@ -913,23 +914,216 @@ class App(Tk):
             names.append(mapping.name)
         return names
 
-    def create_xml(self, preset_name):
+    def save_preset(self, path, layouts_path, preset_name):
+        layouts = self._load_layouts(layouts_path)
+        root = self.create_xml(preset_name, layouts)
+
+        if not root:
+            print("XML was not created, not saving preset...")
+            return
+
+        if os.path.isfile(path):
+            print("Warning: '" + path + "' already exists.\nOverriding that file assuming that it's ok :)\n")
+        print("Writing to file: " + path + "\n...")
+        xmlstr = minidom.parseString(tostring(root)).toprettyxml()
+        with open(path, "w") as f:
+            f.write(xmlstr)
+        print("Saved successfully!")
+
+    def _load_layouts(self, path):
+        layouts = []
+
+        if not os.path.isfile(path):
+            print("File doesn't exist: " + path)
+            self.file_path = None
+            return None
+
+        print("Opening layouts file: " + path)
+        with codecs.open(path, 'r', "utf-16") as f:
+            self.tree = ElementTree.parse(f)
+
+        # Get KeyboardLayoutTranslations element, which holds all
+        # information and is basically the root element
+        root = None
+        for element in self.tree.getroot().iter():
+            if element.tag == 'KeyboardLayoutTranslations':
+                root = element
+                break
+        self.root = root
+
+        # Retrieve layouts element
+        layouts_element = root.find('layouts')
+
+        if not layouts_element:
+            print("Couldn't retrieve layout list, no <layouts> element "
+                  "in loaded XML. Pleas load in an other XML file.")
+            return None
+
+        # Iterate over languages specified in layouts file
+        for layout in layouts_element.iter('lang'):
+            name = layout.text
+            if not KeyboardLayout.validate_layout_name(name):
+                print("Layout name: " + name + " is not a valid language code name. Not loading this layout.")
+                continue
+            layouts.append(
+                KeyboardLayout(name=name, root=root)
+            )
+
+        return layouts
+
+    def create_xml(self, preset_name, layouts, mixxx_version="2.0.1+"):
+        mappings = self.mappings
+        master_mapping = self.master_mapping
+
+        # Check if for each mapping, there is a matching layout
+        for mapping in mappings:
+            mapping_locale_name = mapping.get_locale_name()
+            layout_found_for_mapping = False
+            for layout in layouts:
+                if layout.name == mapping_locale_name:
+                    layout_found_for_mapping = True
+                    break
+            if not layout_found_for_mapping:
+                print("No layout found for '" + mapping.name +
+                      "', with locale name: '" + mapping_locale_name +
+                      ". Please choose another layouts file.")
+                return None
+
+        # Check if master mapping is specified
+        if not master_mapping:
+            print("Master mapping not specified. Please "
+                  "mark one of the mappings as master mapping")
+            return None
+
+        # Retrieve layout for master mapping
+        master_mapping_layout = None
+        for layout in layouts:
+            if layout.name == master_mapping.get_locale_name():
+                master_mapping_layout = layout
+
+        # Technically this is not possible, otherwise it would
+        # have returned at the "check if for each mapping, there
+        # is a matching layout" check
+        assert master_mapping_layout is not None
+
+        # A dictionary that will store the controls of master_mapping, but
+        # instead of having a flat hierarchy, stored in a dictionary where:
+        #     - key:    group-name
+        #     - value:  list containing controls belonging to group
+        master_mapping_data = {}
+        for group_name in master_mapping.groups:
+            controls = master_mapping.find_controls_by_group(group_name)
+            master_mapping_data[group_name] = controls
+
         # Create XML root element
-        root = Element('MixxxKeyboardPreset')
-        root.set('schemaVersion', '1')
-        root.set('mixxxVersion', self.mixxx_version)
+        root_element = Element('MixxxKeyboardPreset')
+        root_element.set('schemaVersion', '1')
+        root_element.set('mixxxVersion', mixxx_version)
 
         # Create info block
-        info = SubElement(root, 'info')
-        SubElement(info, 'name').text = preset_name
-        SubElement(info, 'author').text = "kbdcfg_to_kbdxml.py"
-        SubElement(info, 'description').text = "This keyboard preset was generated based on: " + \
-                                               str(self.get_mapping_names())
+        info_element = SubElement(root_element, 'info')
+        SubElement(info_element, 'name').text = preset_name
+        SubElement(info_element, 'author').text = "KbdCfg_to_KbdXML converter"
+        SubElement(info_element, 'description').text = \
+            "This preset was generated based on: " + str(self.get_mapping_names())
 
-        # Create controllers block
-        controller = SubElement(root, 'controller')
+        # Create controller block
+        controller_element = SubElement(root_element, 'controller')
 
-        return root
+        # Fill controller_element with <group> elements, fill those with
+        # <control> elements, which will contain one or more <keyseq> elements
+        #
+        # But first, iterate over groups
+        for group_name, controls in master_mapping_data.items():
+            group_element = SubElement(controller_element, 'group')
+            group_element.set('name', group_name)
+
+            # Iterate over controls in this group
+            for master_control in controls:
+                control_element = SubElement(group_element, 'control')
+                control_element.set('action', master_control.action)
+
+                # Retrieve master control key info
+                master_control_keyseq = master_control.keysequence
+                master_control_mods = master_control_keyseq.split('+').pop()
+                master_control_mod_int = \
+                    KeyboardKey.MODIFIERS.SHIFT if "SHIFT" in [x.upper() for x in master_control_mods] else KeyboardKey.MODIFIERS.NONE
+                master_control_char = master_control_keyseq.split('+')[-1]
+                master_control_scancode = master_mapping_layout.get_scancode(
+                    master_control_keyseq,
+                    master_control_mod_int
+                )
+
+                # Create <keyseq> element for master control key
+                master_keyseq_element = SubElement(control_element, 'keyseq')
+                master_keyseq_element.set('lang', master_mapping.get_locale_name())
+                master_keyseq_element.set('scancode', str(master_control_scancode))
+                master_keyseq_element.text = master_control_keyseq
+
+                # Check if there is a control with the same group and action
+                # in other mappings. If one is found, iterate over given layouts
+                # and translate master key to current layout. Then compare
+                # scancode and modifiers with master key info. If they are the
+                # same, that means that the key sequence can be deduced and
+                # doesn't have to be explicitly set for the correspondent layout
+                for mapping in mappings:
+
+                    # We don't need to check control in master mapping, because
+                    # a keyseq element is already added for that one
+                    if mapping == master_mapping:
+                        continue
+
+                    reference_control = mapping.find_control(
+                        master_control.group,
+                        master_control.action
+                    )
+
+                    # If no control is found in mapping with same group
+                    # and action, it's pretty safe to say that we don't
+                    # need an extra <keyseq> element :)
+                    if not reference_control:
+                        continue
+
+                    # Retrieve layout for current mapping
+                    reference_mapping_layout = None
+                    for i_layout in layouts:
+                        if i_layout.name == mapping.get_locale_name():
+                            reference_mapping_layout = i_layout
+                            break
+
+                    # This is impossible. Otherwise it would already have
+                    # returned at the beginning of create_xml
+                    assert reference_mapping_layout is not None
+
+                    reference_control_keyseq = reference_control.keysequence
+                    reference_control_mods = reference_control_keyseq.split('+').pop()
+                    reference_control_mod_int = \
+                        KeyboardKey.MODIFIERS.SHIFT if "SHIFT" in [x.upper() for x in reference_control_mods] else KeyboardKey.MODIFIERS.NONE
+                    reference_control_char = reference_control_keyseq.split('+')[-1]
+                    reference_control_scancode = reference_mapping_layout.get_scancode(
+                        reference_control_keyseq,
+                        reference_control_mod_int
+                    )
+
+                    # Check if reference modifiers are the same as master's.
+                    # We check with a set() so that it's unordered.
+                    # This way we make sure that Ctrl+Shift and Shift+Ctrl
+                    # both return true
+                    mods_are_equal = \
+                        set([x.upper() for x in reference_control_mods]) == \
+                        set([x.upper() for x in master_control_mods])
+
+                    # Check if reference scancode is the same as master scancode
+                    scancodes_are_equal = reference_control_scancode == master_control_scancode
+
+                    # If translated master control wouldn't match reference keysequence
+                    if not mods_are_equal and not scancodes_are_equal:
+                        overloaded_keyseq_element = SubElement(control_element, 'keyseq')
+                        overloaded_keyseq_element.set('lang', mapping.get_locale_name())
+                        overloaded_keyseq_element.set('scancode', str(reference_control_scancode))
+                        overloaded_keyseq_element.text = reference_control_keyseq
+
+        return root_element
 
 
 class DlgMappingInfo(Frame):
@@ -1037,19 +1231,22 @@ class DlgSave(Frame):
             Grid.rowconfigure(body, x, pad=5)
 
         Label(body, text="Layouts").grid(row=0, column=0, sticky='w')
-        Entry(body).grid(row=0, column=1, sticky='w')
-        Button(body, text="Browse").grid(row=0, column=2, sticky='e')
+        self.layouts_path = StringVar()
+        Entry(body, textvariable=self.layouts_path).grid(row=0, column=1, sticky='w')
+        Button(body, text="Browse", command=self._browse_layouts_file_command).grid(row=0, column=2, sticky='e')
 
         Label(body, text="Save preset to").grid(row=1, column=0, sticky='w')
-        Entry(body).grid(row=1, column=1, sticky='w')
-        Button(body, text="Browse").grid(row=1, column=2, sticky='e')
+        self.save_preset_to_path = StringVar()
+        Entry(body, textvariable=self.save_preset_to_path).grid(row=1, column=1, sticky='w')
+        Button(body, text="Browse", command=self._browse_saveto_command).grid(row=1, column=2, sticky='e')
 
         Label(body, text="Preset name").grid(row=2, column=0, sticky='w')
-        Entry(body).grid(row=2, column=1, sticky='w')
+        self.preset_name = StringVar()
+        Entry(body, textvariable=self.preset_name).grid(row=2, column=1, sticky='w')
 
         body.pack(padx=6)
 
-        self.start_button = Button(self, text="Start", state=DISABLED)
+        self.start_button = Button(self, text="Start", state=DISABLED, command=self._start_button_command)
         self.start_button.pack(side=BOTTOM, pady=10, padx=10, fill=X)
 
     def update(self):
@@ -1057,6 +1254,31 @@ class DlgSave(Frame):
             self.start_button.configure(state=DISABLED)
         else:
             self.start_button.configure(state=ACTIVE)
+
+    def _browse_layouts_file_command(self):
+        path = filedialog.askopenfilename(
+            filetypes=(("XML Files", ".xml"), ("All Files", "*")),
+            title="Choose a layouts xml file"
+        )
+        if not path:
+            return None
+        self.layouts_path.set(path)
+
+    def _browse_saveto_command(self):
+        try:
+            path = filedialog.asksaveasfilename(
+                defaultextension=".kbd.xml",
+                title="Where to save the kbd.xml file")
+        except AttributeError:
+            return
+        self.save_preset_to_path.set(path)
+
+    def _start_button_command(self):
+        self.app.save_preset(
+            self.save_preset_to_path.get(),
+            self.layouts_path.get(),
+            self.preset_name.get()
+        )
 
 
 class DlgSidebar(Frame):
@@ -1246,7 +1468,7 @@ class Mapping:
 
         found_controls = []
         for control in self.controls:
-            if control.action == action:
+            if control.action == action and control.group == group:
                 found_controls.append(control)
 
         n_found_controls = len(found_controls)
@@ -1261,12 +1483,192 @@ class Mapping:
                   group + " and action '" + action + "'. Returning last one...")
             return found_controls[-1]
 
+    # Returns set of controls that belong to a given group
+    def find_controls_by_group(self, group):
+        controls = set()
+        for control in self.controls:
+            if control.group == group:
+                controls.add(control)
+        return controls
+
+    def get_locale_name(self):
+        return self.lang + "_" + self.country
+
 
 class Control:
     def __init__(self, group='', action='', keysequence=''):
         self.group = group
         self.action = action
-        self.keyseqyence = keysequence
+        self.keysequence = keysequence
+
+
+class KeyboardKey:
+    """ Class representing one physical character key as seen here:
+    https://en.wikipedia.org/wiki/Keyboard_layout#/media/File:ISO_keyboard_(105)_QWERTY_UK.svg
+
+    This class contains information about which character is bound
+    to this keyboard key, also for different modifiers"""
+
+    class MODIFIERS:
+        """ Modifier enum, following the Qt::KeyboardModifier standard, found here:
+        http://doc.qt.io/qt-5/qt.html#KeyboardModifier-enum """
+        NONE, SHIFT, CTRL, ALT, META, KEYPAD = range(1, 7)
+
+        @staticmethod
+        def is_valid_modifier(modifier):
+            return modifier in range(1, 7)
+
+    class KeyChar:
+        def __init__(self, modifier, char):
+            self.modifier = modifier
+            self.char = char
+
+    def __init__(self, scancode):
+        self.scancode = scancode
+
+        # A list containing KeyChar objects. For example, for the a key, it will contain:
+        #   - One KeyChar with modifier == NONE and char = 'a'
+        #   - One KeyChar with modifier == SHIFT and char = 'A'
+        self._key_chars = []
+
+    def get_key_char(self, modifier, verbose=True):
+        if not KeyboardKey.MODIFIERS.is_valid_modifier(modifier):
+            if verbose:
+                print("Given modifier: " + modifier + " is not valid.")
+            return
+
+        for key_char in self._key_chars:
+            if key_char.modifier == modifier:
+                return key_char
+
+        if verbose:
+            print("Keyboard key with scancode '" + str(self.scancode) +
+                  "' has not a key char set with modifier: " + str(modifier))
+        return None
+
+    def set_key_char(self, modifier, char):
+        if not KeyboardKey.MODIFIERS.is_valid_modifier(modifier):
+            print("Given modifier: " + modifier + " is not valid.")
+            return
+
+        # Check if there is already a KeyChar with the given modifier
+        key_char = self.get_key_char(modifier=modifier, verbose=False)
+
+        if key_char:
+            key_char.char = char
+        else:
+            self._key_chars.append(KeyboardKey.KeyChar(
+                modifier=modifier,
+                char=char
+            ))
+
+
+class KeyboardLayout:
+    NAME_VALIDATION_PATTERN = re.compile("^[a-z]{2}_[A-Z]{2,3}$")
+
+    @staticmethod
+    # Check if name has the correct format, described here: http://doc.qt.io/qt-4.8/qlocale.html#QLocale-2
+    # Name has to start with a two letter ISO 639-1 language code ...
+    # ... followed by an underscore ...
+    # ... followed by a three letter uppercase ISO 3166 country code
+    #
+    # Note: This validation is not full-prove: qw_ZXC will pass.
+    def validate_layout_name(name):
+        return KeyboardLayout.NAME_VALIDATION_PATTERN.match(name)
+
+    def __init__(self, name="", root=None):
+        # Keyboard layout name
+        self.name = name
+
+        # Mapping data for this keyboard layout, contains instances of KeyboardKey.
+        self._data = []
+
+        # Parse XML and store it into self._data
+        self.parse_xml(root)
+
+    def parse_xml(self, root):
+        for key in root.iter('key'):
+            scancode = key.get('scancode')
+            if not scancode:
+                print(
+                    "Skipping key, no scan code defined. Make sure that all key "
+                    "elements have a 'scancode' attribute telling the scancode as "
+                    "described here: http://www.barcodeman.com/altek/mule/kb102.gif")
+                break
+
+            for char in key.iter('char'):
+                lang = char.get('lang')
+                if lang == self.name:
+                    modifier_attr = char.get('modifier')
+                    if modifier_attr == "NONE":
+                        modifier = KeyboardKey.MODIFIERS.NONE
+                    elif modifier_attr == "SHIFT":
+                        modifier = KeyboardKey.MODIFIERS.SHIFT
+                    else:
+                        modifier = -1
+
+                    self.update_key(
+                        scancode=int(scancode),
+                        modifier=int(modifier),
+                        char=char.text
+                    )
+
+    def find(self, scancode):
+        for key in self._data:
+            if key.scancode == scancode:
+                return key
+        return None
+
+    def update_key(self, scancode, modifier, char, verbose=False):
+        key = self.find(scancode)
+        if not key:
+            if verbose:
+                print("Can't update key with scancode '" + str(scancode) +
+                      "'. Scancode doesnt't exist. Creating new one...")
+            key = KeyboardKey(scancode)
+            self._data.append(key)
+        key.set_key_char(modifier=modifier, char=char)
+
+    def get_scancodes(self):
+        scancodes = set()
+        for key in self._data:
+            scancodes.add(key.scancode)
+        return scancodes
+
+    def get_scancode(self, keyseq, modifier):
+        # Retrieve scancode
+        split_keyseq = keyseq.split('+')
+        char = split_keyseq[-1] if split_keyseq else ""
+
+        # Make sure that the character is a lower-case character if shift is not pressed and
+        # is an upper-case character when shift is pressed so that it can be found in _data
+        char = char.upper() if modifier == KeyboardKey.MODIFIERS.SHIFT else char.lower()
+
+        scancodes = []
+        for key in self._data:
+            if key.get_key_char(modifier).char == char:
+                scancodes.append(key.scancode)
+        scancode = scancodes[0] if len(scancodes) == 1 \
+            else "TODO: Set scancode for " + char + " (please choose between one of these: " + str(scancodes) + ")"
+
+        # Check if this key is universal (for example: F-keys or Space)
+        if KeyboardLayout.is_universal_key(char):
+            scancode = "universal_key"
+
+        return scancode
+
+    @staticmethod
+    def is_universal_key(key):
+        universal_keys = [
+            "LEFT", "UP", "RIGHT", "DOWN",
+            "SPACE", "RETURN", "F1", "F2",
+            "F3", "F4", "F5", "F6", "F7",
+            "F8", "F9", "F10", "F11", "F12"]
+
+        if key.upper() in universal_keys:
+            return True
+        else:
+            return False
 
 
 if __name__ == '__main__':
