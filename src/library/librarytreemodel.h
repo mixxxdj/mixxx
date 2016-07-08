@@ -1,0 +1,26 @@
+#ifndef LIBRARYTREEMODEL_H
+#define LIBRARYTREEMODEL_H
+
+#include <QSqlQuery>
+#include <QStringList>
+
+#include "library/treeitemmodel.h"
+
+class MixxxLibraryFeature;
+class TrackCollection;
+
+class LibraryTreeModel : public TreeItemModel {
+  public:
+    LibraryTreeModel(MixxxLibraryFeature* pFeature, TrackCollection *pTrackCollection, QObject* parent = nullptr);
+
+  private:
+    void createTracksTree();
+    void createTreeRecursive(TreeItem* parent, QVector<QString>& lastInserted, 
+                             int index, QSqlQuery& query);
+
+    MixxxLibraryFeature* m_pFeature;
+    TrackCollection* m_pTrackCollection;
+    QStringList m_sortOrder;
+};
+
+#endif // LIBRARYTREEMODEL_H

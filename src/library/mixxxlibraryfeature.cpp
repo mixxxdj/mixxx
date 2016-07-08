@@ -5,20 +5,19 @@
 
 #include "library/mixxxlibraryfeature.h"
 
-#include "library/parser.h"
-#include "library/library.h"
 #include "library/basetrackcache.h"
-#include "library/librarytablemodel.h"
-#include "library/queryutil.h"
-#include "library/trackcollection.h"
 #include "library/dlghidden.h"
 #include "library/dlgmissing.h"
-#include "treeitem.h"
+#include "library/library.h"
+#include "library/librarytablemodel.h"
+#include "library/parser.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
 #include "sources/soundsourceproxy.h"
-#include "widget/wlibrary.h"
-#include "widget/wlibrarystack.h"
-#include "widget/wlibrarysidebar.h"
 #include "util/dnd.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarystack.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          Library* pLibrary,
@@ -26,8 +25,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          TrackCollection* pTrackCollection)
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           kLibraryTitle(tr("Library")),
-          m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pTrackCollection(pTrackCollection) {
+          m_childModel(this, pTrackCollection),
+          m_trackDao(pTrackCollection->getTrackDAO()) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -103,16 +102,6 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
 
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
-
-    TreeItem* pRootItem = new TreeItem();
-    pRootItem->setLibraryFeature(this);
-    
-    TreeItem* pLibraryChildItem = new TreeItem(kLibraryTitle, kLibraryTitle,
-                                               this, pRootItem);
-    pLibraryChildItem->setIcon(getIcon());
-    pRootItem->appendChild(pLibraryChildItem);
-
-    m_childModel.setRootItem(pRootItem);
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {

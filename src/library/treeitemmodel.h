@@ -35,14 +35,15 @@ class TreeItemModel : public QAbstractItemModel {
     // Return the underlying TreeItem.
     // If the index is invalid, the root item is returned.
     TreeItem* getItem(const QModelIndex &index) const;
-
-    void triggerRepaint();
     
     bool dropAccept(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
+    
+  public slots:
+    void triggerRepaint();
 
-  private:
-    TreeItem *m_pRootItem;
+  protected:
+    TreeItem* m_pRootItem;
 };
 
 #endif

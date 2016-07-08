@@ -943,6 +943,7 @@ class MixxxCore(Feature):
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
+                   "library/librarytreemodel.cpp",
 
                    "library/parser.cpp",
                    "library/parserpls.cpp",

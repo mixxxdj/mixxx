@@ -16,8 +16,8 @@
 #include <QPointer>
 
 #include "library/libraryfeature.h"
+#include "library/librarytreemodel.h"
 #include "library/dao/trackdao.h"
-#include "treeitemmodel.h"
 #include "preferences/usersettings.h"
 
 class DlgHidden;
@@ -66,14 +66,12 @@ class MixxxLibraryFeature : public LibraryFeature {
         Hidden = 2,
         Missing = 3
     };
-    
     const QString kLibraryTitle;
     
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
-    TreeItemModel m_childModel;
+    LibraryTreeModel m_childModel;
     TrackDAO& m_trackDao;
-    TrackCollection* m_pTrackCollection;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */
