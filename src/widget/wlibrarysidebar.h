@@ -11,9 +11,19 @@
 #include <QTimerEvent>
 #include <QTreeView>
 #include <QEvent>
+#include <QStyledItemDelegate>
 
 #include "widget/wbasewidget.h"
 #include "library/libraryview.h"
+
+class WSidebarItemDelegate : public QStyledItemDelegate {
+    Q_OBJECT
+  public:
+    WSidebarItemDelegate(QObject* parent = nullptr);
+    
+    void paint(QPainter* painter, const QStyleOptionViewItem& option,
+               const QModelIndex& index) const;
+};
 
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT

@@ -16,8 +16,9 @@ class TreeItem {
     TreeItem(); //creates an invisible root item for the tree
     TreeItem(const QString &data,
              const QString &data_path,
-             LibraryFeature* feature,
+             LibraryFeature* pFeature,
              TreeItem* parent);
+    TreeItem(LibraryFeature* pFeature);
     ~TreeItem();
     /** appends a child item to this object **/
     void appendChild(TreeItem *child);
@@ -47,30 +48,29 @@ class TreeItem {
     bool isPlaylist() const;
     /** returns true if we have an inner node **/
     bool isFolder() const;
-    /* Returns the Library feature object to which an item belongs to */
+    // Returns the Library feature object to which an item belongs to
     LibraryFeature* getFeature();
     
     void setLibraryFeature(LibraryFeature* pFeature);
 
-    void setBold(bool bold) {
-        m_bold = bold;
-    }
-    bool isBold() const {
-        return m_bold;
-    }
+    void setBold(bool bold);
+    bool isBold() const;
 
+    void setDivider(bool divider);
+    bool isDivider() const;
 
     void setIcon(const QIcon& icon);
-    QIcon getIcon();
+    QIcon getIcon() const;
 
   private:
     QList<TreeItem*> m_childItems;
-    QString m_dataPath;
     QString m_data;
+    QString m_dataPath;
     LibraryFeature* m_pFeature;
     bool m_bold;
+    bool m_divider;
 
-    TreeItem *m_parentItem;
+    TreeItem* m_pParent;
     QIcon m_icon;
 };
 

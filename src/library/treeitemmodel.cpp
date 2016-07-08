@@ -45,45 +45,52 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole && role != kDataPathRole && 
-            role != kBoldRole && role != Qt::DecorationRole) {
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+    if (item == nullptr) {
         return QVariant();
     }
 
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-
-    // We use Qt::UserRole to ask for the datapath.
-    if (role == kDataPathRole) {
-        return item->dataPath();
-    } else if (role == kBoldRole) {
-        return item->isBold();
-    } else if (role == Qt::DecorationRole) {
-        return item->getIcon();
+    // We use Qt::UserRole to ask for the datapath.    
+    switch(role) {
+        case Qt::DisplayRole:
+            return item->data();        
+        case Qt::DecorationRole:
+            return item->getIcon();
+        case Role::RoleDataPath:
+            return item->dataPath();
+        case Role::RoleBold:
+            return item->isBold();
+        case Role::RoleDivider:
+            return item->isDivider();
     }
-    return item->data();
+
+    return QVariant();
 }
 
 bool TreeItemModel::setData(const QModelIndex &a_rIndex,
                             const QVariant &a_rValue, int a_iRole) {
     // Get the item referred to by this index.
     TreeItem *pItem = static_cast<TreeItem*>(a_rIndex.internalPointer());
-    if (pItem == NULL) {
+    if (pItem == nullptr) {
         return false;
     }
 
     // Set the relevant data.
     switch (a_iRole) {
-    case Qt::DisplayRole:
-        pItem->setData(a_rValue, pItem->dataPath());
-        break;
-    case kDataPathRole:
-        pItem->setData(pItem->data(), a_rValue);
-        break;
-    case kBoldRole:
-        pItem->setBold(a_rValue.toBool());
-        break;
-    default:
-        return false;
+        case Qt::DisplayRole:
+            pItem->setData(a_rValue, pItem->dataPath());
+            break;
+        case Role::RoleDataPath:
+            pItem->setData(pItem->data(), a_rValue);
+            break;
+        case Role::RoleBold:
+            pItem->setBold(a_rValue.toBool());
+            break;
+        case Role::RoleDivider:
+            pItem->setDivider(a_rValue.toBool());
+            break;
+        default:
+            return false;
     }
 
     emit(dataChanged(a_rIndex, a_rIndex));
@@ -93,8 +100,14 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
 Qt::ItemFlags TreeItemModel::flags(const QModelIndex &index) const {
     if (!index.isValid())
         return 0;
-
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    Qt::ItemFlags flags = Qt::ItemIsEnabled;
+    
+    bool divider = index.data(Role::RoleDivider).toBool();
+    if (!divider) {
+        flags |= Qt::ItemIsSelectable;
+    }
+    
+    return flags;
 }
 
 QVariant TreeItemModel::headerData(int section, Qt::Orientation orientation, int role) const {

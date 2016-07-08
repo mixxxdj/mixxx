@@ -57,13 +57,16 @@ void LibraryTreeModel::createTracksTree() {
     }
     
     QVector<QString> lastUsed(size);
+    QChar lastHeader;
     QVector<TreeItem*> parent(size + 1, nullptr);
     parent[0] = m_pRootItem;
     
     while (query.next()) {
         for (int i = 0; i < size; ++i) {
             QString value = query.value(i).toString();
-            if (value == "") {
+            
+            bool uknown = (value == "");
+            if (uknown) {
                 value = tr("Unknown");
             }            
             if (!lastUsed[i].isNull() && value == lastUsed[i]) {
@@ -77,7 +80,14 @@ void LibraryTreeModel::createTracksTree() {
                     s = QString();
                 }
                 
-                // TODO(jmigual) Check if a header must be added
+                // Check if a header must be added
+                if (!uknown && lastHeader != value.at(0)) {
+                    lastHeader = value.at(0);
+                    TreeItem* pTree = 
+                        new TreeItem(lastHeader, lastHeader, m_pFeature, parent[0]);
+                    pTree->setDivider(true);
+                    parent[0]->appendChild(pTree);
+                }
                 
             }
             lastUsed[i] = value;

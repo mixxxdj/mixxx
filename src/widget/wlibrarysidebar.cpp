@@ -2,19 +2,52 @@
 
 #include <QFileInfo>
 #include <QHeaderView>
-#include <QUrl>
-#include <QtDebug>
 #include <QMimeData>
+#include <QPainter>
+#include <QDebug>
+#include <QUrl>
 
-#include "library/sidebarmodel.h"
 #include "library/treeitemmodel.h"
+#include "library/sidebarmodel.h"
 #include "util/dnd.h"
 
 const int expand_time = 250;
 
+
+WSidebarItemDelegate::WSidebarItemDelegate(QObject* parent)
+        : QStyledItemDelegate(parent) {
+    
+}
+
+void WSidebarItemDelegate::paint(QPainter* painter,
+                                 const QStyleOptionViewItem& option,
+                                 const QModelIndex& index) const {
+    bool divider = index.data(TreeItemModel::RoleDivider).toBool();
+    if (!divider) {
+        QStyledItemDelegate::paint(painter, option, index);
+        return;
+    }
+    
+    QString text = index.data().toString();
+    QRect rect(option.rect);
+    // Set small padding left
+    rect.setLeft(rect.left() + 20);
+    
+    // Draw the text
+    painter->setPen(option.palette.color(QPalette::Text));
+    painter->setFont(option.font);
+    painter->drawText(rect, text);
+    
+    // Draw line under text
+    painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
+}
+
+
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this) {
+    setItemDelegate(new WSidebarItemDelegate(this));
+    
     //Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);

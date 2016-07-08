@@ -29,28 +29,40 @@
  * - cratefeature.cpp
  * - *feature.cpp
  */
-TreeItem::TreeItem(const QString &data, const QString &data_path,
-                   LibraryFeature* feature, TreeItem* parent) {
-    m_data = data;
-    m_dataPath = data_path;
-    m_parentItem = parent;
-    m_pFeature = feature;
-    m_bold = false;
+TreeItem::TreeItem(const QString& data, const QString& data_path,
+                   LibraryFeature* pFeature, TreeItem* parent)
+        : m_data(data),
+          m_dataPath(data_path),
+          m_pFeature(pFeature),
+          m_bold(false),
+          m_divider(false),
+          m_pParent(parent) {
 }
 
-TreeItem::TreeItem() {
-    m_data = "$root";
-    m_dataPath = "$root";
-    m_parentItem = nullptr;
-    m_pFeature = nullptr;
-    m_bold = false;
+TreeItem::TreeItem(LibraryFeature* pFeature)
+        : m_data("$root"),
+          m_dataPath("$root"),
+          m_pFeature(pFeature),
+          m_bold(false),
+          m_divider(false),
+          m_pParent(nullptr) {
+
+}
+
+TreeItem::TreeItem()
+        : m_data("$root"),
+          m_dataPath("$root"),
+          m_pFeature(nullptr),
+          m_bold(false),
+          m_divider(false),
+          m_pParent(nullptr) {
 }
 
 TreeItem::~TreeItem() {
     qDeleteAll(m_childItems);
 }
 
-void TreeItem::appendChild(TreeItem *item) {
+void TreeItem::appendChild(TreeItem* item) {
     m_childItems.append(item);
 }
 
@@ -58,7 +70,7 @@ void TreeItem::removeChild(int index) {
     m_childItems.removeAt(index);
 }
 
-TreeItem *TreeItem::child(int row) {
+TreeItem* TreeItem::child(int row) {
     return m_childItems.value(row);
 }
 
@@ -82,13 +94,13 @@ bool TreeItem::isFolder() const {
     return (m_childItems.count() != 0);
 }
 
-TreeItem *TreeItem::parent() {
-    return m_parentItem;
+TreeItem* TreeItem::parent() {
+    return m_pParent;
 }
 
 int TreeItem::row() const {
-    if (m_parentItem) {
-        return m_parentItem->m_childItems.indexOf(const_cast<TreeItem*>(this));
+    if (m_pParent) {
+        return m_pParent->m_childItems.indexOf(const_cast<TreeItem*>(this));
     }
 
     return 0;
@@ -98,13 +110,30 @@ LibraryFeature* TreeItem::getFeature() {
     return m_pFeature;
 }
 
-void TreeItem::setLibraryFeature(LibraryFeature *pFeature) {
+void TreeItem::setLibraryFeature(LibraryFeature* pFeature) {
     m_pFeature = pFeature;
 }
 
-bool TreeItem::insertChildren(QList<TreeItem*> &data, int position, int count) {
-    if (position < 0 || position > m_childItems.size())
+void TreeItem::setBold(bool bold) {
+    m_bold = bold;
+}
+
+bool TreeItem::isBold() const {
+    return m_bold;
+}
+
+void TreeItem::setDivider(bool divider) {
+    m_divider = divider;
+}
+
+bool TreeItem::isDivider() const {
+    return m_divider;
+}
+
+bool TreeItem::insertChildren(QList<TreeItem*>& data, int position, int count) {
+    if (position < 0 || position > m_childItems.size()) {
         return false;
+    }
 
     for (int row = 0; row < count; ++row) {
         TreeItem* item = data.at(row);
@@ -115,24 +144,27 @@ bool TreeItem::insertChildren(QList<TreeItem*> &data, int position, int count) {
 }
 
 bool TreeItem::removeChildren(int position, int count) {
-    if (position < 0 || position + count > m_childItems.size())
+    if (position < 0 || position + count > m_childItems.size()) {
         return false;
+    }
 
     for (int row = 0; row < count; ++row) {
         //Remove from list to avoid invalid pointers
         TreeItem* item = m_childItems.takeAt(position);
-        if(item) delete item;
+        if (item) {
+            delete item;
+        }
     }
     return true;
 }
 
-bool TreeItem::setData(const QVariant &data, const QVariant &data_path) {
+bool TreeItem::setData(const QVariant& data, const QVariant& data_path) {
     m_data = data.toString();
     m_dataPath = data_path.toString();
     return true;
 }
 
-QIcon TreeItem::getIcon() {
+QIcon TreeItem::getIcon() const {
     return m_icon;
 }
 

@@ -144,7 +144,7 @@ void MixxxLibraryFeature::activate() {
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
-    QString itemName = index.data(TreeItemModel::kDataPathRole).toString();
+    QString itemName = index.data(TreeItemModel::RoleDataPath).toString();
     
     if (itemName == kLibraryTitle) {
         activate();
