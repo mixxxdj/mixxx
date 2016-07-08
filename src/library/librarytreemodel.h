@@ -15,9 +15,7 @@ class LibraryTreeModel : public TreeItemModel {
 
   private:
     void createTracksTree();
-    void createTreeRecursive(TreeItem* parent, QVector<QString>& lastInserted, 
-                             int index, QSqlQuery& query);
-
+    
     MixxxLibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;
     QStringList m_sortOrder;

@@ -16,7 +16,8 @@ LibraryTreeModel::LibraryTreeModel(MixxxLibraryFeature* pFeature,
     pRootItem->setLibraryFeature(pFeature);
     QString title = pFeature->title().toString();
 
-    TreeItem* pLibraryChildItem = new TreeItem(title, title, pFeature, pRootItem);
+    TreeItem* pLibraryChildItem = new TreeItem(title, title, m_pFeature, pRootItem);
+    pLibraryChildItem->setIcon(m_pFeature->getIcon());
 
     pRootItem->appendChild(pLibraryChildItem);
     setRootItem(pRootItem);
@@ -50,18 +51,43 @@ void LibraryTreeModel::createTracksTree() {
     
     qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
     
-    TreeItem* parent = m_pRootItem;
-    TreeItem* lastInserted = nullptr;
-    
     int size = columns.size();
+    if (size <= 0) {
+        return;
+    }
+    
     QVector<QString> lastUsed(size);
+    QVector<TreeItem*> parent(size + 1, nullptr);
+    parent[0] = m_pRootItem;
     
-    int index = 0;
+    while (query.next()) {
+        for (int i = 0; i < size; ++i) {
+            QString value = query.value(i).toString();
+            if (value == "") {
+                value = tr("Unknown");
+            }            
+            if (!lastUsed[i].isNull() && value == lastUsed[i]) {
+                continue;
+            }
+            
+            if (i == 0) {
+                // If a new top level is added all the following levels must be
+                // reset 
+                for (QString& s : lastUsed) {
+                    s = QString();
+                }
+                
+                // TODO(jmigual) Check if a header must be added
+                
+            }
+            lastUsed[i] = value;
+            
+            // We need to create a new item
+            TreeItem* pTree = new TreeItem(value, value, m_pFeature, parent[i]);
+            parent[i]->appendChild(pTree);
+            parent[i + 1] = pTree;
+        }    
+    }
     
-}
-
-void LibraryTreeModel::createTreeRecursive(TreeItem* parent,
-                                           QVector<QString>& lastInserted, 
-                                           int index, QSqlQuery& query) {
-    
+    triggerRepaint();
 }
