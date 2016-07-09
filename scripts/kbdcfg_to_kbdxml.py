@@ -1045,7 +1045,8 @@ class App(Tk):
 
                 # Retrieve master control key info
                 master_control_keyseq = master_control.keysequence
-                master_control_mods = master_control_keyseq.split('+').pop()
+                master_control_mods = master_control_keyseq.split('+')
+                master_control_mods.pop()
                 master_control_mod_int = \
                     KeyboardKey.MODIFIERS.SHIFT if "SHIFT" in [x.upper() for x in master_control_mods] else KeyboardKey.MODIFIERS.NONE
                 master_control_char = master_control_keyseq.split('+')[-1]
@@ -1059,6 +1060,13 @@ class App(Tk):
                 master_keyseq_element.set('lang', master_mapping.get_locale_name())
                 master_keyseq_element.set('scancode', str(master_control_scancode))
                 master_keyseq_element.text = master_control_keyseq
+                #
+                # if master_control.action == "bpm_tap":
+                #     print("Master keyseq: " + master_control.keysequence)
+                #     print("Master mods: " + str(master_control_mods))
+                #     print("Master mod int: " + str(master_control_mod_int))
+                #     print("Master char: " + master_control_char)
+                #     print("Master scancode: " + str(master_control_scancode))
 
                 # Check if there is a control with the same group and action
                 # in other mappings. If one is found, iterate over given layouts
@@ -1096,7 +1104,8 @@ class App(Tk):
                     assert reference_mapping_layout is not None
 
                     reference_control_keyseq = reference_control.keysequence
-                    reference_control_mods = reference_control_keyseq.split('+').pop()
+                    reference_control_mods = reference_control_keyseq.split('+')
+                    reference_control_mods.pop()
                     reference_control_mod_int = \
                         KeyboardKey.MODIFIERS.SHIFT if "SHIFT" in [x.upper() for x in reference_control_mods] else KeyboardKey.MODIFIERS.NONE
                     reference_control_char = reference_control_keyseq.split('+')[-1]
@@ -1646,7 +1655,11 @@ class KeyboardLayout:
 
         scancodes = []
         for key in self._data:
-            if key.get_key_char(modifier).char == char:
+            key_char = key.get_key_char(modifier)
+            if key_char is None:
+                scancode = "There was no key-char found for keyseq '" + keyseq + "' with modifier '" + str(modifier)
+                continue
+            if key_char.char == char:
                 scancodes.append(key.scancode)
         scancode = scancodes[0] if len(scancodes) == 1 \
             else "TODO: Set scancode for " + char + " (please choose between one of these: " + str(scancodes) + ")"
