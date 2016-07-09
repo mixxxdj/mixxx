@@ -331,6 +331,7 @@ void readCoverArtFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) 
                 static_cast<TagLib::ID3v2::AttachedPictureFrame*>(covertArtFrame.front());
         TagLib::ByteVector data = picframe->picture();
         *pCoverArt = QImage::fromData(
+                // char -> uchar
                 reinterpret_cast<const uchar *>(data.data()), data.size());
     }
 }
@@ -348,6 +349,7 @@ void readCoverArtFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
         if (++pos > 0) {
             const TagLib::ByteVector& data = item.mid(pos);
             *pCoverArt = QImage::fromData(
+                    // char -> uchar
                     reinterpret_cast<const uchar *>(data.data()), data.size());
         }
     }
@@ -359,18 +361,27 @@ void readCoverArtFromXiphComment(QImage* pCoverArt, const TagLib::Ogg::XiphComme
     }
 
     if (tag.fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
-        QByteArray data(
+        // https://wiki.xiph.org/VorbisComment#METADATA_BLOCK_PICTURE
+        const TagLib::StringList& base64Pictures =
+                tag.fieldListMap()["METADATA_BLOCK_PICTURE"];
+        const QByteArray blockData(
                 QByteArray::fromBase64(
                         tag.fieldListMap()["METADATA_BLOCK_PICTURE"].front().toCString()));
-        TagLib::ByteVector tdata(data.data(), data.size());
-        TagLib::FLAC::Picture p(tdata);
-        data = QByteArray(p.data().data(), p.data().size());
-        *pCoverArt = QImage::fromData(data);
+        const TagLib::ByteVector pictureBlockData(blockData.data(), blockData.size());
+        const TagLib::FLAC::Picture picture(pictureBlockData);
+        const TagLib::ByteVector pictureData(picture.data());
+        *pCoverArt = QImage::fromData(
+                // char -> uchar
+                reinterpret_cast<const uchar*>(pictureData.data()),
+                pictureData.size());
     } else if (tag.fieldListMap().contains("COVERART")) {
-        QByteArray data(
+        // COVERART is deprecated:
+        // https://wiki.xiph.org/VorbisComment#Unofficial_COVERART_field_.28deprecated.29
+        qWarning() << "Reading cover art from deprecated VorbisComment field COVERART";
+        const QByteArray imageData(
                 QByteArray::fromBase64(
                         tag.fieldListMap()["COVERART"].toString().toCString()));
-        *pCoverArt = QImage::fromData(data);
+        *pCoverArt = QImage::fromData(imageData);
     }
 }
 
@@ -384,6 +395,7 @@ void readCoverArtFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
                 getItemListMap(tag)["covr"].toCoverArtList();
         TagLib::ByteVector data = coverArtList.front().data();
         *pCoverArt = QImage::fromData(
+                // char -> uchar
                 reinterpret_cast<const uchar *>(data.data()), data.size());
     }
 }
