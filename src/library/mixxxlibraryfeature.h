@@ -50,6 +50,7 @@ class MixxxLibraryFeature : public LibraryFeature {
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
+    void onRightClickChild(const QPoint& pos, const QModelIndex&);
     void refreshLibraryModels();
     
     void selectAll();

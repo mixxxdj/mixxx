@@ -15,9 +15,12 @@ class LibraryTreeModel : public TreeItemModel {
                      TrackCollection* pTrackCollection, 
                      QObject* parent = nullptr);
 
+    void setSortOrder(QStringList sortOrder);
     QString getQuery(TreeItem* pTree) const;
     
-  private:
+    void reloadTracksTree();
+    
+  private:    
     void createTracksTree();
     
     MixxxLibraryFeature* m_pFeature;

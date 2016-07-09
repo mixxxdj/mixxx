@@ -1,7 +1,8 @@
 // mixxxlibraryfeature.cpp
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QtDebug>
+#include <QDebug>
+#include <QMenu>
 
 #include "library/mixxxlibraryfeature.h"
 
@@ -152,6 +153,36 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     switchToFeature();
     showBreadCrumb(pTree);
     restoreSearch(query);
+}
+
+void MixxxLibraryFeature::onRightClickChild(const QPoint& pos, 
+                                            const QModelIndex&) {
+    // Create the sort menu
+    QMenu menu;
+    QAction* artist_album = menu.addAction(tr("Artist > Album"));
+    QAction* album_artist = menu.addAction(tr("Album > Artist"));
+    QAction* genre_artist = menu.addAction(tr("Genre > Artist > Album"));
+    QAction* genre_album  = menu.addAction(tr("Genre > Album > Artist"));
+    
+    QAction* selected = menu.exec(pos);
+    
+    QStringList sortOrder;
+    if (selected == artist_album) {
+        sortOrder << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
+    } else if (selected == album_artist) {
+        sortOrder << LIBRARYTABLE_ALBUM << LIBRARYTABLE_ARTIST;
+    } else if (selected == genre_artist) {
+        sortOrder << LIBRARYTABLE_GENRE << LIBRARYTABLE_ARTIST
+                  << LIBRARYTABLE_ALBUM;
+    } else if (selected == genre_album) {
+        sortOrder << LIBRARYTABLE_GENRE << LIBRARYTABLE_ALBUM 
+                  << LIBRARYTABLE_ARTIST;
+    } else {
+        // Menu rejected
+        return;
+    }
+    m_childModel.setSortOrder(sortOrder);
+    m_childModel.reloadTracksTree();
 }
 
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {

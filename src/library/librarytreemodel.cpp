@@ -13,21 +13,14 @@ LibraryTreeModel::LibraryTreeModel(MixxxLibraryFeature* pFeature,
           m_pFeature(pFeature),
           m_pTrackCollection(pTrackCollection) {
     
-    // Create root item
-    TreeItem* pRootItem = new TreeItem();
-    pRootItem->setLibraryFeature(pFeature);
-    QString title = pFeature->title().toString();
-
-    m_pLibraryItem = new TreeItem(title, title, m_pFeature, pRootItem);
-    m_pLibraryItem->setIcon(m_pFeature->getIcon());
-
-    pRootItem->appendChild(m_pLibraryItem);
-    setRootItem(pRootItem);
-
     // By default sort by Artist -> Album
     // TODO(jmigual) store the sort order in the configuration
     m_sortOrder << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
-    createTracksTree();
+    reloadTracksTree();
+}
+
+void LibraryTreeModel::setSortOrder(QStringList sortOrder) {
+    m_sortOrder = sortOrder;
 }
 
 QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
@@ -65,6 +58,22 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
     }
     
     return result.join(" ");
+}
+
+void LibraryTreeModel::reloadTracksTree() {    
+    // Create root item
+    TreeItem* pRootItem = new TreeItem();
+    pRootItem->setLibraryFeature(m_pFeature);
+    QString title = m_pFeature->title().toString();
+
+    m_pLibraryItem = new TreeItem(title, title, m_pFeature, pRootItem);
+    m_pLibraryItem->setIcon(m_pFeature->getIcon());
+
+    pRootItem->appendChild(m_pLibraryItem);
+    
+    // Deletes the old root item if the previous root item was not null
+    setRootItem(pRootItem);
+    createTracksTree();
 }
 
 void LibraryTreeModel::createTracksTree() {
