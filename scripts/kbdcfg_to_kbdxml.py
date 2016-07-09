@@ -11,20 +11,37 @@ from tkinter import filedialog
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement, tostring
 
+
 def main():
     app = App()
     app.mainloop()
 
 
 class App(Tk):
+    """ Main class for kbdcfg_to_kbdxml, Tk root
+
+    This is the main class of the KbdCfg_to_KbdXml converter tool Tk
+    application. It is the view, being the main application window, but
+    also the model, holding mapping data.
+
+    Attributes:
+        dlg_sidebar:      Sidebar widget at the left side of the application, showing loaded mappings
+        dlg_mapping_info: Widget displaying info about selected mapping, at the right of dlg_sidebar
+        dlg_save:         Widget which can be interacted with to choose a layouts resource file and a path to save to
+
+        mappings:         Loaded mappings, represented as instances of the Mapping class
+        selected_mapping: The currently selected mapping
+        master_mapping:   The mapping on which the keyboard preset will be based on
+    """
+
+    TITLE = "Keyboard legacy files to keyboard XML converter"
+
     FONTS = {
         'huge': ("Helvetica", 18),
         'big': ("Helvetica", 14),
         'normal': ("Helvetica", 10),
         'small': ("Helvetica", 7)
     }
-
-    TITLE = "Keyboard legacy files to keyboard XML converter"
 
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
@@ -50,10 +67,16 @@ class App(Tk):
         self.selected_mapping = None
         self.master_mapping = None
 
-    # Add given mapping to self.mappings. If there is already a mapping
-    # loaded with the same path, don't add it and return false. If added,
-    # return true.
     def add_mapping(self, mapping):
+        """Add a new mapping to mappings
+
+        Add a new mapping to mappings if necessary. If there is already a
+        mapping loaded with the same path, don't add it.
+
+        :param mapping: Mapping to be added
+        :return: True if mapping was added successfully, False if not.
+        """
+
         path = mapping.path
         for i_mapping in self.mappings:
             if i_mapping.path == path:
@@ -68,9 +91,13 @@ class App(Tk):
         self.dlg_save.update()
         return True
 
-    # Remove mapping at given index. If Mapping instance is given instead of
-    # an int telling the index, that will work as well.
     def remove_mapping(self, mapping):
+        """ Remove mapping / unload mapping from mappings
+
+        :param mapping: Mapping to be removed.
+        :return:
+        """
+
         if type(mapping).__name__ != 'Mapping':
             raise TypeError("Can't remove mapping. Expected "
                             "type: Mapping. Got: " + type(mapping).__name__)
@@ -86,10 +113,13 @@ class App(Tk):
         self.dlg_sidebar.update()
         self.dlg_mapping_info.update()
         self.dlg_save.update()
-        return True
 
-    # Select mapping at given index. If mapping instance is given
     def select_mapping(self, index):
+        """ Select a mapping at given index
+
+        :param index: Mapping's index
+        :return:
+        """
         index = int(index)
 
         if index > len(self.mappings):
@@ -109,14 +139,24 @@ class App(Tk):
         self.dlg_sidebar.update()
         self.dlg_mapping_info.update()
 
-    # Returns a list of the names of loaded mappings
     def get_mapping_names(self):
+        """
+        :return: List of the names of loaded mappings
+        """
         names = []
         for mapping in self.mappings:
             names.append(mapping.name)
         return names
 
     def save_preset(self, path, layouts_path, preset_name):
+        """ Save keyboard controller preset
+
+        :param path: Path to which the preset should be saved
+        :param layouts_path: Layouts resource file paths
+        :param preset_name: This is the name that Mixxx will display under preferences
+        :return:
+        """
+
         layouts = self._load_layouts(layouts_path)
         root = self.create_xml(preset_name, layouts)
 
@@ -133,6 +173,15 @@ class App(Tk):
         print("Saved successfully!")
 
     def _load_layouts(self, path):
+        """ Read layouts resource file and load it in
+
+        Extract each layout in layouts resource file and create for
+        each one a KeyboardLayout object.
+
+        :param path: Layouts resource file path
+        :return: List of KeyboardLayout objects
+        """
+
         layouts = []
 
         if not os.path.isfile(path):
@@ -174,6 +223,40 @@ class App(Tk):
         return layouts
 
     def create_xml(self, preset_name, layouts, mixxx_version="2.0.1+"):
+        """ Create keyboard controller preset XML based on loaded mappings
+
+        Construct an XML document following the format for KeyboardControllerPreset. Add mapping information
+        for master mapping layout and if necessary, overload key sequences for specific languages / keyboard
+        layouts. That is, when the translation of a key sequence from the master mapping's layout to another
+        layout doesn't match the key described in the legacy mapping file for that other layout.
+
+        Example where master mapping's layout is en_US:
+
+        <group name='[Master]'>
+          <control action='crossfader_up'>
+            <keyseq lang='en_US' scancode='36'>h</keyseq>
+          </control>
+
+          <control action='crossfader_down'>
+            <keyseq lang='en_US' scancode='35'>g</keyseq>
+          </control>
+        </group>
+
+        <group name='[Microphone]'>
+          <control action='talkover'>
+            <keyseq lang='en_US' scancode='1'>`</keyseq>
+
+            <!-- In de_DE layout, '`' is a dead key, so it has to be overloaded -->
+            <keyseq lang='de_DE' scancode='45'><</keyseq>
+          </control>
+        </group>
+
+        :param preset_name: Preset name, will be visible in Mixxx -> preferences
+        :param layouts: List of KeyboardLayouts objects
+        :param mixxx_version: Minimal mixxx version needed for this controller preset
+        :return: XML root element
+        """
+
         mappings = self.mappings
         master_mapping = self.master_mapping
 
@@ -354,6 +437,12 @@ class App(Tk):
 
 
 class DlgMappingInfo(Frame):
+    """ Widget that displays information about selected mapping
+
+    This widget shows information about the current selected mapping and provides
+    a knob to the user to mark the mapping as master mapping.
+    """
+
     def __init__(self, *args, app, **kwargs):
         Frame.__init__(self, *args, **kwargs)
         self.app = app
@@ -392,6 +481,10 @@ class DlgMappingInfo(Frame):
         self.reset()
 
     def update(self):
+        """
+        Update mapping information based on current selected mapping in App
+        """
+
         mapping = self.app.selected_mapping
         if not mapping:
             self.reset()
@@ -444,6 +537,11 @@ class DlgMappingInfo(Frame):
 
 
 class DlgSave(Frame):
+    """
+    Save keyboard controller preset widget. The user can browse for a layouts resource
+    file, select a path to save the kbd.xml file to and set a preset name
+    """
+
     def __init__(self, *args, app, **kwargs):
         Frame.__init__(self, *args, bd=4, relief=RAISED, **kwargs)
         self.app = app
@@ -509,6 +607,13 @@ class DlgSave(Frame):
 
 
 class DlgSidebar(Frame):
+    """
+    Sidebar widget, that shows a list of loaded mappings which can be clicked on to
+    select a mapping. Also it provides two buttons, one for adding a new mapping, which
+    will popup a filedialog to search a *.kbd.cfg file and one for removing a mappoing,
+    that will remove the currently selected mapping.
+    """
+
     def __init__(self, *args, app, **kwargs):
         Frame.__init__(self, *args, **kwargs)
         self.app = app
@@ -525,6 +630,10 @@ class DlgSidebar(Frame):
         self.listbox.bind('<<ListboxSelect>>', self._on_item_selected)
 
     def update(self):
+        """
+        Update items in list based on loaded mappings in App
+        """
+
         selected_mapping = self.app.selected_mapping
         previous_selection_index = int(self.listbox.curselection()[0]) if selected_mapping else -1
 
@@ -600,6 +709,11 @@ class DlgSidebar(Frame):
 
 
 class Mapping:
+    """ Contains mapping info for specific language
+
+    There is one Mapping object per legacy keyboard mapping file (*.kbd.cfg file)
+    """
+
     LEGACY_EXTENSION = ".kbd.cfg"
     NAME_VALIDATION_PATTERN = re.compile("^[a-z]{2}_[A-Z]{2,3}$")
 
@@ -650,6 +764,12 @@ class Mapping:
         self.load(path)
 
     def load(self, path):
+        """ Load legacy keyboard mapping file
+
+        Parse legacy file and load controls into memory.
+        :param path: Path to *.kbd.cfg file
+        """
+
         parser = configparser.ConfigParser(allow_no_value=True, delimiters=(' '))
         parser.optionxform = str
         # parser.read(path, encoding='utf-8')
@@ -724,11 +844,17 @@ class Control:
 
 
 class KeyboardKey:
-    """ Class representing one physical character key as seen here:
+    """
+    Class representing one physical character key as seen here:
     https://en.wikipedia.org/wiki/Keyboard_layout#/media/File:ISO_keyboard_(105)_QWERTY_UK.svg
 
     This class contains information about which character is bound
-    to this keyboard key, also for different modifiers"""
+    to this keyboard key, also for different modifiers
+
+    Attributes:
+        scancode: positional code of key, that is the same for each keyboard layout
+        _key_chars: characters bound to this key for different keyboard layouts
+    """
 
     # Create regular expression to split key sequence on each
     # plus sign without splitting on the last plus sign.
@@ -796,6 +922,16 @@ class KeyboardKey:
 
 
 class KeyboardLayout:
+    """
+    This class represent a keyboard layout, for example: en_US. It holds info about which
+    characters are bound to specific keys, with or without modifiers (Shift). For each layout
+    in the layouts resource file, there will be one KeyboardLayout object.
+
+    Attributes:
+        name: Keyboard layout name
+        _data: Mapping data for this keyboard layout, contains instances of KeyboardKey
+    """
+
     NAME_VALIDATION_PATTERN = re.compile("^[a-z]{2}_[A-Z]{2,3}$")
 
     @staticmethod
@@ -809,16 +945,20 @@ class KeyboardLayout:
         return KeyboardLayout.NAME_VALIDATION_PATTERN.match(name)
 
     def __init__(self, name="", root=None):
-        # Keyboard layout name
         self.name = name
-
-        # Mapping data for this keyboard layout, contains instances of KeyboardKey.
         self._data = []
 
         # Parse XML and store it into self._data
         self.parse_xml(root)
 
     def parse_xml(self, root):
+        """
+        Read XML and load in all character information whose language code is
+        the same as the name of this KeyboardLayout
+
+        :param root: Layouts resource file XML root
+        """
+
         for key in root.iter('key'):
             scancode = key.get('scancode')
             if not scancode:
@@ -903,6 +1043,13 @@ class KeyboardLayout:
 
     @staticmethod
     def is_universal_key(key):
+        """
+        Check if given key is universal or not. Universal
+        keys are keys that are the same for each KeyboardLayout.
+
+        :param key: Key to be checked for universality
+        :return: True if it is universal, False if it's not
+        """
         universal_keys = [
             "LEFT", "UP", "RIGHT", "DOWN",
             "SPACE", "RETURN", "F1", "F2",
