@@ -194,7 +194,15 @@ Section "Mixxx (required)" SecMixxx
 
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  
+  !ifdef STATICDEPS
+    ; The below is not fatal if Mixxx is built with static dependencies
+    ; since there may not be any DLLs to bundle
+    File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  !else
+    File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  !endif
+  
   ; If PDB files are present bundle them. For release builds we will not copy
   ; PDBs into the distXX folder so they won't get bundled.
   File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.pdb"
