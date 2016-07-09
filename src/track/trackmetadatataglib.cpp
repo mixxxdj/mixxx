@@ -26,6 +26,10 @@
 #define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
 
+// TagLib has support for pictures in XiphComment since version 1.11
+#define TAGLIB_HAS_XIPH_COMMENT_PICTURES \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 11))
+
 #ifdef _WIN32
 static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
 #define TAGLIB_FILENAME_FROM_QSTRING(fileName) (const wchar_t*)fileName.utf16()
@@ -355,11 +359,40 @@ void readCoverArtFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
     }
 }
 
-void readCoverArtFromXiphComment(QImage* pCoverArt, const TagLib::Ogg::XiphComment& tag) {
+const TagLib::FLAC::Picture* findFrontPicture(
+        const TagLib::List<TagLib::FLAC::Picture*>& pictures) {
+    if (pictures.size() > 1) {
+        for (auto picture: pictures) {
+            const QString description(
+                    toQString(picture->description()));
+            if (description.toLower().contains("front")) {
+                // Match: The 1st picture with a description containing "front"
+                qDebug() << "Selected cover art from multiple VorbisComment pictures:" << description;
+                return picture;
+            }
+        }
+    }
+    // No best match -> simply return the first picture
+    return pictures.front();
+}
+
+void readCoverArtFromXiphComment(QImage* pCoverArt, TagLib::Ogg::XiphComment& tag) {
     if (!pCoverArt) {
         return; // nothing to do
     }
 
+#ifdef TAGLIB_HAS_XIPH_COMMENT_PICTURES
+    const TagLib::FLAC::Picture* pFrontPicture =
+            findFrontPicture(tag.pictureList());
+    if (pFrontPicture != nullptr) {
+        const TagLib::ByteVector pictureData(
+                pFrontPicture->data());
+        *pCoverArt = QImage::fromData(
+                // char -> uchar
+                reinterpret_cast<const uchar*>(pictureData.data()),
+                pictureData.size());
+    }
+#else
     if (tag.fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
         // https://wiki.xiph.org/VorbisComment#METADATA_BLOCK_PICTURE
         const TagLib::StringList& base64Pictures =
@@ -383,6 +416,7 @@ void readCoverArtFromXiphComment(QImage* pCoverArt, const TagLib::Ogg::XiphComme
                         tag.fieldListMap()["COVERART"].toString().toCString()));
         *pCoverArt = QImage::fromData(imageData);
     }
+#endif
 }
 
 void readCoverArtFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
@@ -1390,7 +1424,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
             }
         }
         if (readAudioProperties(pTrackMetadata, file)) {
-            const TagLib::Ogg::XiphComment* pXiphComment =
+            TagLib::Ogg::XiphComment* pXiphComment =
                     hasXiphComment(file) ? file.xiphComment() : nullptr;
             if (pXiphComment) {
                 readTrackMetadataFromXiphComment(pTrackMetadata, *pXiphComment);
@@ -1416,7 +1450,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     } else if (kFileTypeOggVorbis == fileType) {
         TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
-            const TagLib::Ogg::XiphComment* pXiphComment = file.tag();
+            TagLib::Ogg::XiphComment* pXiphComment = file.tag();
             if (pXiphComment) {
                 readTrackMetadataFromXiphComment(pTrackMetadata, *pXiphComment);
                 readCoverArtFromXiphComment(pCoverArt, *pXiphComment);
@@ -1434,7 +1468,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     } else if (kFileTypeOggOpus == fileType) {
         TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
-            const TagLib::Ogg::XiphComment* pXiphComment = file.tag();
+            TagLib::Ogg::XiphComment* pXiphComment = file.tag();
             if (pXiphComment) {
                 readTrackMetadataFromXiphComment(pTrackMetadata, *pXiphComment);
                 readCoverArtFromXiphComment(pCoverArt, *pXiphComment);
