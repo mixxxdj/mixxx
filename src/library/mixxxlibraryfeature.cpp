@@ -137,19 +137,21 @@ void MixxxLibraryFeature::selectAll() {
 void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
     showTrackModel(m_pLibraryTableModel);
-    m_pLibrary->restoreSearch("");
-    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    restoreSearch("");
+    showBreadCrumb(m_childModel.getItem(QModelIndex()));
     
     emit(enableCoverArtDisplay(true));
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
-    QString itemName = index.data(TreeItemModel::RoleDataPath).toString();
+    TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
+    QString query = m_childModel.getQuery(pTree);
+    qDebug() << "MixxxLibraryFeature::activateChild" << query;
     
-    if (itemName == kLibraryTitle) {
-        activate();
-        return;
-    } 
+    m_pLibraryTableModel->search(query);
+    switchToFeature();
+    showBreadCrumb(pTree);
+    restoreSearch(query);
 }
 
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {

@@ -19,6 +19,7 @@ class TreeItem {
              LibraryFeature* pFeature,
              TreeItem* parent);
     TreeItem(LibraryFeature* pFeature);
+    TreeItem(TreeItem* parent);
     ~TreeItem();
     /** appends a child item to this object **/
     void appendChild(TreeItem *child);
@@ -31,7 +32,9 @@ class TreeItem {
     /** Returns the position of this object within its parent **/
     int row() const;
     /** returns the parent **/
-    TreeItem *parent();
+    TreeItem* parent();
+    /** sets the parent **/
+    void setParent(TreeItem* parent);
 
     /** for dynamic resizing models **/
     bool insertChildren(QList<TreeItem*> &data, int position, int count);

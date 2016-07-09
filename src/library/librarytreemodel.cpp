@@ -12,20 +12,59 @@ LibraryTreeModel::LibraryTreeModel(MixxxLibraryFeature* pFeature,
         : TreeItemModel(parent),
           m_pFeature(pFeature),
           m_pTrackCollection(pTrackCollection) {
+    
+    // Create root item
     TreeItem* pRootItem = new TreeItem();
     pRootItem->setLibraryFeature(pFeature);
     QString title = pFeature->title().toString();
 
-    TreeItem* pLibraryChildItem = new TreeItem(title, title, m_pFeature, pRootItem);
-    pLibraryChildItem->setIcon(m_pFeature->getIcon());
+    m_pLibraryItem = new TreeItem(title, title, m_pFeature, pRootItem);
+    m_pLibraryItem->setIcon(m_pFeature->getIcon());
 
-    pRootItem->appendChild(pLibraryChildItem);
+    pRootItem->appendChild(m_pLibraryItem);
     setRootItem(pRootItem);
 
     // By default sort by Artist -> Album
     // TODO(jmigual) store the sort order in the configuration
     m_sortOrder << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
     createTracksTree();
+}
+
+QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
+    DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
+        return "";
+    }
+    
+    if (pTree == m_pLibraryItem) {
+        return "";
+    }
+    
+    int depth = 0;
+    TreeItem* pAux = pTree;
+    
+    // We need to know the depth of the item to apply the filter
+    while (pAux->parent() != m_pRootItem && pAux->parent() != nullptr) {
+        pAux = pAux->parent();
+        ++depth;
+    }
+    
+    // Generate the query
+    QStringList result;
+    pAux = pTree;
+    while (depth >= 0) {
+        QString value;
+        if (pAux->dataPath().toString() == "") {
+            value = "";
+        } else {
+            value = pAux->data().toString();
+        }
+        
+        result << m_sortOrder[depth] % ":\"" % value % "\"";
+        pAux = pAux->parent();
+        --depth;
+    }
+    
+    return result.join(" ");
 }
 
 void LibraryTreeModel::createTracksTree() {
@@ -64,9 +103,10 @@ void LibraryTreeModel::createTracksTree() {
     while (query.next()) {
         for (int i = 0; i < size; ++i) {
             QString value = query.value(i).toString();
+            QString valueP = value;
             
-            bool uknown = (value == "");
-            if (uknown) {
+            bool unknown = (value == "");
+            if (unknown) {
                 value = tr("Unknown");
             }            
             if (!lastUsed[i].isNull() && value == lastUsed[i]) {
@@ -81,19 +121,20 @@ void LibraryTreeModel::createTracksTree() {
                 }
                 
                 // Check if a header must be added
-                if (!uknown && lastHeader != value.at(0).toUpper()) {
+                if (!unknown && lastHeader != value.at(0).toUpper()) {
                     lastHeader = value.at(0).toUpper();
-                    TreeItem* pTree = 
-                        new TreeItem(lastHeader, lastHeader, m_pFeature, parent[0]);
+                    TreeItem* pTree = new TreeItem(parent[0]);
+                    pTree->setLibraryFeature(m_pFeature);
+                    pTree->setData(lastHeader, lastHeader);                    
                     pTree->setDivider(true);
+                    
                     parent[0]->appendChild(pTree);
-                }
-                
+                }   
             }
             lastUsed[i] = value;
             
             // We need to create a new item
-            TreeItem* pTree = new TreeItem(value, value, m_pFeature, parent[i]);
+            TreeItem* pTree = new TreeItem(value, valueP, m_pFeature, parent[i]);
             parent[i]->appendChild(pTree);
             parent[i + 1] = pTree;
         }    

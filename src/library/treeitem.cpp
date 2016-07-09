@@ -46,6 +46,16 @@ TreeItem::TreeItem(LibraryFeature* pFeature)
           m_bold(false),
           m_divider(false),
           m_pParent(nullptr) {
+    
+}
+
+TreeItem::TreeItem(TreeItem* parent)
+        : m_data("$root"),
+          m_dataPath("$root"),
+          m_pFeature(nullptr),
+          m_bold(false),
+          m_divider(false),
+          m_pParent(parent) {
 
 }
 
@@ -96,6 +106,10 @@ bool TreeItem::isFolder() const {
 
 TreeItem* TreeItem::parent() {
     return m_pParent;
+}
+
+void TreeItem::setParent(TreeItem* parent) {
+    m_pParent = parent;
 }
 
 int TreeItem::row() const {
