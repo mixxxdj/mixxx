@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import os
-import re
 import codecs
 import ntpath
 import configparser
@@ -1007,7 +1006,6 @@ class KeyboardLayout:
         for key in self._data:
             key_char = key.get_key_char(modifier)
             if key_char is None:
-                scancode = "There was no key-char found for keyseq '" + keyseq + "' with modifier '" + str(modifier)
                 continue
             if key_char.char == char:
                 scancodes.append(key.scancode)
