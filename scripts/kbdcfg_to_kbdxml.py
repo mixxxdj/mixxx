@@ -926,7 +926,7 @@ class App(Tk):
             print("Warning: '" + path + "' already exists.\nOverriding that file assuming that it's ok :)\n")
         print("Writing to file: " + path + "\n...")
         xmlstr = minidom.parseString(tostring(root)).toprettyxml()
-        with open(path, "w") as f:
+        with codecs.open(path, 'w', "utf-8") as f:
             f.write(xmlstr)
         print("Saved successfully!")
 
@@ -1030,6 +1030,11 @@ class App(Tk):
         # Create controller block
         controller_element = SubElement(root_element, 'controller')
 
+        # Create regular expression to split key sequence on each
+        # plus sign without splitting on the last plus sign.
+        # So that the last plus sign in "Shift++" is not lost
+        modifier_splitter_pattern = re.compile("\+(?!$)")
+
         # Fill controller_element with <group> elements, fill those with
         # <control> elements, which will contain one or more <keyseq> elements
         #
@@ -1045,11 +1050,12 @@ class App(Tk):
 
                 # Retrieve master control key info
                 master_control_keyseq = master_control.keysequence
-                master_control_mods = master_control_keyseq.split('+')
+                master_control_split_keyseq = KeyboardKey.split_keysequence(master_control_keyseq)
+                master_control_mods = list(master_control_split_keyseq)
                 master_control_mods.pop()
                 master_control_mod_int = \
                     KeyboardKey.MODIFIERS.SHIFT if "SHIFT" in [x.upper() for x in master_control_mods] else KeyboardKey.MODIFIERS.NONE
-                master_control_char = master_control_keyseq.split('+')[-1]
+                master_control_char = master_control_split_keyseq[-1]
                 master_control_scancode = master_mapping_layout.get_scancode(
                     master_control_keyseq,
                     master_control_mod_int
@@ -1060,13 +1066,14 @@ class App(Tk):
                 master_keyseq_element.set('lang', master_mapping.get_locale_name())
                 master_keyseq_element.set('scancode', str(master_control_scancode))
                 master_keyseq_element.text = master_control_keyseq
-                #
-                # if master_control.action == "bpm_tap":
-                #     print("Master keyseq: " + master_control.keysequence)
-                #     print("Master mods: " + str(master_control_mods))
-                #     print("Master mod int: " + str(master_control_mod_int))
-                #     print("Master char: " + master_control_char)
-                #     print("Master scancode: " + str(master_control_scancode))
+
+                if master_control.action == "hotcue_4_clear" and master_control.group:
+                    print("\nLang: " + master_mapping.get_locale_name())
+                    print("Master keyseq: " + master_control.keysequence)
+                    print("Master mods: " + str(master_control_mods))
+                    print("Master mod int: " + str(master_control_mod_int))
+                    print("Master char: " + master_control_char)
+                    print("Master scancode: " + str(master_control_scancode))
 
                 # Check if there is a control with the same group and action
                 # in other mappings. If one is found, iterate over given layouts
@@ -1104,15 +1111,24 @@ class App(Tk):
                     assert reference_mapping_layout is not None
 
                     reference_control_keyseq = reference_control.keysequence
-                    reference_control_mods = reference_control_keyseq.split('+')
+                    reference_control_split_keyseq = KeyboardKey.split_keysequence(reference_control_keyseq)
+                    reference_control_mods = list(reference_control_split_keyseq)
                     reference_control_mods.pop()
                     reference_control_mod_int = \
                         KeyboardKey.MODIFIERS.SHIFT if "SHIFT" in [x.upper() for x in reference_control_mods] else KeyboardKey.MODIFIERS.NONE
-                    reference_control_char = reference_control_keyseq.split('+')[-1]
+                    reference_control_char = reference_control_split_keyseq[-1]
                     reference_control_scancode = reference_mapping_layout.get_scancode(
                         reference_control_keyseq,
                         reference_control_mod_int
                     )
+
+                    if reference_control.action == "hotcue_4_clear" and reference_control.group == "[Channel2]":
+                        print("\nLang: " + mapping.get_locale_name())
+                        print("Reference keyseq: " + reference_control.keysequence)
+                        print("Reference mods: " + str(reference_control_mods))
+                        print("Reference mod int: " + str(reference_control_mod_int))
+                        print("Reference char: " + reference_control_char)
+                        print("Reference scancode: " + str(reference_control_scancode))
 
                     # Check if reference modifiers are the same as master's.
                     # We check with a set() so that it's unordered.
@@ -1126,7 +1142,7 @@ class App(Tk):
                     scancodes_are_equal = reference_control_scancode == master_control_scancode
 
                     # If translated master control wouldn't match reference keysequence
-                    if not mods_are_equal and not scancodes_are_equal:
+                    if not scancodes_are_equal:
                         overloaded_keyseq_element = SubElement(control_element, 'keyseq')
                         overloaded_keyseq_element.set('lang', mapping.get_locale_name())
                         overloaded_keyseq_element.set('scancode', str(reference_control_scancode))
@@ -1432,9 +1448,10 @@ class Mapping:
         self.load(path)
 
     def load(self, path):
-        parser = configparser.ConfigParser(allow_no_value=True)
+        parser = configparser.ConfigParser(allow_no_value=True, delimiters=(' '))
         parser.optionxform = str
-        parser.read(path, encoding='utf-8')
+        # parser.read(path, encoding='utf-8')
+        parser.readfp(codecs.open(path, "r", "utf8"))
 
         # Set name if valid. If not, return
         name = Mapping.get_file_name_from_path(path)
@@ -1453,18 +1470,11 @@ class Mapping:
         for section in parser.sections():
             group = '[{0}]'.format(section)
 
-            for item in parser.items(section):
-                control = item[0].split()
-                action = control[0]
-                try:
-                    keysequence = control[1]
-                except IndexError:
-                    keysequence = ""
-
+            for action, keyseq in parser.items(section):
                 self.controls.append(Control(
                     group=group,
                     action=action,
-                    keysequence=keysequence
+                    keysequence=keyseq
                 ))
 
         # Set path only if loading went well
@@ -1517,6 +1527,17 @@ class KeyboardKey:
 
     This class contains information about which character is bound
     to this keyboard key, also for different modifiers"""
+
+    # Create regular expression to split key sequence on each
+    # plus sign without splitting on the last plus sign.
+    # So that the last plus sign in "Shift++" is not lost
+    KEYSEQUENCE_SPLIT_PATTERN = re.compile("\+(?!$)")
+
+    # Split given key sequence and returns list, split on
+    # KEYSEQUENCE_SPLIT_PATTERN regular expression
+    @staticmethod
+    def split_keysequence(keyseq):
+        return KeyboardKey.KEYSEQUENCE_SPLIT_PATTERN.split(keyseq)
 
     class MODIFIERS:
         """ Modifier enum, following the Qt::KeyboardModifier standard, found here:
@@ -1645,8 +1666,7 @@ class KeyboardLayout:
         return scancodes
 
     def get_scancode(self, keyseq, modifier):
-        # Retrieve scancode
-        split_keyseq = keyseq.split('+')
+        split_keyseq = KeyboardKey.split_keysequence(keyseq)
         char = split_keyseq[-1] if split_keyseq else ""
 
         # Make sure that the character is a lower-case character if shift is not pressed and
@@ -1661,8 +1681,17 @@ class KeyboardLayout:
                 continue
             if key_char.char == char:
                 scancodes.append(key.scancode)
-        scancode = scancodes[0] if len(scancodes) == 1 \
-            else "TODO: Set scancode for " + char + " (please choose between one of these: " + str(scancodes) + ")"
+
+        scancodes_found = len(scancodes)
+        if scancodes_found == 1:
+            scancode = scancodes[0]
+        elif scancodes_found > 1:
+            scancode = "TODO: Set scancode for " + char + "' for layout: '" + self.name + "'" + \
+                       " (please choose between one of these: " + str(scancodes) + ")"
+        elif scancodes_found == 0:
+            scancode = "TODO: No scancode found in " + self.name + " for character: '" + char + "'"
+        else:
+            scancode = "TODO: Set scancode for '" + char + "' for layout: '" + self.name + "'"
 
         # Check if this key is universal (for example: F-keys or Space)
         if KeyboardLayout.is_universal_key(char):
