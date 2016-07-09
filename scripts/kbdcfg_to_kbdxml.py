@@ -773,7 +773,7 @@ class Mapping:
         parser = configparser.ConfigParser(allow_no_value=True, delimiters=(' '))
         parser.optionxform = str
         # parser.read(path, encoding='utf-8')
-        parser.readfp(codecs.open(path, "r", "utf8"))
+        parser.read_file(codecs.open(path, "r", "utf8"))
 
         # Set name if valid. If not, return
         name = Mapping.get_file_name_from_path(path)
