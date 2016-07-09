@@ -315,10 +315,11 @@ class App(Tk):
         # Create controller block
         controller_element = SubElement(root_element, 'controller')
 
-        # Create regular expression to split key sequence on each
-        # plus sign without splitting on the last plus sign.
-        # So that the last plus sign in "Shift++" is not lost
-        modifier_splitter_pattern = re.compile("\+(?!$)")
+        # Helper function that tells whether a given string is
+        # in an array or not. The check is case-insensitive
+        def string_in_array_case_insensitive(string, array):
+            array_uppercase = [x.upper() for x in array]
+            return string.upper() in array_uppercase
 
         # Fill controller_element with <group> elements, fill those with
         # <control> elements, which will contain one or more <keyseq> elements
@@ -338,9 +339,10 @@ class App(Tk):
                 master_control_split_keyseq = KeyboardKey.split_keysequence(master_control_keyseq)
                 master_control_mods = list(master_control_split_keyseq)
                 master_control_mods.pop()
-                master_control_mod_int = \
-                    KeyboardKey.MODIFIERS.SHIFT if "SHIFT" in [x.upper() for x in master_control_mods] else KeyboardKey.MODIFIERS.NONE
-                master_control_char = master_control_split_keyseq[-1]
+                if string_in_array_case_insensitive("Shift", master_control_mods):
+                    master_control_mod_int = KeyboardKey.MODIFIERS.SHIFT
+                else:
+                    master_control_mod_int = KeyboardKey.MODIFIERS.NONE
                 master_control_scancode = master_mapping_layout.get_scancode(
                     master_control_keyseq,
                     master_control_mod_int
@@ -351,14 +353,6 @@ class App(Tk):
                 master_keyseq_element.set('lang', master_mapping.get_locale_name())
                 master_keyseq_element.set('scancode', str(master_control_scancode))
                 master_keyseq_element.text = master_control_keyseq
-
-                if master_control.action == "hotcue_4_clear" and master_control.group:
-                    print("\nLang: " + master_mapping.get_locale_name())
-                    print("Master keyseq: " + master_control.keysequence)
-                    print("Master mods: " + str(master_control_mods))
-                    print("Master mod int: " + str(master_control_mod_int))
-                    print("Master char: " + master_control_char)
-                    print("Master scancode: " + str(master_control_scancode))
 
                 # Check if there is a control with the same group and action
                 # in other mappings. If one is found, iterate over given layouts
@@ -399,29 +393,23 @@ class App(Tk):
                     reference_control_split_keyseq = KeyboardKey.split_keysequence(reference_control_keyseq)
                     reference_control_mods = list(reference_control_split_keyseq)
                     reference_control_mods.pop()
-                    reference_control_mod_int = \
-                        KeyboardKey.MODIFIERS.SHIFT if "SHIFT" in [x.upper() for x in reference_control_mods] else KeyboardKey.MODIFIERS.NONE
-                    reference_control_char = reference_control_split_keyseq[-1]
+                    if string_in_array_case_insensitive("SHIFT", reference_control_mods):
+                        reference_control_mod_int = KeyboardKey.MODIFIERS.SHIFT
+                    else:
+                        reference_control_mod_int = KeyboardKey.MODIFIERS.NONE
                     reference_control_scancode = reference_mapping_layout.get_scancode(
                         reference_control_keyseq,
                         reference_control_mod_int
                     )
 
-                    if reference_control.action == "hotcue_4_clear" and reference_control.group == "[Channel2]":
-                        print("\nLang: " + mapping.get_locale_name())
-                        print("Reference keyseq: " + reference_control.keysequence)
-                        print("Reference mods: " + str(reference_control_mods))
-                        print("Reference mod int: " + str(reference_control_mod_int))
-                        print("Reference char: " + reference_control_char)
-                        print("Reference scancode: " + str(reference_control_scancode))
-
                     # Check if reference modifiers are the same as master's.
                     # We check with a set() so that it's unordered.
                     # This way we make sure that Ctrl+Shift and Shift+Ctrl
                     # both return true
-                    mods_are_equal = \
-                        set([x.upper() for x in reference_control_mods]) == \
-                        set([x.upper() for x in master_control_mods])
+                    # TODO(Tomasito) Do we still need this?
+                    # mods_are_equal = \
+                    #     set([x.upper() for x in reference_control_mods]) == \
+                    #     set([x.upper() for x in master_control_mods])
 
                     # Check if reference scancode is the same as master scancode
                     scancodes_are_equal = reference_control_scancode == master_control_scancode
@@ -700,6 +688,7 @@ class DlgSidebar(Frame):
         )
 
     def _on_item_selected(self, event):
+        del event
         self.listbox.focus_set()
         try:
             index = int(self.listbox.curselection()[0])
@@ -770,9 +759,8 @@ class Mapping:
         :param path: Path to *.kbd.cfg file
         """
 
-        parser = configparser.ConfigParser(allow_no_value=True, delimiters=(' '))
+        parser = configparser.ConfigParser(allow_no_value=True, delimiters=' ')
         parser.optionxform = str
-        # parser.read(path, encoding='utf-8')
         parser.read_file(codecs.open(path, "r", "utf8"))
 
         # Set name if valid. If not, return
