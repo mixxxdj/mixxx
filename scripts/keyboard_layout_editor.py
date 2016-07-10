@@ -245,6 +245,7 @@ class KeyboardLayoutEditor(Tk):
             KeyboardLayout(name=name, root=self.root)
         )
         self.sidebarframe.update_layout_list(self.layouts)
+        self.dlgkeyboard.update_keys()
 
     def get_layout(self, layout_name):
         for layout in self.layouts:
@@ -256,6 +257,11 @@ class KeyboardLayoutEditor(Tk):
     def remove_layout(self, layout):
         self.layouts.remove(layout)
         self.sidebarframe.update_layout_list(self.layouts)
+
+        if not self.layouts:
+            self.selected_layout = None
+
+        self.dlgkeyboard.update_keys()
 
     def select_layout(self, layout_name):
         layout = self.get_layout(layout_name)
@@ -578,9 +584,9 @@ class DlgKeyboard(Frame):
         numeric_keys_row = Frame(self)
         numeric_keys_row.configure(background=DlgKeyboard.BG_COLOR)
         for i in range(1, 14):
-            key = DlgKeyboardKey(numeric_keys_row, key_id=i, dlg_keyboard=self)
+            key = DlgKeyboardKey(numeric_keys_row, key_id=i, dlg_keyboard=self, state=DISABLED)
             self.keys.append(key)
-        self.keys.append(DlgKeyboardKey(numeric_keys_row, key_id=42, dlg_keyboard=self))
+        self.keys.append(DlgKeyboardKey(numeric_keys_row, key_id=42, dlg_keyboard=self, state=DISABLED))
         DlgKeyboardKey(numeric_keys_row, key_id=15, width=5, char="Backspace", state=DISABLED)
         numeric_keys_row.grid(row=2, column=1, sticky='we')
 
@@ -589,9 +595,9 @@ class DlgKeyboard(Frame):
         letters_keys_row_1.configure(background=DlgKeyboard.BG_COLOR)
         DlgKeyboardKey(letters_keys_row_1, key_id=16, width=5, char="Tab", state=DISABLED)
         for i in range(17, 29):
-            key = DlgKeyboardKey(letters_keys_row_1, key_id=i, dlg_keyboard=self)
+            key = DlgKeyboardKey(letters_keys_row_1, key_id=i, dlg_keyboard=self, state=DISABLED)
             self.keys.append(key)
-        self.keys.append(DlgKeyboardKey(letters_keys_row_1, key_id=42, width=7, dlg_keyboard=self))
+        self.keys.append(DlgKeyboardKey(letters_keys_row_1, key_id=42, width=7, dlg_keyboard=self, state=DISABLED))
         letters_keys_row_1.grid(row=3, column=1, sticky='we')
 
         # Character keys (asdfghjkl;'\ on en_US)
@@ -599,7 +605,7 @@ class DlgKeyboard(Frame):
         letters_keys_row_2.configure(background=DlgKeyboard.BG_COLOR)
         DlgKeyboardKey(letters_keys_row_2, key_id=30, width=7, char="Caps Lock", state=DISABLED)
         for i in range(31, 43):
-            key = DlgKeyboardKey(letters_keys_row_2, key_id=i, dlg_keyboard=self)
+            key = DlgKeyboardKey(letters_keys_row_2, key_id=i, dlg_keyboard=self, state=DISABLED)
             self.keys.append(key)
         DlgKeyboardKey(letters_keys_row_2, key_id=43, width=5, char="Enter", state=DISABLED)
         letters_keys_row_2.grid(row=4, column=1, sticky='we')
@@ -609,23 +615,37 @@ class DlgKeyboard(Frame):
         letters_keys_row_3.configure(background=DlgKeyboard.BG_COLOR)
         self.shift_l = DlgKeyboardKey(letters_keys_row_3, key_id=44, width=5, char="Shift", state=DISABLED)
         for i in range(45, 56):
-            key = DlgKeyboardKey(letters_keys_row_3, key_id=i, dlg_keyboard=self)
+            key = DlgKeyboardKey(letters_keys_row_3, key_id=i, dlg_keyboard=self, state=DISABLED)
             self.keys.append(key)
         self.shift_r = DlgKeyboardKey(letters_keys_row_3, key_id=57, width=11, char="Shift", state=DISABLED)
         letters_keys_row_3.grid(row=5, column=1, sticky='we')
 
         self.shift_pressed = False
 
+    def update_keys_state(self, state):
+        for key in self.keys:
+            key.config(state=state)
+            char = key.cget('text')
+            key.set_char(char)
+
+    def reset_keys(self):
+        for key in self.keys:
+            key.set_char('')
+
     def update_keys(self):
         layout = self.app.selected_layout
         modifier = KeyboardKey.MODIFIERS.SHIFT if self.shift_pressed else KeyboardKey.MODIFIERS.NONE
 
+        if layout:
+            self.update_keys_state(NORMAL)
+        else:
+            self.update_keys_state(DISABLED)
+            self.reset_keys()
+            return
+
         relief = SUNKEN if modifier == KeyboardKey.MODIFIERS.SHIFT else RAISED
         self.shift_l.config(relief=relief)
         self.shift_r.config(relief=relief)
-
-        if not layout:
-            return
 
         for dlg_key in self.keys:
             key = layout.find(dlg_key.key_id)
