@@ -331,6 +331,7 @@ void readCoverArtFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) 
                 static_cast<TagLib::ID3v2::AttachedPictureFrame*>(covertArtFrame.front());
         TagLib::ByteVector data = picframe->picture();
         *pCoverArt = QImage::fromData(
+                // char -> uchar
                 reinterpret_cast<const uchar *>(data.data()), data.size());
     }
 }
@@ -348,29 +349,91 @@ void readCoverArtFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
         if (++pos > 0) {
             const TagLib::ByteVector& data = item.mid(pos);
             *pCoverArt = QImage::fromData(
+                    // char -> uchar
                     reinterpret_cast<const uchar *>(data.data()), data.size());
         }
     }
 }
 
+const TagLib::FLAC::Picture* findFrontPictureFromPictureList(
+        const TagLib::List<TagLib::FLAC::Picture*>& pictures) {
+    if (pictures.isEmpty()) {
+        return nullptr;
+    }
+    if (pictures.size() > 1) {
+        for (auto picture: pictures) {
+            const QString description(
+                    toQString(picture->description()));
+            if (description.toLower().contains("front")) {
+                // Match: The 1st picture with a description containing "front"
+                qDebug() << "Selected cover art from multiple VorbisComment pictures:" << description;
+                return picture;
+            }
+        }
+    }
+    // Fallback: No best match -> simply return the 1st picture from the list
+    return pictures.front();
+}
+
+QImage readImageFromPicture(const TagLib::FLAC::Picture& picture) {
+    const TagLib::ByteVector pictureData(picture.data());
+    return QImage::fromData(
+            // char -> uchar
+            reinterpret_cast<const uchar*>(pictureData.data()),
+            pictureData.size());
+}
+
+bool readCoverArtFromPictureList(
+        QImage* pCoverArt,
+        const TagLib::List<TagLib::FLAC::Picture*>& pictures) {
+    if (pCoverArt == nullptr) {
+        return false; // nothing to do
+    }
+
+    const TagLib::FLAC::Picture* pFrontPicture =
+            findFrontPictureFromPictureList(pictures);
+    if (pFrontPicture != nullptr) {
+        *pCoverArt = readImageFromPicture(*pFrontPicture);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void readCoverArtFromXiphComment(QImage* pCoverArt, const TagLib::Ogg::XiphComment& tag) {
-    if (!pCoverArt) {
+    if (pCoverArt == nullptr) {
         return; // nothing to do
     }
 
     if (tag.fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
-        QByteArray data(
-                QByteArray::fromBase64(
-                        tag.fieldListMap()["METADATA_BLOCK_PICTURE"].front().toCString()));
-        TagLib::ByteVector tdata(data.data(), data.size());
-        TagLib::FLAC::Picture p(tdata);
-        data = QByteArray(p.data().data(), p.data().size());
-        *pCoverArt = QImage::fromData(data);
-    } else if (tag.fieldListMap().contains("COVERART")) {
-        QByteArray data(
+        // https://wiki.xiph.org/VorbisComment#METADATA_BLOCK_PICTURE
+        const TagLib::StringList& base64Pictures =
+                tag.fieldListMap()["METADATA_BLOCK_PICTURE"];
+        if (!base64Pictures.isEmpty()) {
+            // Simply choose the 1st entry from the non-empty list
+            const QByteArray blockData(
+                    QByteArray::fromBase64(
+                            base64Pictures.front().toCString()));
+            const TagLib::ByteVector pictureBlockData(blockData.data(), blockData.size());
+            const TagLib::FLAC::Picture picture(pictureBlockData);
+            const TagLib::ByteVector pictureData(picture.data());
+            *pCoverArt = QImage::fromData(
+                    // char -> uchar
+                    reinterpret_cast<const uchar*>(pictureData.data()),
+                    pictureData.size());
+            return; // done
+        }
+    }
+
+    // Fallback
+    if (tag.fieldListMap().contains("COVERART")) {
+        // COVERART is deprecated:
+        // https://wiki.xiph.org/VorbisComment#Unofficial_COVERART_field_.28deprecated.29
+        qWarning() << "Reading cover art from deprecated VorbisComment field COVERART";
+        const QByteArray imageData(
                 QByteArray::fromBase64(
                         tag.fieldListMap()["COVERART"].toString().toCString()));
-        *pCoverArt = QImage::fromData(data);
+        *pCoverArt = QImage::fromData(imageData);
     }
 }
 
@@ -384,6 +447,7 @@ void readCoverArtFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
                 getItemListMap(tag)["covr"].toCoverArtList();
         TagLib::ByteVector data = coverArtList.front().data();
         *pCoverArt = QImage::fromData(
+                // char -> uchar
                 reinterpret_cast<const uchar *>(data.data()), data.size());
     }
 }
@@ -1365,17 +1429,8 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         }
     } else if (kFileTypeFLAC == fileType) {
         TagLib::FLAC::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
-        if (pCoverArt) {
-            // FLAC files may contain cover art that is not part
-            // of any tag. Use the first picture from this list
-            // as the default picture for the cover art.
-            TagLib::List<TagLib::FLAC::Picture*> covers = file.pictureList();
-            if (!covers.isEmpty()) {
-                std::list<TagLib::FLAC::Picture*>::iterator it = covers.begin();
-                TagLib::FLAC::Picture* cover = *it;
-                *pCoverArt = QImage::fromData(
-                        QByteArray(cover->data().data(), cover->data().size()));
-            }
+        if (pCoverArt != nullptr) {
+            readCoverArtFromPictureList(pCoverArt, file.pictureList());
         }
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::Ogg::XiphComment* pXiphComment =
