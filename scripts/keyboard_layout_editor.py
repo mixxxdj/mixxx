@@ -749,7 +749,12 @@ class DlgKeyboardKey(Button):
         modifier = KeyboardKey.MODIFIERS.SHIFT if self.dlg_keyboard.shift_pressed else KeyboardKey.MODIFIERS.NONE
         layout.update_key(key_id=key_id, modifier=modifier, char=char)
         self.dlg_keyboard.set_keys_with_same_key_id_as(self)
-        self.tk_focusNext().focus_set()
+
+        # Circular focus (when focus on last key, return focus to first key)
+        if self != self.dlg_keyboard.keys[-1]:
+            self.tk_focusNext().focus_set()
+        else:
+            self.dlg_keyboard.keys[0].focus_set()
 
         # If we don't invoke a shift down event on the next key, it won't
         # detect shift release event when we release the shift key
