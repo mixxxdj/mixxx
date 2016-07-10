@@ -1,5 +1,6 @@
 #include <QSqlQuery>
 
+#include "library/coverartcache.h"
 #include "library/librarytreemodel.h"
 #include "library/mixxxlibraryfeature.h"
 #include "library/queryutil.h"
@@ -16,7 +17,58 @@ LibraryTreeModel::LibraryTreeModel(MixxxLibraryFeature* pFeature,
     // By default sort by Artist -> Album
     // TODO(jmigual) store the sort order in the configuration
     m_sortOrder << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
+    QStringList aux;
+    
+    aux << LIBRARYTABLE_COVERART 
+        << LIBRARYTABLE_COVERART_HASH
+        << LIBRARYTABLE_COVERART_LOCATION 
+        << LIBRARYTABLE_COVERART_SOURCE
+        << LIBRARYTABLE_COVERART_TYPE;
+    
+    for (QString& s : aux) {
+        s.prepend("library.");
+    }
+    m_coverQuery = aux.join(",");
+    
     reloadTracksTree();
+}
+
+QVariant LibraryTreeModel::data(const QModelIndex& index, int role) {
+    
+    // The decoration role contains the icon in QTreeView
+    if (role != Qt::DecorationRole) {
+        return TreeItemModel::data(index, role);
+    }
+    
+    TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
+    DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
+        return QVariant();
+    }
+    
+    // The library item has its own icon
+    if (pTree == m_pLibraryItem) {
+        return pTree->getIcon();
+    }
+    
+    const CoverInfo& info = pTree->getCoverInfo();
+    
+    // Currently we only support this two types of cover info
+    if (info.type != CoverInfo::METADATA || info.type != CoverInfo::FILE) {
+        return QVariant();
+    }
+    
+    CoverArtCache* pCache = CoverArtCache::instance();
+    QPixmap pixmap = pCache->requestCover(info, this, info.hash);
+    
+    if (pixmap.isNull()) {
+        // The icon is not in the cache so we need to wait until the
+        // coverFound slot is called
+        m_hashToIndex.insert(info.type, index);
+    } else {
+        // Good luck icon found
+        return QIcon(pixmap);
+    }
+    return QVariant();
 }
 
 void LibraryTreeModel::setSortOrder(QStringList sortOrder) {
@@ -76,6 +128,20 @@ void LibraryTreeModel::reloadTracksTree() {
     createTracksTree();
 }
 
+void LibraryTreeModel::coverFound(const QObject* requestor, int requestReference,
+                                  const CoverInfo&, QPixmap pixmap, bool fromCache) {
+    
+    if (requestor == this && !pixmap.isNull() && !fromCache) {
+        auto it = m_hashToIndex.find(requestReference);
+        if (it == m_hashToIndex.end()) {
+            return;
+        }
+        
+        const QModelIndex& index = *it;
+        emit(dataChanged(index, index));
+    }
+}
+
 void LibraryTreeModel::createTracksTree() {
 
     QStringList columns;
@@ -83,9 +149,9 @@ void LibraryTreeModel::createTracksTree() {
         columns << "library." + col;
     }
 
-    QString queryStr = "SELECT DISTINCT %1 "
+    QString queryStr = "SELECT DISTINCT %1,%2 "
                        "FROM library "
-                       "WHERE library.%2 != 1 "
+                       "WHERE library.%3 != 1 "
                        "ORDER BY %1";
     queryStr = queryStr.arg(columns.join(","), LIBRARYTABLE_MIXXXDELETED);
         

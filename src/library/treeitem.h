@@ -11,6 +11,8 @@
 
 #include "library/libraryfeature.h"
 
+class CoverInfo;
+
 class TreeItem {
   public:
     TreeItem(); //creates an invisible root item for the tree
@@ -64,6 +66,9 @@ class TreeItem {
 
     void setIcon(const QIcon& icon);
     QIcon getIcon() const;
+    
+    void setCoverInfo(const CoverInfo& cover);
+    const CoverInfo& getCoverInfo() const;
 
   private:
     QList<TreeItem*> m_childItems;
@@ -75,6 +80,7 @@ class TreeItem {
 
     TreeItem* m_pParent;
     QIcon m_icon;
+    CoverInfo m_cover;
 };
 
 #endif

@@ -34,6 +34,8 @@ struct CoverInfo {
                   trackLocation(QString()),
                   // This default value is fine: qChecksum(NULL, 0) is 0.
                   hash(0) {}
+    
+    CoverInfo(const CoverInfo& c) = default;
 
     bool operator==(const CoverInfo& other) const {
         return other.source == source &&
@@ -45,6 +47,8 @@ struct CoverInfo {
     bool operator!=(const CoverInfo& other) const {
         return !(*this == other);
     }
+    
+    CoverInfo& operator=(const CoverInfo& other) = default;
 
     Source source;
     Type type;

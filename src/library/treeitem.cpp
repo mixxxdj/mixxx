@@ -3,6 +3,7 @@
 
 #include <QStringList>
 
+#include "library/coverart.h"
 #include "library/treeitem.h"
 
 /*
@@ -184,4 +185,12 @@ QIcon TreeItem::getIcon() const {
 
 void TreeItem::setIcon(const QIcon& icon) {
     m_icon = icon;
+}
+
+void TreeItem::setCoverInfo(const CoverInfo &cover) {
+    m_cover = cover;
+}
+
+const CoverInfo& TreeItem::getCoverInfo() const {
+    return m_cover;
 }
