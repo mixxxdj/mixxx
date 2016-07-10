@@ -1,5 +1,4 @@
 import os.path
-import re
 import ntpath
 import codecs
 from tkinter import *
@@ -606,19 +605,19 @@ class DlgKeyboard(Frame):
         # Character keys (\zxcvbnm,./ on en_US)
         letters_keys_row_3 = Frame(self)
         letters_keys_row_3.configure(background=DlgKeyboard.BG_COLOR)
-        DlgKeyboardKey(letters_keys_row_3, key_id=44, width=5, char="Shift", state=DISABLED)
+        self.shift_l = DlgKeyboardKey(letters_keys_row_3, key_id=44, width=5, char="Shift", state=DISABLED)
         for i in range(45, 56):
             key = DlgKeyboardKey(letters_keys_row_3, key_id=i, dlg_keyboard=self)
             self.keys.append(key)
-        DlgKeyboardKey(letters_keys_row_3, key_id=57, width=11, char="Shift", state=DISABLED)
+        self.shift_r = DlgKeyboardKey(letters_keys_row_3, key_id=57, width=11, char="Shift", state=DISABLED)
         letters_keys_row_3.grid(row=5, column=1, sticky='we')
 
         self.shift_pressed = False
 
     def update_keys(self):
         layout = self.app.selected_layout
+        modifier = KeyboardKey.MODIFIERS.SHIFT if self.shift_pressed else KeyboardKey.MODIFIERS.NONE
         for dlg_key in self.keys:
-            modifier = KeyboardKey.MODIFIERS.SHIFT if self.shift_pressed else KeyboardKey.MODIFIERS.NONE
             key = layout.find(dlg_key.key_id)
             if key:
                 key_char = key.get_char(modifier)
@@ -626,6 +625,10 @@ class DlgKeyboard(Frame):
             else:
                 char = ""
             dlg_key.set_char(char)
+
+        relief = SUNKEN if modifier == KeyboardKey.MODIFIERS.SHIFT else RAISED
+        self.shift_l.config(relief=relief)
+        self.shift_r.config(relief=relief)
 
     def clear_all(self):
         for key in self.keys:
