@@ -17,17 +17,23 @@ class LibraryTreeModel : public TreeItemModel {
                      TrackCollection* pTrackCollection, 
                      QObject* parent = nullptr);
 
-    virtual QVariant data(const QModelIndex &index, int role);
+    virtual QVariant data(const QModelIndex &index, int role) const;
     
     void setSortOrder(QStringList sortOrder);
     QString getQuery(TreeItem* pTree) const;
     
     void reloadTracksTree();
     
+  signals:
+    
+    void markInHash(quint16, const QModelIndex&);
+    
   private slots:
     
     void coverFound(const QObject* requestor, int requestReference, const CoverInfo&,
                     QPixmap pixmap, bool fromCache);
+    
+    void slotMarkInHash(quint16 hash, const QModelIndex& index);
     
   private:    
     void createTracksTree();
@@ -35,10 +41,10 @@ class LibraryTreeModel : public TreeItemModel {
     MixxxLibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;
     QStringList m_sortOrder;
-    QString m_coverQuery;
+    QStringList m_coverQuery;
     
     TreeItem* m_pLibraryItem;
-    QHash<quint16, QModelIndex> m_hashToIndex;
+    
 };
 
 #endif // LIBRARYTREEMODEL_H

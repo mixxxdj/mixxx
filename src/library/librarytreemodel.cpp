@@ -7,6 +7,10 @@
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 
+namespace  {
+QHash<quint16, QModelIndex> m_hashToIndex;
+}
+
 LibraryTreeModel::LibraryTreeModel(MixxxLibraryFeature* pFeature,
                                    TrackCollection* pTrackCollection,
                                    QObject* parent)
@@ -17,23 +21,21 @@ LibraryTreeModel::LibraryTreeModel(MixxxLibraryFeature* pFeature,
     // By default sort by Artist -> Album
     // TODO(jmigual) store the sort order in the configuration
     m_sortOrder << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
-    QStringList aux;
     
-    aux << LIBRARYTABLE_COVERART 
-        << LIBRARYTABLE_COVERART_HASH
-        << LIBRARYTABLE_COVERART_LOCATION 
-        << LIBRARYTABLE_COVERART_SOURCE
-        << LIBRARYTABLE_COVERART_TYPE;
+    m_coverQuery << LIBRARYTABLE_COVERART_HASH
+                 << LIBRARYTABLE_COVERART_LOCATION 
+                 << LIBRARYTABLE_COVERART_SOURCE
+                 << LIBRARYTABLE_COVERART_TYPE;
     
-    for (QString& s : aux) {
+    for (QString& s : m_coverQuery) {
         s.prepend("library.");
     }
-    m_coverQuery = aux.join(",");
+    m_coverQuery << "track_locations." + TRACKLOCATIONSTABLE_LOCATION;
     
     reloadTracksTree();
 }
 
-QVariant LibraryTreeModel::data(const QModelIndex& index, int role) {
+QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
     
     // The decoration role contains the icon in QTreeView
     if (role != Qt::DecorationRole) {
@@ -53,16 +55,19 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) {
     const CoverInfo& info = pTree->getCoverInfo();
     
     // Currently we only support this two types of cover info
-    if (info.type != CoverInfo::METADATA || info.type != CoverInfo::FILE) {
+    if (info.type != CoverInfo::METADATA && info.type != CoverInfo::FILE) {
         return QVariant();
     }
     
     CoverArtCache* pCache = CoverArtCache::instance();
-    QPixmap pixmap = pCache->requestCover(info, this, info.hash);
+    // Set a maximum size of 64px to not use many cache
+    QPixmap pixmap = pCache->requestCover(info, this, info.hash, 64);
     
     if (pixmap.isNull()) {
         // The icon is not in the cache so we need to wait until the
-        // coverFound slot is called
+        // coverFound slot is called. Since the data function is const
+        // and we cannot change that we use m_hashToIndex in an anonymous
+        // namespace to store the future value that we will get
         m_hashToIndex.insert(info.type, index);
     } else {
         // Good luck icon found
@@ -150,10 +155,16 @@ void LibraryTreeModel::createTracksTree() {
     }
 
     QString queryStr = "SELECT DISTINCT %1,%2 "
-                       "FROM library "
-                       "WHERE library.%3 != 1 "
-                       "ORDER BY %1";
-    queryStr = queryStr.arg(columns.join(","), LIBRARYTABLE_MIXXXDELETED);
+                       "FROM library LEFT JOIN track_locations "
+                       "ON (%3 = %4) "
+                       "WHERE %5 != 1 "
+                       "GROUP BY %2 "
+                       "ORDER BY %2";
+    queryStr = queryStr.arg(m_coverQuery.join(","), 
+                            columns.join(","), 
+                            "library." + LIBRARYTABLE_ID,
+                            "track_locations." + TRACKLOCATIONSTABLE_ID,
+                            "library." + LIBRARYTABLE_MIXXXDELETED);
         
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
@@ -169,7 +180,20 @@ void LibraryTreeModel::createTracksTree() {
     if (size <= 0) {
         return;
     }
+    QSqlRecord record = query.record();
     
+    int iAlbum = record.indexOf(LIBRARYTABLE_ALBUM);
+    int iCoverHash = record.indexOf(LIBRARYTABLE_COVERART_HASH);
+    int iCoverLoc = record.indexOf(LIBRARYTABLE_COVERART_LOCATION);
+    int iCoverSrc = record.indexOf(LIBRARYTABLE_COVERART_SOURCE);
+    int iCoverType = record.indexOf(LIBRARYTABLE_COVERART_TYPE);
+    int iTrackLoc = record.indexOf(TRACKLOCATIONSTABLE_LOCATION);
+    
+    for (int i = 0; i < record.count(); ++i) {
+        qDebug() << record.fieldName(i);
+    }
+    
+    int extraSize = m_coverQuery.size();
     QVector<QString> lastUsed(size);
     QChar lastHeader;
     QVector<TreeItem*> parent(size + 1, nullptr);
@@ -177,7 +201,7 @@ void LibraryTreeModel::createTracksTree() {
     
     while (query.next()) {
         for (int i = 0; i < size; ++i) {
-            QString value = query.value(i).toString();
+            QString value = query.value(extraSize + i).toString();
             QString valueP = value;
             
             bool unknown = (value == "");
@@ -212,6 +236,19 @@ void LibraryTreeModel::createTracksTree() {
             TreeItem* pTree = new TreeItem(value, valueP, m_pFeature, parent[i]);
             parent[i]->appendChild(pTree);
             parent[i + 1] = pTree;
+            
+            if (extraSize + i == iAlbum) {
+                CoverInfo c;
+                c.hash = query.value(iCoverHash).toInt();
+                c.coverLocation = query.value(iCoverLoc).toString();
+                c.trackLocation = query.value(iTrackLoc).toString();
+                
+                quint16 source = query.value(iCoverSrc).toInt();
+                quint16 type = query.value(iCoverType).toInt();
+                c.source = static_cast<CoverInfo::Source>(source);
+                c.type = static_cast<CoverInfo::Type>(type);
+                pTree->setCoverInfo(c);
+            }
         }    
     }
     
