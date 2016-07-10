@@ -46,22 +46,16 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
     DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
         return QVariant();
     }
-    
-    // The library item has its own icon
-    if (pTree == m_pLibraryItem) {
-        return pTree->getIcon();
-    }
-    
-    const CoverInfo& info = pTree->getCoverInfo();
+    const CoverInfo& info = pTree->getCoverInfo();    
     
     // Currently we only support this two types of cover info
     if (info.type != CoverInfo::METADATA && info.type != CoverInfo::FILE) {
-        return QVariant();
+        return TreeItemModel::data(index, role);
     }
     
     CoverArtCache* pCache = CoverArtCache::instance();
-    // Set a maximum size of 64px to not use many cache
-    QPixmap pixmap = pCache->requestCover(info, this, info.hash, 64);
+    // Set a maximum size of 32px to not use many cache
+    QPixmap pixmap = pCache->requestCover(info, this, info.hash, 32);
     
     if (pixmap.isNull()) {
         // The icon is not in the cache so we need to wait until the

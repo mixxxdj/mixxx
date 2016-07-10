@@ -104,6 +104,7 @@ WLibrarySidebar *LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter 
     WLibrarySidebar* pSidebar = new WLibrarySidebar(nullptr);
     pSidebar->installEventFilter(pKeyboard);
     pSidebar->setModel(getChildModel());
+    pSidebar->setIconSize(QSize(32, 32));
     
     connect(pSidebar, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(activateChild(const QModelIndex&)));
