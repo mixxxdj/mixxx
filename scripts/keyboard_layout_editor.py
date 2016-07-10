@@ -362,6 +362,8 @@ class LayoutNameDialog:
             height=top.winfo_height()
         )
 
+        self.entry.focus_set()
+
     def ok(self, e=None):
         name = self.entry.get()
         if not KeyboardLayout.validate_layout_name(name):
