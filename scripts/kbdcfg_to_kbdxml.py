@@ -189,7 +189,7 @@ class App(Tk):
             return None
 
         print("Opening layouts file: " + path)
-        with codecs.open(path, 'r', "utf-16") as f:
+        with codecs.open(path, 'r', "utf-8") as f:
             self.tree = ElementTree.parse(f)
 
         # Get KeyboardLayoutTranslations element, which holds all
