@@ -123,8 +123,8 @@ Function InstallVCRedist
 
   ClearErrors
   ; Call it & wait for it to install
-  ExecWait 'vcredist_${ARCH}.exe /quiet /install'
-  Delete "$TEMP\vc_redist_${ARCH}.exe"
+  ExecWait 'vcredist_${ARCH}.exe /quiet /install /norestart'
+  Delete "$TEMP\vcredist_${ARCH}.exe"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
