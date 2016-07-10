@@ -1384,8 +1384,6 @@ NumarkMixtrack3.PadModeButton = function(channel, control, value, status, group)
     var deck = NumarkMixtrack3.decks["D" + decknum];
     var i;
 
-NumarkMixtrack3.PadModeButton = !NumarkMixtrack3.PadModeButton;
-    
     if (value === DOWN) {
         //ensure all LEDs are ON (default)
         if (decknum === 1) {
