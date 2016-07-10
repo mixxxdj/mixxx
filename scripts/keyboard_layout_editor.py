@@ -619,6 +619,14 @@ class DlgKeyboard(Frame):
     def update_keys(self):
         layout = self.app.selected_layout
         modifier = KeyboardKey.MODIFIERS.SHIFT if self.shift_pressed else KeyboardKey.MODIFIERS.NONE
+
+        relief = SUNKEN if modifier == KeyboardKey.MODIFIERS.SHIFT else RAISED
+        self.shift_l.config(relief=relief)
+        self.shift_r.config(relief=relief)
+
+        if not layout:
+            return
+
         for dlg_key in self.keys:
             key = layout.find(dlg_key.key_id)
             if key:
@@ -627,10 +635,6 @@ class DlgKeyboard(Frame):
             else:
                 char = ""
             dlg_key.set_char(char)
-
-        relief = SUNKEN if modifier == KeyboardKey.MODIFIERS.SHIFT else RAISED
-        self.shift_l.config(relief=relief)
-        self.shift_r.config(relief=relief)
 
     def clear_all(self):
         for key in self.keys:
