@@ -52,8 +52,7 @@ class LibraryPaneManager : public QObject {
     }
 
   signals:
-
-    void search(const QString& text);
+    
     void searchCleared();
     void searchStarting();
 
@@ -62,6 +61,7 @@ class LibraryPaneManager : public QObject {
     void slotPaneCollapsed();
     void slotPaneUncollapsed();
     void slotPaneFocused();
+    void slotSearch(const QString& text);
 
   protected:
 

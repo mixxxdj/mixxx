@@ -35,6 +35,8 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
   public slots:
 
     virtual void switchToFeature(LibraryFeature* pFeature);
+    
+    virtual void search(const QString&);
 
   protected:
       

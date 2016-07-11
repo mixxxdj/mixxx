@@ -122,9 +122,9 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 }
 
 QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    WLibrarySidebar* pSidebar = createLibrarySidebarWidget(pKeyboard);
-    pSidebar->setIconSize(QSize(32, 32));
-    return pSidebar;
+    m_pSidebar = createLibrarySidebarWidget(pKeyboard);
+    m_pSidebar->setIconSize(QSize(32, 32));
+    return m_pSidebar;
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {
@@ -138,6 +138,10 @@ void MixxxLibraryFeature::selectAll() {
     if (!pTable.isNull()) {
         pTable->selectAll();
     }
+}
+
+void MixxxLibraryFeature::onSearch(const QString&) {
+    m_pSidebar->clearSelection();
 }
 
 

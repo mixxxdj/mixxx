@@ -54,6 +54,10 @@ void WBaseLibrary::switchToFeature(LibraryFeature *pFeature) {
     }
 }
 
+void WBaseLibrary::search(const QString&) {
+    
+}
+
 bool WBaseLibrary::eventFilter(QObject*, QEvent* pEvent) {
     if (pEvent->type() == QEvent::FocusIn) {
         //qDebug() << "WBaseLibrary::eventFilter FocusIn";

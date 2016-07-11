@@ -52,7 +52,7 @@ void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchBar) {
     pSearchBar->installEventFilter(this);
 
     connect(pSearchBar, SIGNAL(search(const QString&)),
-            this, SIGNAL(search(const QString&)));
+            this, SLOT(slotSearch(const QString&)));
     connect(pSearchBar, SIGNAL(searchCleared()),
             this, SIGNAL(searchCleared()));
     connect(pSearchBar, SIGNAL(searchStarting()),
@@ -143,6 +143,14 @@ void LibraryPaneManager::slotPaneUncollapsed() {
 
 void LibraryPaneManager::slotPaneFocused() {
     m_pLibrary->slotPaneFocused(this);
+}
+
+void LibraryPaneManager::slotSearch(const QString& text) {
+    DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull()) {
+        return;    
+    }
+    m_pPaneWidget->search(text);
+    m_pCurrentFeature->onSearch(text);
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {

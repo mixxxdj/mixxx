@@ -127,10 +127,7 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
     
     // Get the value once to avoid searching again in the hash
     LibraryPaneManager* pPane = getPane(paneId);
-    pPane->bindPaneWidget(pLibraryWidget, pKeyboard);
-    
-    connect(pPane, SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&)));    
+    pPane->bindPaneWidget(pLibraryWidget, pKeyboard); 
     
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.

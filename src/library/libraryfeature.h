@@ -91,6 +91,9 @@ class LibraryFeature : public QObject {
     virtual void onLazyChildExpandation(const QModelIndex&) {
     }
     
+    virtual void onSearch(const QString&) {
+    }
+    
   signals:
     
     void loadTrack(TrackPointer);

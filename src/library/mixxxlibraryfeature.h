@@ -55,7 +55,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     void refreshLibraryModels();
     
     void selectAll();
-    
+    void onSearch(const QString&) override;
     
   signals:
     void unhideHidden();
@@ -71,6 +71,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     const QString kLibraryTitle;
     
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
+    QPointer<WLibrarySidebar> m_pSidebar;
     LibraryTableModel* m_pLibraryTableModel;
     LibraryTreeModel m_childModel;
     TrackDAO& m_trackDao;
