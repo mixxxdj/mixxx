@@ -96,12 +96,7 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
     QStringList result;
     pAux = pTree;
     while (depth >= 0) {
-        QString value;
-        if (pAux->dataPath().toString() == "") {
-            value = "";
-        } else {
-            value = pAux->data().toString();
-        }
+        QString value = pAux->dataPath().toString();
         
         result << m_sortOrder[depth] % ":\"" % value % "\"";
         pAux = pAux->parent();
@@ -148,7 +143,7 @@ void LibraryTreeModel::createTracksTree() {
         columns << "library." + col;
     }
 
-    QString queryStr = "SELECT DISTINCT %1,%2 "
+    QString queryStr = "SELECT COUNT(%3),%1,%2 "
                        "FROM library LEFT JOIN track_locations "
                        "ON (%3 = %4) "
                        "WHERE %5 != 1 "
@@ -168,7 +163,7 @@ void LibraryTreeModel::createTracksTree() {
         LOG_FAILED_QUERY(query);
     }
     
-    qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
+    //qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
     
     int size = columns.size();
     if (size <= 0) {
@@ -183,11 +178,7 @@ void LibraryTreeModel::createTracksTree() {
     int iCoverType = record.indexOf(LIBRARYTABLE_COVERART_TYPE);
     int iTrackLoc = record.indexOf(TRACKLOCATIONSTABLE_LOCATION);
     
-    for (int i = 0; i < record.count(); ++i) {
-        qDebug() << record.fieldName(i);
-    }
-    
-    int extraSize = m_coverQuery.size();
+    int extraSize = m_coverQuery.size() + 1;
     QVector<QString> lastUsed(size);
     QChar lastHeader;
     QVector<TreeItem*> parent(size + 1, nullptr);
@@ -198,40 +189,39 @@ void LibraryTreeModel::createTracksTree() {
             QString value = query.value(extraSize + i).toString();
             QString valueP = value;
             
-            bool unknown = (value == "");
+            bool unknown = valueP.isNull();
             if (unknown) {
+                valueP = "";
                 value = tr("Unknown");
             }            
-            if (!lastUsed[i].isNull() && value == lastUsed[i]) {
+            if (!lastUsed[i].isNull() && valueP == lastUsed[i]) {                
                 continue;
             }
-            
-            if (i == 0) {
+
+            if (i == 0 && !unknown) {
                 // If a new top level is added all the following levels must be
                 // reset 
-                for (QString& s : lastUsed) {
-                    s = QString();
-                }
+                lastUsed.fill(QString());
                 
                 // Check if a header must be added
-                if (!unknown && lastHeader != value.at(0).toUpper()) {
+                if (lastHeader != value.at(0).toUpper()) {
                     lastHeader = value.at(0).toUpper();
-                    TreeItem* pTree = new TreeItem(parent[0]);
-                    pTree->setLibraryFeature(m_pFeature);
-                    pTree->setData(lastHeader, lastHeader);                    
+                    TreeItem* pTree = new TreeItem(lastHeader, lastHeader, 
+                                                   m_pFeature, parent[0]);
                     pTree->setDivider(true);
-                    
                     parent[0]->appendChild(pTree);
                 }   
             }
-            lastUsed[i] = value;
+            
+            lastUsed[i] = valueP;
             
             // We need to create a new item
             TreeItem* pTree = new TreeItem(value, valueP, m_pFeature, parent[i]);
+            pTree->setTrackCount(0);
             parent[i]->appendChild(pTree);
             parent[i + 1] = pTree;
             
-            if (extraSize + i == iAlbum) {
+            if (extraSize + i == iAlbum && !unknown) {
                 CoverInfo c;
                 c.hash = query.value(iCoverHash).toInt();
                 c.coverLocation = query.value(iCoverLoc).toString();
@@ -243,7 +233,18 @@ void LibraryTreeModel::createTracksTree() {
                 c.type = static_cast<CoverInfo::Type>(type);
                 pTree->setCoverInfo(c);
             }
-        }    
+        }
+        
+        // Set track count
+        int val = query.value(0).toInt();
+        for (int i = 1; i < size + 1; ++i) {
+            TreeItem* pTree = parent[i];
+            if (pTree == nullptr) {
+                continue;
+            }
+            
+            pTree->setTrackCount(pTree->getTrackCount() + val);
+        }
     }
     
     triggerRepaint();

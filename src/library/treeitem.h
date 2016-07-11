@@ -69,6 +69,9 @@ class TreeItem {
     
     void setCoverInfo(const CoverInfo& cover);
     const CoverInfo& getCoverInfo() const;
+    
+    void setTrackCount(int count);
+    int getTrackCount();
 
   private:
     QList<TreeItem*> m_childItems;
@@ -77,6 +80,7 @@ class TreeItem {
     LibraryFeature* m_pFeature;
     bool m_bold;
     bool m_divider;
+    int m_trackCount;
 
     TreeItem* m_pParent;
     QIcon m_icon;

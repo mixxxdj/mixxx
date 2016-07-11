@@ -1,6 +1,7 @@
 // TreeItem.cpp
 // Created 10/02/2010 by Tobias Rafreider
 
+#include <QString>
 #include <QStringList>
 
 #include "library/coverart.h"
@@ -37,6 +38,7 @@ TreeItem::TreeItem(const QString& data, const QString& data_path,
           m_pFeature(pFeature),
           m_bold(false),
           m_divider(false),
+          m_trackCount(-1),
           m_pParent(parent) {
 }
 
@@ -46,6 +48,7 @@ TreeItem::TreeItem(LibraryFeature* pFeature)
           m_pFeature(pFeature),
           m_bold(false),
           m_divider(false),
+          m_trackCount(-1),
           m_pParent(nullptr) {
     
 }
@@ -56,6 +59,7 @@ TreeItem::TreeItem(TreeItem* parent)
           m_pFeature(nullptr),
           m_bold(false),
           m_divider(false),
+          m_trackCount(-1),
           m_pParent(parent) {
 
 }
@@ -66,6 +70,7 @@ TreeItem::TreeItem()
           m_pFeature(nullptr),
           m_bold(false),
           m_divider(false),
+          m_trackCount(-1),
           m_pParent(nullptr) {
 }
 
@@ -90,6 +95,10 @@ int TreeItem::childCount() const {
 }
 
 QVariant TreeItem::data() const {
+    if (m_trackCount >= 0) {
+        return m_data + " (" + QString::number(m_trackCount) + ")";
+    }
+    
     return m_data;
 }
 
@@ -193,4 +202,12 @@ void TreeItem::setCoverInfo(const CoverInfo &cover) {
 
 const CoverInfo& TreeItem::getCoverInfo() const {
     return m_cover;
+}
+
+void TreeItem::setTrackCount(int count) {
+    m_trackCount = count;
+}
+
+int TreeItem::getTrackCount() {
+    return m_trackCount;
 }
