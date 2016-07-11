@@ -122,7 +122,7 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 }
 
 QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    WLibrarySidebar* pSidebar = createSidebarWidget(pKeyboard);
+    WLibrarySidebar* pSidebar = createLibrarySidebarWidget(pKeyboard);
     pSidebar->setIconSize(QSize(32, 32));
     return pSidebar;
 }
