@@ -24,7 +24,7 @@ void extractEmbeddedCover(
         const QImage& expectedImage) {
     const QImage actualImage(
             CoverArtUtils::extractEmbeddedCover(trackLocation, pToken));
-    EXPECT_FALSE(actualImage.isNull());
+    ASSERT_FALSE(actualImage.isNull());
     EXPECT_EQ(expectedImage, actualImage);
 }
 
