@@ -864,9 +864,10 @@ class KeyboardKey:
             return modifier in range(1, 7)
 
     class KeyChar:
-        def __init__(self, modifier, char):
+        def __init__(self, modifier, char, dead_key=False):
             self.modifier = modifier
             self.char = char
+            self.dead_key = dead_key
 
     def __init__(self, key_id):
         self.key_id = key_id
@@ -891,7 +892,7 @@ class KeyboardKey:
                   "' has not a key char set with modifier: " + str(modifier))
         return None
 
-    def set_key_char(self, modifier, char):
+    def set_key_char(self, modifier, char, dead_key=False):
         if not KeyboardKey.MODIFIERS.is_valid_modifier(modifier):
             print("Given modifier: " + modifier + " is not valid.")
             return
@@ -901,10 +902,12 @@ class KeyboardKey:
 
         if key_char:
             key_char.char = char
+            key_char.dead_key = dead_key
         else:
             self._key_chars.append(KeyboardKey.KeyChar(
                 modifier=modifier,
-                char=char
+                char=char,
+                dead_key=dead_key
             ))
 
 
@@ -966,10 +969,13 @@ class KeyboardLayout:
                     else:
                         modifier = -1
 
+                    dead_key = char.get('dead_key') == '1'
+
                     self.update_key(
                         key_id=int(key_id),
                         modifier=int(modifier),
-                        char=char.text
+                        char=char.text,
+                        dead_key=dead_key
                     )
 
     def find(self, key_id):
@@ -978,7 +984,7 @@ class KeyboardLayout:
                 return key
         return None
 
-    def update_key(self, key_id, modifier, char, verbose=False):
+    def update_key(self, key_id, modifier, char, dead_key=False, verbose=False):
         key = self.find(key_id)
         if not key:
             if verbose:
@@ -986,7 +992,7 @@ class KeyboardLayout:
                       "'. Key_id doesnt't exist. Creating new one...")
             key = KeyboardKey(key_id)
             self._data.append(key)
-        key.set_key_char(modifier=modifier, char=char)
+        key.set_key_char(modifier=modifier, char=char, dead_key=dead_key)
 
     def get_key_ids(self):
         key_ids = set()
