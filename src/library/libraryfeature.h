@@ -106,37 +106,37 @@ class LibraryFeature : public QObject {
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer);
     
-protected:
-  inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
-  inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
-  
-  // Creates a table widget with no model
-  virtual WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
-                                             int paneId);
-  
-  // Creates a WLibrarySidebar widget with the getChildModel() function as
-  // model
-  WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter* pKeyboard);
-  
-  // Override this function to create a custom inner widget for the sidebar,
-  // the default widget is a WLibrarySidebar widget
-  virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
-  
-  void showTrackModel(QAbstractItemModel *model);
-  void switchToFeature();
-  void restoreSearch(const QString& search);
-  void showBreadCrumb(TreeItem* pTree);
-  void showBreadCrumb(const QString& text);
-  
-  WTrackTableView* getFocusedTable();
-  
-  UserSettingsPointer m_pConfig;
-  Library* m_pLibrary;
-  TrackCollection* m_pTrackCollection;
-  
-  int m_featureFocus;
-  int m_focusedPane;
-
+  protected:
+    inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
+    inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
+    
+    // Creates a table widget with no model
+    virtual WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
+                                               int paneId);
+    
+    // Creates a WLibrarySidebar widget with the getChildModel() function as
+    // model
+    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter* pKeyboard);
+    
+    // Override this function to create a custom inner widget for the sidebar,
+    // the default widget is a WLibrarySidebar widget
+    virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
+    
+    void showTrackModel(QAbstractItemModel *model);
+    void switchToFeature();
+    void restoreSearch(const QString& search);
+    void showBreadCrumb(TreeItem* pTree);
+    void showBreadCrumb(const QString& text);
+    
+    WTrackTableView* getFocusedTable();
+    
+    UserSettingsPointer m_pConfig;
+    Library* m_pLibrary;
+    TrackCollection* m_pTrackCollection;
+    
+    int m_featureFocus;
+    int m_focusedPane;
+    
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);
     QHash<int, QPointer<WTrackTableView> > m_trackTables;
