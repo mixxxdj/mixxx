@@ -134,8 +134,8 @@
     <CustomAction Id="SetARPINSTALLLOCATION" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
 
     <!-- Install VCRedist -->
-    <CustomAction Id='InstallVCRedist' BinaryKey='VCRedist' ExeCommand='/quiet /install' Return='check' />
-    
+    <CustomAction Id='InstallVCRedist' BinaryKey='VCRedist' ExeCommand='/quiet /install /norestart' Return='check' />
+
     <!-- License agreement -->
     <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
     
