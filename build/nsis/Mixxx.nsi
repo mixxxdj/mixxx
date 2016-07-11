@@ -108,7 +108,7 @@ Function .onInit    ; Prevent multiple installer instances
 FunctionEnd
 
 ;-------------------------------
-; Install the VC 2010 redistributable DLLs if they're not already.
+; Install the VC redistributable DLLs if they're not already.
 Function InstallVCRedist
   Push $R0
   Call CheckVCRedist
@@ -123,7 +123,7 @@ Function InstallVCRedist
 
   ClearErrors
   ; Call it & wait for it to install
-  ExecWait 'vcredist_${ARCH}.exe /quiet /install /norestart'
+  ExecWait "$TEMP\vcredist_${ARCH}.exe /quiet /install /norestart"
   Delete "$TEMP\vcredist_${ARCH}.exe"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
