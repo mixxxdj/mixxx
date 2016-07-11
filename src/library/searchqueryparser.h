@@ -34,6 +34,7 @@ class SearchQueryParser {
     QStringList m_allFilters;
     QHash<QString, QStringList> m_fieldToSqlColumns;
 
+    QRegExp m_isNullMatcher;
     QRegExp m_fuzzyMatcher;
     QRegExp m_textFilterMatcher;
     QRegExp m_numericFilterMatcher;

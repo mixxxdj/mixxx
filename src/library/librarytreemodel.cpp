@@ -97,8 +97,11 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
     pAux = pTree;
     while (depth >= 0) {
         QString value = pAux->dataPath().toString();
-        
-        result << m_sortOrder[depth] % ":\"" % value % "\"";
+        if (value == "") {
+            result << "\\+" + m_sortOrder[depth];
+        } else {
+            result << m_sortOrder[depth] % ":\"" % value % "\"";
+        }
         pAux = pAux->parent();
         --depth;
     }

@@ -54,6 +54,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_allFilters.append(m_specialFilters);
 
     m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
+    m_isNullMatcher = QRegExp(QString("^\\\\\\+(%1)$").arg(m_allFilters.join("|")));
     m_textFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
     m_numericFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
     m_specialFilterMatcher = QRegExp(QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
@@ -116,6 +117,11 @@ void SearchQueryParser::parseTokens(QStringList tokens,
 
         if (m_fuzzyMatcher.indexIn(token) != -1) {
             // TODO(XXX): implement this feature.
+        } else if (m_isNullMatcher.indexIn(token) != -1) {
+            QString field = m_isNullMatcher.cap(1);
+            std::unique_ptr<QueryNode> pNode(std::make_unique<SqlNode>(
+                    field + " IS NULL"));
+            pQuery->addNode(std::move(pNode));
         } else if (m_textFilterMatcher.indexIn(token) != -1) {
             bool negate = token.startsWith(kNegatePrefix);
             QString field = m_textFilterMatcher.cap(1);
