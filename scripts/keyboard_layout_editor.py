@@ -399,9 +399,10 @@ class KeyboardKey:
             return modifier in range(1, 3)
 
     class KeyChar:
-        def __init__(self, modifier, char):
+        def __init__(self, modifier, char, dead_key=False):
             self.modifier = modifier
             self.char = char
+            self.dead_key = dead_key
 
     def __init__(self, key_id):
         self.key_id = key_id
@@ -426,7 +427,7 @@ class KeyboardKey:
                   "' has not a key char set with modifier: " + str(modifier))
         return None
 
-    def set_key_char(self, modifier, char):
+    def set_key_char(self, modifier, char, dead_key=False):
         if not KeyboardKey.MODIFIERS.is_valid_modifier(modifier):
             print("Given modifier: " + modifier + " is not valid.")
             return
@@ -436,10 +437,12 @@ class KeyboardKey:
 
         if key_char:
             key_char.char = char
+            key_char.dead_key = dead_key
         else:
             self._key_chars.append(KeyboardKey.KeyChar(
                 modifier=modifier,
-                char=char
+                char=char,
+                dead_key=dead_key
             ))
 
 
@@ -499,14 +502,14 @@ class KeyboardLayout:
                 return key
         return None
 
-    def update_key(self, key_id, modifier, char):
+    def update_key(self, key_id, modifier, char, dead_key=False):
         key = self.find(key_id)
         if not key:
             print("Can't update key with key_id '" + str(key_id) +
                   "'. key_id doesnt't exist. Creating new one...")
             key = KeyboardKey(key_id)
             self._data.append(key)
-        key.set_key_char(modifier=modifier, char=char)
+        key.set_key_char(modifier=modifier, char=char, dead_key=dead_key)
 
     def get_key_ids(self):
         key_ids = set()
@@ -570,6 +573,14 @@ class DlgKeyboard(Frame):
             highlightbackground=DlgKeyboard.BG_COLOR,
             borderwidth=3
         )
+
+        # Setup context menu
+        self.context_menu = Menu(self, tearoff=0)
+        self.context_menu.add_command(label="Dead key", command=lambda: self.active_key.set_dead_key())
+        self.context_menu.add_command(label="Reset", command=lambda: self.active_key.set_char(""))
+
+        # Current active key (key that has focus)
+        self.active_key = None
 
         # F-keys
         f_keys_row = Frame(self)
@@ -651,10 +662,16 @@ class DlgKeyboard(Frame):
             key = layout.find(dlg_key.key_id)
             if key:
                 key_char = key.get_char(modifier)
-                char = key_char.char if key_char else ""
+                if key_char:
+                    char = key_char.char
+                    dead_key = key_char.dead_key
+                else:
+                    char = ""
+                    dead_key = False
             else:
                 char = ""
-            dlg_key.set_char(char)
+                dead_key=False
+            dlg_key.set_char(char, dead_key=dead_key)
 
     def clear_all(self):
         for key in self.keys:
@@ -665,6 +682,9 @@ class DlgKeyboard(Frame):
         for i_key in self.keys:
             if i_key.key_id == p_key.key_id and i_key != p_key:
                 i_key.set_char(char)
+
+    def show_context_menu(self, x, y):
+        self.context_menu.post(x, y)
 
 
 class DlgKeyboardKey(Button):
@@ -678,11 +698,13 @@ class DlgKeyboardKey(Button):
         "active_background_color": "#656D79",
         "background_color_key_set": "#8FC238",
         "active_background_color_key_set": "#A3D553",
-        "disabled_color": "#CCD1DA"
+        "disabled_color": "#CCD1DA",
+        "dead_key_background_color": "#f1c40f",
+        "dead_key_active_background_color": "#f39c12"
     }
 
     def __init__(self, *args, key_id=None, width=SIZE['width'], char=None, dlg_keyboard=None, **kwargs):
-        Button.__init__(self, *args, width=width, height=DlgKeyboardKey.SIZE['height'], command=self.set_listening, **kwargs)
+        Button.__init__(self, *args, width=width, height=DlgKeyboardKey.SIZE['height'], command=self.set_focus, **kwargs)
         self.set_char(char)
         self.pack_propagate(0)
         self.pack(side=LEFT, padx=1, pady=1, expand=1)
@@ -705,6 +727,11 @@ class DlgKeyboardKey(Button):
         self.bind("<Enter>", lambda e: self.show_key_id())
         self.bind("<Leave>", lambda e: self.hide_key_id())
 
+        # Bind button to show context menu
+        self.bind("<Button-3>", self._popup_context_menu_command)
+
+        self.dead_key = False
+
     def show_key_id(self):
         self.key_id_label.place(x=0, y=0)
 
@@ -717,18 +744,24 @@ class DlgKeyboardKey(Button):
         self.dlg_keyboard.shift_pressed = pressed
         self.dlg_keyboard.update_keys()
 
-    def set_char(self, char):
+    def set_char(self, char, dead_key=False):
         if not char:
             char = ""
         self.config(text=char, font=("Helvetica", 12))
-        self.update_button_colors(bool(char))
+        self.update_button_colors(bool(char), dead_key)
 
-    def set_listening(self):
-        self.focus_set()
-
-    def update_button_colors(self, key_set):
+    def update_button_colors(self, key_set, dead_key):
         if self['state'] == DISABLED:
             self.configure(bg="#CCD1DA")
+            return
+
+        if dead_key:
+            self.configure(
+                fg="white",
+                activeforeground="white",
+                bg=DlgKeyboardKey.COLORS["dead_key_background_color"],
+                activebackground=DlgKeyboardKey.COLORS["dead_key_active_background_color"]
+            )
             return
 
         if key_set:
@@ -781,15 +814,45 @@ class DlgKeyboardKey(Button):
 
         # Circular focus (when focus on last key, return focus to first key)
         if self != self.dlg_keyboard.keys[-1]:
-            self.tk_focusNext().focus_set()
+            self.tk_focusNext().set_focus()
         else:
-            self.dlg_keyboard.keys[0].focus_set()
+            self.dlg_keyboard.keys[0].set_focus()
 
         # If we don't invoke a shift down event on the next key, it won't
         # detect shift release event when we release the shift key
         if self.dlg_keyboard.shift_pressed:
             self.tk_focusNext().event_generate("<KeyPress-Shift_L>")
             self.tk_focusNext().event_generate("<KeyPress-Shift_R>")
+
+    def set_focus(self):
+        self.dlg_keyboard.active_key = self
+        self.focus_set()
+
+    def _popup_context_menu_command(self, event):
+        state = self.cget('state')
+        if state == DISABLED:
+            return
+        self.set_focus()
+
+        self.dlg_keyboard.show_context_menu(event.x_root, event.y_root)
+
+    def set_dead_key(self):
+        key_id = self.key_id
+        if not key_id:
+            print("This key was not assigned a key_id and the key can not be marked as a dead key")
+            return
+
+        app = self.dlg_keyboard.app
+        layout = app.selected_layout
+        if not layout:
+            print("Layout is None, not marking key as dead key")
+            return
+
+        modifier = KeyboardKey.MODIFIERS.SHIFT if self.dlg_keyboard.shift_pressed else KeyboardKey.MODIFIERS.NONE
+        layout.update_key(key_id=key_id, modifier=modifier, char='', dead_key=True)
+        self.dlg_keyboard.set_keys_with_same_key_id_as(self)
+
+        self.set_char("", dead_key=True)
 
 
 if __name__ == '__main__':
