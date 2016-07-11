@@ -121,6 +121,12 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
     return &m_childModel;
 }
 
+QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
+    WLibrarySidebar* pSidebar = createSidebarWidget(pKeyboard);
+    pSidebar->setIconSize(QSize(32, 32));
+    return pSidebar;
+}
+
 void MixxxLibraryFeature::refreshLibraryModels() {
     if (m_pLibraryTableModel) {
         m_pLibraryTableModel->select();
