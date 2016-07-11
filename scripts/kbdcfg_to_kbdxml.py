@@ -8,7 +8,7 @@ from tkinter import *
 from xml.dom import minidom
 from tkinter import filedialog
 from xml.etree import ElementTree
-from xml.etree.ElementTree import Element, SubElement, tostring
+from xml.etree.ElementTree import Element, SubElement, tostring, Comment
 
 
 def main():
@@ -366,17 +366,6 @@ class App(Tk):
                     if mapping == master_mapping:
                         continue
 
-                    reference_control = mapping.find_control(
-                        master_control.group,
-                        master_control.action
-                    )
-
-                    # If no control is found in mapping with same group
-                    # and action, it's pretty safe to say that we don't
-                    # need an extra <keyseq> element :)
-                    if not reference_control:
-                        continue
-
                     # Retrieve layout for current mapping
                     reference_mapping_layout = None
                     for i_layout in layouts:
@@ -387,6 +376,37 @@ class App(Tk):
                     # This is impossible. Otherwise it would already have
                     # returned at the beginning of create_xml
                     assert reference_mapping_layout is not None
+
+                    reference_control = mapping.find_control(
+                        master_control.group,
+                        master_control.action
+                    )
+
+                    # If no control is found in mapping with same group and action,
+                    # check if control can be translated to reference layout. If it
+                    # can't, attend the user via a comment that the keyseq element
+                    # should be overloaded explicitly for this layout, because it
+                    # can't be translated
+                    if not reference_control:
+                        translated_key = reference_mapping_layout.find(master_control_key_id)
+                        translated_key_char = translated_key.get_key_char(master_control_mod_int)
+                        if translated_key_char.dead_key:
+                            if master_control_mod_int == KeyboardKey.MODIFIERS.SHIFT:
+                                mod_attribute = "SHIFT"
+                            else:
+                                mod_attribute = "NONE"
+
+                            comment = Comment("TODO: The key with key_id '" + str(master_control_key_id) +
+                                              "' with modifier '" + mod_attribute + "' happens to be a " +
+                                              "dead key on keyboard layout '" + reference_mapping_layout.name +
+                                              "' and should therefore be overloaded. Please add: \"<keyseq lang='" +
+                                              reference_mapping_layout.name + "' key_id='" +
+                                              str(master_control_key_id) + "' modifier='" +
+                                              mod_attribute + "'> </keyseq>\" and fill it with a key sequence that " +
+                                              "exists on this keyboard layout.")
+                            control_element.insert(1, comment)
+                        continue
+
 
                     reference_control_keyseq = reference_control.keysequence
                     reference_control_split_keyseq = KeyboardKey.split_keysequence(reference_control_keyseq)

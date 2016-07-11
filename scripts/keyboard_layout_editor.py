@@ -219,6 +219,9 @@ class KeyboardLayoutEditor(Tk):
                 layout_name = layout.name
                 keyboard_key = layout.find(key_id)
 
+                if not keyboard_key:
+                    continue
+
                 key_char = keyboard_key.get_char(modifier=KeyboardKey.MODIFIERS.NONE)
                 if key_char:
                     char = key_char.char
