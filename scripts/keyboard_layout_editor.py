@@ -227,6 +227,11 @@ class KeyboardLayoutEditor(Tk):
                     char_element.set('lang', layout_name)
                     char_element.set('modifier', 'NONE')
 
+                    if key_char.dead_key:
+                        char_element.set('dead_key', '1')
+                    else:
+                        char_element.set('dead_key', '0')
+
                 key_char_shift = keyboard_key.get_char(modifier=KeyboardKey.MODIFIERS.SHIFT)
                 if key_char_shift:
                     char = key_char_shift.char
@@ -490,10 +495,13 @@ class KeyboardLayout:
                     else:
                         modifier = -1
 
+                    dead_key = char.get('dead_key') == '1'
+
                     self.update_key(
                         key_id=int(key_id),
                         modifier=int(modifier),
-                        char=char.text
+                        char=char.text,
+                        dead_key=dead_key
                     )
 
     def find(self, key_id):
