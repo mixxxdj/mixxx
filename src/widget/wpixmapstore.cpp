@@ -17,6 +17,7 @@
 
 #include "widget/wpixmapstore.h"
 
+#include <QDir>
 #include <QString>
 #include <QtDebug>
 
@@ -304,9 +305,20 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
 
 // static
 QString Paintable::getAltFileName(const QString& fileName) {
+    // Detect if the alternate image file exists and, if it does,
+    // return its path instead
     QStringList temp = fileName.split('.');
+    if (temp.length() != 2) {
+        return fileName;
+    }
+
     QString newFileName = temp[0] + QString::fromAscii("@2x.") + temp[1];
-    return newFileName;
+    QFile file(newFileName);
+    if (QFileInfo(file).exists()) {
+        return newFileName;
+    } else {
+        return fileName;
+    }
 }
 
 
