@@ -54,8 +54,7 @@ QIcon HistoryFeature::getIcon() {
     return QIcon(":/images/library/ic_library_history.png");
 }
 
-void HistoryFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
+void HistoryFeature::onRightClick(const QPoint&) {
     m_lastRightClickedIndex = QModelIndex();
 
     // Create the right-click menu
@@ -262,6 +261,8 @@ void HistoryFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     if (!currentPlayingTrackId.isValid()) {
         return;
     }
+    
+    m_pPlaylistTableModel = getPlaylistTableModel(-1);
 
     if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
         // View needs a refresh

@@ -26,7 +26,7 @@ public:
     QIcon getIcon();
 
   public slots:
-    void onRightClick(const QPoint& globalPos);
+    void onRightClick(const QPoint&);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void slotJoinWithPrevious();
     void slotGetNewPlaylist();

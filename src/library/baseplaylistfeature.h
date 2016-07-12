@@ -85,7 +85,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
-    PlaylistTableModel* m_pPlaylistTableModel;
+    QPointer<PlaylistTableModel> m_pPlaylistTableModel;
     QHash<int, QPointer<PlaylistTableModel> > m_playlistTableModel;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
