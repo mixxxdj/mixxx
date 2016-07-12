@@ -71,6 +71,7 @@ class Paintable {
 
     static DrawMode DrawModeFromString(const QString& str);
     static QString DrawModeToString(DrawMode mode);
+    static QString getAltFileName(const QString& fileName);
 
   private:
     void drawInternal(const QRectF& targetRect, QPainter* pPainter,

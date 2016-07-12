@@ -90,7 +90,8 @@ Paintable::Paintable(const QString& fileName, DrawMode mode)
             m_pSvg.reset(new QSvgRenderer(fileName));
         }
     } else {
-        m_pPixmap.reset(new QPixmap(fileName));
+        // TODO: this should detect DoubleWidgetSize setting
+        m_pPixmap.reset(new QPixmap(getAltFileName(fileName)));
     }
 }
 
@@ -121,7 +122,8 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode)
         if (!source.getData().isEmpty()) {
             pPixmap->loadFromData(source.getData());
         } else {
-            pPixmap->load(source.getPath());
+            // TODO: this should detect DoubleWidgetSize setting
+            pPixmap->load(getAltFileName(source.getPath()));
         }
         m_pPixmap.reset(pPixmap);
     }
@@ -299,6 +301,14 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
         }
     }
 }
+
+// static
+QString Paintable::getAltFileName(const QString& fileName) {
+    QStringList temp = fileName.split('.');
+    QString newFileName = temp[0] + QString::fromAscii("@2x.") + temp[1];
+    return newFileName;
+}
+
 
 // static
 PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
