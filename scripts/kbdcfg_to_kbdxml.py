@@ -166,7 +166,7 @@ class App(Tk):
         if os.path.isfile(path):
             print("Warning: '" + path + "' already exists.\nOverriding that file assuming that it's ok :)\n")
         print("Writing to file: " + path + "\n...")
-        xmlstr = minidom.parseString(tostring(root)).toprettyxml()
+        xmlstr = minidom.parseString(tostring(root)).toprettyxml(indent="  ")
         with codecs.open(path, 'w', "utf-8") as f:
             f.write(xmlstr)
         print("Saved successfully!")
