@@ -73,34 +73,6 @@ class LibraryFeature : public QObject {
     
     virtual void setFocusedPane(int paneId);
 
-  protected:
-    inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
-    inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
-    
-    // Creates a table widget with no model
-    WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
-                                       int paneId);
-    
-    // Creates a WLibrarySidebar widget with the getChildModel() function as
-    // model
-    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter* pKeyboard);
-    
-    // Override this function to create a custom inner widget for the sidebar,
-    // the default widget is a WLibrarySidebar widget
-    virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
-    
-    void showTrackModel(QAbstractItemModel *model);
-    void switchToFeature();
-    
-    WTrackTableView* getFocusedTable();
-    
-    UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
-    TrackCollection* m_pTrackCollection;
-    
-    int m_featureFocus;
-    int m_focusedPane;
-
   public slots:
     // called when you single click on the root item
     virtual void activate() = 0;
@@ -133,6 +105,36 @@ class LibraryFeature : public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer);
+    
+  protected:
+    inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
+    inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
+    
+    // Creates a table widget with no model
+    WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
+                                     int paneId);
+    
+    // Creates a WLibrarySidebar widget with the getChildModel() function as
+    // model
+    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter* pKeyboard);
+    
+    // Override this function to create a custom inner widget for the sidebar,
+    // the default widget is a WLibrarySidebar widget
+    virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
+    
+    void showTrackModel(QAbstractItemModel *model);
+    void switchToFeature();
+    void restoreSearch(const QString& search);
+    void showBreadCrumb(TreeItem *pTree);
+    
+    WTrackTableView* getFocusedTable();
+    
+    UserSettingsPointer m_pConfig;
+    Library* m_pLibrary;
+    TrackCollection* m_pTrackCollection;
+    
+    int m_featureFocus;
+    int m_focusedPane;
 
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);

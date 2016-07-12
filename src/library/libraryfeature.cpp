@@ -129,6 +129,14 @@ void LibraryFeature::switchToFeature() {
     m_pLibrary->switchToFeature(this);
 }
 
+void LibraryFeature::restoreSearch(const QString& search) {
+    m_pLibrary->restoreSearch(search);
+}
+
+void LibraryFeature::showBreadCrumb(TreeItem* pTree) {
+    m_pLibrary->showBreadCrumb(pTree);
+}
+
 WTrackTableView *LibraryFeature::getFocusedTable() {
     auto it = m_trackTables.find(m_featureFocus);
     if (it == m_trackTables.end() || it->isNull()) {
