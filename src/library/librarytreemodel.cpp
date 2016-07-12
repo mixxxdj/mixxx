@@ -145,18 +145,28 @@ void LibraryTreeModel::createTracksTree() {
     for (const QString& col : m_sortOrder) {
         columns << "library." + col;
     }
+    
+    QStringList sortColumns;
+#ifdef __SQLITE3__
+    for (const QString& col : m_sortOrder) {
+        sortColumns << col + " COLLATE localeAwareCompare";
+    }
+#else
+    sortColumns = m_sortOrder;
+#endif
 
     QString queryStr = "SELECT COUNT(%3),%1,%2 "
                        "FROM library LEFT JOIN track_locations "
                        "ON (%3 = %4) "
                        "WHERE %5 != 1 "
                        "GROUP BY %2 "
-                       "ORDER BY %2";
+                       "ORDER BY %6 ";
     queryStr = queryStr.arg(m_coverQuery.join(","), 
                             columns.join(","), 
                             "library." + LIBRARYTABLE_ID,
                             "track_locations." + TRACKLOCATIONSTABLE_ID,
-                            "library." + LIBRARYTABLE_MIXXXDELETED);
+                            "library." + LIBRARYTABLE_MIXXXDELETED,
+                            sortColumns.join(","));
         
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
@@ -164,9 +174,12 @@ void LibraryTreeModel::createTracksTree() {
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
+        return;
     }
     
-    //qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
+    qDebug() << QString("A").compare("Ä") << QString("A").localeAwareCompare("Â");
+    qDebug() << QString("B").compare("Ä") << QString("B").localeAwareCompare("Ä");
+    qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
     
     int size = columns.size();
     if (size <= 0) {
@@ -197,7 +210,7 @@ void LibraryTreeModel::createTracksTree() {
                 valueP = "";
                 value = tr("Unknown");
             }            
-            if (!lastUsed[i].isNull() && valueP == lastUsed[i]) {                
+            if (!lastUsed[i].isNull() && valueP.localeAwareCompare(lastUsed[i]) == 0) {                
                 continue;
             }
 
@@ -224,6 +237,7 @@ void LibraryTreeModel::createTracksTree() {
             parent[i]->appendChild(pTree);
             parent[i + 1] = pTree;
             
+            // Add coverart info
             if (extraSize + i == iAlbum && !unknown) {
                 CoverInfo c;
                 c.hash = query.value(iCoverHash).toInt();
