@@ -143,6 +143,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
+
+    int m_scaleFactor = 1;
 };
 
 

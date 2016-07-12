@@ -365,6 +365,10 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
 
+    // Load the config option once, here, rather than in setupSize.
+    // DoubleWidgetSize is boolean, so we add 1 to get the multiplier 1 or 2
+    m_scaleFactor = m_pConfig->getValueString(ConfigKey("[Config]","DoubleWidgetSize"), "0").toInt() + 1;
+
     QStringList skinPaths(skinPath);
     QDir::setSearchPaths("skin", skinPaths);
 
@@ -1653,10 +1657,10 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         QString ys = size.mid(comma+1);
 
         bool widthOk = false;
-        int x = xs.toInt(&widthOk) * 2;
+        int x = xs.toInt(&widthOk) * m_scaleFactor;
 
         bool heightOk = false;
-        int y = ys.toInt(&heightOk) * 2;
+        int y = ys.toInt(&heightOk) * m_scaleFactor;
 
         // -1 means do not set.
         if (widthOk && heightOk && x >= 0 && y >= 0) {
@@ -1678,10 +1682,10 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         QString ys = size.mid(comma+1);
 
         bool widthOk = false;
-        int x = xs.toInt(&widthOk) * 2;
+        int x = xs.toInt(&widthOk) * m_scaleFactor;
 
         bool heightOk = false;
-        int y = ys.toInt(&heightOk) * 2;
+        int y = ys.toInt(&heightOk) * m_scaleFactor;
 
         // -1 means do not set.
         if (widthOk && heightOk && x >= 0 && y >= 0) {
@@ -1746,7 +1750,7 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         }
 
         bool widthOk = false;
-        int x = xs.toInt(&widthOk) * 2;
+        int x = xs.toInt(&widthOk) * m_scaleFactor;
         if (widthOk && x >= 0) {
             if (hasHorizontalPolicy &&
                     sizePolicy.horizontalPolicy() == QSizePolicy::Fixed) {
@@ -1759,7 +1763,7 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         }
 
         bool heightOk = false;
-        int y = ys.toInt(&heightOk) * 2;
+        int y = ys.toInt(&heightOk) * m_scaleFactor;
         if (heightOk && y >= 0) {
             if (hasVerticalPolicy &&
                     sizePolicy.verticalPolicy() == QSizePolicy::Fixed) {
