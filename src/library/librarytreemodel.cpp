@@ -1,5 +1,3 @@
-#include <QSqlQuery>
-
 #include "library/coverartcache.h"
 #include "library/librarytreemodel.h"
 #include "library/mixxxlibraryfeature.h"
@@ -31,7 +29,6 @@ LibraryTreeModel::LibraryTreeModel(MixxxLibraryFeature* pFeature,
         s.prepend("library.");
     }
     m_coverQuery << "track_locations." + TRACKLOCATIONSTABLE_LOCATION;
-    
     reloadTracksTree();
 }
 
@@ -106,6 +103,8 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
 }
 
 void LibraryTreeModel::reloadTracksTree() {    
+    qDebug() << "LibraryTreeModel::reloadTracksTree";
+    
     // Create root item
     TreeItem* pRootItem = new TreeItem();
     pRootItem->setLibraryFeature(m_pFeature);
@@ -172,9 +171,6 @@ void LibraryTreeModel::createTracksTree() {
         LOG_FAILED_QUERY(query);
         return;
     }
-    
-    qDebug() << QString("A").compare("Ä") << QString("A").localeAwareCompare("Â");
-    qDebug() << QString("B").compare("Ä") << QString("B").localeAwareCompare("Ä");
     qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
     
     int size = columns.size();

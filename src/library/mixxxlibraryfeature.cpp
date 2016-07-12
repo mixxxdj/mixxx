@@ -98,7 +98,16 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
     connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
             pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
 
+    connect(&m_trackDao, SIGNAL(trackChanged(TrackId)),
+            &m_childModel, SLOT(reloadTracksTree()));
+    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<TrackId>)),
+            &m_childModel, SLOT(reloadTracksTree()));
+    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
+            &m_childModel, SLOT(reloadTracksTree()));
+    
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
+    
+    
     pTrackCollection->setTrackSource(m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
@@ -170,23 +179,22 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& pos,
     // Create the sort menu
     QMenu menu;
     QAction* artist_album = menu.addAction(tr("Artist > Album"));
-    QAction* album_artist = menu.addAction(tr("Album > Artist"));
+    QAction* album = menu.addAction(tr("Album"));
     QAction* genre_artist = menu.addAction(tr("Genre > Artist > Album"));
-    QAction* genre_album  = menu.addAction(tr("Genre > Album > Artist"));
+    QAction* genre_album  = menu.addAction(tr("Genre > Album"));
     
     QAction* selected = menu.exec(pos);
     
     QStringList sortOrder;
     if (selected == artist_album) {
         sortOrder << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
-    } else if (selected == album_artist) {
-        sortOrder << LIBRARYTABLE_ALBUM << LIBRARYTABLE_ARTIST;
+    } else if (selected == album) {
+        sortOrder << LIBRARYTABLE_ALBUM;
     } else if (selected == genre_artist) {
         sortOrder << LIBRARYTABLE_GENRE << LIBRARYTABLE_ARTIST
                   << LIBRARYTABLE_ALBUM;
     } else if (selected == genre_album) {
-        sortOrder << LIBRARYTABLE_GENRE << LIBRARYTABLE_ALBUM 
-                  << LIBRARYTABLE_ARTIST;
+        sortOrder << LIBRARYTABLE_GENRE << LIBRARYTABLE_ALBUM;
     } else {
         // Menu rejected
         return;

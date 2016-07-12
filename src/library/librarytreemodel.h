@@ -2,6 +2,7 @@
 #define LIBRARYTREEMODEL_H
 
 #include <QHash>
+#include <QPixmap>
 #include <QSqlQuery>
 #include <QStringList>
 
@@ -12,6 +13,7 @@ class MixxxLibraryFeature;
 class TrackCollection;
 
 class LibraryTreeModel : public TreeItemModel {
+    Q_OBJECT
   public:
     LibraryTreeModel(MixxxLibraryFeature* pFeature, 
                      TrackCollection* pTrackCollection, 
@@ -22,18 +24,12 @@ class LibraryTreeModel : public TreeItemModel {
     void setSortOrder(QStringList sortOrder);
     QString getQuery(TreeItem* pTree) const;
     
+  public slots:  
     void reloadTracksTree();
     
-  signals:
-    
-    void markInHash(quint16, const QModelIndex&);
-    
   private slots:
-    
     void coverFound(const QObject* requestor, int requestReference, const CoverInfo&,
                     QPixmap pixmap, bool fromCache);
-    
-    void slotMarkInHash(quint16 hash, const QModelIndex& index);
     
   private:    
     void createTracksTree();
