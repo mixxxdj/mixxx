@@ -160,17 +160,12 @@ Function InstallVCRedist
 FunctionEnd
 
 ;-------------------------------
-; Test if Visual C++ Redistributables 10.0 are installed
+; Test if Visual C++ Redistributables are installed
 ; Returns -1 if they're not
 Function CheckVCRedist
    Push $R0
    ClearErrors
    ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\${ARCH}" "Installed"
-   ; Old way:
-   ;   x64
-   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}" "Version"
-   ;   x86
-   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}" "Version"
 
    IfErrors 0 VSRedistInstalled
    StrCpy $R0 "-1"
