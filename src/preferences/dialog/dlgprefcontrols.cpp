@@ -574,6 +574,8 @@ void DlgPrefControls::slotSetCueRecall(bool b)
 
 void DlgPrefControls::slotSetDoubleWidgetSize(bool b) {
     m_pConfig->set(ConfigKey("[Config]", "DoubleWidgetSize"), ConfigValue(b?1:0));
+    // reload the skin when the button is toggled
+    m_mixxx->rebootMixxxView();
 }
 
 void DlgPrefControls::slotSetStartInFullScreen(bool b) {
