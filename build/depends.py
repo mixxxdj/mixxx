@@ -379,6 +379,10 @@ class Qt(Dependence):
                 # QtOpenGL
                 build.env.Append(LIBS = 'glu32')
                 build.env.Append(LIBS = 'opengl32')
+                # TODO(Pegasus): Why aren't these linked in to QtGui or
+                #   whatever as part of the Qt build process?
+                build.env.Append(LIBPATH = '%s/plugins/imageformats' % build.env['QTDIR'])
+                build.env.Append(LIBS = ['qico','qsvg','qtga'])
 
         # Set the rpath for linux/bsd/osx.
         # This is not supported on OS X before the 10.5 SDK.
