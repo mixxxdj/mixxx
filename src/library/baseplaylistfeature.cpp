@@ -130,6 +130,9 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 }
 
 QPointer<PlaylistTableModel> BasePlaylistFeature::getPlaylistTableModel(int paneId) {
+    if (paneId < 0) {
+        paneId = m_focusedPane;
+    }
     auto it = m_playlistTableModel.find(paneId);
     if (it == m_playlistTableModel.end() || it->isNull()) {
         it = m_playlistTableModel.insert(paneId, constructTableModel());

@@ -261,6 +261,8 @@ void HistoryFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     if (!currentPlayingTrackId.isValid()) {
         return;
     }
+    
+    m_pPlaylistTableModel = getPlaylistTableModel(-1);
 
     if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
         // View needs a refresh
