@@ -1,3 +1,5 @@
+#include <array>
+
 #include "track/trackmetadatataglib.h"
 
 #include "track/tracknumbers.h"
@@ -68,6 +70,19 @@ const QString kFileTypeOggOpus("opus");
 const QString kFileTypeWAV("wav");
 const QString kFileTypeWavPack("wv");
 
+// Preferred picture types for cover art sorted by priority
+const std::array<TagLib::ID3v2::AttachedPictureFrame::Type, 4> kCoverArtID3v2PictureTypes = {
+        TagLib::ID3v2::AttachedPictureFrame::FrontCover, // Front cover image of the album
+        TagLib::ID3v2::AttachedPictureFrame::Media, // Image from the album itself
+        TagLib::ID3v2::AttachedPictureFrame::Illustration, // Illustration related to the track
+        TagLib::ID3v2::AttachedPictureFrame::Other
+};
+const std::array<TagLib::FLAC::Picture::Type, 4> kCoverArtVorbisCommentPictureTypes = {
+        TagLib::FLAC::Picture::FrontCover, // Front cover image of the album
+        TagLib::FLAC::Picture::Media, // Image from the album itself
+        TagLib::FLAC::Picture::Illustration, // Illustration related to the track
+        TagLib::FLAC::Picture::Other
+};
 
 inline bool hasID3v2Tag(TagLib::MPEG::File& file) {
 #if TAGLIB_HAS_TAG_CHECK
@@ -320,23 +335,127 @@ inline const TagLib::MP4::ItemListMap& getItemListMap(const TagLib::MP4::Tag& ta
     return const_cast<TagLib::MP4::Tag&>(tag).itemListMap();
 }
 
+inline QImage loadImageFromByteVector(
+        const TagLib::ByteVector& imageData,
+        const char* format = 0) {
+    return QImage::fromData(
+            // char -> uchar
+            reinterpret_cast<const uchar *>(imageData.data()),
+            imageData.size(),
+            format);
+}
+
+inline QImage loadImageFromID3v2PictureFrame(
+        const TagLib::ID3v2::AttachedPictureFrame& apicFrame) {
+    return loadImageFromByteVector(apicFrame.picture());
+}
+
+inline QImage loadImageFromVorbisCommentPicture(
+        const TagLib::FLAC::Picture& picture) {
+    return loadImageFromByteVector(picture.data(), picture.mimeType().toCString());
+}
+
+QImage loadCoverArtImageFromVorbisCommentPictureList(
+        const TagLib::List<TagLib::FLAC::Picture*>& pictures) {
+    if (pictures.isEmpty()) {
+        qDebug() << "VorbisComment picture list is empty";
+        return QImage();
+    }
+
+    for (const auto coverArtType: kCoverArtVorbisCommentPictureTypes) {
+        for (const auto pPicture: pictures) {
+            DEBUG_ASSERT(pPicture != nullptr); // trust TagLib
+            if (pPicture->type() == coverArtType) {
+                const QImage image(loadImageFromVorbisCommentPicture(*pPicture));
+                if (image.isNull()) {
+                    qWarning() << "Failed to load image from VorbisComment picture of type" << pPicture->type();
+                    // continue...
+                } else {
+                    return image; // success
+                }
+            }
+        }
+    }
+
+    // Fallback: No best match -> Create image from first loadable picture of any type
+    for (const auto pPicture: pictures) {
+        DEBUG_ASSERT(pPicture != nullptr); // trust TagLib
+        const QImage image(loadImageFromVorbisCommentPicture(*pPicture));
+        if (image.isNull()) {
+            qWarning() << "Failed to load image from VorbisComment picture of type" << pPicture->type();
+            // continue...
+        } else {
+            return image; // success
+        }
+    }
+
+    qWarning() << "Failed to load cover art image from VorbisComment pictures";
+    return QImage();
+}
+
+bool parseBase64EncodedVorbisCommentPicture(
+        TagLib::FLAC::Picture* pPicture,
+        const TagLib::String& base64Encoded) {
+    DEBUG_ASSERT(pPicture != nullptr);
+    const QByteArray decodedData(QByteArray::fromBase64(base64Encoded.toCString()));
+    const TagLib::ByteVector rawData(decodedData.data(), decodedData.size());
+    TagLib::FLAC::Picture picture;
+    return pPicture->parse(rawData);
+}
+
+inline QImage parseBase64EncodedVorbisCommentImage(
+        const TagLib::String& base64Encoded) {
+    const QByteArray decodedData(QByteArray::fromBase64(base64Encoded.toCString()));
+    return QImage::fromData(decodedData);
+}
+
 void readCoverArtFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) {
-    if (!pCoverArt) {
+    if (pCoverArt == nullptr) {
         return; // nothing to do
     }
 
-    TagLib::ID3v2::FrameList covertArtFrame = tag.frameListMap()["APIC"];
-    if (!covertArtFrame.isEmpty()) {
-        TagLib::ID3v2::AttachedPictureFrame* picframe =
-                static_cast<TagLib::ID3v2::AttachedPictureFrame*>(covertArtFrame.front());
-        TagLib::ByteVector data = picframe->picture();
-        *pCoverArt = QImage::fromData(
-                reinterpret_cast<const uchar *>(data.data()), data.size());
+    TagLib::ID3v2::FrameList pFrames = tag.frameListMap()["APIC"];
+    if (pFrames.isEmpty()) {
+        qDebug() << "Failed to load cover art: Empty list of ID3v2 APIC frames";
+        return; // failure
+    }
+
+    for (const auto coverArtType: kCoverArtID3v2PictureTypes) {
+        for (const auto pFrame: pFrames) {
+            const TagLib::ID3v2::AttachedPictureFrame* pApicFrame =
+                    static_cast<const TagLib::ID3v2::AttachedPictureFrame*>(pFrame);
+            DEBUG_ASSERT(pApicFrame != nullptr); // trust TagLib
+            if (pApicFrame->type() == coverArtType) {
+                QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
+                if (image.isNull()) {
+                    qWarning() << "Failed to load image from ID3v2 APIC frame of type" << pApicFrame->type();
+                    // continue...
+                } else {
+                    *pCoverArt = image;
+                    return; // success
+                }
+            }
+        }
+    }
+
+    // Fallback: No best match -> Simply select the 1st loadable image
+    for (const auto pFrame: pFrames) {
+        const TagLib::ID3v2::AttachedPictureFrame* pApicFrame =
+                static_cast<const TagLib::ID3v2::AttachedPictureFrame*>(pFrame);
+        DEBUG_ASSERT(pApicFrame != nullptr); // trust TagLib
+        const QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
+        if (image.isNull()) {
+            qWarning() << "Failed to load image from ID3v2 APIC frame of type" << pApicFrame->type();
+            // continue...
+        } else {
+            *pCoverArt = image;
+            return; // success
+        }
     }
 }
 
 void readCoverArtFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
-    if (!pCoverArt) {
+    if (pCoverArt == nullptr) {
         return; // nothing to do
     }
 
@@ -346,45 +465,83 @@ void readCoverArtFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
                 tag.itemListMap()["COVER ART (FRONT)"].value();
         int pos = item.find(nullStringTerminator);  // skip the filename
         if (++pos > 0) {
-            const TagLib::ByteVector& data = item.mid(pos);
-            *pCoverArt = QImage::fromData(
-                    reinterpret_cast<const uchar *>(data.data()), data.size());
+            const TagLib::ByteVector data(item.mid(pos));
+            const QImage image(loadImageFromByteVector(data));
+            if (image.isNull()) {
+                qWarning() << "Failed to load image from APE tag";
+            } else {
+                *pCoverArt = image; // success
+            }
         }
     }
 }
 
-void readCoverArtFromXiphComment(QImage* pCoverArt, const TagLib::Ogg::XiphComment& tag) {
-    if (!pCoverArt) {
+void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, const TagLib::Ogg::XiphComment& tag) {
+    if (pCoverArt == nullptr) {
         return; // nothing to do
     }
 
     if (tag.fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
-        QByteArray data(
-                QByteArray::fromBase64(
-                        tag.fieldListMap()["METADATA_BLOCK_PICTURE"].front().toCString()));
-        TagLib::ByteVector tdata(data.data(), data.size());
-        TagLib::FLAC::Picture p(tdata);
-        data = QByteArray(p.data().data(), p.data().size());
-        *pCoverArt = QImage::fromData(data);
-    } else if (tag.fieldListMap().contains("COVERART")) {
-        QByteArray data(
-                QByteArray::fromBase64(
-                        tag.fieldListMap()["COVERART"].toString().toCString()));
-        *pCoverArt = QImage::fromData(data);
+        // https://wiki.xiph.org/VorbisComment#METADATA_BLOCK_PICTURE
+        const TagLib::StringList& base64EncodedList =
+                tag.fieldListMap()["METADATA_BLOCK_PICTURE"];
+        for (const auto& base64Encoded: base64EncodedList) {
+            TagLib::FLAC::Picture picture;
+            if (parseBase64EncodedVorbisCommentPicture(&picture, base64Encoded)) {
+                const QImage image(loadImageFromVorbisCommentPicture(picture));
+                if (image.isNull()) {
+                    qWarning() << "Failed to load image from VorbisComment picture of type" << picture.type();
+                    // continue...
+                } else {
+                    *pCoverArt = image;
+                    return; // done
+                }
+            } else {
+                qWarning() << "Failed to parse picture from VorbisComment metadata block";
+                // continue...
+            }
+        }
     }
+
+    if (tag.fieldListMap().contains("COVERART")) {
+        // The unofficial COVERART field is deprecated:
+        // https://wiki.xiph.org/VorbisComment#Unofficial_COVERART_field_.28deprecated.29
+        qDebug() << "Fallback: Trying to parse image from deprecated VorbisComment field COVERART";
+        const TagLib::StringList& base64EncodedList =
+                tag.fieldListMap()["COVERART"];
+        for (const auto& base64Encoded: base64EncodedList) {
+            const QImage image(parseBase64EncodedVorbisCommentImage(base64Encoded));
+            if (image.isNull()) {
+                qWarning() << "Failed to parse image from deprecated VorbisComment field COVERART";
+                // continue...
+            } else {
+                *pCoverArt = image;
+                return; // done
+            }
+        }
+    }
+
+    qDebug() << "No cover art found in VorbisComment tag";
 }
 
 void readCoverArtFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
-    if (!pCoverArt) {
+    if (pCoverArt == nullptr) {
         return; // nothing to do
     }
 
     if (getItemListMap(tag).contains("covr")) {
         TagLib::MP4::CoverArtList coverArtList =
                 getItemListMap(tag)["covr"].toCoverArtList();
-        TagLib::ByteVector data = coverArtList.front().data();
-        *pCoverArt = QImage::fromData(
-                reinterpret_cast<const uchar *>(data.data()), data.size());
+        for (const auto& coverArt: coverArtList) {
+            const QImage image(loadImageFromByteVector(coverArt.data()));
+            if (image.isNull()) {
+                qWarning() << "Failed to load image from MP4 atom covr";
+                // continue...
+            } else {
+                *pCoverArt = image;
+                return; // done
+            }
+        }
     }
 }
 
@@ -910,7 +1067,7 @@ void readTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::AP
     }
 }
 
-void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
+void readTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
         const TagLib::Ogg::XiphComment& tag) {
     if (!pTrackMetadata) {
         return; // nothing to do
@@ -1365,24 +1522,18 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         }
     } else if (kFileTypeFLAC == fileType) {
         TagLib::FLAC::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
-        if (pCoverArt) {
-            // FLAC files may contain cover art that is not part
-            // of any tag. Use the first picture from this list
-            // as the default picture for the cover art.
-            TagLib::List<TagLib::FLAC::Picture*> covers = file.pictureList();
-            if (!covers.isEmpty()) {
-                std::list<TagLib::FLAC::Picture*>::iterator it = covers.begin();
-                TagLib::FLAC::Picture* cover = *it;
-                *pCoverArt = QImage::fromData(
-                        QByteArray(cover->data().data(), cover->data().size()));
-            }
+        // Read cover art directly from the file first. Will be
+        // overwritten with cover art contained in on of the tags.
+        if (pCoverArt != nullptr) {
+            *pCoverArt = loadCoverArtImageFromVorbisCommentPictureList(file.pictureList());
         }
         if (readAudioProperties(pTrackMetadata, file)) {
+            // VorbisComment tag takes precedence over ID3v2 tag
             const TagLib::Ogg::XiphComment* pXiphComment =
                     hasXiphComment(file) ? file.xiphComment() : nullptr;
             if (pXiphComment) {
-                readTrackMetadataFromXiphComment(pTrackMetadata, *pXiphComment);
-                readCoverArtFromXiphComment(pCoverArt, *pXiphComment);
+                readTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
+                readCoverArtFromVorbisCommentTag(pCoverArt, *pXiphComment);
                 return OK;
             } else {
                 const TagLib::ID3v2::Tag* pID3v2Tag =
@@ -1406,8 +1557,8 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::Ogg::XiphComment* pXiphComment = file.tag();
             if (pXiphComment) {
-                readTrackMetadataFromXiphComment(pTrackMetadata, *pXiphComment);
-                readCoverArtFromXiphComment(pCoverArt, *pXiphComment);
+                readTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
+                readCoverArtFromVorbisCommentTag(pCoverArt, *pXiphComment);
                 return OK;
             } else {
                 // fallback
@@ -1424,8 +1575,8 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::Ogg::XiphComment* pXiphComment = file.tag();
             if (pXiphComment) {
-                readTrackMetadataFromXiphComment(pTrackMetadata, *pXiphComment);
-                readCoverArtFromXiphComment(pCoverArt, *pXiphComment);
+                readTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
+                readCoverArtFromVorbisCommentTag(pCoverArt, *pXiphComment);
                  return OK;
             } else {
                 // fallback
