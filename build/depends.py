@@ -39,6 +39,8 @@ class PortMIDI(Dependence):
         # Check for PortMidi
         libs = ['portmidi', 'libportmidi']
         headers = ['portmidi.h']
+        if build.platform_is_windows and build.static_dependencies:
+            conf.CheckLib('advapi32')
         if build.platform_is_windows:
             # We have this special branch here because on Windows we might want
             # to link PortMidi statically which we don't want to do on other
@@ -370,7 +372,7 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'advapi32') # QtGui, portaudio, portmidi
                 build.env.Append(LIBS = 'ws2_32')   # QtGui, QtNetwork, libshout
                 # QtGui
-                build.env.Append(LIBS = 'gdi32') #QtOpenGL
+                build.env.Append(LIBS = 'gdi32') #QtOpenGL, libshout
                 build.env.Append(LIBS = 'comdlg32')
                 build.env.Append(LIBS = 'oleaut32')
                 build.env.Append(LIBS = 'imm32')
