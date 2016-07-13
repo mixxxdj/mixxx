@@ -356,6 +356,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     setVisible(true);
     trackModel->select();
+    
+    if (!m_pScrollBar.isNull()) {
+        m_pScrollBar->setModel(model);
+    }
 }
 
 void WTrackTableView::createActions() {
@@ -1552,6 +1556,10 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     if (first.isValid()) {
         scrollTo(first, QAbstractItemView::EnsureVisible);
         //scrollTo(first, QAbstractItemView::PositionAtCenter);
+    }
+    
+    if (!m_pScrollBar.isNull()) {
+        m_pScrollBar->setSortColumn(headerSection);
     }
 }
 

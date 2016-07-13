@@ -13,6 +13,7 @@
 #include "track/track.h"
 #include "util/duration.h"
 #include "widget/wlibrarytableview.h"
+#include "widget/wtableminiview.h"
 
 class ControlProxy;
 class DlgTrackInfo;
@@ -157,6 +158,7 @@ class WTrackTableView : public WLibraryTableView {
 
     // Replay Gain feature
     QAction *m_pReplayGainResetAction;
+    QPointer<WTableMiniView> m_pScrollBar;
 
     bool m_sorting;
 

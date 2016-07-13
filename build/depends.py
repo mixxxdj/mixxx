@@ -830,6 +830,8 @@ class MixxxCore(Feature):
                    "widget/wfeatureclickbutton.cpp",
                    "widget/wlibrarystack.cpp",
                    "widget/wlibrarybreadcrumb.cpp",
+                   "widget/wminiviewscrollbar.cpp",
+                   "widget/wtableminiview.cpp",
 
                    "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",
