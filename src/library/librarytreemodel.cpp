@@ -212,9 +212,24 @@ void LibraryTreeModel::createTracksTree() {
                 // reset 
                 lastUsed.fill(QString());
                 
+                QChar c = value.at(0);
+                
+                // This removes the accents of the characters
+                if (c.isLetter()) {
+                    // We only can remove the accents if its a latin character
+                    if (c.toLatin1() != 0) {
+                        QString s1 = value.normalized(QString::NormalizationForm_KD);
+                        s1.remove(QRegExp("[^a-zA-Z]"));
+                        
+                        if (s1.size() > 0) {
+                            c = s1.at(0).toUpper();
+                        }
+                    }
+                }
+                
                 // Check if a header must be added
-                if (lastHeader != value.at(0).toUpper()) {
-                    lastHeader = value.at(0).toUpper();
+                if (lastHeader != c) {
+                    lastHeader = c;
                     TreeItem* pTree = new TreeItem(lastHeader, lastHeader, 
                                                    m_pFeature, parent[0]);
                     pTree->setDivider(true);
