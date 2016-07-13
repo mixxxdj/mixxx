@@ -63,7 +63,6 @@ QIcon AnalysisFeature::getIcon() {
 QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
                                            int paneId) {        
     WTrackTableView* pTable = LibraryFeature::createTableWidget(pKeyboard, paneId);
-    pTable->loadTrackModel(getAnalysisTableModel());
     connect(pTable->selectionModel(), 
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, 
@@ -111,12 +110,11 @@ void AnalysisFeature::selectAll() {
 
 void AnalysisFeature::activate() {
     //qDebug() << "AnalysisFeature::activate()";
-    //m_pLibrary->switchToView(m_sAnalysisViewName);
-    m_pLibrary->switchToFeature(this);
-    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    showTrackModel(getAnalysisTableModel());
+    showBreadCrumb(m_childModel.getItem(QModelIndex()));
     
     if (!m_pAnalysisView.isNull()) {
-        m_pLibrary->restoreSearch(m_pAnalysisView->currentSearch());
+        restoreSearch(m_pAnalysisView->currentSearch());
     }
     emit(enableCoverArtDisplay(true));
 }
