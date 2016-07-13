@@ -324,12 +324,12 @@ class App(Tk):
         # <control> elements, which will contain one or more <keyseq> elements
         #
         # But first, iterate over groups
-        for group_name, controls in master_mapping_data.items():
+        for group_name, controls in sorted(master_mapping_data.items()):
             group_element = SubElement(controller_element, 'group')
             group_element.set('name', group_name)
 
             # Iterate over controls in this group
-            for master_control in controls:
+            for master_control in sorted(controls):
                 control_element = SubElement(group_element, 'control')
                 control_element.set('action', master_control.action)
 
@@ -854,6 +854,9 @@ class Control:
         self.group = group
         self.action = action
         self.keysequence = keysequence
+
+    def __lt__(self, other):
+        return self.action < other.action
 
 
 class KeyboardKey:
