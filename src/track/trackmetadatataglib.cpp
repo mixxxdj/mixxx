@@ -397,7 +397,6 @@ QImage loadCoverArtImageFromVorbisCommentPictureList(
     return QImage();
 }
 
-#if !(TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
 bool parseBase64EncodedVorbisCommentPicture(
         TagLib::FLAC::Picture* pPicture,
         const TagLib::String& base64Encoded) {
@@ -407,7 +406,6 @@ bool parseBase64EncodedVorbisCommentPicture(
     TagLib::FLAC::Picture picture;
     return pPicture->parse(rawData);
 }
-#endif
 
 inline QImage parseBase64EncodedVorbisCommentImage(
         const TagLib::String& base64Encoded) {
@@ -493,11 +491,26 @@ void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCommen
         *pCoverArt = image;
         return; // done
     }
-#else
+#endif
+
+    // NOTE(uklotzde, 2016-07-13): Legacy code for parsing cover art (part 1)
+    //
+    // The following code is needed for TagLib versions <= 1.10 and as a workaround
+    // for an incompatibility between TagLib 1.11 and puddletag 1.1.1.
+    //
+    // puddletag 1.1.1 seems to generate an incompatible METADATA_BLOCK_PICTURE
+    // field that is not recognized by XiphComment::pictureList() by TagLib 1.11.
+    // In this case XiphComment::pictureList() returns an empty list while the
+    // raw data of the pictures can still be found in XiphComment::fieldListMap().
     if (tag.fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
         // https://wiki.xiph.org/VorbisComment#METADATA_BLOCK_PICTURE
         const TagLib::StringList& base64EncodedList =
                 tag.fieldListMap()["METADATA_BLOCK_PICTURE"];
+#if (TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
+        if (!base64EncodedList.isEmpty()) {
+            qWarning() << "Taking legacy code path for reading cover art from VorbisComment field METADATA_BLOCK_PICTURE";
+        }
+#endif
         for (const auto& base64Encoded: base64EncodedList) {
             TagLib::FLAC::Picture picture;
             if (parseBase64EncodedVorbisCommentPicture(&picture, base64Encoded)) {
@@ -515,14 +528,17 @@ void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCommen
             }
         }
     }
-#endif
 
+    // NOTE(uklotzde, 2016-07-13): Legacy code for parsing cover art (part 2)
+    //
+    // The unofficial COVERART field in a VorbisComment tag is deprecated:
+    // https://wiki.xiph.org/VorbisComment#Unofficial_COVERART_field_.28deprecated.29
     if (tag.fieldListMap().contains("COVERART")) {
-        // The unofficial COVERART field is deprecated:
-        // https://wiki.xiph.org/VorbisComment#Unofficial_COVERART_field_.28deprecated.29
-        qDebug() << "Fallback: Trying to parse image from deprecated VorbisComment field COVERART";
         const TagLib::StringList& base64EncodedList =
                 tag.fieldListMap()["COVERART"];
+        if (!base64EncodedList.isEmpty()) {
+            qWarning() << "Fallback: Trying to parse image from deprecated VorbisComment field COVERART";
+        }
         for (const auto& base64Encoded: base64EncodedList) {
             const QImage image(parseBase64EncodedVorbisCommentImage(base64Encoded));
             if (image.isNull()) {
