@@ -37,6 +37,7 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
     void setSorting(bool sorting);
+    void setScrollBar(WTableMiniView* pScrollbar);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);

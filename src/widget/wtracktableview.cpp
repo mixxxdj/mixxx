@@ -1294,6 +1294,11 @@ void WTrackTableView::setSorting(bool sorting) {
     m_sorting = sorting;
 }
 
+void WTrackTableView::setScrollBar(WTableMiniView *pScrollbar) {
+    m_pScrollBar = pScrollbar;
+    setVerticalScrollBar(pScrollbar);
+}
+
 void WTrackTableView::slotSendToAutoDJ() {
     // append to auto DJ
     sendToAutoDJ(false); // bTop = false

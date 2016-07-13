@@ -82,7 +82,7 @@ WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboar
     pTrackTableView->installEventFilter(pKeyboard);
     
     WTableMiniView* pScrollBar = new WTableMiniView(pTrackTableView);
-    pTrackTableView->setVerticalScrollBar(pScrollBar);
+    pTrackTableView->setScrollBar(pScrollBar);
     
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));

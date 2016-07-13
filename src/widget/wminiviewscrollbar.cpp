@@ -1,10 +1,13 @@
+#include <QDebug>
 #include <QPainter>
+#include <QPaintEvent>
 #include <QStyleOptionSlider>
 
 #include "wminiviewscrollbar.h"
 
 WMiniViewScrollBar::WMiniViewScrollBar(QWidget* parent)
-        : QScrollBar(parent) {
+        : QScrollBar(parent),
+          m_showLetters(true) {
 
 }
 
@@ -27,16 +30,16 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
 void WMiniViewScrollBar::lettersPaint(QPaintEvent* event) {
     QPainter painter(this);
 
-    QStyleOptionSlider style;
-    style.init(this);
+    QStyleOptionSlider styleOpts;
+    styleOpts.init(this);
 
-    style.orientation = orientation();
-    style.maximum = maximum();
-    style.minimum = minimum();
-    style.sliderPosition = sliderPosition();
-    style.sliderValue = value();
-    style.singleStep = singleStep();
-    style.pageStep = pageStep();
+    styleOpts.orientation = orientation();
+    styleOpts.maximum = maximum();
+    styleOpts.minimum = minimum();
+    styleOpts.sliderPosition = sliderPosition();
+    styleOpts.sliderValue = value();
+    styleOpts.singleStep = singleStep();
+    styleOpts.pageStep = pageStep();
 
     // Get total count
     int totalCount = 0;
@@ -45,7 +48,7 @@ void WMiniViewScrollBar::lettersPaint(QPaintEvent* event) {
     }
 
     // Get total size
-    const QRect& total = style.rect;
+    const QRect& total = event->rect();
     QPoint topLeft = total.topLeft();
 
     for (const QChar& c : m_letters) {
@@ -54,6 +57,12 @@ void WMiniViewScrollBar::lettersPaint(QPaintEvent* event) {
         int count = m_count[c];
         int height = interpolHeight(count, 0, totalCount,
                                     total.topLeft().y(), total.bottomLeft().y());
+        
+        QPoint bottomRight = topLeft + QPoint(total.width(), height);
+        painter.setBrush(palette().color(QPalette::Text));
+        painter.drawText(QRect(topLeft, bottomRight), QString(c));
+        
+        topLeft += QPoint(0, height);
     }
 }
 

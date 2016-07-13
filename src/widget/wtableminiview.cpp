@@ -30,6 +30,9 @@ void WTableMiniView::refreshCharMap() {
     for (int i = 0; i < size; ++i) {
         const QModelIndex& index = m_pModel->index(i, m_sortColumn);
         QString text = index.data().toString();
+        if (text.isEmpty()) {
+            continue;
+        }
         QChar c = getFirstChar(text);
         
         // Add character to letters order vector
