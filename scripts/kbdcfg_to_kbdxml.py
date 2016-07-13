@@ -349,9 +349,15 @@ class App(Tk):
 
                 # Create <keyseq> element for master control key
                 master_keyseq_element = SubElement(control_element, 'keyseq')
+                master_keyseq_element.text = master_control_keyseq
+
+                # We don't need to add lang or key_id information, nor check for other mappings when the
+                # group is [KeyboardShortcuts]. This key sequences are translated in Mixxx using Qt::tr()
+                if group_name == "[KeyboardShortcuts]":
+                    continue
+
                 master_keyseq_element.set('lang', master_mapping.get_locale_name())
                 master_keyseq_element.set('key_id', str(master_control_key_id))
-                master_keyseq_element.text = master_control_keyseq
 
                 # Check if there is a control with the same group and action
                 # in other mappings. If one is found, iterate over given layouts
