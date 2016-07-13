@@ -27,12 +27,25 @@ class LibraryTreeModel : public TreeItemModel {
   public slots:  
     void reloadTracksTree();
     
+  private:
+    
+    struct CoverIndex {
+        int iCoverHash;
+        int iCoverLoc;
+        int iTrackLoc;
+        int iCoverSrc;
+        int iCoverType;
+    };
+    
   private slots:
     void coverFound(const QObject* requestor, int requestReference, const CoverInfo&,
                     QPixmap pixmap, bool fromCache);
     
   private:    
     void createTracksTree();
+    void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);
+    
+    QChar getFirstChar(const QString &text);
     
     MixxxLibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;

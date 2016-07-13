@@ -181,11 +181,12 @@ void LibraryTreeModel::createTracksTree() {
     QSqlRecord record = query.record();
     
     int iAlbum = record.indexOf(LIBRARYTABLE_ALBUM);
-    int iCoverHash = record.indexOf(LIBRARYTABLE_COVERART_HASH);
-    int iCoverLoc = record.indexOf(LIBRARYTABLE_COVERART_LOCATION);
-    int iCoverSrc = record.indexOf(LIBRARYTABLE_COVERART_SOURCE);
-    int iCoverType = record.indexOf(LIBRARYTABLE_COVERART_TYPE);
-    int iTrackLoc = record.indexOf(TRACKLOCATIONSTABLE_LOCATION);
+    CoverIndex cIndex;
+    cIndex.iCoverHash = record.indexOf(LIBRARYTABLE_COVERART_HASH);
+    cIndex.iCoverLoc = record.indexOf(LIBRARYTABLE_COVERART_LOCATION);
+    cIndex.iCoverSrc = record.indexOf(LIBRARYTABLE_COVERART_SOURCE);
+    cIndex.iCoverType = record.indexOf(LIBRARYTABLE_COVERART_TYPE);
+    cIndex.iTrackLoc = record.indexOf(TRACKLOCATIONSTABLE_LOCATION);
     
     int extraSize = m_coverQuery.size() + 1;
     QVector<QString> lastUsed(size);
@@ -212,22 +213,8 @@ void LibraryTreeModel::createTracksTree() {
                 // reset 
                 lastUsed.fill(QString());
                 
-                QChar c = value.at(0);
-                
-                // This removes the accents of the characters
-                if (c.isLetter()) {
-                    // We only can remove the accents if its a latin character
-                    if (c.toLatin1() != 0) {
-                        QString s1 = value.normalized(QString::NormalizationForm_KD);
-                        s1.remove(QRegExp("[^a-zA-Z]"));
-                        
-                        if (s1.size() > 0) {
-                            c = s1.at(0).toUpper();
-                        }
-                    }
-                }
-                
                 // Check if a header must be added
+                QChar c = getFirstChar(value);
                 if (lastHeader != c) {
                     lastHeader = c;
                     TreeItem* pTree = new TreeItem(lastHeader, lastHeader, 
@@ -247,16 +234,7 @@ void LibraryTreeModel::createTracksTree() {
             
             // Add coverart info
             if (extraSize + i == iAlbum && !unknown) {
-                CoverInfo c;
-                c.hash = query.value(iCoverHash).toInt();
-                c.coverLocation = query.value(iCoverLoc).toString();
-                c.trackLocation = query.value(iTrackLoc).toString();
-                
-                quint16 source = query.value(iCoverSrc).toInt();
-                quint16 type = query.value(iCoverType).toInt();
-                c.source = static_cast<CoverInfo::Source>(source);
-                c.type = static_cast<CoverInfo::Type>(type);
-                pTree->setCoverInfo(c);
+                addCoverArt(cIndex, query, pTree);
             }
         }
         
@@ -273,4 +251,37 @@ void LibraryTreeModel::createTracksTree() {
     }
     
     triggerRepaint();
+}
+
+void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,
+                                   const QSqlQuery& query, TreeItem* pTree) {
+    CoverInfo c;
+    c.hash = query.value(index.iCoverHash).toInt();
+    c.coverLocation = query.value(index.iCoverLoc).toString();
+    c.trackLocation = query.value(index.iTrackLoc).toString();
+    
+    quint16 source = query.value(index.iCoverSrc).toInt();
+    quint16 type = query.value(index.iCoverType).toInt();
+    c.source = static_cast<CoverInfo::Source>(source);
+    c.type = static_cast<CoverInfo::Type>(type);
+    pTree->setCoverInfo(c);
+}
+
+QChar LibraryTreeModel::getFirstChar(const QString& text) {
+    QChar c = text.at(0);                
+    if (!c.isLetter()) {
+        return c;
+    }
+    
+    // This removes the accents of the characters
+    // We only can remove the accents if its a latin character
+    if (c.toLatin1() != 0) {
+        QString s1 = text.normalized(QString::NormalizationForm_KD);
+        s1.remove(QRegExp("[^a-zA-Z]"));
+        
+        if (s1.size() > 0) {
+            c = s1.at(0).toUpper();
+        }
+    }
+    return c;
 }
