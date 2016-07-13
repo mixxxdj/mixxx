@@ -100,23 +100,7 @@ QIcon AutoDJFeature::getIcon() {
 }
 
 QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
-    WTrackTableView* pTrackTableView = 
-            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, false);
-        
-    pTrackTableView->installEventFilter(pKeyboard);
-
-    connect(m_pLibrary, SIGNAL(setTrackTableFont(const QFont&)),
-            pTrackTableView, SLOT(setTrackTableFont(const QFont&)));
-    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            m_pLibrary, SIGNAL(trackSelected(TrackPointer)));
-    
-    m_trackTables[paneId] = pTrackTableView;
-
-    pTrackTableView->loadTrackModel(m_pAutoDJProcessor->getTableModel());
-    
+    WTrackTableView* pTrackTableView = createTableWidget(pKeyboard, paneId);        
     connect(pTrackTableView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, 
@@ -167,9 +151,9 @@ void AutoDJFeature::activate() {
     
     m_pAutoDJView->onShow();
     
-    m_pLibrary->switchToFeature(this);
-    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
-    m_pLibrary->restoreSearch(QString()); //Null String disables search box
+    showTrackModel(m_pAutoDJProcessor->getTableModel());
+    showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    restoreSearch(QString()); //Null String disables search box
     
     emit(enableCoverArtDisplay(true));
 }
@@ -428,15 +412,10 @@ void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
 }
 
 void AutoDJFeature::selectionChanged(const QItemSelection&, const QItemSelection&) {
-    DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+    QPointer<WTrackTableView> pTable = getFocusedTable();
+    DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull() && !pTable.isNull()) {
         return;
     }
     
-    auto it = m_trackTables.find(m_featureFocus);
-    if (it == m_trackTables.end() || it->isNull()) {
-        return;
-    }
-    
-    const QModelIndexList& selectedRows = (*it)->selectionModel()->selectedRows();
-    m_pAutoDJView->setSelectedRows(selectedRows);
+    m_pAutoDJView->setSelectedRows(pTable->selectionModel()->selectedRows());
 }

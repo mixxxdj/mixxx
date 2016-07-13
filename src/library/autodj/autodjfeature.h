@@ -65,7 +65,6 @@ class AutoDJFeature : public LibraryFeature {
     AutoDJProcessor* m_pAutoDJProcessor;
     TreeItemModel m_childModel;
     QPointer<DlgAutoDJ> m_pAutoDJView;
-    QHash<int, QPointer<WTrackTableView> > m_trackTables;
 
     // Initialize the list of crates loaded into the auto-DJ queue.
     void constructCrateChildModel();
