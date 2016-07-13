@@ -28,6 +28,10 @@
 #define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
 
+// TagLib has support for XiphComment::pictureList() since version 1.11
+#define TAGLIB_HAS_VORBIS_COMMENT_PICTURES \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 11))
+
 #ifdef _WIN32
 static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
 #define TAGLIB_FILENAME_FROM_QSTRING(fileName) (const wchar_t*)fileName.utf16()
@@ -393,6 +397,7 @@ QImage loadCoverArtImageFromVorbisCommentPictureList(
     return QImage();
 }
 
+#if !(TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
 bool parseBase64EncodedVorbisCommentPicture(
         TagLib::FLAC::Picture* pPicture,
         const TagLib::String& base64Encoded) {
@@ -402,6 +407,7 @@ bool parseBase64EncodedVorbisCommentPicture(
     TagLib::FLAC::Picture picture;
     return pPicture->parse(rawData);
 }
+#endif
 
 inline QImage parseBase64EncodedVorbisCommentImage(
         const TagLib::String& base64Encoded) {
@@ -476,11 +482,18 @@ void readCoverArtFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
     }
 }
 
-void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, const TagLib::Ogg::XiphComment& tag) {
+void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphComment& tag) {
     if (pCoverArt == nullptr) {
         return; // nothing to do
     }
 
+#if TAGLIB_HAS_VORBIS_COMMENT_PICTURES
+    const QImage image(loadCoverArtImageFromVorbisCommentPictureList(tag.pictureList()));
+    if (!image.isNull()) {
+        *pCoverArt = image;
+        return; // done
+    }
+#else
     if (tag.fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
         // https://wiki.xiph.org/VorbisComment#METADATA_BLOCK_PICTURE
         const TagLib::StringList& base64EncodedList =
@@ -502,6 +515,7 @@ void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, const TagLib::Ogg::Xiph
             }
         }
     }
+#endif
 
     if (tag.fieldListMap().contains("COVERART")) {
         // The unofficial COVERART field is deprecated:
@@ -1529,7 +1543,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         }
         if (readAudioProperties(pTrackMetadata, file)) {
             // VorbisComment tag takes precedence over ID3v2 tag
-            const TagLib::Ogg::XiphComment* pXiphComment =
+            TagLib::Ogg::XiphComment* pXiphComment =
                     hasXiphComment(file) ? file.xiphComment() : nullptr;
             if (pXiphComment) {
                 readTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
@@ -1555,7 +1569,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     } else if (kFileTypeOggVorbis == fileType) {
         TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
-            const TagLib::Ogg::XiphComment* pXiphComment = file.tag();
+            TagLib::Ogg::XiphComment* pXiphComment = file.tag();
             if (pXiphComment) {
                 readTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
                 readCoverArtFromVorbisCommentTag(pCoverArt, *pXiphComment);
@@ -1573,7 +1587,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     } else if (kFileTypeOggOpus == fileType) {
         TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
-            const TagLib::Ogg::XiphComment* pXiphComment = file.tag();
+            TagLib::Ogg::XiphComment* pXiphComment = file.tag();
             if (pXiphComment) {
                 readTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
                 readCoverArtFromVorbisCommentTag(pCoverArt, *pXiphComment);
