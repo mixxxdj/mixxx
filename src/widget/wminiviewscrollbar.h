@@ -13,7 +13,7 @@ class WMiniViewScrollBar : public QScrollBar
 
   protected:
     void paintEvent(QPaintEvent* event) override;
-    void lettersPaint(QPaintEvent* event);
+    void lettersPaint(QPaintEvent*);
 
     QHash<QChar, int> m_count;
     QVector<QChar> m_letters;

@@ -27,20 +27,12 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
     }
 }
 
-void WMiniViewScrollBar::lettersPaint(QPaintEvent* event) {
+void WMiniViewScrollBar::lettersPaint(QPaintEvent*) {
     QPainter painter(this);
 
     QStyleOptionSlider styleOpts;
     styleOpts.init(this);
-
-    styleOpts.orientation = orientation();
-    styleOpts.maximum = maximum();
-    styleOpts.minimum = minimum();
-    styleOpts.sliderPosition = sliderPosition();
-    styleOpts.sliderValue = value();
-    styleOpts.singleStep = singleStep();
-    styleOpts.pageStep = pageStep();
-
+    
     // Get total count
     int totalCount = 0;
     for (int x : m_count) {
@@ -48,8 +40,10 @@ void WMiniViewScrollBar::lettersPaint(QPaintEvent* event) {
     }
 
     // Get total size
-    const QRect& total = event->rect();
+    const QRect& total = styleOpts.rect;
     QPoint topLeft = total.topLeft();
+    QFont f(font());
+    f.setPointSize(f.pointSize()/1.5);
 
     for (const QChar& c : m_letters) {
 
@@ -60,7 +54,8 @@ void WMiniViewScrollBar::lettersPaint(QPaintEvent* event) {
         
         QPoint bottomRight = topLeft + QPoint(total.width(), height);
         painter.setBrush(palette().color(QPalette::Text));
-        painter.drawText(QRect(topLeft, bottomRight), QString(c));
+        painter.setFont(f);
+        painter.drawText(QRect(topLeft, bottomRight), Qt::AlignTop | Qt::AlignHCenter, QString(c));
         
         topLeft += QPoint(0, height);
     }

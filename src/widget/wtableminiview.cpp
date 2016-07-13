@@ -49,7 +49,7 @@ void WTableMiniView::refreshCharMap() {
         }
     }
     
-    repaint();
+    update();
 }
 
 QChar WTableMiniView::getFirstChar(const QString& text) {
