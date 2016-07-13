@@ -153,7 +153,7 @@ void LibraryTreeModel::createTracksTree() {
     QString queryStr = "SELECT COUNT(%3),%1,%2 "
                        "FROM library LEFT JOIN track_locations "
                        "ON (%3 = %4) "
-                       "WHERE %5 != 1 "
+                       "WHERE %5 != 1 AND  %7 != 1 "
                        "GROUP BY %2 "
                        "ORDER BY %6 ";
     queryStr = queryStr.arg(m_coverQuery.join(","), 
@@ -161,7 +161,8 @@ void LibraryTreeModel::createTracksTree() {
                             "library." + LIBRARYTABLE_ID,
                             "track_locations." + TRACKLOCATIONSTABLE_ID,
                             "library." + LIBRARYTABLE_MIXXXDELETED,
-                            sortColumns.join(","));
+                            sortColumns.join(","),
+                            "track_locations." + TRACKLOCATIONSTABLE_FSDELETED);
         
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
