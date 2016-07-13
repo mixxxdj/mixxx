@@ -49,7 +49,7 @@ static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size th
 #include <taglib/mp4file.h>
 #include <taglib/flacfile.h>
 #include <taglib/vorbisfile.h>
-#if TAGLIB_HAS_OPUSFILE
+#if (TAGLIB_HAS_OPUSFILE)
 #include <taglib/opusfile.h>
 #endif
 #include <taglib/wavpackfile.h>
@@ -89,7 +89,7 @@ const std::array<TagLib::FLAC::Picture::Type, 4> kCoverArtVorbisCommentPictureTy
 };
 
 inline bool hasID3v2Tag(TagLib::MPEG::File& file) {
-#if TAGLIB_HAS_TAG_CHECK
+#if (TAGLIB_HAS_TAG_CHECK)
     return file.hasID3v2Tag();
 #else
     return nullptr != file.ID3v2Tag();
@@ -97,7 +97,7 @@ inline bool hasID3v2Tag(TagLib::MPEG::File& file) {
 }
 
 inline bool hasAPETag(TagLib::MPEG::File& file) {
-#if TAGLIB_HAS_TAG_CHECK
+#if (TAGLIB_HAS_TAG_CHECK)
     return file.hasAPETag();
 #else
     return nullptr != file.APETag();
@@ -105,7 +105,7 @@ inline bool hasAPETag(TagLib::MPEG::File& file) {
 }
 
 inline bool hasID3v2Tag(TagLib::FLAC::File& file) {
-#if TAGLIB_HAS_TAG_CHECK
+#if (TAGLIB_HAS_TAG_CHECK)
     return file.hasID3v2Tag();
 #else
     return nullptr != file.ID3v2Tag();
@@ -113,7 +113,7 @@ inline bool hasID3v2Tag(TagLib::FLAC::File& file) {
 }
 
 inline bool hasXiphComment(TagLib::FLAC::File& file) {
-#if TAGLIB_HAS_TAG_CHECK
+#if (TAGLIB_HAS_TAG_CHECK)
     return file.hasXiphComment();
 #else
     return nullptr != file.xiphComment();
@@ -121,7 +121,7 @@ inline bool hasXiphComment(TagLib::FLAC::File& file) {
 }
 
 inline bool hasAPETag(TagLib::WavPack::File& file) {
-#if TAGLIB_HAS_TAG_CHECK
+#if (TAGLIB_HAS_TAG_CHECK)
     return file.hasAPETag();
 #else
     return nullptr != file.APETag();
@@ -282,7 +282,7 @@ void readAudioProperties(TrackMetadata* pTrackMetadata,
     pTrackMetadata->setChannels(audioProperties.channels());
     pTrackMetadata->setSampleRate(audioProperties.sampleRate());
     pTrackMetadata->setBitrate(audioProperties.bitrate());
-#if TAGLIB_HAS_LENGTH_IN_MILLISECONDS
+#if (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
     // Cast to double is required for duration with sub-second precision
     const double dLengthInMilliseconds = audioProperties.lengthInMilliseconds();
     const double duration = dLengthInMilliseconds / mixxx::Duration::kMillisPerSecond;
@@ -487,7 +487,7 @@ void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCommen
         return; // nothing to do
     }
 
-#if TAGLIB_HAS_VORBIS_COMMENT_PICTURES
+#if (TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
     const QImage image(loadCoverArtImageFromVorbisCommentPictureList(tag.pictureList()));
     if (!image.isNull()) {
         *pCoverArt = image;
@@ -1220,7 +1220,7 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
     } else if (getItemListMap(tag).contains("tmpo")) {
             // Read the BPM as an integer value.
             const TagLib::MP4::Item& item = getItemListMap(tag)["tmpo"];
-#if TAGLIB_HAS_MP4_ATOM_TYPES
+#if (TAGLIB_HAS_MP4_ATOM_TYPES)
             if (item.atomDataType() == TagLib::MP4::TypeInteger) {
                 pTrackMetadata->setBpm(Bpm(item.toInt()));
             }
@@ -1583,7 +1583,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 }
             }
         }
-#if TAGLIB_HAS_OPUSFILE
+#if (TAGLIB_HAS_OPUSFILE)
     } else if (kFileTypeOggOpus == fileType) {
         TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
@@ -1624,7 +1624,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
 
         TagLib::RIFF::WAV::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
-#if TAGLIB_HAS_WAV_ID3V2TAG
+#if (TAGLIB_HAS_WAV_ID3V2TAG)
             const TagLib::ID3v2::Tag* pID3v2Tag =
                     file.hasID3v2Tag() ? file.ID3v2Tag() : nullptr;
 #else
@@ -1716,7 +1716,7 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
                         TAGLIB_FILENAME_FROM_QSTRING(fileName));
         anyTagsWritten |= writeTrackMetadataIntoXiphComment(pOggVorbisFile->tag(), trackMetadata);
         pFile = std::move(pOggVorbisFile); // transfer ownership
-#if TAGLIB_HAS_OPUSFILE
+#if (TAGLIB_HAS_OPUSFILE)
     } else if (kFileTypeOggOpus == fileType) {
         auto pOggOpusFile =
                 std::make_unique<TagLib::Ogg::Opus::File>(
@@ -1734,7 +1734,7 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         auto pWAVFile =
                 std::make_unique<TagLib::RIFF::WAV::File>(
                         TAGLIB_FILENAME_FROM_QSTRING(fileName));
-#if TAGLIB_HAS_WAV_ID3V2TAG
+#if (TAGLIB_HAS_WAV_ID3V2TAG)
         anyTagsWritten |= writeTrackMetadataIntoID3v2Tag(pWAVFile->ID3v2Tag(), trackMetadata);
 #else
         anyTagsWritten |= writeTrackMetadataIntoID3v2Tag(pWAVFile->tag(), trackMetadata);
