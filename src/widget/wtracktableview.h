@@ -36,6 +36,7 @@ class WTrackTableView : public WLibraryTableView {
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
+    void setSorting(bool sorting);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);

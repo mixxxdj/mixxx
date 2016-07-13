@@ -43,20 +43,10 @@ TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 
-QWidget* RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int) {
-    WTrackTableView* pTrackTableView = new WTrackTableView(nullptr, 
-                                                           m_pConfig, 
-                                                           m_pTrackCollection, 
-                                                           false); // No sorting
-    pTrackTableView->installEventFilter(pKeyboard);
-    
-    connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    pTrackTableView->loadTrackModel(getProxyTrackModel());
-    
-    return pTrackTableView;
+QWidget* RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
+    WTrackTableView* pTable = LibraryFeature::createTableWidget(pKeyboard, paneId);
+    pTable->setSorting(false);    
+    return pTable;
 }
 
 QWidget *RecordingFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
@@ -77,9 +67,9 @@ void RecordingFeature::activate() {
     }
     
     m_pRecordingView->refreshBrowseModel();
-    m_pLibrary->switchToFeature(this);
-    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
-    m_pLibrary->restoreSearch("");
+    showTrackModel(getProxyTrackModel());
+    showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    restoreSearch("");
     
     emit(enableCoverArtDisplay(false));
 }

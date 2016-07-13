@@ -100,7 +100,7 @@ QIcon AutoDJFeature::getIcon() {
 }
 
 QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
-    WTrackTableView* pTrackTableView = createTableWidget(pKeyboard, paneId);        
+    WTrackTableView* pTrackTableView = LibraryFeature::createTableWidget(pKeyboard, paneId);        
     connect(pTrackTableView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, 

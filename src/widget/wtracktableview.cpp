@@ -1290,6 +1290,10 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
     loadSelectionToGroup(group, play);
 }
 
+void WTrackTableView::setSorting(bool sorting) {
+    m_sorting = sorting;
+}
+
 void WTrackTableView::slotSendToAutoDJ() {
     // append to auto DJ
     sendToAutoDJ(false); // bTop = false
