@@ -591,7 +591,7 @@ class DlgKeyboard(Frame):
         # Setup context menu
         self.context_menu = Menu(self, tearoff=0)
         self.context_menu.add_command(label="Dead key", command=lambda: self.active_key.set_dead_key())
-        self.context_menu.add_command(label="Reset", command=lambda: self.active_key.set_char(""))
+        self.context_menu.add_command(label="Reset", command=lambda: self.active_key.reset())
 
         # Current active key (key that has focus)
         self.active_key = None
@@ -798,7 +798,8 @@ class DlgKeyboardKey(Button):
 
         # Check for DELETE key
         if e.keysym_num == 65535 or e.keysym_num == 65439:
-            char = ""
+            self.reset()
+            return
         elif not char.strip():
             return
 
@@ -867,6 +868,23 @@ class DlgKeyboardKey(Button):
         self.dlg_keyboard.set_keys_with_same_key_id_as(self)
 
         self.set_char("", dead_key=True)
+
+    def reset(self):
+        key_id = self.key_id
+        if not key_id:
+            print("This key was not assigned a key_id and the key can not be marked as a dead key")
+            return
+
+        app = self.dlg_keyboard.app
+        layout = app.selected_layout
+        if not layout:
+            print("Layout is None, not marking key as dead key")
+            return
+
+        modifier = KeyboardKey.MODIFIERS.SHIFT if self.dlg_keyboard.shift_pressed else KeyboardKey.MODIFIERS.NONE
+        layout.update_key(key_id=key_id, modifier=modifier, char='')
+        self.set_char('')
+
 
 
 if __name__ == '__main__':
