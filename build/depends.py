@@ -254,7 +254,7 @@ class Qt(Dependence):
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
         
-        if build.static_dependencies:
+        if build.static_qt:
             build.env.Append(CPPDEFINES='QT_NODLL')
         else:
             build.env.Append(CPPDEFINES='QT_SHARED')
@@ -352,14 +352,14 @@ class Qt(Dependence):
             # appropriate.
             if qt5:
                 build.env.EnableQt5Modules(qt_modules,
-                                           staticdeps=build.static_dependencies,
+                                           staticdeps=build.static_qt,
                                            debug=build.build_is_debug)
             else:
                 build.env.EnableQt4Modules(qt_modules,
-                                           staticdeps=build.static_dependencies,
+                                           staticdeps=build.static_qt,
                                            debug=build.build_is_debug)
 
-            if build.static_dependencies:
+            if build.static_qt:
                 # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
                 # QtCore
                 build.env.Append(LIBS = 'kernel32')
