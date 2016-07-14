@@ -1,6 +1,7 @@
 #ifndef WMINIVIEWSCROLLBAR_H
 #define WMINIVIEWSCROLLBAR_H
 
+#include <QMutex>
 #include <QScrollBar>
 
 class WMiniViewScrollBar : public QScrollBar
@@ -10,18 +11,28 @@ class WMiniViewScrollBar : public QScrollBar
 
     void setShowLetters(bool show);
     bool showLetters() const;
+    
+    // Sets the letters to be shown and triggers a update
+    void setLetters(const QVector<QPair<QChar, int> >& letters);
 
   protected:
-    void paintEvent(QPaintEvent* event) override;
+    virtual void paintEvent(QPaintEvent* event);
+    virtual void resizeEvent(QResizeEvent*pEvent);
     void lettersPaint(QPaintEvent*);
-
-    QHash<QChar, int> m_count;
-    QVector<QChar> m_letters;
     
   private:
-    int interpolHeight(int current, int min1, int max1, int min2, int max2);
+    // The purpose of this function is to avoid computing all the sizes in the
+    // paintEvent function which can block the GUI thread
+    void computeLettersSize();
+    
+    static float interpolHeight(float current, float min1, float max1, float min2, float max2);
+    static int findSmallest(const QVector<QPair<QChar, int> >& vector);
     
     bool m_showLetters;
+    QVector<QPair<QChar, int> > m_letters;
+    QVector<QPair<QChar, int> > m_computedSize;
+    QMutex m_computeMutex;
+    QMutex m_lettersMutex;
 };
 
 #endif // WMINIVIEWSCROLLBAR_H

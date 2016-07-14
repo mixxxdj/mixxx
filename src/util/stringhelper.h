@@ -6,7 +6,7 @@ class StringHelper
   public:
     StringHelper();
     
-    static QChar getFirstChar(const QString &text);
+    static QChar getFirstCharForGrouping(const QString &text);
 };
 
 #endif // STRINGHELPER_H

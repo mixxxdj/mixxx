@@ -7,7 +7,7 @@ StringHelper::StringHelper() {
 
 }
 
-QChar StringHelper::getFirstChar(const QString& text) {
+QChar StringHelper::getFirstCharForGrouping(const QString& text) {
     if (text.size() <= 0) {
         return QChar();
     }
@@ -20,7 +20,10 @@ QChar StringHelper::getFirstChar(const QString& text) {
     QString letter(c);
     QString limmit("Z");
     if (QString::localeAwareCompare(limmit, letter) < 0) {
-        // The letter is above z so we must not change it
+        // The letter is above z so we must not change it this is due to 
+        // Chinese letters or Finnish sorting. In Finnish the correct sorting
+        // is a-z, å, ä, ö and the user will expect these letters at the
+        // end and not like this a, ä, å, b-o, ö, p-z
         return c;
     }
     

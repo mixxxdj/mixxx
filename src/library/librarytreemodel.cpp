@@ -216,7 +216,7 @@ void LibraryTreeModel::createTracksTree() {
                 lastUsed.fill(QString());
                 
                 // Check if a header must be added
-                QChar c = StringHelper::getFirstChar(value);
+                QChar c = StringHelper::getFirstCharForGrouping(value);
                 if (lastHeader != c) {
                     lastHeader = c;
                     TreeItem* pTree = new TreeItem(lastHeader, lastHeader, 

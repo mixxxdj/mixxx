@@ -26,31 +26,27 @@ void WTableMiniView::refreshCharMap() {
         return;
     }
     
-    m_count.clear();
     int size = m_pModel->rowCount();
+    QVector<QPair<QChar, int> > letters;
     
     for (int i = 0; i < size; ++i) {
         const QModelIndex& index = m_pModel->index(i, m_sortColumn);
         QString text = index.data().toString();
-        if (text.isEmpty()) {
-            continue;
-        }
-        QChar c = StringHelper::getFirstChar(text);
+        QChar c = StringHelper::getFirstCharForGrouping(text);
         
-        // Add character to letters order vector
-        if (m_letters.size() <= 0 || c != m_letters.last()) {
-            m_letters.append(c);
-        }
-        
-        // Add character to character map
-        auto it = m_count.find(c);
-        if (it == m_count.end()) {
-            m_count.insert(c, 1);
+        if (letters.size() <= 0) {
+            letters.append(qMakePair(c, 1));
         } else {
-            ++(*it);
+            QPair<QChar, int> &last = letters.last();
+            
+            if (last.first == c) {
+                ++last.second;
+            } else {
+                letters.append(qMakePair(c, 1));
+            }
         }
     }
     
-    update();
+    setLetters(letters);
 }
 
