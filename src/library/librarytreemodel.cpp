@@ -112,7 +112,7 @@ void LibraryTreeModel::reloadTracksTree() {
     pRootItem->setLibraryFeature(m_pFeature);
     QString title = m_pFeature->title().toString();
 
-    m_pLibraryItem = new TreeItem(title, title, m_pFeature, pRootItem);
+    m_pLibraryItem = new TreeItem(title, "", m_pFeature, pRootItem);
     m_pLibraryItem->setIcon(m_pFeature->getIcon());
 
     pRootItem->appendChild(m_pLibraryItem);

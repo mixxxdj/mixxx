@@ -11,14 +11,12 @@ class WTableMiniView : public WMiniViewScrollBar
   public:
     WTableMiniView(QWidget* parent = nullptr);
 
-    void setModel(QAbstractItemModel *model);
     void setSortColumn(int column);
 
   private slots:
-    void refreshCharMap();
+    void refreshCharMap() override;
 
   private:    
-    QPointer<QAbstractItemModel> m_pModel;
     int m_sortColumn;
 };
 

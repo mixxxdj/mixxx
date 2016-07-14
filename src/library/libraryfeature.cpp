@@ -18,6 +18,7 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 #include "widget/wtableminiview.h"
+#include "widget/wtreeminiview.h"
 
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!
 // The reason for this is that LibraryFeature uses slots/signals and for this
@@ -107,7 +108,13 @@ QWidget* LibraryFeature::createInnerSidebarWidget(KeyboardEventFilter *pKeyboard
 WLibrarySidebar *LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter *pKeyboard) {
     WLibrarySidebar* pSidebar = new WLibrarySidebar(nullptr);
     pSidebar->installEventFilter(pKeyboard);
-    pSidebar->setModel(getChildModel());
+    QAbstractItemModel* pModel = getChildModel();
+    pSidebar->setModel(pModel);
+    
+    // Set sidebar mini view
+    WTreeMiniView* pMiniView = new WTreeMiniView(pSidebar);
+    pMiniView->setModel(pModel);
+    pSidebar->setVerticalScrollBar(pMiniView);
     
     connect(pSidebar, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(activateChild(const QModelIndex&)));

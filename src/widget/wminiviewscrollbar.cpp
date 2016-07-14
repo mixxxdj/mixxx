@@ -26,6 +26,17 @@ void WMiniViewScrollBar::setLetters(const QVector<QPair<QChar, int> >& letters) 
     update();
 }
 
+void WMiniViewScrollBar::setModel(QAbstractItemModel *model) {
+    m_pModel = model;
+    if (!m_pModel.isNull()) {
+        connect(m_pModel.data(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+                this, SLOT(refreshCharMap()));
+        
+        refreshCharMap();
+        update();
+    }
+}
+
 void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
     QScrollBar::paintEvent(event);
 

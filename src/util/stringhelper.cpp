@@ -28,9 +28,7 @@ QChar StringHelper::getFirstCharForGrouping(const QString& text) {
     }
     
     // This removes the accents of the characters
-    QString s1 = letter.normalized(QString::NormalizationForm_KD);
-    s1.remove(QRegExp("[^A-Z]"));
-    
+    QString s1 = letter.normalized(QString::NormalizationForm_KD);    
     if (s1.size() > 0) {
         c = s1.at(0).toUpper();
     }

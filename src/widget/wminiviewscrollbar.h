@@ -1,7 +1,9 @@
 #ifndef WMINIVIEWSCROLLBAR_H
 #define WMINIVIEWSCROLLBAR_H
 
+#include <QAbstractItemModel>
 #include <QMutex>
+#include <QPointer>
 #include <QScrollBar>
 
 class WMiniViewScrollBar : public QScrollBar
@@ -14,11 +16,15 @@ class WMiniViewScrollBar : public QScrollBar
     
     // Sets the letters to be shown and triggers a update
     void setLetters(const QVector<QPair<QChar, int> >& letters);
+    void setModel(QAbstractItemModel *model);
 
   protected:
     virtual void paintEvent(QPaintEvent* event);
     virtual void resizeEvent(QResizeEvent*pEvent);
+    virtual void refreshCharMap() = 0;
     void lettersPaint(QPaintEvent*);
+    
+    QPointer<QAbstractItemModel> m_pModel;
     
   private:
     // The purpose of this function is to avoid computing all the sizes in the
