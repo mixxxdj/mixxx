@@ -129,6 +129,11 @@ QTableView {
   gridline-color: red;
 }
 
+QTableView QScrollBar {
+  color: #d2d2d2;
+  font-size: 8pt;
+}
+
 /* checkbox in library "Played" column */
 QTableView::indicator {
   width: 12px;

@@ -124,8 +124,8 @@ void WMiniViewScrollBar::computeLettersSize() {
         // Do the same algorithm reversed, it should take the space from the
         // biggest elements in the other direction.
         
-        int difference = 0;
-        int prevSpace = 0;
+        difference = totalSizeCheck - totalLinearSize;
+        prevSpace = 0;
         for (int i = m_computedSize.size() - 1; i >= 0; --i) {
             int height = m_computedSize[i].second;
             int auxDifference = abs(letterSize - height);
