@@ -5,6 +5,8 @@
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 
+#include "util/stringhelper.h"
+
 namespace  {
 QHash<quint16, QModelIndex> m_hashToIndex;
 }
@@ -214,7 +216,7 @@ void LibraryTreeModel::createTracksTree() {
                 lastUsed.fill(QString());
                 
                 // Check if a header must be added
-                QChar c = getFirstChar(value);
+                QChar c = StringHelper::getFirstChar(value);
                 if (lastHeader != c) {
                     lastHeader = c;
                     TreeItem* pTree = new TreeItem(lastHeader, lastHeader, 
@@ -265,23 +267,4 @@ void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,
     c.source = static_cast<CoverInfo::Source>(source);
     c.type = static_cast<CoverInfo::Type>(type);
     pTree->setCoverInfo(c);
-}
-
-QChar LibraryTreeModel::getFirstChar(const QString& text) {
-    QChar c = text.at(0);                
-    if (!c.isLetter()) {
-        return c;
-    }
-    
-    // This removes the accents of the characters
-    // We only can remove the accents if its a latin character
-    if (c.toLatin1() != 0) {
-        QString s1 = text.normalized(QString::NormalizationForm_KD);
-        s1.remove(QRegExp("[^a-zA-Z]"));
-        
-        if (s1.size() > 0) {
-            c = s1.at(0).toUpper();
-        }
-    }
-    return c;
 }

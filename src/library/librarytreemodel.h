@@ -45,8 +45,6 @@ class LibraryTreeModel : public TreeItemModel {
     void createTracksTree();
     void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);
     
-    QChar getFirstChar(const QString &text);
-    
     MixxxLibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;
     QStringList m_sortOrder;

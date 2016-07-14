@@ -1082,6 +1082,7 @@ class MixxxCore(Feature):
                    "util/rotary.cpp",
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
+                   "util/stringhelper.cpp",
 
                    '#res/mixxx.qrc'
                    ]

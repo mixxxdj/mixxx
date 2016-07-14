@@ -1,5 +1,7 @@
 #include "widget/wtableminiview.h"
 
+#include "util/stringhelper.h"
+
 WTableMiniView::WTableMiniView(QWidget* parent)
         : WMiniViewScrollBar(parent) {
     
@@ -33,7 +35,7 @@ void WTableMiniView::refreshCharMap() {
         if (text.isEmpty()) {
             continue;
         }
-        QChar c = getFirstChar(text);
+        QChar c = StringHelper::getFirstChar(text);
         
         // Add character to letters order vector
         if (m_letters.size() <= 0 || c != m_letters.last()) {
@@ -51,24 +53,4 @@ void WTableMiniView::refreshCharMap() {
     
     update();
 }
-
-QChar WTableMiniView::getFirstChar(const QString& text) {
-    QChar c = text.at(0);                
-    if (!c.isLetter()) {
-        return c;
-    }
-    
-    // This removes the accents of the characters
-    // We only can remove the accents if its a latin character
-    if (c.toLatin1() != 0) {
-        QString s1 = text.normalized(QString::NormalizationForm_KD);
-        s1.remove(QRegExp("[^a-zA-Z]"));
-        
-        if (s1.size() > 0) {
-            c = s1.at(0).toUpper();
-        }
-    }
-    return c;
-}
-
 

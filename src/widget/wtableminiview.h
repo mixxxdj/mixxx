@@ -17,9 +17,7 @@ class WTableMiniView : public WMiniViewScrollBar
   private slots:
     void refreshCharMap();
 
-  private:
-    QChar getFirstChar(const QString& text);
-    
+  private:    
     QPointer<QAbstractItemModel> m_pModel;
     int m_sortColumn;
 };
