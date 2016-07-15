@@ -1326,14 +1326,21 @@ QHeaderView::section {
 /* QScrollbar styling is even harder */
 QScrollBar {
   border: 1px solid #585858;
-  min-height: 12px;
-  width: 15px;
   background: #1a1a1a;
   border-radius: 3px;
   padding: 1px;
   color: #999999;
   font-size: 8pt;
 }
+QScrollBar:horizontal {
+  min-width: 12px;
+  height: 15px;
+}
+QScrollBar:vertical {
+  min-height: 12px;
+  width: 15px;
+}
+
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 QScrollBar::add-page, QScrollBar::sub-page {
   min-width: 15px;
@@ -1344,7 +1351,7 @@ QScrollBar::add-page, QScrollBar::sub-page {
 }
 QScrollBar::handle {
   min-height: 25px;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #725309, stop:1 #412f05);
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(114, 83, 9, 190), stop:1 rgba(65, 47, 5, 190));
   border-radius: 3px;
   border: 1px solid #725309;
 }

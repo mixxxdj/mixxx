@@ -475,24 +475,34 @@
 
 					/* Scroll bars */
 					QScrollBar {
+					  color: #474747;
+					  font-size: 8pt;
+					  padding: 3px;
+					}
+
+					QScrollBar:horizontal {
+					  border-top: 1px solid #141414;
+					  min-width: 12px;
+					  height: 15px;
+					}
+					QScrollBar:vertical {
 					  border-left: 1px solid #141414;
 					  min-height: 12px;
 					  width: 15px;
-					  padding: 3px;
-					  font-size: 8pt;
 					}
 					/* "add-page" and "sub-page" are the gutter of the scrollbar */
 					QScrollBar::add-page, QScrollBar::sub-page {
 					  background: none;
 					}
+
 					QScrollBar::handle {
-					  min-width: 25px;
-					  background: #757575;
-					  border-radius: 2px;
+					  min-height: 25px;
+					  background: rgba(95, 95, 95, 150);
+					  border-radius: 3px;
 					  border: none;
 					}
-					QScrollBar::handle:hover, QScrollBar::handle:hover {
-					  background: #B3B3B3;
+					QScrollBar::handle:hover {
+					  background: rgba(179, 179, 179, 150);
 					}
 
 					/* Turn off buttons */
@@ -500,6 +510,11 @@
 					  width: 0px;
 					  height: 0px;
 					  border: none;
+					}
+
+					QScrollArea {
+					  border: 1px solid #1A1A1A;
+					  background-color: #222222;
 					}
 
 					WBaseLibrary QTabWidget QTreeView, #DlgAutoDJ QScrollArea {

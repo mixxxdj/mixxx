@@ -129,11 +129,6 @@ QTableView {
   gridline-color: red;
 }
 
-QTableView QScrollBar {
-  color: #d2d2d2;
-  font-size: 8pt;
-}
-
 /* checkbox in library "Played" column */
 QTableView::indicator {
   width: 12px;
@@ -357,11 +352,6 @@ QTreeView {
   margin: 4px 0px 0px 0px;
 }
 
-QTreeView QScrollBar {
-  color: #d2d2d2;
-  font-size: 8pt;
-}
-
 /* sidebar, as well as root items for playlists, crates, and history */
 QTextBrowser, QTreeView {
   color: #d2d2d2;
@@ -500,47 +490,40 @@ WBaseLibrary QPushButton:pressed {
 }
 
 /* Scroll bars */
+QScrollBar {
+  color: #d2d2d2;
+  font-size: 8pt;
+  background: #222222;
+  padding: 3px;
+}
+
 QScrollBar:horizontal {
   border-top: 1px solid #141414;
   min-width: 12px;
   height: 15px;
-  background: #222222;
-  padding: 3px;
 }
 QScrollBar:vertical {
   border-left: 1px solid #141414;
   min-height: 12px;
   width: 15px;
-  background: #222222;
-  padding: 3px;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 QScrollBar::add-page, QScrollBar::sub-page {
   background: none;
 }
-QScrollBar::handle:horizontal {
-  min-width: 25px;
-  background: #5F5F5F;
-  border-radius: 3px;
-  border: none;
-}
-QScrollBar::handle:vertical {
+
+QScrollBar::handle {
   min-height: 25px;
-  background: #5F5F5F;
+  background: rgba(95, 95, 95, 150);
   border-radius: 3px;
   border: none;
 }
-QScrollBar::handle:horizontal:hover, QScrollBar::handle:vertical:hover {
-  background: #B3B3B3;
+QScrollBar::handle:hover {
+  background: rgba(179, 179, 179, 150);
 }
 
 /* Turn off buttons */
-QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
-  width: 0px;
-  height: 0px;
-  border: none;
-}
-QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
+QScrollBar::add-line, QScrollBar::sub-line {
   width: 0px;
   height: 0px;
   border: none;

@@ -3,6 +3,7 @@
 #include <QPaintEvent>
 #include <QStyleOptionSlider>
 
+#include "library/basesqltablemodel.h"
 #include "library/columncache.h"
 #include "util/stringhelper.h"
 
@@ -52,10 +53,11 @@ void WMiniViewScrollBar::setModel(QAbstractItemModel* model) {
 }
 
 void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
-    QScrollBar::paintEvent(event);
 
     if (m_showLetters) {
         lettersPaint(event);
+    } else {
+        QScrollBar::paintEvent(event);
     }
 }
 
@@ -79,11 +81,20 @@ void WMiniViewScrollBar::refreshCharMap() {
         // Search the max number of digits, since we know that the model is
         // sorted then we search the first and the last element for the number
         // of digits
-        QString first = rootIndex.sibling(0, m_sortColumn).data(m_dataRole).toString();
-        QString last  = rootIndex.sibling(size - 1, m_sortColumn).data(m_dataRole).toString();
+        const QModelIndex& firstIndex = rootIndex.sibling(0, m_sortColumn);
+        QString first = firstIndex.data(m_dataRole).toString();
+        const QModelIndex& lastIndex = rootIndex.sibling(size - 1, m_sortColumn);
+        QString last  = lastIndex.data(m_dataRole).toString();
         
         digits = qMax(first.length(), last.length());
     }
+    
+    bool isYear = false;
+    QPointer<BaseSqlTableModel> pModel = qobject_cast<BaseSqlTableModel*>(m_pModel);
+    if (!pModel.isNull()) {
+        int index = pModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
+        isYear = index == m_sortColumn;
+    }    
     
     m_letters.clear();
     for (int i = 0; i < size; ++i) {
@@ -96,6 +107,10 @@ void WMiniViewScrollBar::refreshCharMap() {
             } else {
                 c = '0';
             }
+        } else if (isYear && text.size() >= 3) {
+            // 4 digits year, we take the decade which is the most 
+            // representative in one single digit show
+            c = text.at(2);
         } else {
             c = StringHelper::getFirstCharForGrouping(text);
         }
