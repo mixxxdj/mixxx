@@ -43,7 +43,7 @@ class WMiniViewScrollBar : public QScrollBar
     void triggerUpdate();
 
     static int findSmallest(const QVector<CharPosition>& vector);
-    static float interpolHeight(float current, float min1, float max1, float min2,
+    static float interpolHeight(float current, float max1,
                                 float max2);
 
     int m_sortColumn;

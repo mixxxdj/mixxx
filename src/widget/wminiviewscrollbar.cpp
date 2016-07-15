@@ -141,10 +141,15 @@ void WMiniViewScrollBar::computeLettersSize() {
     
     for (CharPosition& p : m_computedSize) {
         int height = interpolHeight(p.position, 
-                                    0, totalCount,
-                                    0, totalLinearSize);
+                                    totalCount,
+                                    totalLinearSize);
+        float percentage = p.position/float(totalCount);
         
-        if (optimalScrollPosition < nextAvailableScrollPosition) {
+        if (optimalScrollPosition < nextAvailableScrollPosition ||
+            percentage < 0.01) {
+            // If a very small percentage letter takes the space for a letter
+            // with more high ocupacy percentage this can be annoying
+            
             // A negative position won't paint the character
             p.position = -1;
         } else {
@@ -175,10 +180,8 @@ int WMiniViewScrollBar::findSmallest(const QVector<CharPosition>& vector) {
     return smallestIndex;
 }
 
-float WMiniViewScrollBar::interpolHeight(float current, float min1, float max1, 
-                                         float min2, float max2) {
-    float aux1 = (current - min1)*(max2 - min2);
-    float res = (aux1/(max1 - min1)) + min2;
+float WMiniViewScrollBar::interpolHeight(float current, float max1, float max2) {
+    float res = current*(max2/max1);
     return res;
 }
 
