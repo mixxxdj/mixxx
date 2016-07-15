@@ -63,29 +63,6 @@ void WMiniViewScrollBar::resizeEvent(QResizeEvent* pEvent) {
     QScrollBar::resizeEvent(pEvent);
 }
 
-void WMiniViewScrollBar::lettersPaint(QPaintEvent*) {
-    QPainter painter(this);
-    painter.setBrush(palette().color(QPalette::Text));
-    painter.setFont(font());
-    
-    int flags = Qt::AlignTop | Qt::AlignHCenter;
-
-    // Get total size
-    int letterSize = fontMetrics().height();
-    int w = width();
-    
-    // Draw each letter in its position
-    for (CharPosition& p : m_computedSize) {
-        if (p.position < 0) {
-            continue;
-        }
-        
-        QPoint topLeft = QPoint(0, p.position);
-        QPoint bottomRight = topLeft + QPoint(w, letterSize);
-        painter.drawText(QRect(topLeft, bottomRight), flags, p.character);
-    }
-}
-
 void WMiniViewScrollBar::refreshCharMap() {    
     if (m_pModel.isNull()) {
         return;
@@ -120,6 +97,29 @@ void WMiniViewScrollBar::refreshCharMap() {
                 m_letters.append({c, 1});
             }
         }
+    }
+}
+
+void WMiniViewScrollBar::lettersPaint(QPaintEvent*) {
+    QPainter painter(this);
+    painter.setBrush(palette().color(QPalette::Text));
+    painter.setFont(font());
+    
+    int flags = Qt::AlignTop | Qt::AlignHCenter;
+
+    // Get total size
+    int letterSize = fontMetrics().height();
+    int w = width();
+    
+    // Draw each letter in its position
+    for (CharPosition& p : m_computedSize) {
+        if (p.position < 0) {
+            continue;
+        }
+        
+        QPoint topLeft = QPoint(0, p.position);
+        QPoint bottomRight = topLeft + QPoint(w, letterSize);
+        painter.drawText(QRect(topLeft, bottomRight), flags, p.character);
     }
 }
 
