@@ -75,13 +75,13 @@ const QString kFileTypeWAV("wav");
 const QString kFileTypeWavPack("wv");
 
 // Preferred picture types for cover art sorted by priority
-const std::array<TagLib::ID3v2::AttachedPictureFrame::Type, 4> kCoverArtID3v2PictureTypes = {
+const std::array<TagLib::ID3v2::AttachedPictureFrame::Type, 4> kPreferredID3v2PictureTypes = {
         TagLib::ID3v2::AttachedPictureFrame::FrontCover, // Front cover image of the album
         TagLib::ID3v2::AttachedPictureFrame::Media, // Image from the album itself
         TagLib::ID3v2::AttachedPictureFrame::Illustration, // Illustration related to the track
         TagLib::ID3v2::AttachedPictureFrame::Other
 };
-const std::array<TagLib::FLAC::Picture::Type, 4> kCoverArtVorbisCommentPictureTypes = {
+const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredVorbisCommentPictureTypes = {
         TagLib::FLAC::Picture::FrontCover, // Front cover image of the album
         TagLib::FLAC::Picture::Media, // Image from the album itself
         TagLib::FLAC::Picture::Illustration, // Illustration related to the track
@@ -366,7 +366,7 @@ QImage loadCoverArtImageFromVorbisCommentPictureList(
         return QImage();
     }
 
-    for (const auto coverArtType: kCoverArtVorbisCommentPictureTypes) {
+    for (const auto coverArtType: kPreferredVorbisCommentPictureTypes) {
         for (const auto pPicture: pictures) {
             DEBUG_ASSERT(pPicture != nullptr); // trust TagLib
             if (pPicture->type() == coverArtType) {
@@ -424,7 +424,7 @@ void readCoverArtFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) 
         return; // failure
     }
 
-    for (const auto coverArtType: kCoverArtID3v2PictureTypes) {
+    for (const auto coverArtType: kPreferredID3v2PictureTypes) {
         for (const auto pFrame: pFrames) {
             const TagLib::ID3v2::AttachedPictureFrame* pApicFrame =
                     static_cast<const TagLib::ID3v2::AttachedPictureFrame*>(pFrame);
