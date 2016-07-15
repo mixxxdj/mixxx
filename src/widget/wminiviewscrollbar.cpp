@@ -74,22 +74,19 @@ void WMiniViewScrollBar::lettersPaint(QPaintEvent*) {
     const QRect& total = rect();
     QPoint topLeft = total.topLeft();
     
-    QMutexLocker lock(&m_mutexCompute);
-    for (const QPair<QChar, int>& p : m_computedSize) {
+    for (CharCount& p : m_computedSize) {
 
         // Get letter count
-        int height = p.second;
+        int height = p.count;
         
         QPoint bottomRight = topLeft + QPoint(total.width(), height);
-        painter.drawText(QRect(topLeft, bottomRight), flags, p.first);
+        painter.drawText(QRect(topLeft, bottomRight), flags, p.character);
         
         topLeft += QPoint(0, height);
     }
 }
 
-void WMiniViewScrollBar::refreshCharMap() {
-    QMutexLocker locker(&m_mutexLetters);
-    
+void WMiniViewScrollBar::refreshCharMap() {    
     if (m_pModel.isNull()) {
         return;
     }
@@ -113,21 +110,20 @@ void WMiniViewScrollBar::refreshCharMap() {
         QChar c = StringHelper::getFirstCharForGrouping(text);
         
         if (m_letters.size() <= 0) {
-            m_letters.append(qMakePair(c, 1));
+            m_letters.append({c, 1});
         } else {
-            QPair<QChar, int>& last = m_letters.last();
+            CharCount& last = m_letters.last();
             
-            if (last.first == c) {
-                ++last.second;
+            if (last.character == c) {
+                ++last.count;
             } else {
-                m_letters.append(qMakePair(c, 1));
+                m_letters.append({c, 1});
             }
         }
     }
 }
 
 void WMiniViewScrollBar::computeLettersSize() {
-    m_mutexLetters.lock();
     const QRect& total(rect());
     
     // Height of a letter
@@ -140,13 +136,11 @@ void WMiniViewScrollBar::computeLettersSize() {
     int totalCount = 0;
     // Get the total count of letters appearance to make a linear interpolation
     // with the current widget height
-    for (const QPair<QChar, int>& p : m_letters) {
-        totalCount += p.second;
+    for (CharCount& p : m_letters) {
+        totalCount += p.count;
     }
     
-    QMutexLocker locker(&m_mutexCompute);
     m_computedSize = m_letters;
-    m_mutexLetters.unlock();
     
     if (!enoughSpace) {
         // Remove the letters from smaller letter to biggest
@@ -162,8 +156,8 @@ void WMiniViewScrollBar::computeLettersSize() {
     }
     
     int totalSizeCheck = 0;
-    for (QPair<QChar, int>& p : m_computedSize) {
-        int height = interpolHeight(p.second, 
+    for (CharCount& p : m_computedSize) {
+        int height = interpolHeight(p.count, 
                                     0, totalCount,
                                     0, totalLinearSize);
         
@@ -180,7 +174,7 @@ void WMiniViewScrollBar::computeLettersSize() {
         }
         int itemSize = letterSize + prevSpace;
         totalSizeCheck += itemSize;
-        p.second = itemSize;
+        p.count = itemSize;
     }
     
     if (totalSizeCheck > totalLinearSize) {
@@ -190,7 +184,7 @@ void WMiniViewScrollBar::computeLettersSize() {
         difference = totalSizeCheck - totalLinearSize;
         prevSpace = 0;
         for (int i = m_computedSize.size() - 1; i >= 0; --i) {
-            int height = m_computedSize[i].second;
+            int height = m_computedSize[i].count;
             int auxDifference = abs(letterSize - height);
             
             if (height >= letterSize) {
@@ -202,7 +196,7 @@ void WMiniViewScrollBar::computeLettersSize() {
                 difference += auxDifference;
                 prevSpace = 0;
             }
-            m_computedSize[i].second = letterSize + prevSpace;
+            m_computedSize[i].count = letterSize + prevSpace;
         }
     }
 }
@@ -213,14 +207,14 @@ void WMiniViewScrollBar::triggerUpdate() {
     update();
 }
 
-int WMiniViewScrollBar::findSmallest(const QVector<QPair<QChar, int> >& vector) {
+int WMiniViewScrollBar::findSmallest(const QVector<CharCount>& vector) {
     if (vector.size() <= 0) {
         return -1;
     }
     
     int smallestIndex = 0;
     for (int i = 1; i < vector.size(); ++i) {
-        if (vector[i].second < vector[smallestIndex].second) {
+        if (vector[i].count < vector[smallestIndex].count) {
             smallestIndex = i;
         }
     }
@@ -228,7 +222,7 @@ int WMiniViewScrollBar::findSmallest(const QVector<QPair<QChar, int> >& vector) 
 }
 
 float WMiniViewScrollBar::interpolHeight(float current, float min1, float max1, 
-                                       float min2, float max2) {
+                                         float min2, float max2) {
     float aux1 = (current - min1)*(max2 - min2);
     float res = (aux1/(max1 - min1)) + min2;
     return res;

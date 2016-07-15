@@ -2,7 +2,6 @@
 #define WMINIVIEWSCROLLBAR_H
 
 #include <QAbstractItemModel>
-#include <QMutex>
 #include <QPointer>
 #include <QScrollBar>
 
@@ -43,18 +42,16 @@ class WMiniViewScrollBar : public QScrollBar
     void computeLettersSize();
     void triggerUpdate();
 
-    static int findSmallest(const QVector<QPair<QChar, int> >& vector);
+    static int findSmallest(const QVector<CharCount>& vector);
     static float interpolHeight(float current, float min1, float max1, float min2,
                                 float max2);
 
     int m_sortColumn;
     int m_dataRole;
     bool m_showLetters;
-    QVector<QPair<QChar, int> > m_letters;
-    QVector<QPair<QChar, int> > m_computedSize;
+    QVector<CharCount> m_letters;
+    QVector<CharCount> m_computedSize;
     QPointer<QAbstractItemModel> m_pModel;
-    QMutex m_mutexCompute;
-    QMutex m_mutexLetters;
 };
 
 #endif // WMINIVIEWSCROLLBAR_H
