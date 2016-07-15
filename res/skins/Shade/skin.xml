@@ -478,6 +478,7 @@
 					  color: #474747;
 					  font-size: 8pt;
 					  padding: 3px;
+					  background-color: #aab2b7;
 					}
 
 					QScrollBar:horizontal {
@@ -502,7 +503,7 @@
 					  border: none;
 					}
 					QScrollBar::handle:hover {
-					  background: rgba(179, 179, 179, 150);
+					  background: rgba(120, 120, 120, 150);
 					}
 
 					/* Turn off buttons */
@@ -533,12 +534,12 @@
 					}
 
 					#LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
-						background-color: #8d98a3;
+						background-color: #aab2b7;
 						margin-right: 13px;
 					}
 
 					#LibrarySidebarButtons QScrollArea {
-						background-color: #8d98a3;
+						background-color: #aab2b7;
 					}
 
 					WButtonBar QToolButton {

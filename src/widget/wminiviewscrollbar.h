@@ -24,19 +24,21 @@ class WMiniViewScrollBar : public QScrollBar
   protected:
     virtual void paintEvent(QPaintEvent* event);
     virtual void resizeEvent(QResizeEvent* pEvent);
+    virtual void mouseMoveEvent(QMouseEvent* pEvent);
+    virtual void mousePressEvent(QMouseEvent* pEvent);
+    virtual void leaveEvent(QEvent*pEvent);
 
   private:
     struct CharPosition {
         QChar character;
         int position;
+        bool bold;
     };
     
   private slots:
     void refreshCharMap();
 
   private:
-    void lettersPaint(QPaintEvent*);
-
     // The purpose of this function is to avoid computing all the sizes in the
     // paintEvent function which can block the GUI thread
     void computeLettersSize();

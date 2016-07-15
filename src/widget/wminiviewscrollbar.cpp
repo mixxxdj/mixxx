@@ -14,6 +14,7 @@ WMiniViewScrollBar::WMiniViewScrollBar(QWidget* parent)
           m_sortColumn(-1),
           m_dataRole(Qt::DisplayRole),
           m_showLetters(true) {
+    setMouseTracking(true);
 }
 
 void WMiniViewScrollBar::setShowLetters(bool show) {
@@ -53,17 +54,96 @@ void WMiniViewScrollBar::setModel(QAbstractItemModel* model) {
 }
 
 void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
-
-    if (m_showLetters) {
-        lettersPaint(event);
-    } else {
+    if (!m_showLetters) {
         QScrollBar::paintEvent(event);
+        return;
     }
+    
+    QStylePainter painter(this);
+    QStyleOptionSlider opt;
+    opt.init(this);
+    opt.subControls = QStyle::SC_None;
+    opt.activeSubControls = QStyle::SC_None;
+    opt.orientation = orientation();
+    opt.minimum = minimum();
+    opt.maximum = maximum();
+    opt.sliderPosition = sliderPosition();
+    opt.sliderValue = value();
+    opt.singleStep = singleStep();
+    opt.pageStep = pageStep();
+    painter.drawComplexControl(QStyle::CC_ScrollBar, opt);
+    
+    painter.setBrush(palette().color(QPalette::Text));
+    int flags = Qt::AlignTop | Qt::AlignHCenter;
+
+    // Get total size
+    int letterSize = fontMetrics().height();
+    int w = width();
+    
+    // Draw each letter in its position
+    for (CharPosition& p : m_computedSize) {
+        if (p.position < 0) {
+            continue;
+        }
+        QFont f(font());
+        f.setBold(p.bold);
+        painter.setFont(f);
+        
+        QPoint topLeft = QPoint(0, p.position);
+        QPoint bottomRight = topLeft + QPoint(w, letterSize);
+        painter.drawText(QRect(topLeft, bottomRight), flags, p.character);
+    }
+    
+    opt.rect = style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
+                                       QStyle::SC_ScrollBarSlider, this);
+    opt.subControls = QStyle::SC_ScrollBarSlider;
+    opt.activeSubControls = QStyle::SC_ScrollBarSlider;
+    painter.drawControl(QStyle::CE_ScrollBarSlider, opt);
 }
 
 void WMiniViewScrollBar::resizeEvent(QResizeEvent* pEvent) {
     computeLettersSize();
     QScrollBar::resizeEvent(pEvent);
+}
+
+void WMiniViewScrollBar::mouseMoveEvent(QMouseEvent* pEvent) {
+    // Check mouse hover condition
+    
+    bool found = false;
+    int letterSize = fontMetrics().height();
+    int posVert = pEvent->pos().y();
+
+    for (CharPosition& c : m_computedSize) {
+        if (posVert >= c.position && posVert < c.position + letterSize && !found) {
+            c.bold = true;
+            found = true;
+        } else {
+            c.bold = false;
+        }
+    } 
+    update();
+    QScrollBar::mouseMoveEvent(pEvent);
+}
+
+void WMiniViewScrollBar::mousePressEvent(QMouseEvent* pEvent) {
+    QScrollBar::mousePressEvent(pEvent);
+    
+    for (CharPosition& c : m_computedSize) {
+        if (c.bold) {            
+            float aux = c.position/float(height());
+            aux *= float(maximum() - minimum());
+            aux += float(minimum());
+            setSliderPosition(aux);
+            break;
+        }
+    }
+}
+
+void WMiniViewScrollBar::leaveEvent(QEvent* pEvent) {
+    for (CharPosition& c : m_computedSize) {
+        c.bold = false;
+    }
+    QScrollBar::leaveEvent(pEvent);
 }
 
 void WMiniViewScrollBar::refreshCharMap() {    
@@ -116,58 +196,17 @@ void WMiniViewScrollBar::refreshCharMap() {
         }
         
         if (m_letters.size() <= 0) {
-            m_letters.append({c, 1});
+            m_letters.append({c, 1, false});
         } else {
             CharPosition& last = m_letters.last();
             
             if (last.character == c) {
                 ++last.position;
             } else {
-                m_letters.append({c, 1});
+                m_letters.append({c, 1, false});
             }
         }
     }
-}
-
-void WMiniViewScrollBar::lettersPaint(QPaintEvent*) {
-    QStylePainter painter(this);
-    QStyleOptionSlider opt;
-    opt.init(this);
-    opt.subControls = QStyle::SC_None;
-    opt.activeSubControls = QStyle::SC_None;
-    opt.orientation = orientation();
-    opt.minimum = minimum();
-    opt.maximum = maximum();
-    opt.sliderPosition = sliderPosition();
-    opt.sliderValue = value();
-    opt.singleStep = singleStep();
-    opt.pageStep = pageStep();
-    painter.drawComplexControl(QStyle::CC_ScrollBar, opt);
-    
-    painter.setBrush(palette().color(QPalette::Text));
-    painter.setFont(font());
-    int flags = Qt::AlignTop | Qt::AlignHCenter;
-
-    // Get total size
-    int letterSize = fontMetrics().height();
-    int w = width();
-    
-    // Draw each letter in its position
-    for (CharPosition& p : m_computedSize) {
-        if (p.position < 0) {
-            continue;
-        }
-        
-        QPoint topLeft = QPoint(0, p.position);
-        QPoint bottomRight = topLeft + QPoint(w, letterSize);
-        painter.drawText(QRect(topLeft, bottomRight), flags, p.character);
-    }
-    
-    opt.rect = style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
-                                       QStyle::SC_ScrollBarSlider, this);
-    opt.subControls = QStyle::SC_ScrollBarSlider;
-    opt.activeSubControls = QStyle::SC_ScrollBarSlider;
-    painter.drawControl(QStyle::CE_ScrollBarSlider, opt);
 }
 
 void WMiniViewScrollBar::computeLettersSize() {
