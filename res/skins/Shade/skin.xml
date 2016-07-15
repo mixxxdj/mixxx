@@ -1,4 +1,5 @@
 
+
 	<!--
 	Shade, Skin for Mixxx 1.12.x
 	www.mixxx.org
@@ -470,6 +471,35 @@
 					WBaseLibrary QScrollArea,
 					QScrollArea QWidget {
 						background-color: transparent;
+					}
+
+					/* Scroll bars */
+					QScrollBar {
+					  border-left: 1px solid #141414;
+					  min-height: 12px;
+					  width: 15px;
+					  padding: 3px;
+					  font-size: 8pt;
+					}
+					/* "add-page" and "sub-page" are the gutter of the scrollbar */
+					QScrollBar::add-page, QScrollBar::sub-page {
+					  background: none;
+					}
+					QScrollBar::handle {
+					  min-width: 25px;
+					  background: #757575;
+					  border-radius: 2px;
+					  border: none;
+					}
+					QScrollBar::handle:hover, QScrollBar::handle:hover {
+					  background: #B3B3B3;
+					}
+
+					/* Turn off buttons */
+					QScrollBar::add-line, QScrollBar::sub-line {
+					  width: 0px;
+					  height: 0px;
+					  border: none;
 					}
 
 					WBaseLibrary QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
