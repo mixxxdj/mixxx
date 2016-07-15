@@ -17,8 +17,7 @@
 #include "widget/wbaselibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
-#include "widget/wtableminiview.h"
-#include "widget/wtreeminiview.h"
+#include "widget/wminiviewscrollbar.h"
 
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!
 // The reason for this is that LibraryFeature uses slots/signals and for this
@@ -82,7 +81,7 @@ WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboar
     
     pTrackTableView->installEventFilter(pKeyboard);
     
-    WTableMiniView* pScrollBar = new WTableMiniView(pTrackTableView);
+    WMiniViewScrollBar* pScrollBar = new WMiniViewScrollBar(pTrackTableView);
     pTrackTableView->setScrollBar(pScrollBar);
     
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
@@ -112,7 +111,9 @@ WLibrarySidebar *LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter 
     pSidebar->setModel(pModel);
     
     // Set sidebar mini view
-    WTreeMiniView* pMiniView = new WTreeMiniView(pSidebar);
+    WMiniViewScrollBar* pMiniView = new WMiniViewScrollBar(pSidebar);
+    pMiniView->setSortColumn(0);
+    pMiniView->setRole(TreeItemModel::RoleDataPath);
     pMiniView->setModel(pModel);
     pSidebar->setVerticalScrollBar(pMiniView);
     

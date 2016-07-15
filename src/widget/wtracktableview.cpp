@@ -1294,7 +1294,7 @@ void WTrackTableView::setSorting(bool sorting) {
     m_sorting = sorting;
 }
 
-void WTrackTableView::setScrollBar(WTableMiniView *pScrollbar) {
+void WTrackTableView::setScrollBar(WMiniViewScrollBar *pScrollbar) {
     m_pScrollBar = pScrollbar;
     setVerticalScrollBar(pScrollbar);
 }

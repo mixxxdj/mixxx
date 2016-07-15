@@ -13,32 +13,48 @@ class WMiniViewScrollBar : public QScrollBar
 
     void setShowLetters(bool show);
     bool showLetters() const;
+
+    void setSortColumn(int column);
+    int sortColumn();
     
-    // Sets the letters to be shown and triggers a update
-    void setLetters(const QVector<QPair<QChar, int> >& letters);
-    void setModel(QAbstractItemModel *model);
+    void setRole(int role);
+    int role();
+
+    void setModel(QAbstractItemModel* model);
 
   protected:
     virtual void paintEvent(QPaintEvent* event);
-    virtual void resizeEvent(QResizeEvent*pEvent);
-    virtual void refreshCharMap() = 0;
-    void lettersPaint(QPaintEvent*);
-    
-    QPointer<QAbstractItemModel> m_pModel;
-    
+    virtual void resizeEvent(QResizeEvent* pEvent);
+
   private:
+    struct CharCount {
+        QChar character;
+        int count;
+    };
+    
+  private slots:
+    void refreshCharMap();
+
+  private:
+    void lettersPaint(QPaintEvent*);
+
     // The purpose of this function is to avoid computing all the sizes in the
     // paintEvent function which can block the GUI thread
     void computeLettersSize();
-    
-    static float interpolHeight(float current, float min1, float max1, float min2, float max2);
+    void triggerUpdate();
+
     static int findSmallest(const QVector<QPair<QChar, int> >& vector);
-    
+    static float interpolHeight(float current, float min1, float max1, float min2,
+                                float max2);
+
+    int m_sortColumn;
+    int m_dataRole;
     bool m_showLetters;
     QVector<QPair<QChar, int> > m_letters;
     QVector<QPair<QChar, int> > m_computedSize;
-    QMutex m_computeMutex;
-    QMutex m_lettersMutex;
+    QPointer<QAbstractItemModel> m_pModel;
+    QMutex m_mutexCompute;
+    QMutex m_mutexLetters;
 };
 
 #endif // WMINIVIEWSCROLLBAR_H

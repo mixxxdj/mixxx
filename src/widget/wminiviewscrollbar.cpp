@@ -3,10 +3,14 @@
 #include <QPaintEvent>
 #include <QStyleOptionSlider>
 
+#include "util/stringhelper.h"
+
 #include "wminiviewscrollbar.h"
 
 WMiniViewScrollBar::WMiniViewScrollBar(QWidget* parent)
         : QScrollBar(parent),
+          m_sortColumn(-1),
+          m_dataRole(Qt::DisplayRole),
           m_showLetters(true) {
 }
 
@@ -18,22 +22,31 @@ bool WMiniViewScrollBar::showLetters() const {
     return m_showLetters;
 }
 
-void WMiniViewScrollBar::setLetters(const QVector<QPair<QChar, int> >& letters) {
-    m_lettersMutex.lock();
-    m_letters = letters;
-    m_lettersMutex.unlock();
-    computeLettersSize();
-    update();
+void WMiniViewScrollBar::setSortColumn(int column) {
+    m_sortColumn = column;
+    triggerUpdate();
 }
 
-void WMiniViewScrollBar::setModel(QAbstractItemModel *model) {
+int WMiniViewScrollBar::sortColumn() {
+    return m_sortColumn;
+}
+
+void WMiniViewScrollBar::setRole(int role) {
+    m_dataRole = role;
+    triggerUpdate();
+}
+
+int WMiniViewScrollBar::role() {
+    return m_dataRole;
+}
+
+void WMiniViewScrollBar::setModel(QAbstractItemModel* model) {
     m_pModel = model;
     if (!m_pModel.isNull()) {
         connect(m_pModel.data(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
                 this, SLOT(refreshCharMap()));
         
-        refreshCharMap();
-        update();
+        triggerUpdate();
     }
 }
 
@@ -61,7 +74,7 @@ void WMiniViewScrollBar::lettersPaint(QPaintEvent*) {
     const QRect& total = rect();
     QPoint topLeft = total.topLeft();
     
-    QMutexLocker lock(&m_computeMutex);
+    QMutexLocker lock(&m_mutexCompute);
     for (const QPair<QChar, int>& p : m_computedSize) {
 
         // Get letter count
@@ -74,8 +87,47 @@ void WMiniViewScrollBar::lettersPaint(QPaintEvent*) {
     }
 }
 
+void WMiniViewScrollBar::refreshCharMap() {
+    QMutexLocker locker(&m_mutexLetters);
+    
+    if (m_pModel.isNull()) {
+        return;
+    }
+    
+    int size = m_pModel->rowCount();
+    const QModelIndex& rootIndex = m_pModel->index(0, 0);
+    /*bool isNumber = (m_sortColumn == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    int digits = 0;
+    if (isNumber) {
+        
+        // Search the max number of digits, since we know that the model is
+        // sorted then we search the first and the last element for the number
+        // of digits
+        const QModelIndex& index = m_pModel->index()
+    }*/
+    
+    m_letters.clear();
+    for (int i = 0; i < size; ++i) {
+        const QModelIndex& index = rootIndex.sibling(i, m_sortColumn);
+        QString text = index.data(m_dataRole).toString();
+        QChar c = StringHelper::getFirstCharForGrouping(text);
+        
+        if (m_letters.size() <= 0) {
+            m_letters.append(qMakePair(c, 1));
+        } else {
+            QPair<QChar, int>& last = m_letters.last();
+            
+            if (last.first == c) {
+                ++last.second;
+            } else {
+                m_letters.append(qMakePair(c, 1));
+            }
+        }
+    }
+}
+
 void WMiniViewScrollBar::computeLettersSize() {
-    m_lettersMutex.lock();
+    m_mutexLetters.lock();
     const QRect& total(rect());
     
     // Height of a letter
@@ -92,9 +144,9 @@ void WMiniViewScrollBar::computeLettersSize() {
         totalCount += p.second;
     }
     
-    QMutexLocker locker(&m_computeMutex);
+    QMutexLocker locker(&m_mutexCompute);
     m_computedSize = m_letters;
-    m_lettersMutex.unlock();
+    m_mutexLetters.unlock();
     
     if (!enoughSpace) {
         // Remove the letters from smaller letter to biggest
@@ -155,11 +207,10 @@ void WMiniViewScrollBar::computeLettersSize() {
     }
 }
 
-float WMiniViewScrollBar::interpolHeight(float current, float min1, float max1, 
-                                       float min2, float max2) {
-    float aux1 = (current - min1)*(max2 - min2);
-    float res = (aux1/(max1 - min1)) + min2;
-    return res;
+void WMiniViewScrollBar::triggerUpdate() {
+    refreshCharMap();
+    computeLettersSize();
+    update();
 }
 
 int WMiniViewScrollBar::findSmallest(const QVector<QPair<QChar, int> >& vector) {
@@ -174,5 +225,12 @@ int WMiniViewScrollBar::findSmallest(const QVector<QPair<QChar, int> >& vector) 
         }
     }
     return smallestIndex;
+}
+
+float WMiniViewScrollBar::interpolHeight(float current, float min1, float max1, 
+                                       float min2, float max2) {
+    float aux1 = (current - min1)*(max2 - min2);
+    float res = (aux1/(max1 - min1)) + min2;
+    return res;
 }
 

@@ -13,7 +13,7 @@
 #include "track/track.h"
 #include "util/duration.h"
 #include "widget/wlibrarytableview.h"
-#include "widget/wtableminiview.h"
+#include "widget/wminiviewscrollbar.h"
 
 class ControlProxy;
 class DlgTrackInfo;
@@ -37,7 +37,7 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
     void setSorting(bool sorting);
-    void setScrollBar(WTableMiniView* pScrollbar);
+    void setScrollBar(WMiniViewScrollBar* pScrollbar);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
@@ -160,7 +160,7 @@ class WTrackTableView : public WLibraryTableView {
 
     // Replay Gain feature
     QAction *m_pReplayGainResetAction;
-    QPointer<WTableMiniView> m_pScrollBar;
+    QPointer<WMiniViewScrollBar> m_pScrollBar;
 
     bool m_sorting;
 
