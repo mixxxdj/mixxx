@@ -3,6 +3,7 @@
 #include <QPaintEvent>
 #include <QStyleOptionSlider>
 
+#include "library/columncache.h"
 #include "util/stringhelper.h"
 
 #include "wminiviewscrollbar.h"
@@ -70,21 +71,34 @@ void WMiniViewScrollBar::refreshCharMap() {
     
     int size = m_pModel->rowCount();
     const QModelIndex& rootIndex = m_pModel->index(0, 0);
-    /*bool isNumber = (m_sortColumn == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    
     int digits = 0;
+    bool isNumber;
+    rootIndex.sibling(0, m_sortColumn).data(m_dataRole).toString().toInt(&isNumber);
     if (isNumber) {
-        
         // Search the max number of digits, since we know that the model is
         // sorted then we search the first and the last element for the number
         // of digits
-        const QModelIndex& index = m_pModel->index()
-    }*/
+        QString first = rootIndex.sibling(0, m_sortColumn).data(m_dataRole).toString();
+        QString last  = rootIndex.sibling(size - 1, m_sortColumn).data(m_dataRole).toString();
+        
+        digits = qMax(first.length(), last.length());
+    }
     
     m_letters.clear();
     for (int i = 0; i < size; ++i) {
         const QModelIndex& index = rootIndex.sibling(i, m_sortColumn);
         QString text = index.data(m_dataRole).toString();
-        QChar c = StringHelper::getFirstCharForGrouping(text);
+        QChar c;
+        if (isNumber) {
+            if (text.length() == digits) {
+                c = text.at(0);
+            } else {
+                c = '0';
+            }
+        } else {
+            c = StringHelper::getFirstCharForGrouping(text);
+        }
         
         if (m_letters.size() <= 0) {
             m_letters.append({c, 1});
