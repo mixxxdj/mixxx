@@ -26,9 +26,9 @@ class WMiniViewScrollBar : public QScrollBar
     virtual void resizeEvent(QResizeEvent* pEvent);
 
   private:
-    struct CharCount {
+    struct CharPosition {
         QChar character;
-        int count;
+        int position;
     };
     
   private slots:
@@ -42,15 +42,15 @@ class WMiniViewScrollBar : public QScrollBar
     void computeLettersSize();
     void triggerUpdate();
 
-    static int findSmallest(const QVector<CharCount>& vector);
+    static int findSmallest(const QVector<CharPosition>& vector);
     static float interpolHeight(float current, float min1, float max1, float min2,
                                 float max2);
 
     int m_sortColumn;
     int m_dataRole;
     bool m_showLetters;
-    QVector<CharCount> m_letters;
-    QVector<CharCount> m_computedSize;
+    QVector<CharPosition> m_letters;
+    QVector<CharPosition> m_computedSize;
     QPointer<QAbstractItemModel> m_pModel;
 };
 

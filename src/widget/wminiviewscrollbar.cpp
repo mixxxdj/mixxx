@@ -71,18 +71,18 @@ void WMiniViewScrollBar::lettersPaint(QPaintEvent*) {
     int flags = Qt::AlignTop | Qt::AlignHCenter;
 
     // Get total size
-    const QRect& total = rect();
-    QPoint topLeft = total.topLeft();
+    int letterSize = fontMetrics().height();
+    int w = width();
     
-    for (CharCount& p : m_computedSize) {
-
-        // Get letter count
-        int height = p.count;
+    // Draw each letter in its position
+    for (CharPosition& p : m_computedSize) {
+        if (p.position < 0) {
+            continue;
+        }
         
-        QPoint bottomRight = topLeft + QPoint(total.width(), height);
+        QPoint topLeft = QPoint(0, p.position);
+        QPoint bottomRight = topLeft + QPoint(w, letterSize);
         painter.drawText(QRect(topLeft, bottomRight), flags, p.character);
-        
-        topLeft += QPoint(0, height);
     }
 }
 
@@ -112,10 +112,10 @@ void WMiniViewScrollBar::refreshCharMap() {
         if (m_letters.size() <= 0) {
             m_letters.append({c, 1});
         } else {
-            CharCount& last = m_letters.last();
+            CharPosition& last = m_letters.last();
             
             if (last.character == c) {
-                ++last.count;
+                ++last.position;
             } else {
                 m_letters.append({c, 1});
             }
@@ -124,80 +124,34 @@ void WMiniViewScrollBar::refreshCharMap() {
 }
 
 void WMiniViewScrollBar::computeLettersSize() {
-    const QRect& total(rect());
+    m_computedSize = m_letters;
     
     // Height of a letter
     int letterSize = fontMetrics().height();
-    int totalLetters = m_letters.size();
-    bool enoughSpace = total.height() >= letterSize*totalLetters;
-    const int totalLinearSize = total.height();
-    int difference = 0;
-    int prevSpace = 0;
+    const int totalLinearSize = rect().height();
+    int nextAvailableScrollPosition = 0;
+    int optimalScrollPosition = 0;
+    
     int totalCount = 0;
     // Get the total count of letters appearance to make a linear interpolation
     // with the current widget height
-    for (CharCount& p : m_letters) {
-        totalCount += p.count;
+    for (CharPosition& p : m_letters) {
+        totalCount += p.position;
     }
     
-    m_computedSize = m_letters;
-    
-    if (!enoughSpace) {
-        // Remove the letters from smaller letter to biggest
-        // since we need to preserve the current sort order we can't sort
-        // the vector by size and we'll need to find each letter one by one
-        int neededSpace = abs(totalLinearSize - letterSize*totalLetters);
-        
-        while (neededSpace > 0.5) {
-            int index = findSmallest(m_computedSize);
-            neededSpace -= letterSize;
-            m_computedSize.remove(index);
-        }
-    }
-    
-    int totalSizeCheck = 0;
-    for (CharCount& p : m_computedSize) {
-        int height = interpolHeight(p.count, 
+    for (CharPosition& p : m_computedSize) {
+        int height = interpolHeight(p.position, 
                                     0, totalCount,
                                     0, totalLinearSize);
         
-        int auxDifference = abs(letterSize - height);
-        
-        if (height >= letterSize) {
-            prevSpace = qMax(0, auxDifference - difference);
-            difference = qMax(0, difference - auxDifference);
+        if (optimalScrollPosition < nextAvailableScrollPosition) {
+            // A negative position won't paint the character
+            p.position = -1;
         } else {
-            // Add a difference to remove it when a letter is bigger than the
-            // size it needs
-            difference += auxDifference;
-            prevSpace = 0;            
+            p.position = optimalScrollPosition;
+            nextAvailableScrollPosition = optimalScrollPosition + letterSize;
         }
-        int itemSize = letterSize + prevSpace;
-        totalSizeCheck += itemSize;
-        p.count = itemSize;
-    }
-    
-    if (totalSizeCheck > totalLinearSize) {
-        // Do the same algorithm reversed, it should take the space from the
-        // biggest elements in the other direction.
-        
-        difference = totalSizeCheck - totalLinearSize;
-        prevSpace = 0;
-        for (int i = m_computedSize.size() - 1; i >= 0; --i) {
-            int height = m_computedSize[i].count;
-            int auxDifference = abs(letterSize - height);
-            
-            if (height >= letterSize) {
-                prevSpace = qMax(0, auxDifference - difference);
-                difference = qMax(0, difference - auxDifference);
-            } else {
-                // Add a difference to remove it when a letter is bigger than the
-                // size it needs
-                difference += auxDifference;
-                prevSpace = 0;
-            }
-            m_computedSize[i].count = letterSize + prevSpace;
-        }
+        optimalScrollPosition += height;
     }
 }
 
@@ -207,14 +161,14 @@ void WMiniViewScrollBar::triggerUpdate() {
     update();
 }
 
-int WMiniViewScrollBar::findSmallest(const QVector<CharCount>& vector) {
+int WMiniViewScrollBar::findSmallest(const QVector<CharPosition>& vector) {
     if (vector.size() <= 0) {
         return -1;
     }
     
     int smallestIndex = 0;
     for (int i = 1; i < vector.size(); ++i) {
-        if (vector[i].count < vector[smallestIndex].count) {
+        if (vector[i].position < vector[smallestIndex].position) {
             smallestIndex = i;
         }
     }
