@@ -1,5 +1,5 @@
 #include <QDebug>
-#include <QPainter>
+#include <QStylePainter>
 #include <QPaintEvent>
 #include <QStyleOptionSlider>
 
@@ -115,10 +115,22 @@ void WMiniViewScrollBar::refreshCharMap() {
 }
 
 void WMiniViewScrollBar::lettersPaint(QPaintEvent*) {
-    QPainter painter(this);
+    QStylePainter painter(this);
+    QStyleOptionSlider opt;
+    opt.init(this);
+    opt.subControls = QStyle::SC_None;
+    opt.activeSubControls = QStyle::SC_None;
+    opt.orientation = orientation();
+    opt.minimum = minimum();
+    opt.maximum = maximum();
+    opt.sliderPosition = sliderPosition();
+    opt.sliderValue = value();
+    opt.singleStep = singleStep();
+    opt.pageStep = pageStep();
+    painter.drawComplexControl(QStyle::CC_ScrollBar, opt);
+    
     painter.setBrush(palette().color(QPalette::Text));
     painter.setFont(font());
-    
     int flags = Qt::AlignTop | Qt::AlignHCenter;
 
     // Get total size
@@ -135,6 +147,12 @@ void WMiniViewScrollBar::lettersPaint(QPaintEvent*) {
         QPoint bottomRight = topLeft + QPoint(w, letterSize);
         painter.drawText(QRect(topLeft, bottomRight), flags, p.character);
     }
+    
+    opt.rect = style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
+                                       QStyle::SC_ScrollBarSlider, this);
+    opt.subControls = QStyle::SC_ScrollBarSlider;
+    opt.activeSubControls = QStyle::SC_ScrollBarSlider;
+    painter.drawControl(QStyle::CE_ScrollBarSlider, opt);
 }
 
 void WMiniViewScrollBar::computeLettersSize() {
