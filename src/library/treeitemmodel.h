@@ -16,7 +16,9 @@ class TreeItemModel : public QAbstractItemModel {
     enum Role {
         RoleDataPath = Qt::UserRole,
         RoleBold,
-        RoleDivider
+        RoleDivider,
+        RoleQuery,
+        RoleBreadCrumb
     };
 
     TreeItemModel(QObject* parent = nullptr);
@@ -42,6 +44,8 @@ class TreeItemModel : public QAbstractItemModel {
     
     bool dropAccept(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
+    
+    static QString getBreadCrumbString(TreeItem* pTree);
     
   public slots:
     void triggerRepaint();

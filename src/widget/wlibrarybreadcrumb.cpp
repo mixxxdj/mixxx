@@ -1,26 +1,7 @@
 #include <QStringBuilder>
 
+#include "library/treeitemmodel.h"
 #include <widget/wlibrarybreadcrumb.h>
-
-namespace {
-
-QString getPathString(TreeItem* pTree) {    
-    // Base case
-    if (pTree == nullptr || pTree->getFeature() == nullptr) {
-        return QString();
-    }
-    else if (pTree->parent() == nullptr) {
-        return pTree->getFeature()->title().toString();
-    }
-    
-    // Recursive case
-    QString text = pTree->data().toString();
-    QString next = getPathString(pTree->parent());
-    return next % QLatin1Literal(" > ") % text;
-}
-
-} // NAMESPACE
-
 
 WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent) 
 		: QLabel(parent) {
@@ -44,11 +25,11 @@ QSize WLibraryBreadCrumb::minimumSizeHint() const {
     return QSize(0, height());
 }
 
-void WLibraryBreadCrumb::showBreadCrumb(TreeItem *pTree) {
-    setText(getPathString(pTree));
+void WLibraryBreadCrumb::showBreadCrumb(TreeItem* pTree) {
+    setText(TreeItemModel::getBreadCrumbString(pTree));
 }
 
-void WLibraryBreadCrumb::showBreadCrumb(const QString &text) {
+void WLibraryBreadCrumb::showBreadCrumb(const QString& text) {
     setText(text);
 }
 

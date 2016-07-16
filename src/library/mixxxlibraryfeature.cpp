@@ -164,13 +164,12 @@ void MixxxLibraryFeature::activate() {
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
-    TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
-    QString query = m_childModel.getQuery(pTree);
-    qDebug() << "MixxxLibraryFeature::activateChild" << query;
+    QString query = index.data(TreeItemModel::RoleQuery).toString();
+    //qDebug() << "MixxxLibraryFeature::activateChild" << query;
     
     m_pLibraryTableModel->search(query);
     switchToFeature();
-    showBreadCrumb(pTree);
+    showBreadCrumb(index.data(TreeItemModel::RoleBreadCrumb).toString());
     restoreSearch(query);
 }
 

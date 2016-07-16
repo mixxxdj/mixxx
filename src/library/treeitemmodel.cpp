@@ -1,5 +1,6 @@
 #include "library/treeitemmodel.h"
 
+#include <QLatin1Literal>
 #include "library/treeitem.h"
 
 /*
@@ -62,6 +63,8 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
             return item->isBold();
         case Role::RoleDivider:
             return item->isDivider();
+        case Role::RoleBreadCrumb:
+            return getBreadCrumbString(item);
     }
 
     return QVariant();
@@ -220,6 +223,21 @@ void TreeItemModel::triggerRepaint() {
     QModelIndex left = index(0, 0);
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
     emit(dataChanged(left, right));
+}
+
+QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {    
+    // Base case
+    if (pTree == nullptr || pTree->getFeature() == nullptr) {
+        return QString();
+    }
+    else if (pTree->parent() == nullptr) {
+        return pTree->getFeature()->title().toString();
+    }
+    
+    // Recursive case
+    QString text = pTree->data().toString();
+    QString next = getBreadCrumbString(pTree->parent());
+    return next % QLatin1Literal(" > ") % text;
 }
 
 bool TreeItemModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,

@@ -121,12 +121,8 @@ QWidget* AutoDJFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard)
     pContainer->addTab(pScroll, tr("Controls"));
     
     // Add drop target
-    WLibrarySidebar* pSidebar = new WLibrarySidebar(pContainer);
-    pSidebar->setModel(&m_childModel);
-    pSidebar->installEventFilter(pKeyboard);
-    
-    connect(pSidebar, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
-            this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
+    WLibrarySidebar* pSidebar = createLibrarySidebarWidget(pKeyboard);
+    pSidebar->setParent(pContainer);
     
     pContainer->addTab(pSidebar, tr("Track source"));
 
@@ -152,7 +148,7 @@ void AutoDJFeature::activate() {
     m_pAutoDJView->onShow();
     
     showTrackModel(m_pAutoDJProcessor->getTableModel());
-    showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    showBreadCrumb(title().toString());
     restoreSearch(QString()); //Null String disables search box
     
     emit(enableCoverArtDisplay(true));

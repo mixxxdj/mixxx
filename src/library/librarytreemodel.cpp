@@ -37,7 +37,7 @@ LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
 QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
     
     // The decoration role contains the icon in QTreeView
-    if (role != Qt::DecorationRole) {
+    if (role != Qt::DecorationRole && role != TreeItemModel::RoleQuery) {
         return TreeItemModel::data(index, role);
     }
     
@@ -45,6 +45,11 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
     DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
         return QVariant();
     }
+    if (role == TreeItemModel::RoleQuery) {
+        return getQuery(pTree);
+    }
+    
+    // Role is decoration role, we need to show the cover art
     const CoverInfo& info = pTree->getCoverInfo();    
     
     // Currently we only support this two types of cover info
@@ -71,37 +76,6 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
 
 void LibraryTreeModel::setSortOrder(QStringList sortOrder) {
     m_sortOrder = sortOrder;
-}
-
-QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
-    DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
-        return "";
-    }
-    
-    if (pTree == m_pLibraryItem) {
-        return "";
-    }
-    
-    int depth = 0;
-    TreeItem* pAux = pTree;
-    
-    // We need to know the depth of the item to apply the filter
-    while (pAux->parent() != m_pRootItem && pAux->parent() != nullptr) {
-        pAux = pAux->parent();
-        ++depth;
-    }
-    
-    // Generate the query
-    QStringList result;
-    pAux = pTree;
-    while (depth >= 0) {
-        QString value = pAux->dataPath().toString();
-        result << m_sortOrder[depth] % ":\"" % value % "\"";
-        pAux = pAux->parent();
-        --depth;
-    }
-    
-    return result.join(" ");
 }
 
 void LibraryTreeModel::reloadTracksTree() {    
@@ -134,6 +108,37 @@ void LibraryTreeModel::coverFound(const QObject* requestor, int requestReference
         const QModelIndex& index = *it;
         emit(dataChanged(index, index));
     }
+}
+
+QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
+    DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
+        return "";
+    }
+    
+    if (pTree == m_pLibraryItem) {
+        return "";
+    }
+    
+    int depth = 0;
+    TreeItem* pAux = pTree;
+    
+    // We need to know the depth of the item to apply the filter
+    while (pAux->parent() != m_pRootItem && pAux->parent() != nullptr) {
+        pAux = pAux->parent();
+        ++depth;
+    }
+    
+    // Generate the query
+    QStringList result;
+    pAux = pTree;
+    while (depth >= 0) {
+        QString value = pAux->dataPath().toString();
+        result << m_sortOrder[depth] % ":\"" % value % "\"";
+        pAux = pAux->parent();
+        --depth;
+    }
+    
+    return result.join(" ");
 }
 
 void LibraryTreeModel::createTracksTree() {

@@ -22,7 +22,6 @@ class LibraryTreeModel : public TreeItemModel {
     virtual QVariant data(const QModelIndex &index, int role) const;
     
     void setSortOrder(QStringList sortOrder);
-    QString getQuery(TreeItem* pTree) const;
     
   public slots:  
     void reloadTracksTree();
@@ -42,6 +41,7 @@ class LibraryTreeModel : public TreeItemModel {
                     QPixmap pixmap, bool fromCache);
     
   private:    
+    QString getQuery(TreeItem* pTree) const;
     void createTracksTree();
     void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);
     
