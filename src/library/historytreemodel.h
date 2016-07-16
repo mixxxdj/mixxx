@@ -21,6 +21,7 @@ class HistoryTreeModel : public TreeItemModel
         int iID;
         int iDate;
         int iName;
+        int iCount;
     };
     
     LibraryFeature* m_pFeature;
