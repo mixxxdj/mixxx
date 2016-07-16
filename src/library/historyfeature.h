@@ -12,6 +12,7 @@
 
 class TrackCollection;
 class TreeItem;
+class HistoryTreeModel;
 
 class HistoryFeature : public BasePlaylistFeature {
     Q_OBJECT
@@ -48,6 +49,7 @@ public:
     QLinkedList<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pGetNewPlaylist;
+    HistoryTreeModel* m_pHistoryTreeModel;
     int m_playlistId;
 };
 

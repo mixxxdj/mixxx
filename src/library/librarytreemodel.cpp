@@ -1,6 +1,6 @@
 #include "library/coverartcache.h"
 #include "library/librarytreemodel.h"
-#include "library/mixxxlibraryfeature.h"
+#include "library/libraryfeature.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
@@ -11,7 +11,7 @@ namespace  {
 QHash<quint16, QModelIndex> m_hashToIndex;
 }
 
-LibraryTreeModel::LibraryTreeModel(MixxxLibraryFeature* pFeature,
+LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
                                    TrackCollection* pTrackCollection,
                                    QObject* parent)
         : TreeItemModel(parent),
@@ -105,7 +105,7 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
 }
 
 void LibraryTreeModel::reloadTracksTree() {    
-    qDebug() << "LibraryTreeModel::reloadTracksTree";
+    //qDebug() << "LibraryTreeModel::reloadTracksTree";
     
     // Create root item
     TreeItem* pRootItem = new TreeItem();
@@ -174,7 +174,7 @@ void LibraryTreeModel::createTracksTree() {
         LOG_FAILED_QUERY(query);
         return;
     }
-    qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
+    //qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
     
     int size = columns.size();
     if (size <= 0) {

@@ -9,13 +9,13 @@
 #include "library/treeitemmodel.h"
 
 class CoverInfo;
-class MixxxLibraryFeature;
+class LibraryFeature;
 class TrackCollection;
 
 class LibraryTreeModel : public TreeItemModel {
     Q_OBJECT
   public:
-    LibraryTreeModel(MixxxLibraryFeature* pFeature, 
+    LibraryTreeModel(LibraryFeature* pFeature, 
                      TrackCollection* pTrackCollection, 
                      QObject* parent = nullptr);
 
@@ -45,7 +45,7 @@ class LibraryTreeModel : public TreeItemModel {
     void createTracksTree();
     void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);
     
-    MixxxLibraryFeature* m_pFeature;
+    LibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;
     QStringList m_sortOrder;
     QStringList m_coverQuery;

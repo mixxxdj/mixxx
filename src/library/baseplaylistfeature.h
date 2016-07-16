@@ -101,7 +101,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pAnalyzePlaylistAction;
     QList<QPair<int, QString> > m_playlistList;
     QModelIndex m_lastRightClickedIndex;
-    TreeItemModel m_childModel;
+    TreeItemModel* m_childModel;
     TrackPointer m_pSelectedTrack;
 
   private slots:

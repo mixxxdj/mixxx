@@ -5,6 +5,7 @@
 #include "library/historyfeature.h"
 
 #include "control/controlobject.h"
+#include "library/historytreemodel.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
@@ -28,9 +29,9 @@ HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
     emit(slotGetNewPlaylist());
 
     //construct child model
-    TreeItem *rootItem = new TreeItem();
-    m_childModel.setRootItem(rootItem);
-    constructChildModel(-1);
+    delete m_childModel;
+    m_childModel = m_pHistoryTreeModel = new HistoryTreeModel(this, m_pTrackCollection);
+    m_pHistoryTreeModel->reloadListsTree();
     
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotPlayingTrackChanged(TrackPointer)));

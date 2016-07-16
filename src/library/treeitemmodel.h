@@ -19,7 +19,7 @@ class TreeItemModel : public QAbstractItemModel {
         RoleDivider
     };
 
-    TreeItemModel(QObject *parent = 0);
+    TreeItemModel(QObject* parent = nullptr);
     virtual ~TreeItemModel();
 
     virtual QVariant data(const QModelIndex &index, int role) const;
