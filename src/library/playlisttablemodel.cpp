@@ -1,3 +1,5 @@
+#include <QString>
+
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
@@ -16,14 +18,33 @@ PlaylistTableModel::~PlaylistTableModel() {
 }
 
 void PlaylistTableModel::setTableModel(int playlistId) {
-    //qDebug() << "PlaylistTableModel::setTableModel" << playlistId;
-    if (m_iPlaylistId == playlistId) {
-        qDebug() << "Already focused on playlist " << playlistId;
+    m_iPlaylistId = playlistId;
+    QSet<int> temp;
+    temp.insert(playlistId);
+    setTableModel(temp);
+}
+
+void PlaylistTableModel::setTableModel(const QSet<int> &playlistIds) {
+    if (m_playlistIds == playlistIds) {
+        qDebug() << "Already focused on playlist " << playlistIds;
         return;
     }
+    
+    if (playlistIds.size() > 1) {
+        // If we are showing many playlist at once this is not a real playlist
+        m_iPlaylistId = -1;
+    }
 
-    m_iPlaylistId = playlistId;
-    QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
+    m_playlistIds = playlistIds;
+    
+    QString playlistTableName = "playlist";
+    QStringList sIds;
+    for (int n : m_playlistIds) {
+        QString sNum = QString::number(n);
+        sIds << sNum;
+        playlistTableName.append("_" + sNum);
+    }
+    
     QSqlQuery query(m_database);
     FieldEscaper escaper(m_database);
 
@@ -43,10 +64,10 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT %2 FROM PlaylistTracks "
                                   "INNER JOIN library ON library.id = PlaylistTracks.track_id "
-                                  "WHERE PlaylistTracks.playlist_id = %3")
+                                  "WHERE PlaylistTracks.playlist_id IN (%3)")
                           .arg(escaper.escapeString(playlistTableName),
                                columns.join(","),
-                               QString::number(playlistId));
+                               sIds.join(","));
     if (!m_showAll) {
         queryString.append(" AND library.mixxx_deleted = 0");
     }

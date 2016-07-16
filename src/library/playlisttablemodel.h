@@ -1,5 +1,6 @@
 #ifndef PLAYLISTTABLEMODEL_H
 #define PLAYLISTTABLEMODEL_H
+#include <QSet>
 
 #include "library/basesqltablemodel.h"
 #include "library/dao/playlistdao.h"
@@ -11,6 +12,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
                        const char* settingsNamespace, bool showAll = false);
     virtual ~PlaylistTableModel();
     void setTableModel(int playlistId = -1);
+    void setTableModel(const QSet<int>& playlistIds);
 
     int getPlaylist() const {
         return m_iPlaylistId;
@@ -37,6 +39,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
   private:
     PlaylistDAO& m_playlistDao;
     int m_iPlaylistId;
+    QSet<int> m_playlistIds;
     bool m_showAll;
 };
 
