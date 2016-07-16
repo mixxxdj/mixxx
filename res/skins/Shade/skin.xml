@@ -499,7 +499,6 @@
 					QScrollBar::handle {
 					  min-height: 25px;
 					  background: rgba(95, 95, 95, 150);
-					  border-radius: 3px;
 					  border: none;
 					}
 					QScrollBar::handle:hover {

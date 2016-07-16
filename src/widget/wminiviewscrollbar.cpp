@@ -81,7 +81,7 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
     int w = width();
     
     // Draw each letter in its position
-    for (CharPosition& p : m_computedSize) {
+    for (CharPosition& p : m_computedPosition) {
         if (p.position < 0) {
             continue;
         }
@@ -113,7 +113,7 @@ void WMiniViewScrollBar::mouseMoveEvent(QMouseEvent* pEvent) {
     int letterSize = fontMetrics().height();
     int posVert = pEvent->pos().y();
 
-    for (CharPosition& c : m_computedSize) {
+    for (CharPosition& c : m_computedPosition) {
         if (posVert >= c.position && posVert < c.position + letterSize && !found) {
             c.bold = true;
             found = true;
@@ -128,7 +128,7 @@ void WMiniViewScrollBar::mouseMoveEvent(QMouseEvent* pEvent) {
 void WMiniViewScrollBar::mousePressEvent(QMouseEvent* pEvent) {
     QScrollBar::mousePressEvent(pEvent);
     
-    for (CharPosition& c : m_computedSize) {
+    for (const CharPosition& c : m_computedPosition) {
         if (c.bold) {            
             float aux = c.position/float(height());
             aux *= float(maximum() - minimum());
@@ -140,7 +140,7 @@ void WMiniViewScrollBar::mousePressEvent(QMouseEvent* pEvent) {
 }
 
 void WMiniViewScrollBar::leaveEvent(QEvent* pEvent) {
-    for (CharPosition& c : m_computedSize) {
+    for (CharPosition& c : m_computedPosition) {
         c.bold = false;
     }
     QScrollBar::leaveEvent(pEvent);
@@ -210,39 +210,38 @@ void WMiniViewScrollBar::refreshCharMap() {
 }
 
 void WMiniViewScrollBar::computeLettersSize() {
-    m_computedSize = m_letters;
+    // Initialize each position with the times each character appears
+    m_computedPosition = m_letters;
     
     // Height of a letter
-    int letterSize = fontMetrics().height();
+    const int letterSize = fontMetrics().height();
     const int totalLinearSize = rect().height();
-    int nextAvailableScrollPosition = 0;
-    int optimalScrollPosition = 0;
+    float nextAvailableScrollPosition = 0.0;
+    float optimalScrollPosition = 0.0;
     
     int totalCount = 0;
     // Get the total count of letters appearance to make a linear interpolation
     // with the current widget height
-    for (CharPosition& p : m_letters) {
+    for (const CharPosition& p : m_letters) {
         totalCount += p.position;
     }
     
-    for (CharPosition& p : m_computedSize) {
-        int height = interpolHeight(p.position, 
-                                    totalCount,
-                                    totalLinearSize);
-        float percentage = p.position/float(totalCount);
+    for (CharPosition& p : m_computedPosition) {
+        float size = interpolSize(p.position, totalCount, totalLinearSize);
+        float percentage = 100.0*p.position/float(totalCount);
         
-        if (optimalScrollPosition < nextAvailableScrollPosition ||
-            percentage < 0.01) {
+        if ((optimalScrollPosition + size) < (nextAvailableScrollPosition + letterSize) 
+                || percentage < 1.0) {
             // If a very small percentage letter takes the space for a letter
             // with more high ocupacy percentage this can be annoying
             
             // A negative position won't paint the character
             p.position = -1;
         } else {
-            p.position = optimalScrollPosition;
-            nextAvailableScrollPosition = optimalScrollPosition + letterSize;
+            p.position = (int) optimalScrollPosition;
+            nextAvailableScrollPosition = optimalScrollPosition + (float)(letterSize);
         }
-        optimalScrollPosition += height;
+        optimalScrollPosition += size;
     }
 }
 
@@ -266,7 +265,7 @@ int WMiniViewScrollBar::findSmallest(const QVector<CharPosition>& vector) {
     return smallestIndex;
 }
 
-float WMiniViewScrollBar::interpolHeight(float current, float max1, float max2) {
+float WMiniViewScrollBar::interpolSize(float current, float max1, float max2) {
     float res = current*(max2/max1);
     return res;
 }

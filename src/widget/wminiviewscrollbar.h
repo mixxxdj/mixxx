@@ -45,14 +45,18 @@ class WMiniViewScrollBar : public QScrollBar
     void triggerUpdate();
 
     static int findSmallest(const QVector<CharPosition>& vector);
-    static float interpolHeight(float current, float max1,
+    static float interpolSize(float current, float max1,
                                 float max2);
 
     int m_sortColumn;
     int m_dataRole;
     bool m_showLetters;
+    
+    // Contains the times each character appears in the model
     QVector<CharPosition> m_letters;
-    QVector<CharPosition> m_computedSize;
+    
+    // Contains each character's vertical position
+    QVector<CharPosition> m_computedPosition;
     QPointer<QAbstractItemModel> m_pModel;
 };
 
