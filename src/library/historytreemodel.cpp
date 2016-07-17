@@ -58,7 +58,6 @@ void HistoryTreeModel::reloadListsTree() {
     
     TreeItem* lastYear = nullptr;
     TreeItem* lastMonth = nullptr;
-    TreeItem* lastDay = nullptr;
     TreeItem* lastPlaylist = nullptr;
     bool change = true;
     QDate lastDate;
@@ -74,25 +73,18 @@ void HistoryTreeModel::reloadListsTree() {
         }
         
         if (auxDate.month() != lastDate.month() || change) {
-            change = true;
             QString month = QDate::longMonthName(auxDate.month(), QDate::StandaloneFormat);
             QString monthNum = QString::number(auxDate.month());
             lastMonth = new TreeItem(month, monthNum, m_pFeature, lastYear);
             lastYear->appendChild(lastMonth);
         }
         
-        if (auxDate.day() != lastDate.day() || change) {
-            QString day = QString::number(auxDate.day());
-            lastDay = new TreeItem(day, day, m_pFeature, lastMonth);
-            lastMonth->appendChild(lastDay);
-        } 
-        
-        QString sTime = dTime.time().toString();
+        QString sTime = dTime.toString("d hh:mm");
         sTime += QString(" (%1)").arg(query.value(ind.iCount).toString());
         QString pId = query.value(ind.iID).toString();
         
-        lastPlaylist = new TreeItem(sTime, pId, m_pFeature, lastDay);
-        lastDay->appendChild(lastPlaylist);
+        lastPlaylist = new TreeItem(sTime, pId, m_pFeature, lastMonth);
+        lastMonth->appendChild(lastPlaylist);
         lastDate = auxDate;
         change = false;
     }
@@ -113,8 +105,7 @@ QVariant HistoryTreeModel::data(const QModelIndex &index, int role) const {
     // We need to know the depth of the item to apply the filter
     // depth == 0 => Year
     // depth == 1 => Month
-    // depth == 2 => Day
-    // depth == 3 => A single playlist
+    // depth == 2 => A single playlist
     int depth = 0;
     TreeItem* pAux = pTree;
     while (pAux->parent() != nullptr && pAux->parent() != m_pRootItem) {
