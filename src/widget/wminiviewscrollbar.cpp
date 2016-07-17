@@ -128,14 +128,23 @@ void WMiniViewScrollBar::mouseMoveEvent(QMouseEvent* pEvent) {
 void WMiniViewScrollBar::mousePressEvent(QMouseEvent* pEvent) {
     QScrollBar::mousePressEvent(pEvent);
     
-    for (const CharPosition& c : m_computedPosition) {
-        if (c.bold) {            
-            float aux = c.position/float(height());
-            aux *= float(maximum() - minimum());
-            aux += float(minimum());
-            setSliderPosition(aux);
-            break;
+    bool found = false;
+    auto itL = m_letters.begin();
+    auto itC = m_computedPosition.begin();
+    int totalSum = 0;
+    
+    // When setting the slider position the correct position is the sum of all
+    // the previous elements of the selected element. 
+    // In this scrollbar maximum = model.size(), minimum = 0
+    while (!found && itL != m_letters.end() && itC != m_computedPosition.end()) {
+        if (itC->bold) {
+            found = true;
+            setSliderPosition(totalSum);
+        } else {
+            totalSum += itL->position;
         }
+        ++itL;
+        ++itC;
     }
 }
 
@@ -152,6 +161,8 @@ void WMiniViewScrollBar::refreshCharMap() {
     }
     
     int size = m_pModel->rowCount();
+    setMinimum(0);
+    setMaximum(size);
     const QModelIndex& rootIndex = m_pModel->index(0, 0);
     
     int digits = 0;
