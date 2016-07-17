@@ -146,6 +146,19 @@ PlaylistTableModel* HistoryFeature::constructTableModel() {
                                   "mixxx.db.model.setlog", true);
 }
 
+QSet<int> HistoryFeature::playlistIdsFromIndex(const QModelIndex& index) const {
+    QList<QVariant> auxList = index.data(TreeItemModel::RoleQuery).toList();
+    QSet<int> playlistIds;
+    for (QVariant& var : auxList) {
+        bool ok;
+        playlistIds.insert(var.toInt(&ok));
+        if (!ok) {
+            return QSet<int>();
+        }
+    }
+    return playlistIds;
+}
+
 void HistoryFeature::slotGetNewPlaylist() {
     //qDebug() << "slotGetNewPlaylist() succesfully triggered !";
 

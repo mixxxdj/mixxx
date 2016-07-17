@@ -74,10 +74,12 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void buildPlaylistList() = 0;
     virtual void decorateChild(TreeItem *pChild, int playlist_id) = 0;
     virtual void addToAutoDJ(bool bTop);
-
-    int playlistIdFromIndex(QModelIndex index);
+    
     QPointer<PlaylistTableModel> getPlaylistTableModel(int paneId);
     virtual PlaylistTableModel* constructTableModel() = 0;
+    
+    virtual QSet<int> playlistIdsFromIndex(const QModelIndex& index) const;
+    int playlistIdFromIndex(const QModelIndex& index) const;
     
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.

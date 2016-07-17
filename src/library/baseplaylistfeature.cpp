@@ -116,21 +116,6 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pAnalyzePlaylistAction;
 }
 
-int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
-    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-    if (item == NULL) {
-        return -1;
-    }
-
-    QString dataPath = item->dataPath().toString();
-    bool ok = false;
-    int playlistId = dataPath.toInt(&ok);
-    if (!ok) {
-        return -1;
-    }
-    return playlistId;
-}
-
 QPointer<PlaylistTableModel> BasePlaylistFeature::getPlaylistTableModel(int paneId) {
     if (paneId < 0) {
         paneId = m_focusedPane;
@@ -625,6 +610,28 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
         }
     }
 }
+
+QSet<int> BasePlaylistFeature::playlistIdsFromIndex(const QModelIndex &index) const {
+    QString dataPath = index.data(TreeItemModel::RoleDataPath).toString();
+    bool ok = false;
+    int playlistId = dataPath.toInt(&ok);
+    if (!ok) {
+        return QSet<int>();
+    }
+    return QSet<int>::fromList({ playlistId });
+    
+}
+
+
+int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
+    QSet<int> playlistIds = playlistIdsFromIndex(index);
+    if (playlistIds.empty() || playlistIds.size() > 1) {
+        return -1;
+    } 
+    
+    return *playlistIds.begin();
+}
+
 
 void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {

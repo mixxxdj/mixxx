@@ -36,6 +36,7 @@ public:
     void buildPlaylistList();
     void decorateChild(TreeItem *pChild, int playlist_id);
     PlaylistTableModel* constructTableModel();
+    QSet<int> playlistIdsFromIndex(const QModelIndex &index) const override;
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);

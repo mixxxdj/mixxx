@@ -24,7 +24,7 @@ class TreeItem {
     TreeItem(TreeItem* parent);
     ~TreeItem();
     /** appends a child item to this object **/
-    void appendChild(TreeItem *child);
+    void appendChild(TreeItem* child);
     /** remove a child item at the given index **/
     void removeChild(int index);
     /** returns the tree item at position 'row' in the child list **/

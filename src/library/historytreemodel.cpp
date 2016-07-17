@@ -92,7 +92,7 @@ void HistoryTreeModel::reloadListsTree() {
     triggerRepaint();
 }
 
-QVariant HistoryTreeModel::data(const QModelIndex &index, int role) const {
+QVariant HistoryTreeModel::data(const QModelIndex& index, int role) const {
     if (role != TreeItemModel::RoleQuery) {
         return TreeItemModel::data(index, role);
     }
@@ -102,16 +102,25 @@ QVariant HistoryTreeModel::data(const QModelIndex &index, int role) const {
         return QVariant();
     }
     
-    // We need to know the depth of the item to apply the filter
-    // depth == 0 => Year
-    // depth == 1 => Month
-    // depth == 2 => A single playlist
-    int depth = 0;
-    TreeItem* pAux = pTree;
-    while (pAux->parent() != nullptr && pAux->parent() != m_pRootItem) {
-        pAux = pAux->parent();
-        ++depth;
+    return idsFromItem(pTree);
+}
+
+QList<QVariant> HistoryTreeModel::idsFromItem(TreeItem* pTree) const {
+    if (pTree->childCount() <= 0) {
+        bool ok;
+        int value = pTree->dataPath().toInt(&ok);
+        if (!ok) {
+            return QList<QVariant>();
+        }
+        
+        return { value };
     }
     
-    return QVariant();
+    QList<QVariant> res;
+    int size = pTree->childCount();
+    for (int i = 0; i < size; ++i) {
+        QList<QVariant> aux = idsFromItem(pTree->child(i));
+        res.append(aux);
+    }
+    return res;
 }
