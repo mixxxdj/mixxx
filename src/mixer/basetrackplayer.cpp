@@ -156,12 +156,14 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
         // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
         // relies on signals and slots to get tons of things done. Don't
         // randomly disconnect things.
-        // m_pLoadedTrack->disconnect();
         disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
         disconnect(m_pLoadedTrack.data(), 0, this, 0);
         disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
 
-        setReplayGain(0);
+        // Do not reset m_pReplayGain here, because the track might be still
+        // playing and the last buffer will be processed.
+
+        m_pPlay->set(0.0);
     }
 
     m_pLoadedTrack = pNewTrack;
