@@ -14,10 +14,10 @@ class WMiniViewScrollBar : public QScrollBar
     bool showLetters() const;
 
     void setSortColumn(int column);
-    int sortColumn();
+    int sortColumn() const;
     
     void setRole(int role);
-    int role();
+    int role() const;
 
     void setModel(QAbstractItemModel* model);
 
@@ -29,6 +29,11 @@ class WMiniViewScrollBar : public QScrollBar
     virtual void leaveEvent(QEvent*pEvent);
 
   private:
+    struct CharCount {
+        QChar character;
+        int count;
+    };
+    
     struct CharPosition {
         QChar character;
         int position;
@@ -44,16 +49,12 @@ class WMiniViewScrollBar : public QScrollBar
     void computeLettersSize();
     void triggerUpdate();
 
-    static int findSmallest(const QVector<CharPosition>& vector);
-    static float interpolSize(float current, float max1,
-                                float max2);
-
     int m_sortColumn;
     int m_dataRole;
     bool m_showLetters;
     
     // Contains the times each character appears in the model
-    QVector<CharPosition> m_letters;
+    QVector<CharCount> m_letters;
     
     // Contains each character's vertical position
     QVector<CharPosition> m_computedPosition;
