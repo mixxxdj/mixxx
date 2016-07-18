@@ -23,29 +23,29 @@ public:
                   TrackCollection* pTrackCollection);
     virtual ~HistoryFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
   public slots:
-    void onRightClick(const QPoint&);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClick(const QPoint&) override;
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
     void slotJoinWithPrevious();
     void slotGetNewPlaylist();
 
   protected:
-    void buildPlaylistList();
-    void decorateChild(TreeItem *pChild, int playlist_id);
-    PlaylistTableModel* constructTableModel();
+    void buildPlaylistList() override;
+    void decorateChild(TreeItem *pChild, int playlist_id) override;
+    PlaylistTableModel* constructTableModel() override;
     QSet<int> playlistIdsFromIndex(const QModelIndex &index) const override;
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
-    void slotPlaylistTableChanged(int playlistId);
-    void slotPlaylistContentChanged(int playlistId);
-    void slotPlaylistTableRenamed(int playlistId, QString a_strName);
+    void slotPlaylistTableChanged(int playlistId) override;
+    void slotPlaylistContentChanged(int playlistId) override;
+    void slotPlaylistTableRenamed(int playlistId, QString a_strName) override;
 
   private:
-    QString getRootViewHtml() const;
+    QString getRootViewHtml() const override;
 
     QLinkedList<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;

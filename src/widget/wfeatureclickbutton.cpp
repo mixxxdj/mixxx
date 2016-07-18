@@ -1,3 +1,5 @@
+#include <QMimeData>
+
 #include "wfeatureclickbutton.h"
 #include "util/assert.h"
 

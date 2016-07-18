@@ -145,11 +145,11 @@ void BasePlaylistFeature::activate() {
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
-    int playlistId = playlistIdFromIndex(index);
+    QSet<int> playlistIds = playlistIdsFromIndex(index);
     m_pPlaylistTableModel = getPlaylistTableModel(m_focusedPane);
     
-    if (playlistId != -1 && m_pPlaylistTableModel) {
-        m_pPlaylistTableModel->setTableModel(playlistId);
+    if (!playlistIds.isEmpty() && m_pPlaylistTableModel) {
+        m_pPlaylistTableModel->setTableModel(playlistIds);
         
         auto it = m_panes.find(m_focusedPane);
         auto itId = m_idTable.find(m_focusedPane);

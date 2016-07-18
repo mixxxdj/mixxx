@@ -1,6 +1,7 @@
 #include "library/treeitemmodel.h"
 
-#include <QLatin1Literal>
+#include <QLatin1String>
+#include <QStringBuilder>
 #include "library/treeitem.h"
 
 /*
@@ -27,7 +28,7 @@
  * - cratefeature.cpp
  * - *feature.cpp
  */
-TreeItemModel::TreeItemModel(QObject *parent)
+TreeItemModel::TreeItemModel(QObject* parent)
         : QAbstractItemModel(parent),
           m_pRootItem(new TreeItem()) {
 }
@@ -237,7 +238,7 @@ QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {
     // Recursive case
     QString text = pTree->data().toString();
     QString next = getBreadCrumbString(pTree->parent());
-    return next % QLatin1Literal(" > ") % text;
+    return next % QLatin1String(" > ") % text;
 }
 
 bool TreeItemModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
