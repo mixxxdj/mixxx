@@ -385,21 +385,31 @@ void AutoDJFeature::constructCrateChildModel() {
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     //Save the model index so we can get it in the action slots...
-    m_lastRightClickedIndex = index;
-
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    QString crateName = item->dataPath().toString();
-    if (crateName.length() > 0) {
+    QString crateName;
+    if (index.isValid()) {
+        m_lastRightClickedIndex = index;
+    
+        TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+        DEBUG_ASSERT_AND_HANDLE(item) {
+            return;
+        }
+    
+        crateName = item->dataPath().toString();
+    }
+    
+    if (!crateName.isEmpty()) {
         // A crate was right-clicked.
         // Bring up the context menu.
-        QMenu menu(NULL);
+        QMenu menu(nullptr);
         menu.addAction(m_pRemoveCrateFromAutoDj);
         menu.exec(globalPos);
-    } else {
+        return;
+    } 
+    else {
         // The "Crates" tree-item was right-clicked.
         // Bring up the context menu.
-        QMenu menu(NULL);
-        QMenu crateMenu(NULL);
+        QMenu menu(nullptr);
+        QMenu crateMenu(nullptr);
         crateMenu.setTitle(tr("Add Crate as Track Source"));
         QMap<QString,int> crateMap;
         m_crateDao.getAutoDjCrates(false, &crateMap);
