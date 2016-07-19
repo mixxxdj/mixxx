@@ -84,9 +84,7 @@ QModelIndex HistoryTreeModel::reloadListsTree(int playlistId) {
             lastYear->appendChild(lastMonth);
         }
         
-        QString name = query.value(ind.iName).toString();
-        QDate date = QDate::fromString(name.left(10), "yyyy-MM-dd");
-        QString sData = date.isValid() ? dTime.toString("d hh:mm") : name;
+        QString sData = query.value(ind.iName).toString();
         sData += QString(" (%1)").arg(query.value(ind.iCount).toString());
         
         int id = query.value(ind.iID).toInt();

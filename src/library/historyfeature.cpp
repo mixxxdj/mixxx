@@ -306,6 +306,8 @@ void HistoryFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,
                                             m_playlistId);
     }
+    // Refresh sidebar tree
+    constructChildModel(m_playlistId);
 }
 
 void HistoryFeature::slotPlaylistTableChanged(int playlistId) {
