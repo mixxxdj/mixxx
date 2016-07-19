@@ -70,7 +70,6 @@ class BasePlaylistFeature : public LibraryFeature {
   protected:
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selected_id);
-    virtual void clearChildModel();
     virtual void buildPlaylistList() = 0;
     virtual void decorateChild(TreeItem *pChild, int playlist_id) = 0;
     virtual void addToAutoDJ(bool bTop);
@@ -83,7 +82,7 @@ class BasePlaylistFeature : public LibraryFeature {
     
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
-    QModelIndex indexFromPlaylistId(int playlistId);
+    virtual QModelIndex indexFromPlaylistId(int playlistId) const;
 
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;

@@ -14,8 +14,9 @@ class HistoryTreeModel : public TreeItemModel
     HistoryTreeModel(LibraryFeature *pFeature, TrackCollection* pTrackCollection, 
                      QObject* parent = nullptr);
 
-    void reloadListsTree();
-    virtual QVariant data(const QModelIndex& index, int role) const;
+    QModelIndex reloadListsTree(int playlistId);
+    QModelIndex indexFromPlaylistId(int playlistId);
+    QVariant data(const QModelIndex& index, int role) const override;
 
   private:
     struct HistoryQueryIndex {
@@ -26,6 +27,7 @@ class HistoryTreeModel : public TreeItemModel
     };
     
     QList<QVariant> idsFromItem(TreeItem* pTree) const;
+    TreeItem* findItemFromPlaylistId(TreeItem* pTree, int playlistId, int& row) const;
     
     LibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;

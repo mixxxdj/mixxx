@@ -16,8 +16,8 @@ class CoverInfo;
 class TreeItem {
   public:
     TreeItem(); //creates an invisible root item for the tree
-    TreeItem(const QString &data,
-             const QString &data_path,
+    TreeItem(const QVariant &data,
+             const QVariant &data_path,
              LibraryFeature* pFeature,
              TreeItem* parent);
     TreeItem(LibraryFeature* pFeature);
@@ -39,12 +39,12 @@ class TreeItem {
     void setParent(TreeItem* parent);
 
     /** for dynamic resizing models **/
-    bool insertChildren(QList<TreeItem*> &data, int position, int count);
+    bool insertChildren(QList<TreeItem*>& data, int position, int count);
     /** Removes <count> children from the child list starting at index <position> **/
     bool removeChildren(int position, int count);
 
     /** sets data **/
-    bool setData(const QVariant &data, const QVariant &data_path);
+    bool setData(const QVariant& data, const QVariant& data_path);
     /** simple name of the playlist **/
     QVariant data() const;
     /** Full path of the playlist **/
@@ -75,8 +75,8 @@ class TreeItem {
 
   private:
     QList<TreeItem*> m_childItems;
-    QString m_data;
-    QString m_dataPath;
+    QVariant m_data;
+    QVariant m_dataPath;
     LibraryFeature* m_pFeature;
     bool m_bold;
     bool m_divider;

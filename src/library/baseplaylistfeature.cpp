@@ -174,8 +174,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
-    QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != -1 && index.isValid() && m_pPlaylistTableModel) {
+    if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         showTrackModel(m_pPlaylistTableModel);
         //m_pPlaylistTableModel->select();
@@ -689,15 +688,13 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     TreeItem* root = m_childModel->getItem(QModelIndex());
 
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
-        int playlist_id = it->first;
-        QString playlist_name = it->second;
+    for (const QPair<int, QString>& p : m_playlistList) {
+        int playlist_id = p.first;
+        QString playlist_name = p.second;
 
         if (selected_id == playlist_id) {
             // save index for selection
             selected_row = row;
-            m_childModel->index(selected_row, 0);
         }
 
         // Create the TreeItem whose parent is the invisible root item
@@ -706,50 +703,34 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 
         decorateChild(item, playlist_id);
         data_list.append(item);
+        ++row;
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_childModel->insertRows(data_list, 0, m_playlistList.size());
-    if (selected_row == -1) {
-        return QModelIndex();
-    }
     return m_childModel->index(selected_row, 0);
 }
 
 void BasePlaylistFeature::updateChildModel(int selected_id) {
     buildPlaylistList();
-
-    int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
-        int playlist_id = it->first;
-        QString playlist_name = it->second;
-
-        if (selected_id == playlist_id) {
-            TreeItem* item = m_childModel->getItem(indexFromPlaylistId(playlist_id));
-            item->setData(playlist_name, QString::number(playlist_id));
-            decorateChild(item, playlist_id);
-        }
-
+    
+    QModelIndex index = indexFromPlaylistId(selected_id);
+    if (!index.isValid()) {
+        return;
     }
+    
+    TreeItem* item = m_childModel->getItem(index);
+    DEBUG_ASSERT_AND_HANDLE(item) {
+        return;
+    }
+    decorateChild(item, selected_id);
 }
 
-
-
-/**
-  * Clears the child model dynamically, but the invisible root item remains
-  */
-void BasePlaylistFeature::clearChildModel() {
-    m_childModel->removeRows(0, m_playlistList.size());
-}
-
-QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
+QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) const {
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
          it != m_playlistList.end(); ++it, ++row) {
         int current_id = it->first;
-        QString playlist_name = it->second;
-
         if (playlistId == current_id) {
             return m_childModel->index(row, 0);
         }

@@ -31,7 +31,7 @@
  * - cratefeature.cpp
  * - *feature.cpp
  */
-TreeItem::TreeItem(const QString& data, const QString& data_path,
+TreeItem::TreeItem(const QVariant& data, const QVariant& data_path,
                    LibraryFeature* pFeature, TreeItem* parent)
         : m_data(data),
           m_dataPath(data_path),
@@ -96,7 +96,7 @@ int TreeItem::childCount() const {
 
 QVariant TreeItem::data() const {
     if (m_trackCount >= 0) {
-        return m_data + " (" + QString::number(m_trackCount) + ")";
+        return m_data.toString() + " (" + QString::number(m_trackCount) + ")";
     }
     
     return m_data;

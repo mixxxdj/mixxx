@@ -22,7 +22,7 @@ HistoryTreeModel::HistoryTreeModel(LibraryFeature* pFeature,
     }
 }
 
-void HistoryTreeModel::reloadListsTree() {
+QModelIndex HistoryTreeModel::reloadListsTree(int playlistId) {
     TreeItem* pRootItem = new TreeItem();
     pRootItem->setLibraryFeature(m_pFeature);
     setRootItem(pRootItem);
@@ -46,7 +46,7 @@ void HistoryTreeModel::reloadListsTree() {
     if (!query.exec(queryStr)) {
         qDebug() << queryStr;
         LOG_FAILED_QUERY(query);
-        return;
+        return QModelIndex();
     }
     
     QSqlRecord record = query.record();
@@ -61,6 +61,10 @@ void HistoryTreeModel::reloadListsTree() {
     TreeItem* lastPlaylist = nullptr;
     bool change = true;
     QDate lastDate;
+    int row = 0;
+    int selectedRow = -1;
+    TreeItem* selectedItem = nullptr;
+    
     while (query.next()) {
         QDateTime dTime = query.value(ind.iDate).toDateTime();
         QDate auxDate = dTime.date();
@@ -79,17 +83,33 @@ void HistoryTreeModel::reloadListsTree() {
             lastYear->appendChild(lastMonth);
         }
         
-        QString sTime = dTime.toString("d hh:mm");
-        sTime += QString(" (%1)").arg(query.value(ind.iCount).toString());
-        QString pId = query.value(ind.iID).toString();
+        QString name = query.value(ind.iName).toString();
+        QDate date = QDate::fromString(name.left(10), "yyyy-MM-dd");
+        QString sData = date.isValid() ? dTime.toString("d hh:mm") : name;
+        sData += QString(" (%1)").arg(query.value(ind.iCount).toString());
+        int id = query.value(ind.iID).toInt();
+        QString pId = QString::number(id);
         
-        lastPlaylist = new TreeItem(sTime, pId, m_pFeature, lastMonth);
+        lastPlaylist = new TreeItem(sData, pId, m_pFeature, lastMonth);
         lastMonth->appendChild(lastPlaylist);
+        if (id == playlistId) {
+            selectedRow = row;
+            selectedItem = lastPlaylist;
+        }
         lastDate = auxDate;
         change = false;
+        ++row;
     }
     
     triggerRepaint();
+    if (selectedRow < 0) return QModelIndex();
+    return createIndex(selectedRow, 0, selectedItem);
+}
+
+QModelIndex HistoryTreeModel::indexFromPlaylistId(int playlistId) {
+    int row = -1;
+    TreeItem* pItem = findItemFromPlaylistId(m_pRootItem, playlistId, row);
+    return createIndex(row, 0, pItem);
 }
 
 QVariant HistoryTreeModel::data(const QModelIndex& index, int role) const {
@@ -123,4 +143,27 @@ QList<QVariant> HistoryTreeModel::idsFromItem(TreeItem* pTree) const {
         res.append(aux);
     }
     return res;
+}
+
+TreeItem* HistoryTreeModel::findItemFromPlaylistId(TreeItem* pTree, 
+                                                  int playlistId, int& row) const {
+    int size = pTree->childCount();
+    if (size <= 0) {
+        bool ok = false;
+        int value = pTree->dataPath().toInt(&ok);
+        if (ok && value == playlistId) {
+            return pTree;
+        } 
+        return nullptr;
+    }
+    
+    for (int i = 0; i < size; ++i) {
+        TreeItem* child = pTree->child(i);
+        ++row;
+        TreeItem* result = findItemFromPlaylistId(child, playlistId, row);
+        if (result != nullptr) {
+            return result;
+        }
+    }
+    return nullptr;
 }

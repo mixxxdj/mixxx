@@ -7,6 +7,7 @@
 #include "control/controlobject.h"
 #include "library/historytreemodel.h"
 #include "library/playlisttablemodel.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
@@ -31,7 +32,7 @@ HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
     //construct child model
     delete m_childModel;
     m_childModel = m_pHistoryTreeModel = new HistoryTreeModel(this, m_pTrackCollection);
-    m_pHistoryTreeModel->reloadListsTree();
+    constructChildModel(-1);
     
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotPlayingTrackChanged(TrackPointer)));
@@ -81,7 +82,7 @@ void HistoryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex inde
 
 
     //Create the right-click menu
-    QMenu menu(NULL);
+    QMenu menu(nullptr);
     //menu.addAction(m_pCreatePlaylistAction);
     //menu.addSeparator();
     menu.addAction(m_pAddToAutoDJAction);
@@ -108,25 +109,18 @@ void HistoryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex inde
 
 void HistoryFeature::buildPlaylistList() {
     m_playlistList.clear();
-    // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
-    playlistTableModel.setTable("Playlists");
-    playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
-                               Qt::AscendingOrder);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
+    
+    // Setup the sidebar playlist model    
+    QSqlQuery query("SELECT id, name FROM Playlists WHERE hidden=2");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
     }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
-
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id = playlistTableModel.data(
-            playlistTableModel.index(row, idColumn)).toInt();
-        QString name = playlistTableModel.data(
-            playlistTableModel.index(row, nameColumn)).toString();
+    
+    int iId = query.record().indexOf("id");
+    int iName = query.record().indexOf("name");
+    while (query.next()) {
+        int id = query.value(iId).toInt();
+        QString name = query.value(iName).toString();
         m_playlistList.append(qMakePair(id, name));
     }
 }
@@ -139,6 +133,11 @@ void HistoryFeature::decorateChild(TreeItem* item, int playlist_id) {
     } else {
         item->setIcon(QIcon());
     }
+}
+
+QModelIndex HistoryFeature::constructChildModel(int selected_id) {
+    buildPlaylistList();
+    return m_pHistoryTreeModel->reloadListsTree(selected_id);
 }
 
 PlaylistTableModel* HistoryFeature::constructTableModel() {
@@ -157,6 +156,10 @@ QSet<int> HistoryFeature::playlistIdsFromIndex(const QModelIndex& index) const {
         }
     }
     return playlistIds;
+}
+
+QModelIndex HistoryFeature::indexFromPlaylistId(int playlistId) const {
+    return m_pHistoryTreeModel->indexFromPlaylistId(playlistId);
 }
 
 void HistoryFeature::slotGetNewPlaylist() {
@@ -297,7 +300,6 @@ void HistoryFeature::slotPlaylistTableChanged(int playlistId) {
     PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
     }
 }
@@ -325,7 +327,6 @@ void HistoryFeature::slotPlaylistTableRenamed(int playlistId,
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
             activatePlaylist(playlistId);
