@@ -44,8 +44,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
-    void onSearchStarting();
-    void onSearchCleared();
+    void onSearchStarting() override;
+    void onSearchCleared() override;
     void slotSendToAutoDJ() override;
     void slotSendToAutoDJTop() override;
 

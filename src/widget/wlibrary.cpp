@@ -8,6 +8,13 @@
 #include "library/libraryview.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 
+namespace {
+void showLibraryWarning() {
+    qDebug() << "WARNING: Attempted to register a view with WLibrary "
+      << "that does not implement the LibraryView interface. Ignoring.";
+}
+}
+
 WLibrary::WLibrary(QWidget* parent)
         : WBaseLibrary(parent),
           m_mutex(QMutex::Recursive) {
@@ -17,13 +24,20 @@ WLibrary::WLibrary(QWidget* parent)
 bool WLibrary::registerView(LibraryFeature *pFeature, QWidget* pView) {
     QMutexLocker lock(&m_mutex);
     if (pFeature == nullptr || dynamic_cast<LibraryView*>(pView) == nullptr) {
-        qDebug() << "WARNING: Attempted to register a view with WLibrary "
-                 << "that does not implement the LibraryView interface. "
-                 << "Ignoring.";
+        showLibraryWarning();
         return false;
     }
     return WBaseLibrary::registerView(pFeature, pView);
 }
+
+LibraryView* WLibrary::getActiveView() const {
+    LibraryView* pView = dynamic_cast<LibraryView*>(currentWidget());
+    if (pView == nullptr) {
+        showLibraryWarning();
+    }
+    return pView;
+}
+
 
 void WLibrary::switchToFeature(LibraryFeature *pFeature) {
     QMutexLocker lock(&m_mutex);
@@ -31,9 +45,7 @@ void WLibrary::switchToFeature(LibraryFeature *pFeature) {
     if (it != m_featureMap.end()) {
         LibraryView* pView = dynamic_cast<LibraryView*>(*it);
         if (pView == nullptr) {
-            qDebug() << "WARNING: Attempted to register a view with WLibrary "
-                     << "that does not implement the LibraryView interface. "
-                     << "Ignoring.";
+            showLibraryWarning();
             return;
         }
         WBaseLibrary::switchToFeature(pFeature);
@@ -43,17 +55,26 @@ void WLibrary::switchToFeature(LibraryFeature *pFeature) {
 
 void WLibrary::search(const QString& name) {
     QMutexLocker lock(&m_mutex);
-    QWidget* current = currentWidget();
-    LibraryView* view = dynamic_cast<LibraryView*>(current);
+    LibraryView* view = getActiveView();
     if (view == nullptr) {
-        qDebug() << "WARNING: Attempted to register a view with WLibrary "
-          << "that does not implement the LibraryView interface. Ignoring.";
         return;
     }
     lock.unlock();
     view->onSearch(name);
 }
 
-LibraryView* WLibrary::getActiveView() const {
-    return dynamic_cast<LibraryView*>(currentWidget());
+void WLibrary::searchCleared() {
+    LibraryView* view = getActiveView();
+    if (view == nullptr) {
+        return;
+    }
+    view->onSearchCleared();
+}
+
+void WLibrary::searchStarting() {
+    LibraryView* view = getActiveView();
+    if (view == nullptr) {
+        return;
+    }
+    view->onSearchStarting();
 }

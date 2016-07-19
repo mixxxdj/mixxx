@@ -54,9 +54,9 @@ void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchBar) {
     connect(pSearchBar, SIGNAL(search(const QString&)),
             this, SLOT(slotSearch(const QString&)));
     connect(pSearchBar, SIGNAL(searchCleared()),
-            this, SIGNAL(searchCleared()));
+            this, SLOT(slotSearchCleared()));
     connect(pSearchBar, SIGNAL(searchStarting()),
-            this, SIGNAL(searchStarting()));
+            this, SLOT(slotSearchStarting()));
     
     m_pSearchBar = pSearchBar;
 }
@@ -151,6 +151,18 @@ void LibraryPaneManager::slotSearch(const QString& text) {
     }
     m_pPaneWidget->search(text);
     m_pCurrentFeature->onSearch(text);
+}
+
+void LibraryPaneManager::slotSearchStarting() {
+    if (!m_pPaneWidget.isNull()) {
+        m_pPaneWidget->searchStarting();
+    }
+}
+
+void LibraryPaneManager::slotSearchCleared() {
+    if (!m_pPaneWidget.isNull()) {
+        m_pPaneWidget->searchCleared();
+    }
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {

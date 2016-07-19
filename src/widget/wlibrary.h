@@ -37,8 +37,10 @@ class WLibrary : public WBaseLibrary {
     void switchToFeature(LibraryFeature* pFeature);
 
     void search(const QString& name) override;
+    void searchCleared() override;
+    void searchStarting() override;
 
-  private:
+  private:    
     QMutex m_mutex;
 };
 

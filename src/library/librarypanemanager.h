@@ -62,6 +62,8 @@ class LibraryPaneManager : public QObject {
     void slotPaneUncollapsed();
     void slotPaneFocused();
     void slotSearch(const QString& text);
+    void slotSearchStarting();
+    void slotSearchCleared();
 
   protected:
 

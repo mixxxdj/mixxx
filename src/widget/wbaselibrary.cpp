@@ -29,7 +29,7 @@ bool WBaseLibrary::registerView(LibraryFeature *pFeature, QWidget *view) {
     return true;
 }
 
-LibraryFeature *WBaseLibrary::getCurrentFeature() {
+LibraryFeature* WBaseLibrary::getCurrentFeature() {
     return m_pCurrentFeature;
 }
 
@@ -52,10 +52,6 @@ void WBaseLibrary::switchToFeature(LibraryFeature *pFeature) {
         m_pCurrentFeature = pFeature;
         setCurrentWidget(*it);
     }
-}
-
-void WBaseLibrary::search(const QString&) {
-    
 }
 
 bool WBaseLibrary::eventFilter(QObject*, QEvent* pEvent) {

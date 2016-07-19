@@ -15,7 +15,9 @@ class LibraryView {
 
     virtual void onShow() = 0;
     // reimplement if LibraryView should be able to search
-    virtual void onSearch(const QString& text) {Q_UNUSED(text);}
+    virtual void onSearch(const QString&) {}
+    virtual void onSearchStarting() {}
+    virtual void onSearchCleared() {}
 
     // If applicable, requests that the LibraryView load the selected
     // track. Does nothing otherwise.
