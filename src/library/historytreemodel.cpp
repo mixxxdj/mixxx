@@ -33,7 +33,7 @@ QModelIndex HistoryTreeModel::reloadListsTree(int playlistId) {
                        "ON %3=%4 "
                        "WHERE %5=2  "
                        "GROUP BY %4 "
-                       "ORDER BY %6";
+                       "ORDER BY %6 DESC";
     queryStr = queryStr.arg(m_columns.join(","),
                             "PlaylistTracks." + PLAYLISTTRACKSTABLE_TRACKID,
                             "PlaylistTracks." + PLAYLISTTRACKSTABLE_PLAYLISTID,
@@ -70,16 +70,17 @@ QModelIndex HistoryTreeModel::reloadListsTree(int playlistId) {
         QDate auxDate = dTime.date();
         
         if (auxDate.year() != lastDate.year() || change) {
+            row = 0;
             change = true;
             QString year = QString::number(auxDate.year());
-            lastYear = new TreeItem(year, year, m_pFeature, pRootItem);
+            lastYear = new TreeItem(year, -1, m_pFeature, pRootItem);
             pRootItem->appendChild(lastYear);
         }
         
         if (auxDate.month() != lastDate.month() || change) {
+            row = 0;
             QString month = QDate::longMonthName(auxDate.month(), QDate::StandaloneFormat);
-            QString monthNum = QString::number(auxDate.month());
-            lastMonth = new TreeItem(month, monthNum, m_pFeature, lastYear);
+            lastMonth = new TreeItem(month, -1, m_pFeature, lastYear);
             lastYear->appendChild(lastMonth);
         }
         
@@ -87,10 +88,10 @@ QModelIndex HistoryTreeModel::reloadListsTree(int playlistId) {
         QDate date = QDate::fromString(name.left(10), "yyyy-MM-dd");
         QString sData = date.isValid() ? dTime.toString("d hh:mm") : name;
         sData += QString(" (%1)").arg(query.value(ind.iCount).toString());
-        int id = query.value(ind.iID).toInt();
-        QString pId = QString::number(id);
         
-        lastPlaylist = new TreeItem(sData, pId, m_pFeature, lastMonth);
+        int id = query.value(ind.iID).toInt();
+        
+        lastPlaylist = new TreeItem(sData, id, m_pFeature, lastMonth);
         lastMonth->appendChild(lastPlaylist);
         if (id == playlistId) {
             selectedRow = row;
@@ -156,14 +157,14 @@ TreeItem* HistoryTreeModel::findItemFromPlaylistId(TreeItem* pTree,
         } 
         return nullptr;
     }
-    
+    row = 0;
     for (int i = 0; i < size; ++i) {
         TreeItem* child = pTree->child(i);
-        ++row;
         TreeItem* result = findItemFromPlaylistId(child, playlistId, row);
         if (result != nullptr) {
             return result;
         }
+        ++row;
     }
     return nullptr;
 }
