@@ -12,6 +12,7 @@
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "widget/wlibrarysidebar.h"
 
 HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
                              Library* pLibrary,
@@ -19,9 +20,9 @@ HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_playlistId(-1) {
-    m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
-    connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
-            this, SLOT(slotJoinWithPrevious()));
+    m_pJoinWithNextAction = new QAction(tr("Join with next"), this);
+    connect(m_pJoinWithNextAction, SIGNAL(triggered()),
+            this, SLOT(slotJoinWithNext()));
 
     m_pGetNewPlaylist = new QAction(tr("Create new history playlist"), this);
     connect(m_pGetNewPlaylist, SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
@@ -69,14 +70,17 @@ void HistoryFeature::onRightClick(const QPoint&) {
 void HistoryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
-    QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    bool ok;
+    int playlistId = index.data(TreeItemModel::RoleDataPath).toInt(&ok);
+    if (!ok || playlistId < 0) {
+        return;
+    }
 
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
-    m_pJoinWithPreviousAction->setEnabled(!locked);
+    m_pJoinWithNextAction->setEnabled(!locked);
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
@@ -88,14 +92,11 @@ void HistoryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex inde
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
     menu.addAction(m_pRenamePlaylistAction);
+    menu.addAction(m_pJoinWithNextAction);
     if (playlistId != m_playlistId) {
         // Todays playlist should not be locked or deleted
         menu.addAction(m_pDeletePlaylistAction);
         menu.addAction(m_pLockPlaylistAction);
-    }
-    if (index.row() > 0) {
-        // The very first setlog cannot be joint
-        menu.addAction(m_pJoinWithPreviousAction);
     }
     if (playlistId == m_playlistId && m_playlistDao.tracksInPlaylist(m_playlistId) != 0) {
         // Todays playlists can change !
@@ -137,7 +138,11 @@ void HistoryFeature::decorateChild(TreeItem* item, int playlist_id) {
 
 QModelIndex HistoryFeature::constructChildModel(int selected_id) {
     buildPlaylistList();
-    return m_pHistoryTreeModel->reloadListsTree(selected_id);
+    QModelIndex index = m_pHistoryTreeModel->reloadListsTree(selected_id);
+    if (!m_pSidebar.isNull()) {
+        m_pSidebar->expandAll();
+    }
+    return index;
 }
 
 PlaylistTableModel* HistoryFeature::constructTableModel() {
@@ -191,54 +196,66 @@ void HistoryFeature::slotGetNewPlaylist() {
     showTrackModel(m_pPlaylistTableModel);
 }
 
-void HistoryFeature::slotJoinWithPrevious() {
+QWidget* HistoryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
+    m_pSidebar = createLibrarySidebarWidget(pKeyboard);
+    m_pSidebar->expandAll();
+    return m_pSidebar;
+}
+
+void HistoryFeature::slotJoinWithNext() {
     //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
-
+    m_pPlaylistTableModel = getPlaylistTableModel(m_focusedPane);
     if (m_lastRightClickedIndex.isValid()) {
-        int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
-            m_lastRightClickedIndex.data().toString());
+        bool ok;
+        int currentPlaylistId =
+                m_lastRightClickedIndex.data(TreeItemModel::RoleDataPath).toInt(&ok);
+        
+        if (!ok) {
+            return;
+        }
 
-        if (currentPlaylistId >= 0) {
-
-            bool locked = m_playlistDao.isPlaylistLocked(currentPlaylistId);
-
-            if (locked) {
-                qDebug() << "Skipping playlist deletion because playlist" << currentPlaylistId << "is locked.";
-                return;
-            }
-
-            // Add every track from right klicked playlist to that with the next smaller ID
-            int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
-            if (previousPlaylistId >= 0) {
-
-                m_pPlaylistTableModel->setTableModel(previousPlaylistId);
-
-                if (currentPlaylistId == m_playlistId) {
-                    // mark all the Tracks in the previous Playlist as played
-
-                    m_pPlaylistTableModel->select();
-                    int rows = m_pPlaylistTableModel->rowCount();
-                    for (int i = 0; i < rows; ++i) {
-                        QModelIndex index = m_pPlaylistTableModel->index(i,0);
-                        if (index.isValid()) {
-                            TrackPointer track = m_pPlaylistTableModel->getTrack(index);
-                            // Do not update the play count, just set played status.
-                            PlayCounter playCounter(track->getPlayCounter());
-                            playCounter.setPlayed();
-                            track->setPlayCounter(playCounter);
-                        }
-                    }
-
-                    // Change current setlog
-                    m_playlistId = previousPlaylistId;
-                }
-                qDebug() << "slotJoinWithPrevious() current:" << currentPlaylistId << " previous:" << previousPlaylistId;
-                if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
-                    m_playlistDao.deletePlaylist(currentPlaylistId);
-                    slotPlaylistTableChanged(previousPlaylistId); // For moving selection
-                    showTrackModel(m_pPlaylistTableModel);
+        bool locked = m_playlistDao.isPlaylistLocked(currentPlaylistId);
+        
+        if (locked) {
+            qDebug() << "Skipping playlist deletion because playlist" << currentPlaylistId << "is locked.";
+            return;
+        }
+        
+        // Add every track from right klicked playlist to that with the next smaller ID
+        // Although being the name "join with next" this is because it's ordered
+        // in descendant order so actually the next playlist in the GUI is the
+        // previous Id playlist.
+        int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
+        if (previousPlaylistId < 0) {
+            return;
+        }
+            
+        m_pPlaylistTableModel->setTableModel(previousPlaylistId);
+        
+        if (currentPlaylistId == m_playlistId) {
+            // mark all the Tracks in the previous Playlist as played
+            
+            m_pPlaylistTableModel->select();
+            int rows = m_pPlaylistTableModel->rowCount();
+            for (int i = 0; i < rows; ++i) {
+                QModelIndex index = m_pPlaylistTableModel->index(i,0);
+                if (index.isValid()) {
+                    TrackPointer track = m_pPlaylistTableModel->getTrack(index);
+                    // Do not update the play count, just set played status.
+                    PlayCounter playCounter(track->getPlayCounter());
+                    playCounter.setPlayed();
+                    track->setPlayCounter(playCounter);
                 }
             }
+            
+            // Change current setlog
+            m_playlistId = previousPlaylistId;
+        }
+        qDebug() << "slotJoinWithPrevious() current:" << currentPlaylistId << " previous:" << previousPlaylistId;
+        if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
+            m_playlistDao.deletePlaylist(currentPlaylistId);
+            slotPlaylistTableChanged(previousPlaylistId); // For moving selection
+            showTrackModel(m_pPlaylistTableModel);
         }
     }
 }

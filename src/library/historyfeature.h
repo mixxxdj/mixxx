@@ -29,10 +29,12 @@ public:
   public slots:
     void onRightClick(const QPoint&) override;
     void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
-    void slotJoinWithPrevious();
+    void slotJoinWithNext();
     void slotGetNewPlaylist();
 
   protected:
+    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
+    
     void buildPlaylistList() override;
     void decorateChild(TreeItem *pChild, int playlist_id) override;
     QModelIndex constructChildModel(int selected_id);
@@ -49,8 +51,9 @@ public:
   private:
     QString getRootViewHtml() const override;
 
+    QPointer<WLibrarySidebar> m_pSidebar;
     QLinkedList<TrackId> m_recentTracks;
-    QAction* m_pJoinWithPreviousAction;
+    QAction* m_pJoinWithNextAction;
     QAction* m_pGetNewPlaylist;
     HistoryTreeModel* m_pHistoryTreeModel;
     int m_playlistId;
