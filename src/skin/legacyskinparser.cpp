@@ -1306,6 +1306,7 @@ QWidget *LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
 	pContainer->setLayout(pLayout);
 	
 	QScrollArea* scroll = new QScrollArea(pContainer);
+    scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	scroll->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	
@@ -1328,6 +1329,7 @@ QWidget *LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseLibrarySidebarButtons(const QDomElement& node) {
     QScrollArea* scroll = new QScrollArea(m_pParent);
+    scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scroll->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     
