@@ -16,14 +16,9 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "recording/recordingmanager.h"
-#include "analysisfeature.h"
-#include "library/coverartcache.h"
-#include "library/historyfeature.h"
 #include "library/scanner/libraryscanner.h"
 
-#include "widget/wtracktableview.h"
-#include "widget/wfeatureclickbutton.h"
-
+class AnalysisFeature;
 class CrateFeature;
 class KeyboardEventFilter;
 class LibraryPaneManager;
@@ -31,17 +26,20 @@ class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
 class LibrarySidebarExpandedManager;
+class LibraryView;
 class MixxxLibraryFeature;
 class PlaylistFeature;
 class PlayerManagerInterface;
 class SidebarModel;
 class TrackModel;
 class TrackCollection;
+class WBaseLibrary;
 class WLibrary;
 class WLibrarySidebar;
 class WLibraryBreadCrumb;
 class WButtonBar;
 class WSearchLineEdit;
+class TreeItem;
 
 class Library : public QObject {
     Q_OBJECT

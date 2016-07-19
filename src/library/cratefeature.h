@@ -10,6 +10,7 @@
 #include <QIcon>
 #include <QPoint>
 #include <QSet>
+#include <QStackedWidget>
 
 #include "library/libraryfeature.h"
 #include "library/cratetablemodel.h"

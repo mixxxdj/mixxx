@@ -11,6 +11,7 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "library/treeitem.h"
+#include "library/treeitemmodel.h"
 #include "library/queryutil.h"
 #include "library/parser.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -199,7 +200,6 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
     }
 }
@@ -229,7 +229,6 @@ void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
             activatePlaylist(playlistId);

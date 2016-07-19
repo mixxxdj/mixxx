@@ -12,8 +12,10 @@
 #include <QVariant>
 #include <QVBoxLayout>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/libraryfeature.h"
+#include "library/treeitemmodel.h"
 #include "widget/wbaselibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"

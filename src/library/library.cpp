@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QDebug>
 
+#include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
@@ -34,8 +35,8 @@
 #include "util/sandbox.h"
 
 
-#include "widget/wlibrarysidebar.h"
 #include "widget/wbuttonbar.h"
+#include "widget/wfeatureclickbutton.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 

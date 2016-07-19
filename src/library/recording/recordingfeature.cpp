@@ -1,6 +1,7 @@
 // recordingfeature.cpp
 // Created 03/26/2010 by Tobias Rafreider
 
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/recording/dlgrecording.h"
 #include "track/track.h"
 #include "library/treeitem.h"
@@ -8,7 +9,7 @@
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "widget/wlibrary.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "widget/wtracktableview.h"
 
 RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,
                                    Library* pLibrary,
