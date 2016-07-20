@@ -48,21 +48,24 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // to cause instability / crashes.
     bool initialized() const { return m_bInitialized; }
     TrackId getTrackId(const QModelIndex& index) const;
-    void search(const QString& searchText, const QString& extraFilter = QString());
+    
+    void search(const QString& searchText, const QString& extraFilter = QString()) override;
     void setSearch(const QString& searchText, const QString& extraFilter = QString());
+    void onSearchStarting() override;
+    void onSearchCleared() override;
     const QString currentSearch() const;
     void setSort(int column, Qt::SortOrder order);
-    void hideTracks(const QModelIndexList& indices);
 
+    void hideTracks(const QModelIndexList& indices) override;
     int fieldIndex(ColumnCache::Column column) const;
-    int fieldIndex(const QString& fieldName) const;
+    int fieldIndex(const QString& fieldName) const override;
 
     QString getTrackLocation(const QModelIndex& index) const;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
 
     // Methods reimplemented from QAbstractItemModel
-    void sort(int column, Qt::SortOrder order);
-    int rowCount(const QModelIndex& parent=QModelIndex()) const;
+    void sort(int column, Qt::SortOrder order) override;
+    int rowCount(const QModelIndex& parent=QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
@@ -146,6 +149,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QHash<TrackId, QLinkedList<int> > m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
+    QList<SortColumn> m_savedSortColumns;
     QVector<QHash<int, QVariant> > m_headerInfo;
     QString m_trackSourceOrderBy;
 

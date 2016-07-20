@@ -9,7 +9,6 @@
 
 #include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
-#include "library/librarytablemodel.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 

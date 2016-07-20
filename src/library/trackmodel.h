@@ -65,6 +65,8 @@ class TrackModel {
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
+    virtual void onSearchStarting() {}
+    virtual void onSearchCleared() {}
     virtual const QString currentSearch() const = 0;
     virtual bool isColumnInternal(int column) = 0;
     // if no header state exists, we may hide some columns so that the user can

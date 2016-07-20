@@ -377,6 +377,16 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
     m_currentSearchFilter = extraFilter;
 }
 
+void BaseSqlTableModel::onSearchStarting() {
+    // Save current sorting
+    m_savedSortColumns = m_sortColumns;
+}
+
+void BaseSqlTableModel::onSearchCleared() {
+    // Restore sorting
+    m_sortColumns = m_savedSortColumns;
+}
+
 void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;

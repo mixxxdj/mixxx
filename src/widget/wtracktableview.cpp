@@ -982,13 +982,18 @@ void WTrackTableView::onSearch(const QString& text) {
 }
 
 void WTrackTableView::onSearchStarting() {
-    saveVScrollBarPos();
+    saveView();    
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel) {
+        trackModel->onSearchStarting();
+    }
 }
 
 void WTrackTableView::onSearchCleared() {
-    restoreVScrollBarPos();
+    restoreView();
     TrackModel* trackModel = getTrackModel();
     if (trackModel) {
+        trackModel->onSearchCleared();
         trackModel->search("");
     }
 }
@@ -1087,7 +1092,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // the SQL data models causes a select() (ie. generation of a new result set),
     // which causes view to reset itself. A view reset causes the widget to scroll back
     // up to the top, which is confusing when you're dragging and dropping. :)
-    saveVScrollBarPos();
+    saveView();
 
 
     // Calculate the model index where the track or tracks are destined to go.
@@ -1254,7 +1259,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     }
 
     event->acceptProposedAction();
-    restoreVScrollBarPos();
+    restoreView();
 }
 
 TrackModel* WTrackTableView::getTrackModel() {
