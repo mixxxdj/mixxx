@@ -25,6 +25,7 @@ public:
 
     QVariant title() override;
     QIcon getIcon() override;
+    void decorateChild(TreeItem *pChild, int playlist_id) override;
 
   public slots:
     void onRightClick(const QPoint&) override;
@@ -36,7 +37,6 @@ public:
     QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
     
     void buildPlaylistList() override;
-    void decorateChild(TreeItem *pChild, int playlist_id) override;
     QModelIndex constructChildModel(int selected_id);
     PlaylistTableModel* constructTableModel() override;
     QSet<int> playlistIdsFromIndex(const QModelIndex &index) const override;

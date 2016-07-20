@@ -5,13 +5,13 @@
 
 #include "library/treeitemmodel.h"
 
-class LibraryFeature;
+class HistoryFeature;
 class TrackCollection;
 
 class HistoryTreeModel : public TreeItemModel
 {
   public:
-    HistoryTreeModel(LibraryFeature *pFeature, TrackCollection* pTrackCollection, 
+    HistoryTreeModel(HistoryFeature* pFeature, TrackCollection* pTrackCollection, 
                      QObject* parent = nullptr);
 
     QModelIndex reloadListsTree(int playlistId);
@@ -29,7 +29,7 @@ class HistoryTreeModel : public TreeItemModel
     QList<QVariant> idsFromItem(TreeItem* pTree) const;
     TreeItem* findItemFromPlaylistId(TreeItem* pTree, int playlistId, int& row) const;
     
-    LibraryFeature* m_pFeature;
+    HistoryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;
     QStringList m_columns;
 };

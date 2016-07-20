@@ -1,13 +1,13 @@
 #include <QDateTime>
 
-#include "library/libraryfeature.h"
+#include "library/historyfeature.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 
 #include "library/historytreemodel.h"
 
-HistoryTreeModel::HistoryTreeModel(LibraryFeature* pFeature,
+HistoryTreeModel::HistoryTreeModel(HistoryFeature* pFeature,
                                    TrackCollection* pTrackCollection,
                                    QObject* parent)
         : TreeItemModel(parent),
@@ -90,6 +90,7 @@ QModelIndex HistoryTreeModel::reloadListsTree(int playlistId) {
         int id = query.value(ind.iID).toInt();
         
         lastPlaylist = new TreeItem(sData, id, m_pFeature, lastMonth);
+        m_pFeature->decorateChild(lastPlaylist, id);
         lastMonth->appendChild(lastPlaylist);
         if (id == playlistId) {
             selectedRow = row;
