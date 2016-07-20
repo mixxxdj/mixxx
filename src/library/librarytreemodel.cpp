@@ -12,15 +12,21 @@ QHash<quint16, QModelIndex> m_hashToIndex;
 }
 
 LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
-                                   TrackCollection* pTrackCollection,
+                                   TrackCollection* pTrackCollection, 
+                                   UserSettingsPointer pConfig,
                                    QObject* parent)
         : TreeItemModel(parent),
           m_pFeature(pFeature),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_pConfig(pConfig) {    
     
-    // By default sort by Artist -> Album
-    // TODO(jmigual) store the sort order in the configuration
-    m_sortOrder << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
+    QString sort = m_pConfig->getValueString(ConfigKey("[Library]", LIBRARYTREEMODEL_SORT));
+    if (sort.isNull()) {
+        // By default sort by Artist -> Album
+        m_sortOrder << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
+    } else {
+        m_sortOrder = sort.split(",");
+    }
     
     m_coverQuery << LIBRARYTABLE_COVERART_HASH
                  << LIBRARYTABLE_COVERART_LOCATION 
@@ -76,6 +82,8 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
 
 void LibraryTreeModel::setSortOrder(QStringList sortOrder) {
     m_sortOrder = sortOrder;
+    m_pConfig->set(ConfigKey("[Library]", LIBRARYTREEMODEL_SORT),
+                   ConfigValue(m_sortOrder.join(",")));
 }
 
 void LibraryTreeModel::reloadTracksTree() {    

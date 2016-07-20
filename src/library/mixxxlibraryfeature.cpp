@@ -27,7 +27,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          TrackCollection* pTrackCollection)
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           kLibraryTitle(tr("Library")),
-          m_childModel(this, pTrackCollection),
+          m_childModel(this, pTrackCollection, pConfig),
           m_trackDao(pTrackCollection->getTrackDAO()) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID

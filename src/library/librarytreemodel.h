@@ -7,16 +7,20 @@
 #include <QStringList>
 
 #include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
 
 class CoverInfo;
 class LibraryFeature;
 class TrackCollection;
+
+const QString LIBRARYTREEMODEL_SORT = "LibraryTree_Sort"; // ConfigValue key for Library Tree Model sort
 
 class LibraryTreeModel : public TreeItemModel {
     Q_OBJECT
   public:
     LibraryTreeModel(LibraryFeature* pFeature, 
                      TrackCollection* pTrackCollection, 
+                     UserSettingsPointer pConfig,
                      QObject* parent = nullptr);
 
     virtual QVariant data(const QModelIndex &index, int role) const;
@@ -49,7 +53,7 @@ class LibraryTreeModel : public TreeItemModel {
     TrackCollection* m_pTrackCollection;
     QStringList m_sortOrder;
     QStringList m_coverQuery;
-    
+    UserSettingsPointer m_pConfig;
     TreeItem* m_pLibraryItem;
     
 };

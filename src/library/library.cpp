@@ -181,8 +181,6 @@ void Library::addFeature(LibraryFeature* feature) {
     
     m_pSidebarModel->addLibraryFeature(feature);
     
-    // TODO(jmigual): this should be removed and add a direct interaction
-    // between the LibraryFeature and the Library
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
