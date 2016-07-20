@@ -7,25 +7,25 @@
 #include <QMenu>
 #include <QDesktopServices>
 
+#include "library/cratefeature.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/cratefeature.h"
 #include "library/cratetablemodel.h"
 #include "library/export/trackexportwizard.h"
+#include "library/library.h"
 #include "library/parsercsv.h"
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "library/treeitem.h"
 #include "sources/soundsourceproxy.h"
-#include "treeitem.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 #include "util/time.h"
-#include "widget/wlibrary.h"
-#include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrarystack.h"
+#include "widget/wlibrarytextbrowser.h"
 
 CrateFeature::CrateFeature(UserSettingsPointer pConfig,
                            Library* pLibrary,
@@ -219,9 +219,9 @@ void CrateFeature::activate() {
     
     (*it)->setCurrentIndex(*itId);
     
-    m_pLibrary->switchToFeature(this);
-    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
-    m_pLibrary->restoreSearch(QString()); //disable search on crate home
+    switchToFeature();
+    showBreadCrumb(title().toString());
+    restoreSearch(QString()); //disable search on crate home
     m_featureFocus = -1;
     emit(enableCoverArtDisplay(true));
 }
@@ -251,8 +251,8 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     showTrackModel(m_pCrateTableModel);
     m_featureFocus = -1;
     
-    m_pLibrary->restoreSearch("");
-    m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+    restoreSearch("");
+    showBreadCrumb(index.data(TreeItemModel::RoleBreadCrumb).toString());
     emit(enableCoverArtDisplay(true));
 }
 

@@ -13,14 +13,14 @@
 #include <QStackedWidget>
 
 #include "library/libraryfeature.h"
-#include "library/cratetablemodel.h"
-#include "library/library.h"
-
-#include "treeitemmodel.h"
+#include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 
 class TrackCollection;
+class TreeItemModel;
+class CrateTableModel;
+class CrateDAO;
 
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
