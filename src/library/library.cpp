@@ -264,6 +264,7 @@ void Library::onSkinLoadFinished() {
             
             (*itF)->setFeatureFocus(itP.key());
             (*itF)->activate();
+            m_savedFeatures[itP.key()] = *itF;
             
             ++itP;
             ++itF;
@@ -359,18 +360,39 @@ void Library::paneCollapsed(int paneId) {
     // Automatically switch the focus to a non collapsed pane
     m_panes[paneId]->clearFocus();
     
+    bool focused = false;
     for (LibraryPaneManager* pPane : m_panes) {
-        if (!m_collapsedPanes.contains(pPane->getPaneId())) {
+        int auxId = pPane->getPaneId();
+        if (!m_collapsedPanes.contains(auxId) && !focused) {
             m_focusedPane = pPane->getPaneId();
             setFocusedPane();
             pPane->setFocus();
-            break;
+            focused = true;
         }
+        
+        // Save the current feature from all panes
+        m_savedFeatures[auxId] = pPane->getCurrentFeature();
     }
 }
 
 void Library::paneUncollapsed(int paneId) {
     m_collapsedPanes.remove(paneId);
+    
+    // If the current shown feature in some pane is the same as the uncollapsed
+    // pane feature, switch the feature from one pane to the other and set
+    // instead the saved feature
+    LibraryFeature* pPaneFeature = m_panes[paneId]->getCurrentFeature();
+    pPaneFeature->setFeatureFocus(m_panes[paneId]->getPaneId());
+    
+    for (LibraryPaneManager* pPane : m_panes) {
+        int auxId = pPane->getPaneId();
+        if (auxId != paneId && pPaneFeature == pPane->getCurrentFeature()) {
+            LibraryFeature* pSaved = m_savedFeatures[auxId];
+            pPane->switchToFeature(pSaved);
+            pSaved->setFeatureFocus(auxId);
+            pSaved->activate();
+        }
+    }    
 }
 
 void Library::slotActivateFeature(LibraryFeature *pFeature) {

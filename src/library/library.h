@@ -166,6 +166,7 @@ public:
     LibraryPaneManager* m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
     QSet<int> m_collapsedPanes;
+    QHash<int, LibraryFeature*> m_savedFeatures;
     
     // Can be any integer as it's used with a HashMap
     int m_focusedPane;
