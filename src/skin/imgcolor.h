@@ -40,6 +40,15 @@ private:
     int m_amt;
 };
 
+class ImgMonoColor : public ImgColorProcessor {
+    
+  public:
+    ImgMonoColor(ImgSource* parent, QColor baseColor);
+    virtual QColor doColorCorrection(QColor c);
+  private:
+    QColor m_baseColor;
+};
+
 class ImgScaleWhite : public ImgColorProcessor {
 
 public:

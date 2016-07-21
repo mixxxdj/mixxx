@@ -88,3 +88,14 @@ QColor ImgHSVTweak::doColorCorrection(QColor c) {
     return c;
 }
 
+ImgMonoColor::ImgMonoColor(ImgSource* parent, QColor baseColor)
+    : ImgColorProcessor(parent),
+      m_baseColor(baseColor) {    
+}
+
+QColor ImgMonoColor::doColorCorrection(QColor c) {
+    // Get first the grayscale color
+    int h, s, v, a;
+    c.getHsl(h, s, v, a);
+    c.setHsv(m_baseColor.hsvHue(), s, v, a);
+}
