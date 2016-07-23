@@ -33,7 +33,7 @@ namespace {
     // We need to use a smaller block size, because on Linux the AnalyzerQueue
     // can starve the CPU of its resources, resulting in xruns. A block size
     // of 4096 frames per block seems to do fine.
-    const SINT kAnalysisChannels = Mixxx::AudioSource::kChannelCountStereo;
+    const SINT kAnalysisChannels = mixxx::AudioSource::kChannelCountStereo;
     const SINT kAnalysisFramesPerBlock = 4096;
     const SINT kAnalysisSamplesPerBlock =
             kAnalysisFramesPerBlock * kAnalysisChannels;
@@ -177,7 +177,7 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyzerQueue thread
-bool AnalyzerQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudioSource) {
+bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudioSource) {
 
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
@@ -320,9 +320,9 @@ void AnalyzerQueue::run() {
 
         // Get the audio
         SoundSourceProxy soundSourceProxy(nextTrack);
-        Mixxx::AudioSourceConfig audioSrcCfg;
+        mixxx::AudioSourceConfig audioSrcCfg;
         audioSrcCfg.setChannelCount(kAnalysisChannels);
-        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+        mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
         if (!pAudioSource) {
             qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
             emptyCheck();

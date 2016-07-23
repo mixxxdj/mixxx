@@ -30,7 +30,7 @@ class MixxxTest : public testing::Test {
     // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
     class ApplicationScope {
     public:
-        ApplicationScope(int argc, char** argv);
+        ApplicationScope(int& argc, char** argv);
         ~ApplicationScope();
     };
     friend class ApplicationScope;

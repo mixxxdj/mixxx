@@ -5,7 +5,7 @@
 
 #include "util/math.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // DTO for storing BPM information.
 class Bpm final {
@@ -63,6 +63,6 @@ bool operator!=(const Bpm& lhs, const Bpm& rhs) {
 
 }
 
-Q_DECLARE_METATYPE(Mixxx::Bpm)
+Q_DECLARE_METATYPE(mixxx::Bpm)
 
 #endif // MIXXX_BPM_H

@@ -18,9 +18,9 @@
 #include "AudioFormat.h"
 #endif
 
-namespace Mixxx {
+namespace mixxx {
 
-class SoundSourceCoreAudio : public Mixxx::SoundSource {
+class SoundSourceCoreAudio : public mixxx::SoundSource {
 public:
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio() override;
@@ -53,6 +53,6 @@ public:
     }
 };
 
-}  // namespace Mixxx
+}  // namespace mixxx
 
 #endif // SOUNDSOURCECOREAUDIO_H

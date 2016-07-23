@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="ru-ru" Codepage="1251"
+                 xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+  <!-- ..................................................... -->
+  <!-- This wxl file has been auto generated from a po file  -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools        -->
+  <!-- Source File: po/ru-RU.po                              -->
+  <!-- ..................................................... -->
+
+  <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
+  <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
+  <String Id="Language">1049</String>
+
+
+  <!-- Programm informations -->
+  <String Id="ApplicationName">Mixxx</String>
+  <String Id="ManufacturerName">Mixxx</String>
+  <String Id="ManufacturerFullName">Команда разработчиков The Mixxx</String>
+  <String Id="ProductDescription">Программа с открытым исходным кодом для ди-джеев</String>
+  <String Id="Comments">Установите Mixxx</String>
+
+  <!-- Error messages -->
+  <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
+  <String Id="OS2Old">Этот продукт поддерживается на Windows XP и выше.</String>
+  <String Id="NewerInstalled">Данная или выше версия продукта уже установлена.</String>
+  <String Id="x64VersionRequired">Вам необходимо установить 64-битную версию продукта на 64-битную версию Windows.</String>
+  <String Id="x86VersionRequired">Вам необходимо установить 32-битную версию продукта на 32-битную версию Windows.</String>
+  <String Id="x86VersionWarning">Вы пытаетесь установить 32-битную версию на 64-битную версию операционной системы.&#13;&#10;Мы рекомендуем использовать 64-битную версию для увеличения производительности.&#13;&#10;Вы можете скачать 64-битную версию программы на http://mixxx.org/download/.</String>
+  <String Id="XPWarning">Вы установили Mixxx на операционную систему, которая более не поддерживается. Некоторые функции могут не работать или работать некорректно. Рекомендуем Вам обновить операционную систему.</String>
+  <String Id="bitWidthMismatch32">Вы пытаетесь установить 32-битную версию, но у вас уже установлена 64-битная версия. Это может привести к нежелательным последствиям. Пожалуйста, удалите сначала установленную версию, или скачайте 64-битную версию установщика для обновления текущей версии ПО (если вы уверены в том, что делаете.)</String>
+  <String Id="bitWidthMismatch64">Вы пытаетесь установить 64-битную версию, но у вас уже установлена 32-битная версия. Это может привести к нежелательным последствиям. Пожалуйста, удалите сначала установленную версию, или скачайте 32-битную версию установщика для обновления текущей версии ПО (если вы уверены в том, что делаете.)</String>
+  <String Id="OlderVersionFound">Обнаружена страя версия Mixxx. Так как установщик был изменен, нет возможности обновения версии ПО. Пожалуйста, удалите старую версию перед запуском данного установщика.</String>
+
+  <!-- Custom Warning Dialog -->
+  <String Id="WarningDlgTitle">{\WixUI_Font_Title}Предупреждение</String>
+
+  <!-- Features translations -->
+  <String Id="FeatureCompleteDescription">Полный пакет.</String>
+  <String Id="FeatureMainProgramTitle">Основная программа</String>
+  <String Id="FeatureMainProgramDescription">Основная программа Mixxx включает настройки контроллера.</String>
+  <String Id="FeatureDesktopShortcutTitle">Ярлык на Рабочем столе</String>
+  <String Id="FeatureDesktopShortcutDescription">Добавляет ярлык Mixxx на Рабочий стол</String>
+  <String Id="FeatureManualTitle">Руководство пользователя</String>
+  <String Id="FeatureManualDescription">Руквоводство пользователя Mixxx в формате PDF, так же доступно на http://mixxx.org/manual/</String>
+  <String Id="FeatureTranslationsTitle">Переводы</String>
+  <String Id="FeatureTranslationsDescription">Файлы, позволяющие Mixxx отображать интерфейс на альтернативных языках, нежели US английский.</String>
+</WixLocalization>

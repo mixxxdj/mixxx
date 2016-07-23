@@ -5,7 +5,7 @@
 
 #include <QMap>
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourceProviderRegistration {
 public:
@@ -99,6 +99,6 @@ private:
     FileExtension2RegistrationList m_registry;
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEPROVIDERREGISTRY_H

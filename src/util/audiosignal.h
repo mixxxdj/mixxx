@@ -4,7 +4,7 @@
 #include "util/assert.h"
 #include "util/types.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // Common properties of audio signals in Mixxx.
 //

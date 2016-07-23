@@ -23,20 +23,20 @@
 #include "track/track.h"
 #include "util/sleep.h"
 
-static const int kConnectRetries = 10;
+static const int kConnectRetries = 30;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
 EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
-        : m_pTextCodec(NULL),
+        : m_pTextCodec(nullptr),
           m_pMetaData(),
-          m_pShout(NULL),
-          m_pShoutMetaData(NULL),
+          m_pShout(nullptr),
+          m_pShoutMetaData(nullptr),
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
           m_iShoutFailures(0),
           m_pConfig(pConfig),
-          m_encoder(NULL),
+          m_encoder(nullptr),
           m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
           m_custom_metadata(false),
           m_firstCall(false),
@@ -47,7 +47,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
           m_threadWaiting(false),
-          m_pOutputFifo(NULL) {
+          m_pOutputFifo(nullptr) {
     const bool persist = true;
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
@@ -129,7 +129,9 @@ void EngineBroadcast::updateFromPreferences() {
     double dStatus = m_pStatusCO->get();
     if (dStatus == STATUSCO_CONNECTED ||
             dStatus == STATUSCO_CONNECTING) {
-        qDebug() << "EngineBroadcast::updateFromPreferences: Can't edit preferences when playing";
+        qDebug() << "EngineBroadcast::updateFromPreferences status:"
+                 << dStatus
+                 << ". Can't edit preferences when playing";
         return;
     }
 
@@ -333,7 +335,7 @@ void EngineBroadcast::updateFromPreferences() {
     if (m_encoder) {
         // delete m_encoder if it has been initialized (with maybe) different bitrate
         delete m_encoder;
-        m_encoder = NULL;
+        m_encoder = nullptr;
     }
 
     if (m_format_is_mp3) {
@@ -350,7 +352,7 @@ void EngineBroadcast::updateFromPreferences() {
         //init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
         delete m_encoder;
-        m_encoder = NULL;
+        m_encoder = nullptr;
     }
     setState(NETWORKSTREAMWORKER_STATE_READY);
 }
@@ -362,8 +364,9 @@ bool EngineBroadcast::serverConnect() {
 }
 
 bool EngineBroadcast::processConnect() {
+    qDebug() << "EngineBroadcast::processConnect()";
     // Make sure that we call updateFromPreferences always
-    if (m_encoder == NULL) {
+    if (m_encoder == nullptr) {
         updateFromPreferences();
     }
 
@@ -458,6 +461,7 @@ bool EngineBroadcast::processConnect() {
             m_threadWaiting = true;
             m_pStatusCO->setAndConfirm(STATUSCO_CONNECTED);
             emit(broadcastConnected());
+            qDebug() << "EngineBroadcast::processConnect() returning true";
             return true;
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
             m_lastErrorStr = "Socket error";
@@ -476,7 +480,7 @@ bool EngineBroadcast::processConnect() {
     if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
-        m_encoder = NULL;
+        m_encoder = nullptr;
     }
     if (m_pBroadcastEnabled->toBool()) {
         m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
@@ -484,6 +488,7 @@ bool EngineBroadcast::processConnect() {
     } else {
         m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
     }
+    qDebug() << "EngineBroadcast::processConnect() returning false";
     return false;
 }
 
@@ -501,7 +506,7 @@ void EngineBroadcast::processDisconnect() {
     if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
-        m_encoder = NULL;
+        m_encoder = nullptr;
     }
 }
 
@@ -645,7 +650,7 @@ void EngineBroadcast::updateMetaData() {
     // If we use either MP3 streaming or OGG streaming with dynamic update of
     // metadata being enabled, we want dynamic metadata changes
     if (!m_custom_metadata && (m_format_is_mp3 || m_ogg_dynamic_update)) {
-        if (m_pMetaData != NULL) {
+        if (m_pMetaData != nullptr) {
 
             QString artist = m_pMetaData->getArtist();
             QString title = m_pMetaData->getTitle();

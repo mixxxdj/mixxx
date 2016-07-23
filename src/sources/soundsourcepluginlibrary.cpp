@@ -2,7 +2,7 @@
 
 #include <QMutexLocker>
 
-namespace Mixxx {
+namespace mixxx {
 
 /*static*/ QMutex SoundSourcePluginLibrary::s_loadedPluginLibrariesMutex;
 /*static*/ QMap<QString, SoundSourcePluginLibraryPointer> SoundSourcePluginLibrary::s_loadedPluginLibraries;

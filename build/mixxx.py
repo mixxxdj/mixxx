@@ -111,6 +111,7 @@ class MixxxBuild(object):
 
         # Currently this only works for Windows
         self.static_dependencies = int(Script.ARGUMENTS.get('staticlibs', 0))
+        self.static_qt = int(Script.ARGUMENTS.get('staticqt', 0))
 
         logging.info("Target Platform: %s" % self.platform)
         logging.info("Target Machine: %s" % self.machine)
@@ -121,6 +122,8 @@ class MixxxBuild(object):
         if self.platform_is_windows:
             logging.info("Static dependencies: %s" % (
                 "YES" if self.static_dependencies else "NO"))
+            logging.info("Static Qt: %s" % (
+                "YES" if self.static_qt else "NO"))
 
         if self.crosscompile:
             logging.info("Host Platform: %s" % self.host_platform)

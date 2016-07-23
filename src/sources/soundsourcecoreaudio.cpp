@@ -3,7 +3,7 @@
 
 #include "util/math.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -210,4 +210,4 @@ QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-}  // namespace Mixxx
+}  // namespace mixxx

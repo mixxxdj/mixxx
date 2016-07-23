@@ -17,6 +17,7 @@
 #include "track/playcounter.h"
 #include "track/trackmetadata.h"
 #include "util/sandbox.h"
+#include "util/duration.h"
 #include "waveform/waveform.h"
 
 class Track;
@@ -59,8 +60,10 @@ class Track : public QObject {
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
     Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
-    Q_PROPERTY(int duration READ getDuration WRITE setDuration)
-    Q_PROPERTY(QString durationFormatted READ getDurationText STORED false)
+    Q_PROPERTY(double duration READ getDuration WRITE setDuration)
+    Q_PROPERTY(QString durationFormatted READ getDurationTextSeconds STORED false)
+    Q_PROPERTY(QString durationFormattedCentiseconds READ getDurationTextCentiseconds STORED false)
+    Q_PROPERTY(QString durationFormattedMilliseconds READ getDurationTextMilliseconds STORED false)
 
     QFileInfo getFileInfo() const {
         // Copying a QFileInfo is thread-safe (implicit sharing), no locking needed.
@@ -114,12 +117,27 @@ class Track : public QObject {
     // Returns the bitrate as a string
     QString getBitrateText() const;
 
-    // Set duration in seconds
-    void setDuration(int);
-    // Returns the duration in seconds
-    int getDuration() const;
-    // Returns the duration as a string: H:MM:SS
-    QString getDurationText() const;
+    void setDuration(double duration);
+    double getDuration() const {
+        return getDuration(DurationRounding::NONE);
+    }
+    // Returns the duration rounded to seconds
+    int getDurationInt() const {
+        return static_cast<int>(getDuration(DurationRounding::SECONDS));
+    }
+    // Returns the duration formatted as a string (H:MM:SS or H:MM:SS.cc or H:MM:SS.mmm)
+    QString getDurationText(mixxx::Duration::Precision precision) const;
+
+    // Helper functions for Q_PROPERTYs
+    QString getDurationTextSeconds() const {
+        return getDurationText(mixxx::Duration::Precision::SECONDS);
+    }
+    QString getDurationTextCentiseconds() const {
+        return getDurationText(mixxx::Duration::Precision::CENTISECONDS);
+    }
+    QString getDurationTextMilliseconds() const {
+        return getDurationText(mixxx::Duration::Precision::MILLISECONDS);
+    }
 
     // Set BPM
     double setBpm(double);
@@ -134,9 +152,9 @@ class Track : public QObject {
     bool isBpmLocked() const;
 
     // Set ReplayGain
-    void setReplayGain(const Mixxx::ReplayGain&);
+    void setReplayGain(const mixxx::ReplayGain&);
     // Returns ReplayGain
-    Mixxx::ReplayGain getReplayGain() const;
+    mixxx::ReplayGain getReplayGain() const;
 
     // Indicates if the metadata has been parsed from file tags.
     bool isHeaderParsed() const;
@@ -264,10 +282,10 @@ class Track : public QObject {
 
     // Set/get track metadata and cover art (optional) all at once.
     void setTrackMetadata(
-            const Mixxx::TrackMetadata& trackMetadata,
+            const mixxx::TrackMetadata& trackMetadata,
             bool parsedFromFile);
     void getTrackMetadata(
-            Mixxx::TrackMetadata* pTrackMetadata,
+            mixxx::TrackMetadata* pTrackMetadata,
             bool* pHeaderParsed) const;
 
     // Mark the track dirty if it isn't already.
@@ -296,7 +314,7 @@ class Track : public QObject {
     void beatsUpdated();
     void keyUpdated(double key);
     void keysUpdated();
-    void ReplayGainUpdated(Mixxx::ReplayGain replayGain);
+    void ReplayGainUpdated(mixxx::ReplayGain replayGain);
     void cuesUpdated();
     void changed(Track* pTrack);
     void dirty(Track* pTrack);
@@ -324,6 +342,12 @@ class Track : public QObject {
     // Only used by TrackDAO!
     void setId(TrackId id);
 
+    enum class DurationRounding {
+        SECONDS, // rounded to full seconds
+        NONE     // unmodified
+    };
+    double getDuration(DurationRounding rounding) const;
+
     // The file
     const QFileInfo m_fileInfo;
 
@@ -348,7 +372,7 @@ class Track : public QObject {
     QString m_sType;
 
     // Track metadata
-    Mixxx::TrackMetadata m_metadata;
+    mixxx::TrackMetadata m_metadata;
 
     // URL (used in promo track)
     QString m_sURL;

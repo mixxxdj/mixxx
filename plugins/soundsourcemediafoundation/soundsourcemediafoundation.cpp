@@ -60,7 +60,7 @@ template<class T> static void safeRelease(T **ppT) {
 
 } // anonymous namespace
 
-namespace Mixxx {
+namespace mixxx {
 
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
@@ -85,7 +85,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
 SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     if (SUCCEEDED(m_hrCoInitialize)) {
         qWarning() << "Cannot reopen MediaFoundation file" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     const QString fileName(getLocalFileName());
@@ -186,7 +186,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     }
 
     // http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
-    hr = m_pReader->SetCurrentPosition(GUID_nullptr, prop);
+    hr = m_pReader->SetCurrentPosition(GUID_NULL, prop);
     if (FAILED(hr)) {
         // nothing we can do here as we can't fail (no facility to other than
         // crashing mixxx)
@@ -665,17 +665,17 @@ SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl
     return exportSoundSourcePlugin(new SoundSourceMediaFoundation(url));
 }
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderMediaFoundation is stateless and a single instance
     // can safely be shared
-    static Mixxx::SoundSourceProviderMediaFoundation singleton;
+    static mixxx::SoundSourceProviderMediaFoundation singleton;
     return &singleton;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
     // The statically allocated instance must not be deleted!
 }

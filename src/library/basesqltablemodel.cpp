@@ -16,7 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
-#include "util/time.h"
+#include "util/duration.h"
 #include "util/dnd.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
@@ -42,9 +42,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
           m_database(pTrackCollection->getDatabase()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_bInitialized(false),
-          m_currentSearch(""),
-          m_trackSourceSortColumn(kIdColumn),
-          m_trackSourceSortOrder(Qt::AscendingOrder) {
+          m_currentSearch("") {
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
     connect(&m_trackDAO, SIGNAL(forceModelUpdate()),
@@ -270,8 +268,8 @@ void BaseSqlTableModel::select() {
         m_trackSource->filterAndSort(trackIds, m_currentSearch,
                                      m_currentSearchFilter,
                                      m_trackSourceOrderBy,
-                                     m_trackSourceSortColumn,
-                                     m_trackSourceSortOrder,
+                                     m_sortColumns,
+                                     m_tableColumns.size() - 1,
                                      &m_trackSortOrder);
 
         // Re-sort the track IDs since filterAndSort can change their order or mark
@@ -476,46 +474,49 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     // reset the old order by clauses
     m_trackSourceOrderBy.clear();
     m_tableOrderBy.clear();
-    m_trackSourceSortColumn = 0;
-    m_trackSourceSortOrder = Qt::AscendingOrder;
 
     if (column > 0 && column < m_tableColumns.size()) {
         // Table sorting, no history
-        m_tableOrderBy.append("ORDER BY ");
-        QString field = m_tableColumns[column];
-        QString sort_field = QString("%1.%2").arg(m_tableName, field);
-        m_tableOrderBy.append(sort_field);
-    #ifdef __SQLITE3__
-        m_tableOrderBy.append(" COLLATE localeAwareCompare");
-    #endif
-        m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
-        
-        // Random sort easter egg
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+            // Random sort easter egg
             m_tableOrderBy = "ORDER BY RANDOM()";
+        } else {
+            m_tableOrderBy = "ORDER BY ";
+            QString field = m_tableColumns[column];
+            QString sort_field = QString("%1.%2").arg(m_tableName, field);
+            m_tableOrderBy.append(sort_field);
+        #ifdef __SQLITE3__
+            m_tableOrderBy.append(" COLLATE localeAwareCompare");
+        #endif
+            m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
         }
-        
         m_sortColumns.clear();
+        m_sortColumns.prepend(SortColumn(column, order));
     } else if (m_trackSource) {
-        
         bool first = true;
         for (const SortColumn &sc : m_sortColumns) {
-            m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
-            
             QString sort_field;
-            if (sc.m_column == kIdColumn) {
-                sort_field = m_trackSource->columnSortForFieldIndex(kIdColumn);
+            if (sc.m_column < m_tableColumns.size()) {
+                if (sc.m_column == kIdColumn) {
+                    sort_field = m_trackSource->columnSortForFieldIndex(kIdColumn);
+                } else if (sc.m_column ==
+                        fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+                    sort_field = "RANDOM()";
+                } else {
+                    // we can't sort by other table columns here since primary sort is a track
+                    // column: skip   
+                    continue;
+                }
             } else {
                 // + 1 to skip id column
                 int ccColumn = sc.m_column - m_tableColumns.size() + 1;
                 sort_field = m_trackSource->columnSortForFieldIndex(ccColumn);
-                if (first) {
-                    // first cycle: main sort criteria
-                    m_trackSourceSortColumn = ccColumn;
-                    m_trackSourceSortOrder = sc.m_order;
-                }
+            }
+            DEBUG_ASSERT_AND_HANDLE(!sort_field.isEmpty()) {
+                continue;
             }
 
+            m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
             m_trackSourceOrderBy.append(sort_field);
 
     #ifdef __SQLITE3__
@@ -614,7 +615,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = Time::formatSeconds(duration);
+                    value = mixxx::Duration::formatSeconds(duration);
                 } else {
                     value = QString();
                 }
@@ -637,7 +638,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
-                value = Mixxx::TrackMetadata::formatCalendarYear(value.toString());
+                value = mixxx::TrackMetadata::formatCalendarYear(value.toString());
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
                 int track_number = value.toInt();
                 if (track_number <= 0) {
@@ -667,7 +668,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                     }
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
-                value = Mixxx::ReplayGain::ratioToString(value.toDouble());
+                value = mixxx::ReplayGain::ratioToString(value.toDouble());
             } // Otherwise, just use the column value.
 
             break;

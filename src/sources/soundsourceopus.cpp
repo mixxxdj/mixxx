@@ -1,6 +1,6 @@
 #include "sources/soundsourceopus.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -83,8 +83,9 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     pTrackMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
     pTrackMetadata->setSampleRate(kSamplingRate);
     pTrackMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
-    pTrackMetadata->setDuration(
-            op_pcm_total(l_ptrOpusFile, -1) / pTrackMetadata->getSampleRate());
+    // Cast to double is required for duration with sub-second precision
+    const double dTotalFrames = op_pcm_total(l_ptrOpusFile, -1);
+    pTrackMetadata->setDuration(dTotalFrames / pTrackMetadata->getSampleRate());
 
     bool hasDate = false;
     for (i = 0; i < l_ptrOpusTags->comments; ++i) {
@@ -293,4 +294,4 @@ QStringList SoundSourceProviderOpus::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

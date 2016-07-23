@@ -7,7 +7,7 @@
 #include <QMutex>
 #include <QLibrary>
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourcePluginLibrary;
 
@@ -39,7 +39,7 @@ protected:
 
 private:
     static QMutex s_loadedPluginLibrariesMutex;
-    static QMap<QString, Mixxx::SoundSourcePluginLibraryPointer> s_loadedPluginLibraries;
+    static QMap<QString, mixxx::SoundSourcePluginLibraryPointer> s_loadedPluginLibraries;
 
     QLibrary m_library;
 
@@ -50,6 +50,6 @@ private:
     SoundSourcePluginAPI_destroySoundSourceProviderFunc m_destroySoundSourceProviderFunc;
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEPLUGINLIBRARY_H

@@ -9,7 +9,7 @@
 
 class QFile;
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourceOggVorbis: public SoundSource {
 public:
@@ -57,6 +57,6 @@ public:
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEOGGVORBIS_H

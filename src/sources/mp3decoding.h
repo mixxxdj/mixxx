@@ -3,7 +3,7 @@
 
 #include "util/types.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // In the worst case up to 29 MP3 frames need to be prefetched
 // for accurate seeking:
@@ -11,6 +11,6 @@ namespace Mixxx {
 // Used by both SoundSourceMp3 and SoundSourceCoreAudio.
 static const SINT kMp3SeekFramePrefetchCount = 29;
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_MP3DECODING_H

@@ -10,7 +10,7 @@
 #define AUDIOSOURCEFFMPEG_BYTEOFFSET_TO_MIXXXFRAME(byteOffset) (samples2frames(byteOffset / sizeof(CSAMPLE)))
 #define AUDIOSOURCEFFMPEG_FILL_FROM_CURRENTPOS -1
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -712,4 +712,4 @@ SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
     return numberOfFrames;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

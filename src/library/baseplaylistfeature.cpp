@@ -392,22 +392,22 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     if (playlist_files.isEmpty()) {
         return;
     }
-    
+
     // Set last import directory
     QFileInfo fileName(playlist_files.first());
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
-    
+
     int lastPlaylistId = -1;
-    
+
     // For each selected element create a different playlist.
     for (const QString& playlistFile : playlist_files) {
         fileName = QFileInfo(playlistFile);
-    
+
         // Get a valid name
         QString baseName = fileName.baseName();
         QString name;
-        
+
         bool validNameGiven = false;
         int i = 0;
         while (!validNameGiven) {
@@ -415,14 +415,14 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
             if (i != 0) {
                 name += QString::number(i);
             }
-    
+
             // Check name
             int existingId = m_playlistDao.getPlaylistIdFromName(name);
-    
+
             validNameGiven = (existingId == -1);
             ++i;
         }
-    
+
         lastPlaylistId = m_playlistDao.createPlaylist(name);
         if (lastPlaylistId != -1 && m_pPlaylistTableModel) {
             m_pPlaylistTableModel->setTableModel(lastPlaylistId);
@@ -434,7 +434,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
                                       + name);
                 return;
         }
-        
+
         slotImportPlaylistFile(playlistFile);
     }
     activatePlaylist(lastPlaylistId);
@@ -480,7 +480,6 @@ void BasePlaylistFeature::slotExportPlaylist() {
         file_location.append(".").append(ext);
     }
     // Update the import/export playlist directory
-    //QFileInfo fileName(file_location);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
 

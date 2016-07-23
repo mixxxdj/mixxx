@@ -390,6 +390,7 @@ class Vamp(Feature):
             return
 
         build.env.Append(CPPDEFINES='__VAMP__')
+        build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
 
         # If there is no system vamp-hostdk installed, then we'll directly link
         # the vamp-hostsdk.
@@ -832,6 +833,7 @@ class LiveBroadcasting(Feature):
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
             conf.CheckLib('ws2_32')
+            conf.CheckLib('gdi32')
 
     def sources(self, build):
         depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')

@@ -108,7 +108,7 @@ Function .onInit    ; Prevent multiple installer instances
 FunctionEnd
 
 ;-------------------------------
-; Install the VC 2010 redistributable DLLs if they're not already.
+; Install the VC redistributable DLLs if they're not already.
 Function InstallVCRedist
   Push $R0
   Call CheckVCRedist
@@ -123,8 +123,8 @@ Function InstallVCRedist
 
   ClearErrors
   ; Call it & wait for it to install
-  ExecWait 'vcredist_${ARCH}.exe /quiet /install'
-  Delete "$TEMP\vc_redist_${ARCH}.exe"
+  ExecWait "$TEMP\vcredist_${ARCH}.exe /quiet /install /norestart"
+  Delete "$TEMP\vcredist_${ARCH}.exe"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
@@ -160,17 +160,12 @@ Function InstallVCRedist
 FunctionEnd
 
 ;-------------------------------
-; Test if Visual C++ Redistributables 10.0 are installed
+; Test if Visual C++ Redistributables are installed
 ; Returns -1 if they're not
 Function CheckVCRedist
    Push $R0
    ClearErrors
-   ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\${ARCH}" "Installed"
-   ; Old way:
-   ;   x64
-   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}" "Version"
-   ;   x86
-   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}" "Version"
+   ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\${ARCH}" "Installed"
 
    IfErrors 0 VSRedistInstalled
    StrCpy $R0 "-1"
@@ -194,7 +189,15 @@ Section "Mixxx (required)" SecMixxx
 
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  
+  !ifdef STATICDEPS
+    ; The below is not fatal if Mixxx is built with static dependencies
+    ; since there may not be any DLLs to bundle
+    File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  !else
+    File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  !endif
+  
   ; If PDB files are present bundle them. For release builds we will not copy
   ; PDBs into the distXX folder so they won't get bundled.
   File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.pdb"

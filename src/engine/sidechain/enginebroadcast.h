@@ -34,7 +34,7 @@ class EngineBroadcast
   public:
     enum StatusCOStates {
         STATUSCO_UNCONNECTED = 0, // IDLE state, no error
-        STATUSCO_CONNECTING = 1, // 10 s max
+        STATUSCO_CONNECTING = 1, // 30 s max
         STATUSCO_CONNECTED = 2, // On Air
         STATUSCO_FAILURE = 3 // Happens when disconnected by an error
     };

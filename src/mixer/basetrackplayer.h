@@ -70,7 +70,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotLoadTrack(TrackPointer track, bool bPlay) override;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, QString reason);
-    void slotSetReplayGain(Mixxx::ReplayGain replayGain);
+    void slotSetReplayGain(mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 
   private slots:

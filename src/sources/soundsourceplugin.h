@@ -3,7 +3,7 @@
 
 #include "sources/soundsourcepluginapi.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // Common base class for SoundSource plugins
 class SoundSourcePlugin: public SoundSource {
@@ -23,7 +23,7 @@ protected:
 SoundSourcePointer exportSoundSourcePlugin(
         SoundSourcePlugin* pSoundSourcePlugin);
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion();
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int Mixxx_SoundSourcePluginAPI_getVersion();

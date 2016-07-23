@@ -16,8 +16,8 @@ class SuperLinkTest : public BaseEffectTest {
     SuperLinkTest()
             : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
-        Time::setTestMode(true);
-        Time::setTestElapsedTime(mixxx::Duration::fromNanos(0));
+        mixxx::Time::setTestMode(true);
+        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromNanos(0));
         m_pEffectsManager->registerChannel(m_master);
         m_pEffectsManager->registerChannel(m_headphone);
         registerTestBackend();
@@ -120,7 +120,7 @@ TEST_F(SuperLinkTest, Softtakeover) {
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pControlValue->set(0.1);
     // Let enough time pass by to exceed soft-takeover's override interval.
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
+    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
                              mixxx::Duration::fromMillis(2));
     // Ignored by SoftTakeover since it is too far from the current value of
     // 0.1.
