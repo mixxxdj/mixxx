@@ -356,7 +356,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 calculateTransition(&deck2, &deck1);
                 // Load track into the left deck.
                 emitLoadTrackToPlayer(nextTrack, deck1.group, false);
-                // Move crossfader to the left.
+                // Move crossfader to the right.
                 setCrossfader(1.0, true);
             }
         }
