@@ -28,66 +28,68 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     comboBoxServerType->addItem(tr("Icecast 1"), BROADCAST_SERVER_ICECAST1);
 
     int tmp_index = comboBoxServerType->findData(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"servertype")));
-    if (tmp_index < 0) //Set default if invalid.
+            ConfigKey(BROADCAST_PREF_KEY,"servertype")));
+    if (tmp_index < 0) { //Set default if invalid.
         tmp_index = 0;
+    }
     comboBoxServerType->setCurrentIndex(tmp_index);
 
     // Mountpoint
     mountpoint->setText(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"mountpoint")));
+            ConfigKey(BROADCAST_PREF_KEY,"mountpoint")));
 
     // Host
     host->setText(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"host")));
+            ConfigKey(BROADCAST_PREF_KEY, "host")));
 
     // Port
     QString tmp_string = m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"port"));
-    if (tmp_string.isEmpty())
-        tmp_string = QString(BROADCAST_DEFAULT_PORT);
+            ConfigKey(BROADCAST_PREF_KEY, "port"));
     port->setText(tmp_string);
 
     // Login
     login->setText(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"login")));
+            ConfigKey(BROADCAST_PREF_KEY, "login")));
 
     // Password
     password->setText(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"password")));
+            ConfigKey(BROADCAST_PREF_KEY,"password")));
 
     // Stream name
     stream_name->setText(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"stream_name")));
+            ConfigKey(BROADCAST_PREF_KEY,"stream_name")));
 
     // Stream website
     tmp_string = m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"stream_website"));
-    if (tmp_string.isEmpty())
+            ConfigKey(BROADCAST_PREF_KEY,"stream_website"));
+    if (tmp_string.isEmpty()) {
         tmp_string = MIXXX_WEBSITE_URL;
+    }
     stream_website->setText(tmp_string);
 
     // Stream description
     tmp_string = m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"stream_desc"));
-    if (tmp_string.isEmpty())
+            ConfigKey(BROADCAST_PREF_KEY,"stream_desc"));
+    if (tmp_string.isEmpty()) {
         tmp_string = tr("This stream is online for testing purposes!");
+    }
     stream_desc->setText(tmp_string);
 
     // Stream genre
     tmp_string = m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"stream_genre"));
-    if (tmp_string.isEmpty())
+            ConfigKey(BROADCAST_PREF_KEY,"stream_genre"));
+    if (tmp_string.isEmpty()) {
         tmp_string = tr("Live Mix");
+    }
     stream_genre->setText(tmp_string);
 
     // Stream "public" checkbox
     stream_public->setChecked((bool)m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"stream_public")).toInt());
+            ConfigKey(BROADCAST_PREF_KEY,"stream_public")).toInt());
 
     // OGG "dynamicupdate" checkbox
     ogg_dynamicupdate->setChecked((bool)m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate")).toInt());
+            ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate")).toInt());
 
     // Encoding bitrate combobox
     QString kbps_pattern = QString("%1 kbps");
@@ -106,11 +108,11 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
                << BROADCAST_BITRATE_32KBPS;
     foreach (int kbps, valid_kpbs) {
         comboBoxEncodingBitrate->addItem(
-            kbps_pattern.arg(QString::number(kbps)), kbps);
+                kbps_pattern.arg(QString::number(kbps)), kbps);
     }
 
     tmp_index = comboBoxEncodingBitrate->findData(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY, "bitrate")).toInt());
+            ConfigKey(BROADCAST_PREF_KEY, "bitrate")).toInt());
     if (tmp_index < 0) {
         tmp_index = comboBoxEncodingBitrate->findData(BROADCAST_BITRATE_128KBPS);
     }
@@ -120,7 +122,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     comboBoxEncodingFormat->addItem(tr("MP3"), BROADCAST_FORMAT_MP3);
     comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), BROADCAST_FORMAT_OV);
     tmp_index = comboBoxEncodingFormat->findData(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY, "format")));
+            ConfigKey(BROADCAST_PREF_KEY, "format")));
     if (tmp_index < 0) {
         // Set default of MP3 if invalid.
         tmp_index = 0;
@@ -130,35 +132,37 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     // Encoding channels combobox
     comboBoxEncodingChannels->addItem(tr("Stereo"), BROADCAST_CHANNELS_STEREO);
     tmp_index = comboBoxEncodingChannels->findData(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY, "channels")));
-    if (tmp_index < 0) //Set default to stereo if invalid.
+            ConfigKey(BROADCAST_PREF_KEY, "channels")));
+    if (tmp_index < 0) { //Set default to stereo if invalid.
         tmp_index = 0;
+    }
     comboBoxEncodingChannels->setCurrentIndex(tmp_index);
 
     // "Enable UTF-8 metadata" checkbox
     // TODO(rryan): allow arbitrary codecs in the future?
     QString charset = m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY, "metadata_charset"));
+            ConfigKey(BROADCAST_PREF_KEY, "metadata_charset"));
     enableUtf8Metadata->setChecked(charset == "UTF-8");
 
     // "Enable custom metadata" checkbox
     enableCustomMetadata->setChecked((bool)m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"enable_metadata")).toInt());
+            ConfigKey(BROADCAST_PREF_KEY,"enable_metadata")).toInt());
 
-    //Custom artist
+    // Custom artist
     custom_artist->setText(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"custom_artist")));
+            ConfigKey(BROADCAST_PREF_KEY,"custom_artist")));
 
-    //Custom title
+    // Custom title
     custom_title->setText(m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"custom_title")));
+            ConfigKey(BROADCAST_PREF_KEY,"custom_title")));
 
-    //Metadata format
+    // Metadata format
     tmp_string = m_pConfig->getValueString(
-        ConfigKey(BROADCAST_PREF_KEY,"metadata_format"));
-    if (tmp_string.isEmpty())
+            ConfigKey(BROADCAST_PREF_KEY,"metadata_format"));
+    if (tmp_string.isEmpty()) {
         // No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
         tmp_string = kDefaultMetadataFormat;
+    }
     metadata_format->setText(tmp_string);
 
     slotApply();
@@ -173,7 +177,7 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     comboBoxServerType->setCurrentIndex(0);
     mountpoint->setText("");
     host->setText("");
-    port->setText("8000");
+    port->setText("");
     login->setText("");
     password->setText("");
     stream_name->setText("");
