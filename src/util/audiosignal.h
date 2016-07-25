@@ -118,7 +118,6 @@ public:
 
 protected:
     void setChannelCount(SINT channelCount) {
-        DEBUG_ASSERT(isValidChannelCount(channelCount));
         m_channelCount = channelCount;
     }
     void resetChannelCount() {
@@ -126,7 +125,6 @@ protected:
     }
 
     void setSamplingRate(SINT samplingRate) {
-        DEBUG_ASSERT(isValidSamplingRate(samplingRate));
         m_samplingRate = samplingRate;
     }
     void resetSamplingRate() {

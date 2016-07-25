@@ -583,35 +583,32 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                      << getUrl().toString()
                      << "with provider"
                      << getSoundSourceProvider()->getName();
-            if (mixxx::SoundSource::OpenResult::FAILED == openResult) {
+            if ((mixxx::SoundSource::OpenResult::SUCCEEDED == openResult) && m_pSoundSource->isValid()) {
+                m_pAudioSource =
+                        AudioSourceProxy::create(m_pTrack, m_pSoundSource);
+                if (m_pAudioSource->isEmpty()) {
+                    qWarning() << "Empty audio data in file"
+                               << getUrl().toString();
+                }
+                // Overwrite metadata with actual audio properties
+                if (!m_pTrack.isNull()) {
+                    m_pTrack->setChannels(m_pAudioSource->getChannelCount());
+                    m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
+                    if (m_pAudioSource->hasDuration()) {
+                        m_pTrack->setDuration(m_pAudioSource->getDuration());
+                    }
+                    if (m_pAudioSource->hasBitrate()) {
+                        m_pTrack->setBitrate(m_pAudioSource->getBitrate());
+                    }
+                }
+                return m_pAudioSource; // success -> exit loop
+            } else {
                 qWarning() << "Invalid audio data in file"
                            << getUrl().toString();
                 // Do NOT retry with the next SoundSource provider if
                 // the file itself is malformed!
                 m_pSoundSource->close();
                 break; // exit loop
-            } else {
-                DEBUG_ASSERT(mixxx::SoundSource::OpenResult::SUCCEEDED == openResult);
-                if (m_pSoundSource->isValid()) {
-                    m_pAudioSource =
-                            AudioSourceProxy::create(m_pTrack, m_pSoundSource);
-                    if (m_pAudioSource->isEmpty()) {
-                        qWarning() << "Empty audio data in file"
-                                   << getUrl().toString();
-                    }
-                    // Overwrite metadata with actual audio properties
-                    if (!m_pTrack.isNull()) {
-                        m_pTrack->setChannels(m_pAudioSource->getChannelCount());
-                        m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
-                        if (m_pAudioSource->hasDuration()) {
-                            m_pTrack->setDuration(m_pAudioSource->getDuration());
-                        }
-                        if (m_pAudioSource->hasBitrate()) {
-                            m_pTrack->setBitrate(m_pAudioSource->getBitrate());
-                        }
-                    }
-                    return m_pAudioSource; // success -> exit loop
-                }
             }
         }
         qWarning() << "Failed to open AudioSource for file"
