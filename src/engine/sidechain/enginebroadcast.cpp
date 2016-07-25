@@ -163,16 +163,16 @@ void EngineBroadcast::updateFromPreferences() {
     QString serverType = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "servertype"));
 
-    // first try to parse host entry as whole url:
     QString host = m_pConfig->getValueString(
                 ConfigKey(BROADCAST_PREF_KEY, "host"));
-    QUrl serverUrl = host;
-    if (serverUrl.host().isEmpty()) {
-        // Qt requires a preceding // for the host part
-        // else the path is treated relative and goes to the
-        // path() section
-        serverUrl = QLatin1String("//") + host;
+    int start = host.indexOf(QLatin1String("//"));
+    if (start == -1) {
+        // the host part requires preceding //.
+        // Without them, the path is treated relative and goes to the
+        // path() section.
+        host.prepend(QLatin1String("//"));
     }
+    QUrl serverUrl = host;
 
     bool ok = false;
     unsigned int port = m_pConfig->getValueString(
