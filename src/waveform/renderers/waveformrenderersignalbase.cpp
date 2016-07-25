@@ -20,6 +20,7 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
       m_pMidKillControlObject(NULL),
       m_pHighKillControlObject(NULL),
       m_alignment(Qt::AlignCenter),
+      m_orientation(Qt::Horizontal),
       m_pColors(NULL),
       m_axesColor_r(0),
       m_axesColor_g(0),
@@ -100,6 +101,13 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
         m_alignment = Qt::AlignTop;
     } else {
         m_alignment = Qt::AlignCenter;
+    }
+
+    QString orientationString = context.selectString(node, "Orientation").toLower();
+    if (orientationString == "vertical") {
+        m_orientation = Qt::Vertical;
+    } else {
+        m_orientation = Qt::Horizontal;
     }
 
     m_pColors = m_waveformRenderer->getWaveformSignalColors();

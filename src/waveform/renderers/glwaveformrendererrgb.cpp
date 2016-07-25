@@ -68,6 +68,10 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
+        if (m_orientation == Qt::Vertical) {
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glScalef(-1.0f, 1.0f, 1.0f);
+        }
         glOrtho(firstVisualIndex, lastVisualIndex, -255.0, 255.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);
@@ -139,6 +143,10 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
+        if (m_orientation == Qt::Vertical) {
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glScalef(-1.0f, 1.0f, 1.0f);
+        }
         if (m_alignment == Qt::AlignBottom) {
             glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
         } else {

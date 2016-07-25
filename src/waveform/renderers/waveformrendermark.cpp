@@ -50,16 +50,25 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
         if (samplePosition > 0.0) {
             double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
 
-            // NOTE: vRince I guess image width is odd to display the center on the exact line !
-            //external image should respect that ...
-            const int markHalfWidth = mark.m_image.width() / 2.0;
+            if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
+                // NOTE: vRince I guess image width is odd to display the center on the exact line !
+                // external image should respect that ...
+                const int markHalfWidth = mark.m_image.width() / 2.0;
 
-            //check if the current point need to be displayed
-            if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
-                painter->drawImage(QPoint(currentMarkPoint-markHalfWidth,0), mark.m_image);
+                // check if the current point need to be displayed
+                if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
+                    painter->drawImage(QPoint(currentMarkPoint - markHalfWidth,0), mark.m_image);
+                }
+            } else {
+                const int markHalfHeight = mark.m_image.height() / 2.0;
+
+                if (currentMarkPoint > -markHalfHeight && currentMarkPoint < m_waveformRenderer->getHeight() + markHalfHeight) {
+                    painter->drawImage(QPoint(0,currentMarkPoint - markHalfHeight), mark.m_image);
+                }
             }
         }
     }
+
     painter->restore();
 }
 
@@ -107,9 +116,16 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         QRectF labelRect(0, 0,
                 (float)labelRectWidth, (float)labelRectHeight);
 
-        mark.m_image = QImage(labelRectWidth+1,
-                m_waveformRenderer->getHeight(),
-                QImage::Format_ARGB32_Premultiplied);
+        if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
+            mark.m_image = QImage(labelRectWidth + 1,
+                                  m_waveformRenderer->getHeight(),
+                                  QImage::Format_ARGB32_Premultiplied);
+        } else {
+            mark.m_image = QImage(m_waveformRenderer->getWidth(),
+                                  2 * labelRectHeight + 1,
+                                  QImage::Format_ARGB32_Premultiplied);
+            labelRect.moveLeft((m_waveformRenderer->getWidth() - labelRectWidth) / 2);
+        }
 
         if (mark.m_align == Qt::AlignBottom) {
             labelRect.moveBottom(mark.m_image.height()-1);
@@ -143,36 +159,61 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         lineColor.setAlpha(200);
         painter.setPen(lineColor);
 
-        float middle = mark.m_image.width() / 2.0;
-        //Default line align top
-        float lineTop = labelRectHeight + 1;
-        float lineBottom = mark.m_image.height();
+        if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
+            float middle = mark.m_image.width() / 2.0;
+            //Default line align top
+            float lineTop = labelRectHeight + 1;
+            float lineBottom = mark.m_image.height();
 
-        if (mark.m_align == Qt::AlignBottom) {
-            lineTop = 0.0;
-            lineBottom = mark.m_image.height() - labelRectHeight - 1;
+            if (mark.m_align == Qt::AlignBottom) {
+                lineTop = 0.0;
+                lineBottom = mark.m_image.height() - labelRectHeight - 1;
+            }
+
+            painter.drawLine(middle, lineTop, middle, lineBottom);
+
+            //other lines to increase contrast
+            painter.setPen(QColor(0,0,0,120));
+            painter.drawLine(middle - 1, lineTop, middle - 1, lineBottom);
+            painter.drawLine(middle + 1, lineTop, middle + 1, lineBottom);
+        } else {
+            float middle = mark.m_image.height() / 2.0;
+            float lineLeft = 0.0;
+            float lineRight = mark.m_image.width();
+
+            painter.drawLine(lineLeft, middle, lineRight, middle);
+
+            //other lines to increase contrast
+            painter.setPen(QColor(0,0,0,120));
+            painter.drawLine(lineLeft, middle - 1, lineRight, middle - 1);
+            painter.drawLine(lineLeft, middle + 1, lineRight, middle + 1);
         }
-
-        painter.drawLine(middle, lineTop, middle, lineBottom);
-
-        //other lines to increase contrast
-        painter.setPen(QColor(0,0,0,120));
-        painter.drawLine(middle - 1, lineTop, middle - 1, lineBottom);
-        painter.drawLine(middle + 1, lineTop, middle + 1, lineBottom);
-
     }
     else //no text draw triangle
     {
         float triangleSize = 9.0;
-        mark.m_image = QImage(labelRectWidth+1,
-                m_waveformRenderer->getHeight(),
-                QImage::Format_ARGB32_Premultiplied);
+        float markLength = triangleSize + 1.0;
+        float markBreadth = m_waveformRenderer->getBreadth();
+        if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
+            mark.m_image = QImage(markLength,
+                                  markBreadth,
+                                  QImage::Format_ARGB32_Premultiplied);
+        } else {
+            mark.m_image = QImage(markBreadth,
+                                  markLength,
+                                  QImage::Format_ARGB32_Premultiplied);
+        }
         mark.m_image.fill(QColor(0,0,0,0).rgba());
 
         painter.begin(&mark.m_image);
         painter.setRenderHint(QPainter::TextAntialiasing);
 
         painter.setWorldMatrixEnabled(false);
+
+        // Rotate if drawing vertical waveforms
+        if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+            painter.setTransform(QTransform(0, 1, 1, 0, 0, 0));
+        }
 
         QColor triangleColor = mark.m_color;
         triangleColor.setAlpha(140);
@@ -190,9 +231,9 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         painter.drawPolygon(triangle);
 
         triangle.clear();
-        triangle.append(QPointF(0.0,mark.m_image.height()));
-        triangle.append(QPointF(triangleSize+0.5,mark.m_image.height()));
-        triangle.append(QPointF(triangleSize*0.5 + 0.1, mark.m_image.height() - triangleSize*0.5 - 2.1));
+        triangle.append(QPointF(0.0,markBreadth));
+        triangle.append(QPointF(triangleSize+0.5,markBreadth));
+        triangle.append(QPointF(triangleSize*0.5 + 0.1, markBreadth - triangleSize*0.5 - 2.1));
 
         painter.drawPolygon(triangle);
 
@@ -201,10 +242,10 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         QColor lineColor = mark.m_color;
         lineColor.setAlpha(140);
         painter.setPen(lineColor);
-        float middle = mark.m_image.width() / 2.0;
+        float middle = markLength / 2.0;
 
         float lineTop = triangleSize * 0.5 + 1;
-        float lineBottom = mark.m_image.height() - triangleSize * 0.5 - 1;
+        float lineBottom = markBreadth - triangleSize * 0.5 - 1;
 
         painter.drawLine(middle, lineTop, middle, lineBottom);
 

@@ -85,6 +85,12 @@ class WOverview : public WWidget {
     // Append the waveform overview pixmap according to available data in waveform
     virtual bool drawNextPixmapPart() = 0;
     void paintText(const QString &text, QPainter *painter);
+    inline int length() {
+        return m_orientation == Qt::Horizontal ? width() : height();
+    }
+    inline int breadth() {
+        return m_orientation == Qt::Vertical ? height() : width();
+    }
     inline int valueToPosition(double value) const {
         return static_cast<int>(m_a * value - m_b);
     }
@@ -107,6 +113,8 @@ class WOverview : public WWidget {
     bool m_bDrag;
     // Internal storage of slider position in pixels
     int m_iPos;
+
+    Qt::Orientation m_orientation;
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
