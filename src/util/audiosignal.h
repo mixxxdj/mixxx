@@ -41,13 +41,15 @@ public:
     }
 
     static const SINT kSamplingRateZero    = 0;
+    static const SINT kSamplingRateMin     = 8000; // lower bound
+    static const SINT kSamplingRateMax     = 192000; // upper bound
     static const SINT kSamplingRateCD      = 44100;
     static const SINT kSamplingRate48kHz   = 48000;
     static const SINT kSamplingRate96kHz   = 96000;
     static const SINT kSamplingRateDefault = kSamplingRateZero;
 
     static bool isValidSamplingRate(SINT samplingRate) {
-        return kSamplingRateZero < samplingRate;
+        return (kSamplingRateMin <= samplingRate) && (kSamplingRateMax >= samplingRate);
     }
 
     explicit AudioSignal(SampleLayout sampleLayout)
@@ -116,7 +118,6 @@ public:
 
 protected:
     void setChannelCount(SINT channelCount) {
-        DEBUG_ASSERT(isValidChannelCount(channelCount));
         m_channelCount = channelCount;
     }
     void resetChannelCount() {
@@ -124,7 +125,6 @@ protected:
     }
 
     void setSamplingRate(SINT samplingRate) {
-        DEBUG_ASSERT(isValidSamplingRate(samplingRate));
         m_samplingRate = samplingRate;
     }
     void resetSamplingRate() {
