@@ -163,8 +163,16 @@ void EngineBroadcast::updateFromPreferences() {
     QString serverType = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "servertype"));
 
-    QUrl serverUrl = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "host"));
+    // first try to parse host entry as whole url:
+    QString host = m_pConfig->getValueString(
+                ConfigKey(BROADCAST_PREF_KEY, "host"));
+    QUrl serverUrl = host;
+    if (serverUrl.host().isEmpty()) {
+        // Qt requires a preceding // for the host part
+        // else the path is treated relative and goes to the
+        // path() section
+        serverUrl = QLatin1String("//") + host;
+    }
 
     bool ok = false;
     unsigned int port = m_pConfig->getValueString(
@@ -176,6 +184,9 @@ void EngineBroadcast::updateFromPreferences() {
     QString mountPoint = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "mountpoint")).toLatin1();
     if (!mountPoint.isEmpty()) {
+        if (!mountPoint.startsWith('/')) {
+            mountPoint.prepend('/');
+        }
         serverUrl.setPath(mountPoint);
     }
 
@@ -184,6 +195,8 @@ void EngineBroadcast::updateFromPreferences() {
     if (!login.isEmpty()) {
         serverUrl.setUserName(login);
     }
+
+    qDebug() << "Using server URL:" << serverUrl;
 
     QByteArray baPassword = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "password")).toLatin1();
@@ -252,9 +265,6 @@ void EngineBroadcast::updateFromPreferences() {
         errorDialog(tr("Error setting mount!"), shout_get_error(m_pShout));
         return;
     }
-
-qDebug() << "############" << serverUrl;
-
 
     if (shout_set_user(m_pShout, serverUrl.userName().toLatin1().constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting username!"), shout_get_error(m_pShout));
