@@ -78,7 +78,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
 
     // create the output format
     const UInt32 numChannels =
-            audioSrcCfg.hasChannelCount() ? audioSrcCfg.getChannelCount() : 2;
+            audioSrcCfg.hasValidChannelCount() ? audioSrcCfg.getChannelCount() : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 

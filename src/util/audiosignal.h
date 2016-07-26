@@ -60,8 +60,8 @@ public:
         : m_sampleLayout(sampleLayout),
           m_channelCount(kChannelCountDefault),
           m_samplingRate(kSamplingRateDefault) {
-        DEBUG_ASSERT(!hasChannelCount());
-        DEBUG_ASSERT(!hasSamplingRate());
+        DEBUG_ASSERT(!hasValidChannelCount());
+        DEBUG_ASSERT(!hasValidSamplingRate());
     }
     AudioSignal(SampleLayout sampleLayout, SINT channelCount, SINT samplingRate)
         : m_sampleLayout(sampleLayout),
@@ -81,7 +81,7 @@ public:
     SINT getChannelCount() const {
         return m_channelCount;
     }
-    bool hasChannelCount() const {
+    bool hasValidChannelCount() const {
         return isValidChannelCount(getChannelCount());
     }
 
@@ -95,7 +95,7 @@ public:
     SINT getSamplingRate() const {
         return m_samplingRate;
     }
-    bool hasSamplingRate() const {
+    bool hasValidSamplingRate() const {
         return isValidSamplingRate(getSamplingRate());
     }
 
@@ -104,13 +104,13 @@ public:
     // implementation of the super class and concatenate the result with
     // && (logical and).
     virtual bool isValid() const {
-        return hasChannelCount() && hasSamplingRate();
+        return hasValidChannelCount() && hasValidSamplingRate();
     }
 
     // Conversion: #samples / sample offset -> #frames / frame offset
     template<typename T>
     inline T samples2frames(T samples) const {
-        DEBUG_ASSERT(hasChannelCount());
+        DEBUG_ASSERT(hasValidChannelCount());
         DEBUG_ASSERT(0 == (samples % getChannelCount()));
         return samples / getChannelCount();
     }
@@ -118,7 +118,7 @@ public:
     // Conversion: #frames / frame offset -> #samples / sample offset
     template<typename T>
     inline T frames2samples(T frames) const {
-        DEBUG_ASSERT(hasChannelCount());
+        DEBUG_ASSERT(hasValidChannelCount());
         return frames * getChannelCount();
     }
 

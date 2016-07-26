@@ -415,7 +415,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
     {
         const SINT channelCount = metadata->data.stream_info.channels;
         if (isValidChannelCount(channelCount)) {
-            if (hasChannelCount()) {
+            if (hasValidChannelCount()) {
                 // already set before -> check for consistency
                 if (getChannelCount() != channelCount) {
                     qWarning() << "Unexpected channel count:"
@@ -431,7 +431,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         }
         const SINT samplingRate = metadata->data.stream_info.sample_rate;
         if (isValidSamplingRate(samplingRate)) {
-            if (hasSamplingRate()) {
+            if (hasValidSamplingRate()) {
                 // already set before -> check for consistency
                 if (getSamplingRate() != samplingRate) {
                     qWarning() << "Unexpected sampling rate:"
