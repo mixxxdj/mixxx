@@ -138,6 +138,14 @@ void EngineBroadcast::updateFromPreferences() {
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
+    if (m_encoder) {
+        qDebug() << "delete m_encoder";
+        // delete m_encoder if it has been initialized (with maybe) different
+        // bitrate
+        delete m_encoder;
+        m_encoder = nullptr;
+    }
+
     m_format_is_mp3 = false;
     m_format_is_ov = false;
     m_protocol_is_icecast1 = false;
@@ -362,27 +370,26 @@ void EngineBroadcast::updateFromPreferences() {
     }
 
     // Initialize m_encoder
-    if (m_encoder) {
-        // delete m_encoder if it has been initialized (with maybe) different bitrate
-        delete m_encoder;
-        m_encoder = nullptr;
-    }
-
     if (m_format_is_mp3) {
         m_encoder = new EncoderMp3(this);
     } else if (m_format_is_ov) {
         m_encoder = new EncoderVorbis(this);
     } else {
         qDebug() << "**** Unknown Encoder Format";
+        setState(NETWORKSTREAMWORKER_STATE_ERROR);
+        m_lastErrorStr = "Encoder format error";
         return;
     }
 
     if (m_encoder->initEncoder(iBitrate, iMasterSamplerate) < 0) {
-        //e.g., if lame is not found
-        //init m_encoder itself will display a message box
+        // e.g., if lame is not found
+        // init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
         delete m_encoder;
         m_encoder = nullptr;
+        setState(NETWORKSTREAMWORKER_STATE_ERROR);
+        m_lastErrorStr = "Encoder error";
+        return;
     }
     setState(NETWORKSTREAMWORKER_STATE_READY);
 }
@@ -395,9 +402,16 @@ bool EngineBroadcast::serverConnect() {
 
 bool EngineBroadcast::processConnect() {
     qDebug() << "EngineBroadcast::processConnect()";
+
     // Make sure that we call updateFromPreferences always
-    if (m_encoder == nullptr) {
-        updateFromPreferences();
+    updateFromPreferences();
+
+    if (!m_encoder) {
+        // updateFromPreferences failed
+        m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+        m_pBroadcastEnabled->set(0);
+        qDebug() << "EngineBroadcast::processConnect() returning false";
+        return false;
     }
 
     m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
@@ -411,7 +425,7 @@ bool EngineBroadcast::processConnect() {
     if(m_pMetaData) {
         m_pMetaData.clear();
     }
-    //If static metadata is available, we only need to send metadata one time
+    // If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
 
     while (m_iShoutFailures < kMaxShoutFailures) {
