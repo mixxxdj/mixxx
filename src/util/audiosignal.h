@@ -32,21 +32,25 @@ public:
     };
 
     static const SINT kChannelCountZero    = 0;
-    static const SINT kChannelCountMono    = 1;
-    static const SINT kChannelCountStereo  = 2;
     static const SINT kChannelCountDefault = kChannelCountZero;
+    static const SINT kChannelCountMono    = 1;
+    static const SINT kChannelCountMin     = kChannelCountMono; // lower bound
+    static const SINT kChannelCountStereo  = 2;
+    static const SINT kChannelCountMax     = 256; // upper bound (8-bit unsigned integer)
 
     static bool isValidChannelCount(SINT channelCount) {
-        return kChannelCountZero < channelCount;
+        return (kChannelCountMin <= channelCount) && (kChannelCountMax >= channelCount);
     }
 
     static const SINT kSamplingRateZero    = 0;
-    static const SINT kSamplingRateMin     = 8000; // lower bound
-    static const SINT kSamplingRateMax     = 192000; // upper bound
+    static const SINT kSamplingRateDefault = kSamplingRateZero;
+    static const SINT kSamplingRateMin     = 8000; // lower bound (= minimum MP3 sampling rate)
+    static const SINT kSamplingRate32kHz   = 32000;
     static const SINT kSamplingRateCD      = 44100;
     static const SINT kSamplingRate48kHz   = 48000;
     static const SINT kSamplingRate96kHz   = 96000;
-    static const SINT kSamplingRateDefault = kSamplingRateZero;
+    static const SINT kSamplingRate192kHz  = 192000;
+    static const SINT kSamplingRateMax     = kSamplingRate192kHz; // upper bound
 
     static bool isValidSamplingRate(SINT samplingRate) {
         return (kSamplingRateMin <= samplingRate) && (kSamplingRateMax >= samplingRate);
@@ -56,13 +60,15 @@ public:
         : m_sampleLayout(sampleLayout),
           m_channelCount(kChannelCountDefault),
           m_samplingRate(kSamplingRateDefault) {
+        DEBUG_ASSERT(!hasChannelCount());
+        DEBUG_ASSERT(!hasSamplingRate());
     }
     AudioSignal(SampleLayout sampleLayout, SINT channelCount, SINT samplingRate)
         : m_sampleLayout(sampleLayout),
           m_channelCount(channelCount),
           m_samplingRate(samplingRate) {
-        DEBUG_ASSERT(kChannelCountZero <= m_channelCount);
-        DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate);
+        DEBUG_ASSERT(kChannelCountZero <= m_channelCount); // unsigned value
+        DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate); // unsigned value
     }
     virtual ~AudioSignal() {}
 
@@ -118,6 +124,7 @@ public:
 
 protected:
     void setChannelCount(SINT channelCount) {
+        DEBUG_ASSERT(kChannelCountZero <= m_channelCount); // unsigned value
         m_channelCount = channelCount;
     }
     void resetChannelCount() {
@@ -125,6 +132,7 @@ protected:
     }
 
     void setSamplingRate(SINT samplingRate) {
+        DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate); // unsigned value
         m_samplingRate = samplingRate;
     }
     void resetSamplingRate() {
