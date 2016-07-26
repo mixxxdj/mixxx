@@ -99,14 +99,15 @@ public:
         return isValidSamplingRate(getSamplingRate());
     }
 
-    // Checks for valid properties and logs warning for all properties
-    // with invalid values.
+    // Verifies various properties to ensure that the audio data is
+    // actually readable. Warning messages are logged for properties
+    // with invalid values for diagnostic purposes.
     //
     // Subclasses may override this function for checking additional
     // properties in derived classes. Derived functions should always
     // call the implementation of the super class first:
     //
-    // bool DerivedClass::validate() const {
+    // bool DerivedClass::verifyReadable() const {
     //     bool result = BaseClass::validate();
     //     if (my property is invalid) {
     //         qWarning() << ...warning message...
@@ -114,7 +115,7 @@ public:
     //     }
     //     return result;
     // }
-    virtual bool validate() const;
+    virtual bool verifyReadable() const;
 
     // Conversion: #samples / sample offset -> #frames / frame offset
     template<typename T>
