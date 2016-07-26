@@ -583,7 +583,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                      << getUrl().toString()
                      << "with provider"
                      << getSoundSourceProvider()->getName();
-            if ((mixxx::SoundSource::OpenResult::SUCCEEDED == openResult) && m_pSoundSource->isValid()) {
+            if ((mixxx::SoundSource::OpenResult::SUCCEEDED == openResult) && m_pSoundSource->verifyReadable()) {
                 m_pAudioSource =
                         AudioSourceProxy::create(m_pTrack, m_pSoundSource);
                 if (m_pAudioSource->isEmpty()) {
@@ -597,7 +597,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                     if (m_pAudioSource->hasDuration()) {
                         m_pTrack->setDuration(m_pAudioSource->getDuration());
                     }
-                    if (m_pAudioSource->hasBitrate()) {
+                    if (m_pAudioSource->hasValidBitrate()) {
                         m_pTrack->setBitrate(m_pAudioSource->getBitrate());
                     }
                 }

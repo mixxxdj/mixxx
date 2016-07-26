@@ -45,7 +45,7 @@ class AudioSource: public UrlResource, public AudioSignal {
     // The actual duration in seconds.
     // Well defined only for valid files!
     inline bool hasDuration() const {
-        return isValid();
+        return hasValidSamplingRate();
     }
     inline double getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero
@@ -56,14 +56,13 @@ class AudioSource: public UrlResource, public AudioSignal {
     inline static bool isValidBitrate(SINT bitrate) {
         return kBitrateZero < bitrate;
     }
-    inline bool hasBitrate() const {
+    inline bool hasValidBitrate() const {
         return isValidBitrate(m_bitrate);
     }
     // Setting the bitrate is optional when opening a file.
     // The bitrate is not needed for decoding, it is only used
     // for informational purposes.
     inline SINT getBitrate() const {
-        DEBUG_ASSERT(hasBitrate()); // prevents reading an invalid bitrate
         return m_bitrate;
     }
 
@@ -181,6 +180,8 @@ class AudioSource: public UrlResource, public AudioSignal {
             SINT* pMinFrameIndexOfInterval,
             SINT* pMaxFrameIndexOfInterval,
             SINT maxFrameIndexOfAudioSource);
+
+    bool verifyReadable() const override;
 
   protected:
     explicit AudioSource(const QUrl& url);
