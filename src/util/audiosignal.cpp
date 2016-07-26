@@ -4,7 +4,7 @@
 
 namespace mixxx {
 
-bool AudioSignal::validate() const {
+bool AudioSignal::verifyReadable() const {
     bool result = true;
     if (!hasValidChannelCount()) {
         qWarning() << "Invalid number of channels:"

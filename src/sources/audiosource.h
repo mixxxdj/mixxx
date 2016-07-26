@@ -52,18 +52,13 @@ class AudioSource: public UrlResource, public AudioSignal {
         return double(getFrameCount()) / double(getSamplingRate());
     }
 
-    // The bitrate is measured in kbit/s (kbps).
-    inline static bool isValidBitrate(SINT bitrate) {
-        return kBitrateZero < bitrate;
-    }
+    // The bitrate is optional and measured in kbit/s (kbps).
+    // It depends on the metadata and decoder if a value for the
+    // bitrate is available.
     inline bool hasBitrate() const {
-        return isValidBitrate(m_bitrate);
+        return kBitrateZero < m_bitrate;
     }
-    // Setting the bitrate is optional when opening a file.
-    // The bitrate is not needed for decoding, it is only used
-    // for informational purposes.
     inline SINT getBitrate() const {
-        DEBUG_ASSERT(hasBitrate()); // prevents reading an invalid bitrate
         return m_bitrate;
     }
 
@@ -182,6 +177,8 @@ class AudioSource: public UrlResource, public AudioSignal {
             SINT* pMaxFrameIndexOfInterval,
             SINT maxFrameIndexOfAudioSource);
 
+    bool verifyReadable() const override;
+
   protected:
     explicit AudioSource(const QUrl& url);
     explicit AudioSource(const AudioSource& other) = default;
@@ -191,6 +188,9 @@ class AudioSource: public UrlResource, public AudioSignal {
     }
     void setFrameCount(SINT frameCount);
 
+    inline static bool isValidBitrate(SINT bitrate) {
+        return kBitrateZero <= bitrate;
+    }
     void setBitrate(SINT bitrate);
 
     SINT getSampleBufferSize(
