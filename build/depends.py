@@ -1073,6 +1073,7 @@ class MixxxCore(Feature):
                    "util/rotary.cpp",
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
+                   "util/audiosignal.cpp",
 
                    '#res/mixxx.qrc'
                    ]

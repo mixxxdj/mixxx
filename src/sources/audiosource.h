@@ -45,7 +45,7 @@ class AudioSource: public UrlResource, public AudioSignal {
     // The actual duration in seconds.
     // Well defined only for valid files!
     inline bool hasDuration() const {
-        return isValid();
+        return hasValidSamplingRate();
     }
     inline double getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero

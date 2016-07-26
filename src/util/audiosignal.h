@@ -99,13 +99,22 @@ public:
         return isValidSamplingRate(getSamplingRate());
     }
 
-    // Check for valid properties. Subclasses may override this function
-    // to add more constraints. Derived functions should always call the
-    // implementation of the super class and concatenate the result with
-    // && (logical and).
-    virtual bool isValid() const {
-        return hasValidChannelCount() && hasValidSamplingRate();
-    }
+    // Checks for valid properties and logs warning for all properties
+    // with invalid values.
+    //
+    // Subclasses may override this function for checking additional
+    // properties in derived classes. Derived functions should always
+    // call the implementation of the super class first:
+    //
+    // bool DerivedClass::validate() const {
+    //     bool result = BaseClass::validate();
+    //     if (my property is invalid) {
+    //         qWarning() << ...warning message...
+    //         result = false;
+    //     }
+    //     return result;
+    // }
+    virtual bool validate() const;
 
     // Conversion: #samples / sample offset -> #frames / frame offset
     template<typename T>
