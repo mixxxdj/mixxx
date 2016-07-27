@@ -35,6 +35,8 @@ class App(Tk):
 
     TITLE = "Keyboard legacy files to keyboard XML converter"
 
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
     FONTS = {
         'huge': ("Helvetica", 18),
         'big': ("Helvetica", 14),
@@ -586,6 +588,12 @@ class DlgSave(Frame):
 
         self.start_button = Button(self, text="Start", state=DISABLED, command=self._start_button_command)
         self.start_button.pack(side=BOTTOM, pady=10, padx=10, fill=X)
+
+        # Try to find layouts header file
+        layouts_path = os.path.join(app.SCRIPT_DIR, '..', 'src', 'controllers', 'keyboard', 'layouts.h')
+        layouts_path_canonical = os.path.realpath(layouts_path)
+        if os.path.isfile(layouts_path_canonical):
+            self.layouts_path.set(layouts_path_canonical)
 
     def update(self):
         if len(self.app.mappings) < 1:
