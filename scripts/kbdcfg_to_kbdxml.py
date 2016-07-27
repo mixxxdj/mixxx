@@ -191,34 +191,63 @@ class App(Tk):
             return None
 
         print("Opening layouts file: " + path)
-        with codecs.open(path, 'r', "utf-8") as f:
-            self.tree = ElementTree.parse(f)
 
-        # Get KeyboardLayoutTranslations element, which holds all
-        # information and is basically the root element
-        root = None
-        for element in self.tree.getroot().iter():
-            if element.tag == 'KeyboardLayoutTranslations':
-                root = element
-                break
-        self.root = root
+        with open(path) as f:
+            data = f.readlines()
 
-        # Retrieve layouts element
-        layouts_element = root.find('layouts')
+        # Finds KbdKeyChar en_US[48][2]
+        layout_variable_name_line_pattern = re.compile("(KbdKeyChar)(.*?)(\[[0-9]+\]){2}")
 
-        if not layouts_element:
-            print("Couldn't retrieve layout list, no <layouts> element "
-                  "in loaded XML. Pleas load in an other XML file.")
-            return None
+        # In KbdKeyChar en_US[48][2], finds en_US
+        layout_variable_name_pattern = re.compile("(?<=KbdKeyChar)(.*?)(?=\[[0-9]+\]){2}")
+
+        # List holding dictionaries, one for each layout
+        #
+        # Dictionaries are holding:
+        #   var_name     - Variable name of layout
+        #   name         - Name found in comment. If no comment, name = var_name
+        #   line_number  - Line number where variable is declared
+        layouts_info = []
+
+        lines = enumerate(data, 1)
+        previous_line = ""
+        for n, line_raw in lines:
+
+            # Strip new lines from line
+            line = line_raw.rstrip()
+
+            # We are only interested in variable names, not in the content
+            if layout_variable_name_line_pattern.search(line) is None:
+                previous_line = line
+                continue
+
+            var_name = layout_variable_name_pattern.search(line).group(0)
+            name = var_name
+
+            if previous_line.startswith("//"):
+                name = previous_line[2:].strip()
+
+            layout_info = {
+                "var_name": var_name,
+                "name": name,
+                "n_line": n
+            }
+
+            layouts_info.append(layout_info)
+            previous_line = line
 
         # Iterate over languages specified in layouts file
-        for layout in layouts_element.iter('lang'):
-            name = layout.text
-            if not KeyboardLayout.validate_layout_name(name):
-                print("Layout name: " + name + " is not a valid language code name. Not loading this layout.")
+        for layout in layouts_info:
+            var_name = layout.var_name
+            if not KeyboardLayout.validate_layout_name(var_name):
+                print("Layout name: " + var_name + " is not a valid language code name. Not loading this layout.")
                 continue
             layouts.append(
-                KeyboardLayout(name=name, root=root)
+                KeyboardLayout(
+                    name=layout.name,
+                    var_name=var_name,
+                    layouts_data=lines,
+                    n_line=layout.n_line)
             )
 
         return layouts
@@ -971,49 +1000,51 @@ class KeyboardLayout:
     def validate_layout_name(name):
         return KeyboardLayout.NAME_VALIDATION_PATTERN.match(name)
 
-    def __init__(self, name="", root=None):
+    def __init__(self, name="", var_name="", layouts_data=None, n_line=0):
         self.name = name
         self._data = []
 
         # Parse XML and store it into self._data
-        self.parse_xml(root)
+        self.parse_header_file(layouts_data)
 
-    def parse_xml(self, root):
+    def parse_header_file(self, layouts_data):
         """
-        Read XML and load in all character information whose language code is
+        Read header file and load in all character information whose language code is
         the same as the name of this KeyboardLayout
 
-        :param root: Layouts resource file XML root
+        :param path: Layouts header file path
         """
 
-        for key in root.iter('key'):
-            key_id = key.get('key_id')
-            if not key_id:
-                print(
-                    "Skipping key, no scan code defined. Make sure that all key "
-                    "elements have a 'key_id' attribute telling the key_id as "
-                    "described here: http://www.barcodeman.com/altek/mule/kb102.gif")
-                break
 
-            for char in key.iter('char'):
-                lang = char.get('lang')
-                if lang == self.name:
-                    modifier_attr = char.get('modifier')
-                    if modifier_attr == "NONE":
-                        modifier = KeyboardKey.MODIFIERS.NONE
-                    elif modifier_attr == "SHIFT":
-                        modifier = KeyboardKey.MODIFIERS.SHIFT
-                    else:
-                        modifier = -1
 
-                    dead_key = char.get('dead_key') == '1'
-
-                    self.update_key(
-                        key_id=int(key_id),
-                        modifier=int(modifier),
-                        char=char.text,
-                        dead_key=dead_key
-                    )
+        # for key in root.iter('key'):
+        #     key_id = key.get('key_id')
+        #     if not key_id:
+        #         print(
+        #             "Skipping key, no scan code defined. Make sure that all key "
+        #             "elements have a 'key_id' attribute telling the key_id as "
+        #             "described here: http://www.barcodeman.com/altek/mule/kb102.gif")
+        #         break
+        #
+        #     for char in key.iter('char'):
+        #         lang = char.get('lang')
+        #         if lang == self.name:
+        #             modifier_attr = char.get('modifier')
+        #             if modifier_attr == "NONE":
+        #                 modifier = KeyboardKey.MODIFIERS.NONE
+        #             elif modifier_attr == "SHIFT":
+        #                 modifier = KeyboardKey.MODIFIERS.SHIFT
+        #             else:
+        #                 modifier = -1
+        #
+        #             dead_key = char.get('dead_key') == '1'
+        #
+        #             self.update_key(
+        #                 key_id=int(key_id),
+        #                 modifier=int(modifier),
+        #                 char=char.text,
+        #                 dead_key=dead_key
+        #             )
 
     def find(self, key_id):
         for key in self._data:
