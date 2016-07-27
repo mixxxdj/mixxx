@@ -595,8 +595,8 @@ class DlgSave(Frame):
 
     def _browse_layouts_file_command(self):
         path = filedialog.askopenfilename(
-            filetypes=(("XML Files", ".xml"), ("All Files", "*")),
-            title="Choose a layouts xml file"
+            filetypes=(("Header Files", ".h"), ("C++ Files", ".cpp"), ("All Files", "*")),
+            title="Choose a layouts header file"
         )
         if not path:
             return None
