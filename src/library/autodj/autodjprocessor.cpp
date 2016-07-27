@@ -772,9 +772,11 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
                  << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
     }
 
-    if (pTrack->getDuration() == 0) {
-        qWarning() << "Skip track with 0:00 Duration" << pTrack->getLocation();
-        // Remove Tack with duration < 1 s
+    double duration = pTrack->getDuration();
+    if (duration < 0.2) {
+        qWarning() << "Skip track with" << duration << "Duration"
+                   << pTrack->getLocation();
+        // Remove Tack with duration smaller than two callbacks
         removeTrackFromTopOfQueue(pTrack);
 
         // Load the next track. If we are the first AutoDJ track
