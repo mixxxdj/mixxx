@@ -209,7 +209,7 @@ class App(Tk):
         #   line_number  - Line number where variable is declared
         layouts_info = []
 
-        lines = enumerate(data, 1)
+        lines = enumerate(data)
         previous_line = ""
         for n, line_raw in lines:
 
@@ -228,7 +228,7 @@ class App(Tk):
                 name = previous_line[2:].strip()
 
             layout_info = {
-                "var_name": var_name,
+                "var_name": var_name.strip(),
                 "name": name,
                 "n_line": n
             }
@@ -237,18 +237,29 @@ class App(Tk):
             previous_line = line
 
         # Iterate over languages specified in layouts file
+        layout_index = 0
         for layout in layouts_info:
-            var_name = layout.var_name
+            var_name = layout['var_name']
             if not KeyboardLayout.validate_layout_name(var_name):
-                print("Layout name: " + var_name + " is not a valid language code name. Not loading this layout.")
+                print("Layout name: '" + var_name + "' is not a valid language code name. Not loading this layout.")
                 continue
+
+            # If there is another layout after this one, it ends at the start of the next one.
+            # If not, it ends on the last line of the file
+            if layout_index + 1 < len(layouts_info):
+                n_end_line = layouts_info[layout_index + 1]['n_line'] - 1
+            else:
+                n_end_line = len(data) - 1
+
+            current_layout_lines = data[layout['n_line']:n_end_line]
+
             layouts.append(
                 KeyboardLayout(
-                    name=layout.name,
-                    var_name=var_name,
-                    layouts_data=lines,
-                    n_line=layout.n_line)
+                    name=var_name,
+                    human_readable_name=layout['name'],
+                    data=current_layout_lines)
             )
+            layout_index += 1
 
         return layouts
 
@@ -1000,51 +1011,82 @@ class KeyboardLayout:
     def validate_layout_name(name):
         return KeyboardLayout.NAME_VALIDATION_PATTERN.match(name)
 
-    def __init__(self, name="", var_name="", layouts_data=None, n_line=0):
+    def __init__(self, name="", human_readable_name="", data=None):
         self.name = name
+        self.human_readable_name = human_readable_name
         self._data = []
 
         # Parse XML and store it into self._data
-        self.parse_header_file(layouts_data)
+        self.parse_header_file(data)
 
-    def parse_header_file(self, layouts_data):
+    def parse_header_file(self, data):
         """
         Read header file and load in all character information whose language code is
         the same as the name of this KeyboardLayout
 
-        :param path: Layouts header file path
+        :param layouts_data: Layouts file
+        :param n_line: Begin reading from given line number
         """
 
+        # For example: {{'t'}, {'T'}},
+        layout_element_pattern = re.compile("({{.*?}), ({.*?}})(,|)")
 
+        # For example 't' or 'T'
+        single_element_pattern = re.compile("{(.*?)}")
 
-        # for key in root.iter('key'):
-        #     key_id = key.get('key_id')
-        #     if not key_id:
-        #         print(
-        #             "Skipping key, no scan code defined. Make sure that all key "
-        #             "elements have a 'key_id' attribute telling the key_id as "
-        #             "described here: http://www.barcodeman.com/altek/mule/kb102.gif")
-        #         break
-        #
-        #     for char in key.iter('char'):
-        #         lang = char.get('lang')
-        #         if lang == self.name:
-        #             modifier_attr = char.get('modifier')
-        #             if modifier_attr == "NONE":
-        #                 modifier = KeyboardKey.MODIFIERS.NONE
-        #             elif modifier_attr == "SHIFT":
-        #                 modifier = KeyboardKey.MODIFIERS.SHIFT
-        #             else:
-        #                 modifier = -1
-        #
-        #             dead_key = char.get('dead_key') == '1'
-        #
-        #             self.update_key(
-        #                 key_id=int(key_id),
-        #                 modifier=int(modifier),
-        #                 char=char.text,
-        #                 dead_key=dead_key
-        #             )
+        comma_not_surrounded_by_apostrofes = re.compile("(?<!'),(?!')")
+
+        unicode_literal_pattern = re.compile("(u'\\\)(u)(\d|[a-f]){4}")
+
+        # Returns true if s is "'a', true" (for example)
+        def is_dead(s):
+            split = comma_not_surrounded_by_apostrofes.split(s)
+            return len(split) == 2 and split[1].strip() == "true"
+
+        def is_cpp_unicode_literal(s):
+            return bool(unicode_literal_pattern.match(s.strip()))
+
+        def interpret_cpp_unicode_literal(literal):
+            if not is_cpp_unicode_literal(literal):
+                if literal.startswith("'") and literal.endswith("'"):
+                    return literal[1:-1]
+                return literal
+            return eval("\"" + literal[2:] + "\"")
+
+        key_id = 0
+        for line_raw in data:
+            line = line_raw.rstrip()
+            filtered_line = layout_element_pattern.search(line)
+
+            # Check if line contains valid array element
+            if filtered_line is None:
+                continue
+            else:
+                filtered_line = filtered_line.group(0)
+
+            elements = single_element_pattern.findall(filtered_line)
+            if elements[0].startswith('{'):
+                elements[0] = elements[0][1:]
+
+            # Remove surrounding apostroves
+            first_key_char = interpret_cpp_unicode_literal(elements[0])
+            second_key_char = interpret_cpp_unicode_literal(elements[1])
+
+            self.update_key(
+                key_id=int(key_id),
+                modifier=KeyboardKey.MODIFIERS.NONE,
+                char=first_key_char,
+                dead_key=is_dead(first_key_char)
+            )
+
+            self.update_key(
+                key_id=int(key_id),
+                modifier=KeyboardKey.MODIFIERS.SHIFT,
+                char=second_key_char,
+                dead_key=is_dead(second_key_char)
+            )
+
+            key_id += 1
 
     def find(self, key_id):
         for key in self._data:
@@ -1120,7 +1162,6 @@ class KeyboardLayout:
             return True
         else:
             return False
-
 
 if __name__ == '__main__':
     main()
