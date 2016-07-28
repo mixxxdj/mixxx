@@ -1051,7 +1051,7 @@ class KeyboardLayout:
                 if literal.startswith("'") and literal.endswith("'"):
                     return literal[1:-1]
                 return literal
-            return eval("\"" + literal[2:] + "\"")
+            return eval("\"" + literal[2:-1] + "\"")
 
         key_id = 0
         for line_raw in data:
@@ -1068,22 +1068,25 @@ class KeyboardLayout:
             if elements[0].startswith('{'):
                 elements[0] = elements[0][1:]
 
-            # Remove surrounding apostroves
-            first_key_char = interpret_cpp_unicode_literal(elements[0])
-            second_key_char = interpret_cpp_unicode_literal(elements[1])
+            # Split for example: "'a', true" into ['a', true] (and also ',', true into [',', true]
+            first_key_char_list = comma_not_surrounded_by_apostrofes.split(elements[0])
+            second_key_char_list = comma_not_surrounded_by_apostrofes.split(elements[1])
+
+            first_key_char = interpret_cpp_unicode_literal(first_key_char_list[0])
+            second_key_char = interpret_cpp_unicode_literal(second_key_char_list[0])
 
             self.update_key(
                 key_id=int(key_id),
                 modifier=KeyboardKey.MODIFIERS.NONE,
                 char=first_key_char,
-                dead_key=is_dead(first_key_char)
+                dead_key=is_dead(elements[0])
             )
 
             self.update_key(
                 key_id=int(key_id),
                 modifier=KeyboardKey.MODIFIERS.SHIFT,
                 char=second_key_char,
-                dead_key=is_dead(second_key_char)
+                dead_key=is_dead(elements[1])
             )
 
             key_id += 1
