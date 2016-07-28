@@ -455,7 +455,6 @@ class App(Tk):
                             control_element.insert(1, comment)
                         continue
 
-
                     reference_control_keyseq = reference_control.keysequence
                     reference_control_split_keyseq = KeyboardKey.split_keysequence(reference_control_keyseq)
                     reference_control_mods = list(reference_control_split_keyseq)
@@ -1034,14 +1033,24 @@ class KeyboardLayout:
         # For example 't' or 'T'
         single_element_pattern = re.compile("{(.*?)}")
 
-        comma_not_surrounded_by_apostrofes = re.compile("(?<!'),(?!')")
+        comma_not_surrounded_by_quotes = re.compile(',(?=(?:[^"]*"[^"]*")*[^"]*$)')
 
         unicode_literal_pattern = re.compile("(u'\\\)(u)(\d|[a-f]){4}")
 
+        # Splits a given string on each comma (that is not surrounded by quotes) and strips every element
+        def split_key_char_string(s):
+            split = comma_not_surrounded_by_quotes.split(s)
+            return [x.strip() for x in split]
+
         # Returns true if s is "'a', true" (for example)
         def is_dead(s):
-            split = comma_not_surrounded_by_apostrofes.split(s)
-            return len(split) == 2 and split[1].strip() == "true"
+            split = split_key_char_string(s)
+            if not len(split) == 2:
+                return False
+            dead_string = split[1]
+            if dead_string.startswith("\'") and dead_string.endswith("\'"):
+               dead_string = dead_string[1:-1]
+            return dead_string == "true"
 
         def is_cpp_unicode_literal(s):
             return bool(unicode_literal_pattern.match(s.strip()))
@@ -1074,8 +1083,8 @@ class KeyboardLayout:
                 elements[0] = elements[0][1:]
 
             # Split for example: "'a', true" into ['a', true] (and also ',', true into [',', true]
-            first_key_char_list = comma_not_surrounded_by_apostrofes.split(elements[0])
-            second_key_char_list = comma_not_surrounded_by_apostrofes.split(elements[1])
+            first_key_char_list = split_key_char_string(elements[0])
+            second_key_char_list = split_key_char_string(elements[1])
 
             first_key_char = interpret_cpp_unicode_literal(first_key_char_list[0])
             second_key_char = interpret_cpp_unicode_literal(second_key_char_list[0])
