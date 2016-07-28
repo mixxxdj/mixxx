@@ -387,7 +387,7 @@ class App(Tk):
                 master_control_key_id = master_mapping_layout.get_key_id(
                     master_control_keyseq,
                     master_control_mod_int
-                )
+                )[0]
 
                 # Create <keyseq> element for master control key
                 master_keyseq_element = SubElement(control_element, 'keyseq')
@@ -467,7 +467,7 @@ class App(Tk):
                     reference_control_key_id = reference_mapping_layout.get_key_id(
                         reference_control_keyseq,
                         reference_control_mod_int
-                    )
+                    )[0]
 
                     # Check if reference modifiers are the same as master's.
                     # We check with a set() so that it's unordered.
@@ -1146,13 +1146,6 @@ class KeyboardLayout:
                        " (please choose between one of these: " + str(key_ids) + ")"
         elif key_ids_found == 0:
             key_id = "TODO: No key_id found in " + self.name + " for character: '" + char + "'"
-            if char == "\"":
-                print("\n\nNOT FOUND")
-                for key in self._data:
-                    key_char = key.get_key_char(modifier)
-                    if key_char is None:
-                        continue
-                    print(key_char.char)
         else:
             key_id = "TODO: Set key_id for '" + char + "' for layout: '" + self.name + "'"
 
@@ -1163,9 +1156,12 @@ class KeyboardLayout:
         if key_ids_found != 1 and key_id != "universal_key" and not auto_case:
             print("No key_id found in " + self.name + " for character: '" +
                   char + "' with modifier '" + str(modifier) + "'. Retrying with auto-case...")
-            return self.get_key_id(keyseq, modifier, auto_case=True)
+            result = self.get_key_id(keyseq, modifier, auto_case=True)
+            if type(result[0]).__name__ == 'int':
+                print("Yes! Found one using auto-case for character '" + result[1] + "'")
+            return result
 
-        return key_id
+        return key_id, char
 
     @staticmethod
     def is_universal_key(key):
