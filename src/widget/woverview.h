@@ -55,6 +55,14 @@ class WOverview : public WWidget {
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
+    inline int length() {
+        return m_orientation == Qt::Horizontal ? width() : height();
+    }
+
+    inline int breadth() {
+        return m_orientation == Qt::Horizontal ? height() : width();
+    }
+
     ConstWaveformPointer getWaveform() const {
         return m_pWaveform;
     }
@@ -85,12 +93,6 @@ class WOverview : public WWidget {
     // Append the waveform overview pixmap according to available data in waveform
     virtual bool drawNextPixmapPart() = 0;
     void paintText(const QString &text, QPainter *painter);
-    inline int length() {
-        return m_orientation == Qt::Horizontal ? width() : height();
-    }
-    inline int breadth() {
-        return m_orientation == Qt::Vertical ? height() : width();
-    }
     inline int valueToPosition(double value) const {
         return static_cast<int>(m_a * value - m_b);
     }

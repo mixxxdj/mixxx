@@ -368,7 +368,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
         if (m_trackLoaded && trackSamples > 0) {
             //qDebug() << "WOverview::paintEvent trackSamples > 0";
             const float offset = 1.0f;
-            const float gain = static_cast<float>(width()-2) / trackSamples;
+            const float gain = static_cast<float>(length() - 2) / trackSamples;
 
             // Draw range (loop)
             for (auto&& currentMarkRange : m_markRanges) {
@@ -421,10 +421,6 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
             painter.setOpacity(0.9);
 
-            if (m_orientation == Qt::Vertical) {
-                painter.setTransform(QTransform(0, 1, 1, 0, 0, 0));
-            }
-
             for (int i = 0; i < m_marks.size(); ++i) {
                 WaveformMark& currentMark = m_marks[i];
                 if (currentMark.m_pPointCos && currentMark.m_pPointCos->get() >= 0.0) {
@@ -432,7 +428,12 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                     const float markPosition = offset + currentMark.m_pPointCos->get() * gain;
 
-                    const QLineF line(markPosition, 0.0, markPosition, static_cast<float>(breadth()));
+                    QLineF line;
+                    if (m_orientation == Qt::Horizontal) {
+                        line.setLine(markPosition, 0.0, markPosition, static_cast<float>(height()));
+                    } else {
+                        line.setLine(0.0, markPosition, static_cast<float>(width()), markPosition);
+                    }
                     painter.setPen(shadowPen);
                     painter.drawLine(line);
 
@@ -440,14 +441,18 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     painter.drawLine(line);
 
                     if (!currentMark.m_text.isEmpty()) {
+                        QFontMetricsF metric(markerFont);
                         QPointF textPoint;
-                        textPoint.setX(markPosition + 0.5f);
-
-                        if (currentMark.m_align == Qt::AlignTop) {
-                            QFontMetricsF metric(markerFont);
-                            textPoint.setY(metric.tightBoundingRect(currentMark.m_text).height()+0.5f);
+                        if (m_orientation == Qt::Horizontal) {
+                            textPoint.setX(markPosition + 0.5f);
+                            if (currentMark.m_align == Qt::AlignTop) {
+                                textPoint.setY(metric.tightBoundingRect(currentMark.m_text).height() + 0.5f);
+                            } else {
+                                textPoint.setY(float(height()) - 0.5f);
+                            }
                         } else {
-                            textPoint.setY(float(height())-0.5f);
+                            textPoint.setX(1.0f);
+                            textPoint.setY(markPosition + metric.ascent());
                         }
 
                         painter.setPen(shadowPen);
@@ -459,6 +464,10 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                         painter.drawText(textPoint,currentMark.m_text);
                     }
                 }
+            }
+
+            if (m_orientation == Qt::Vertical) {
+                painter.setTransform(QTransform(0, 1, 1, 0, 0, 0));
             }
 
             // draw current position
@@ -493,7 +502,7 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
     int textWidth = fm.width(text);
     if (textWidth > length()) {
         qreal pointSize = font.pointSizeF();
-        pointSize = pointSize * (breadth() - 5) / textWidth;
+        pointSize = pointSize * (length() - 5) / textWidth;
         if (pointSize < 6) {
             pointSize = 6;
         }
@@ -501,7 +510,7 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
         painter->setFont(font);
     }
     if (m_orientation == Qt::Vertical) {
-        painter->rotate(90);
+        painter->setTransform(QTransform(0, 1, -1, 0, width(), 0));
     }
     painter->drawText(10, 12, text);
     painter->resetTransform();
