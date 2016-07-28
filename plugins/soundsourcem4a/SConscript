@@ -15,6 +15,7 @@ m4a_sources = [
     "sources/soundsource.cpp",
     "sources/soundsourceplugin.cpp",
     "sources/audiosource.cpp",
+    "util/audiosignal.cpp",
     "util/samplebuffer.cpp",
     "util/singularsamplebuffer.cpp",
     "util/sample.cpp",
