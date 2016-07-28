@@ -1067,7 +1067,7 @@ class KeyboardLayout:
                 return literal
             return eval("\"" + literal[2:-1] + "\"")
 
-        key_id = 0
+        i_key = 0
         for line_raw in data:
             line = line_raw.rstrip()
             filtered_line = layout_element_pattern.search(line)
@@ -1089,6 +1089,8 @@ class KeyboardLayout:
             first_key_char = interpret_cpp_unicode_literal(first_key_char_list[0])
             second_key_char = interpret_cpp_unicode_literal(second_key_char_list[0])
 
+            key_id = KeyboardLayout.layout_index_to_key_id(i_key)
+
             self.update_key(
                 key_id=int(key_id),
                 modifier=KeyboardKey.MODIFIERS.NONE,
@@ -1103,7 +1105,7 @@ class KeyboardLayout:
                 dead_key=is_dead(elements[1])
             )
 
-            key_id += 1
+            i_key += 1
 
     def find(self, key_id):
         for key in self._data:
@@ -1191,6 +1193,18 @@ class KeyboardLayout:
             return True
         else:
             return False
+
+    LAYOUT_SCANCODES = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+        45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55
+    ]
+
+    @staticmethod
+    def layout_index_to_key_id(i):
+        return KeyboardLayout.LAYOUT_SCANCODES[i]
+
 
 if __name__ == '__main__':
     main()
