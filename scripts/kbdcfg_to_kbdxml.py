@@ -1113,13 +1113,16 @@ class KeyboardLayout:
             key_ids.add(key.key_id)
         return key_ids
 
-    def get_key_id(self, keyseq, modifier):
+    def get_key_id(self, keyseq, modifier, auto_case=False):
         split_keyseq = KeyboardKey.split_keysequence(keyseq)
         char = split_keyseq[-1] if split_keyseq else ""
 
         # Make sure that the character is a lower-case character if shift is not pressed and
         # is an upper-case character when shift is pressed so that it can be found in _data
-        char = char.upper() if modifier == KeyboardKey.MODIFIERS.SHIFT else char.lower()
+        # TODO(Tomasito) Hmm.. sometimes the shifted character is not the uppercase character.
+        # TODO ...       For example. In German (Switzerland), the ; key is ö and é when shifted
+        if auto_case:
+            char = char.upper() if modifier == KeyboardKey.MODIFIERS.SHIFT else char.lower()
 
         key_ids = []
         for key in self._data:
@@ -1143,6 +1146,11 @@ class KeyboardLayout:
         # Check if this key is universal (for example: F-keys or Space)
         if KeyboardLayout.is_universal_key(char):
             key_id = "universal_key"
+
+        if key_ids_found != 1 and key_id != "universal_key" and not auto_case:
+            print("No key_id found in " + self.name + " for character: '"
+                  + char + "' with modifier '" + str(modifier) + "'. Retrying with auto-case...")
+            return self.get_key_id(keyseq, modifier, auto_case=True)
 
         return key_id
 
