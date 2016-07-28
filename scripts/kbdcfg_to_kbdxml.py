@@ -1049,7 +1049,12 @@ class KeyboardLayout:
         def interpret_cpp_unicode_literal(literal):
             if not is_cpp_unicode_literal(literal):
                 if literal.startswith("'") and literal.endswith("'"):
-                    return literal[1:-1]
+                    char_without_apostroves = literal[1:-1]
+
+                    # If escaped character, remove first backslash
+                    if char_without_apostroves.startswith("\\"):
+                        char_without_apostroves = char_without_apostroves[1:]
+                    return char_without_apostroves
                 return literal
             return eval("\"" + literal[2:-1] + "\"")
 
@@ -1137,10 +1142,17 @@ class KeyboardLayout:
         if key_ids_found == 1:
             key_id = key_ids[0]
         elif key_ids_found > 1:
-            key_id = "TODO: Set key_id for " + char + "' for layout: '" + self.name + "'" + \
+            key_id = "TODO: Set key_id for '" + char + "' for layout: '" + self.name + "'" + \
                        " (please choose between one of these: " + str(key_ids) + ")"
         elif key_ids_found == 0:
             key_id = "TODO: No key_id found in " + self.name + " for character: '" + char + "'"
+            if char == "\"":
+                print("\n\nNOT FOUND")
+                for key in self._data:
+                    key_char = key.get_key_char(modifier)
+                    if key_char is None:
+                        continue
+                    print(key_char.char)
         else:
             key_id = "TODO: Set key_id for '" + char + "' for layout: '" + self.name + "'"
 
