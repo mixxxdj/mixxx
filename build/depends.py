@@ -756,6 +756,7 @@ class MixxxCore(Feature):
                    "controllers/keyboard/keyboardcontrollerpreset.cpp",
                    "controllers/keyboard/keyboardcontrollerpresetfilehandler.cpp",
                    "controllers/keyboard/keyboardshortcutsupdater.cpp",
+                   "controllers/keyboard/layoututils.cpp",
 
                    "main.cpp",
                    "mixxx.cpp",
