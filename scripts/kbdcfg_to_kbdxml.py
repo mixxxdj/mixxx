@@ -275,20 +275,20 @@ class App(Tk):
 
         <group name='[Master]'>
           <control action='crossfader_up'>
-            <keyseq lang='en_US' key_id='36'>h</keyseq>
+            <keyseq lang='en_US' scancode='36'>h</keyseq>
           </control>
 
           <control action='crossfader_down'>
-            <keyseq lang='en_US' key_id='35'>g</keyseq>
+            <keyseq lang='en_US' scancode='35'>g</keyseq>
           </control>
         </group>
 
         <group name='[Microphone]'>
           <control action='talkover'>
-            <keyseq lang='en_US' key_id='1'>`</keyseq>
+            <keyseq lang='en_US' scancode='1'>`</keyseq>
 
             <!-- In de_DE layout, '`' is a dead key, so it has to be overloaded -->
-            <keyseq lang='de_DE' key_id='45'><</keyseq>
+            <keyseq lang='de_DE' scancode='45'><</keyseq>
           </control>
         </group>
 
@@ -384,7 +384,7 @@ class App(Tk):
                     master_control_mod_int = KeyboardKey.MODIFIERS.SHIFT
                 else:
                     master_control_mod_int = KeyboardKey.MODIFIERS.NONE
-                master_control_key_id = master_mapping_layout.get_key_id(
+                master_control_scancode = master_mapping_layout.get_scancode(
                     master_control_keyseq,
                     master_control_mod_int
                 )[0]
@@ -393,18 +393,18 @@ class App(Tk):
                 master_keyseq_element = SubElement(control_element, 'keyseq')
                 master_keyseq_element.text = master_control_keyseq
 
-                # We don't need to add lang or key_id information, nor check for other mappings when the
+                # We don't need to add lang or scancode information, nor check for other mappings when the
                 # group is [KeyboardShortcuts]. This key sequences are translated in Mixxx using Qt::tr()
                 if group_name == "[KeyboardShortcuts]":
                     continue
 
                 master_keyseq_element.set('lang', master_mapping.get_locale_name())
-                master_keyseq_element.set('key_id', str(master_control_key_id))
+                master_keyseq_element.set('scancode', str(master_control_scancode))
 
                 # Check if there is a control with the same group and action
                 # in other mappings. If one is found, iterate over given layouts
                 # and translate master key to current layout. Then compare
-                # key_id and modifiers with master key info. If they are the
+                # scancode and modifiers with master key info. If they are the
                 # same, that means that the key sequence can be deduced and
                 # doesn't have to be explicitly set for the correspondent layout
                 for mapping in mappings:
@@ -436,7 +436,7 @@ class App(Tk):
                     # should be overloaded explicitly for this layout, because it
                     # can't be translated
                     if not reference_control:
-                        translated_key = reference_mapping_layout.find(master_control_key_id)
+                        translated_key = reference_mapping_layout.find(master_control_scancode)
                         translated_key_char = translated_key.get_key_char(master_control_mod_int)
                         if translated_key_char.dead_key:
                             if master_control_mod_int == KeyboardKey.MODIFIERS.SHIFT:
@@ -444,12 +444,12 @@ class App(Tk):
                             else:
                                 mod_attribute = "NONE"
 
-                            comment = Comment("TODO: The key with key_id '" + str(master_control_key_id) +
+                            comment = Comment("TODO: The key with scancode '" + str(master_control_scancode) +
                                               "' with modifier '" + mod_attribute + "' happens to be a " +
                                               "dead key on keyboard layout '" + reference_mapping_layout.name +
                                               "' and should therefore be overloaded. Please add: \"<keyseq lang='" +
-                                              reference_mapping_layout.name + "' key_id='" +
-                                              str(master_control_key_id) + "' modifier='" +
+                                              reference_mapping_layout.name + "' scancode='" +
+                                              str(master_control_scancode) + "' modifier='" +
                                               mod_attribute + "'> </keyseq>\" and fill it with a key sequence that " +
                                               "exists on this keyboard layout.")
                             control_element.insert(1, comment)
@@ -463,7 +463,7 @@ class App(Tk):
                         reference_control_mod_int = KeyboardKey.MODIFIERS.SHIFT
                     else:
                         reference_control_mod_int = KeyboardKey.MODIFIERS.NONE
-                    reference_control_key_id = reference_mapping_layout.get_key_id(
+                    reference_control_scancode = reference_mapping_layout.get_scancode(
                         reference_control_keyseq,
                         reference_control_mod_int
                     )[0]
@@ -477,14 +477,14 @@ class App(Tk):
                     #     set([x.upper() for x in reference_control_mods]) == \
                     #     set([x.upper() for x in master_control_mods])
 
-                    # Check if reference key_id is the same as master key_id
-                    key_ids_are_equal = reference_control_key_id == master_control_key_id
+                    # Check if reference scancode is the same as master scancode
+                    scancodes_are_equal = reference_control_scancode == master_control_scancode
 
                     # If translated master control wouldn't match reference keysequence
-                    if not key_ids_are_equal:
+                    if not scancodes_are_equal:
                         overloaded_keyseq_element = SubElement(control_element, 'keyseq')
                         overloaded_keyseq_element.set('lang', mapping.get_locale_name())
-                        overloaded_keyseq_element.set('key_id', str(reference_control_key_id))
+                        overloaded_keyseq_element.set('scancode', str(reference_control_scancode))
                         overloaded_keyseq_element.text = reference_control_keyseq
 
         return root_element
@@ -915,7 +915,7 @@ class KeyboardKey:
     to this keyboard key, also for different modifiers
 
     Attributes:
-        key_id: positional code of key, that is the same for each keyboard layout
+        scancode: positional code of key, that is the same for each keyboard layout
         _key_chars: characters bound to this key for different keyboard layouts
     """
 
@@ -945,8 +945,8 @@ class KeyboardKey:
             self.char = char
             self.dead_key = dead_key
 
-    def __init__(self, key_id):
-        self.key_id = key_id
+    def __init__(self, scancode):
+        self.scancode = scancode
 
         # A list containing KeyChar objects. For example, for the a key, it will contain:
         #   - One KeyChar with modifier == NONE and char = 'a'
@@ -964,7 +964,7 @@ class KeyboardKey:
                 return key_char
 
         if verbose:
-            print("Keyboard key with key_id '" + str(self.key_id) +
+            print("Keyboard key with scancode '" + str(self.scancode) +
                   "' has not a key char set with modifier: " + str(modifier))
         return None
 
@@ -1089,17 +1089,17 @@ class KeyboardLayout:
             first_key_char = interpret_cpp_unicode_literal(first_key_char_list[0])
             second_key_char = interpret_cpp_unicode_literal(second_key_char_list[0])
 
-            key_id = KeyboardLayout.layout_index_to_key_id(i_key)
+            scancode = KeyboardLayout.layout_index_to_scancode(i_key)
 
             self.update_key(
-                key_id=int(key_id),
+                scancode=int(scancode),
                 modifier=KeyboardKey.MODIFIERS.NONE,
                 char=first_key_char,
                 dead_key=is_dead(elements[0])
             )
 
             self.update_key(
-                key_id=int(key_id),
+                scancode=int(scancode),
                 modifier=KeyboardKey.MODIFIERS.SHIFT,
                 char=second_key_char,
                 dead_key=is_dead(elements[1])
@@ -1107,29 +1107,29 @@ class KeyboardLayout:
 
             i_key += 1
 
-    def find(self, key_id):
+    def find(self, scancode):
         for key in self._data:
-            if key.key_id == key_id:
+            if key.scancode == scancode:
                 return key
         return None
 
-    def update_key(self, key_id, modifier, char, dead_key=False, verbose=False):
-        key = self.find(key_id)
+    def update_key(self, scancode, modifier, char, dead_key=False, verbose=False):
+        key = self.find(scancode)
         if not key:
             if verbose:
-                print("Can't update key with key_id '" + str(key_id) +
-                      "'. Key_id doesnt't exist. Creating new one...")
-            key = KeyboardKey(key_id)
+                print("Can't update key with scancode '" + str(scancode) +
+                      "'. scancode doesnt't exist. Creating new one...")
+            key = KeyboardKey(scancode)
             self._data.append(key)
         key.set_key_char(modifier=modifier, char=char, dead_key=dead_key)
 
-    def get_key_ids(self):
-        key_ids = set()
+    def get_scancodes(self):
+        scancodes = set()
         for key in self._data:
-            key_ids.add(key.key_id)
-        return key_ids
+            scancodes.add(key.scancode)
+        return scancodes
 
-    def get_key_id(self, keyseq, modifier, auto_case=False):
+    def get_scancode(self, keyseq, modifier, auto_case=False):
         split_keyseq = KeyboardKey.split_keysequence(keyseq)
         char = split_keyseq[-1] if split_keyseq else ""
 
@@ -1141,38 +1141,38 @@ class KeyboardLayout:
         if auto_case:
             char = char.upper() if modifier == KeyboardKey.MODIFIERS.SHIFT else char.lower()
 
-        key_ids = []
+        scancodes = []
         for key in self._data:
             key_char = key.get_key_char(modifier)
             if key_char is None:
                 continue
             if key_char.char == char:
-                key_ids.append(key.key_id)
+                scancodes.append(key.scancode)
 
-        key_ids_found = len(key_ids)
-        if key_ids_found == 1:
-            key_id = key_ids[0]
-        elif key_ids_found > 1:
-            key_id = "TODO: Set key_id for '" + char + "' for layout: '" + self.name + "'" + \
-                       " (please choose between one of these: " + str(key_ids) + ")"
-        elif key_ids_found == 0:
-            key_id = "TODO: No key_id found in " + self.name + " for character: '" + char + "'"
+        scancodes_found = len(scancodes)
+        if scancodes_found == 1:
+            scancode = scancodes[0]
+        elif scancodes_found > 1:
+            scancode = "TODO: Set scancode for '" + char + "' for layout: '" + self.name + "'" + \
+                       " (please choose between one of these: " + str(scancodes) + ")"
+        elif scancodes_found == 0:
+            scancode = "TODO: No scancode found in " + self.name + " for character: '" + char + "'"
         else:
-            key_id = "TODO: Set key_id for '" + char + "' for layout: '" + self.name + "'"
+            scancode = "TODO: Set scancode for '" + char + "' for layout: '" + self.name + "'"
 
         # Check if this key is universal (for example: F-keys or Space)
         if KeyboardLayout.is_universal_key(char):
-            key_id = "universal_key"
+            scancode = "universal_key"
 
-        if key_ids_found != 1 and key_id != "universal_key" and not auto_case:
-            print("No key_id found in " + self.name + " for character: '" +
+        if scancodes_found != 1 and scancode != "universal_key" and not auto_case:
+            print("No scancode found in " + self.name + " for character: '" +
                   char + "' with modifier '" + str(modifier) + "'. Retrying with auto-case...")
-            result = self.get_key_id(keyseq, modifier, auto_case=True)
+            result = self.get_scancode(keyseq, modifier, auto_case=True)
             if type(result[0]).__name__ == 'int':
                 print("Yes! Found one using auto-case for character '" + result[1] + "'")
             return result
 
-        return key_id, char
+        return scancode, char
 
     @staticmethod
     def is_universal_key(key):
@@ -1195,14 +1195,18 @@ class KeyboardLayout:
             return False
 
     LAYOUT_SCANCODES = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-        31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
-        45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55
+        0x29, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, # Digits row
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,       # Upper row
+        0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x2b,       # Home row
+        0x5e, 0x0c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35                # Lower row
+
+        # Note: Although the <LSGT> key is not defined in the scancode set 2,
+        # it is added for pc105 compatibility. It's given scancode 0x5e (94)
     ]
 
     @staticmethod
-    def layout_index_to_key_id(i):
+    def layout_index_to_scancode(i):
+        print("INDEX: " + str(i))
         return KeyboardLayout.LAYOUT_SCANCODES[i]
 
 
