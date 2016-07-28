@@ -50,7 +50,7 @@ class EngineBufferScale : public QObject {
     // Set the desired output sample rate.
     virtual void setSampleRate(SINT iSampleRate);
 
-    const Mixxx::AudioSignal& getAudioSignal() const {
+    const mixxx::AudioSignal& getAudioSignal() const {
         return m_audioSignal;
     }
 
@@ -68,7 +68,7 @@ class EngineBufferScale : public QObject {
             SINT iOutputBufferSize) = 0;
 
   private:
-    Mixxx::AudioSignal m_audioSignal;
+    mixxx::AudioSignal m_audioSignal;
 
   protected:
     double m_dBaseRate;
