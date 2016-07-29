@@ -1,4 +1,7 @@
-#include "layoututils.h"
+#include <QtCore>
+
+#include "controllers/keyboard/layoututils.h"
+#include "controllers/keyboard/layouts.h"
 
 namespace layoutUtils {
     static const unsigned char LAYOUT_SCANCODES[48] = {
@@ -22,5 +25,26 @@ namespace layoutUtils {
             }
         }
         return (unsigned char) -1;
+    }
+
+    KeyboardLayoutPointer getLayout(const QString layoutName) {
+        if (layoutName == "en_US") return en_US;
+        if (layoutName == "en_GB") return en_GB;
+        if (layoutName == "es_ES") return es_ES;
+        if (layoutName == "es_MX") return es_MX;
+        if (layoutName == "fr_FR") return fr_FR;
+        if (layoutName == "fr_CH") return fr_CH;
+        if (layoutName == "de_DE") return de_DE;
+        if (layoutName == "de_CH") return de_CH;
+        if (layoutName == "it_IT") return it_IT;
+        if (layoutName == "ru_RU") return ru_RU;
+        if (layoutName == "nl_NL") return nl_NL;
+        if (layoutName == "el_GR") return el_GR;
+        if (layoutName == "da_DK") return da_DK;
+        if (layoutName == "fi_FI") return fi_FI;
+        if (layoutName == "pt_PT") return pt_PT;
+        else {
+            return nullptr;
+        }
     }
 }
