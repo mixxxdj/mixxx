@@ -2,6 +2,10 @@
 
 using namespace layoutUtils;
 
+// TODO(Tomasito) Find a way of getting rid of [-Wmissing-field-initializers]s
+//                (KbdKeyChar structs which are not dead keys are not initialized
+//                without explicitly setting dead key to false)
+
 // English (US)
 static const KbdKeyChar en_US[48][2] = {
     // Digits row

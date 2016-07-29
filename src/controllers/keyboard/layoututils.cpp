@@ -14,11 +14,11 @@ namespace layoutUtils {
             // it is added for pc105 compatibility. It's given scancode 0x5e (94)
     };
 
-    unsigned char layoutIndexToScancode(unsigned char layoutIndex) {
+    unsigned char layoutIndexToScancode(const unsigned char layoutIndex) {
         return LAYOUT_SCANCODES[layoutIndex];
     };
 
-    unsigned char scancodeToLayoutIndex(unsigned char scancode) {
+    unsigned char scancodeToLayoutIndex(const unsigned char scancode) {
         for (unsigned char i = 0; i < 48; i++) {
             if (LAYOUT_SCANCODES[i] == scancode) {
                 return i;
@@ -47,4 +47,6 @@ namespace layoutUtils {
             return nullptr;
         }
     }
+
+
 }
