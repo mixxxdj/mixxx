@@ -49,9 +49,9 @@ namespace layoutUtils {
         }
     }
 
-    KbdKeyChar getKbdKeyChar(KeyboardLayoutPointer pLayout,
-                  unsigned char scancode,
-                  Qt::KeyboardModifier modifier) {
+    const KbdKeyChar * getKbdKeyChar(KeyboardLayoutPointer pLayout,
+                                     unsigned char scancode,
+                                     Qt::KeyboardModifier modifier) {
 
         // Keyboard layouts only support no modifier and shift modifier
         if (!(modifier & Qt::NoModifier ||
@@ -66,6 +66,6 @@ namespace layoutUtils {
             pKeyChar++;
         }
 
-        return *pKeyChar;
+        return pKeyChar;
     }
 }
