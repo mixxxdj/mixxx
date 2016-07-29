@@ -1033,7 +1033,8 @@ class KeyboardLayout:
         # For example 't' or 'T'
         single_element_pattern = re.compile("{(.*?)}")
 
-        comma_not_surrounded_by_quotes = re.compile(',(?=(?:[^"]*"[^"]*")*[^"]*$)')
+        # Match only commas that are not surrounded by single quotes
+        comma_not_surrounded_by_quotes = re.compile(',(?=(?:[^\']*\'[^"]*\')*[^\']*$)')
 
         unicode_literal_pattern = re.compile("(u'\\\)(u)(\d|[a-f]){4}")
 
