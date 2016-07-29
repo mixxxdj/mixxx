@@ -14,6 +14,9 @@ namespace layoutUtils {
     unsigned char layoutIndexToScancode(const unsigned char layoutIndex);
     unsigned char scancodeToLayoutIndex(const unsigned char scancode);
     KeyboardLayoutPointer getLayout(const QString layoutName);
+    KbdKeyChar getKbdKeyChar(KeyboardLayoutPointer pLayout,
+                             unsigned char scancode,
+                             Qt::KeyboardModifier modifier);
 }
 
 

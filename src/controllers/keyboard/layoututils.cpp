@@ -1,4 +1,5 @@
 #include <QtCore>
+#include <QtGui>
 
 #include "controllers/keyboard/layoututils.h"
 #include "controllers/keyboard/layouts.h"
@@ -48,5 +49,23 @@ namespace layoutUtils {
         }
     }
 
+    KbdKeyChar getKbdKeyChar(KeyboardLayoutPointer pLayout,
+                  unsigned char scancode,
+                  Qt::KeyboardModifier modifier) {
 
+        // Keyboard layouts only support no modifier and shift modifier
+        if (!(modifier & Qt::NoModifier ||
+                modifier & Qt::ShiftModifier)) {
+            return {};
+        }
+
+        unsigned char layoutIndex = scancodeToLayoutIndex(scancode);
+        const KbdKeyChar* pKeyChar = pLayout[layoutIndex];
+
+        if (modifier & Qt::ShiftModifier) {
+            pKeyChar++;
+        }
+
+        return *pKeyChar;
+    }
 }
