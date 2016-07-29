@@ -156,11 +156,13 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         if (maxLow[0] && maxLow[1]) {
             switch (m_alignment) {
                 case Qt::AlignBottom :
+                case Qt::AlignRight :
                     m_lowLines[actualLowLineNumber].setLine(
                         x, breadth,
                         x, breadth - (int)(heightFactor*lowGain*(float)math_max(maxLow[0],maxLow[1])));
                     break;
                 case Qt::AlignTop :
+                case Qt::AlignLeft :
                     m_lowLines[actualLowLineNumber].setLine(
                         x, 0,
                         x, (int)(heightFactor*lowGain*(float)math_max(maxLow[0],maxLow[1])));
@@ -176,11 +178,13 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         if (maxMid[0] && maxMid[1]) {
             switch (m_alignment) {
                 case Qt::AlignBottom :
+                case Qt::AlignRight :
                     m_midLines[actualMidLineNumber].setLine(
                         x, breadth,
                         x, breadth - (int)(heightFactor*midGain*(float)math_max(maxMid[0],maxMid[1])));
                     break;
                 case Qt::AlignTop :
+                case Qt::AlignLeft :
                     m_midLines[actualMidLineNumber].setLine(
                         x, 0,
                         x, (int)(heightFactor*midGain*(float)math_max(maxMid[0],maxMid[1])));
@@ -196,11 +200,13 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         if (maxHigh[0] && maxHigh[1]) {
             switch (m_alignment) {
                 case Qt::AlignBottom :
+                case Qt::AlignRight :
                     m_highLines[actualHighLineNumber].setLine(
                         x, breadth,
                         x, breadth - (int)(heightFactor*highGain*(float)math_max(maxHigh[0],maxHigh[1])));
                     break;
                 case Qt::AlignTop :
+                case Qt::AlignLeft :
                     m_highLines[actualHighLineNumber].setLine(
                         x, 0,
                         x, (int)(heightFactor*highGain*(float)math_max(maxHigh[0],maxHigh[1])));

@@ -158,11 +158,13 @@ void WaveformRendererHSV::draw(QPainter* painter,
             painter->setPen(color);
             switch (m_alignment) {
                 case Qt::AlignBottom :
+                case Qt::AlignRight :
                     painter->drawLine(
                         x, breadth,
                         x, breadth - (int)(heightFactor * (float)math_max(maxAll[0],maxAll[1])));
                     break;
                 case Qt::AlignTop :
+                case Qt::AlignLeft :
                     painter->drawLine(
                         x, 0,
                         x, (int)(heightFactor * (float)math_max(maxAll[0],maxAll[1])));

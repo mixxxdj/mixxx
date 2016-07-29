@@ -146,11 +146,13 @@ void WaveformRendererRGB::draw(QPainter* painter,
             painter->setPen(color);
             switch (m_alignment) {
                 case Qt::AlignBottom :
+                case Qt::AlignRight :
                     painter->drawLine(
                         x, breadth,
                         x, breadth - (int)(heightFactor * (float)math_max(maxAllA, maxAllB)));
                     break;
                 case Qt::AlignTop :
+                case Qt::AlignLeft :
                     painter->drawLine(
                         x, 0,
                         x, (int)(heightFactor * (float)math_max(maxAllA, maxAllB)));

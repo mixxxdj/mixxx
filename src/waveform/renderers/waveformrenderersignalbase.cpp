@@ -94,20 +94,30 @@ bool WaveformRendererSignalBase::init() {
 
 void WaveformRendererSignalBase::setup(const QDomNode& node,
                                        const SkinContext& context) {
-    QString alignString = context.selectString(node, "Align").toLower();
-    if (alignString == "bottom") {
-        m_alignment = Qt::AlignBottom;
-    } else if (alignString == "top") {
-        m_alignment = Qt::AlignTop;
-    } else {
-        m_alignment = Qt::AlignCenter;
-    }
-
     QString orientationString = context.selectString(node, "Orientation").toLower();
     if (orientationString == "vertical") {
         m_orientation = Qt::Vertical;
     } else {
         m_orientation = Qt::Horizontal;
+    }
+
+    QString alignString = context.selectString(node, "Align").toLower();
+    if (m_orientation == Qt::Horizontal) {
+        if (alignString == "bottom") {
+            m_alignment = Qt::AlignBottom;
+        } else if (alignString == "top") {
+            m_alignment = Qt::AlignTop;
+        } else {
+            m_alignment = Qt::AlignCenter;
+        }
+    } else {
+        if (alignString == "left") {
+            m_alignment = Qt::AlignLeft;
+        } else if (alignString == "right") {
+            m_alignment = Qt::AlignRight;
+        } else {
+            m_alignment = Qt::AlignCenter;
+        }
     }
 
     m_pColors = m_waveformRenderer->getWaveformSignalColors();

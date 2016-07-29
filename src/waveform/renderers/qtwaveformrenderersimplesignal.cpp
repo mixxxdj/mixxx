@@ -72,10 +72,10 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     getGains(&allGain, NULL, NULL, NULL);
 
     double heightGain = allGain * (double)m_waveformRenderer->getBreadth()/255.0;
-    if (m_alignment == Qt::AlignTop) {
+    if (m_alignment == Qt::AlignTop || m_alignment == Qt::AlignRight) {
         painter->translate(0.0, 0.0);
         painter->scale(1.0, heightGain);
-    } else if (m_alignment == Qt::AlignBottom) {
+    } else if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignLeft) {
         painter->translate(0.0, m_waveformRenderer->getBreadth());
         painter->scale(1.0, heightGain);
     } else {
@@ -113,8 +113,8 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         int delta = 1;
         double direction = 1.0;
 
-        //Reverse display for merged bottom channel
-        if (m_alignment == Qt::AlignBottom)
+        // Reverse display for merged bottom/left channel
+        if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignLeft)
             direction = -1.0;
 
         if (channel == 1) {
