@@ -720,7 +720,7 @@ ReloopBeatmix24.FX6Off = function(channel, control, value, status, group) {
     // Nothing in single-effect mode
 };
 
-ReloopBeatmix24.EncoderTurn = function(channel, control, value, status, group) {
+ReloopBeatmix24.FxEncoderTurn = function(channel, control, value, status, group) {
     var newValue = value - 0x40;
     if (FxMode == 1) {
         newValue = engine.getValue(group, "mix") + newValue * 0.05;
@@ -743,7 +743,7 @@ ReloopBeatmix24.EncoderTurn = function(channel, control, value, status, group) {
     }
 };
 
-ReloopBeatmix24.ShiftEncoderTurn = function(channel, control, value, status,
+ReloopBeatmix24.ShiftFxEncoderTurn = function(channel, control, value, status,
     group) {
     var newValue = value - 0x40;
     if (FxMode == 1) {
