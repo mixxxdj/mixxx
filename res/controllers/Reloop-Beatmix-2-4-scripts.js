@@ -589,6 +589,8 @@ ReloopBeatmix24.FX3Turn = function(channel, control, value, status, group) {
     // Nothing in multi-effect mode
 };
 
+// FX4-6 refer to FX 1-3 effect knobs used with the shift key
+
 ReloopBeatmix24.FX4Turn = function(channel, control, value, status, group) {
     if (FxMode == 1) {
         engine.setParameter(group, "parameter4", script.absoluteLin(value,
