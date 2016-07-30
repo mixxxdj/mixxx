@@ -41,7 +41,6 @@
 ////////////////////////////////////////////////////////////////////////
 // Global variables and declarations.
 // ========================================================
-
 var ReloopBeatmix24 = {};
 
 var RateRangeArray = [0.08, 0.10, 0.12, 0.16];
@@ -223,10 +222,11 @@ ReloopBeatmix24.LoopSet = function(channel, control, value, status, group) {
 };
 
 ReloopBeatmix24.loopDefined = function(value, group, control) {
-    var channelRegEx = /\[Channel(\d+)\]/
+    var channelRegEx = /\[Channel(\d+)\]/;
     var channelChan = parseInt(channelRegEx.exec(group))[1];
     if (channelChan <= 4) {
-        midi.sendShortMsg(0x90 + channelChan, 0x44, value < 0 ? OFF : VIOLET);
+        midi.sendShortMsg(0x90 + channelChan, 0x44, value < 0 ? OFF :
+            VIOLET);
     }
 };
 
@@ -359,25 +359,30 @@ ReloopBeatmix24.deckloaded = function(value, group, control) {
     var i;
     switch (group.substr(1, 7)) {
         case "Channel":
-            var channelRegEx = /\[Channel(\d+)\]/
+            var channelRegEx = /\[Channel(\d+)\]/;
             var channelChan = parseInt(channelRegEx.exec(group))[1];
             if (channelChan <= 4) {
-                midi.sendShortMsg(0x90 + channelChan, 0x50, value ? ON : OFF);
+                midi.sendShortMsg(0x90 + channelChan, 0x50, value ? ON :
+                    OFF);
             }
             break;
         case "Sampler":
-            var samplerRegEx = /\[Sampler(\d+)\]/
+            var samplerRegEx = /\[Sampler(\d+)\]/;
             var samplerChan = parseInt(samplerRegEx.exec(group))[1];
             if (samplerChan <= 4) { // We only handle 4 samplers (1 per pad)
                 for (i = 0x91; i <= 0x94; i++) {
                     // PAD1 Mode A
-                    midi.sendShortMsg(i, 0x08 - 1 + samplerChan, value ? RED : OFF);
+                    midi.sendShortMsg(i, 0x08 - 1 + samplerChan, value ?
+                        RED : OFF);
                     // SHIFT+PAD1 Mode A
-                    midi.sendShortMsg(i, 0x48 - 1 + samplerChan, value ? RED : OFF);
+                    midi.sendShortMsg(i, 0x48 - 1 + samplerChan, value ?
+                        RED : OFF);
                     // PAD5 Mode A+B
-                    midi.sendShortMsg(i, 0x14 - 1 + samplerChan, value ? RED : OFF);
+                    midi.sendShortMsg(i, 0x14 - 1 + samplerChan, value ?
+                        RED : OFF);
                     // SHIFT+PAD5 Mode A+B
-                    midi.sendShortMsg(i, 0x1C - 1 + samplerChan, value ? RED : OFF);
+                    midi.sendShortMsg(i, 0x1C - 1 + samplerChan, value ?
+                        RED : OFF);
                 }
             }
             break;
@@ -505,7 +510,8 @@ ReloopBeatmix24.FxModeLedFlash = function(step, mode) {
             midi.sendShortMsg(i, 0x26 - mode, ledValue);
             midi.sendShortMsg(i, 0x26 + SHIFT - mode, ledValue);
         }
-        engine.beginTimer(150, "ReloopBeatmix24.FxModeLedFlash(" + (step + 1) +
+        engine.beginTimer(150, "ReloopBeatmix24.FxModeLedFlash(" + (step +
+                1) +
             ", " + mode + ")", true);
     }
 };
@@ -575,36 +581,21 @@ ReloopBeatmix24.ActivateFx2 = function(channel, control, value, status, group) {
     }
 };
 
-ReloopBeatmix24.FX1Turn = function(channel, control, value, status, group) {
+ReloopBeatmix24.FxKnobTurn = function(channel, control, value, status, group) {
     if (FxMode == 1) {
-        engine.setParameter(group, "parameter1", script.absoluteLin(value,
-            0, 1));
+        var parameter = control;
+        engine.setParameter(group, "parameter" + parameter.toString(),
+            script.absoluteLin(value, 0, 1));
     }
     // Nothing in multi-effect mode
 };
 
-ReloopBeatmix24.FX2Turn = function(channel, control, value, status, group) {
+ReloopBeatmix24.ShiftFxKnobTurn = function(channel, control, value, status,
+    group) {
     if (FxMode == 1) {
-        engine.setParameter(group, "parameter2", script.absoluteLin(value,
-            0, 1));
-    }
-    // Nothing in multi-effect mode
-};
-
-ReloopBeatmix24.FX3Turn = function(channel, control, value, status, group) {
-    if (FxMode == 1) {
-        engine.setParameter(group, "parameter3", script.absoluteLin(value,
-            0, 1));
-    }
-    // Nothing in multi-effect mode
-};
-
-// FX4-6 refer to FX 1-3 effect knobs used with the shift key
-
-ReloopBeatmix24.FX4Turn = function(channel, control, value, status, group) {
-    if (FxMode == 1) {
-        engine.setParameter(group, "parameter4", script.absoluteLin(value,
-            0, 1));
+        var parameter = 3 + control - SHIFT;
+        engine.setParameter(group, "parameter" + parameter.toString(),
+            script.absoluteLin(value, 0, 1));
     } else {
         var effectUnit = parseInt(group.substr(23, 1), 10);
         var storeIndex = "FX4U" + effectUnit.toString();
@@ -624,67 +615,7 @@ ReloopBeatmix24.FX4Turn = function(channel, control, value, status, group) {
     }
 };
 
-ReloopBeatmix24.FX5Turn = function(channel, control, value, status, group) {
-    if (FxMode == 1) {
-        engine.setParameter(group, "parameter5", script.absoluteLin(value,
-            0, 1));
-    } else {
-        var effectUnit = parseInt(group.substr(23, 1), 10);
-        var storeIndex = "FX5U" + effectUnit.toString();
-        if (storeIndex in previousValue) {
-            if (value - previousValue[storeIndex] > 5) {
-                engine.setValue("[EffectRack1_EffectUnit" + effectUnit +
-                    "_Effect2]", "next_effect", 1);
-                previousValue[storeIndex] = value;
-            } else if (value - previousValue[storeIndex] < -5) {
-                engine.setValue("[EffectRack1_EffectUnit" + effectUnit +
-                    "_Effect2]", "prev_effect", 1);
-                previousValue[storeIndex] = value;
-            }
-        } else {
-            previousValue[storeIndex] = value;
-        }
-    }
-};
-
-ReloopBeatmix24.FX6Turn = function(channel, control, value, status, group) {
-    if (FxMode == 1) {
-        engine.setParameter(group, "parameter6", script.absoluteLin(value,
-            0, 1));
-    } else {
-        var effectUnit = parseInt(group.substr(23, 1), 10);
-        var storeIndex = "FX6U" + effectUnit.toString();
-        if (storeIndex in previousValue) {
-            if (value - previousValue[storeIndex] > 5) {
-                engine.setValue("[EffectRack1_EffectUnit" + effectUnit +
-                    "_Effect3]", "next_effect", 1);
-                previousValue[storeIndex] = value;
-            } else if (value - previousValue[storeIndex] < -5) {
-                engine.setValue("[EffectRack1_EffectUnit" + effectUnit +
-                    "_Effect3]", "prev_effect", 1);
-                previousValue[storeIndex] = value;
-            }
-        } else {
-            previousValue[storeIndex] = value;
-        }
-    }
-};
-
-ReloopBeatmix24.FX1Off = function(channel, control, value, status, group) {
-    if (FxMode != 1) {
-        engine.setValue(group, "enabled", value ? 1 : 0);
-    }
-    // Nothing in single-effect mode
-};
-
-ReloopBeatmix24.FX2Off = function(channel, control, value, status, group) {
-    if (FxMode != 1) {
-        engine.setValue(group, "enabled", value ? 1 : 0);
-    }
-    // Nothing in single-effect mode
-};
-
-ReloopBeatmix24.FX3Off = function(channel, control, value, status, group) {
+ReloopBeatmix24.FxOff = function(channel, control, value, status, group) {
     if (FxMode != 1) {
         engine.setValue(group, "enabled", value ? 1 : 0);
     }
@@ -695,31 +626,7 @@ ReloopBeatmix24.EffectClearTimerCallBack = function(group) {
     engine.setValue(group, "clear", 0);
 };
 
-ReloopBeatmix24.FX4Off = function(channel, control, value, status, group) {
-    if (FxMode != 1) {
-        if (value === UP) {
-            engine.setValue(group, "clear", 1);
-            engine.beginTimer(100,
-                "ReloopBeatmix24.EffectClearTimerCallBack(\"" + group +
-                "\")", true);
-        }
-    }
-    // Nothing in single-effect mode
-};
-
-ReloopBeatmix24.FX5Off = function(channel, control, value, status, group) {
-    if (FxMode != 1) {
-        if (value === UP) {
-            engine.setValue(group, "clear", 1);
-            engine.beginTimer(100,
-                "ReloopBeatmix24.EffectClearTimerCallBack(\"" + group +
-                "\")", true);
-        }
-    }
-    // Nothing in single-effect mode
-};
-
-ReloopBeatmix24.FX6Off = function(channel, control, value, status, group) {
+ReloopBeatmix24.ShiftFxOff = function(channel, control, value, status, group) {
     if (FxMode != 1) {
         if (value === UP) {
             engine.setValue(group, "clear", 1);
@@ -771,14 +678,14 @@ ReloopBeatmix24.ShiftFxEncoderTurn = function(channel, control, value, status,
     }
 };
 
-ReloopBeatmix24.EncoderPush = function(channel, control, value, status, group) {
+ReloopBeatmix24.FxEncoderPush = function(channel, control, value, status, group) {
     if (value) {
         engine.setValue(group, "enabled",
             engine.getValue(group, "enabled") ? 0 : 1);
     }
 };
 
-ReloopBeatmix24.ShiftEncoderPush = function(channel, control, value, status,
+ReloopBeatmix24.ShiftFxEncoderPush = function(channel, control, value, status,
     group) {
     engine.setValue(group, "clear", value ? 1 : 0);
 };
