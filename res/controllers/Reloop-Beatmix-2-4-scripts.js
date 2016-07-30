@@ -41,9 +41,8 @@
 ////////////////////////////////////////////////////////////////////////
 // Global variables and declarations.
 // ========================================================
-function ReloopBeatmix24() {}
 
-ReloopBeatmix24(); // Very important ! Initializes the declared function, yep
+var ReloopBeatmix24 = {};
 
 var RateRangeArray = [0.08, 0.10, 0.12, 0.16];
 
