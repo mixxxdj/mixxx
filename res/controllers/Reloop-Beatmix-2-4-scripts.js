@@ -223,8 +223,11 @@ ReloopBeatmix24.LoopSet = function(channel, control, value, status, group) {
 };
 
 ReloopBeatmix24.loopDefined = function(value, group, control) {
-    var deck = parseInt(group.substr(8, 1), 10);
-    midi.sendShortMsg(0x90 + deck, 0x44, value < 0 ? OFF : VIOLET);
+    var channelRegEx = /\[Channel(\d+)\]/
+    var channelChan = parseInt(channelRegEx.exec(group))[1];
+    if (channelChan <= 4) {
+        midi.sendShortMsg(0x90 + channelChan, 0x44, value < 0 ? OFF : VIOLET);
+    }
 };
 
 ReloopBeatmix24.traxSelect = function(value, step) {
@@ -354,21 +357,28 @@ ReloopBeatmix24.WheelTurn = function(channel, control, value, status, group) {
 
 ReloopBeatmix24.deckloaded = function(value, group, control) {
     var i;
-    var chan = parseInt(group.substr(8, 1), 10);
     switch (group.substr(1, 7)) {
         case "Channel":
-            midi.sendShortMsg(0x90 + chan, 0x50, value ? ON : OFF);
+            var channelRegEx = /\[Channel(\d+)\]/
+            var channelChan = parseInt(channelRegEx.exec(group))[1];
+            if (channelChan <= 4) {
+                midi.sendShortMsg(0x90 + channelChan, 0x50, value ? ON : OFF);
+            }
             break;
         case "Sampler":
-            for (i = 0x91; i <= 0x94; i++) {
-                // PAD1 Mode A
-                midi.sendShortMsg(i, 0x08 - 1 + chan, value ? RED : OFF);
-                // SHIFT+PAD1 Mode A
-                midi.sendShortMsg(i, 0x48 - 1 + chan, value ? RED : OFF);
-                // PAD5 Mode A+B
-                midi.sendShortMsg(i, 0x14 - 1 + chan, value ? RED : OFF);
-                // SHIFT+PAD5 Mode A+B
-                midi.sendShortMsg(i, 0x1C - 1 + chan, value ? RED : OFF);
+            var samplerRegEx = /\[Sampler(\d+)\]/
+            var samplerChan = parseInt(samplerRegEx.exec(group))[1];
+            if (samplerChan <= 4) { // We only handle 4 samplers (1 per pad)
+                for (i = 0x91; i <= 0x94; i++) {
+                    // PAD1 Mode A
+                    midi.sendShortMsg(i, 0x08 - 1 + samplerChan, value ? RED : OFF);
+                    // SHIFT+PAD1 Mode A
+                    midi.sendShortMsg(i, 0x48 - 1 + samplerChan, value ? RED : OFF);
+                    // PAD5 Mode A+B
+                    midi.sendShortMsg(i, 0x14 - 1 + samplerChan, value ? RED : OFF);
+                    // SHIFT+PAD5 Mode A+B
+                    midi.sendShortMsg(i, 0x1C - 1 + samplerChan, value ? RED : OFF);
+                }
             }
             break;
     }
