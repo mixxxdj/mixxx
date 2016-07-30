@@ -177,7 +177,7 @@ ReloopBeatmix24.GetNextRange = function(OV) {
 };
 
 ReloopBeatmix24.Range = function(channel, control, value, status, group) {
-    if (value == DOWN) {
+    if (value === DOWN) {
         var oldvalue = engine.getValue(group, "rateRange");
         engine.setValue(group, "rateRange", ReloopBeatmix24.GetNextRange(
             oldvalue));
@@ -186,14 +186,14 @@ ReloopBeatmix24.Range = function(channel, control, value, status, group) {
 };
 
 ReloopBeatmix24.MasterSync = function(channel, control, value, status, group) {
-    if (value == DOWN) {
+    if (value === DOWN) {
         engine.setValue(group, "sync_enabled",
             engine.getValue(group, "sync_enabled") ? 0 : 1);
     }
 };
 
 ReloopBeatmix24.LoadButton = function(channel, control, value, status, group) {
-    if (value == DOWN) {
+    if (value === DOWN) {
         loadButtonLongPressed[group] = false;
         loadButtonTimers[group] = engine.beginTimer(1000,
             "ReloopBeatmix24.LoadButtonEject(\"" + group + "\")", true);
@@ -216,7 +216,7 @@ ReloopBeatmix24.LoadButtonEject = function(group) {
 };
 
 ReloopBeatmix24.LoopSet = function(channel, control, value, status, group) {
-    if (value == DOWN) {
+    if (value === DOWN) {
         engine.setValue(group, "loop_in", 1);
     } else {
         engine.setValue(group, "loop_out", 1);
@@ -275,7 +275,7 @@ ReloopBeatmix24.TraxPush = function(channel, control, value, status, group) {
             traxMode = 3;
             break;
         case 3: // Preview mode
-            if (value == DOWN) {
+            if (value === DOWN) {
                 engine.setValue("[PreviewDeck1]", "play", engine.getValue(
                     "[PreviewDeck1]", "play") ? 0 : 1);
             }
@@ -288,7 +288,7 @@ ReloopBeatmix24.ShiftTraxPush = function(channel, control, value, status, group)
 };
 
 ReloopBeatmix24.BackButton = function(channel, control, value, status, group) {
-    if (value == DOWN) {
+    if (value === DOWN) {
         switch (traxMode) {
             case 1: // Playlist mode
                 traxMode = 2; // Switch to track mode
@@ -305,7 +305,7 @@ ReloopBeatmix24.BackButton = function(channel, control, value, status, group) {
 
 ReloopBeatmix24.SamplerLoadEject = function(channel, control, value, status,
     group) {
-    if (value == DOWN) {
+    if (value === DOWN) {
         if (engine.getValue(group, "track_samples")) { // Loaded
             engine.setValue(group, "eject", 1);
         } else { // Empty
@@ -332,7 +332,7 @@ ReloopBeatmix24.PitchSlider = function(channel, control, value, status, group) {
 
 ReloopBeatmix24.WheelTouch = function(channel, control, value, status, group) {
     var deck = parseInt(group.substr(8, 1), 10);
-    if (value == DOWN) {
+    if (value === DOWN) {
         var alpha = 1.0 / 8;
         var beta = alpha / 32;
         engine.scratchEnable(deck, 1600, 33 + 1 / 3, alpha, beta);
@@ -515,7 +515,7 @@ ReloopBeatmix24.FxModeCallback = function(group, mode) {
 };
 
 ReloopBeatmix24.ActivateFx1 = function(channel, control, value, status, group) {
-    if (value == DOWN) {
+    if (value === DOWN) {
         if (FxModeTimers[group]) {
             engine.stopTimer(FxModeTimers[group]);
             delete FxModeTimers[group];
@@ -541,7 +541,7 @@ ReloopBeatmix24.ActivateFx1 = function(channel, control, value, status, group) {
 };
 
 ReloopBeatmix24.ActivateFx2 = function(channel, control, value, status, group) {
-    if (value == DOWN) {
+    if (value === DOWN) {
         if (FxModeTimers[group]) {
             engine.stopTimer(FxModeTimers[group]);
             delete FxModeTimers[group];
@@ -686,7 +686,7 @@ ReloopBeatmix24.EffectClearTimerCallBack = function(group) {
 
 ReloopBeatmix24.FX4Off = function(channel, control, value, status, group) {
     if (FxMode != 1) {
-        if (value == UP) {
+        if (value === UP) {
             engine.setValue(group, "clear", 1);
             engine.beginTimer(100,
                 "ReloopBeatmix24.EffectClearTimerCallBack(\"" + group +
@@ -698,7 +698,7 @@ ReloopBeatmix24.FX4Off = function(channel, control, value, status, group) {
 
 ReloopBeatmix24.FX5Off = function(channel, control, value, status, group) {
     if (FxMode != 1) {
-        if (value == UP) {
+        if (value === UP) {
             engine.setValue(group, "clear", 1);
             engine.beginTimer(100,
                 "ReloopBeatmix24.EffectClearTimerCallBack(\"" + group +
@@ -710,7 +710,7 @@ ReloopBeatmix24.FX5Off = function(channel, control, value, status, group) {
 
 ReloopBeatmix24.FX6Off = function(channel, control, value, status, group) {
     if (FxMode != 1) {
-        if (value == UP) {
+        if (value === UP) {
             engine.setValue(group, "clear", 1);
             engine.beginTimer(100,
                 "ReloopBeatmix24.EffectClearTimerCallBack(\"" + group +
