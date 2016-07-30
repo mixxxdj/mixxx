@@ -171,7 +171,7 @@ void CoverArtCache::coverLoaded() {
 
     QString cacheKey = pixmapCacheKey(res.cover.info.hash, res.desiredWidth);
     QPixmap pixmap;
-    if (!QPixmapCache::find(cacheKey, &pixmap) && !res.cover.image.isNull()) {
+    if (!res.cover.image.isNull() && !QPixmapCache::find(cacheKey, &pixmap)) {
         pixmap.convertFromImage(res.cover.image);
         QPixmapCache::insert(cacheKey, pixmap);
     }

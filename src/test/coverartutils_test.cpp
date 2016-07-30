@@ -255,7 +255,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
         res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                     prefCovers);
         EXPECT_QSTRING_EQ(expected.info.coverLocation, res.info.coverLocation);
-        EXPECT_QSTRING_EQ(expected.info.hash, res.info.hash);
+        EXPECT_EQ(expected.info.hash, res.info.hash);
         EXPECT_EQ(expected, res);
 
         QFile::remove(cover.filePath());
