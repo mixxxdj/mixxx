@@ -321,7 +321,7 @@ ReloopBeatmix24.SamplerLoadEject = function(channel, control, value, status,
 };
 
 ReloopBeatmix24.SamplerVol = function(channel, control, value, status, group) {
-    for (var i = 1; i <= 4; i++) {
+    for (var i = 1; i <= engine.getValue("[Master]", "num_samplers"); i++) {
         engine.setValue("[Sampler" + i + "]", "volume", value / 127.0);
     }
 };
