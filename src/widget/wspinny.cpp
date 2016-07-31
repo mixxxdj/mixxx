@@ -71,9 +71,9 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const int,
+        connect(pCache, SIGNAL(coverFound(const QObject*,
                                           const CoverInfo&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const int,
+                this, SLOT(slotCoverFound(const QObject*,
                                           const CoverInfo&, QPixmap, bool)));
     }
 
@@ -255,24 +255,17 @@ void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 }
 
 void WSpinny::slotTrackCoverArtUpdated() {
-    if (m_loadedTrack) {
-        m_lastRequestedCover = m_loadedTrack->getCoverInfo();
-        m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache != nullptr) {
-            pCache->requestCover(m_lastRequestedCover, this, m_lastRequestedCover.hash);
-        }
-    }
+    CoverArtCache::requestCover(m_loadedTrack.data(), this);
 }
 
-void WSpinny::slotCoverFound(const QObject* pRequestor, int requestReference,
+void WSpinny::slotCoverFound(const QObject* pRequestor,
                              const CoverInfo& info, QPixmap pixmap,
                              bool fromCache) {
     Q_UNUSED(info);
     Q_UNUSED(fromCache);
 
     if (pRequestor == this && m_loadedTrack &&
-            m_lastRequestedCover.hash == requestReference) {
+            m_loadedTrack->getCoverInfo().hash == info.hash) {
         qDebug() << "WSpinny::slotCoverFound" << pRequestor << info
                  << pixmap.size();
         m_loadedCover = pixmap;

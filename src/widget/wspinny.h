@@ -42,7 +42,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
   protected slots:
     void maybeUpdate();
-    void slotCoverFound(const QObject* pRequestor, int requestReference,
+    void slotCoverFound(const QObject* pRequestor,
                         const CoverInfo& info, QPixmap pixmap, bool fromCache);
     void slotTrackCoverArtUpdated();
 

@@ -22,16 +22,15 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
      *      search algorithm.
      *      In this way, the method will just look into CoverCache and return
      *      a Pixmap if it is already loaded in the QPixmapCache.
-     *
-     * TODO(rryan): Provide a QObject* and a SLOT to invoke directly. Why make
-     * everyone filter the signals they receive?
      */
     QPixmap requestCover(const CoverInfo& info,
                          const QObject* pRequestor,
-                         const int requestReference,
-                         const int desiredWidth = 0,
-                         const bool onlyCached = false,
-                         const bool signalWhenDone = true);
+                         const int desiredWidth,
+                         const bool onlyCached,
+                         const bool signalWhenDone);
+
+    static void requestCover(const Track* pTrack,
+                             const QObject* pRequestor);
 
     // Guesses the cover art for the provided tracks by searching the tracks'
     // metadata and folders for image files. All I/O is done in a separate
@@ -42,14 +41,12 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     struct FutureResult {
         FutureResult()
                 : pRequestor(NULL),
-                  requestReference(0),
                   desiredWidth(0),
                   signalWhenDone(false) {
         }
 
         CoverArt cover;
         const QObject* pRequestor;
-        int requestReference;
         int desiredWidth;
         bool signalWhenDone;
     };
@@ -59,7 +56,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     void coverLoaded();
 
   signals:
-    void coverFound(const QObject* requestor, int requestReference,
+    void coverFound(const QObject* requestor,
                     const CoverInfo& info, QPixmap pixmap, bool fromCache);
 
   protected:
@@ -71,7 +68,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     // worker thread.
     FutureResult loadCover(const CoverInfo& coverInfo,
                            const QObject* pRequestor,
-                           const int requestReference,
                            const int desiredWidth,
                            const bool emitSignals);
 
@@ -81,7 +77,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     QPixmap cacheCover(CoverArt cover, int width);
 
   private:
-    QSet<QPair<const QObject*, int> > m_runningRequests;
+    QSet<QPair<const QObject*, quint16> > m_runningRequests;
 };
 
 #endif // COVERARTCACHE_H

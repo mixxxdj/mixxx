@@ -55,19 +55,18 @@ CoverArtCache::~CoverArtCache() {
 
 QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
                                     const QObject* pRequestor,
-                                    int requestReference,
                                     const int desiredWidth,
                                     const bool onlyCached,
                                     const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::requestCover"
-                 << requestInfo << pRequestor << requestReference <<
+                 << requestInfo << pRequestor <<
                 desiredWidth << onlyCached << signalWhenDone;
     }
 
     if (requestInfo.type == CoverInfo::NONE) {
         if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestReference, requestInfo,
+            emit(coverFound(pRequestor, requestInfo,
                             QPixmap(), true));
         }
         return QPixmap();
@@ -75,7 +74,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    QPair<const QObject*, int> requestId = qMakePair(pRequestor, requestReference);
+    QPair<const QObject*, quint16> requestId = qMakePair(pRequestor, requestInfo.hash);
     if (m_runningRequests.contains(requestId)) {
         return QPixmap();
     }
@@ -90,7 +89,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestReference, requestInfo, pixmap, true));
+            emit(coverFound(pRequestor, requestInfo, pixmap, true));
         }
         return pixmap;
     }
@@ -106,16 +105,27 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
             this, &CoverArtCache::loadCover, requestInfo, pRequestor,
-            requestReference, desiredWidth, signalWhenDone);
+            desiredWidth, signalWhenDone);
     connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
     watcher->setFuture(future);
     return QPixmap();
 }
 
+//static
+void CoverArtCache::requestCover(const Track* pTrack,
+                         const QObject* pRequestor) {
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache == nullptr || pTrack == nullptr) return;
+
+    CoverInfo info = pTrack->getCoverInfo();
+    // trackLocation is still empty here
+    info.trackLocation = pTrack->getLocation();
+    pCache->requestCover(info, pRequestor, 0, false, true);
+}
+
 CoverArtCache::FutureResult CoverArtCache::loadCover(
         const CoverInfo& info,
         const QObject* pRequestor,
-        int requestReference,
         const int desiredWidth,
         const bool signalWhenDone) {
     if (sDebug) {
@@ -125,7 +135,6 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
 
     FutureResult res;
     res.pRequestor = pRequestor;
-    res.requestReference = requestReference;
     res.cover.info = info;
     res.desiredWidth = desiredWidth;
     res.signalWhenDone = signalWhenDone;
@@ -161,11 +170,10 @@ void CoverArtCache::coverLoaded() {
 
     QPixmap pixmap = cacheCover(res.cover, res.desiredWidth);
 
-    m_runningRequests.remove(qMakePair(res.pRequestor, res.requestReference));
+    m_runningRequests.remove(qMakePair(res.pRequestor, res.cover.info.hash));
 
     if (res.signalWhenDone) {
-        emit(coverFound(res.pRequestor, res.requestReference,
-                        res.cover.info, pixmap, false));
+        emit(coverFound(res.pRequestor, res.cover.info, pixmap, false));
     }
 }
 
