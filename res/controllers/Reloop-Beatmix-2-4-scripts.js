@@ -1,10 +1,11 @@
 /************************  GPL v2 licence  *****************************
- * Reloop Beatmix controller script
+ * Reloop Beatmix 2/4 controller script
  * Author: Sébastien Blaisot <sebastien@blaisot.org>
  *
  **********************************************************************
  * User References
  * ---------------
+ * Wiki/manual : http://www.mixxx.org/wiki/doku.php/reloop_beatmix_2
  * Wiki/manual : http://www.mixxx.org/wiki/doku.php/reloop_beatmix_4
  * support forum : http://mixxx.org/forums/viewtopic.php?f=7&t=8428
  *
@@ -14,7 +15,7 @@
  ***********************************************************************
  *                           GPL v2 licence
  *                           --------------
- * Reloop Beatmix controller script script 1.0 for Mixxx 2.1.0
+ * Reloop Beatmix controller script script 1.1 for Mixxx 2.1.0
  * Copyright (C) 2015 Sébastien Blaisot
  *
  * This program is free software; you can redistribute it and/or
@@ -39,13 +40,14 @@
 /* global print                                                       */
 /* global midi                                                        */
 ////////////////////////////////////////////////////////////////////////
+
 // Global variables and declarations.
 // ========================================================
 var ReloopBeatmix24 = {};
 
 var RateRangeArray = [0.08, 0.10, 0.12, 0.16];
 
-// Timers
+// Timers & long press state
 var jogWheelTimers = [];
 var loadButtonTimers = [];
 var loadButtonLongPressed = [];
@@ -64,7 +66,7 @@ var traxMode = 2;
 // Effects mode
 // 1 for single effect mode (1 effect controlled in each EffectUnit)
 // 2 for multi-effect mode (3 effects controlled in each EffectUnit)
-// TODO(sblaisot): Define how to change mode from controller
+// SHIFT + long press on pitchbend +/- to change mode
 var FxMode = 1; // Single effect mode by default
 
 var ON = 0x7F,
@@ -284,7 +286,7 @@ ReloopBeatmix24.LoadButton = function(channel, control, value, status, group) {
         loadButtonTimers[group] = engine.beginTimer(1000,
             "ReloopBeatmix24.LoadButtonEject(\"" + group + "\")", true);
     } else { // UP
-        if (!loadButtonLongPressed[group]) {
+        if (!loadButtonLongPressed[group]) { // Short press
             engine.stopTimer(loadButtonTimers[group]);
             delete loadButtonTimers[group];
             engine.setValue(group, "LoadSelectedTrack", 1);
@@ -528,7 +530,6 @@ ReloopBeatmix24.jogLedFlash = function(group, state) {
             "\", 0x30)",
             true);
     }
-
 };
 
 // Effects functions
