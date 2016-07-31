@@ -642,7 +642,7 @@ ReloopBeatmix24.ShiftFxKnobTurn = function(channel, control, value, status,
 
 // Fx knobs send Note-Off MIDI signal when at 0 and Note-On when leaving zero.
 // These 0x9 MIDI signals are mapped to this function
-ReloopBeatmix24.FxOff = function(channel, control, value, status, group) {
+ReloopBeatmix24.FxKnobOnOff = function(channel, control, value, status, group) {
     if (FxMode !== 1) {
         engine.setValue(group, "enabled", value ? 1 : 0);
     }
@@ -653,7 +653,7 @@ ReloopBeatmix24.EffectClearTimerCallBack = function(group) {
     engine.setValue(group, "clear", 0);
 };
 
-ReloopBeatmix24.ShiftFxOff = function(channel, control, value, status, group) {
+ReloopBeatmix24.ShiftFxKnobOnOff = function(channel, control, value, status, group) {
     if (FxMode !== 1) {
         if (value === UP) {
             engine.setValue(group, "clear", 1);

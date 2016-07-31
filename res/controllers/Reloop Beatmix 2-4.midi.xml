@@ -2261,7 +2261,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit1_Effect1]</group>
-                 <key>ReloopBeatmix24.FxOff</key>
+                 <key>ReloopBeatmix24.FxKnobOnOff</key>
                  <description>L-FX1-OFF</description>
                  <status>0x91</status>
                  <midino>0x71</midino>
@@ -2271,7 +2271,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit1_Effect1]</group>
-                 <key>ReloopBeatmix24.ShiftFxOff</key>
+                 <key>ReloopBeatmix24.ShiftFxKnobOnOff</key>
                  <description>SHIFT+L-FX1-OFF</description>
                  <status>0x91</status>
                  <midino>0x74</midino>
@@ -2301,7 +2301,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit1_Effect2]</group>
-                 <key>ReloopBeatmix24.FxOff</key>
+                 <key>ReloopBeatmix24.FxKnobOnOff</key>
                  <description>L-FX2-OFF</description>
                  <status>0x91</status>
                  <midino>0x72</midino>
@@ -2311,7 +2311,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit1_Effect2]</group>
-                 <key>ReloopBeatmix24.ShiftFxOff</key>
+                 <key>ReloopBeatmix24.ShiftFxKnobOnOff</key>
                  <description>SHIFT+L-FX2-OFF</description>
                  <status>0x91</status>
                  <midino>0x75</midino>
@@ -2341,7 +2341,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit1_Effect3]</group>
-                 <key>ReloopBeatmix24.FxOff</key>
+                 <key>ReloopBeatmix24.FxKnobOnOff</key>
                  <description>L-FX3-OFF</description>
                  <status>0x91</status>
                  <midino>0x73</midino>
@@ -2351,7 +2351,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit1_Effect3]</group>
-                 <key>ReloopBeatmix24.ShiftFxOff</key>
+                 <key>ReloopBeatmix24.ShiftFxKnobOnOff</key>
                  <description>SHIFT+L-FX3-OFF</description>
                  <status>0x91</status>
                  <midino>0x76</midino>
@@ -2464,7 +2464,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit2_Effect1]</group>
-                 <key>ReloopBeatmix24.FxOff</key>
+                 <key>ReloopBeatmix24.FxKnobOnOff</key>
                  <description>R-FX1-OFF</description>
                  <status>0x92</status>
                  <midino>0x71</midino>
@@ -2474,7 +2474,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit2_Effect1]</group>
-                 <key>ReloopBeatmix24.ShiftFxOff</key>
+                 <key>ReloopBeatmix24.ShiftFxKnobOnOff</key>
                  <description>SHIFT+R-FX1-OFF</description>
                  <status>0x92</status>
                  <midino>0x74</midino>
@@ -2504,7 +2504,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit2_Effect2]</group>
-                 <key>ReloopBeatmix24.FxOff</key>
+                 <key>ReloopBeatmix24.FxKnobOnOff</key>
                  <description>R-FX2-OFF</description>
                  <status>0x92</status>
                  <midino>0x72</midino>
@@ -2514,7 +2514,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit2_Effect2]</group>
-                 <key>ReloopBeatmix24.ShiftFxOff</key>
+                 <key>ReloopBeatmix24.ShiftFxKnobOnOff</key>
                  <description>SHIFT+R-FX2-OFF</description>
                  <status>0x92</status>
                  <midino>0x75</midino>
@@ -2544,7 +2544,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit2_Effect3]</group>
-                 <key>ReloopBeatmix24.FxOff</key>
+                 <key>ReloopBeatmix24.FxKnobOnOff</key>
                  <description>R-FX3-OFF</description>
                  <status>0x92</status>
                  <midino>0x73</midino>
@@ -2554,7 +2554,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit2_Effect3]</group>
-                 <key>ReloopBeatmix24.ShiftFxOff</key>
+                 <key>ReloopBeatmix24.ShiftFxKnobOnOff</key>
                  <description>SHIFT+R-FX3-OFF</description>
                  <status>0x92</status>
                  <midino>0x76</midino>
