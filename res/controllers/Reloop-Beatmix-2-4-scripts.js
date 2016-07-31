@@ -577,7 +577,11 @@ ReloopBeatmix24.FxModeCallback = function(group, mode) {
         true);
 };
 
-ReloopBeatmix24.ActivateFx1 = function(channel, control, value, status, group) {
+// This function activate Fx Unit 1 or 2 for the selected Channel.
+// It is mapped to SHIFT + PITCHBEND+/- (FX1 and FX2)
+ReloopBeatmix24.ActivateFx = function(channel, control, value, status, group) {
+    // Calculate Fx num based on midi control (0x66 for Fx1 and 0x67 for Fx2)
+    FxNum = control - 0x65;
     if (value === DOWN) {
         if (FxModeTimers[group]) {
             engine.stopTimer(FxModeTimers[group]);
@@ -585,7 +589,7 @@ ReloopBeatmix24.ActivateFx1 = function(channel, control, value, status, group) {
         }
         FxModeLongPressed[group] = false;
         FxModeTimers[group] = engine.beginTimer(1000,
-            "ReloopBeatmix24.FxModeCallback(\"" + group + "\", 1)",
+            "ReloopBeatmix24.FxModeCallback(\"" + group + "\", " + FxNum + ")",
             true);
     } else { // UP
         if (FxModeLongPressed[group]) { // long press
@@ -595,35 +599,9 @@ ReloopBeatmix24.ActivateFx1 = function(channel, control, value, status, group) {
             // stop & delete timer
             engine.stopTimer(FxModeTimers[group]);
             delete FxModeTimers[group];
-            var oldvalue = engine.getValue("[EffectRack1_EffectUnit1]",
+            var oldvalue = engine.getValue("[EffectRack1_EffectUnit" + FxNum + "]",
                 "group_" + group + "_enable");
-            engine.setValue("[EffectRack1_EffectUnit1]", "group_" + group +
-                "_enable", oldvalue ? 0 : 1);
-        }
-    }
-};
-
-ReloopBeatmix24.ActivateFx2 = function(channel, control, value, status, group) {
-    if (value === DOWN) {
-        if (FxModeTimers[group]) {
-            engine.stopTimer(FxModeTimers[group]);
-            delete FxModeTimers[group];
-        }
-        FxModeLongPressed[group] = false;
-        FxModeTimers[group] = engine.beginTimer(1000,
-            "ReloopBeatmix24.FxModeCallback(\"" + group + "\", 2)",
-            true);
-    } else { // UP
-        if (FxModeLongPressed[group]) { // long press
-            // Nothing to do, this has already been done in callback function
-            FxModeLongPressed[group] = false;
-        } else { // short press
-            // stop & delete timer
-            engine.stopTimer(FxModeTimers[group]);
-            delete FxModeTimers[group];
-            var oldvalue = engine.getValue("[EffectRack1_EffectUnit2]",
-                "group_" + group + "_enable");
-            engine.setValue("[EffectRack1_EffectUnit2]", "group_" + group +
+            engine.setValue("[EffectRack1_EffectUnit" + FxNum + "]", "group_" + group +
                 "_enable", oldvalue ? 0 : 1);
         }
     }
@@ -665,7 +643,7 @@ ReloopBeatmix24.ShiftFxKnobTurn = function(channel, control, value, status,
 };
 
 ReloopBeatmix24.FxOff = function(channel, control, value, status, group) {
-    if (FxMode != 1) {
+    if (FxMode !== 1) {
         engine.setValue(group, "enabled", value ? 1 : 0);
     }
     // Nothing in single-effect mode
@@ -676,7 +654,7 @@ ReloopBeatmix24.EffectClearTimerCallBack = function(group) {
 };
 
 ReloopBeatmix24.ShiftFxOff = function(channel, control, value, status, group) {
-    if (FxMode != 1) {
+    if (FxMode !== 1) {
         if (value === UP) {
             engine.setValue(group, "clear", 1);
             engine.beginTimer(100,
