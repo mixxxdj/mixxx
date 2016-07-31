@@ -228,7 +228,7 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
-            m_pDlgFullSize->init(m_lastRequestedCover);
+            m_pDlgFullSize->init(m_loadedCover);
         }
     }
 }
