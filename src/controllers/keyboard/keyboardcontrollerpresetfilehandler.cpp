@@ -1,4 +1,6 @@
-#include "keyboardcontrollerpresetfilehandler.h"
+#include "util/compatibility.h"
+#include "controllers/keyboard/keyboardcontrollerpresetfilehandler.h"
+#include "controllers/keyboard/layoututils.h"
 
 
 KeyboardControllerPresetFileHandler::KeyboardControllerPresetFileHandler() {
@@ -21,6 +23,11 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
 
     KeyboardControllerPreset* preset = new KeyboardControllerPreset();
 
+    // Get current keyboard layout
+    QString layoutName = inputLocale().name();
+    KeyboardLayoutPointer layout = layoutUtils::getLayout(layoutName);
+    Q_UNUSED(layout);
+
     // Superclass handles parsing <info> tag and script files
     parsePresetInfo(root, preset);
     addScriptFilesToPreset(controller, preset);
@@ -29,18 +36,25 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
     QDomElement group = controller.firstChildElement("group");
     while (!group.isNull()) {
         QString groupName = group.attributeNode("name").value();
-        QDomElement control = group.firstChildElement("control");
 
-        // Iterate through each <control> node inside the current <group> block
+        // Iterate through each <control> element inside the current <group> block
+        QDomElement control = group.firstChildElement("control");
         while (!control.isNull()) {
             QString action = control.attributeNode("action").value();
-            QString keyseq = control.attributeNode("keyseq").value();
 
-            ConfigValueKbd configValueKbd = ConfigValueKbd(keyseq);
-            ConfigKey configKey = ConfigKey(groupName, action);
+            // Iterate through each <keyseq> node inside the current <control> element
+            QDomElement keyseq_element = control.firstChildElement("keyseq");
+            while(!keyseq_element.isNull()) {
+                QString keyseq = keyseq_element.text();
 
-            // Load action into preset
-            preset->m_mapping.insert(configValueKbd, configKey);
+                ConfigValueKbd configValueKbd = ConfigValueKbd(keyseq);
+                ConfigKey configKey = ConfigKey(groupName, action);
+
+                // Load action into preset
+                preset->m_mapping.insert(configValueKbd, configKey);
+
+                keyseq_element = keyseq_element.nextSiblingElement("keyseq");
+            }
 
             control = control.nextSiblingElement("control");
         }
