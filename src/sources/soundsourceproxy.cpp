@@ -465,6 +465,7 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
         if (!coverImg.isNull()) {
             // Cover image has been parsed from the file
             coverArt.image = coverImg;
+            // TODO() here we may introduce a duplicate hash code
             coverArt.info.hash = CoverArtUtils::calculateHash(coverArt.image);
             coverArt.info.coverLocation = QString();
             coverArt.info.type = CoverInfo::METADATA;
