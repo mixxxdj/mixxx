@@ -38,12 +38,14 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     // thread.
     void requestGuessCovers(QList<TrackPointer> tracks);
     void requestGuessCover(TrackPointer pTrack);
+    static QPixmap cacheCover(CoverArt cover, int with);
 
     struct FutureResult {
-        FutureResult() : pRequestor(NULL),
-                         requestReference(0),
-                         desiredWidth(0),
-                         signalWhenDone(false) {
+        FutureResult()
+                : pRequestor(NULL),
+                  requestReference(0),
+                  desiredWidth(0),
+                  signalWhenDone(false) {
         }
 
         CoverArt cover;

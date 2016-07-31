@@ -25,6 +25,7 @@
 #include "sources/soundsourceflac.h"
 
 #include "library/coverartutils.h"
+#include "library/coverartcache.h"
 #include "util/cmdlineargs.h"
 #include "util/regex.h"
 
@@ -490,7 +491,8 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     // Dump the trackMetadata extracted from the file back into the track.
     m_pTrack->setTrackMetadata(trackMetadata, parsedFromFile);
     if (parsedCoverArt) {
-        m_pTrack->setCoverArt(coverArt);
+        CoverArtCache::cacheCover(coverArt, 0);
+        m_pTrack->setCoverInfo(coverArt.info);
     }
 }
 

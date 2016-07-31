@@ -881,9 +881,8 @@ bool Track::isBpmLocked() const {
 
 void Track::setCoverInfo(const CoverInfo& info) {
     QMutexLocker lock(&m_qMutex);
-    if (info != m_coverArt.info) {
-        m_coverArt = CoverArt();
-        m_coverArt.info = info;
+    if (info != m_coverInfo) {
+        m_coverInfo = info;
         markDirtyAndUnlock(&lock);
         emit(coverArtUpdated());
     }
@@ -891,18 +890,5 @@ void Track::setCoverInfo(const CoverInfo& info) {
 
 CoverInfo Track::getCoverInfo() const {
     QMutexLocker lock(&m_qMutex);
-    return m_coverArt.info;
-}
-
-void Track::setCoverArt(const CoverArt& coverArt) {
-    QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_coverArt, coverArt)) {
-        markDirtyAndUnlock(&lock);
-        emit(coverArtUpdated());
-    }
-}
-
-CoverArt Track::getCoverArt() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_coverArt;
+    return m_coverInfo;
 }

@@ -169,12 +169,8 @@ void CoverArtCache::coverLoaded() {
         qDebug() << "CoverArtCache::coverLoaded" << res.cover;
     }
 
-    QString cacheKey = pixmapCacheKey(res.cover.info.hash, res.desiredWidth);
-    QPixmap pixmap;
-    if (!res.cover.image.isNull() && !QPixmapCache::find(cacheKey, &pixmap)) {
-        pixmap.convertFromImage(res.cover.image);
-        QPixmapCache::insert(cacheKey, pixmap);
-    }
+    QPixmap pixmap = cacheCover(res.cover, res.desiredWidth);
+
     m_runningRequests.remove(qMakePair(res.pRequestor, res.requestReference));
 
     if (res.signalWhenDone) {
@@ -193,7 +189,9 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 
 void CoverArtCache::guessCover(TrackPointer pTrack) {
     if (pTrack) {
-        pTrack->setCoverArt(CoverArtUtils::guessCoverArt(pTrack));
+        CoverArt cover = CoverArtUtils::guessCoverArt(pTrack);
+        cacheCover(cover, 0);
+        pTrack->setCoverInfo(cover.info);
     }
 }
 
@@ -203,4 +201,17 @@ void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
     foreach (TrackPointer pTrack, tracks) {
         guessCover(pTrack);
     }
+}
+
+//static
+QPixmap CoverArtCache::cacheCover(CoverArt cover, int with) {
+    QPixmap pixmap;
+    if (!cover.image.isNull()) {
+        QString cacheKey = pixmapCacheKey(cover.info.hash, with);
+        if (!QPixmapCache::find(cacheKey, &pixmap)) {
+            pixmap.convertFromImage(cover.image);
+            QPixmapCache::insert(cacheKey, pixmap);
+        }
+    }
+    return pixmap;
 }

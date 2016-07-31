@@ -96,7 +96,7 @@ void WCoverArt::slotReloadCoverArt() {
 void WCoverArt::slotCoverArtSelected(const CoverArt& art) {
     if (m_loadedTrack) {
         // Will trigger slotTrackCoverArtUpdated().
-        m_loadedTrack->setCoverArt(art);
+        m_loadedTrack->setCoverInfo(art.info);
     }
 }
 
@@ -138,7 +138,7 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
     }
 
     if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getId().toInt() == requestReference) {
+            m_loadedTrack->getCoverInfo().hash == requestReference) {
         qDebug() << "WCoverArt::slotCoverFound" << pRequestor << info
                  << pixmap.size();
         m_loadedCover = pixmap;
@@ -153,8 +153,7 @@ void WCoverArt::slotTrackCoverArtUpdated() {
         m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache != nullptr) {
-            // TODO(rryan): Don't use track id.
-            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId().toInt());
+            pCache->requestCover(m_lastRequestedCover, this, m_lastRequestedCover.hash);
         }
     }
 }
