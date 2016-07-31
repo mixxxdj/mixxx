@@ -38,7 +38,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     // thread.
     void requestGuessCovers(QList<TrackPointer> tracks);
     void requestGuessCover(TrackPointer pTrack);
-    static QPixmap cacheCover(CoverArt cover, int with);
 
     struct FutureResult {
         FutureResult()
@@ -79,6 +78,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     // Guesses the cover art for each track.
     void guessCovers(QList<TrackPointer> tracks);
     void guessCover(TrackPointer pTrack);
+    QPixmap cacheCover(CoverArt cover, int width);
 
   private:
     QSet<QPair<const QObject*, int> > m_runningRequests;

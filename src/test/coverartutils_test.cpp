@@ -35,7 +35,6 @@ void extractEmbeddedCover(
 class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
   protected:
     virtual void SetUp() {
-        CoverArtCache::create();
         m_pTrackCollection = new TrackCollection(config());
     }
 
@@ -145,12 +144,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
     // kTrackLocationTest, hang on to it since we use it as a template for
     // stuff below.
 
-    CoverArtCache* pCache = CoverArtCache::instance();
-    EXPECT_NE(pCache, nullptr);
-    QPixmap pixmap = pCache->requestCover(result, this, result.hash, 0, true, false);
-    EXPECT_EQ(pixmap.isNull(), false);
-
-    const QImage img = pixmap.toImage();
+    result.trackLocation = kTrackLocationTest;
+    const QImage img = CoverArtUtils::loadCover(result);
     EXPECT_EQ(img.isNull(), false);
 
     QString trackBaseName = "cover-test";

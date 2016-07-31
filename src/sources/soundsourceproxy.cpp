@@ -491,7 +491,6 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     // Dump the trackMetadata extracted from the file back into the track.
     m_pTrack->setTrackMetadata(trackMetadata, parsedFromFile);
     if (parsedCoverArt) {
-        CoverArtCache::cacheCover(coverArt, 0);
         m_pTrack->setCoverInfo(coverArt.info);
     }
 }

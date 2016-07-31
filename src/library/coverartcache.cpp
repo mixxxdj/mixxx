@@ -10,17 +10,9 @@
 
 namespace {
     QString pixmapCacheKey(quint16 hash, int width) {
-        if (width == 0) {
-            return QString("CoverArtCache_%1").arg(QString::number(hash));
-        } else {
-            return QString("CoverArtCache_%1_%2")
-                    .arg(QString::number(hash)).arg(width);
-        }
+        return QString("CoverArtCache_%1_%2")
+                .arg(QString::number(hash)).arg(width);
     }
-
-    // Large cover art wastes space in our cache when we typically won't show them at
-    // their full size. If no width is specified, this is the maximum width cap.
-    const int kMaxCoverSize = 300;
 
     // The transformation mode when scaling images
     const Qt::TransformationMode kTransformationMode = Qt::SmoothTransformation;
@@ -152,8 +144,6 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     // efficiency.
     if (res.desiredWidth > 0) {
         res.cover.image = resizeImageWidth(res.cover.image, res.desiredWidth);
-    } else {
-        res.cover.image = limitImageSize(res.cover.image, kMaxCoverSize);
     }
 
     return res;
@@ -190,7 +180,6 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 void CoverArtCache::guessCover(TrackPointer pTrack) {
     if (pTrack) {
         CoverArt cover = CoverArtUtils::guessCoverArt(pTrack);
-        cacheCover(cover, 0);
         pTrack->setCoverInfo(cover.info);
     }
 }
@@ -203,14 +192,22 @@ void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
     }
 }
 
-//static
-QPixmap CoverArtCache::cacheCover(CoverArt cover, int with) {
+QPixmap CoverArtCache::cacheCover(CoverArt cover, int width) {
     QPixmap pixmap;
     if (!cover.image.isNull()) {
-        QString cacheKey = pixmapCacheKey(cover.info.hash, with);
+        QString cacheKey = pixmapCacheKey(cover.info.hash, width);
         if (!QPixmapCache::find(cacheKey, &pixmap)) {
             pixmap.convertFromImage(cover.image);
-            QPixmapCache::insert(cacheKey, pixmap);
+            // Don't cache full size covers (Width = 0)
+            // Large cover art wastes space in our cache and will likely
+            // uncache a lot of the small covers we need in the library
+            // table.
+            // Full size covers are used in the Skin Widgets, which are
+            // loaded with an artificial delay anyway and an additional
+            // re-load delay can be accepted.
+            if (width > 0) {
+                QPixmapCache::insert(cacheKey, pixmap);
+            }
         }
     }
     return pixmap;
