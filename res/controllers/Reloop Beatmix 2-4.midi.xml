@@ -2361,7 +2361,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit1]</group>
-                 <key>ReloopBeatmix24.FxFxEncoderTurn</key>
+                 <key>ReloopBeatmix24.FxEncoderTurn</key>
                  <description>L-EncoderD1</description>
                  <status>0xB1</status>
                  <midino>0x61</midino>
@@ -2371,7 +2371,7 @@
              </control>
              <control>
                  <group>[EffectRack1_EffectUnit1]</group>
-                 <key>ReloopBeatmix24.ShiftFxFxEncoderTurn</key>
+                 <key>ReloopBeatmix24.ShiftFxEncoderTurn</key>
                  <description>SHIFT+L-EncoderD1</description>
                  <status>0xB1</status>
                  <midino>0x71</midino>
