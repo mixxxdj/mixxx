@@ -110,18 +110,17 @@ ReloopBeatmix24.TurnLEDsOff = function() {
     }
 };
 
-ReloopBeatmix24.connectControls = function(disconnect) {
+ReloopBeatmix24.connectControls = function() {
 
     // Channels controls
     for (var i = 1; i <= 4; i++) {
         engine.connectControl("[Channel" + i + "]", "track_samples",
-            "ReloopBeatmix24.deckLoaded", disconnect);
+            "ReloopBeatmix24.deckLoaded");
         engine.connectControl("[Channel" + i + "]", "play",
-            "ReloopBeatmix24.startJogLedSpinnie", disconnect);
+            "ReloopBeatmix24.startJogLedSpinnie");
         engine.connectControl("[Channel" + i + "]", "loop_end_position",
-            "ReloopBeatmix24.loopDefined", disconnect);
-        engine.softTakeover("[Channel" + i + "]", "rate", disconnect ?
-            false : true);
+            "ReloopBeatmix24.loopDefined");
+        engine.softTakeover("[Channel" + i + "]", "rate", true);
         engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel" + i +
             "]_enable", 0);
         engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel" + i +
@@ -131,9 +130,9 @@ ReloopBeatmix24.connectControls = function(disconnect) {
     // Samplers controls
     for (i = 1; i <= 8; i++) {
         engine.connectControl("[Sampler" + i + "]", "track_samples",
-            "ReloopBeatmix24.deckLoaded", disconnect);
+            "ReloopBeatmix24.deckLoaded");
         engine.connectControl("[Sampler" + i + "]", "play",
-            "ReloopBeatmix24.SamplerPlay", disconnect);
+            "ReloopBeatmix24.SamplerPlay");
     }
 
     // Effects reset
@@ -155,7 +154,6 @@ ReloopBeatmix24.init = function(id, debug) {
 
 ReloopBeatmix24.shutdown = function() {
     ReloopBeatmix24.TurnLEDsOff(); // Turn off all LEDs
-    ReloopBeatmix24.connectControls(true);
     print("Reloop Beatmix: " + ReloopBeatmix24.id + " shut down.");
 };
 
@@ -642,6 +640,8 @@ ReloopBeatmix24.ShiftFxKnobTurn = function(channel, control, value, status,
     }
 };
 
+// Fx knobs send Note-Off MIDI signal when at 0 and Note-On when leaving zero.
+// These 0x9 MIDI signals are mapped to this function
 ReloopBeatmix24.FxOff = function(channel, control, value, status, group) {
     if (FxMode !== 1) {
         engine.setValue(group, "enabled", value ? 1 : 0);
