@@ -315,6 +315,11 @@ ReloopBeatmix24.ShiftSamplerPad = function(channel, control, value, status, grou
         } else {
             engine.setValue(group, "LoadSelectedTrack", 1);
         }
+    } else { // UP
+        if (!engine.getValue(group, "track_samples")) { // if empty
+            // Set eject back to 0 to turn off the eject button on screen
+            engine.setValue(group, "eject", 0);
+        }
     }
 };
 
