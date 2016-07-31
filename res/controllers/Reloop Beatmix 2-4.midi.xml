@@ -2729,7 +2729,7 @@
             </control>
             <control>
                 <group>[Playlist]</group>
-                <key>ReloopBeatmix24.ShiftTraxPush</key>
+                <key>ReloopBeatmix24.TraxPush</key>
                 <description>SHIFT+TRAX PUSH</description>
                 <status>0x95</status>
                 <midino>0x49</midino>
