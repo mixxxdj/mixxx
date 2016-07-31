@@ -578,7 +578,8 @@ ReloopBeatmix24.FxModeCallback = function(group, mode) {
         true);
 };
 
-// This function activate Fx Unit 1 or 2 for the selected Channel.
+// This function activate Fx Unit 1 or 2 for the selected Channel on short press
+// and toggle Fx Mode on long press (>1s)
 // It is mapped to SHIFT + PITCHBEND+/- (FX1 and FX2)
 ReloopBeatmix24.ActivateFx = function(channel, control, value, status, group) {
     // Calculate Fx num based on midi control (0x66 for Fx1 and 0x67 for Fx2)
