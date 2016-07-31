@@ -78,13 +78,6 @@ var ON = 0x7F,
 
 // Initialise and shutdown stuff.
 // ========================================================
-ReloopBeatmix24.AllJogLEDsToggle = function(deck, state, step) {
-    var step = typeof step !== 'undefined' ? step : 1; // default value
-    for (var j = 0x30; j <= 0x3F; j += step) {
-        midi.sendShortMsg(deck, j, state);
-    }
-};
-
 ReloopBeatmix24.TurnLEDsOff = function() {
     // Turn all LEDS off
     var i, j;
@@ -116,10 +109,10 @@ ReloopBeatmix24.TurnLEDsOff = function() {
 };
 
 ReloopBeatmix24.connectControls = function(disconnect) {
+
+    // Channels controls
     for (var i = 1; i <= 4; i++) {
         engine.connectControl("[Channel" + i + "]", "track_samples",
-            "ReloopBeatmix24.deckloaded", disconnect);
-        engine.connectControl("[Sampler" + i + "]", "track_samples",
             "ReloopBeatmix24.deckloaded", disconnect);
         engine.connectControl("[Channel" + i + "]", "play",
             "ReloopBeatmix24.startJogLedSpinnie", disconnect);
@@ -133,13 +126,17 @@ ReloopBeatmix24.connectControls = function(disconnect) {
             "]_enable", 0);
     }
 
+    // Samplers controls
+    for (i = 1; i <= 8; i++) {
+        engine.connectControl("[Sampler" + i + "]", "track_samples",
+            "ReloopBeatmix24.deckloaded", disconnect);
+        engine.connectControl("[Sampler" + i + "]", "play",
+            "ReloopBeatmix24.SamplerPlay", disconnect);
+    }
+
+    // Effects reset
     engine.setValue("[EffectRack1_EffectUnit1]", "group_[Master]_enable", 0);
     engine.setValue("[EffectRack1_EffectUnit2]", "group_[Master]_enable", 0);
-
-    for (i = 1; i <= 3; i++) {
-        engine.softTakeover("[EffectRack1_EffectUnit" + i + "]", "super1",
-            disconnect ? false : true);
-    }
 };
 
 ReloopBeatmix24.init = function(id, debug) {
@@ -150,10 +147,6 @@ ReloopBeatmix24.init = function(id, debug) {
     for (var i = 1; i <= 4; i++) {
         engine.trigger("[Channel" + i + "]", "loop_end_position");
     }
-
-    // Workaround for Bug #1607127
-    engine.setValue("[EffectRack1_EffectUnit1]", "super1", 0);
-    engine.setValue("[EffectRack1_EffectUnit2]", "super1", 0);
 
     print("Reloop Beatmix: " + id + " initialized.");
 };
@@ -190,29 +183,6 @@ ReloopBeatmix24.MasterSync = function(channel, control, value, status, group) {
     }
 };
 
-ReloopBeatmix24.LoadButton = function(channel, control, value, status, group) {
-    if (value === DOWN) {
-        loadButtonLongPressed[group] = false;
-        loadButtonTimers[group] = engine.beginTimer(1000,
-            "ReloopBeatmix24.LoadButtonEject(\"" + group + "\")", true);
-    } else { // UP
-        if (!loadButtonLongPressed[group]) {
-            engine.stopTimer(loadButtonTimers[group]);
-            delete loadButtonTimers[group];
-            engine.setValue(group, "LoadSelectedTrack", 1);
-        } else {
-            // Nothing to do, action already done in timer callback function
-            loadButtonLongPressed[group] = false;
-        }
-    }
-};
-
-ReloopBeatmix24.LoadButtonEject = function(group) {
-    loadButtonLongPressed[group] = true;
-    engine.setValue(group, "eject", 1);
-    delete loadButtonTimers[group];
-};
-
 ReloopBeatmix24.LoopSet = function(channel, control, value, status, group) {
     if (value === DOWN) {
         engine.setValue(group, "loop_in", 1);
@@ -221,15 +191,12 @@ ReloopBeatmix24.LoopSet = function(channel, control, value, status, group) {
     }
 };
 
-ReloopBeatmix24.loopDefined = function(value, group, control) {
-    var channelRegEx = /\[Channel(\d+)\]/;
-    var channelChan = parseInt(channelRegEx.exec(group))[1];
-    if (channelChan <= 4) {
-        midi.sendShortMsg(0x90 + channelChan, 0x44, value < 0 ? OFF :
-            VIOLET);
-    }
+ReloopBeatmix24.PitchSlider = function(channel, control, value, status, group) {
+    engine.setValue(group, "rate", -script.pitch(control, value, status));
 };
 
+// Trax navigation functions
+// ========================================================
 ReloopBeatmix24.traxSelect = function(value, step) {
     switch (traxMode) {
         case 1: // Playlist mode
@@ -273,13 +240,13 @@ ReloopBeatmix24.TraxPush = function(channel, control, value, status, group) {
             break;
         case 2: // Track mode
             engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay",
-                value ? 1 : 0);
+                value);
             traxMode = 3;
             break;
         case 3: // Preview mode
-            if (value === DOWN) {
-                engine.setValue("[PreviewDeck1]", "play", engine.getValue(
-                    "[PreviewDeck1]", "play") ? 0 : 1);
+            if (value == DOWN) {
+                engine.setValue("[PreviewDeck1]", "play",
+                    engine.getValue("[PreviewDeck1]", "play") ? 0 : 1);
             }
             break;
     }
@@ -305,19 +272,51 @@ ReloopBeatmix24.BackButton = function(channel, control, value, status, group) {
     }
 };
 
-ReloopBeatmix24.SamplerLoadEject = function(channel, control, value, status,
-    group) {
+ReloopBeatmix24.LoadButtonEject = function(group) {
+    loadButtonLongPressed[group] = true;
+    engine.setValue(group, "eject", 1);
+    delete loadButtonTimers[group];
+};
+
+ReloopBeatmix24.LoadButton = function(channel, control, value, status, group) {
     if (value === DOWN) {
-        if (engine.getValue(group, "track_samples")) { // Loaded
-            engine.setValue(group, "eject", 1);
-        } else { // Empty
+        loadButtonLongPressed[group] = false;
+        loadButtonTimers[group] = engine.beginTimer(1000,
+            "ReloopBeatmix24.LoadButtonEject(\"" + group + "\")", true);
+    } else { // UP
+        if (!loadButtonLongPressed[group]) {
+            engine.stopTimer(loadButtonTimers[group]);
+            delete loadButtonTimers[group];
+            engine.setValue(group, "LoadSelectedTrack", 1);
+        } else {
+            // Nothing to do, action already done in timer callback function
+            loadButtonLongPressed[group] = false;
+        }
+    }
+};
+
+// Sampler functions
+// ========================================================
+ReloopBeatmix24.SamplerPad = function(channel, control, value, status, group) {
+    if (value === DOWN) {
+        if (engine.getValue(group, "track_samples")) { //Sampler loaded (playing or not)
+            engine.setValue(group, "cue_gotoandplay", 1);
+        } else {
             engine.setValue(group, "LoadSelectedTrack", 1);
         }
-    } else { // UP
-        if (engine.getValue(group, "track_samples")) { // Loaded
-            engine.setValue(group, "LoadSelectedTrack", 0);
-        } else { // Empty
-            engine.setValue(group, "eject", 0);
+    }
+};
+
+ReloopBeatmix24.ShiftSamplerPad = function(channel, control, value, status, group) {
+    if (value === DOWN) {
+        if (engine.getValue(group, "track_samples")) { //Sampler loaded (playing or not)
+            if (engine.getValue(group, "play")) { // Sampler is playing
+                engine.setValue(group, "cue_gotoandstop", 1);
+            } else {
+                engine.setValue(group, "eject", 1);
+            }
+        } else {
+            engine.setValue(group, "LoadSelectedTrack", 1);
         }
     }
 };
@@ -328,9 +327,8 @@ ReloopBeatmix24.SamplerVol = function(channel, control, value, status, group) {
     }
 };
 
-ReloopBeatmix24.PitchSlider = function(channel, control, value, status, group) {
-    engine.setValue(group, "rate", -script.pitch(control, value, status));
-};
+// Jog Wheel functions
+// ========================================================
 
 ReloopBeatmix24.WheelTouch = function(channel, control, value, status, group) {
     var deck = parseInt(group.substr(8, 1), 10);
@@ -355,12 +353,21 @@ ReloopBeatmix24.WheelTurn = function(channel, control, value, status, group) {
     }
 };
 
+// Led Feedback functions
+// ========================================================
+ReloopBeatmix24.AllJogLEDsToggle = function(deck, state, step) {
+    var step = typeof step !== 'undefined' ? step : 1; // default value
+    for (var j = 0x30; j <= 0x3F; j += step) {
+        midi.sendShortMsg(deck, j, state);
+    }
+};
+
 ReloopBeatmix24.deckloaded = function(value, group, control) {
     var i;
     switch (group.substr(1, 7)) {
         case "Channel":
             var channelRegEx = /\[Channel(\d+)\]/;
-            var channelChan = parseInt(channelRegEx.exec(group))[1];
+            var channelChan = parseInt(channelRegEx.exec(group)[1]);
             if (channelChan <= 4) {
                 midi.sendShortMsg(0x90 + channelChan, 0x50, value ? ON :
                     OFF);
@@ -368,8 +375,8 @@ ReloopBeatmix24.deckloaded = function(value, group, control) {
             break;
         case "Sampler":
             var samplerRegEx = /\[Sampler(\d+)\]/;
-            var samplerChan = parseInt(samplerRegEx.exec(group))[1];
-            if (samplerChan <= 4) { // We only handle 4 samplers (1 per pad)
+            var samplerChan = parseInt(samplerRegEx.exec(group)[1]);
+            if (samplerChan <= 8) { // We only handle 8 samplers (1 per pad)
                 for (i = 0x91; i <= 0x94; i++) {
                     // PAD1 Mode A
                     midi.sendShortMsg(i, 0x08 - 1 + samplerChan, value ?
@@ -377,15 +384,58 @@ ReloopBeatmix24.deckloaded = function(value, group, control) {
                     // SHIFT+PAD1 Mode A
                     midi.sendShortMsg(i, 0x48 - 1 + samplerChan, value ?
                         RED : OFF);
-                    // PAD5 Mode A+B
-                    midi.sendShortMsg(i, 0x14 - 1 + samplerChan, value ?
-                        RED : OFF);
-                    // SHIFT+PAD5 Mode A+B
-                    midi.sendShortMsg(i, 0x1C - 1 + samplerChan, value ?
-                        RED : OFF);
+                    if (samplerChan <= 4) { // Handle first 4 samplers in split mode
+                        // PAD5 Mode A+B (sampler 1 in split mode)
+                        midi.sendShortMsg(i, 0x14 - 1 + samplerChan, value ?
+                            RED : OFF);
+                        // SHIFT+PAD5 Mode A+B (sampler 1 in split mode)
+                        midi.sendShortMsg(i, 0x1C - 1 + samplerChan, value ?
+                            RED : OFF);
+                    }
                 }
             }
             break;
+    }
+};
+
+ReloopBeatmix24.SamplerPlay = function(value, group, control) {
+    var samplerRegEx = /\[Sampler(\d+)\]/;
+    var samplerChan = parseInt(samplerRegEx.exec(group)[1]);
+    if (samplerChan <= 8) { // We only handle 8 samplers (1 per pad)
+        var ledColor;
+        if (value) {
+            ledColor = VIOLET;
+        } else {
+            ledColor = engine.getValue(group, "track_samples") ? RED : OFF;
+        }
+
+        // We need to switch off pad lights before changing color otherwise
+        // VIOLET to RED transition does not work well. (???)
+        for (var i = 0x91; i <= 0x94; i++) {
+            // PAD1 Mode A
+            midi.sendShortMsg(i, 0x08 - 1 + samplerChan, OFF);
+            midi.sendShortMsg(i, 0x08 - 1 + samplerChan, ledColor);
+            // SHIFT+PAD1 Mode A
+            midi.sendShortMsg(i, 0x48 - 1 + samplerChan, OFF);
+            midi.sendShortMsg(i, 0x48 - 1 + samplerChan, ledColor);
+            if (samplerChan <= 4) { // Handle first 4 samplers in split mode
+                // PAD5 Mode A+B (sampler 1 in split mode)
+                midi.sendShortMsg(i, 0x14 - 1 + samplerChan, OFF);
+                midi.sendShortMsg(i, 0x14 - 1 + samplerChan, ledColor);
+                // SHIFT+PAD5 Mode A+B (sampler 1 in split mode)
+                midi.sendShortMsg(i, 0x1C - 1 + samplerChan, OFF);
+                midi.sendShortMsg(i, 0x1C - 1 + samplerChan, ledColor);
+            }
+        }
+    }
+};
+
+ReloopBeatmix24.loopDefined = function(value, group, control) {
+    var channelRegEx = /\[Channel(\d+)\]/;
+    var channelChan = parseInt(channelRegEx.exec(group)[1]);
+    if (channelChan <= 4) {
+        midi.sendShortMsg(0x90 + channelChan, 0x44, value < 0 ? OFF :
+            VIOLET);
     }
 };
 
@@ -483,12 +533,10 @@ ReloopBeatmix24.jogLedFlash = function(group, state) {
 
 // Effects functions
 // ========================================================
-
 ReloopBeatmix24.FxModeLedFlash = function(step, mode) {
     var i;
     var ledValue = (step % 2) ? ON : OFF;
     if (step >= 7) {
-
         for (i = 1; i <= 4; i++) {
             // engine.trigger should be sufficient, but...
             engine.trigger("[EffectRack1_EffectUnit1]", "group_[Channel" +
@@ -510,8 +558,7 @@ ReloopBeatmix24.FxModeLedFlash = function(step, mode) {
             midi.sendShortMsg(i, 0x26 - mode, ledValue);
             midi.sendShortMsg(i, 0x26 + SHIFT - mode, ledValue);
         }
-        engine.beginTimer(150, "ReloopBeatmix24.FxModeLedFlash(" + (step +
-                1) +
+        engine.beginTimer(150, "ReloopBeatmix24.FxModeLedFlash(" + (step + 1) +
             ", " + mode + ")", true);
     }
 };
@@ -525,7 +572,7 @@ ReloopBeatmix24.FxModeCallback = function(group, mode) {
         midi.sendShortMsg(i, 0x26 - mode, OFF);
         midi.sendShortMsg(i, 0x26 + SHIFT - mode, OFF);
     }
-    engine.beginTimer(150, "ReloopBeatmix24.FxModeLedFlash(1," + mode + ")",
+    engine.beginTimer(150, "ReloopBeatmix24.FxModeLedFlash(1, " + mode + ")",
         true);
 };
 
@@ -598,15 +645,16 @@ ReloopBeatmix24.ShiftFxKnobTurn = function(channel, control, value, status,
             script.absoluteLin(value, 0, 1));
     } else {
         var effectUnit = parseInt(group.substr(23, 1), 10);
-        var storeIndex = "FX4U" + effectUnit.toString();
+        var Effect = control - SHIFT;
+        var storeIndex = "FX" + Effect.toString() + "U" + effectUnit.toString();
         if (storeIndex in previousValue) {
             if (value - previousValue[storeIndex] > 5) {
                 engine.setValue("[EffectRack1_EffectUnit" + effectUnit +
-                    "_Effect1]", "next_effect", 1);
+                    "_Effect" + Effect + "]", "next_effect", 1);
                 previousValue[storeIndex] = value;
             } else if (value - previousValue[storeIndex] < -5) {
                 engine.setValue("[EffectRack1_EffectUnit" + effectUnit +
-                    "_Effect1]", "prev_effect", 1);
+                    "_Effect" + Effect + "]", "prev_effect", 1);
                 previousValue[storeIndex] = value;
             }
         } else {
@@ -641,23 +689,9 @@ ReloopBeatmix24.ShiftFxOff = function(channel, control, value, status, group) {
 ReloopBeatmix24.FxEncoderTurn = function(channel, control, value, status, group) {
     var newValue = value - 0x40;
     if (FxMode == 1) {
-        newValue = engine.getValue(group, "mix") + newValue * 0.05;
-        if (newValue < 0) {
-            newValue = 0;
-        }
-        if (newValue > 1) {
-            newValue = 1;
-        }
-        engine.setValue(group, "mix", newValue);
+        engine.setValue(group, newValue > 0 ? "mix_up" : "mix_down", 1);
     } else {
-        newValue = engine.getValue(group, "super1") + newValue * 0.05;
-        if (newValue < 0) {
-            newValue = 0;
-        }
-        if (newValue > 1) {
-            newValue = 1;
-        }
-        engine.setValue(group, "super1", newValue);
+        engine.setValue(group, newValue > 0 ? "super1_up" : "super1_down", 1);
     }
 };
 
@@ -667,14 +701,7 @@ ReloopBeatmix24.ShiftFxEncoderTurn = function(channel, control, value, status,
     if (FxMode == 1) {
         engine.setValue(group, "chain_selector", newValue);
     } else {
-        newValue = engine.getValue(group, "mix") + newValue * 0.05;
-        if (newValue < 0) {
-            newValue = 0;
-        }
-        if (newValue > 1) {
-            newValue = 1;
-        }
-        engine.setValue(group, "mix", newValue);
+        engine.setValue(group, newValue > 0 ? "mix_up" : "mix_down", 1);
     }
 };
 
@@ -687,5 +714,5 @@ ReloopBeatmix24.FxEncoderPush = function(channel, control, value, status, group)
 
 ReloopBeatmix24.ShiftFxEncoderPush = function(channel, control, value, status,
     group) {
-    engine.setValue(group, "clear", value ? 1 : 0);
+    engine.setValue(group, "clear", value);
 };

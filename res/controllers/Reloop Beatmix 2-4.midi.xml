@@ -119,22 +119,22 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD1B</description>
                 <status>0x91</status>
                 <midino>0x10</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD1B</description>
                 <status>0x91</status>
                 <midino>0x18</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -159,22 +159,22 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD2B</description>
                 <status>0x91</status>
                 <midino>0x11</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD2B</description>
                 <status>0x91</status>
                 <midino>0x19</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -199,22 +199,22 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD3B</description>
                 <status>0x91</status>
                 <midino>0x12</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD3B</description>
                 <status>0x91</status>
                 <midino>0x1A</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -239,22 +239,22 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD4B</description>
                 <status>0x91</status>
                 <midino>0x13</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD4B</description>
                 <status>0x91</status>
                 <midino>0x1B</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -278,18 +278,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
-                <key>start_stop</key>
+                <group>[Sampler5]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD5B</description>
                 <status>0x91</status>
                 <midino>0x14</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler5]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD5B</description>
                 <status>0x91</status>
                 <midino>0x1C</midino>
@@ -318,18 +318,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
-                <key>start_stop</key>
+                <group>[Sampler6]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD6B</description>
                 <status>0x91</status>
                 <midino>0x15</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler6]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD6B</description>
                 <status>0x91</status>
                 <midino>0x1D</midino>
@@ -358,18 +358,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
-                <key>start_stop</key>
+                <group>[Sampler7]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD7B</description>
                 <status>0x91</status>
                 <midino>0x16</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler7]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD7B</description>
                 <status>0x91</status>
                 <midino>0x1E</midino>
@@ -398,18 +398,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
-                <key>start_stop</key>
+                <group>[Sampler8]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD8B</description>
                 <status>0x91</status>
                 <midino>0x17</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler8]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD8B</description>
                 <status>0x91</status>
                 <midino>0X1F</midino>
@@ -674,22 +674,22 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD1B</description>
                 <status>0x92</status>
                 <midino>0x10</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD1B</description>
                 <status>0x92</status>
                 <midino>0x18</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -714,22 +714,22 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD2B</description>
                 <status>0x92</status>
                 <midino>0x11</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD2B</description>
                 <status>0x92</status>
                 <midino>0x19</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -754,22 +754,22 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD3B</description>
                 <status>0x92</status>
                 <midino>0x12</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD3B</description>
                 <status>0x92</status>
                 <midino>0x1A</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -794,22 +794,22 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD4B</description>
                 <status>0x92</status>
                 <midino>0x13</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD4B</description>
                 <status>0x92</status>
                 <midino>0x1B</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -833,18 +833,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
-                <key>start_stop</key>
+                <group>[Sampler5]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD5B</description>
                 <status>0x92</status>
                 <midino>0x14</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler5]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD5B</description>
                 <status>0x92</status>
                 <midino>0x1C</midino>
@@ -873,18 +873,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
-                <key>start_stop</key>
+                <group>[Sampler6]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD6B</description>
                 <status>0x92</status>
                 <midino>0x15</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler6]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD6B</description>
                 <status>0x92</status>
                 <midino>0x1D</midino>
@@ -913,18 +913,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
-                <key>start_stop</key>
+                <group>[Sampler7]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD7B</description>
                 <status>0x92</status>
                 <midino>0x16</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler7]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD7B</description>
                 <status>0x92</status>
                 <midino>0x1E</midino>
@@ -953,18 +953,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
-                <key>start_stop</key>
+                <group>[Sampler8]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD8B</description>
                 <status>0x92</status>
                 <midino>0x17</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler8]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD8B</description>
                 <status>0x92</status>
                 <midino>0X1F</midino>
@@ -1229,22 +1229,22 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD1B</description>
                 <status>0x93</status>
                 <midino>0x10</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD1B</description>
                 <status>0x93</status>
                 <midino>0x18</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -1269,22 +1269,22 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD2B</description>
                 <status>0x93</status>
                 <midino>0x11</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD2B</description>
                 <status>0x93</status>
                 <midino>0x19</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -1309,22 +1309,22 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD3B</description>
                 <status>0x93</status>
                 <midino>0x12</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD3B</description>
                 <status>0x93</status>
                 <midino>0x1A</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -1349,22 +1349,22 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD4B</description>
                 <status>0x93</status>
                 <midino>0x13</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD4B</description>
                 <status>0x93</status>
                 <midino>0x1B</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -1388,18 +1388,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
-                <key>start_stop</key>
+                <group>[Sampler5]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD5B</description>
                 <status>0x93</status>
                 <midino>0x14</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler5]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD5B</description>
                 <status>0x93</status>
                 <midino>0x1C</midino>
@@ -1428,18 +1428,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
-                <key>start_stop</key>
+                <group>[Sampler6]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD6B</description>
                 <status>0x93</status>
                 <midino>0x15</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler6]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD6B</description>
                 <status>0x93</status>
                 <midino>0x1D</midino>
@@ -1468,18 +1468,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
-                <key>start_stop</key>
+                <group>[Sampler7]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD7B</description>
                 <status>0x93</status>
                 <midino>0x16</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler7]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD7B</description>
                 <status>0x93</status>
                 <midino>0x1E</midino>
@@ -1508,18 +1508,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
-                <key>start_stop</key>
+                <group>[Sampler8]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD8B</description>
                 <status>0x93</status>
                 <midino>0x17</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler8]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD8B</description>
                 <status>0x93</status>
                 <midino>0X1F</midino>
@@ -1784,22 +1784,22 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD1B</description>
                 <status>0x94</status>
                 <midino>0x10</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD1B</description>
                 <status>0x94</status>
                 <midino>0x18</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -1824,22 +1824,22 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD2B</description>
                 <status>0x94</status>
                 <midino>0x11</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD2B</description>
                 <status>0x94</status>
                 <midino>0x19</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -1864,22 +1864,22 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD3B</description>
                 <status>0x94</status>
                 <midino>0x12</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD3B</description>
                 <status>0x94</status>
                 <midino>0x1A</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -1904,22 +1904,22 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>cue_gotoandplay</key>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD4B</description>
                 <status>0x94</status>
                 <midino>0x13</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>repeat</key>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD4B</description>
                 <status>0x94</status>
                 <midino>0x1B</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
@@ -1943,18 +1943,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
-                <key>start_stop</key>
+                <group>[Sampler5]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD5B</description>
                 <status>0x94</status>
                 <midino>0x14</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler5]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD5B</description>
                 <status>0x94</status>
                 <midino>0x1C</midino>
@@ -1983,18 +1983,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
-                <key>start_stop</key>
+                <group>[Sampler6]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD6B</description>
                 <status>0x94</status>
                 <midino>0x15</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler6]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD6B</description>
                 <status>0x94</status>
                 <midino>0x1D</midino>
@@ -2023,18 +2023,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
-                <key>start_stop</key>
+                <group>[Sampler7]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD7B</description>
                 <status>0x94</status>
                 <midino>0x16</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler7]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD7B</description>
                 <status>0x94</status>
                 <midino>0x1E</midino>
@@ -2063,18 +2063,18 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
-                <key>start_stop</key>
+                <group>[Sampler8]</group>
+                <key>ReloopBeatmix24.SamplerPad</key>
                 <description>PAD8B</description>
                 <status>0x94</status>
                 <midino>0x17</midino>
                 <options>
-                    <Normal/>
+                    <Script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
-                <key>ReloopBeatmix24.SamplerLoadEject</key>
+                <group>[Sampler8]</group>
+                <key>ReloopBeatmix24.ShiftSamplerPad</key>
                 <description>SHIFT+PAD8B</description>
                 <status>0x94</status>
                 <midino>0X1F</midino>
