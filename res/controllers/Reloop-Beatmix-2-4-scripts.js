@@ -115,7 +115,7 @@ ReloopBeatmix24.connectControls = function(disconnect) {
     // Channels controls
     for (var i = 1; i <= 4; i++) {
         engine.connectControl("[Channel" + i + "]", "track_samples",
-            "ReloopBeatmix24.deckloaded", disconnect);
+            "ReloopBeatmix24.deckLoaded", disconnect);
         engine.connectControl("[Channel" + i + "]", "play",
             "ReloopBeatmix24.startJogLedSpinnie", disconnect);
         engine.connectControl("[Channel" + i + "]", "loop_end_position",
@@ -131,7 +131,7 @@ ReloopBeatmix24.connectControls = function(disconnect) {
     // Samplers controls
     for (i = 1; i <= 8; i++) {
         engine.connectControl("[Sampler" + i + "]", "track_samples",
-            "ReloopBeatmix24.deckloaded", disconnect);
+            "ReloopBeatmix24.deckLoaded", disconnect);
         engine.connectControl("[Sampler" + i + "]", "play",
             "ReloopBeatmix24.SamplerPlay", disconnect);
     }
@@ -180,8 +180,7 @@ ReloopBeatmix24.Range = function(channel, control, value, status, group) {
 
 ReloopBeatmix24.MasterSync = function(channel, control, value, status, group) {
     if (value === DOWN) {
-        engine.setValue(group, "sync_enabled",
-            engine.getValue(group, "sync_enabled") ? 0 : 1);
+        script.toggleControl(group, "sync_enabled");
     }
 };
 
@@ -247,15 +246,10 @@ ReloopBeatmix24.TraxPush = function(channel, control, value, status, group) {
             break;
         case 3: // Preview mode
             if (value == DOWN) {
-                engine.setValue("[PreviewDeck1]", "play",
-                    engine.getValue("[PreviewDeck1]", "play") ? 0 : 1);
+                script.toggleControl("[PreviewDeck1]", "play");
             }
             break;
     }
-};
-
-ReloopBeatmix24.ShiftTraxPush = function(channel, control, value, status, group) {
-    ReloopBeatmix24.TraxPush(channel, control, value, status, group);
 };
 
 ReloopBeatmix24.BackButton = function(channel, control, value, status, group) {
@@ -291,7 +285,8 @@ ReloopBeatmix24.LoadButton = function(channel, control, value, status, group) {
             delete loadButtonTimers[group];
             engine.setValue(group, "LoadSelectedTrack", 1);
         } else {
-            // Nothing to do, action already done in timer callback function
+            // Set eject back to 0 to turn off the eject button on screen
+            engine.setValue(group, "eject", 0);
             loadButtonLongPressed[group] = false;
         }
     }
@@ -364,7 +359,7 @@ ReloopBeatmix24.AllJogLEDsToggle = function(deck, state, step) {
     }
 };
 
-ReloopBeatmix24.deckloaded = function(value, group, control) {
+ReloopBeatmix24.deckLoaded = function(value, group, control) {
     var i;
     switch (group.substr(1, 7)) {
         case "Channel":
