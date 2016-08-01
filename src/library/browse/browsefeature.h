@@ -36,8 +36,8 @@ class BrowseFeature : public LibraryFeature {
                   RecordingManager* pRec);
     virtual ~BrowseFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
 
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
 

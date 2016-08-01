@@ -39,8 +39,8 @@ class AutoDJFeature : public LibraryFeature {
                   TrackCollection* pTrackCollection);
     virtual ~AutoDJFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);

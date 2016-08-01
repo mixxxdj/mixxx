@@ -141,6 +141,10 @@ QVariant BrowseFeature::title() {
     return QVariant(tr("Browse"));
 }
 
+QString BrowseFeature::getIconPath() {
+    return ":/images/library/ic_library_browse.png";
+}
+
 void BrowseFeature::slotAddQuickLink() {
     if (!m_pLastRightClickedItem) {
         return;
@@ -201,10 +205,6 @@ void BrowseFeature::slotRemoveQuickLink() {
     m_pQuickLinkItem->removeChild(index);
     m_quickLinkList.removeAt(index);
     saveQuickLinks();
-}
-
-QIcon BrowseFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_browse.png");
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {

@@ -95,8 +95,8 @@ QVariant AutoDJFeature::title() {
     return tr("Auto DJ");
 }
 
-QIcon AutoDJFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_autodj.png");
+QString AutoDJFeature::getIconPath() {
+    return ":/images/library/ic_library_autodj.png";
 }
 
 QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {

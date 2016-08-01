@@ -24,7 +24,7 @@ public:
     virtual ~HistoryFeature();
 
     QVariant title() override;
-    QIcon getIcon() override;
+    QString getIconPath() override;
     void decorateChild(TreeItem *pChild, int playlist_id) override;
 
   public slots:

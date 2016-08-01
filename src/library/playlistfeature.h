@@ -26,8 +26,8 @@ class PlaylistFeature : public BasePlaylistFeature {
                     TrackCollection* pTrackCollection);
     virtual ~PlaylistFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
 
     bool dragMoveAccept(QUrl url);
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);

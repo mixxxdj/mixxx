@@ -56,10 +56,6 @@ QVariant AnalysisFeature::title() {
     return m_Title;
 }
 
-QIcon AnalysisFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_prepare.png");
-}
-
 QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
                                            int paneId) {        
     WTrackTableView* pTable = LibraryFeature::createTableWidget(pKeyboard, paneId);

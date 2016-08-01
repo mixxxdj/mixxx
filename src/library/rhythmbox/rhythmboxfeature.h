@@ -29,7 +29,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
 
     QVariant title();
-    QIcon getIcon();
+    QString getIconPath() override;
 
     TreeItemModel* getChildModel();
     // processes the music collection

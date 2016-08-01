@@ -27,8 +27,8 @@ QVariant MaintenanceFeature::title() {
     return kMaintenanceTitle;
 }
 
-QIcon MaintenanceFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_maintenance.png");
+QString MaintenanceFeature::getIconPath() {
+    return ":/images/library/ic_library_maintenance.png";
 }
 
 TreeItemModel* MaintenanceFeature::getChildModel() {

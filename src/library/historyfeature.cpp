@@ -53,8 +53,8 @@ QVariant HistoryFeature::title() {
     return tr("History");
 }
 
-QIcon HistoryFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_history.png");
+QString HistoryFeature::getIconPath() {
+    return ":/images/library/ic_library_history.png";
 }
 
 void HistoryFeature::onRightClick(const QPoint&) {

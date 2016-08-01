@@ -44,8 +44,8 @@ class TraktorFeature : public BaseExternalLibraryFeature {
                    TrackCollection* pTrackCollection);
     virtual ~TraktorFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
     static bool isSupported();
 
     TreeItemModel* getChildModel();

@@ -123,8 +123,8 @@ QVariant CrateFeature::title() {
     return tr("Crates");
 }
 
-QIcon CrateFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_crates.png");
+QString CrateFeature::getIconPath() {
+    return ":/images/library/ic_library_crates.png";
 }
 
 int CrateFeature::crateIdFromIndex(QModelIndex index) {

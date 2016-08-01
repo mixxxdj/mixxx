@@ -20,8 +20,8 @@ class MaintenanceFeature : public LibraryFeature
                        Library* pLibrary, QObject* parent, 
                        TrackCollection* pTrackCollection);
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
     TreeItemModel* getChildModel();
 
   public slots:

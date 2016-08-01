@@ -40,8 +40,8 @@ class MixxxLibraryFeature : public LibraryFeature {
                         TrackCollection* pTrackCollection);
     virtual ~MixxxLibraryFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
     
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);

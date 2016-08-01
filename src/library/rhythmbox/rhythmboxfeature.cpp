@@ -103,8 +103,8 @@ QVariant RhythmboxFeature::title() {
     return m_title;
 }
 
-QIcon RhythmboxFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_rhythmbox.png");
+QString RhythmboxFeature::getIconPath() {
+    return ":/images/library/ic_library_rhythmbox.png";
 }
 
 TreeItemModel* RhythmboxFeature::getChildModel() {

@@ -38,7 +38,8 @@ class LibraryFeature : public QObject {
     virtual ~LibraryFeature();
 
     virtual QVariant title() = 0;
-    virtual QIcon getIcon() = 0;
+    virtual QString getIconPath() = 0;
+    QIcon getIcon();
 
     virtual bool dropAccept(QList<QUrl> /* urls */, 
                             QObject* /* pSource */) {

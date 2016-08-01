@@ -28,8 +28,8 @@ class RecordingFeature : public LibraryFeature {
                      RecordingManager* pRecordingManager);
     virtual ~RecordingFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
 
     QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int paneId) override;
     QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;

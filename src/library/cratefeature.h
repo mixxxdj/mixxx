@@ -31,8 +31,8 @@ class CrateFeature : public LibraryFeature {
                  TrackCollection* pTrackCollection);
     virtual ~CrateFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
     
     void onSearch(QString&) {}
 

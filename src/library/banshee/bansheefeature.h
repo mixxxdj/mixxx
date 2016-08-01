@@ -28,8 +28,8 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);
 
-    virtual QVariant title();
-    virtual QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
 
     virtual TreeItemModel* getChildModel();
 

@@ -28,8 +28,8 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     virtual ~ITunesFeature();
     static bool isSupported();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
 
     TreeItemModel* getChildModel();
 

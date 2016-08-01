@@ -37,8 +37,8 @@ QVariant PlaylistFeature::title() {
     return tr("Playlists");
 }
 
-QIcon PlaylistFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_playlist.png");
+QString PlaylistFeature::getIconPath() {
+    return ":/images/library/ic_library_playlist.png";
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {

@@ -58,8 +58,8 @@ QVariant BansheeFeature::title() {
     return m_title;
 }
 
-QIcon BansheeFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_banshee.png");
+QString BansheeFeature::getIconPath() {
+    return ":/images/library/ic_library_banshee.png";
 }
 
 void BansheeFeature::activate() {

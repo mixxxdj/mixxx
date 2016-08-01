@@ -29,8 +29,8 @@ class AnalysisFeature : public LibraryFeature {
                     QObject* parent);
     virtual ~AnalysisFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QString getIconPath() override;
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);

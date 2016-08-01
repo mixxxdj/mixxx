@@ -123,8 +123,8 @@ QVariant MixxxLibraryFeature::title() {
     return kLibraryTitle;
 }
 
-QIcon MixxxLibraryFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_library.png");
+QString MixxxLibraryFeature::getIconPath() {
+    return ":/images/library/ic_library_library.png";
 }
 
 TreeItemModel* MixxxLibraryFeature::getChildModel() {

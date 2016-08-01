@@ -39,6 +39,10 @@ LibraryFeature::~LibraryFeature() {
     
 }
 
+QIcon LibraryFeature::getIcon() {
+    return QIcon(getIconPath());
+}
+
 QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                           int paneId) {
     return createTableWidget(pKeyboard, paneId);

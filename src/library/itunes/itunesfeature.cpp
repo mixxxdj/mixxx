@@ -112,8 +112,8 @@ QVariant ITunesFeature::title() {
     return m_title;
 }
 
-QIcon ITunesFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_itunes.png");
+QString ITunesFeature::getIconPath() {
+    return ":/images/library/ic_library_itunes.png";
 }
 
 void ITunesFeature::activate() {
