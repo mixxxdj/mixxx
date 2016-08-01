@@ -11,7 +11,7 @@ WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* pare
     DEBUG_ASSERT_AND_HANDLE(pFeature != nullptr) {
         return;
     }
-
+    
     setIcon(m_pFeature->getIcon());
     setText(m_pFeature->title().toString());
 

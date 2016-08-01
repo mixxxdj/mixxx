@@ -20,6 +20,7 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 #include "widget/wminiviewscrollbar.h"
+#include "widget/wpixmapstore.h"
 
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!
 // The reason for this is that LibraryFeature uses slots/signals and for this
@@ -40,7 +41,10 @@ LibraryFeature::~LibraryFeature() {
 }
 
 QIcon LibraryFeature::getIcon() {
-    return QIcon(getIconPath());
+    QPixmap* pPixmap = WPixmapStore::getPixmapNoCache(getIconPath());
+    QIcon icon(*pPixmap);
+    delete pPixmap;
+    return icon;
 }
 
 QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
