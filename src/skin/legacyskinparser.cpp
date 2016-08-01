@@ -228,7 +228,7 @@ QList<QString> LegacySkinParser::getSchemeList(const QString& qSkinPath) {
 
     QDomElement docElem = openSkin(qSkinPath);
     QList<QString> schlist;
-
+    
     QDomNode colsch = docElem.namedItem("Schemes");
     if (!colsch.isNull() && colsch.isElement()) {
         QDomNode sch = colsch.firstChild();

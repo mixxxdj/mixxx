@@ -25,6 +25,23 @@
     </attributes>
   </manifest>
 
+  <Schemes>
+    <Scheme>
+      <Name>Default</Name>
+      <Filters></Filters>
+    </Scheme>
+    <Scheme>
+      <Name>Green</Name>
+      <Filters>
+        <HSVTweak>
+          <HMin>23</HMin>
+          <HMax>25</HMax>
+          <HConst>100</HConst>
+        </HSVTweak>
+      </Filters>
+    </Scheme>
+  </Schemes>
+
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"/>
 
