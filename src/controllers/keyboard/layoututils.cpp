@@ -5,6 +5,8 @@
 #include "controllers/keyboard/layouts.h"
 
 namespace layoutUtils {
+    QRegExp const keysequenceSeparator("\\+(?!$)");
+
     static const unsigned char LAYOUT_SCANCODES[48] = {
             0x29, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,  // Digits row
             0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,        // Upper row
@@ -54,8 +56,7 @@ namespace layoutUtils {
                                      Qt::KeyboardModifier modifier) {
 
         // Keyboard layouts only support no modifier and shift modifier
-        if (!(modifier & Qt::NoModifier ||
-                modifier & Qt::ShiftModifier)) {
+        if (modifier > Qt::ShiftModifier) {
             return {};
         }
 
@@ -67,5 +68,15 @@ namespace layoutUtils {
         }
 
         return pKeyChar;
+    }
+
+    QString getCharFromKeysequence(QString keyseq) {
+        return keyseq.split(keysequenceSeparator).last();
+    }
+
+    QStringList getModifiersFromKeysequence(QString keyseq) {
+        QStringList splitKeyseq = keyseq.split(keysequenceSeparator);
+        splitKeyseq.pop_back();
+        return splitKeyseq;
     }
 }

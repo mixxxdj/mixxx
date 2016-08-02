@@ -26,7 +26,12 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
     // Get current keyboard layout
     QString layoutName = inputLocale().name();
     KeyboardLayoutPointer layout = layoutUtils::getLayout(layoutName);
-    Q_UNUSED(layout);
+
+    // Default to American English layout if not found
+    if (layout == nullptr) {
+        layoutName = "en_US";
+        layout = layoutUtils::getLayout("en_US");
+    }
 
     // Superclass handles parsing <info> tag and script files
     parsePresetInfo(root, preset);
@@ -40,21 +45,68 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
         // Iterate through each <control> element inside the current <group> block
         QDomElement control = group.firstChildElement("control");
         while (!control.isNull()) {
-            QString action = control.attributeNode("action").value();
+            bool keyseqNeedsTranslate = true;
 
             // Iterate through each <keyseq> node inside the current <control> element
-            QDomElement keyseq_element = control.firstChildElement("keyseq");
+            // Iterate in reverse order and default to first keyseq if none is found
+            QDomElement keyseq_element = control.lastChildElement("keyseq");
             while(!keyseq_element.isNull()) {
-                QString keyseq = keyseq_element.text();
+                // Check if this key sequence is a universal key and thus doesn't need a translation
+                bool isUniversalKey = keyseq_element.attributeNode("scancode").value() == "universal_key";
 
-                ConfigValueKbd configValueKbd = ConfigValueKbd(keyseq);
-                ConfigKey configKey = ConfigKey(groupName, action);
+                // Check if this key sequence's target layout is the same as the user's language
+                bool keyboardLayoutIsSame = keyseq_element.attributeNode("lang").value() == layoutName;
 
-                // Load action into preset
-                preset->m_mapping.insert(configValueKbd, configKey);
+                if (isUniversalKey || keyboardLayoutIsSame) {
+                    keyseqNeedsTranslate = false;
+                    break;
+                }
 
-                keyseq_element = keyseq_element.nextSiblingElement("keyseq");
+                if (keyseq_element == control.firstChildElement("keyseq")) {
+                    break;
+                }
+                keyseq_element = keyseq_element.previousSiblingElement("keyseq");
             }
+
+            QString action = control.attributeNode("action").value();
+            QString keyseq = keyseq_element.text();
+
+            if (keyseqNeedsTranslate) {
+                QString scancode_string = keyseq_element.attributeNode("scancode").value();
+                unsigned char scancode = (unsigned char) scancode_string.toInt();
+
+                if (!scancode_string.isEmpty()) {
+                    // Find out if the character is regular or shifted
+                    QStringList modifiers = layoutUtils::getModifiersFromKeysequence(keyseq);
+                    bool onlyShift = modifiers.size() == 1 && modifiers.contains("Shift");
+                    Qt::KeyboardModifier modifier = onlyShift ? Qt::ShiftModifier : Qt::NoModifier;
+
+                    // Get KbdKeyChar
+                    const KbdKeyChar* keyChar = layoutUtils::getKbdKeyChar(layout, scancode, modifier);
+                    QChar character = QChar(keyChar->character);
+                    if (keyChar->is_dead) {
+                        qWarning() << "Can't translate "
+                                "key for action \'" << action << "\' because it's "
+                                "a dead key on target layout " << layoutName;
+                    }
+
+                    // Reconstruct key sequence with translated character
+                    QString modifiersString = modifiers.join("+");
+                    if (!modifiersString.isEmpty()) {
+                        modifiersString += "+";
+                    }
+                    keyseq = modifiersString + character;
+
+                } else {
+                    // Guess scancode
+                }
+            }
+
+            ConfigValueKbd configValueKbd = ConfigValueKbd(keyseq);
+            ConfigKey configKey = ConfigKey(groupName, action);
+
+            // Load action into preset
+            preset->m_mapping.insert(configValueKbd, configKey);
 
             control = control.nextSiblingElement("control");
         }
@@ -67,9 +119,11 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
 
 bool KeyboardControllerPresetFileHandler::save(const KeyboardControllerPreset &preset, const QString deviceName,
                                                const QString fileName) const {
-    QDomDocument doc = buildRootWithScripts(preset, deviceName);
-    addControlsToDocument(preset, &doc);
-    return writeDocument(doc, fileName);
+    // TODO(Tomasito) Fix this for new
+//    QDomDocument doc = buildRootWithScripts(preset, deviceName);
+//    addControlsToDocument(preset, &doc);
+//    return writeDocument(doc, fileName);
+      return true;
 }
 
 void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardControllerPreset& preset,
