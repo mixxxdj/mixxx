@@ -1,3 +1,4 @@
+#include "util/cmdlineargs.h"
 #include "util/compatibility.h"
 #include "controllers/keyboard/keyboardcontrollerpresetfilehandler.h"
 #include "controllers/keyboard/layoututils.h"
@@ -84,28 +85,30 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
                     // Get KbdKeyChar
                     const KbdKeyChar* keyChar = layoutUtils::getKbdKeyChar(layout, scancode, modifier);
                     QChar character = QChar(keyChar->character);
-                    if (keyChar->is_dead) {
-                        qWarning() << "Can't translate "
-                                "key for action \'" << action << "\' because it's "
-                                "a dead key on target layout " << layoutName;
+
+                    // If key is not dead, reconstruct key sequence with translated character.
+                    // Otherwise, warn the user about the key that is not going to work.
+                    if (!keyChar->is_dead) {
+                        QString modifiersString = modifiers.join("+");
+                        if (!modifiersString.isEmpty()) {
+                            modifiersString += "+";
+                        }
+                        keyseq = modifiersString + character;
+                    } else {
+                        qWarning() << "Can't use key with scancode " << scancode
+                                   << " because it's a dead key on layout '" << layoutName
+                                   << "'. Please specify <keyseq lang=\"" << layoutName
+                                   << "\" scancode=\"" << scancode << "\"> in the keyboard preset file (group: "
+                                   << groupName << ").";
+                        keyseq = "";
                     }
 
-                    // Reconstruct key sequence with translated character
-                    QString modifiersString = modifiers.join("+");
-                    if (!modifiersString.isEmpty()) {
-                        modifiersString += "+";
-                    }
-                    keyseq = modifiersString + character;
-
-                } else {
-                    // Guess scancode
                 }
             }
 
+            // Load action into preset
             ConfigValueKbd configValueKbd = ConfigValueKbd(keyseq);
             ConfigKey configKey = ConfigKey(groupName, action);
-
-            // Load action into preset
             preset->m_mapping.insert(configValueKbd, configKey);
 
             control = control.nextSiblingElement("control");
@@ -119,7 +122,7 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
 
 bool KeyboardControllerPresetFileHandler::save(const KeyboardControllerPreset &preset, const QString deviceName,
                                                const QString fileName) const {
-    // TODO(Tomasito) Fix this for new
+    // TODO(Tomasito) Fix this for new keyboard preset controller format
 //    QDomDocument doc = buildRootWithScripts(preset, deviceName);
 //    addControlsToDocument(preset, &doc);
 //    return writeDocument(doc, fileName);
