@@ -133,14 +133,15 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
                  << info << desiredWidth << signalWhenDone;
     }
 
+    QImage image = CoverArtUtils::loadCover(info);
+
     FutureResult res;
     res.pRequestor = pRequestor;
-    res.cover.info = info;
+    res.cover = CoverArt(info, image);
     res.desiredWidth = desiredWidth;
     res.signalWhenDone = signalWhenDone;
-    res.cover.image = CoverArtUtils::loadCover(res.cover.info);
 
-    if (res.cover.image.isNull()) {
+    if (image.isNull()) {
         return res;
     }
 
@@ -170,10 +171,10 @@ void CoverArtCache::coverLoaded() {
 
     QPixmap pixmap = cacheCover(res.cover, res.desiredWidth);
 
-    m_runningRequests.remove(qMakePair(res.pRequestor, res.cover.info.hash));
+    m_runningRequests.remove(qMakePair(res.pRequestor, res.cover.hash));
 
     if (res.signalWhenDone) {
-        emit(coverFound(res.pRequestor, res.cover.info, pixmap, false));
+        emit(coverFound(res.pRequestor, res.cover, pixmap, false));
     }
 }
 
@@ -188,7 +189,7 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 void CoverArtCache::guessCover(TrackPointer pTrack) {
     if (pTrack) {
         CoverArt cover = CoverArtUtils::guessCoverArt(pTrack);
-        pTrack->setCoverInfo(cover.info);
+        pTrack->setCoverInfo(cover);
     }
 }
 
@@ -203,7 +204,7 @@ void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
 QPixmap CoverArtCache::cacheCover(CoverArt cover, int width) {
     QPixmap pixmap;
     if (!cover.image.isNull()) {
-        QString cacheKey = pixmapCacheKey(cover.info.hash, width);
+        QString cacheKey = pixmapCacheKey(cover.hash, width);
         if (!QPixmapCache::find(cacheKey, &pixmap)) {
             pixmap.convertFromImage(cover.image);
             // Don't cache full size covers (Width = 0)

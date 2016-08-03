@@ -86,7 +86,7 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
 //static
 CoverArt CoverArtUtils::guessCoverArt(TrackPointer pTrack) {
     CoverArt art;
-    art.info.source = CoverInfo::GUESSED;
+    art.source = CoverInfo::GUESSED;
 
     if (pTrack.isNull()) {
         return art;
@@ -96,9 +96,9 @@ CoverArt CoverArtUtils::guessCoverArt(TrackPointer pTrack) {
     art.image = extractEmbeddedCover(fileInfo, pTrack->getSecurityToken());
     if (!art.image.isNull()) {
         // TODO() here we my introduce a duplicate hash code
-        art.info.hash = calculateHash(art.image);
-        art.info.coverLocation = QString();
-        art.info.type = CoverInfo::METADATA;
+        art.hash = calculateHash(art.image);
+        art.coverLocation = QString();
+        art.type = CoverInfo::METADATA;
         qDebug() << "CoverArtUtils::guessCoverArt found metadata art" << art;
         return art;
     }
@@ -106,7 +106,7 @@ CoverArt CoverArtUtils::guessCoverArt(TrackPointer pTrack) {
     QLinkedList<QFileInfo> possibleCovers = findPossibleCoversInFolder(
             fileInfo.absolutePath());
     art = selectCoverArtForTrack(pTrack.data(), possibleCovers);
-    if (art.info.type == CoverInfo::FILE) {
+    if (art.type == CoverInfo::FILE) {
         qDebug() << "CoverArtUtils::guessCoverArt found file art" << art;
     } else {
         qDebug() << "CoverArtUtils::guessCoverArt didn't find art" << art;
@@ -141,7 +141,7 @@ CoverArt CoverArtUtils::selectCoverArtForTrack(
         const QLinkedList<QFileInfo>& covers) {
     if (pTrack == NULL || covers.isEmpty()) {
         CoverArt art;
-        art.info.source = CoverInfo::GUESSED;
+        art.source = CoverInfo::GUESSED;
         return art;
     }
 
@@ -156,7 +156,7 @@ CoverArt CoverArtUtils::selectCoverArtForTrack(
         const QString& albumName,
         const QLinkedList<QFileInfo>& covers) {
     CoverArt art;
-    art.info.source = CoverInfo::GUESSED;
+    art.source = CoverInfo::GUESSED;
     if (covers.isEmpty()) {
         return art;
     }
@@ -216,11 +216,11 @@ CoverArt CoverArtUtils::selectCoverArtForTrack(
     if (bestInfo != NULL) {
         art.image = QImage(bestInfo->filePath());
         if (!art.image.isNull()) {
-            art.info.source = CoverInfo::GUESSED;
-            art.info.type = CoverInfo::FILE;
+            art.source = CoverInfo::GUESSED;
+            art.type = CoverInfo::FILE;
             // TODO() here we may introduce a duplicate hash code
-            art.info.hash = CoverArtUtils::calculateHash(art.image);
-            art.info.coverLocation = bestInfo->fileName();
+            art.hash = CoverArtUtils::calculateHash(art.image);
+            art.coverLocation = bestInfo->fileName();
             return art;
         }
     }

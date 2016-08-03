@@ -126,7 +126,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     res = CoverArtUtils::selectCoverArtForTrack(pTrack.data(), covers);
     CoverInfo expected1;
     expected1.source = CoverInfo::GUESSED;
-    EXPECT_EQ(expected1, res.info);
+    EXPECT_EQ(expected1, res);
 
     // Looking for a track with embedded cover.
     pTrack = TrackPointer(Track::newTemporary(kTrackLocationTest));
@@ -164,11 +164,11 @@ TEST_F(CoverArtUtilTest, searchImage) {
     // All the following expect the same image/hash to be selected.
     CoverArt expected2;
     expected2.image = img;
-    expected2.info.hash = CoverArtUtils::calculateHash(expected2.image);
+    expected2.hash = CoverArtUtils::calculateHash(expected2.image);
 
     // All the following expect FILE and GUESSED.
-    expected2.info.type = CoverInfo::FILE;
-    expected2.info.source = CoverInfo::GUESSED;
+    expected2.type = CoverInfo::FILE;
+    expected2.source = CoverInfo::GUESSED;
 
     // 0. saving just one cover in our temp track dir
     QString cLoc_foo = QString(trackdir % "/" % "foo." % qFormat);
@@ -176,8 +176,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // looking for cover in an directory with one image will select that one.
     expected2.image = QImage(cLoc_foo);
-    expected2.info.coverLocation = "foo.jpg";
-    expected2.info.hash = CoverArtUtils::calculateHash(expected2.image);
+    expected2.coverLocation = "foo.jpg";
+    expected2.hash = CoverArtUtils::calculateHash(expected2.image);
     covers << QFileInfo(cLoc_foo);
     res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                 covers);
@@ -244,19 +244,19 @@ TEST_F(CoverArtUtilTest, searchImage) {
         // selected once we get to it since it is the only cover available.
         if (cover.baseName() == "other1") {
             expected2.image = QImage();
-            expected2.info.type = CoverInfo::NONE;
-            expected2.info.coverLocation = QString();
-            expected2.info.hash = 0;
+            expected2.type = CoverInfo::NONE;
+            expected2.coverLocation = QString();
+            expected2.hash = 0;
         } else {
             expected2.image = QImage(cover.filePath());
-            expected2.info.type = CoverInfo::FILE;
-            expected2.info.coverLocation = cover.fileName();
-            expected2.info.hash = CoverArtUtils::calculateHash(expected2.image);
+            expected2.type = CoverInfo::FILE;
+            expected2.coverLocation = cover.fileName();
+            expected2.hash = CoverArtUtils::calculateHash(expected2.image);
         }
         res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                     prefCovers);
-        EXPECT_QSTRING_EQ(expected2.info.coverLocation, res.info.coverLocation);
-        EXPECT_EQ(expected2.info.hash, res.info.hash);
+        EXPECT_QSTRING_EQ(expected2.coverLocation, res.coverLocation);
+        EXPECT_EQ(expected2.hash, res.hash);
         EXPECT_EQ(expected2, res);
 
         QFile::remove(cover.filePath());
@@ -280,8 +280,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
     res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                 prefCovers);
     expected2.image = QImage(cLoc_coverJPG);
-    expected2.info.hash = CoverArtUtils::calculateHash(expected2.image);
-    expected2.info.coverLocation = "cover.JPG";
+    expected2.hash = CoverArtUtils::calculateHash(expected2.image);
+    expected2.coverLocation = "cover.JPG";
     EXPECT_EQ(expected2, res);
 
     // As we are looking for %album%.jpg and %base_track.jpg%,
@@ -298,8 +298,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
     res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                 prefCovers);
     expected2.image = QImage(cLoc_albumName);
-    expected2.info.hash = CoverArtUtils::calculateHash(expected2.image);
-    expected2.info.coverLocation = trackAlbum % ".jpg";
+    expected2.hash = CoverArtUtils::calculateHash(expected2.image);
+    expected2.coverLocation = trackAlbum % ".jpg";
     EXPECT_EQ(expected2, res);
 
     // 1. track_filename.jpg
@@ -309,8 +309,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
     res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                 prefCovers);
     expected2.image = QImage(cLoc_filename);
-    expected2.info.hash = CoverArtUtils::calculateHash(expected2.image);
-    expected2.info.coverLocation = trackBaseName % ".jpg";
+    expected2.hash = CoverArtUtils::calculateHash(expected2.image);
+    expected2.coverLocation = trackBaseName % ".jpg";
     EXPECT_EQ(expected2, res);
 
     QFile::remove(cLoc_filename);

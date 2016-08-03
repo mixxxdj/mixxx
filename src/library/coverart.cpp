@@ -27,17 +27,22 @@ QString typeToString(CoverInfo::Type type) {
     return "INVALID TYPE VALUE";
 }
 
-QDebug operator<<(QDebug dbg, const CoverInfo& info) {
-    return dbg.maybeSpace() << QString("CoverInfo(%1,%2,%3,%4,%5)")
+QDebug operator<<(QDebug dbg, const CoverInfoRelative& info) {
+    return dbg.maybeSpace() << QString("CoverInfo(%1,%2,%3,%4)")
             .arg(typeToString(info.type),
                  sourceToString(info.source),
                  info.coverLocation,
-                 QString::number(info.hash), 
+                 QString::number(info.hash));
+}
+
+QDebug operator<<(QDebug dbg, const CoverInfo& info) {
+    return dbg.maybeSpace() << QString("CoverInfo(%1,%2)")
+            .arg(toDebugString(static_cast<CoverInfoRelative>(info)),
                  info.trackLocation);
 }
 
 QDebug operator<<(QDebug dbg, const CoverArt& art) {
     return dbg.maybeSpace() << QString("CoverArt(%1,%2)")
             .arg(toDebugString(art.image.size()),
-                 toDebugString(art.info));
+                 toDebugString(static_cast<CoverInfo>(art)));
 }

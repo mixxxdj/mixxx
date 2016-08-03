@@ -1635,7 +1635,7 @@ void WTrackTableView::slotCoverArtSelected(const CoverArt& art) {
     for (const QModelIndex& index : selection) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->setCoverInfo(art.info);
+            pTrack->setCoverInfo(art);
         }
     }
 }

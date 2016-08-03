@@ -251,7 +251,7 @@ void DlgTrackInfo::slotReloadCoverArt() {
 
 void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
     qDebug() << "DlgTrackInfo::slotCoverArtSelected" << art;
-    m_loadedCoverInfo = art.info;
+    m_loadedCoverInfo = art;
     if (m_pLoadedTrack) {
         m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
     }

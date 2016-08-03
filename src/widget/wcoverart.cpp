@@ -96,7 +96,7 @@ void WCoverArt::slotReloadCoverArt() {
 void WCoverArt::slotCoverArtSelected(const CoverArt& art) {
     if (m_loadedTrack) {
         // Will trigger slotTrackCoverArtUpdated().
-        m_loadedTrack->setCoverInfo(art.info);
+        m_loadedTrack->setCoverInfo(art);
     }
 }
 

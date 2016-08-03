@@ -82,19 +82,19 @@ void WCoverArtMenu::slotChange() {
         // TODO(rryan): feedback
         return;
     }
-    art.info.type = CoverInfo::FILE;
-    art.info.source = CoverInfo::USER_SELECTED;
-    art.info.coverLocation = selectedCoverPath;
+    art.type = CoverInfo::FILE;
+    art.source = CoverInfo::USER_SELECTED;
+    art.coverLocation = selectedCoverPath;
     // TODO() here we may introduce a duplicate hash code
-    art.info.hash = CoverArtUtils::calculateHash(art.image);
+    art.hash = CoverArtUtils::calculateHash(art.image);
     qDebug() << "WCoverArtMenu::slotChange emit" << art;
     emit(coverArtSelected(art));
 }
 
 void WCoverArtMenu::slotUnset() {
     CoverArt art;
-    art.info.type = CoverInfo::NONE;
-    art.info.source = CoverInfo::USER_SELECTED;
+    art.type = CoverInfo::NONE;
+    art.source = CoverInfo::USER_SELECTED;
     qDebug() << "WCoverArtMenu::slotUnset emit" << art;
     emit(coverArtSelected(art));
 }
