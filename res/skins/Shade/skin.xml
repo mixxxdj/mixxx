@@ -562,7 +562,7 @@
 						border-top: 2px solid aqua;
 					}
 
-					WLibraryBreadCrumb {
+					WLibraryBreadCrumb QLabel {
 						margin: 2px 4px;
 					}
 

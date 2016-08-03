@@ -1276,7 +1276,7 @@
   selection-background-color: #725309;
 }
 
-WLibraryBreadCrumb {
+WLibraryBreadCrumb QLabel {
   margin: 4px 2px;
 }
 
