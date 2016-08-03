@@ -134,6 +134,7 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
     m_pSidebar = createLibrarySidebarWidget(pKeyboard);
     m_pSidebar->setIconSize(QSize(32, 32));
+    m_childModel.reloadTracksTree();
     return m_pSidebar;
 }
 
