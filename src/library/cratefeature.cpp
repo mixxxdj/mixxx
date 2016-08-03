@@ -220,7 +220,7 @@ void CrateFeature::activate() {
     (*it)->setCurrentIndex(*itId);
     
     switchToFeature();
-    showBreadCrumb(title().toString());
+    showBreadCrumb();
     restoreSearch(QString()); //disable search on crate home
     m_featureFocus = -1;
     emit(enableCoverArtDisplay(true));
@@ -252,7 +252,8 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     m_featureFocus = -1;
     
     restoreSearch("");
-    showBreadCrumb(index.data(TreeItemModel::RoleBreadCrumb).toString());
+    showBreadCrumb(index.data(TreeItemModel::RoleBreadCrumb).toString(),
+                   getIcon());
     emit(enableCoverArtDisplay(true));
 }
 

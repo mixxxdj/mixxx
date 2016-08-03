@@ -2,31 +2,38 @@
 #define SRC_WIDGET_WBREADCRUMB_H_
 
 #include <QLabel>
-#include "library/treeitem.h"
+#include <QWidget>
 
-class WLibraryBreadCrumb : public QLabel {
+class TreeItem;
+
+class WLibraryBreadCrumb : public QWidget {
     Q_OBJECT
 
   public:
 
     WLibraryBreadCrumb(QWidget* parent = nullptr);
 
-    void setText(const QString& text);
-    QString text() const;
     
     virtual QSize minimumSizeHint() const;
 
   public slots:
 
     void showBreadCrumb(TreeItem* pTree);
-    void showBreadCrumb(const QString& text);
+    void showBreadCrumb(const QString& text, const QIcon& icon);
+    void setBreadIcon(const QIcon& icon);
 
   protected:
     
     virtual void resizeEvent(QResizeEvent* pEvent);
     
   private:
-
+    
+    void setText(const QString& text);
+    void refreshWidth();
+    
+    QLabel* m_pIcon;
+    QLabel* m_pText;
+    
     QString m_longText;
 };
 

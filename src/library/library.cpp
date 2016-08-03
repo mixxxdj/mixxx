@@ -208,8 +208,8 @@ void Library::showBreadCrumb(TreeItem *pTree) {
     m_panes[m_focusedPane]->showBreadCrumb(pTree);
 }
 
-void Library::showBreadCrumb(const QString &text) {
-    m_panes[m_focusedPane]->showBreadCrumb(text);
+void Library::showBreadCrumb(const QString &text, const QIcon &icon) {
+    m_panes[m_focusedPane]->showBreadCrumb(text, icon);
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {

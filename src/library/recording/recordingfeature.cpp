@@ -69,7 +69,7 @@ void RecordingFeature::activate() {
     
     m_pRecordingView->refreshBrowseModel();
     showTrackModel(getProxyTrackModel());
-    showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    showBreadCrumb();
     restoreSearch("");
     
     emit(enableCoverArtDisplay(false));

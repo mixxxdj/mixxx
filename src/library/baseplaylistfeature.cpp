@@ -137,7 +137,7 @@ void BasePlaylistFeature::activate() {
     
     (*it)->setCurrentIndex(*itId);
     switchToFeature();
-    showBreadCrumb(m_childModel->getItem(QModelIndex()));
+    showBreadCrumb();
     
     restoreSearch(QString()); // Null String disables search box
     emit(enableCoverArtDisplay(true));

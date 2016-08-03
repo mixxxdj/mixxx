@@ -111,7 +111,7 @@ void AnalysisFeature::selectAll() {
 void AnalysisFeature::activate() {
     //qDebug() << "AnalysisFeature::activate()";
     showTrackModel(getAnalysisTableModel());
-    showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    showBreadCrumb();
     
     if (!m_pAnalysisView.isNull()) {
         restoreSearch(m_pAnalysisView->currentSearch());

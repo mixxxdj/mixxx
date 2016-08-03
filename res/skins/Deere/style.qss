@@ -171,7 +171,7 @@ WBaseLibrary[showFocus="1"] {
   margin-right: 13px;
 }
 
-#LibraryBreadCrumb,
+WLibraryBreadCrumb QLabel,
 WBaseLibrary QLabel {
   margin: 4px 4px;
   font-size: 12px;

@@ -160,7 +160,7 @@ void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
     showTrackModel(m_pLibraryTableModel);
     restoreSearch("");
-    showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    showBreadCrumb();
     
     emit(enableCoverArtDisplay(true));
 }
@@ -171,7 +171,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     
     m_pLibraryTableModel->search(query);
     switchToFeature();
-    showBreadCrumb(index.data(TreeItemModel::RoleBreadCrumb).toString());
+    showBreadCrumb(index.data(TreeItemModel::RoleBreadCrumb).toString(), getIcon());
     restoreSearch(query);
 }
 

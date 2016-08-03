@@ -45,7 +45,7 @@ class LibraryPaneManager : public QObject {
     void restoreSearch(const QString& text);
     void switchToFeature(LibraryFeature* pFeature);
     void showBreadCrumb(TreeItem* pTree);
-    void showBreadCrumb(const QString& text);
+    void showBreadCrumb(const QString& text, const QIcon &icon);
     
     inline int getPaneId() { 
         return m_paneId;

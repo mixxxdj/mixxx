@@ -1,24 +1,22 @@
-#include <QStringBuilder>
+#include <QHBoxLayout>
+
+#include "widget/wlibrarybreadcrumb.h"
 
 #include "library/treeitemmodel.h"
-#include <widget/wlibrarybreadcrumb.h>
+#include "library/treeitem.h"
 
 WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent) 
-		: QLabel(parent) {
-    setText("I'm a BreadCrumb");
-}
-
-void WLibraryBreadCrumb::setText(const QString &text) {
-    m_longText = text;
-    QFontMetrics metrics(font());
-    
-    // Measure the text for the label width
-    QString elidedText = metrics.elidedText(m_longText, Qt::ElideRight, width() - 10);
-    QLabel::setText(elidedText);
-}
-
-QString WLibraryBreadCrumb::text() const {
-    return m_longText;
+		: QWidget(parent) {
+    QHBoxLayout* layout = new QHBoxLayout(this);
+    m_pIcon = new QLabel(this);
+    m_pText = new QLabel(this);
+    layout->addWidget(m_pIcon);
+    layout->addWidget(m_pText);
+    layout->addItem(new QSpacerItem(0,0, QSizePolicy::MinimumExpanding));
+    layout->setSpacing(0);
+    layout->setContentsMargins(0,0,0,0);
+    setContentsMargins(0,0,0,0);
+    setLayout(layout);
 }
 
 QSize WLibraryBreadCrumb::minimumSizeHint() const {
@@ -26,14 +24,45 @@ QSize WLibraryBreadCrumb::minimumSizeHint() const {
 }
 
 void WLibraryBreadCrumb::showBreadCrumb(TreeItem* pTree) {
+    LibraryFeature* pFeature = pTree->getFeature();
+    DEBUG_ASSERT_AND_HANDLE(pFeature) {
+        return;
+    }
+    
+    setBreadIcon(pFeature->getIcon());
     setText(TreeItemModel::getBreadCrumbString(pTree));
 }
 
-void WLibraryBreadCrumb::showBreadCrumb(const QString& text) {
+void WLibraryBreadCrumb::showBreadCrumb(const QString& text, const QIcon& icon) {
     setText(text);
+    setBreadIcon(icon);
 }
 
-void WLibraryBreadCrumb::resizeEvent(QResizeEvent *pEvent) {
-    QLabel::resizeEvent(pEvent);
-    setText(m_longText);
+void WLibraryBreadCrumb::setBreadIcon(const QIcon& icon) {
+    // Get font height
+    int height = fontMetrics().height();    
+    m_pIcon->setPixmap(icon.pixmap(height));
+}
+
+void WLibraryBreadCrumb::resizeEvent(QResizeEvent* pEvent) {
+    QWidget::resizeEvent(pEvent);
+    refreshWidth();
+}
+
+void WLibraryBreadCrumb::setText(const QString &text) {
+    m_longText = text;
+    refreshWidth();
+}
+
+void WLibraryBreadCrumb::refreshWidth() {
+    QFontMetrics metrics(fontMetrics());
+    
+    // Measure the text for the label width
+    int mLText, mRText;
+    m_pText->getContentsMargins(&mLText, nullptr, &mRText, nullptr);
+    int margins = mLText + mRText;
+    
+    int newSize = width() - m_pIcon->width() - margins;
+    QString elidedText = metrics.elidedText(m_longText, Qt::ElideRight, newSize);
+    m_pText->setText(elidedText);
 }

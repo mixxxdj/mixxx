@@ -126,11 +126,11 @@ void LibraryPaneManager::showBreadCrumb(TreeItem *pTree) {
     m_pBreadCrumb->showBreadCrumb(pTree);
 }
 
-void LibraryPaneManager::showBreadCrumb(const QString &text) {
+void LibraryPaneManager::showBreadCrumb(const QString &text, const QIcon& icon) {
     DEBUG_ASSERT_AND_HANDLE(!m_pBreadCrumb.isNull()) {
         return;
     }
-    m_pBreadCrumb->showBreadCrumb(text);
+    m_pBreadCrumb->showBreadCrumb(text, icon);
 }
 
 void LibraryPaneManager::slotPaneCollapsed() {

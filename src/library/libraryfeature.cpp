@@ -159,8 +159,12 @@ void LibraryFeature::showBreadCrumb(TreeItem *pTree) {
     m_pLibrary->showBreadCrumb(pTree);
 }
 
-void LibraryFeature::showBreadCrumb(const QString &text) {
-    m_pLibrary->showBreadCrumb(text);
+void LibraryFeature::showBreadCrumb(const QString &text, const QIcon& icon) {
+    m_pLibrary->showBreadCrumb(text, icon);
+}
+
+void LibraryFeature::showBreadCrumb() {
+    m_pLibrary->showBreadCrumb(title().toString(), getIcon());
 }
 
 WTrackTableView *LibraryFeature::getFocusedTable() {

@@ -130,7 +130,8 @@ class LibraryFeature : public QObject {
     void switchToFeature();
     void restoreSearch(const QString& search);
     void showBreadCrumb(TreeItem* pTree);
-    void showBreadCrumb(const QString& text);
+    void showBreadCrumb(const QString& text, const QIcon &icon);
+    void showBreadCrumb();
     
     WTrackTableView* getFocusedTable();
     

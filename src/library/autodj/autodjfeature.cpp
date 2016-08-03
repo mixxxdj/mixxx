@@ -148,7 +148,7 @@ void AutoDJFeature::activate() {
     m_pAutoDJView->onShow();
     
     showTrackModel(m_pAutoDJProcessor->getTableModel());
-    showBreadCrumb(title().toString());
+    showBreadCrumb();
     restoreSearch(QString()); //Null String disables search box
     
     emit(enableCoverArtDisplay(true));

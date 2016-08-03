@@ -148,7 +148,7 @@ void MaintenanceFeature::slotTabIndexChanged(int index) {
 
     switchToFeature();
     restoreSearch("");
-    showBreadCrumb(kMaintenanceTitle % " > " % (*title));
+    showBreadCrumb(kMaintenanceTitle % " > " % (*title), getIcon());
     emit(enableCoverArtDisplay(true));
 }
 
