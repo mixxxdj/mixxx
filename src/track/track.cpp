@@ -124,12 +124,17 @@ void Track::setTrackMetadata(
 
     // Need to set BPM after sample rate since beat grid creation depends on
     // knowing the sample rate. Bug #1020438.
-    if (trackMetadata.getBpm().hasValue() &&
-            ((nullptr == m_pBeats) || !mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
-        // Only (re-)set the BPM if the beat grid is not valid.
+    if (trackMetadata.getBpm().hasValue()) {
+        // NOTE(uklotzde): Only (re-)set the BPM if the beat grid is not valid.
         // Reason: The BPM value in the metadata might be normalized or rounded,
         // e.g. ID3v2 only supports integer values!
-        setBpm(trackMetadata.getBpm().getValue());
+        if ((m_pBeats == nullptr) || !mixxx::Bpm::isValidValue(m_pBeats->getBpm())) {
+            setBpm(trackMetadata.getBpm().getValue());
+        } else {
+            qDebug() << "Ignoring"
+                    << trackMetadata.getBpm().getValue()
+                    << "bpm from track metadata";
+        }
     }
 
     const QString key(trackMetadata.getKey());

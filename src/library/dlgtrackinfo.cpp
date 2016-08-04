@@ -149,6 +149,17 @@ void DlgTrackInfo::cueDelete() {
     }
 }
 
+void DlgTrackInfo::cacheCoverArt() {
+    const TrackId trackId(m_pLoadedTrack->getId());
+    if (trackId.isValid()) {
+        CoverArtCache* const pCache = CoverArtCache::instance();
+        if (pCache != nullptr) {
+            // TODO(rryan) don't use track ID as a reference
+            pCache->requestCover(m_loadedCoverInfo, this, trackId.toInt());
+        }
+    }
+}
+
 void DlgTrackInfo::populateFields(const Track& track) {
     setWindowTitle(track.getArtist() % " - " % track.getTitle());
 
@@ -170,21 +181,18 @@ void DlgTrackInfo::populateFields(const Track& track) {
     txtType->setText(track.getType());
     txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr("kbps"));
     txtBpm->setText(track.getBpmText());
-    m_keysClone = track.getKeys();
-    txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
+    m_keys = track.getKeys();
+    txtKey->setText(KeyUtils::getGlobalKeyText(m_keys));
     const mixxx::ReplayGain replayGain(track.getReplayGain());
     txtReplayGain->setText(mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
 
     reloadTrackBeats(track);
 
     m_loadedCoverInfo = track.getCoverInfo();
-    int reference = track.getId().toInt();
     m_loadedCoverInfo.trackLocation = track.getLocation();
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo.trackLocation, m_loadedCoverInfo, QPixmap());
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        pCache->requestCover(m_loadedCoverInfo, this, reference);
-    }
+
+    cacheCoverArt();
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
@@ -253,16 +261,8 @@ void DlgTrackInfo::slotReloadCoverArt() {
 void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
     qDebug() << "DlgTrackInfo::slotCoverArtSelected" << art;
     m_loadedCoverInfo = art.info;
-    // TODO(rryan) don't use track ID as a reference
-    int reference = 0;
-    if (m_pLoadedTrack) {
-        reference = m_pLoadedTrack->getId().toInt();
-        m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
-    }
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        pCache->requestCover(m_loadedCoverInfo, this, reference);
-    }
+    m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
+    cacheCoverArt();
 }
 
 void DlgTrackInfo::slotOpenInFileBrowser() {
@@ -383,7 +383,7 @@ void DlgTrackInfo::saveTrack() {
     // invalid then the change will be rejected.
     slotKeyTextChanged();
 
-    m_pLoadedTrack->setKeys(m_keysClone);
+    m_pLoadedTrack->setKeys(m_keys);
 
     QSet<int> updatedRows;
     for (int row = 0; row < cueTable->rowCount(); ++row) {
@@ -468,7 +468,7 @@ void DlgTrackInfo::clear() {
     txtComment->setPlainText("");
     spinBpm->setValue(0.0);
     m_pBeatsClone.clear();
-    m_keysClone = Keys();
+    m_keys = Keys();
 
     txtDuration->setText("");
     txtType->setText("");
@@ -596,32 +596,23 @@ void DlgTrackInfo::slotKeyTextChanged() {
 
     // If the new key string is invalid and not empty them reject the new key.
     if (globalKey == mixxx::track::io::key::INVALID && !newKeyText.isEmpty()) {
-        txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
+        txtKey->setText(KeyUtils::getGlobalKeyText(m_keys));
         return;
     }
 
     // If the new key is the same as the old key, reject the change.
-    if (globalKey == m_keysClone.getGlobalKey()) {
+    if (globalKey == m_keys.getGlobalKey()) {
         return;
     }
 
     // Otherwise, accept.
-    m_keysClone = newKeys;
+    m_keys = newKeys;
 }
 
 void DlgTrackInfo::reloadTrackMetadata() {
     if (m_pLoadedTrack) {
-        // Allocate a temporary track object for reading the metadata.
-        // We cannot reuse m_pLoadedTrack, because it might already been
-        // modified and we want to read fresh metadata directly from the
-        // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack(Track::newTemporary(
-                m_pLoadedTrack->getFileInfo(),
-                m_pLoadedTrack->getSecurityToken()));
-        SoundSourceProxy(pTrack).loadTrackMetadata();
-        if (!pTrack.isNull()) {
-            populateFields(*pTrack);
-        }
+        SoundSourceProxy(m_pLoadedTrack).loadTrackMetadata(true);
+        populateFields(*m_pLoadedTrack);
     }
 }
 
