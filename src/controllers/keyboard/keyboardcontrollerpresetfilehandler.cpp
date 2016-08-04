@@ -1,5 +1,6 @@
 #include "util/cmdlineargs.h"
 #include "util/compatibility.h"
+#include "control/controlobject.h"
 #include "controllers/keyboard/keyboardcontrollerpresetfilehandler.h"
 #include "controllers/keyboard/layoututils.h"
 
@@ -46,34 +47,51 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
         // Iterate through each <control> element inside the current <group> block
         QDomElement control = group.firstChildElement("control");
         while (!control.isNull()) {
+
+            // All keyseq elements (also the overloaded elements, that may
+            // not be used for the user's current keyboard layout)
+            QList<KbdControllerPresetKeyseq> keyseqsRaw;
+
+            // True if there is no keyseq object which has the same
+            // keyboardlayout as the user's layout. False if there is.
             bool keyseqNeedsTranslate = true;
 
-            // Iterate through each <keyseq> node inside the current <control> element
-            // Iterate in reverse order and default to first keyseq if none is found
-            QDomElement keyseq_element = control.lastChildElement("keyseq");
+            // Create one Keyseq struct instance for each <keyseq> element inside the
+            // current <control> element and append it to keyseqsRaw
+            QDomElement keyseq_element = control.firstChildElement("keyseq");
             while(!keyseq_element.isNull()) {
+                keyseqsRaw.append(
+                        {
+                                keyseq_element.text(),                            // Key sequence
+                                keyseq_element.attributeNode("lang").value(),     // Lang
+                                keyseq_element.attributeNode("scancode").value()  // Scancode
+                        }
+                );
+                keyseq_element = keyseq_element.nextSiblingElement("keyseq");
+            }
+
+            // Find action an key sequence
+            QList<KbdControllerPresetKeyseq>::const_iterator keyseqsRawI = keyseqsRaw.constEnd();
+            while (keyseqsRawI != keyseqsRaw.constBegin()) {
+                --keyseqsRawI;
+
                 // Check if this key sequence is a universal key and thus doesn't need a translation
-                bool isUniversalKey = keyseq_element.attributeNode("scancode").value() == "universal_key";
+                bool isUniversalKey = keyseqsRawI->scancode == "universal_key";
 
                 // Check if this key sequence's target layout is the same as the user's language
-                bool keyboardLayoutIsSame = keyseq_element.attributeNode("lang").value() == layoutName;
+                bool keyboardLayoutIsSame = keyseqsRawI->lang == layoutName;
 
                 if (isUniversalKey || keyboardLayoutIsSame) {
                     keyseqNeedsTranslate = false;
                     break;
                 }
-
-                if (keyseq_element == control.firstChildElement("keyseq")) {
-                    break;
-                }
-                keyseq_element = keyseq_element.previousSiblingElement("keyseq");
             }
 
             QString action = control.attributeNode("action").value();
-            QString keyseq = keyseq_element.text();
+            QString keyseq = !keyseqsRaw.isEmpty() ? keyseqsRawI->keysequence : "";
 
-            if (keyseqNeedsTranslate) {
-                QString scancode_string = keyseq_element.attributeNode("scancode").value();
+            if (keyseqNeedsTranslate && !keyseqsRaw.isEmpty()) {
+                QString scancode_string = keyseqsRawI->scancode;
                 unsigned char scancode = (unsigned char) scancode_string.toInt();
 
                 if (!scancode_string.isEmpty()) {
@@ -111,6 +129,11 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
             ConfigKey configKey = ConfigKey(groupName, action);
             preset->m_mapping.insert(configValueKbd, configKey);
 
+            // Store raw data so that it can be accessed later when saving the preset
+            preset->m_mapping_raw.append(
+                    {configKey, keyseqsRaw}
+            );
+
             control = control.nextSiblingElement("control");
         }
 
@@ -130,7 +153,7 @@ bool KeyboardControllerPresetFileHandler::save(const KeyboardControllerPreset &p
 }
 
 void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardControllerPreset& preset,
-                                                            QDomDocument* doc) const {
+                                                                QDomDocument* doc) const {
     QDomElement controller = doc->documentElement().firstChildElement("controller");
 
     // Group blocks will be inflated here
