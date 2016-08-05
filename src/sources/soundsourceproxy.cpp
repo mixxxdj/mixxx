@@ -25,6 +25,7 @@
 #include "sources/soundsourceflac.h"
 
 #include "library/coverartutils.h"
+#include "library/coverartcache.h"
 #include "util/cmdlineargs.h"
 #include "util/regex.h"
 
@@ -464,6 +465,7 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
         if (!coverImg.isNull()) {
             // Cover image has been parsed from the file
             coverArt.image = coverImg;
+            // TODO() here we may introduce a duplicate hash code
             coverArt.info.hash = CoverArtUtils::calculateHash(coverArt.image);
             coverArt.info.coverLocation = QString();
             coverArt.info.type = CoverInfo::METADATA;
@@ -490,7 +492,7 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     // Dump the trackMetadata extracted from the file back into the track.
     m_pTrack->setTrackMetadata(trackMetadata, parsedFromFile);
     if (parsedCoverArt) {
-        m_pTrack->setCoverArt(coverArt);
+        m_pTrack->setCoverInfo(coverArt.info);
     }
 }
 
