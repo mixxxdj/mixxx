@@ -136,7 +136,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     EXPECT_EQ(result.type, CoverInfo::METADATA);
     EXPECT_EQ(result.source, CoverInfo::GUESSED);
     EXPECT_EQ(result.coverLocation, QString());
-    EXPECT_NE(result.hash, 0);
+    EXPECT_NE(result.hash, CoverInfoRelative::kNullImageHash);
 
     const char* format("jpg");
     const QString qFormat(format);
@@ -164,7 +164,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // All the following expect the same image/hash to be selected.
     CoverInfoRelative expected2;
-    expected2.hash = 0;
+    expected2.hash = CoverInfoRelative::kNullImageHash;
 
     // All the following expect FILE and GUESSED.
     expected2.type = CoverInfo::FILE;
@@ -244,7 +244,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
         if (cover.baseName() == "other1") {
             expected2.type = CoverInfo::NONE;
             expected2.coverLocation = QString();
-            expected2.hash = 0;
+            expected2.hash = CoverInfoRelative::kNullImageHash;
         } else {
             expected2.type = CoverInfo::FILE;
             expected2.coverLocation = cover.fileName();

@@ -29,11 +29,13 @@ class CoverInfoRelative {
         FILE = 2
     };
 
+    static const quint16 kNullImageHash;
+
     CoverInfoRelative()
             : source(UNKNOWN),
               type(NONE),
               // This default value is fine: qChecksum(NULL, 0) is 0.
-              hash(0) {
+              hash(kNullImageHash) {
     }
 
     bool operator==(const CoverInfoRelative& other) const {
