@@ -43,7 +43,7 @@ private:
 class ImgMonoColor : public ImgColorProcessor {
     
   public:
-    ImgMonoColor(ImgSource* parent, QColor baseColor);
+    ImgMonoColor(ImgSource* parent, const QColor &baseColor);
     virtual QColor doColorCorrection(QColor c);
   private:
     QColor m_baseColor;
