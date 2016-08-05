@@ -12,14 +12,14 @@ WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* pare
     DEBUG_ASSERT_AND_HANDLE(pFeature != nullptr) {
         return;
     }
-    
-    m_textControl.connectValueChanged(SLOT(slotTextDisplayChanged(double)));
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    setAcceptDrops(true);
+    connect(this, SIGNAL(clicked()), this, SLOT(slotClicked()));
     
     setIcon(m_pFeature->getIcon());
-    setText(m_pFeature->title().toString());
-
-    connect(this, SIGNAL(clicked()), this, SLOT(slotClicked()));
-    setAcceptDrops(true);
+    m_textControl.connectValueChanged(SLOT(slotTextDisplayChanged(double)));
+    
+    slotTextDisplayChanged(m_textControl.get());
 }
 
 void WFeatureClickButton::mousePressEvent(QMouseEvent* event) {
@@ -73,8 +73,10 @@ void WFeatureClickButton::slotClicked() {
 void WFeatureClickButton::slotTextDisplayChanged(double value) {
     if (value < 1.0) {
         setText("");
+        setToolButtonStyle(Qt::ToolButtonIconOnly);
     } else {
         setText(m_pFeature->title().toString());
+        setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     }
 }
 

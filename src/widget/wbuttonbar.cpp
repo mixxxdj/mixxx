@@ -14,11 +14,8 @@ WButtonBar::WButtonBar(QWidget* parent)
 }
 
 WFeatureClickButton* WButtonBar::addButton(LibraryFeature* pFeature) {
-    WFeatureClickButton* button = new WFeatureClickButton(pFeature, this);
-    button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    button->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    
+    WFeatureClickButton* button = new WFeatureClickButton(pFeature, this);    
     m_pLayout->addWidget(button);
+    updateGeometry();
     return button;
 }
-

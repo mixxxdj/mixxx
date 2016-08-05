@@ -80,6 +80,7 @@
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
 #include "widget/wsingletoncontainer.h"
+#include "widget/wverticalscrollarea.h"
 #include "util/valuetransformer.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
@@ -1339,12 +1340,10 @@ QWidget *LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseLibrarySidebarButtons(const QDomElement& node) {
-    QScrollArea* scroll = new QScrollArea(m_pParent);
-    scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scroll->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    WVerticalScrollArea* scroll = new WVerticalScrollArea(m_pParent);
     
     WButtonBar* pLibrarySidebar = new WButtonBar(scroll);
+    pLibrarySidebar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
     m_pLibrary->bindSidebarWidget(pLibrarySidebar);
     scroll->setWidget(pLibrarySidebar);
@@ -1407,7 +1406,7 @@ QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
 
     QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
     m_pParent = pLibrarySidebarPage;
-    QWidget* pLibrarySidebar = parseLibrarySidebarButtons(node);
+    QWidget* pLibrarySidebar = parseLibrarySidebar(node);
     QWidget* pLineEditSearch = parseSearchBox(node);
     m_pParent = oldParent;
 

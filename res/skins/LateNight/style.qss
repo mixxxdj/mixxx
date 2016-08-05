@@ -1258,11 +1258,6 @@
 
 #LibrarySidebarButtons WButtonBar {
   background-color: #191919;
-  margin-right: 11px;
-}
-
-#LibrarySidebarButtons {
-  margin-right: 5px;
 }
 
 #LibrarySidebarButtons, QTableView, QTextBrowser, QTreeView {
