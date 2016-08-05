@@ -145,11 +145,9 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
 
 bool KeyboardControllerPresetFileHandler::save(const KeyboardControllerPreset &preset, const QString deviceName,
                                                const QString fileName) const {
-    // TODO(Tomasito) Fix this for new keyboard preset controller format
-//    QDomDocument doc = buildRootWithScripts(preset, deviceName);
-//    addControlsToDocument(preset, &doc);
-//    return writeDocument(doc, fileName);
-      return true;
+    QDomDocument doc = buildRootWithScripts(preset, deviceName);
+    addControlsToDocument(preset, &doc);
+    return writeDocument(doc, fileName);
 }
 
 void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardControllerPreset& preset,
@@ -161,13 +159,12 @@ void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardCo
     QMultiHash<QString, QDomElement>::iterator groupNodesIterator;
 
     // Iterate over all key sequences bound to one or more actions
-    const QMultiHash<ConfigValueKbd, ConfigKey>& mapping = preset.m_mapping;
-    QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator iterator;
+    const QList<KbdControllerPresetControl> mapping = preset.m_mapping_raw;
+    QList<KbdControllerPresetControl>::const_iterator iterator;
 
     for (iterator = mapping.begin(); iterator != mapping.end(); ++iterator) {
-        const ConfigValueKbd& configValueKbd = iterator.key();
-        QString groupName = iterator.value().group;
-        QString action = iterator.value().item;
+        QString groupName = iterator->configKey.group;
+        QString action = iterator->configKey.item;
 
         groupNodesIterator = groupNodes.find(groupName);
 
@@ -185,7 +182,17 @@ void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardCo
         // Inflate control node and append it to the group block
         QDomElement controlNode = doc->createElement("control");
         controlNode.setAttribute("action", action);
-        controlNode.setAttribute("keyseq", configValueKbd.value);
+
+        // Create <keyseq> element for each keyseq of current PresetControl
+        for (auto &keyseq : iterator->keyseqs) {
+            QDomElement keyseqNode = doc->createElement("keyseq");
+            keyseqNode.setAttribute("lang", keyseq.lang);
+            keyseqNode.setAttribute("scancode", keyseq.scancode);
+            QDomText keyseqText = doc->createTextNode(keyseq.keysequence);
+            keyseqNode.appendChild(keyseqText);
+            controlNode.appendChild(keyseqNode);
+        }
+
         groupNode.appendChild(controlNode);
     }
 
