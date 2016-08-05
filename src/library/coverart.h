@@ -28,12 +28,14 @@ struct CoverInfo {
         FILE = 2
     };
 
+    static const quint16 kNullImageHash;
+
     CoverInfo() : source(UNKNOWN),
                   type(NONE),
                   coverLocation(QString()),
                   trackLocation(QString()),
                   // This default value is fine: qChecksum(NULL, 0) is 0.
-                  hash(0) {}
+                  hash(CoverInfo::kNullImageHash) {}
 
     bool operator==(const CoverInfo& other) const {
         return other.source == source &&

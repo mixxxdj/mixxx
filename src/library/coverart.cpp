@@ -1,6 +1,7 @@
 #include <QtDebug>
 
 #include "library/coverart.h"
+#include "library/coverartutils.h"
 #include "util/debug.h"
 
 QString sourceToString(CoverInfo::Source source) {
@@ -41,3 +42,6 @@ QDebug operator<<(QDebug dbg, const CoverArt& art) {
             .arg(toDebugString(art.image.size()),
                  toDebugString(art.info));
 }
+
+const quint16 CoverInfo::kNullImageHash = CoverArtUtils::calculateHash(QImage());
+
