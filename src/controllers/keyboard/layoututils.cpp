@@ -7,7 +7,9 @@
 namespace layoutUtils {
     QRegExp const keysequenceSeparator("\\+(?!$)");
 
-    static const unsigned char LAYOUT_SCANCODES[48] = {
+    static const int LAYOUT_LENGTH = 48;
+
+    static const unsigned char LAYOUT_SCANCODES[LAYOUT_LENGTH] = {
             0x29, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,  // Digits row
             0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,        // Upper row
             0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x2b,        // Home row
@@ -22,7 +24,7 @@ namespace layoutUtils {
     };
 
     unsigned char scancodeToLayoutIndex(const unsigned char scancode) {
-        for (unsigned char i = 0; i < 48; i++) {
+        for (unsigned char i = 0; i < LAYOUT_LENGTH; i++) {
             if (LAYOUT_SCANCODES[i] == scancode) {
                 return i;
             }
