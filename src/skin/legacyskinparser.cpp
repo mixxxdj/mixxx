@@ -26,8 +26,10 @@
 #include "controllers/controllermanager.h"
 
 #include "skin/colorschemeparser.h"
-#include "skin/skincontext.h"
+#include "skin/imgcolor.h"
+#include "skin/imgloader.h"
 #include "skin/launchimage.h"
+#include "skin/skincontext.h"
 
 #include "effects/effectsmanager.h"
 
@@ -368,7 +370,16 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     }
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
-
+    
+    // Setup Library Icons color
+    QString colorName = m_pContext->selectString(skinDocument, "LibraryIconsColor");
+    if (!colorName.isEmpty()) {
+        QColor color(colorName);
+        ImgLoader* loader = new ImgLoader;
+        QSharedPointer<ImgMonoColor> mono(new ImgMonoColor(loader, color));
+        WPixmapStore::setLibraryIconLoader(mono);
+    }
+    
     QStringList skinPaths(skinPath);
     QDir::setSearchPaths("skin", skinPaths);
 
@@ -457,12 +468,7 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         qDebug() << "Skin is a" << (newStyle ? ">=1.12.0" : "<1.12.0") << "style skin.";
 
 
-        if (newStyle) {
-            // Get the library icons color
-            QString colorName = m_pContext->selectString(node, "LibraryIconsColor");
-            m_pConfig->set(ConfigKey("[Library]", "LibraryIconsColor"), 
-                           ConfigValue(colorName));
-            
+        if (newStyle) {            
             // New style skins are just a WidgetGroup at the root.
             result.append(parseWidgetGroup(node));
         } else {

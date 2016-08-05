@@ -16,12 +16,11 @@
 #include "library/library.h"
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
-#include "skin/imgcolor.h"
-#include "skin/imgloader.h"
 #include "widget/wbaselibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 #include "widget/wminiviewscrollbar.h"
+#include "widget/wpixmapstore.h"
 
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!
 // The reason for this is that LibraryFeature uses slots/signals and for this
@@ -41,27 +40,8 @@ LibraryFeature::~LibraryFeature() {
     
 }
 
-QIcon LibraryFeature::getIcon() {
-    // Get color
-    QString strColor = 
-            m_pConfig->getValueString(ConfigKey("[Library]", 
-                                                "LibraryIconsColor"));
-    if (strColor.isEmpty()) {
-        return QIcon(getIconPath());
-    }
-    
-    QColor color(strColor);
-    ImgLoader* loader = new ImgLoader;
-    ImgMonoColor mono(loader, color);
-    QImage* image = mono.getImage(getIconPath());
-    
-    QPixmap pixmap(QPixmap::fromImage(*image));
-    QIcon icon(pixmap);
-    
-    delete image;
-    delete loader;
-    
-    return icon;
+QIcon LibraryFeature::getIcon() {    
+    return WPixmapStore::getLibraryIcon(getIconPath());
 }
 
 QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 

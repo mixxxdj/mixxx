@@ -26,22 +26,24 @@
 
 class ImgSource {
   public:
-    virtual ~ImgSource() {};
+    virtual ~ImgSource() {}
     virtual QImage* getImage(QString img) = 0;
     virtual inline QColor getCorrectColor(QColor c) { return c; }
-    virtual void correctImageColors(QImage* p) { (void)p; };
+    virtual void correctImageColors(QImage* p) { (void)p; }
 };
 
 class ImgProcessor : public ImgSource {
 
   public:
-    virtual ~ImgProcessor() {};
+    virtual ~ImgProcessor() {
+        delete m_parent;
+    }
     inline ImgProcessor(ImgSource* parent) : m_parent(parent) {}
     virtual QColor doColorCorrection(QColor c) = 0;
     inline QColor getCorrectColor(QColor c) {
         return doColorCorrection(m_parent->getCorrectColor(c));
     }
-    virtual void correctImageColors(QImage* p) { (void)p; };
+    virtual void correctImageColors(QImage* p) { (void)p; }
 
   protected:
     ImgSource* m_parent;
@@ -50,7 +52,7 @@ class ImgProcessor : public ImgSource {
 class ImgColorProcessor : public ImgProcessor {
 
 public:
-    virtual ~ImgColorProcessor() {};
+    virtual ~ImgColorProcessor() {}
 
     inline ImgColorProcessor(ImgSource* parent) : ImgProcessor(parent) {}
 
