@@ -90,12 +90,14 @@ QColor ImgHSVTweak::doColorCorrection(QColor c) {
 
 ImgMonoColor::ImgMonoColor(ImgSource* parent, QColor baseColor)
     : ImgColorProcessor(parent),
-      m_baseColor(baseColor) {    
+      m_baseColor(baseColor) {
+    m_baseColor.toHsv();
 }
 
 QColor ImgMonoColor::doColorCorrection(QColor c) {
     // Get first the grayscale color
-    int h, s, v, a;
-    c.getHsl(&h, &s, &v, &a);
-    c.setHsv(m_baseColor.hsvHue(), s, v, a);
+    int s, v, a;
+    c.getHsv(nullptr, &s, &v, &a);
+    c.setHsv(m_baseColor.hue(), s, v, a);
+    return c;
 }
