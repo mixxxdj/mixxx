@@ -2,8 +2,8 @@
 <MixxxKeyboardPreset mixxxVersion="2.0.1+" schemaVersion="1">
   <info>
     <name>Default Mapping</name>
-    <author>KbdCfg_to_KbdXML converter</author>
-    <description>This preset was generated based on: ['da_DK', 'de_CH', 'de_DE', 'el_GR', 'en_US', 'es_ES', 'fi_FI', 'fr_CH', 'fr_FR', 'it_IT', 'ru_RU']</description>
+    <author>Mixxx</author>
+    <description>Default mapping for Mixxx.</description>
   </info>
   <controller>
     <group name="[AutoDJ]">
@@ -156,7 +156,7 @@
       <control action="bpm_tap">
         <keyseq lang="en_US" scancode="7">Shift+^</keyseq>
         <keyseq lang="es_ES" scancode="8">Shift+/</keyseq>
-        <keyseq lang="ru_RU" scancode="TODO: No scancode found in ru_RU for character: ','">Shift+,</keyseq>
+        <keyseq lang="ru_RU" scancode="53">Shift+,</keyseq>
       </control>
       <control action="cue_default">
         <keyseq lang="en_US" scancode="39">;</keyseq>
@@ -178,29 +178,19 @@
       </control>
       <control action="flanger">
         <keyseq lang="en_US" scancode="11">0</keyseq>
+        <keyseq lang="cs_CZ" scancode="TODO: No scancode found in cs_CZ for character: '0'">0</keyseq>
       </control>
       <control action="fwd">
         <keyseq lang="en_US" scancode="37">k</keyseq>
       </control>
       <control action="hotcue_1_activate">
         <keyseq lang="en_US" scancode="50">m</keyseq>
-        <keyseq lang="fr_FR" scancode="TODO: No scancode found in fr_FR for character: ','">,</keyseq>
       </control>
       <control action="hotcue_1_clear">
         <keyseq lang="en_US" scancode="50">Shift+M</keyseq>
       </control>
       <control action="hotcue_2_activate">
-        <keyseq lang="en_US" scancode="TODO: No scancode found in en_US for character: ','">,</keyseq>
-        <keyseq lang="da_DK" scancode="TODO: No scancode found in da_DK for character: ','">,</keyseq>
-        <keyseq lang="de_CH" scancode="TODO: No scancode found in de_CH for character: ','">,</keyseq>
-        <keyseq lang="de_DE" scancode="TODO: No scancode found in de_DE for character: ','">,</keyseq>
-        <keyseq lang="el_GR" scancode="TODO: No scancode found in el_GR for character: ','">,</keyseq>
-        <keyseq lang="es_ES" scancode="TODO: No scancode found in es_ES for character: ','">,</keyseq>
-        <keyseq lang="fi_FI" scancode="TODO: No scancode found in fi_FI for character: ','">,</keyseq>
-        <keyseq lang="fr_CH" scancode="TODO: No scancode found in fr_CH for character: ','">,</keyseq>
-        <keyseq lang="fr_FR" scancode="51">;</keyseq>
-        <keyseq lang="it_IT" scancode="TODO: No scancode found in it_IT for character: ','">,</keyseq>
-        <keyseq lang="ru_RU" scancode="51">б</keyseq>
+        <keyseq lang="en_US" scancode="51">,</keyseq>
       </control>
       <control action="hotcue_2_clear">
         <keyseq lang="en_US" scancode="51">Shift+&lt;</keyseq>
@@ -210,17 +200,8 @@
         <keyseq lang="en_US" scancode="52">.</keyseq>
       </control>
       <control action="hotcue_3_clear">
-        <keyseq lang="en_US" scancode="TODO: Set scancode for '&gt;' for layout: 'en_US' (please choose between one of these: [94, 52])">Shift+&gt;</keyseq>
-        <keyseq lang="da_DK" scancode="52">Shift+:</keyseq>
-        <keyseq lang="de_CH" scancode="52">Shift+:</keyseq>
-        <keyseq lang="de_DE" scancode="52">Shift+:</keyseq>
-        <keyseq lang="el_GR" scancode="52">Shift+&gt;</keyseq>
+        <keyseq lang="en_US" scancode="52">Shift+&gt;</keyseq>
         <keyseq lang="es_ES" scancode="TODO: No scancode found in es_ES for character: '?'">Shift+?</keyseq>
-        <keyseq lang="fi_FI" scancode="52">Shift+:</keyseq>
-        <keyseq lang="fr_CH" scancode="52">Shift+:</keyseq>
-        <keyseq lang="fr_FR" scancode="52">Shift+/</keyseq>
-        <keyseq lang="it_IT" scancode="52">Shift+:</keyseq>
-        <keyseq lang="ru_RU" scancode="52">Shift+Ю</keyseq>
       </control>
       <control action="hotcue_4_activate">
         <keyseq lang="en_US" scancode="53">/</keyseq>
@@ -369,6 +350,7 @@
     <group name="[Microphone]">
       <control action="talkover">
         <keyseq lang="en_US" scancode="41">`</keyseq>
+        <keyseq lang="cs_CZ" scancode="94">\</keyseq>
         <keyseq lang="da_DK" scancode="94">&lt;</keyseq>
         <keyseq lang="de_CH" scancode="94">&lt;</keyseq>
         <keyseq lang="de_DE" scancode="94">&lt;</keyseq>
