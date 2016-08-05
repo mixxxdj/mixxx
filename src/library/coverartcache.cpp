@@ -118,8 +118,6 @@ void CoverArtCache::requestCover(const Track* pTrack,
     if (pCache == nullptr || pTrack == nullptr) return;
 
     CoverInfo info = pTrack->getCoverInfo();
-    // trackLocation is still empty here
-    info.trackLocation = pTrack->getLocation();
     pCache->requestCover(info, pRequestor, 0, false, true);
 }
 
@@ -188,7 +186,7 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 
 void CoverArtCache::guessCover(TrackPointer pTrack) {
     if (pTrack) {
-        CoverArt cover = CoverArtUtils::guessCoverArt(pTrack);
+        CoverInfo cover = CoverArtUtils::guessCoverInfo(pTrack.data());
         pTrack->setCoverInfo(cover);
     }
 }

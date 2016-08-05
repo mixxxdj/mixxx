@@ -84,34 +84,35 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
 }
 
 //static
-CoverArt CoverArtUtils::guessCoverArt(TrackPointer pTrack) {
-    CoverArt art;
-    art.source = CoverInfo::GUESSED;
-
-    if (pTrack.isNull()) {
-        return art;
+CoverInfo CoverArtUtils::guessCoverInfo(const Track* pTrack) {
+    CoverInfo coverInfo;
+    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr){
+        return coverInfo;
     }
 
+    coverInfo.trackLocation = pTrack->getLocation();
+    coverInfo.source = CoverInfo::GUESSED;
+
     const QFileInfo fileInfo(pTrack->getFileInfo());
-    art.image = extractEmbeddedCover(fileInfo, pTrack->getSecurityToken());
-    if (!art.image.isNull()) {
+    QImage image = extractEmbeddedCover(fileInfo, pTrack->getSecurityToken());
+    if (!image.isNull()) {
         // TODO() here we my introduce a duplicate hash code
-        art.hash = calculateHash(art.image);
-        art.coverLocation = QString();
-        art.type = CoverInfo::METADATA;
-        qDebug() << "CoverArtUtils::guessCoverArt found metadata art" << art;
-        return art;
+        coverInfo.hash = calculateHash(image);
+        coverInfo.coverLocation = QString();
+        coverInfo.type = CoverInfo::METADATA;
+        qDebug() << "CoverArtUtils::guessCover found metadata art" << coverInfo;
+        return coverInfo;
     }
 
     QLinkedList<QFileInfo> possibleCovers = findPossibleCoversInFolder(
             fileInfo.absolutePath());
-    art = selectCoverArtForTrack(pTrack.data(), possibleCovers);
-    if (art.type == CoverInfo::FILE) {
-        qDebug() << "CoverArtUtils::guessCoverArt found file art" << art;
+    coverInfo = selectCoverArtForTrack(pTrack, possibleCovers);
+    if (coverInfo.type == CoverInfo::FILE) {
+        qDebug() << "CoverArtUtils::guessCover found file art" << coverInfo;
     } else {
-        qDebug() << "CoverArtUtils::guessCoverArt didn't find art" << art;
+        qDebug() << "CoverArtUtils::guessCover didn't find art" << coverInfo;
     }
-    return art;
+    return coverInfo;
 }
 
 //static
@@ -136,29 +137,30 @@ QLinkedList<QFileInfo> CoverArtUtils::findPossibleCoversInFolder(const QString& 
 }
 
 //static
-CoverArt CoverArtUtils::selectCoverArtForTrack(
-        Track* pTrack,
+CoverInfo CoverArtUtils::selectCoverArtForTrack(
+        const Track* pTrack,
         const QLinkedList<QFileInfo>& covers) {
-    if (pTrack == NULL || covers.isEmpty()) {
-        CoverArt art;
-        art.source = CoverInfo::GUESSED;
-        return art;
+    if (pTrack == NULL) {
+        return CoverInfo();
     }
 
     const QString trackBaseName = pTrack->getFileInfo().baseName();
     const QString albumName = pTrack->getAlbum();
-    return selectCoverArtForTrack(trackBaseName, albumName, covers);
+    const QString trackLocation = pTrack->getLocation();
+    CoverInfoRelative coverInfoRelative =
+            selectCoverArtForTrack(trackBaseName, albumName, covers);
+    return CoverInfo(coverInfoRelative, trackLocation);
 }
 
 //static
-CoverArt CoverArtUtils::selectCoverArtForTrack(
+CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
         const QString& trackBaseName,
         const QString& albumName,
         const QLinkedList<QFileInfo>& covers) {
-    CoverArt art;
-    art.source = CoverInfo::GUESSED;
+    CoverInfoRelative coverInfoRelative;
+    coverInfoRelative.source = CoverInfo::GUESSED;
     if (covers.isEmpty()) {
-        return art;
+        return coverInfoRelative;
     }
 
     PreferredCoverType bestType = NONE;
@@ -214,16 +216,16 @@ CoverArt CoverArtUtils::selectCoverArtForTrack(
     }
 
     if (bestInfo != NULL) {
-        art.image = QImage(bestInfo->filePath());
-        if (!art.image.isNull()) {
-            art.source = CoverInfo::GUESSED;
-            art.type = CoverInfo::FILE;
+        QImage image(bestInfo->filePath());
+        if (!image.isNull()) {
+            coverInfoRelative.source = CoverInfo::GUESSED;
+            coverInfoRelative.type = CoverInfo::FILE;
             // TODO() here we may introduce a duplicate hash code
-            art.hash = CoverArtUtils::calculateHash(art.image);
-            art.coverLocation = bestInfo->fileName();
-            return art;
+            coverInfoRelative.hash = CoverArtUtils::calculateHash(image);
+            coverInfoRelative.coverLocation = bestInfo->fileName();
+            return coverInfoRelative;
         }
     }
 
-    return art;
+    return coverInfoRelative;
 }
