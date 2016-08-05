@@ -730,6 +730,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
                tr("Show/hide cover art"), guiMenu);
+    addControl("[Library]", "show_icon_text",
+               tr("Icons' text Show/Hide"),
+               tr("Show/Hide icons' text"), guiMenu);
 
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");

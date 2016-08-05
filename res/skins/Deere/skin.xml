@@ -22,6 +22,7 @@
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
+      <attribute persist="true" config_key="[Library],show_icon_text">1</attribute>
     </attributes>
   </manifest>
 

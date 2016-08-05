@@ -136,6 +136,15 @@ void WMainMenuBar::initialize() {
     connect(this, SIGNAL(internalLibraryScanActive(bool)),
             pLibraryRescan, SLOT(setDisabled(bool)));
     pLibraryMenu->addAction(pLibraryRescan);
+    
+    QString showTextTitle = tr("Show text in sidebar icons");
+    QString showTextText = tr("Shows the text below the icons in the sidebar");
+    auto pLibraryText = new QAction(showTextTitle, this);
+    pLibraryText->setStatusTip(showTextText);
+    pLibraryText->setWhatsThis(buildWhatsThis(showTextTitle, showTextText));
+    pLibraryText->setCheckable(true);
+    createVisibilityControl(pLibraryText, ConfigKey("[Library]", "show_icon_text"));
+    pLibraryMenu->addAction(pLibraryText);
 
     pLibraryMenu->addSeparator();
 

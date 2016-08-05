@@ -7,10 +7,13 @@ const int WFeatureClickButton::kHoverTime = 250; // milliseconds
 
 WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* parent)
         : QToolButton(parent),
+          m_textControl(ConfigKey("[Library]", "show_icon_text"), this),
           m_pFeature(pFeature) {
     DEBUG_ASSERT_AND_HANDLE(pFeature != nullptr) {
         return;
     }
+    
+    m_textControl.connectValueChanged(SLOT(slotTextDisplayChanged(double)));
     
     setIcon(m_pFeature->getIcon());
     setText(m_pFeature->title().toString());
@@ -65,5 +68,13 @@ void WFeatureClickButton::timerEvent(QTimerEvent* event) {
 
 void WFeatureClickButton::slotClicked() {
     emit(clicked(m_pFeature));
+}
+
+void WFeatureClickButton::slotTextDisplayChanged(double value) {
+    if (value < 1.0) {
+        setText("");
+    } else {
+        setText(m_pFeature->title().toString());
+    }
 }
 

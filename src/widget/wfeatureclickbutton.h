@@ -1,10 +1,12 @@
 #ifndef WRIGHTCLICKBUTTON_H
 #define WRIGHTCLICKBUTTON_H
 
-#include <library/libraryfeature.h>
 #include <QToolButton>
 #include <QMouseEvent>
 #include <QBasicTimer>
+
+#include "library/libraryfeature.h"
+#include "control/controlproxy.h"
 
 class WFeatureClickButton : public QToolButton
 {
@@ -33,11 +35,13 @@ protected:
 private slots:
     
     void slotClicked();
+    void slotTextDisplayChanged(double value);
     
 private:
     
     static const int kHoverTime;
     
+    ControlProxy m_textControl;
     LibraryFeature* m_pFeature;
     QBasicTimer m_hoverTimer;
 };
