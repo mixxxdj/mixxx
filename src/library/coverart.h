@@ -48,7 +48,7 @@ struct CoverInfo {
 
     Source source;
     Type type;
-    QString coverLocation; // Reative path, starting from trackLocation 
+    QString coverLocation; // Relative path, starting from trackLocation
     QString trackLocation;
     quint16 hash;
 };

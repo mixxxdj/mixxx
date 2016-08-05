@@ -71,7 +71,6 @@ void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
 void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
                                       const CoverInfo& info,
                                       QPixmap pixmap, bool fromCache) {
-    Q_UNUSED(info);
     if (pRequestor == this && !pixmap.isNull() && !fromCache) {
         // qDebug() << "CoverArtDelegate::slotCoverFound" << pRequestor << info
         //          << pixmap.size();

@@ -118,7 +118,9 @@ void CoverArtCache::requestCover(const Track* pTrack,
     if (pCache == nullptr || pTrack == nullptr) return;
 
     CoverInfo info = pTrack->getCoverInfo();
-    // trackLocation is still empty here
+    // trackLocation can be still empty here
+    // TODO(DSC) it is an design issue that we have
+    // redundant trackLocation info here
     info.trackLocation = pTrack->getLocation();
     pCache->requestCover(info, pRequestor, 0, false, true);
 }
