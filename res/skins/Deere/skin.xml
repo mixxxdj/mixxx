@@ -25,7 +25,7 @@
     </attributes>
   </manifest>
 
-  <LibraryIconsColor>#00FF00</LibraryIconsColor>
+  <LibraryIconsColor>#006596</LibraryIconsColor>
 
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"/>

@@ -460,10 +460,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         if (newStyle) {
             // Get the library icons color
             QString colorName = m_pContext->selectString(node, "LibraryIconsColor");
-            if (!colorName.isEmpty()) {
-                m_pConfig->set(ConfigKey("[Library]", "LibraryIconsColor"), 
-                               ConfigValue(colorName));
-            }
+            m_pConfig->set(ConfigKey("[Library]", "LibraryIconsColor"), 
+                           ConfigValue(colorName));
             
             // New style skins are just a WidgetGroup at the root.
             result.append(parseWidgetGroup(node));
