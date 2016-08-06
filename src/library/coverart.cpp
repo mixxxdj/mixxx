@@ -1,8 +1,11 @@
 #include <QtDebug>
+#include <QLatin1Literal>
 
 #include "library/coverart.h"
 #include "library/coverartutils.h"
 #include "util/debug.h"
+
+namespace {
 
 QString sourceToString(CoverInfo::Source source) {
     switch (source) {
@@ -28,24 +31,33 @@ QString typeToString(CoverInfo::Type type) {
     return "INVALID TYPE VALUE";
 }
 
-QDebug operator<<(QDebug dbg, const CoverInfoRelative& info) {
-    return dbg.maybeSpace() << QString("CoverInfo(%1,%2,%3,%4)")
-            .arg(typeToString(info.type),
-                 sourceToString(info.source),
-                 info.coverLocation,
-                 QString::number(info.hash));
+QString coverInfoRelativeToString(const CoverInfoRelative& infoRelative) {
+    return typeToString(infoRelative.type) % QLatin1Literal(",") %
+           sourceToString(infoRelative.source) % QLatin1Literal(",") %
+           infoRelative.coverLocation % QLatin1Literal(",") %
+           QLatin1Literal("0x") % QString::number(infoRelative.hash, 16);
+}
+
+QString coverInfoToString(const CoverInfo& info) {
+    return coverInfoRelativeToString(info) % QLatin1Literal(",") %
+           info.trackLocation % QLatin1Literal(",");
+}
+} // anonymous namespace
+
+QDebug operator<<(QDebug dbg, const CoverInfoRelative& infoRelative) {
+    return dbg.maybeSpace() << QString("CoverInfoRelative(%1)")
+            .arg(coverInfoRelativeToString(infoRelative));
 }
 
 QDebug operator<<(QDebug dbg, const CoverInfo& info) {
-    return dbg.maybeSpace() << QString("CoverInfo(%1,%2)")
-            .arg(toDebugString(static_cast<CoverInfoRelative>(info)),
-                 info.trackLocation);
+    return dbg.maybeSpace() << QString("CoverInfo(%1)")
+            .arg(coverInfoToString(info));
 }
 
 QDebug operator<<(QDebug dbg, const CoverArt& art) {
     return dbg.maybeSpace() << QString("CoverArt(%1,%2)")
-            .arg(toDebugString(art.image.size()),
-                 toDebugString(static_cast<CoverInfo>(art)));
+            .arg(coverInfoToString(art),
+                 toDebugString(art.image.size()));
 }
 
 const quint16 CoverInfoRelative::kNullImageHash = CoverArtUtils::calculateHash(QImage());
