@@ -2025,13 +2025,13 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
 
         QImage image(CoverArtUtils::extractEmbeddedCover(trackInfo));
         if (!image.isNull()) {
+            int hash = calculateUniqueCoverHash(image);
             updateQuery.bindValue(":coverart_type",
                                   static_cast<int>(CoverInfo::METADATA));
             updateQuery.bindValue(":coverart_source",
                                   static_cast<int>(CoverInfo::GUESSED));
             // TODO() here we may introduce a duplicate hash code
-            updateQuery.bindValue(":coverart_hash",
-                                  CoverArtUtils::calculateHash(image));
+            updateQuery.bindValue(":coverart_hash", hash);
             updateQuery.bindValue(":coverart_location", "");
             updateQuery.bindValue(":track_id", track.trackId.toVariant());
             if (!updateQuery.exec()) {
@@ -2051,8 +2051,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         }
 
         CoverInfoRelative coverInfo = CoverArtUtils::selectCoverArtForTrack(
-            trackInfo.baseName(), track.trackAlbum, possibleCovers);
-
+                trackInfo.baseName(), track.trackAlbum, possibleCovers);
         updateQuery.bindValue(":coverart_type",
                               static_cast<int>(coverInfo.type));
         updateQuery.bindValue(":coverart_source",
@@ -2105,3 +2104,60 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
 
     return pTrack;
 }
+
+
+bool TrackDAO::verifyCoverHashUnique(const QImage& image, int hash) {
+    CoverInfo info;
+
+    QSqlQuery query(m_database);
+    query.setForwardOnly(true);
+    query.prepare("SELECT "
+                  " coverart_source, " // 0
+                  " coverart_type, " // 1
+                  " coverart_location, " // 2
+                  " track_locations.location " // 3
+                  "FROM library "
+                  "INNER JOIN track_locations "
+                  "ON library.location = track_locations.id "
+                  "WHERE coverart_hash IS :coverart_hash"
+                  " AND coverart_source IS NOT NULL"
+                  // CoverInfo::Source 0 is UNKNOWN
+                  " AND coverart_source IS NOT 0 "
+                  "LIMIT 1");
+
+    query.bindValue(":coverart_hash", hash);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "failed looking for tracks with unknown cover art";
+        return true;
+    }
+
+    while (query.next()) {
+        info.source = static_cast<CoverInfo::Source>(query.value(0).toInt());
+        info.type = static_cast<CoverInfo::Type>(query.value(1).toInt());
+        info.coverLocation = query.value(2).toString();
+        info.trackLocation = query.value(3).toString();
+        info.hash = hash;
+    }
+
+    if (info.source == CoverInfo::UNKNOWN) {
+        return true;
+    }
+
+    //qDebug() << "verifyCoverHashUnique()" << info;
+
+    return CoverArtUtils::loadCover(info) == image;
+}
+
+int TrackDAO::calculateUniqueCoverHash(const QImage& image) {
+    int hash = CoverArtUtils::calculateHash(image);
+    while (!verifyCoverHashUnique(image, hash)) {
+       hash += 0x10000;
+       if (hash > 0xF0000) {
+           return -1;
+       }
+    }
+    return hash;
+}
+
