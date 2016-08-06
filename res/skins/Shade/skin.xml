@@ -528,6 +528,10 @@
 						border: 1px solid #646464;
 					}
 
+					WBaseLibrary QTreeView {
+						margin: 0px;
+					}
+
 					WBaseLibrary QPushButton {
 						border: 1px solid black;
 						background-color: #aab2b7;
@@ -535,11 +539,14 @@
 
 					#LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
 						background-color: #aab2b7;
-						margin-right: 13px;
 					}
 
 					#LibrarySidebarButtons QScrollArea {
 						background-color: #aab2b7;
+					}
+
+					#LibrarySidebarButtons {
+						margin-right: 5px;
 					}
 
 					WButtonBar QToolButton {
@@ -565,6 +572,11 @@
 
 					WLibraryBreadCrumb QLabel {
 						margin: 2px 4px;
+					}
+
+					WBaseLibrary QLabel {
+						margin-left: 5px;
+						margin-bottom: 5px;
 					}
 
 					<!--Spacing between treeview and searchbar-->

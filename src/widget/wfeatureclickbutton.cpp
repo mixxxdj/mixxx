@@ -15,18 +15,11 @@ WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* pare
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     setAcceptDrops(true);
     connect(this, SIGNAL(clicked()), this, SLOT(slotClicked()));
-    
+
     setIcon(m_pFeature->getIcon());
     m_textControl.connectValueChanged(SLOT(slotTextDisplayChanged(double)));
-    
-    slotTextDisplayChanged(m_textControl.get());
-}
 
-void WFeatureClickButton::setText(const QString& text) {
-    QToolButton::setText(text);
-    
-    //QSize size = fontMetrics().boundingRect(text).size();
-    //setFixedSize(size);
+    slotTextDisplayChanged(m_textControl.get());
 }
 
 void WFeatureClickButton::mousePressEvent(QMouseEvent* event) {
@@ -37,7 +30,7 @@ void WFeatureClickButton::mousePressEvent(QMouseEvent* event) {
 }
 
 void WFeatureClickButton::dragEnterEvent(QDragEnterEvent* event) {
-    qDebug() << "WFeatureClickButton::dragEnterEvent" << event;
+    //qDebug() << "WFeatureClickButton::dragEnterEvent" << event;
     if (!event->mimeData()->hasUrls() || event->source() == this) {
         event->ignore();
         return;

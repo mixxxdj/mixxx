@@ -11,38 +11,36 @@
 class WFeatureClickButton : public QToolButton
 {
     Q_OBJECT
-    
-public:
-    WFeatureClickButton(LibraryFeature* pFeature = nullptr, 
+
+  public:
+    WFeatureClickButton(LibraryFeature* pFeature = nullptr,
                         QWidget* parent = nullptr);
-    
-    void setText(const QString& text);
-    
-signals:
-    
+
+  signals:
+
     void clicked(LibraryFeature*);
     void rightClicked(const QPoint&);
     void hoverShow(LibraryFeature*);
-    
-protected:
-    
+
+  protected:
+
     void mousePressEvent(QMouseEvent* event);
-    
+
     void dragEnterEvent(QDragEnterEvent* event);
     void dragLeaveEvent(QDragLeaveEvent*);
     void dropEvent(QDropEvent* event);
-    
+
     void timerEvent(QTimerEvent* event);
-    
-private slots:
-    
+
+  private slots:
+
     void slotClicked();
     void slotTextDisplayChanged(double value);
-    
-private:
-    
+
+  private:
+
     static const int kHoverTime;
-    
+
     ControlProxy m_textControl;
     LibraryFeature* m_pFeature;
     QBasicTimer m_hoverTimer;

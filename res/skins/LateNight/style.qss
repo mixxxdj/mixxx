@@ -1162,7 +1162,7 @@
 }
 
 #LibrarySidebarExpanded QScrollArea {
-  border: 1px solid #585858;
+  border:none;
 }
 
 #LibrarySidebarExpanded QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
@@ -1190,9 +1190,9 @@
 }
 
 #LibrarySidebarExpanded QTabBar::tab:hover {
-  border-top: 2px solid #585858;
-  border-right: 2px solid #585858;
-  border-left: 2px solid #585858; 
+  border-top: 1px solid #585858;
+  border-right: 1px solid #585858;
+  border-left: 1px solid #585858; 
   background-color: #232323;
 }
 
@@ -1203,9 +1203,9 @@
 
 
 #LibrarySidebarExpanded QTabBar::tab:focus {
-  border-top: 2px solid #8E5C00;
-  border-right: 2px solid #8E5C00;
-  border-left: 2px solid #8E5C00; 
+  border-top: 1px solid #8E5C00;
+  border-right: 1px solid #8E5C00;
+  border-left: 1px solid #8E5C00; 
   background-color: #232323;
 }
 
@@ -1223,6 +1223,10 @@
   border: none;
   color: #cfb32c;
   background-color: #191919;
+}
+
+#LibrarySidebarExpanded {
+  margin-left: 5px;
 }
 
 #LibrarySidebarExpanded QPushButton {
