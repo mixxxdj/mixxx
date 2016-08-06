@@ -23,7 +23,7 @@
 class ImgInvert : public ImgColorProcessor {
 
 public:
-    inline ImgInvert(ImgSource* parent) : ImgColorProcessor(parent) {}
+    inline ImgInvert(const QSharedPointer<ImgSource>& parent) : ImgColorProcessor(parent) {}
     virtual QColor doColorCorrection(QColor c);
 };
 

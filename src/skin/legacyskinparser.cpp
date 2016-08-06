@@ -376,7 +376,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     QString colorName = m_pContext->selectString(skinDocument, "LibraryIconsColor");
     if (!colorName.isEmpty()) {
         QColor color(colorName);
-        ImgLoader* loader = new ImgLoader;
+        QSharedPointer<ImgSource> loader(new ImgLoader);
         QSharedPointer<ImgMonoColor> mono(new ImgMonoColor(loader, color));
         WPixmapStore::setLibraryIconLoader(mono);
     } else {

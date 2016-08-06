@@ -20,33 +20,32 @@
 
 #include <QImage>
 #include <QColor>
-#include <QString>
+#include <QDebug>
 #include <QRgb>
-#include <QtDebug>
+#include <QSharedPointer>
+#include <QString>
 
 class ImgSource {
   public:
     virtual ~ImgSource() {}
     virtual QImage* getImage(QString img) = 0;
     virtual inline QColor getCorrectColor(QColor c) { return c; }
-    virtual void correctImageColors(QImage* p) { (void)p; }
+    virtual void correctImageColors(QImage*) {}
 };
 
 class ImgProcessor : public ImgSource {
 
   public:
-    virtual ~ImgProcessor() {
-        delete m_parent;
-    }
-    inline ImgProcessor(ImgSource* parent) : m_parent(parent) {}
-    virtual QColor doColorCorrection(QColor c) = 0;
+    virtual ~ImgProcessor() {}
+    inline ImgProcessor(const QSharedPointer<ImgSource>& parent) : m_parent(parent) {}
+    virtual QColor doColorCorrection(QColor) = 0;
     inline QColor getCorrectColor(QColor c) {
         return doColorCorrection(m_parent->getCorrectColor(c));
     }
-    virtual void correctImageColors(QImage* p) { (void)p; }
+    virtual void correctImageColors(QImage*) {}
 
   protected:
-    ImgSource* m_parent;
+    QSharedPointer<ImgSource> m_parent;
 };
 
 class ImgColorProcessor : public ImgProcessor {
@@ -54,7 +53,8 @@ class ImgColorProcessor : public ImgProcessor {
 public:
     virtual ~ImgColorProcessor() {}
 
-    inline ImgColorProcessor(ImgSource* parent) : ImgProcessor(parent) {}
+    inline ImgColorProcessor(const QSharedPointer<ImgSource>& parent)
+            : ImgProcessor(parent) {}
 
     inline virtual QImage* getImage(QString img) {
         QImage* i = m_parent->getImage(img);
