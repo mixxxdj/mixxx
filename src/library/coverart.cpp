@@ -55,9 +55,10 @@ QDebug operator<<(QDebug dbg, const CoverInfo& info) {
 }
 
 QDebug operator<<(QDebug dbg, const CoverArt& art) {
-    return dbg.maybeSpace() << QString("CoverArt(%1,%2)")
+    return dbg.maybeSpace() << QString("CoverArt(%1,%2,%3)")
             .arg(coverInfoToString(art),
-                 toDebugString(art.image.size()));
+                 toDebugString(art.image.size()),
+                 QString::number(art.resizedToWidth));
 }
 
 const quint16 CoverInfoRelative::kNullImageHash = CoverArtUtils::calculateHash(QImage());

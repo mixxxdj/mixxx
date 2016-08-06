@@ -77,11 +77,14 @@ class CoverInfo : public CoverInfoRelative {
 
 class CoverArt : public CoverInfo {
   public:
-    CoverArt() {}
+    CoverArt()
+        : resizedToWidth(0) {
+    }
 
-    CoverArt(const CoverInfo& base, const QImage& img)
+    CoverArt(const CoverInfo& base, const QImage& img, int rtw)
         : CoverInfo(base),
-          image(img) {
+          image(img),
+          resizedToWidth(rtw) {
     }
 
     bool operator==(const CoverArt& other) const {
@@ -95,7 +98,10 @@ class CoverArt : public CoverInfo {
         return !(*this == other);
     }
 
-    QImage image;
+    // it is not a QPixmap, because it is not safe to use pixmaps 
+    // outside the GUI thread
+    QImage image; 
+    int resizedToWidth;
 };
 
 QDebug operator<<(QDebug dbg, const CoverInfoRelative& info);
