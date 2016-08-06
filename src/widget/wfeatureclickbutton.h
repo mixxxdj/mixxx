@@ -16,6 +16,8 @@ public:
     WFeatureClickButton(LibraryFeature* pFeature = nullptr, 
                         QWidget* parent = nullptr);
     
+    void setText(const QString& text);
+    
 signals:
     
     void clicked(LibraryFeature*);

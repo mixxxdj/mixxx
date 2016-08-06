@@ -22,6 +22,13 @@ WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* pare
     slotTextDisplayChanged(m_textControl.get());
 }
 
+void WFeatureClickButton::setText(const QString& text) {
+    QToolButton::setText(text);
+    
+    //QSize size = fontMetrics().boundingRect(text).size();
+    //setFixedSize(size);
+}
+
 void WFeatureClickButton::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::RightButton) {
         emit(rightClicked(event->globalPos()));

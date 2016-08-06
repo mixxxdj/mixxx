@@ -166,7 +166,7 @@ WBaseLibrary[showFocus="1"] {
   margin-top: 5px;
 }
 
-#LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
+#LibrarySidebarButtons, WButtonBar {
   background-color: #4B4B4B;
 }
 
