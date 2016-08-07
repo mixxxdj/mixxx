@@ -55,6 +55,15 @@
         <keyseq lang="en_US" scancode="6">5</keyseq>
       </control>
       <control action="fwd">
+        <!-- TODO(XXX) The greek alphabet has three characters for the letter Sigma:
+                       upper-case, lower-case and lower-case at the end of a word. The
+                       'normal' lower- and upper-case characters are bound to the S
+                       key on a US layout, and the upper-case is bound to the W key.
+                       The problem with this us that both the key W and S are the same
+                       to Qt. So, if we map 'fwd' to S and 'loop_halve' to W, both
+                       keys will trigger both actions. Therefore, we can't use key S
+                       nor W. This issue will have to be looked on though when changing
+                       to Qt 5. -->
         <keyseq lang="en_US" scancode="31">s</keyseq>
       </control>
       <control action="hotcue_1_activate">
@@ -85,6 +94,8 @@
         <keyseq lang="en_US" scancode="18">e</keyseq>
       </control>
       <control action="loop_halve">
+        <!-- TODO(XXX) Overload W for Greek keyboard layout. See other
+        TODO at control for action "fwd" at group "[Channel1]" -->
         <keyseq lang="en_US" scancode="17">w</keyseq>
       </control>
       <control action="loop_in">
