@@ -94,7 +94,7 @@ CoverInfo CoverArtUtils::guessCoverInfo(const Track& track) {
     QImage image = extractEmbeddedCover(fileInfo, track.getSecurityToken());
     if (!image.isNull()) {
         // TODO() here we my introduce a duplicate hash code
-        coverInfo.hash = calculateHash(image);
+        coverInfo.hash = calculateProvisionalHash(image);
         coverInfo.coverLocation = QString();
         coverInfo.type = CoverInfo::METADATA;
         qDebug() << "CoverArtUtils::guessCover found metadata art" << coverInfo;
@@ -215,7 +215,7 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
             coverInfoRelative.source = CoverInfo::GUESSED;
             coverInfoRelative.type = CoverInfo::FILE;
             // TODO() here we may introduce a duplicate hash code
-            coverInfoRelative.hash = calculateHash(image);
+            coverInfoRelative.hash = calculateProvisionalHash(image);
             coverInfoRelative.coverLocation = bestInfo->fileName();
             return coverInfoRelative;
         }

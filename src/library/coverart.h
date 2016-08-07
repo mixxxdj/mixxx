@@ -30,6 +30,7 @@ class CoverInfoRelative {
     };
 
     static const int kNoHash;
+    static const int kMaxProvisionalHash;
 
     CoverInfoRelative();
     virtual ~CoverInfoRelative() {};

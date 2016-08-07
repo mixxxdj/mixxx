@@ -27,9 +27,14 @@ class CoverArtUtils {
             SecurityTokenPointer pToken);
 
     static QImage loadCover(const CoverInfo& info);
-    static quint16 calculateHash(const QImage& image) {
+
+    static quint16 calculateProvisionalHash(const QImage& image) {
         return qChecksum(reinterpret_cast<const char*>(image.constBits()),
                          image.byteCount());
+    }
+
+    static bool isHashProvisional(int hash) {
+        return hash <= CoverInfo::kMaxProvisionalHash;
     }
 
     static QStringList supportedCoverArtExtensions();

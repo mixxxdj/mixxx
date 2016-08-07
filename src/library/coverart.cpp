@@ -49,7 +49,7 @@ CoverInfoRelative::CoverInfoRelative()
           type(NONE),
           hash(0) {
     // The default hash value should match the calculated hash for a null image
-    DEBUG_ASSERT(CoverArtUtils::calculateHash(QImage()) == hash);
+    DEBUG_ASSERT(CoverArtUtils::calculateProvisionalHash(QImage()) == hash);
 }
 
 bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b) {
@@ -91,3 +91,8 @@ QDebug operator<<(QDebug dbg, const CoverArt& art) {
 }
 
 const int CoverInfoRelative::kNoHash = -1;
+// Mixxx 2.0 16 bit hashes are treated as provisional, since
+// it has no guarantee to be unique. From 2.1 we use the
+// 8 additional bits to distinguish duplicates hashes.
+const int CoverInfoRelative::kMaxProvisionalHash = 0xFFFF;
+
