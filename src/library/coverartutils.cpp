@@ -143,23 +143,17 @@ CoverInfo CoverArtUtils::selectCoverArtForTrack(
     const QString trackLocation = track.getLocation();
     CoverInfoRelative coverInfoRelative =
             selectCoverArtForTrack(trackBaseName, albumName, covers);
+
+
     return CoverInfo(coverInfoRelative, trackLocation);
 }
 
-//static
-CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
+const QFileInfo* CoverArtUtils::selectBestCoverFile(
+        const QLinkedList<QFileInfo>& covers,
         const QString& trackBaseName,
-        const QString& albumName,
-        const QLinkedList<QFileInfo>& covers) {
-    CoverInfoRelative coverInfoRelative;
-    coverInfoRelative.source = CoverInfo::GUESSED;
-    if (covers.isEmpty()) {
-        return coverInfoRelative;
-    }
-
+        const QString& albumName) {
     PreferredCoverType bestType = NONE;
     const QFileInfo* bestInfo = NULL;
-
     // If there is a single image then we use it unconditionally. Otherwise
     // we use the priority order described in PreferredCoverType. Notably,
     // if there are multiple image files in the folder we require they match
@@ -174,40 +168,53 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
         foreach (const QFileInfo& file, covers) {
             const QString coverBaseName = file.baseName();
             if (bestType > TRACK_BASENAME &&
-                coverBaseName.compare(trackBaseName,
-                                      Qt::CaseInsensitive) == 0) {
+                    coverBaseName.compare(trackBaseName,
+                            Qt::CaseInsensitive) == 0) {
                 bestType = TRACK_BASENAME;
                 bestInfo = &file;
                 // This is the best type so we know we're done.
                 break;
             } else if (bestType > ALBUM_NAME &&
-                       coverBaseName.compare(albumName,
-                                             Qt::CaseInsensitive) == 0) {
+                    coverBaseName.compare(albumName,
+                            Qt::CaseInsensitive) == 0) {
                 bestType = ALBUM_NAME;
                 bestInfo = &file;
             } else if (bestType > COVER &&
-                       coverBaseName.compare(QLatin1String("cover"),
-                                             Qt::CaseInsensitive) == 0) {
+                    coverBaseName.compare(QLatin1String("cover"),
+                            Qt::CaseInsensitive) == 0) {
                 bestType = COVER;
                 bestInfo = &file;
             } else if (bestType > FRONT &&
-                       coverBaseName.compare(QLatin1String("front"),
-                                             Qt::CaseInsensitive) == 0) {
+                    coverBaseName.compare(QLatin1String("front"),
+                            Qt::CaseInsensitive) == 0) {
                 bestType = FRONT;
                 bestInfo = &file;
             } else if (bestType > ALBUM &&
-                       coverBaseName.compare(QLatin1String("album"),
-                                             Qt::CaseInsensitive) == 0) {
+                    coverBaseName.compare(QLatin1String("album"),
+                            Qt::CaseInsensitive) == 0) {
                 bestType = ALBUM;
                 bestInfo = &file;
             } else if (bestType > FOLDER &&
-                       coverBaseName.compare(QLatin1String("folder"),
-                                             Qt::CaseInsensitive) == 0) {
+                    coverBaseName.compare(QLatin1String("folder"),
+                            Qt::CaseInsensitive) == 0) {
                 bestType = FOLDER;
                 bestInfo = &file;
             }
         }
     }
+    return bestInfo;
+}
+
+//static
+CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
+        const QString& trackBaseName,
+        const QString& albumName,
+        const QLinkedList<QFileInfo>& covers) {
+    CoverInfoRelative coverInfoRelative;
+    coverInfoRelative.source = CoverInfo::GUESSED;
+
+    const QFileInfo* bestInfo = selectBestCoverFile(
+            covers, trackBaseName, albumName);
 
     if (bestInfo != NULL) {
         QImage image(bestInfo->filePath());

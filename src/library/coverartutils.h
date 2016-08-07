@@ -69,6 +69,8 @@ class CoverArtUtils {
             const QString& albumName,
             const QLinkedList<QFileInfo>& covers);
 
+    static const QFileInfo* selectBestCoverFile(const QLinkedList<QFileInfo>& covers,
+            const QString& trackBaseName, const QString& albumName);
 
   private:
     CoverArtUtils() {}

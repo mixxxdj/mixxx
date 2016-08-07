@@ -2052,14 +2052,29 @@ void TrackDAO::detectCoverArtForTracksUnknownCover(volatile const bool* pCancel,
                 currentDirectoryPath);
         }
 
-        CoverInfoRelative coverInfo = CoverArtUtils::selectCoverArtForTrack(
-                trackInfo.baseName(), track.trackAlbum, possibleCovers);
+        const QFileInfo* bestInfo = CoverArtUtils::selectBestCoverFile(
+                possibleCovers, trackInfo.baseName(), track.trackAlbum);
+
+        CoverInfoRelative coverInfoRelative;
+        coverInfoRelative.source = CoverInfo::GUESSED;
+
+        if (bestInfo != NULL) {
+            QImage image(bestInfo->filePath());
+            if (!image.isNull()) {
+                int hash = calculateUniqueCoverHash(image);
+                coverInfoRelative.source = CoverInfo::GUESSED;
+                coverInfoRelative.type = CoverInfo::FILE;
+                coverInfoRelative.hash = hash;
+                coverInfoRelative.coverLocation = bestInfo->fileName();
+            }
+        }
+
         updateQuery.bindValue(":coverart_type",
-                              static_cast<int>(coverInfo.type));
+                              static_cast<int>(coverInfoRelative.type));
         updateQuery.bindValue(":coverart_source",
-                              static_cast<int>(coverInfo.source));
-        updateQuery.bindValue(":coverart_hash", coverInfo.hash);
-        updateQuery.bindValue(":coverart_location", coverInfo.coverLocation);
+                              static_cast<int>(coverInfoRelative.source));
+        updateQuery.bindValue(":coverart_hash", coverInfoRelative.hash);
+        updateQuery.bindValue(":coverart_location", coverInfoRelative.coverLocation);
         updateQuery.bindValue(":track_id", track.trackId.toVariant());
         if (!updateQuery.exec()) {
             LOG_FAILED_QUERY(updateQuery) << "failed to write file or none cover";
