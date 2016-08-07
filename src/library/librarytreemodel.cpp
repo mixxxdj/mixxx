@@ -268,6 +268,10 @@ void LibraryTreeModel::createTracksTree() {
     triggerRepaint();
 }
 
+void LibraryTreeModel::createFoldersTree() {
+    QSqlQuery query;
+}
+
 void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,
                                    const QSqlQuery& query, TreeItem* pTree) {
     CoverInfo c;

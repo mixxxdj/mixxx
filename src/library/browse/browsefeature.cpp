@@ -246,21 +246,20 @@ void BrowseFeature::activate() {
 // Note: This is executed whenever you single click on an child item
 // Single clicks will not populate sub folders
 void BrowseFeature::activateChild(const QModelIndex& index) {
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    qDebug() << "BrowseFeature::activateChild " << item->data() << " "
-             << item->dataPath();
-
-    QString path = item->dataPath().toString();
-    if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+    QString data = index.data().toString();
+    QString dataPath = index.data(TreeItemModel::RoleDataPath).toString();
+    qDebug() << "BrowseFeature::activateChild " << data << dataPath;
+    
+    if (dataPath == QUICK_LINK_NODE || dataPath == DEVICE_NODE) {
         m_browseModel.setPath(MDir());
     } else {
         // Open a security token for this path and if we do not have access, ask
         // for it.
-        MDir dir(path);
+        MDir dir(dataPath);
         if (!dir.canAccess()) {
-            if (Sandbox::askForAccess(path)) {
+            if (Sandbox::askForAccess(dataPath)) {
                 // Re-create to get a new token.
-                dir = MDir(path);
+                dir = MDir(dataPath);
             } else {
                 // TODO(rryan): Activate an info page about sandboxing?
                 return;
@@ -277,9 +276,11 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         return;
     }
     
+    QString bread = index.data(TreeItemModel::RoleBreadCrumb).toString();
+    
     (*it)->setCurrentIndex(*itId);
     showTrackModel(&m_proxyModel);
-    m_pLibrary->showBreadCrumb(item);
+    showBreadCrumb(bread, getIcon());
     
     emit(enableCoverArtDisplay(true));
 }
