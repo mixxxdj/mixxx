@@ -9,7 +9,7 @@
 
 
 namespace {
-    QString pixmapCacheKey(quint16 hash, int width) {
+    QString pixmapCacheKey(int hash, int width) {
         return QString("CoverArtCache_%1_%2")
                 .arg(QString::number(hash)).arg(width);
     }
@@ -74,7 +74,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    QPair<const QObject*, quint16> requestId = qMakePair(pRequestor, requestInfo.hash);
+    QPair<const QObject*, int> requestId = qMakePair(pRequestor, requestInfo.hash);
     if (m_runningRequests.contains(requestId)) {
         return QPixmap();
     }

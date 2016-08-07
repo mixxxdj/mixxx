@@ -1224,7 +1224,7 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column,
             record.value(column + 1).toInt(&ok));
     if (!ok) coverInfo.type = CoverInfo::NONE;
     coverInfo.coverLocation = record.value(column + 2).toString();
-    coverInfo.hash = record.value(column + 3).toUInt();
+    coverInfo.hash = record.value(column + 3).toInt();
     pTrack->setCoverInfo(coverInfo);
     return false;
 }
@@ -2155,7 +2155,7 @@ int TrackDAO::calculateUniqueCoverHash(const QImage& image) {
     while (!verifyCoverHashUnique(image, hash)) {
        hash += 0x10000;
        if (hash > 0xF0000) {
-           return -1;
+           return CoverInfo::kNoHash;
        }
     }
     return hash;

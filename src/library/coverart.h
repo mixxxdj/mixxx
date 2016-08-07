@@ -29,13 +29,15 @@ class CoverInfoRelative {
         FILE = 2
     };
 
+    static const int kNoHash;
+
     CoverInfoRelative();
     virtual ~CoverInfoRelative() {};
 
     Source source;
     Type type;
     QString coverLocation; // relative path, from track location
-    quint16 hash;
+    int hash;
 };
 
 bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b);

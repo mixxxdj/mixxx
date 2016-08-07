@@ -89,3 +89,5 @@ QDebug operator<<(QDebug dbg, const CoverArt& art) {
                  toDebugString(art.image.size()),
                  QString::number(art.resizedToWidth));
 }
+
+const int CoverInfoRelative::kNoHash = -1;
