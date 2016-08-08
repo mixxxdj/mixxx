@@ -1,3 +1,5 @@
+#include <QString>
+
 #include "library/coverartcache.h"
 #include "library/librarytreemodel.h"
 #include "library/libraryfeature.h"
@@ -101,6 +103,7 @@ void LibraryTreeModel::reloadTracksTree() {
     
     // Deletes the old root item if the previous root item was not null
     setRootItem(pRootItem);
+    createFoldersTree();
     createTracksTree();
 }
 
@@ -127,8 +130,23 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
         return "";
     }
     
-    int depth = 0;
+    // Find for folers root 
     TreeItem* pAux = pTree;
+    bool isFolderItem = false;
+    while (pAux->parent() != nullptr && pAux->parent() != m_pRootItem) {
+        if (pAux->parent() == m_pFoldersRoot) {
+            isFolderItem = true;
+            break;
+        }
+        pAux = pAux->parent();
+    }
+    if (isFolderItem) {
+        return getQueryFolders(pTree);
+    }
+    
+    // Find Artist / Album / Genre query
+    int depth = 0;
+    pAux = pTree;
     
     // We need to know the depth of the item to apply the filter
     while (pAux->parent() != m_pRootItem && pAux->parent() != nullptr) {
@@ -147,6 +165,11 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
     }
     
     return result.join(" ");
+}
+
+QString LibraryTreeModel::getQueryFolders(TreeItem* pTree) const {
+    QString queryStr = "%1:\"%2\"";
+    return queryStr.arg(TRACKLOCATIONSTABLE_LOCATION, pTree->dataPath().toString());
 }
 
 void LibraryTreeModel::createTracksTree() {
@@ -269,7 +292,56 @@ void LibraryTreeModel::createTracksTree() {
 }
 
 void LibraryTreeModel::createFoldersTree() {
-    QSqlQuery query;
+    
+    QString queryStr = "SELECT DISTINCT %1 FROM %2 WHERE %3=0";
+    queryStr = queryStr.arg(TRACKLOCATIONSTABLE_DIRECTORY,
+                            "track_locations",
+                            TRACKLOCATIONSTABLE_FSDELETED);
+    
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    query.prepare(queryStr);
+    
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+        
+    // Get the Library directories
+    QStringList dirs(m_pTrackCollection->getDirectoryDAO().getDirs());
+    
+    // Set the folders root item;    
+    m_pFoldersRoot = new TreeItem(tr("Folders"), "", m_pFeature, m_pRootItem);
+    m_pRootItem->appendChild(m_pFoldersRoot);    
+    
+    QList<FolderItem> tempTree;
+    while(query.next()) {
+        FolderItem value;
+        
+        value.path = value.text = query.value(0).toString();
+        for (const QString& s : dirs) {
+            if (value.text.startsWith(s)) {
+                value.text = value.text.mid(s.size());
+                if (value.text.startsWith("/")) {
+                    value.text = value.text.mid(1);
+                }
+                
+                break;
+            }
+        }
+        if (!value.text.isEmpty()) {
+            tempTree << value;
+        }
+    }
+    
+    // Since the user can define multiple library folders we must sort all the 
+    // items to acts as a single big library folder and show the relative paths
+    // from the "big" folder
+    qSort(tempTree);
+    
+    for (const FolderItem& value : tempTree) {
+        TreeItem* pItem = new TreeItem(value.text, value.path, m_pFeature, m_pFoldersRoot);
+        m_pFoldersRoot->appendChild(pItem);
+    }
 }
 
 void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,

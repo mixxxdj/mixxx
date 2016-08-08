@@ -14,7 +14,6 @@ WButtonBar::WButtonBar(QWidget* parent)
     QWidget* w1 = new QWidget(this);
     QWidget* w2 = new QWidget(this);
     
-    
     // QSizePolicy::Maximum -> treat the size hint as maximum. This protects us 
     // from growing to the scroll area size which includes the Scroll bar. 
     w1->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
