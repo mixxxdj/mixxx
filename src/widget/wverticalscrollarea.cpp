@@ -9,7 +9,7 @@ WVerticalScrollArea::WVerticalScrollArea(QWidget* parent)
     setWidgetResizable(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    setAlignment(Qt::AlignCenter);
 }
 
 void WVerticalScrollArea::setWidget(QWidget* widget) {
@@ -19,10 +19,9 @@ void WVerticalScrollArea::setWidget(QWidget* widget) {
 
 bool WVerticalScrollArea::eventFilter(QObject* o, QEvent* e) {
     if (o == widget() && e->type() == QEvent::Resize) {
-        int vScrollWidth = verticalScrollBar()->width();
         int width = widget()->minimumSizeHint().width();
-        setFixedWidth(width);
-        widget()->setContentsMargins(0, 0, vScrollWidth, 0);
+        int vScrollWidth = verticalScrollBar()->width();
+        setFixedWidth(width + vScrollWidth);
     }
     return false;
 }

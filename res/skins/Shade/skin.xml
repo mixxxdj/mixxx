@@ -1,5 +1,6 @@
 
 
+
 	<!--
 	Shade, Skin for Mixxx 1.12.x
 	www.mixxx.org
@@ -539,6 +540,10 @@
 
 					#LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
 						background-color: #aab2b7;
+					}
+
+					WButtonBar {
+						border: none;
 					}
 
 					#LibrarySidebarButtons QScrollArea {
