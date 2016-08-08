@@ -40,22 +40,12 @@ class LibraryTreeModel : public TreeItemModel {
         int iCoverType;
     };
     
-    struct FolderItem {
-        QString text;
-        QString path;
-        
-        bool operator<(const FolderItem& other) const {
-            return text.localeAwareCompare(other.text) < 0;
-        }
-    };
-    
   private slots:
     void coverFound(const QObject* requestor, int requestReference, const CoverInfo&,
                     QPixmap pixmap, bool fromCache);
     
   private:    
     QString getQuery(TreeItem* pTree) const;
-    QString getQueryFolders(TreeItem* pTree) const;
     void createTracksTree();
     void createFoldersTree();
     void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);

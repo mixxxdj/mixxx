@@ -140,9 +140,6 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
         }
         pAux = pAux->parent();
     }
-    if (isFolderItem) {
-        return getQueryFolders(pTree);
-    }
     
     // Find Artist / Album / Genre query
     int depth = 0;
@@ -154,22 +151,31 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
         ++depth;
     }
     
+    if (isFolderItem) {
+        depth -= 1;
+    }
+    
     // Generate the query
     QStringList result;
+    const QString param("%1:\"%2\"");
+    
     pAux = pTree;
     while (depth >= 0) {
         QString value = pAux->dataPath().toString();
-        result << m_sortOrder[depth] % ":\"" % value % "\"";
+        if (isFolderItem) {
+            result.insert(0, value);
+        } else {
+            result << param.arg(m_sortOrder[depth], value);
+        }
         pAux = pAux->parent();
         --depth;
     }
     
-    return result.join(" ");
-}
-
-QString LibraryTreeModel::getQueryFolders(TreeItem* pTree) const {
-    QString queryStr = "%1:\"%2\"";
-    return queryStr.arg(TRACKLOCATIONSTABLE_LOCATION, pTree->dataPath().toString());
+    QString queryStr = result.join(isFolderItem ? "/" : " ");
+    if (isFolderItem) {
+        queryStr = param.arg(TRACKLOCATIONSTABLE_LOCATION, queryStr);
+    }
+    return queryStr;
 }
 
 void LibraryTreeModel::createTracksTree() {
@@ -313,34 +319,59 @@ void LibraryTreeModel::createFoldersTree() {
     m_pFoldersRoot = new TreeItem(tr("Folders"), "", m_pFeature, m_pRootItem);
     m_pRootItem->appendChild(m_pFoldersRoot);    
     
-    QList<FolderItem> tempTree;
-    while(query.next()) {
-        FolderItem value;
-        
-        value.path = value.text = query.value(0).toString();
+    QStringList tempTree;
+    while(query.next()) {        
+        QString value = query.value(0).toString();
         for (const QString& s : dirs) {
-            if (value.text.startsWith(s)) {
-                value.text = value.text.mid(s.size());
-                if (value.text.startsWith("/")) {
-                    value.text = value.text.mid(1);
+            if (value.startsWith(s)) {
+                value = value.mid(s.size());
+                if (value.startsWith("/")) {
+                    value = value.mid(1);
                 }
                 
                 break;
             }
         }
-        if (!value.text.isEmpty()) {
+        if (!value.isEmpty()) {
             tempTree << value;
         }
     }
+    tempTree.removeDuplicates();
     
     // Since the user can define multiple library folders we must sort all the 
     // items to acts as a single big library folder and show the relative paths
     // from the "big" folder
-    qSort(tempTree);
+    qSort(tempTree.begin(), tempTree.end(), 
+        [](const QString& s1, const QString& s2) -> bool {
+            return s1.localeAwareCompare(s2) < 0;
+        });
     
-    for (const FolderItem& value : tempTree) {
-        TreeItem* pItem = new TreeItem(value.text, value.path, m_pFeature, m_pFoldersRoot);
-        m_pFoldersRoot->appendChild(pItem);
+    QStringList lastUsed;
+    QList<TreeItem*> parent;
+    parent.append(m_pFoldersRoot);
+    
+    for (const QString& value : tempTree) {
+        QStringList parts = value.split("/", QString::SkipEmptyParts);
+        if (parts.size() > lastUsed.size()) {
+            for (int i = lastUsed.size(); i < parts.size(); ++i) {
+                lastUsed.append(QString());
+                parent.append(nullptr);
+            }
+        }
+        
+        bool change = false;
+        for (int i = 0; i < parts.size(); ++i) {
+            const QString& val = parts.at(i);
+            if (change || val != lastUsed.at(i)) {
+                change = true;
+                
+                TreeItem* pItem = new TreeItem(val, val, m_pFeature, parent[i]);
+                parent[i]->appendChild(pItem);
+                
+                parent[i + 1] = pItem;
+                lastUsed[i] = val;
+            }
+        }
     }
 }
 
