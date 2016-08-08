@@ -25,7 +25,7 @@ WButtonBar::WButtonBar(QWidget* parent)
     m_pLayout = new QVBoxLayout(this);
     m_pLayout->setContentsMargins(0,0,0,0);
     m_pLayout->setSpacing(0);
-    m_pLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_pLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     
     w1->setLayout(m_pLayout);
     setLayout(pHb);

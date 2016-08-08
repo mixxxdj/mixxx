@@ -375,6 +375,10 @@ QIcon WPixmapStore::getLibraryIcon(const QString& filename) {
         return QIcon(filename);
     }
     QImage* image = m_pIconLoader->getImage(filename);
+    
+    if (!m_pLoader.isNull()) {
+        m_pLoader->correctImageColors(image);
+    }
     QPixmap pixmap(QPixmap::fromImage(*image));
     QIcon icon(pixmap);
     delete image;

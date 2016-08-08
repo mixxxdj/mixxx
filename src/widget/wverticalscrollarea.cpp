@@ -9,7 +9,7 @@ WVerticalScrollArea::WVerticalScrollArea(QWidget* parent)
     setWidgetResizable(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setAlignment(Qt::AlignCenter);
+    setAlignment(Qt::AlignTop | Qt::AlignHCenter);
 }
 
 void WVerticalScrollArea::setWidget(QWidget* widget) {

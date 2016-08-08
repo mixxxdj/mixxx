@@ -8,6 +8,7 @@
 #include "library/treeitem.h"
 
 #include "util/stringhelper.h"
+#include "widget/wpixmapstore.h"
 
 namespace  {
 QHash<quint16, QModelIndex> m_hashToIndex;
@@ -317,6 +318,8 @@ void LibraryTreeModel::createFoldersTree() {
     
     // Set the folders root item;    
     m_pFoldersRoot = new TreeItem(tr("Folders"), "", m_pFeature, m_pRootItem);
+    QIcon icon(WPixmapStore::getLibraryIcon(":/images/library/ic_library_folder.png"));
+    m_pFoldersRoot->setIcon(icon);
     m_pRootItem->appendChild(m_pFoldersRoot);    
     
     QStringList tempTree;
