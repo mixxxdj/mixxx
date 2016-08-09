@@ -127,7 +127,7 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
         return "";
     }
     
-    if (pTree == m_pLibraryItem) {
+    if (pTree == m_pLibraryItem || pTree == m_pFoldersRoot) {
         return "";
     }
     

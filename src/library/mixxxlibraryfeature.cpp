@@ -212,6 +212,7 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 
         // Adds track, does not insert duplicates, handles unremoving logic.
         QList<TrackId> trackIds = m_trackDao.addMultipleTracks(files, true);
+        m_childModel.reloadTracksTree();
         return trackIds.size() > 0;
     }
 }
