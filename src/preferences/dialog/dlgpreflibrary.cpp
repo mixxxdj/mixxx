@@ -157,6 +157,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     radioButton_dbclick_bottom->setChecked(false);
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
+    radioButton_grouping_albums->setChecked(true);
+    radioButton_grouping_folders->setChecked(false);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
     setLibraryFont(QApplication::font());
 }
@@ -189,6 +191,16 @@ void DlgPrefLibrary::slotUpdate() {
     default:
             radioButton_dbclick_deck->setChecked(true);
             break;
+    }
+    
+    switch(m_pconfig->getValueString(ConfigKey("[Library]", "TreeGrouping"),
+                                     QString::number(GROUPING_ALBUMS)).toInt()) {
+        case GROUPING_FOLDERS:
+            radioButton_grouping_folders->setChecked(true);
+            break;
+        case GROUPING_ALBUMS:
+        default:
+            radioButton_grouping_albums->setChecked(true);
     }
 
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
@@ -319,7 +331,16 @@ void DlgPrefLibrary::slotApply() {
             dbclick_status = LOAD_TRACK_DECK;
     }
     m_pconfig->set(ConfigKey("[Library]","TrackLoadAction"),
-                ConfigValue(dbclick_status));
+                   ConfigValue(dbclick_status));
+    
+    int grouping_status;
+    if (radioButton_grouping_albums->isChecked()) {
+        grouping_status = GROUPING_ALBUMS;
+    } else {
+        grouping_status = GROUPING_FOLDERS;
+    }
+    m_pconfig->set(ConfigKey("[Library]", "TreeGrouping"),
+                   ConfigValue(grouping_status));
 
     QFont font = m_pLibrary->getTrackTableFont();
     if (m_originalTrackTableFont != font) {
