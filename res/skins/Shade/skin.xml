@@ -469,11 +469,6 @@
 					    margin: 2px 3px;
 					    padding: 3px 3px;
 					}
-					
-					WBaseLibrary QScrollArea,
-					QScrollArea QWidget {
-						background-color: transparent;
-					}
 
 					/* Scroll bars */
 					QScrollBar {
@@ -514,9 +509,9 @@
 					  border: none;
 					}
 
-					QScrollArea {
+					QScrollArea QWidget {
 					  border: 1px solid #1A1A1A;
-					  background-color: #222222;
+					  background-color: transparent;
 					}
 
 					WBaseLibrary QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
@@ -542,16 +537,8 @@
 						background-color: #aab2b7;
 					}
 
-					WButtonBar {
+					QScrollArea WButtonBar {
 						border: none;
-					}
-
-					#LibrarySidebarButtons QScrollArea {
-						background-color: #aab2b7;
-					}
-
-					#LibrarySidebarButtons {
-						margin-right: 5px;
 					}
 
 					WButtonBar QToolButton {
@@ -830,6 +817,9 @@
 												<LibrarySidebarButtons>
 													<ObjectName>LibrarySidebarButtons</ObjectName>
 												</LibrarySidebarButtons>
+												<WidgetGroup>
+													<MinimumSize>3,0</MinimumSize>
+												</WidgetGroup>
 												<Splitter>
 													<Orientation>vertical</Orientation>
 													<SplitSizes>8,2</SplitSizes>
