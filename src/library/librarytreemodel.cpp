@@ -317,62 +317,9 @@ void LibraryTreeModel::createFoldersTree() {
             LOG_FAILED_QUERY(query);
             return;
         }
-        QStringList lastUsed;
-        QList<TreeItem*> parent;
-        parent.append(m_pFoldersRoot);
-        bool first = true;
         
-        while (query.next()) {
-            QString value = query.value(0).toString();
-            qDebug() << value;
-            
-            
-            // Remove the 
-            QString dispValue = value.mid(dir.size());
-            if (dispValue.startsWith("/")) {
-                dispValue = dispValue.mid(1);
-            }
-            
-            // Add a header
-            if (first) {
-                first = false;
-                TreeItem* pTree = new TreeItem(dir, dir, m_pFeature, m_pFoldersRoot);
-                pTree->setDivider(true);
-                m_pFoldersRoot->appendChild(pTree);
-            }
-
-            // Do not add empty items
-            if (dispValue.isEmpty()) {    
-                continue;
-            }
-            
-            QStringList parts = dispValue.split("/");
-            if (parts.size() > lastUsed.size()) {
-                for (int i = lastUsed.size(); i < parts.size(); ++i) {
-                    lastUsed.append(QString());
-                    parent.append(nullptr);
-                }
-            }
-            
-            bool change = false;
-            for (int i = 0; i < parts.size(); ++i) {
-                const QString& val = parts.at(i);
-                if (change || val != lastUsed.at(i)) {
-                    change = true;
-                    
-                    QString fullPath = dir + "/";
-                    for (int j = 0; j <= i; ++j) {
-                        fullPath += parts.at(j) + "/";
-                    }
-                    
-                    TreeItem* pItem = new TreeItem(val, fullPath, m_pFeature, parent[i]);
-                    parent[i]->appendChild(pItem);
-                    
-                    parent[i + 1] = pItem;
-                    lastUsed[i] = val;
-                }
-            }
-        }
+        // For each source folder create the tree
+        createTreeFromSource(dir, query);
     }
 }
 
@@ -388,4 +335,64 @@ void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,
     c.source = static_cast<CoverInfo::Source>(source);
     c.type = static_cast<CoverInfo::Type>(type);
     pTree->setCoverInfo(c);
+}
+
+void LibraryTreeModel::createTreeFromSource(const QString& dir, QSqlQuery& query) {
+    
+    QStringList lastUsed;
+    QList<TreeItem*> parent;
+    parent.append(m_pFoldersRoot);
+    bool first = true;
+    
+    while (query.next()) {
+        QString value = query.value(0).toString();
+        qDebug() << value;
+        
+        
+        // Remove the 
+        QString dispValue = value.mid(dir.size());
+        if (dispValue.startsWith("/")) {
+            dispValue = dispValue.mid(1);
+        }
+        
+        // Add a header
+        if (first) {
+            first = false;
+            TreeItem* pTree = new TreeItem(dir, dir, m_pFeature, m_pFoldersRoot);
+            pTree->setDivider(true);
+            m_pFoldersRoot->appendChild(pTree);
+        }
+
+        // Do not add empty items
+        if (dispValue.isEmpty()) {    
+            continue;
+        }
+        
+        QStringList parts = dispValue.split("/");
+        if (parts.size() > lastUsed.size()) {
+            for (int i = lastUsed.size(); i < parts.size(); ++i) {
+                lastUsed.append(QString());
+                parent.append(nullptr);
+            }
+        }
+        
+        bool change = false;
+        for (int i = 0; i < parts.size(); ++i) {
+            const QString& val = parts.at(i);
+            if (change || val != lastUsed.at(i)) {
+                change = true;
+                
+                QString fullPath = dir + "/";
+                for (int j = 0; j <= i; ++j) {
+                    fullPath += parts.at(j) + "/";
+                }
+                
+                TreeItem* pItem = new TreeItem(val, fullPath, m_pFeature, parent[i]);
+                parent[i]->appendChild(pItem);
+                
+                parent[i + 1] = pItem;
+                lastUsed[i] = val;
+            }
+        }
+    }
 }

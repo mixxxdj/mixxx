@@ -55,6 +55,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
 
     m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
     m_textFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
+    m_exactTextMatcher = QRegExp(QString("^-?(%1):=(.*)$").arg(m_textFilters.join("|")));
     m_numericFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
     m_specialFilterMatcher = QRegExp(QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
 }
@@ -117,14 +118,28 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         if (m_fuzzyMatcher.indexIn(token) != -1) {
             // TODO(XXX): implement this feature.
         } else if (m_textFilterMatcher.indexIn(token) != -1) {
+            bool exact = m_exactTextMatcher.indexIn(token) != -1;
             bool negate = token.startsWith(kNegatePrefix);
-            QString field = m_textFilterMatcher.cap(1);
-            QString argument = getTextArgument(
-                m_textFilterMatcher.cap(2), &tokens).trimmed();
+            QString field = m_textFilterMatcher.cap(1);            
+            QString argument; 
+            if (exact) {
+                argument = getTextArgument(
+                            m_exactTextMatcher.cap(2), &tokens).trimmed();
+            } else {
+                argument = getTextArgument(
+                            m_textFilterMatcher.cap(2), &tokens).trimmed();
+            }
 
             if (!argument.isEmpty()) {
-                std::unique_ptr<QueryNode> pNode(std::make_unique<TextFilterNode>(
-                    m_database, m_fieldToSqlColumns[field], argument));
+                std::unique_ptr<QueryNode> pNode;
+                
+                if (exact) {
+                    pNode = std::make_unique<ExactFilterNode>(
+                        m_database, m_fieldToSqlColumns[field], argument);
+                } else {
+                    pNode = std::make_unique<TextFilterNode>(
+                        m_database, m_fieldToSqlColumns[field], argument);
+                }
                 if (negate) {
                     pNode = std::make_unique<NotNode>(std::move(pNode));
                 }

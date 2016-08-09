@@ -49,6 +49,7 @@ class LibraryTreeModel : public TreeItemModel {
     void createTracksTree();
     void createFoldersTree();
     void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);
+    void createTreeFromSource(const QString& dir, QSqlQuery& query);
     
     LibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;

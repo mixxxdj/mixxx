@@ -84,10 +84,19 @@ class TextFilterNode : public QueryNode {
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
 
-  private:
+  protected:
     QSqlDatabase m_database;
     QStringList m_sqlColumns;
     QString m_argument;
+};
+
+class ExactFilterNode : public TextFilterNode {
+  public:
+    ExactFilterNode(const QSqlDatabase& database,
+                    const QStringList& sqlColumns,
+                    const QString& argument)
+            : TextFilterNode(database, sqlColumns, argument) {}
+    QString toSql() const override;
 };
 
 class NumericFilterNode : public QueryNode {
