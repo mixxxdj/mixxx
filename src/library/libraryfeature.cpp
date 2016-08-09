@@ -59,8 +59,19 @@ QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     pLayout->setSpacing(0);
     pContainer->setLayout(pLayout);
     
+    QHBoxLayout* pLayoutTitle = new QHBoxLayout(pContainer);
+    
+    QLabel* pIcon = new QLabel(pContainer);
+    int height = pIcon->fontMetrics().height();
+    pIcon->setPixmap(getIcon().pixmap(height));
+    pLayoutTitle->addWidget(pIcon);
+    
     QLabel* pTitle = new QLabel(title().toString(), pContainer);
-    pLayout->addWidget(pTitle);
+    pLayoutTitle->addWidget(pTitle);
+    pLayoutTitle->addSpacerItem(new QSpacerItem(0, 0, 
+                                                QSizePolicy::Expanding, 
+                                                QSizePolicy::Minimum));
+    pLayout->addLayout(pLayoutTitle);
     
     QWidget* pSidebar = createInnerSidebarWidget(pKeyboard);
     pSidebar->setParent(pContainer);
