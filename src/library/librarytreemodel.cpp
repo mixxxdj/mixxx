@@ -31,6 +31,9 @@ LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
         m_sortOrder = sort.split(",");
     }
     
+    QString recursive = m_pConfig->getValueString(ConfigKey("[Library]","FolderRecursive"));
+    m_folderRecursive = recursive.toInt() == 1;
+    
     m_coverQuery << LIBRARYTABLE_COVERART_HASH
                  << LIBRARYTABLE_COVERART_LOCATION 
                  << LIBRARYTABLE_COVERART_SOURCE
@@ -89,6 +92,20 @@ void LibraryTreeModel::setSortOrder(QStringList sortOrder) {
                    ConfigValue(m_sortOrder.join(",")));
 }
 
+QStringList LibraryTreeModel::getSortOrder() {
+    return m_sortOrder;
+}
+
+void LibraryTreeModel::setFolderRecursive(bool recursive) {
+    m_folderRecursive = recursive;
+    m_pConfig->set(ConfigKey("[Library]", "FolderRecursive"), 
+                   ConfigValue((int)recursive));
+}
+
+bool LibraryTreeModel::getFolderRecursive() {
+    return m_folderRecursive;
+}
+
 void LibraryTreeModel::reloadTracksTree() {    
     //qDebug() << "LibraryTreeModel::reloadTracksTree";
     
@@ -122,7 +139,7 @@ void LibraryTreeModel::coverFound(const QObject* requestor, int requestReference
     }
 }
 
-QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
+QVariant LibraryTreeModel::getQuery(TreeItem* pTree) const {
     DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
         return "";
     }
@@ -163,12 +180,16 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
     pAux = pTree;
     while (depth >= 0) {
         QString value = pAux->dataPath().toString();
+        if (pAux->isDivider()) {
+            value.append("*");
+        }
+        
         result << param.arg(m_sortOrder[depth], value);
         pAux = pAux->parent();
         --depth;
     }
     
-    return result.join(isFolderItem ? "/" : " ");
+    return result.join(" ");
 }
 
 void LibraryTreeModel::createTracksTree() {
@@ -358,7 +379,11 @@ void LibraryTreeModel::createTreeFromSource(const QString& dir, QSqlQuery& query
         // Add a header
         if (first) {
             first = false;
-            TreeItem* pTree = new TreeItem(dir, dir, m_pFeature, m_pFoldersRoot);
+            QString path = dir;
+            if (m_folderRecursive) {
+                path.append("*");
+            }
+            TreeItem* pTree = new TreeItem(dir, path, m_pFeature, m_pFoldersRoot);
             pTree->setDivider(true);
             m_pFoldersRoot->appendChild(pTree);
         }
@@ -382,9 +407,13 @@ void LibraryTreeModel::createTreeFromSource(const QString& dir, QSqlQuery& query
             if (change || val != lastUsed.at(i)) {
                 change = true;
                 
-                QString fullPath = dir + "/";
+                QString fullPath = dir;
                 for (int j = 0; j <= i; ++j) {
-                    fullPath += parts.at(j) + "/";
+                    fullPath += "/" + parts.at(j);
+                }
+                
+                if (m_folderRecursive) {
+                    fullPath.append("*");
                 }
                 
                 TreeItem* pItem = new TreeItem(val, fullPath, m_pFeature, parent[i]);

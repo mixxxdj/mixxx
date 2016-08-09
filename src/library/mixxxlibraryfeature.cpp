@@ -70,6 +70,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
         "SELECT %2 FROM library "
         "INNER JOIN track_locations ON library.location = track_locations.id")
             .arg(tableName, columns.join(","));
+    qDebug() << queryString;
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -178,30 +179,62 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
 
 void MixxxLibraryFeature::onRightClickChild(const QPoint& pos, 
                                             const QModelIndex&) {
+    bool recursive = m_childModel.getFolderRecursive();
+    
     // Create the sort menu
     QMenu menu;
-    QAction* artist_album = menu.addAction(tr("Artist > Album"));
+    QAction* showRecursive = menu.addAction(tr("Show recursive view in folders"));
+    showRecursive->setCheckable(true);
+    showRecursive->setChecked(recursive);
+    
+    menu.addSeparator();
+    QStringList currentSort = m_childModel.getSortOrder();
+    
+    QStringList orderArtistAlbum, orderAlbum, orderGenreArtist, orderGenreAlbum;
+    orderArtistAlbum    << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
+    orderAlbum          << LIBRARYTABLE_ALBUM;
+    orderGenreArtist    << LIBRARYTABLE_GENRE << LIBRARYTABLE_ARTIST
+                        << LIBRARYTABLE_ALBUM;
+    orderGenreAlbum     << LIBRARYTABLE_GENRE << LIBRARYTABLE_ALBUM;
+    
+    QAction* artistAlbum = menu.addAction(tr("Artist > Album"));
     QAction* album = menu.addAction(tr("Album"));
-    QAction* genre_artist = menu.addAction(tr("Genre > Artist > Album"));
-    QAction* genre_album  = menu.addAction(tr("Genre > Album"));
+    QAction* genreArtist = menu.addAction(tr("Genre > Artist > Album"));
+    QAction* genreAlbum  = menu.addAction(tr("Genre > Album"));
+    
+    QActionGroup* orderGroup = new QActionGroup(&menu);
+    artistAlbum->setActionGroup(orderGroup);
+    album->setActionGroup(orderGroup);
+    genreArtist->setActionGroup(orderGroup);
+    genreAlbum->setActionGroup(orderGroup);
+    
+    artistAlbum->setCheckable(true);
+    album->setCheckable(true);
+    genreArtist->setCheckable(true);
+    genreAlbum->setCheckable(true);
+    
+    artistAlbum->setChecked(currentSort == orderArtistAlbum);
+    album->setChecked(currentSort == orderAlbum);
+    genreArtist->setChecked(currentSort == orderGenreArtist);
+    genreAlbum->setChecked(currentSort == orderGenreAlbum);
     
     QAction* selected = menu.exec(pos);
     
-    QStringList sortOrder;
-    if (selected == artist_album) {
-        sortOrder << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
+    if (selected == showRecursive) {
+        recursive = showRecursive->isChecked();
+        m_childModel.setFolderRecursive(recursive);
+    } else if (selected == artistAlbum) {
+        m_childModel.setSortOrder(orderArtistAlbum);
     } else if (selected == album) {
-        sortOrder << LIBRARYTABLE_ALBUM;
-    } else if (selected == genre_artist) {
-        sortOrder << LIBRARYTABLE_GENRE << LIBRARYTABLE_ARTIST
-                  << LIBRARYTABLE_ALBUM;
-    } else if (selected == genre_album) {
-        sortOrder << LIBRARYTABLE_GENRE << LIBRARYTABLE_ALBUM;
+        m_childModel.setSortOrder(orderAlbum);
+    } else if (selected == genreArtist) {
+        m_childModel.setSortOrder(orderGenreArtist);
+    } else if (selected == genreAlbum) {
+        m_childModel.setSortOrder(orderGenreAlbum);
     } else {
         // Menu rejected
         return;
     }
-    m_childModel.setSortOrder(sortOrder);
     m_childModel.reloadTracksTree();
 }
 

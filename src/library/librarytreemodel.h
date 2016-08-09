@@ -26,6 +26,9 @@ class LibraryTreeModel : public TreeItemModel {
     virtual QVariant data(const QModelIndex &index, int role) const;
     
     void setSortOrder(QStringList sortOrder);
+    QStringList getSortOrder();
+    void setFolderRecursive(bool recursive);
+    bool getFolderRecursive();
     
   public slots:  
     void reloadTracksTree();
@@ -45,7 +48,7 @@ class LibraryTreeModel : public TreeItemModel {
                     QPixmap pixmap, bool fromCache);
     
   private:    
-    QString getQuery(TreeItem* pTree) const;
+    QVariant getQuery(TreeItem* pTree) const;
     void createTracksTree();
     void createFoldersTree();
     void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);
@@ -53,12 +56,15 @@ class LibraryTreeModel : public TreeItemModel {
     
     LibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;
+    UserSettingsPointer m_pConfig;
+    
     QStringList m_sortOrder;
     QStringList m_coverQuery;
-    UserSettingsPointer m_pConfig;
     
     TreeItem* m_pLibraryItem;
     TreeItem* m_pFoldersRoot;    
+    
+    bool m_folderRecursive;
 };
 
 #endif // LIBRARYTREEMODEL_H
