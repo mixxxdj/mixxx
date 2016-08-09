@@ -130,7 +130,7 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
     if (pTree == m_pLibraryItem || pTree == m_pFoldersRoot) {
         return "";
     }
-    const QString param("%1:\"%2\"");
+    const QString param("%1:=\"%2\"");
     
     // Find for folers root 
     TreeItem* pAux = pTree;
@@ -144,7 +144,7 @@ QString LibraryTreeModel::getQuery(TreeItem* pTree) const {
     }
     
     if (isFolderItem) {
-        return param.arg("location", pTree->dataPath().toString());
+        return param.arg("folder", pTree->dataPath().toString());
     }
     
     // Find Artist / Album / Genre query

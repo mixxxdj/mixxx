@@ -55,6 +55,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
             << "library." + LIBRARYTABLE_DATETIMEADDED
             << "track_locations.location"
             << "track_locations.fs_deleted"
+            << "track_locations.directory"
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED
             << "library." + LIBRARYTABLE_COVERART_SOURCE

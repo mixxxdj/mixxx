@@ -15,7 +15,9 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                   << "composer"
                   << "grouping"
                   << "comment"
-                  << "location";
+                  << "location"
+                  << "directory"
+                  << "folder";
     m_numericFilters << "year"
                      << "track"
                      << "bpm"
@@ -24,10 +26,10 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "bitrate";
     m_specialFilters << "key"
                      << "duration"
-	             << "added"
-	             << "dateadded"
-		     << "datetime_added"
-	             << "date_added";
+                     << "added"
+                     << "dateadded"
+                     << "datetime_added"
+                     << "date_added";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -47,6 +49,8 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_fieldToSqlColumns["played"] << "timesplayed";
     m_fieldToSqlColumns["rating"] << "rating";
     m_fieldToSqlColumns["location"] << "location";
+    m_fieldToSqlColumns["directory"] << "directory";
+    m_fieldToSqlColumns["folder"] << "directory";
     m_fieldToSqlColumns["datetime_added"] << "datetime_added";
 
     m_allFilters.append(m_textFilters);
