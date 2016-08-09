@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>915</height>
+    <width>593</width>
+    <height>791</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string notr="true">Library Preferences</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QGroupBox" name="groupBoxLibrary">
      <property name="title">
@@ -276,32 +276,6 @@
        <widget class="QRadioButton" name="radioButton_dbclick_bottom">
         <property name="text">
          <string>Add track to Auto DJ Queue (bottom)</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox_5">
-     <property name="title">
-      <string>Tree Grouping</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QRadioButton" name="radioButton_grouping_albums">
-        <property name="text">
-         <string>Artists / Albums / Genres</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="radioButton_grouping_folders">
-        <property name="text">
-         <string>Folders</string>
         </property>
        </widget>
       </item>

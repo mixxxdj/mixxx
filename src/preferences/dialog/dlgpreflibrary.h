@@ -39,11 +39,6 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
         ADD_TRACK_BOTTOM, // Add track to Auto-DJ Queue (bottom).
         ADD_TRACK_TOP     // Add track to Auto-DJ Queue (top).
     };
-    
-    enum LibraryGrouping {
-        GROUPING_ALBUMS,  // Group the tracks by Album / Artist / Genre
-        GROUPING_FOLDERS  // Group the tracks by the folders
-    };
 
     DlgPrefLibrary(QWidget *parent, UserSettingsPointer config,
                    Library *pLibrary);
