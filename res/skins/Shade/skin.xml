@@ -537,7 +537,7 @@
 						background-color: #aab2b7;
 					}
 
-					QScrollArea WButtonBar {
+					QScrollArea WButtonBar, QScrollArea WButtonBar QWidget {
 						border: none;
 					}
 
