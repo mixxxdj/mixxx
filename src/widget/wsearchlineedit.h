@@ -36,7 +36,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void slotTextChanged(const QString& text);
 
   private slots:
-    void updateCloseButton(const QString& text);
+    void updateButtons(const QString& text);
     void slotSetupTimer(const QString& text);
     void triggerSearch();
     void onSearchTextCleared();
@@ -45,8 +45,9 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void showPlaceholder();
 
     QTimer m_searchTimer;
-    QToolButton* m_clearButton;
-    QToolButton* m_saveButton;
+    QToolButton* m_pClearButton;
+    QToolButton* m_pSaveButton;
+    QToolButton* m_pDropButton;
     bool m_place;
     QColor m_fgc; //Foreground color
 };

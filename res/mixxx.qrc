@@ -111,5 +111,6 @@
         <file>images/library/ic_library_maintenance.png</file>
         <file>images/library/ic_library_folder.png</file>
         <file>skins/save.png</file>
+        <file>skins/downArrow.png</file>
     </qresource>
 </RCC>
