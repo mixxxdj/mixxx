@@ -10,7 +10,7 @@ WButtonBar::WButtonBar(QWidget* parent)
     
     QHBoxLayout* pHb = new QHBoxLayout(this);
     pHb->setContentsMargins(0,0,0,0);
-    
+
     QWidget* w1 = new QWidget(this);
     
     // QSizePolicy::Maximum -> treat the size hint as maximum. This protects us 

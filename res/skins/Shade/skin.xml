@@ -1,153 +1,155 @@
 
 
 
-	<!--
-	Shade, Skin for Mixxx 1.12.x
-	www.mixxx.org
-	Copyright (C) 2010-2014 jus <s.brandt@mixxx.org>
-	This file is part of the "Shade" Skin for Mixxx
-	"Shade" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
-	http://creativecommons.org/licenses/by-sa/3.0/
+    <!--
+    Shade, Skin for Mixxx 1.12.x
+    www.mixxx.org
+    Copyright (C) 2010-2014 jus <s.brandt@mixxx.org>
+    This file is part of the "Shade" Skin for Mixxx
+    "Shade" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
+    http://creativecommons.org/licenses/by-sa/3.0/
 
-	With every copy of the work, you are required to either provide a copy of the license it self
-	or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
+    With every copy of the work, you are required to either provide a copy of the license it self
+    or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
 
-	You are free:
-	to Share - to copy, distribute and transmit the work
-	to Remix - to adapt the work
+    You are free:
+    to Share - to copy, distribute and transmit the work
+    to Remix - to adapt the work
 
-	Under the following conditions:
-	Attribution - You must attribute the work in the manner specified by the author or licensor
-	(but not in any way that suggests that they endorse you or your use of the work).
-	A attribution should include the following: The name of the author and/or licensor,
-	the title of the work, the URL that is associated with the work.
+    Under the following conditions:
+    Attribution - You must attribute the work in the manner specified by the author or licensor
+    (but not in any way that suggests that they endorse you or your use of the work).
+    A attribution should include the following: The name of the author and/or licensor,
+    the title of the work, the URL that is associated with the work.
 
-	Share Alike - If you alter, transform, or build upon this work, you may distribute
-	the resulting work only under the same or similar license to this one.
+    Share Alike - If you alter, transform, or build upon this work, you may distribute
+    the resulting work only under the same or similar license to this one.
 
-	See CHANGELOG.txt for the list of changes.
-	-->
+    See CHANGELOG.txt for the list of changes.
+    -->
 
 <!DOCTYPE skin>
 <skin>
-	<!--
-	############################################################################################
-	############################################################################################
-	Mixxx skin documentation:
-	http://mixxx.org/wiki/doku.php/creating_skins
+    <!--
+    ############################################################################################
+    ############################################################################################
+    Mixxx skin documentation:
+    http://mixxx.org/wiki/doku.php/creating_skins
 
-	List of controls:
-	http://mixxx.org/wiki/doku.php/mixxxcontrols
+    List of controls:
+    http://mixxx.org/wiki/doku.php/mixxxcontrols
 
-	Qt Style Sheets documentation:
-	https://qt-project.org/doc/qt-4.8/stylesheet.html
+    Qt Style Sheets documentation:
+    https://qt-project.org/doc/qt-4.8/stylesheet.html
 
-	Debugging:
-	To outline WidgetGroups change all occurrences (exept this one ;-) of
-	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
+    Debugging:
+    To outline WidgetGroups change all occurrences (exept this one ;-) of
+    "QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
 
-	Parent WidgedGroups are outlined one pixel solid red;
-		Child WidgedGroups are outlined one pixel solid yellow;
-			Grandchild WidgedGroups are outlined one pixel solid green;
-	############################################################################################
-	############################################################################################
-	-->
+    Parent WidgedGroups are outlined one pixel solid red;
+        Child WidgedGroups are outlined one pixel solid yellow;
+            Grandchild WidgedGroups are outlined one pixel solid green;
+    ############################################################################################
+    ############################################################################################
+    -->
 
-	<manifest>
-		<title>Shade</title>
-		<author>jus</author>
-		<version>1.12.0.01</version>
-		<description>A 2-deck split-waveform skin with 4 samplers.</description>
-		<language>en</language>
-		<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
-		<attributes>
-			<attribute config_key="[Master],num_decks">2</attribute>
-			<attribute config_key="[Master],num_samplers">4</attribute>
-			<attribute config_key="[Master],num_preview_decks">1</attribute>
-			<!--Optionally, make elements visible on skin load-->
-			<attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
-			<attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
-			<attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
-			<attribute persist="true" config_key="[EffectRack1],show">0</attribute>
-			<attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
-			<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
-			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
-			<attribute persist="true" config_key="[Library],show_icon_text">1</attribute>
-		</attributes>
-	</manifest>
-
-
-	<!--
-	**********************************************
-	General- Skin Colour Scheme
-	**********************************************
-	-->
-	<Schemes>
-		<Scheme>
-			<Name>Classic</Name>
-			<Filters/>
-		</Scheme>
-		<Scheme>
-			<Name>Dark</Name>
-			<Filters>
-				<HSVTweak>
-					<HConst>90</HConst>
-					<SConst>-30</SConst>
-					<VConst>-30</VConst>
-				</HSVTweak>
-				<Add>
-					<Amount>-40</Amount>
-				</Add>
-			</Filters>
-		</Scheme>
-		<Scheme>
-			<Name>Summer Sunset</Name>
-			<Filters>
-				<HSVTweak>
-					<SMin>100</SMin>
-					<VFact>0.7</VFact>
-					<HFact>0.3</HFact>
-				</HSVTweak>
-				<HSVTweak>
-					<SMax>50</SMax>
-					<HFact>0</HFact>
-					<HConst>50</HConst>
-					<SConst>120</SConst>
-					<VConst>-10</VConst>
-				</HSVTweak>
-			</Filters>
-		</Scheme>
-	</Schemes>
+    <manifest>
+        <title>Shade</title>
+        <author>jus</author>
+        <version>1.12.0.01</version>
+        <description>A 2-deck split-waveform skin with 4 samplers.</description>
+        <language>en</language>
+        <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+        <attributes>
+            <attribute config_key="[Master],num_decks">2</attribute>
+            <attribute config_key="[Master],num_samplers">4</attribute>
+            <attribute config_key="[Master],num_preview_decks">1</attribute>
+            <!--Optionally, make elements visible on skin load-->
+            <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
+            <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
+            <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+            <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
+            <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+            <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+            <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
+            <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+            <attribute persist="true" config_key="[Library],show_icon_text">1</attribute>
+        </attributes>
+    </manifest>
 
 
-	<!--
-	############################################################################################
-	############################################################################################
-	General- Main background picture
-	############################################################################################
-	############################################################################################
-	-->
+     <LibraryIconsColor>#e74421</LibraryIconsColor>
 
-	<ObjectName>Mixxx</ObjectName>
-	<Style src="skin:style.qss"/>
-	<MinimumSize>1024,500</MinimumSize>
-	<SizePolicy>me,me</SizePolicy>
-	<Layout>vertical</Layout>
+    <!--
+    **********************************************
+    General- Skin Colour Scheme
+    **********************************************
+    -->
+    <Schemes>
+        <Scheme>
+            <Name>Classic</Name>
+            <Filters/>
+        </Scheme>
+        <Scheme>
+            <Name>Dark</Name>
+            <Filters>
+                <HSVTweak>
+                    <HConst>90</HConst>
+                    <SConst>-30</SConst>
+                    <VConst>-30</VConst>
+                </HSVTweak>
+                <Add>
+                    <Amount>-40</Amount>
+                </Add>
+            </Filters>
+        </Scheme>
+        <Scheme>
+            <Name>Summer Sunset</Name>
+            <Filters>
+                <HSVTweak>
+                    <SMin>100</SMin>
+                    <VFact>0.7</VFact>
+                    <HFact>0.3</HFact>
+                </HSVTweak>
+                <HSVTweak>
+                    <SMax>50</SMax>
+                    <HFact>0</HFact>
+                    <HConst>50</HConst>
+                    <SConst>120</SConst>
+                    <VConst>-10</VConst>
+                </HSVTweak>
+            </Filters>
+        </Scheme>
+    </Schemes>
+
+
+    <!--
+    ############################################################################################
+    ############################################################################################
+    General- Main background picture
+    ############################################################################################
+    ############################################################################################
+    -->
+
+    <ObjectName>Mixxx</ObjectName>
+    <Style src="skin:style.qss"/>
+    <MinimumSize>1024,500</MinimumSize>
+    <SizePolicy>me,me</SizePolicy>
+    <Layout>vertical</Layout>
     <LaunchImageStyle>
-    	LaunchImage { background-color: #202020; }
+        LaunchImage { background-color: #202020; }
         QLabel {
-        	image: url(skin:/style/mixxx-icon-logo-symbolic.png);
-          	padding:0;
+            image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+            padding:0;
             margin:0;
             border:none;
             min-width: 208px;
             min-height: 48px;
-    	    max-width: 208px;
+            max-width: 208px;
             max-height: 48px;
         }
         QProgressBar {
-        	background-color: #202020;
+            background-color: #202020;
             border:none;
             min-width: 208px;
             min-height: 3px;
@@ -157,117 +159,117 @@
         QProgressBar::chunk { background-color: #ec4522; }
     </LaunchImageStyle>
 
-	<Children>
-		<WidgetGroup>
-			<ObjectName>DecksAndMixer</ObjectName>
-			<MinimumSize>1024,265</MinimumSize>
-  			<SizePolicy>e,f</SizePolicy>
-			<Layout>horizontal</Layout>
-  			<Children>
-  				<WidgetGroup>
-  					<Size>378,265</Size>
-  					<SizePolicy>f,f</SizePolicy>
-					<Children>
-		                <WidgetGroup>
-			                <Pos>1,6</Pos>
+    <Children>
+        <WidgetGroup>
+            <ObjectName>DecksAndMixer</ObjectName>
+            <MinimumSize>1024,265</MinimumSize>
+            <SizePolicy>e,f</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+                <WidgetGroup>
+                    <Size>378,265</Size>
+                    <SizePolicy>f,f</SizePolicy>
+                    <Children>
+                        <WidgetGroup>
+                            <Pos>1,6</Pos>
                             <Size>375,255</Size>
-			                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-			                <BackPath>style/style_bg_deck.png</BackPath>
-			                <Children>
-          						<Template src="skin:deck.xml">
-							        <SetVariable name="channum">1</SetVariable>
-						        </Template>
-         						<Template src="skin:deck_transport.xml">
-							        <SetVariable name="channum">1</SetVariable>
-						        </Template>
-                        		<WidgetGroup>
-                        			<Pos>5,200</Pos>
-			                        <Size>372,50</Size>
+                            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+                            <BackPath>style/style_bg_deck.png</BackPath>
+                            <Children>
+                                <Template src="skin:deck.xml">
+                                    <SetVariable name="channum">1</SetVariable>
+                                </Template>
+                                <Template src="skin:deck_transport.xml">
+                                    <SetVariable name="channum">1</SetVariable>
+                                </Template>
+                                <WidgetGroup>
+                                    <Pos>5,200</Pos>
+                                    <Size>372,50</Size>
                                     <SizePolicy>f,f</SizePolicy>
-					                <Children>
-						                <Template src="skin:microphone.xml">
-							                <SetVariable name="micnum"></SetVariable>
-						                </Template>
-                                		<WidgetGroup>
-			                                <Pos>100,0</Pos>
-			                                <Size>93,50</Size>
-			                                <Children>
-						                    <Template src="skin:microphone.xml">
-						                        <SetVariable name="micnum">2</SetVariable>
-						                    </Template>
-                            				</Children>
-		                                    <Connection>
+                                    <Children>
+                                        <Template src="skin:microphone.xml">
+                                            <SetVariable name="micnum"></SetVariable>
+                                        </Template>
+                                        <WidgetGroup>
+                                            <Pos>100,0</Pos>
+                                            <Size>93,50</Size>
+                                            <Children>
+                                            <Template src="skin:microphone.xml">
+                                                <SetVariable name="micnum">2</SetVariable>
+                                            </Template>
+                                            </Children>
+                                            <Connection>
                                                 <ConfigKey>[Microphone2],enabled</ConfigKey>
                                                 <BindProperty>visible</BindProperty>
                                             </Connection>
                                         </WidgetGroup>
-						                <Template src="skin:ducking.xml">
-						                </Template>
-                    				</Children>
-			                        <Connection>
-				                        <ConfigKey>[Microphone],show_microphone</ConfigKey>
-				                        <BindProperty>visible</BindProperty>
-			                        </Connection>
-		                		</WidgetGroup>
-					        </Children>
-				        </WidgetGroup>
-					</Children>
-				</WidgetGroup>
-				<WidgetGroup>
-					<Size>260,265</Size>
-					<Children>
-						<Template src="skin:mixer_panel.xml">
-						</Template>
-					</Children>
-				</WidgetGroup>
-				<WidgetGroup>
-  					<Size>378,265</Size>
-  					<SizePolicy>f,f</SizePolicy>
-					<Children>
-            		    <WidgetGroup>
-			                <Pos>1,6</Pos>
-			                <Size>375,255</Size>
-			                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-			                <BackPath>style/style_bg_deck.png</BackPath>
-			                <Children>
-					            <Template src="skin:deck.xml">
-						            <SetVariable name="channum">2</SetVariable>
-					            </Template>
-					            <Template src="skin:deck_transport.xml">
-						            <SetVariable name="channum">2</SetVariable>
-					            </Template>
-                        		<WidgetGroup>
-                        			<Pos>5,200</Pos>
-		                            <Size>372,50</Size>
+                                        <Template src="skin:ducking.xml">
+                                        </Template>
+                                    </Children>
+                                    <Connection>
+                                        <ConfigKey>[Microphone],show_microphone</ConfigKey>
+                                        <BindProperty>visible</BindProperty>
+                                    </Connection>
+                                </WidgetGroup>
+                            </Children>
+                        </WidgetGroup>
+                    </Children>
+                </WidgetGroup>
+                <WidgetGroup>
+                    <Size>260,265</Size>
+                    <Children>
+                        <Template src="skin:mixer_panel.xml">
+                        </Template>
+                    </Children>
+                </WidgetGroup>
+                <WidgetGroup>
+                    <Size>378,265</Size>
+                    <SizePolicy>f,f</SizePolicy>
+                    <Children>
+                        <WidgetGroup>
+                            <Pos>1,6</Pos>
+                            <Size>375,255</Size>
+                            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+                            <BackPath>style/style_bg_deck.png</BackPath>
+                            <Children>
+                                <Template src="skin:deck.xml">
+                                    <SetVariable name="channum">2</SetVariable>
+                                </Template>
+                                <Template src="skin:deck_transport.xml">
+                                    <SetVariable name="channum">2</SetVariable>
+                                </Template>
+                                <WidgetGroup>
+                                    <Pos>5,200</Pos>
+                                    <Size>372,50</Size>
                                     <SizePolicy>f,f</SizePolicy>
-				                    <Children>
-				                        <Template src="skin:auxiliary.xml">
-				                            <SetVariable name="auxnum">1</SetVariable>
-				                        </Template>
-                                		<WidgetGroup>
-		                                    <Pos>109,0</Pos>
-		                                    <Size>108,50</Size>
-		                                    <Children>
-					                        <Template src="skin:auxiliary.xml">
-					                            <SetVariable name="auxnum">2</SetVariable>
-					                        </Template>
-                            				</Children>
-	                                        <Connection>
+                                    <Children>
+                                        <Template src="skin:auxiliary.xml">
+                                            <SetVariable name="auxnum">1</SetVariable>
+                                        </Template>
+                                        <WidgetGroup>
+                                            <Pos>109,0</Pos>
+                                            <Size>108,50</Size>
+                                            <Children>
+                                            <Template src="skin:auxiliary.xml">
+                                                <SetVariable name="auxnum">2</SetVariable>
+                                            </Template>
+                                            </Children>
+                                            <Connection>
                                                 <ConfigKey>[Auxiliary2],enabled</ConfigKey>
                                                 <BindProperty>visible</BindProperty>
                                             </Connection>
                                         </WidgetGroup>
-                    				</Children>
-		                            <Connection>
-			                            <ConfigKey>[Microphone],show_microphone</ConfigKey>
-			                            <BindProperty>visible</BindProperty>
-		                            </Connection>
-	                    		</WidgetGroup>
-				            </Children>
-			            </WidgetGroup>
-					</Children>
-				</WidgetGroup>
-			</Children>
+                                    </Children>
+                                    <Connection>
+                                        <ConfigKey>[Microphone],show_microphone</ConfigKey>
+                                        <BindProperty>visible</BindProperty>
+                                    </Connection>
+                                </WidgetGroup>
+                            </Children>
+                        </WidgetGroup>
+                    </Children>
+                </WidgetGroup>
+            </Children>
       <Connection>
         <ConfigKey>[Master],maximize_library</ConfigKey>
         <BindProperty>visible</BindProperty>
@@ -275,24 +277,24 @@
           <Not/>
         </Transform>
       </Connection>
-		</WidgetGroup>
+        </WidgetGroup>
 
-		<!--
-		############################################################################################
-		############################################################################################
-		WidgetGroup : Show/hide Samplers, Preview Deck, and shrink Library
-		############################################################################################
-		############################################################################################
-		-->
-		<WidgetGroup>
-			<MinimumSize>1024,105</MinimumSize>
-			<SizePolicy>me,me</SizePolicy>
-			<Layout>vertical</Layout>
-			<!--deactivate the standard
-			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-			cause push buttons in library will show up with wrong margin/padding -->
-			<Style>QGroupBox { border: 0px solid red; }</Style>
-			<Children>
+        <!--
+        ############################################################################################
+        ############################################################################################
+        WidgetGroup : Show/hide Samplers, Preview Deck, and shrink Library
+        ############################################################################################
+        ############################################################################################
+        -->
+        <WidgetGroup>
+            <MinimumSize>1024,105</MinimumSize>
+            <SizePolicy>me,me</SizePolicy>
+            <Layout>vertical</Layout>
+            <!--deactivate the standard
+            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+            cause push buttons in library will show up with wrong margin/padding -->
+            <Style>QGroupBox { border: 0px solid red; }</Style>
+            <Children>
         <!-- Sampler Bank sub-widget -->
         <WidgetGroup>
           <SizePolicy>me,f</SizePolicy>
@@ -368,514 +370,526 @@
           </Connection>
         </WidgetGroup>
 
-				<!--
-				**********************************************
-				Library / Preview Deck / Search / Tree view
-				**********************************************
-				-->
-				<WidgetGroup>
-					<ObjectName>Library</ObjectName>
-					<Pos>0,0</Pos>
-					<Size>e,e</Size>
-					<SizePolicy>me,me</SizePolicy>
-					<Layout>horizontal</Layout>
-					<Style>
-					QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 0px;}
+                <!--
+                **********************************************
+                Library / Preview Deck / Search / Tree view
+                **********************************************
+                -->
+                <WidgetGroup>
+                    <ObjectName>Library</ObjectName>
+                    <Pos>0,0</Pos>
+                    <Size>e,e</Size>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Style>
+                    QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 0px;}
 
-					QTableView, QTextBrowser, QTreeView {
-						border: 1px solid #656565;
-						font: 12px/14px sans-serif;
-						font-family: "Open Sans";
-						background: transparent; color: #ACACAC;
-						<!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?-->
-						alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}
-					<!--checkbox in library "Played" column -->
-					QTableView::indicator { width: 12px; height: 12px;}
-					QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
-					QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
+                    QTableView, QTextBrowser, QTreeView {
+                        border: 1px solid #656565;
+                        font: 12px/14px sans-serif;
+                        font-family: "Open Sans";
+                        background: transparent; color: #ACACAC;
+                        <!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?-->
+                        alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}
+                    <!--checkbox in library "Played" column -->
+                    QTableView::indicator { width: 12px; height: 12px;}
+                    QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
+                    QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
 
                                         <!-- BPM lock icon in the library "BPM" column. -->
                                         #LibraryBPMButton::indicator:checked { image: url(:/images/library/ic_library_checked.png); }
                                         #LibraryBPMButton::indicator:unchecked { image: url(:/images/library/ic_library_unchecked.png); }
 
-					<!--Button in library "Preview" column -->
-					QPushButton#LibraryPreviewButton { width: 23px; height: 12px; background: transparent; border: 0; }
-					QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
-					QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
+                    <!--Button in library "Preview" column -->
+                    QPushButton#LibraryPreviewButton { width: 23px; height: 12px; background: transparent; border: 0; }
+                    QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
+                    QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
-					QPushButton#LibraryBPMButton {background: transparent; border: 0;}
-					QPushButton#LibraryBPMButton::checked {image: url(:/images/library/ic_library_checked.png);}
-					QPushButton#LibraryBPMButton::!checked {image: url(:/images/library/ic_library_unchecked.png);}
+                    QPushButton#LibraryBPMButton {background: transparent; border: 0;}
+                    QPushButton#LibraryBPMButton::checked {image: url(:/images/library/ic_library_checked.png);}
+                    QPushButton#LibraryBPMButton::!checked {image: url(:/images/library/ic_library_unchecked.png);}
 
-					QHeaderView { font: 11px/13px sans-serif;
-						      font-family: "Open Sans";}
+                    QHeaderView { font: 11px/13px sans-serif;
+                              font-family: "Open Sans";}
 
-					<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
-					You could easily style a subcontrol like in the QT-Docs, but if you want to have the OS-native subcontrols, this is the only way i found ( there are probably others ).
-					In our case make sure that the "frame"-property in the corresponding dlgautodj.ui file is set to "false"
-					The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
-					-->
-					<!--transition time in Auto DJ tab-->
-					QSpinBox:editable {
-							font: 12px/14px sans-serif;
-							font-family: "Open Sans";
-							background: transparent;
-							color: #ACACAC; }
-					QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
+                    <!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
+                    You could easily style a subcontrol like in the QT-Docs, but if you want to have the OS-native subcontrols, this is the only way i found ( there are probably others ).
+                    In our case make sure that the "frame"-property in the corresponding dlgautodj.ui file is set to "false"
+                    The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
+                    -->
+                    <!--transition time in Auto DJ tab-->
+                    QSpinBox:editable {
+                            font: 12px/14px sans-serif;
+                            font-family: "Open Sans";
+                            background: transparent;
+                            color: #ACACAC; }
+                    QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
 
-					<!--library search bar-->
-					WSearchLineEdit {
-						margin: 0px 0px 5px 5px;
-						padding: 2px;
-						border: 1px solid #656565;
-						font: 12px/14px sans-serif;
-						font-family: "Open Sans";
-						background: transparent;
-						color: #ACACAC;
-					}
-					WSearchLineEdit:focus {
-						padding: 2px;
-						border: 2px solid #FF6600;
-						font: 12px/14px sans-serif;
-						font-family: "Open Sans";
-						background: rgba(255, 102, 0,50);
-						color: #D6D6D6;}
+                    <!--library search bar-->
+                    WSearchLineEdit {
+                        margin: 0px 0px 5px 5px;
+                        padding: 2px;
+                        border: 1px solid #656565;
+                        font: 12px/14px sans-serif;
+                        font-family: "Open Sans";
+                        background: transparent;
+                        color: #ACACAC;
+                    }
+                    WSearchLineEdit:focus {
+                        padding: 2px;
+                        border: 2px solid #FF6600;
+                        font: 12px/14px sans-serif;
+                        font-family: "Open Sans";
+                        background: rgba(255, 102, 0,50);
+                        color: #D6D6D6;}
 
-					<!--Cover Art-->
-					WCoverArt {
-						font: 13px/15px sans-serif;
-						font-family: "Open Sans";
-						background: transparent;
-						color: #ACACAC;
-					}
+                    <!--Cover Art-->
+                    WCoverArt {
+                        font: 13px/15px sans-serif;
+                        font-family: "Open Sans";
+                        background: transparent;
+                        color: #ACACAC;
+                    }
 
-					<!--splitter between treeview and library-->
-					QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
-					QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
-					QSplitter::handle:horizontal { width: 6px; }
-					QSplitter::handle:vertical { height: 6px;}
+                    <!--splitter between treeview and library-->
+                    QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
+                    QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
+                    QSplitter::handle:horizontal { width: 6px; }
+                    QSplitter::handle:vertical { height: 6px;}
 
-					QAbstractButton { font: 12px/14px sans-serif;
-						      font-family: "Open Sans";}
-					<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
-					QLabel, QRadioButton {
-						font: 12px/14px sans-serif;
-						font-family: "Open Sans";
-						background: transparent;
-						color: #C1C1C1;}
+                    QAbstractButton { font: 12px/14px sans-serif;
+                              font-family: "Open Sans";}
+                    <!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
+                    QLabel, QRadioButton {
+                        font: 12px/14px sans-serif;
+                        font-family: "Open Sans";
+                        background: transparent;
+                        color: #C1C1C1;}
 
-					<!--Additional space for the QPushButtons-->
-					WBaseLibrary QPushButton {
-					    margin: 2px 3px;
-					    padding: 3px 3px;
-					}
+                    <!--Additional space for the QPushButtons-->
+                    WBaseLibrary QPushButton {
+                        margin: 2px 3px;
+                        padding: 3px 3px;
+                    }
 
-					/* Scroll bars */
-					QScrollBar {
-					  color: #474747;
-					  font-size: 8pt;
-					  padding: 3px;
-					  background-color: #aab2b7;
-					}
+                    /* Scroll bars */
+                    QScrollBar {
+                      color: #474747;
+                      font-size: 8pt;
+                      padding: 3px;
+                      background-color: #aab2b7;
+                    }
 
-					QScrollBar:horizontal {
-					  border-top: 1px solid #141414;
-					  min-width: 12px;
-					  height: 15px;
-					}
-					QScrollBar:vertical {
-					  border-left: 1px solid #141414;
-					  min-height: 12px;
-					  width: 15px;
-					}
-					/* "add-page" and "sub-page" are the gutter of the scrollbar */
-					QScrollBar::add-page, QScrollBar::sub-page {
-					  background: none;
-					}
+                    QScrollBar:horizontal {
+                      border-top: 1px solid #141414;
+                      min-width: 12px;
+                      height: 15px;
+                    }
+                    QScrollBar:vertical {
+                      border-left: 1px solid #141414;
+                      min-height: 12px;
+                      width: 15px;
+                    }
+                    /* "add-page" and "sub-page" are the gutter of the scrollbar */
+                    QScrollBar::add-page, QScrollBar::sub-page {
+                      background: none;
+                    }
 
-					QScrollBar::handle {
-					  min-height: 25px;
-					  background: rgba(95, 95, 95, 150);
-					  border: none;
-					}
-					QScrollBar::handle:hover {
-					  background: rgba(120, 120, 120, 150);
-					}
+                    QScrollBar::handle {
+                      min-height: 25px;
+                      background: rgba(95, 95, 95, 150);
+                      border: none;
+                    }
+                    QScrollBar::handle:hover {
+                      background: rgba(120, 120, 120, 150);
+                    }
 
-					/* Turn off buttons */
-					QScrollBar::add-line, QScrollBar::sub-line {
-					  width: 0px;
-					  height: 0px;
-					  border: none;
-					}
+                    /* Turn off buttons */
+                    QScrollBar::add-line, QScrollBar::sub-line {
+                      width: 0px;
+                      height: 0px;
+                      border: none;
+                    }
 
-					QScrollArea QWidget {
-					  border: 1px solid #1A1A1A;
-					  background-color: transparent;
-					}
+                    WBaseLibrary QScrollArea,                   
+                    QScrollArea QWidget {
+                        border: none;
+                        background-color: transparent;
+                    }
 
-					WBaseLibrary QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
-						background-color: #191919;
-						border: none;
-					}
+                    WBaseLibrary QTabWidget QTreeView, 
+                    #DlgAutoDJ QScrollArea {
+                        background-color: #191919;
+                        border: none;
+                    }
 
-					WBaseLibrary QTabWidget::pane {
-						background-color: #191919;
-						border: 1px solid #646464;
-					}
+                    #DlgAutoDJ QScrollArea QScrollBar {
+                      background-color: #aab2b7;
+                    }
 
-					WBaseLibrary QTreeView {
-						margin: 0px;
-					}
+                    WBaseLibrary QTabWidget::pane {
+                        background-color: #191919;
+                        border: 1px solid #646464;
+                    }
 
-					WBaseLibrary QPushButton {
-						border: 1px solid black;
-						background-color: #aab2b7;
-					}
+                    WBaseLibrary QTreeView {
+                        margin: 0px;
+                    }
 
-					#LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
-						background-color: #aab2b7;
-					}
+                    WBaseLibrary QPushButton {
+                        border: 1px solid black;
+                        background-color: #aab2b7;
+                    }
 
-					QScrollArea WButtonBar, QScrollArea WButtonBar QWidget {
-						border: none;
-					}
+                    #LibrarySidebarButtons {
+                        border: none;       
+                        background-color: #aab2b7;
+                    } 
 
-					WButtonBar QToolButton {
-						padding: 2px 2px 2px 2px;
-						color: black;
-						border: none;
-						background-color: #aab2b7;
-					}
+                    #LibrarySidebarButtons WButtonBar {
+                        background-color: #aab2b7;
+                    }
 
-					WButtonBar QToolButton:hover {
-						border: 2px solid #626f87;
-					}
+                    QScrollArea WButtonBar, 
+                    QScrollArea WButtonBar QWidget {
+                        border: none;
+                    }
 
-					WBaseLibrary[showFocus="0"] {
-						padding: 2px 0 0 0;
-						border: none;
-					}
+                    WButtonBar QToolButton {
+                        padding: 2px 2px 2px 2px;
+                        color: black;
+                        border: none;
+                        background-color: #aab2b7;
+                    }
 
-					WBaseLibrary[showFocus="1"] {
-						padding: 2px 1px 1px 1px;
-						border-top: 2px solid aqua;
-					}
+                    WButtonBar QToolButton:hover {
+                        border: 2px solid #626f87;
+                    }
 
-					WLibraryBreadCrumb QLabel {
-						margin: 2px 4px;
-					}
+                    WBaseLibrary[showFocus="0"] {
+                        padding: 2px 0 0 0;
+                        border: none;
+                    }
 
-					WBaseLibrary QLabel {
-						margin-left: 5px;
-						margin-bottom: 5px;
-					}
+                    WBaseLibrary[showFocus="1"] {
+                        padding: 2px 1px 1px 1px;
+                        border-top: 2px solid aqua;
+                    }
 
-					<!--Spacing between treeview and searchbar-->
-					QTreeView { margin: 0px 0px 0px 5px; }
+                    WLibraryBreadCrumb QLabel {
+                        margin: 2px 4px;
+                    }
 
-					<!--triangle for closed/opened branches in treeview-->
-					QTreeView { show-decoration-selected: 0;} <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
-					QTreeView::branch:has-children:!has-siblings:closed,
-					QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);}
-					QTreeView::branch:open:has-children:!has-siblings,
-					QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);}
-					<!--
-					<BgColor>#101010</BgColor>
-					<FgColor>#C1C1C1</FgColor>
-					<BgColorRowEven>#101010</BgColorRowEven>
-					<BgColorRowUneven>#151515</BgColorRowUneven>
-					-->
-					</Style>
-					<Children>
-						<Splitter>
-							<Size>me,me</Size>
-							<SplitSizesConfigKey>[Shade],LibrarySidebarSplitSize</SplitSizesConfigKey>
-							<SplitSizes>1,e</SplitSizes>
-							<Children>
-								<WidgetGroup>
-									<Layout>vertical</Layout>
-									<Children>
-										<!-- Preview Deck-->
-										<WidgetGroup>
-											<Style>
-												QGroupBox {
-													margin: 0px 0px 4px 5px;
-													padding: 0px;
-													border: 1px solid #656565;
-													background: transparent;
-												}
-											</Style>
-											<Layout>horizontal</Layout>
-											<Children>
-												<!-- Preview Deck Column 1 Row 1-->
-												<WidgetGroup>
-													<Layout>vertical</Layout>
-													<Children>
-													<WidgetGroup>
-														<Style> QGroupBox {
-															margin: 0px;
-															padding: 0px 0px 0px 0px;
-															border-left: 0px solid #656565;
-															border-right: 0px solid #2B2B2B;
-															border-top: 0px solid #656565;
-															border-bottom: 1px solid #2B2B2B;
-															background: transparent;
-														}
-														</Style>
-														<Layout>horizontal</Layout>
-														<Children>
-															<!--
-															**********************************************
-															Text- Track Title
-															**********************************************
-															-->
-															<Text>
-																<TooltipId>text</TooltipId>
-																<Style> QLabel {
-																	font: 11px/13px sans-serif;
-																	font-family: "Open Sans";
-																	background-color: transparent;
-																	color: #ACACAC;
-																	text-align: left;
-																	padding-left: 1px;
-																}
-																</Style>
-																<Group>[PreviewDeck1]</Group>
-																<Pos></Pos>
-																<Size>50me,15f</Size>
-																<Elide>right</Elide>
-															</Text>
-															<!--
-															**********************************************
-															Button- Eject
-															**********************************************
-															-->
-															<PushButton>
-																<TooltipId>eject</TooltipId>
-																<Style></Style>
-																<NumberStates>1</NumberStates>
-																<State>
-																	<Number>0</Number>
-																	<Pressed>btn_eject1_over.png</Pressed>
-																	<Unpressed>btn_eject1.png</Unpressed>
-																</State>
-																<Pos></Pos>
-																<Connection>
-																	<ConfigKey>[PreviewDeck1],eject</ConfigKey>
-																	<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-																	<ButtonState>LeftButton</ButtonState>
-																	<ConnectValueToWidget>false</ConnectValueToWidget>
-																</Connection>
-															</PushButton>
-														</Children>
-													</WidgetGroup>
-													<!-- Preview Deck Column 1 Row 2-->
-													<WidgetGroup>
-														<Style>
-															QGroupBox {
-																padding: 0px;
-																margin: 0px;
-																border: 0px;
-															}
-														</Style>
-														<Layout>horizontal</Layout>
-														<Children>
-															<PushButton>
-																<TooltipId>play_start</TooltipId>
-																<Style></Style>
-																<NumberStates>2</NumberStates>
-																<RightClickIsPushButton>true</RightClickIsPushButton>
-																<State>
-																	<Number>0</Number>
-																	<Pressed>btn_play_sampler_down.png</Pressed>
-																	<Unpressed>btn_play_sampler.png</Unpressed>
-																</State>
-																<State>
-																	<Number>1</Number>
-																	<Pressed>btn_play_sampler_overdown.png</Pressed>
-																	<Unpressed>btn_play_sampler_over.png</Unpressed>
-																</State>
-																<Pos>2,2</Pos>
-																<Connection>
-																	<ConfigKey>[PreviewDeck1],play</ConfigKey>
-																	<EmitOnDownPress>true</EmitOnDownPress>
-																	<ButtonState>LeftButton</ButtonState>
-																</Connection>
-																<Connection>
-																	<ConfigKey>[PreviewDeck1],start</ConfigKey>
-																	<EmitOnDownPress>true</EmitOnDownPress>
-																	<ButtonState>RightButton</ButtonState>
-																	<ConnectValueToWidget>false</ConnectValueToWidget>
-																</Connection>
-															</PushButton>
-															<Overview>
-																<TooltipId>waveform_overview</TooltipId>
-																<Style></Style>
-																<Group>[PreviewDeck1]</Group>
-																<Size>me,30f</Size>
-																<BgColor>#8D98A3</BgColor>
-																<SignalHighColor>#FFE300</SignalHighColor>
-																<SignalMidColor>#0099FF</SignalMidColor>
-																<SignalLowColor>#FF0035</SignalLowColor>
-																<SignalColor>#FF8000</SignalColor>
-																<PlayPosColor>#00FF00</PlayPosColor>
-																<DefaultMark>
-																	<Align>bottom</Align>
-																	<Color>#FFFFFF</Color>
-																	<TextColor>#00FF00</TextColor>
-																	<Text> %1 </Text>
-																</DefaultMark>
-																<Mark>
-																	<Control>cue_point</Control>
-																	<Text> C </Text>
-																	<Align>top</Align>
-																	<Color>#FF001C</Color>
-																	<TextColor>#00FF00</TextColor>
-																</Mark>
-																<Connection>
-																	<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
-																	<EmitOnDownPress>false</EmitOnDownPress>
-																</Connection>
-															</Overview>
-														</Children>
-													</WidgetGroup>
-													</Children>
-												</WidgetGroup>
+                    WBaseLibrary QLabel {
+                        margin-left: 5px;
+                        margin-bottom: 5px;
+                    }
 
-											<!-- Preview Deck Column 2-->
-												<WidgetGroup>
-													<MinimumSize>20,62</MinimumSize>
+                    <!--Spacing between treeview and searchbar-->
+                    QTreeView { margin: 0px 0px 0px 5px; }
 
-													<Children>
-													<!--
-													**********************************************
-													Visual- Volume peak indicator
-													**********************************************
-													-->
-													<StatusLight>
-														<TooltipId>preview_PeakIndicator</TooltipId>
-														<Style></Style>
-														<PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
-														<PathBack>btn_clipping_previewdeck.png</PathBack>
-														<Pos>0,1</Pos>
-														<Connection>
-															<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
-														</Connection>
-													</StatusLight>
+                    <!--triangle for closed/opened branches in treeview-->
+                    QTreeView { show-decoration-selected: 0;} <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
+                    QTreeView::branch:has-children:!has-siblings:closed,
+                    QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);}
+                    QTreeView::branch:open:has-children:!has-siblings,
+                    QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);}
+                    <!--
+                    <BgColor>#101010</BgColor>
+                    <FgColor>#C1C1C1</FgColor>
+                    <BgColorRowEven>#101010</BgColorRowEven>
+                    <BgColorRowUneven>#151515</BgColorRowUneven>
+                    -->
+                    </Style>
+                    <Children>
+                        <Splitter>
+                            <Size>me,me</Size>
+                            <SplitSizesConfigKey>[Shade],LibrarySidebarSplitSize</SplitSizesConfigKey>
+                            <SplitSizes>1,e</SplitSizes>
+                            <Children>
+                                <WidgetGroup>
+                                    <Layout>vertical</Layout>
+                                    <Children>
+                                        <!-- Preview Deck-->
+                                        <WidgetGroup>
+                                            <Style>
+                                                QGroupBox {
+                                                    margin: 0px 0px 4px 5px;
+                                                    padding: 0px;
+                                                    border: 1px solid #656565;
+                                                    background: transparent;
+                                                }
+                                            </Style>
+                                            <Layout>horizontal</Layout>
+                                            <Children>
+                                                <!-- Preview Deck Column 1 Row 1-->
+                                                <WidgetGroup>
+                                                    <Layout>vertical</Layout>
+                                                    <Children>
+                                                    <WidgetGroup>
+                                                        <Style> QGroupBox {
+                                                            margin: 0px;
+                                                            padding: 0px 0px 0px 0px;
+                                                            border-left: 0px solid #656565;
+                                                            border-right: 0px solid #2B2B2B;
+                                                            border-top: 0px solid #656565;
+                                                            border-bottom: 1px solid #2B2B2B;
+                                                            background: transparent;
+                                                        }
+                                                        </Style>
+                                                        <Layout>horizontal</Layout>
+                                                        <Children>
+                                                            <!--
+                                                            **********************************************
+                                                            Text- Track Title
+                                                            **********************************************
+                                                            -->
+                                                            <Text>
+                                                                <TooltipId>text</TooltipId>
+                                                                <Style> QLabel {
+                                                                    font: 11px/13px sans-serif;
+                                                                    font-family: "Open Sans";
+                                                                    background-color: transparent;
+                                                                    color: #ACACAC;
+                                                                    text-align: left;
+                                                                    padding-left: 1px;
+                                                                }
+                                                                </Style>
+                                                                <Group>[PreviewDeck1]</Group>
+                                                                <Pos></Pos>
+                                                                <Size>50me,15f</Size>
+                                                                <Elide>right</Elide>
+                                                            </Text>
+                                                            <!--
+                                                            **********************************************
+                                                            Button- Eject
+                                                            **********************************************
+                                                            -->
+                                                            <PushButton>
+                                                                <TooltipId>eject</TooltipId>
+                                                                <Style></Style>
+                                                                <NumberStates>1</NumberStates>
+                                                                <State>
+                                                                    <Number>0</Number>
+                                                                    <Pressed>btn_eject1_over.png</Pressed>
+                                                                    <Unpressed>btn_eject1.png</Unpressed>
+                                                                </State>
+                                                                <Pos></Pos>
+                                                                <Connection>
+                                                                    <ConfigKey>[PreviewDeck1],eject</ConfigKey>
+                                                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                                                    <ButtonState>LeftButton</ButtonState>
+                                                                    <ConnectValueToWidget>false</ConnectValueToWidget>
+                                                                </Connection>
+                                                            </PushButton>
+                                                        </Children>
+                                                    </WidgetGroup>
+                                                    <!-- Preview Deck Column 1 Row 2-->
+                                                    <WidgetGroup>
+                                                        <Style>
+                                                            QGroupBox {
+                                                                padding: 0px;
+                                                                margin: 0px;
+                                                                border: 0px;
+                                                            }
+                                                        </Style>
+                                                        <Layout>horizontal</Layout>
+                                                        <Children>
+                                                            <PushButton>
+                                                                <TooltipId>play_start</TooltipId>
+                                                                <Style></Style>
+                                                                <NumberStates>2</NumberStates>
+                                                                <RightClickIsPushButton>true</RightClickIsPushButton>
+                                                                <State>
+                                                                    <Number>0</Number>
+                                                                    <Pressed>btn_play_sampler_down.png</Pressed>
+                                                                    <Unpressed>btn_play_sampler.png</Unpressed>
+                                                                </State>
+                                                                <State>
+                                                                    <Number>1</Number>
+                                                                    <Pressed>btn_play_sampler_overdown.png</Pressed>
+                                                                    <Unpressed>btn_play_sampler_over.png</Unpressed>
+                                                                </State>
+                                                                <Pos>2,2</Pos>
+                                                                <Connection>
+                                                                    <ConfigKey>[PreviewDeck1],play</ConfigKey>
+                                                                    <EmitOnDownPress>true</EmitOnDownPress>
+                                                                    <ButtonState>LeftButton</ButtonState>
+                                                                </Connection>
+                                                                <Connection>
+                                                                    <ConfigKey>[PreviewDeck1],start</ConfigKey>
+                                                                    <EmitOnDownPress>true</EmitOnDownPress>
+                                                                    <ButtonState>RightButton</ButtonState>
+                                                                    <ConnectValueToWidget>false</ConnectValueToWidget>
+                                                                </Connection>
+                                                            </PushButton>
+                                                            <Overview>
+                                                                <TooltipId>waveform_overview</TooltipId>
+                                                                <Style></Style>
+                                                                <Group>[PreviewDeck1]</Group>
+                                                                <Size>me,30f</Size>
+                                                                <BgColor>#8D98A3</BgColor>
+                                                                <SignalHighColor>#FFE300</SignalHighColor>
+                                                                <SignalMidColor>#0099FF</SignalMidColor>
+                                                                <SignalLowColor>#FF0035</SignalLowColor>
+                                                                <SignalColor>#FF8000</SignalColor>
+                                                                <PlayPosColor>#00FF00</PlayPosColor>
+                                                                <DefaultMark>
+                                                                    <Align>bottom</Align>
+                                                                    <Color>#FFFFFF</Color>
+                                                                    <TextColor>#00FF00</TextColor>
+                                                                    <Text> %1 </Text>
+                                                                </DefaultMark>
+                                                                <Mark>
+                                                                    <Control>cue_point</Control>
+                                                                    <Text> C </Text>
+                                                                    <Align>top</Align>
+                                                                    <Color>#FF001C</Color>
+                                                                    <TextColor>#00FF00</TextColor>
+                                                                </Mark>
+                                                                <Connection>
+                                                                    <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+                                                                    <EmitOnDownPress>false</EmitOnDownPress>
+                                                                </Connection>
+                                                            </Overview>
+                                                        </Children>
+                                                    </WidgetGroup>
+                                                    </Children>
+                                                </WidgetGroup>
 
-													<!--
-													**********************************************
-													Visual - Volume level display
-													**********************************************
-													-->
-													<VuMeter>
-														<TooltipId>channel_VuMeter</TooltipId>
-														<Style></Style>
-														<PathVu>btn_volume_display_previewdeck_over.png</PathVu>
-														<PathBack>btn_volume_display_previewdeck.png</PathBack>
-														<Pos>0,12</Pos>
-														<Horizontal>false</Horizontal>
-														<PeakHoldSize>3</PeakHoldSize>
-														<PeakHoldTime>250</PeakHoldTime>
-														<PeakFallTime>50</PeakFallTime>
-														<PeakFallStep>3</PeakFallStep>
-														<Connection>
-															<ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
-														</Connection>
-													</VuMeter>
+                                            <!-- Preview Deck Column 2-->
+                                                <WidgetGroup>
+                                                    <MinimumSize>20,62</MinimumSize>
 
-													<!--
-													**********************************************
-													Slider- Channel Volume
-													**********************************************
-													-->
-													<SliderComposed>
-														<TooltipId><SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>pregain</TooltipId>
-														<Style></Style>
-														<Handle>knob_volume_previewdeck.png</Handle>
-														<Slider>slider_volume_previewdeck.png</Slider>
-														<Pos>10,2</Pos>
-														<Horizontal>false</Horizontal>
-														<Connection>
-															<ConfigKey>[PreviewDeck1],pregain</ConfigKey>
-															<EmitOnDownPress>false</EmitOnDownPress>
-														</Connection>
-													</SliderComposed>
-													</Children>
-												</WidgetGroup>
-											</Children>
-											<Connection>
-												<ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
-												<BindProperty>visible</BindProperty>
-											</Connection>
-										</WidgetGroup>
-										<!--Library Tree View-->
-										<WidgetGroup>
-											<Layout>horizontal</Layout>
-											<Children>
-												<LibrarySidebarButtons>
-													<ObjectName>LibrarySidebarButtons</ObjectName>
-												</LibrarySidebarButtons>
-												<WidgetGroup>
-													<MinimumSize>3,0</MinimumSize>
-												</WidgetGroup>
-												<Splitter>
-													<Orientation>vertical</Orientation>
-													<SplitSizes>8,2</SplitSizes>
-													<SizePolicy>me,me</SizePolicy>
-													<Children>
-														<LibrarySidebarExpanded>
-			                                            	<ObjectName>LibrarySidebarExpanded</ObjectName>
-			                                            </LibrarySidebarExpanded>
-														<!--Cover Art-->
-														<CoverArt>
-															<MinimumSize>30,30</MinimumSize>
-															<SizePolicy>me,me</SizePolicy>
-															<Connection>
-																<ConfigKey>[Library],show_coverart</ConfigKey>
-																<BindProperty>visible</BindProperty>
-															</Connection>
-														</CoverArt>
-													</Children>
-												</Splitter>
-											</Children>
-										</WidgetGroup>
-									</Children>
-								</WidgetGroup>
-								<WidgetGroup>
-									<Layout>vertical</Layout>
-									<Children>
-										<SearchBox>
-											<Id>1</Id>
-										</SearchBox>
-										<LibraryBreadCrumb>
-											<Id>1</Id>
-										</LibraryBreadCrumb>
-										<LibraryPane>
-											<Id>1</Id>
-										</LibraryPane>
-									</Children>
-								</WidgetGroup>
-								<WidgetGroup>
-									<Layout>vertical</Layout>
-									<Children>
-										<SearchBox>
-											<Id>2</Id>
-										</SearchBox>
-										<LibraryBreadCrumb>
-											<Id>2</Id>
-										</LibraryBreadCrumb>
-										<LibraryPane>
-											<Id>2</Id>
-										</LibraryPane>
-									</Children>
-								</WidgetGroup>
-							</Children>
-						</Splitter>
-					</Children>
-				</WidgetGroup>
-			</Children>
-		</WidgetGroup>
-	</Children>
+                                                    <Children>
+                                                    <!--
+                                                    **********************************************
+                                                    Visual- Volume peak indicator
+                                                    **********************************************
+                                                    -->
+                                                    <StatusLight>
+                                                        <TooltipId>preview_PeakIndicator</TooltipId>
+                                                        <Style></Style>
+                                                        <PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
+                                                        <PathBack>btn_clipping_previewdeck.png</PathBack>
+                                                        <Pos>0,1</Pos>
+                                                        <Connection>
+                                                            <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
+                                                        </Connection>
+                                                    </StatusLight>
+
+                                                    <!--
+                                                    **********************************************
+                                                    Visual - Volume level display
+                                                    **********************************************
+                                                    -->
+                                                    <VuMeter>
+                                                        <TooltipId>channel_VuMeter</TooltipId>
+                                                        <Style></Style>
+                                                        <PathVu>btn_volume_display_previewdeck_over.png</PathVu>
+                                                        <PathBack>btn_volume_display_previewdeck.png</PathBack>
+                                                        <Pos>0,12</Pos>
+                                                        <Horizontal>false</Horizontal>
+                                                        <PeakHoldSize>3</PeakHoldSize>
+                                                        <PeakHoldTime>250</PeakHoldTime>
+                                                        <PeakFallTime>50</PeakFallTime>
+                                                        <PeakFallStep>3</PeakFallStep>
+                                                        <Connection>
+                                                            <ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
+                                                        </Connection>
+                                                    </VuMeter>
+
+                                                    <!--
+                                                    **********************************************
+                                                    Slider- Channel Volume
+                                                    **********************************************
+                                                    -->
+                                                    <SliderComposed>
+                                                        <TooltipId><SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>pregain</TooltipId>
+                                                        <Style></Style>
+                                                        <Handle>knob_volume_previewdeck.png</Handle>
+                                                        <Slider>slider_volume_previewdeck.png</Slider>
+                                                        <Pos>10,2</Pos>
+                                                        <Horizontal>false</Horizontal>
+                                                        <Connection>
+                                                            <ConfigKey>[PreviewDeck1],pregain</ConfigKey>
+                                                            <EmitOnDownPress>false</EmitOnDownPress>
+                                                        </Connection>
+                                                    </SliderComposed>
+                                                    </Children>
+                                                </WidgetGroup>
+                                            </Children>
+                                            <Connection>
+                                                <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+                                                <BindProperty>visible</BindProperty>
+                                            </Connection>
+                                        </WidgetGroup>
+                                        <!--Library Tree View-->
+                                        <WidgetGroup>
+                                            <Layout>horizontal</Layout>
+                                            <Children>
+                                                <LibrarySidebarButtons>
+                                                    <ObjectName>LibrarySidebarButtons</ObjectName>
+                                                </LibrarySidebarButtons>
+                                                <WidgetGroup>
+                                                    <MinimumSize>3,0</MinimumSize>
+                                                </WidgetGroup>
+                                                <Splitter>
+                                                    <Orientation>vertical</Orientation>
+                                                    <SplitSizes>8,2</SplitSizes>
+                                                    <SizePolicy>me,me</SizePolicy>
+                                                    <Children>
+                                                        <LibrarySidebarExpanded>
+                                                            <ObjectName>LibrarySidebarExpanded</ObjectName>
+                                                        </LibrarySidebarExpanded>
+                                                        <!--Cover Art-->
+                                                        <CoverArt>
+                                                            <MinimumSize>30,30</MinimumSize>
+                                                            <SizePolicy>me,me</SizePolicy>
+                                                            <Connection>
+                                                                <ConfigKey>[Library],show_coverart</ConfigKey>
+                                                                <BindProperty>visible</BindProperty>
+                                                            </Connection>
+                                                        </CoverArt>
+                                                    </Children>
+                                                </Splitter>
+                                            </Children>
+                                        </WidgetGroup>
+                                    </Children>
+                                </WidgetGroup>
+                                <WidgetGroup>
+                                    <Layout>vertical</Layout>
+                                    <Children>
+                                        <SearchBox>
+                                            <Id>1</Id>
+                                        </SearchBox>
+                                        <LibraryBreadCrumb>
+                                            <Id>1</Id>
+                                        </LibraryBreadCrumb>
+                                        <LibraryPane>
+                                            <Id>1</Id>
+                                        </LibraryPane>
+                                    </Children>
+                                </WidgetGroup>
+                                <WidgetGroup>
+                                    <Layout>vertical</Layout>
+                                    <Children>
+                                        <SearchBox>
+                                            <Id>2</Id>
+                                        </SearchBox>
+                                        <LibraryBreadCrumb>
+                                            <Id>2</Id>
+                                        </LibraryBreadCrumb>
+                                        <LibraryPane>
+                                            <Id>2</Id>
+                                        </LibraryPane>
+                                    </Children>
+                                </WidgetGroup>
+                            </Children>
+                        </Splitter>
+                    </Children>
+                </WidgetGroup>
+            </Children>
+        </WidgetGroup>
+    </Children>
 </skin>

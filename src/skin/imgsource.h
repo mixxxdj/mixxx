@@ -30,39 +30,45 @@ class ImgSource {
     virtual ~ImgSource() {}
     virtual QImage* getImage(QString img) = 0;
     virtual inline QColor getCorrectColor(QColor c) { return c; }
-    virtual void correctImageColors(QImage*) {}
+    virtual void correctImageColors(QImage*) = 0;
+  protected:
+    virtual void correctImageColorsInner(QImage*) {}
 };
 
 class ImgProcessor : public ImgSource {
 
   public:
-    virtual ~ImgProcessor() {}
+    ~ImgProcessor() override {}
     inline ImgProcessor(const QSharedPointer<ImgSource>& parent) : m_parent(parent) {}
     virtual QColor doColorCorrection(QColor) = 0;
-    inline QColor getCorrectColor(QColor c) {
+    QColor getCorrectColor(QColor c) override {
         return doColorCorrection(m_parent->getCorrectColor(c));
     }
-    virtual void correctImageColors(QImage*) {}
-
+    void correctImageColors(QImage* pImg) override {
+        m_parent->correctImageColors(pImg);
+        correctImageColorsInner(pImg);
+    }
   protected:
+    void correctImageColorsInner(QImage*) override {};
     QSharedPointer<ImgSource> m_parent;
 };
 
 class ImgColorProcessor : public ImgProcessor {
 
-public:
-    virtual ~ImgColorProcessor() {}
+  public:
+    ~ImgColorProcessor() override {}
 
     inline ImgColorProcessor(const QSharedPointer<ImgSource>& parent)
             : ImgProcessor(parent) {}
 
-    inline virtual QImage* getImage(QString img) {
+    virtual QImage* getImage(QString img) override {
         QImage* i = m_parent->getImage(img);
-        correctImageColors(i);
+        correctImageColorsInner(i);
         return i;
     }
 
-    virtual void correctImageColors(QImage* i) {
+  protected:
+    void correctImageColorsInner(QImage* i) override {
         if (i == NULL || i->isNull()) {
             return;
         }

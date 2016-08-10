@@ -22,7 +22,7 @@ bool WVerticalScrollArea::eventFilter(QObject* o, QEvent* e) {
         int width = widget()->minimumSizeHint().width();
         int vScrollWidth = verticalScrollBar()->width();
         // + 2 for a Gap between scroll area and bar 
-        setFixedWidth(width + vScrollWidth + 2); 
+        setFixedWidth(width + vScrollWidth);
     }
     return false;
 }

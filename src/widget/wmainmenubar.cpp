@@ -137,15 +137,6 @@ void WMainMenuBar::initialize() {
             pLibraryRescan, SLOT(setDisabled(bool)));
     pLibraryMenu->addAction(pLibraryRescan);
     
-    QString showTextTitle = tr("Show text in sidebar icons");
-    QString showTextText = tr("Shows the text below the icons in the sidebar");
-    auto pLibraryText = new QAction(showTextTitle, this);
-    pLibraryText->setStatusTip(showTextText);
-    pLibraryText->setWhatsThis(buildWhatsThis(showTextTitle, showTextText));
-    pLibraryText->setCheckable(true);
-    createVisibilityControl(pLibraryText, ConfigKey("[Library]", "show_icon_text"));
-    pLibraryMenu->addAction(pLibraryText);
-
     pLibraryMenu->addSeparator();
 
     QString createPlaylistTitle = tr("Create &New Playlist");
@@ -269,6 +260,14 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
     pViewMenu->addAction(pViewShowCoverArt);
 
+    QString showTextTitle = tr("Show text in sidebar icons");
+    QString showTextText = tr("Shows the text below the icons in the sidebar");
+    auto pLibraryText = new QAction(showTextTitle, this);
+    pLibraryText->setStatusTip(showTextText);
+    pLibraryText->setWhatsThis(buildWhatsThis(showTextTitle, showTextText));
+    pLibraryText->setCheckable(true);
+    createVisibilityControl(pLibraryText, ConfigKey("[Library]", "show_icon_text"));
+    pViewMenu->addAction(pLibraryText);
 
     QString maximizeLibraryTitle = tr("Maximize Library");
     QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
