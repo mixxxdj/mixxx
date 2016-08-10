@@ -12,19 +12,26 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
           WBaseWidget(this) {
     setAcceptDrops(false);
     m_clearButton = new QToolButton(this);
-    QPixmap pixmap(":/skins/cross.png");
-    m_clearButton->setIcon(QIcon(pixmap));
-    m_clearButton->setIconSize(pixmap.size());
+    QPixmap crossPixmap(":/skins/cross.png");
+    m_clearButton->setIcon(QIcon(crossPixmap));
+    m_clearButton->setIconSize(crossPixmap.size());
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setToolTip(tr("Clear input" , "Clear the search bar input field"));
     m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     m_clearButton->hide();
+    
+    m_saveButton = new QToolButton(this);
+    QPixmap savePixmap(":/skins/save.png");
+    m_saveButton->setIcon(QIcon(savePixmap));
+    m_saveButton->setIconSize(QSize(height()/2, height()/2));
+    m_saveButton->setCursor(Qt::ArrowCursor);
+    m_saveButton->setToolTip(tr("Save query", "Save the current query for later use"));
 
     m_place = true;
     showPlaceholder();
 
     setFocusPolicy(Qt::ClickFocus);
-    QShortcut *setFocusShortcut = new QShortcut(
+    QShortcut* setFocusShortcut = new QShortcut(
         QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
     connect(setFocusShortcut, SIGNAL(activated()),
             this, SLOT(setFocus()));

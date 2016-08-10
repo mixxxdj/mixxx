@@ -46,6 +46,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
 
     QTimer m_searchTimer;
     QToolButton* m_clearButton;
+    QToolButton* m_saveButton;
     bool m_place;
     QColor m_fgc; //Foreground color
 };

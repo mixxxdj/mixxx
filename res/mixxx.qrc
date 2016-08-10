@@ -110,5 +110,6 @@
         <file>translations/mixxx_zh_TW.qm</file>
         <file>images/library/ic_library_maintenance.png</file>
         <file>images/library/ic_library_folder.png</file>
+        <file>skins/save.png</file>
     </qresource>
 </RCC>
