@@ -241,6 +241,10 @@ QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {
     return next % QLatin1String(" > ") % text;
 }
 
+void TreeItemModel::reloadTree() {
+    triggerRepaint();
+}
+
 bool TreeItemModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
                                QObject* pSource) {
     //qDebug() << "TreeItemModel::dropAccept() index=" << index << urls;

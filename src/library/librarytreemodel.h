@@ -23,13 +23,11 @@ class LibraryTreeModel : public TreeItemModel {
                      UserSettingsPointer pConfig,
                      QObject* parent = nullptr);
 
-    virtual QVariant data(const QModelIndex &index, int role) const;
-    
-    void setSortOrder(QStringList sortOrder);
-    QStringList getSortOrder();
+    virtual QVariant data(const QModelIndex& index, int role) const;
+    virtual bool setData(const QModelIndex& index, const QVariant& value, int role);
     
   public slots:  
-    void reloadTracksTree();
+    void reloadTree() override;
     
   private:
     

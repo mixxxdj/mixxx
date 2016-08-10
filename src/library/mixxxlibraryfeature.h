@@ -32,7 +32,7 @@ class MissingTableModel;
 
 class MixxxLibraryFeature : public LibraryFeature {
     Q_OBJECT
-    
+
   public:
     MixxxLibraryFeature(UserSettingsPointer pConfig,
                         Library* pLibrary,
@@ -42,25 +42,30 @@ class MixxxLibraryFeature : public LibraryFeature {
 
     QVariant title() override;
     QString getIconPath() override;
-    
+
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
-    QWidget* createInnerSidebarWidget(KeyboardEventFilter *pKeyboard) override;
+    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
 
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
-    void onRightClickChild(const QPoint& pos, const QModelIndex&);
+    void onRightClickChild(const QPoint& pos, const QModelIndex&) override;
     void refreshLibraryModels();
-    
+
     void selectAll();
     void onSearch(const QString&) override;
-    
+
   signals:
     void unhideHidden();
     void purgeHidden();
     void purgeMissing();
+
+  protected:
+    void setChildModel(TreeItemModel* pChild);
+    
+    QPointer<TreeItemModel> m_pChildModel;
 
   private:
     enum Panes {
@@ -69,11 +74,10 @@ class MixxxLibraryFeature : public LibraryFeature {
         Missing = 3
     };
     const QString kLibraryTitle;
-    
+
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     QPointer<WLibrarySidebar> m_pSidebar;
     LibraryTableModel* m_pLibraryTableModel;
-    LibraryTreeModel m_childModel;
     TrackDAO& m_trackDao;
 };
 

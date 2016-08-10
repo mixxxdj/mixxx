@@ -40,15 +40,20 @@ LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
         s.prepend("library.");
     }
     m_coverQuery << "track_locations." + TRACKLOCATIONSTABLE_LOCATION;
-    reloadTracksTree();
+    reloadTree();
 }
 
 QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
     
-    // The decoration role contains the icon in QTreeView
+    if (role == TreeItemModel::RoleSettings) {
+        return m_sortOrder;
+    }
+    
+        // The decoration role contains the icon in QTreeView
     if (role != Qt::DecorationRole && role != TreeItemModel::RoleQuery) {
         return TreeItemModel::data(index, role);
     }
+    
     
     TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
     DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
@@ -83,17 +88,18 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
     return QVariant();
 }
 
-void LibraryTreeModel::setSortOrder(QStringList sortOrder) {
-    m_sortOrder = sortOrder;
-    m_pConfig->set(ConfigKey("[Library]", LIBRARYTREEMODEL_SORT),
-                   ConfigValue(m_sortOrder.join(",")));
+bool LibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+    if (role == TreeItemModel::RoleSettings) {
+        m_sortOrder = value.toStringList();
+        m_pConfig->set(ConfigKey("[Library]", LIBRARYTREEMODEL_SORT),
+                       ConfigValue(m_sortOrder.join(",")));
+        return true;
+    } else {
+        return TreeItemModel::setData(index, value, role);
+    }
 }
 
-QStringList LibraryTreeModel::getSortOrder() {
-    return m_sortOrder;
-}
-
-void LibraryTreeModel::reloadTracksTree() {    
+void LibraryTreeModel::reloadTree() {    
     //qDebug() << "LibraryTreeModel::reloadTracksTree";
     
     // Create root item
@@ -108,8 +114,8 @@ void LibraryTreeModel::reloadTracksTree() {
     
     // Deletes the old root item if the previous root item was not null
     setRootItem(pRootItem);
-    createFoldersTree();
     createTracksTree();
+    triggerRepaint();
 }
 
 void LibraryTreeModel::coverFound(const QObject* requestor, int requestReference,
@@ -136,30 +142,21 @@ QVariant LibraryTreeModel::getQuery(TreeItem* pTree) const {
     }
     const QString param("%1:=\"%2\"");
     
-    // Find Artist / Album / Genre query
     int depth = 0;
-    pAux = pTree;
-    
-    // We need to know the depth of the item to apply the filter
-    while (pAux->parent() != m_pRootItem && pAux->parent() != nullptr) {
-        pAux = pAux->parent();
-        ++depth;
-    }
-    
-    // Generate the query
+    TreeItem* pAux = pTree;
     QStringList result;
     
-    pAux = pTree;
-    while (depth >= 0) {
+    // Generate the query
+    while (pAux->parent() != m_pRootItem && pAux->parent() != nullptr) {
         QString value = pAux->dataPath().toString();
         if (pAux->isDivider()) {
             value.append("*");
         }
-        
         result << param.arg(m_sortOrder[depth], value);
+        
         pAux = pAux->parent();
-        --depth;
-    }
+        ++depth;
+    }    
     
     return result.join(" ");
 }
@@ -279,8 +276,6 @@ void LibraryTreeModel::createTracksTree() {
             pTree->setTrackCount(pTree->getTrackCount() + val);
         }
     }
-    
-    triggerRepaint();
 }
 
 void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,

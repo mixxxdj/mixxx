@@ -12,6 +12,7 @@
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
 #include "library/cratefeature.h"
+#include "library/libraryfoldersfeature.h"
 #include "library/historyfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/librarycontrol.h"
@@ -502,6 +503,8 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
     addFeature(m_pMixxxLibraryFeature);
 
     addFeature(new AutoDJFeature(pConfig, this, this, pPlayerManager, m_pTrackCollection));
+    
+    addFeature(new LibraryFoldersFeature(pConfig, this, this, m_pTrackCollection));
     
     m_pPlaylistFeature = new PlaylistFeature(pConfig, this, this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);

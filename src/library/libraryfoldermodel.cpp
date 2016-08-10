@@ -3,6 +3,8 @@
 #include "library/libraryfoldermodel.h"
 
 #include "library/libraryfeature.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
 #include "library/treeitem.h"
 
 LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
@@ -19,12 +21,27 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
                                                             "FolderRecursive"));
     m_folderRecursive = recursive.toInt() == 1;
 
-    reloadFoldersTree();
+    reloadTree();
+}
+
+bool LibraryFolderModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+    if (role == TreeItemModel::RoleSettings) {
+        m_folderRecursive = value.toBool();
+        m_pConfig->set(ConfigKey("[Library]", "FolderRecursive"), 
+                       ConfigValue((int)m_folderRecursive));
+        return true;
+    } else {
+        return TreeItemModel::setData(index, value, role);
+    }
 }
 
 QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
+    if (role == TreeItemModel::RoleSettings) {
+        return m_folderRecursive;
+    }
+    
     if (role != TreeItemModel::RoleQuery) {
-        return TreeItemModel(index, role);
+        return TreeItemModel::data(index, role);
     }
 
     // Role is Get query
@@ -43,20 +60,9 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
     return param.arg("folder", pTree->dataPath().toString());
 }
 
-void LibraryFolderModel::setFolderRecursive(bool recursive) {
-    m_folderRecursive = recursive;
-    m_pConfig->set(ConfigKey("[Library]", "FolderRecursive"), 
-                   ConfigValue((int)recursive));
-}
-
-bool LibraryFolderModel::getFolderRecursive() {
-    return m_folderRecursive;
-}
-
-void LibraryFolderModel::reloadFoldersTree() {
+void LibraryFolderModel::reloadTree() {
     // Remove current root
-    m_pRootItem = new TreeItem(m_pFeature);
-    setRootItem(m_pRootItem);
+    setRootItem(new TreeItem(m_pFeature));
 
     // Add "show all" item
     m_pShowAllItem = new TreeItem(tr("Show all"), "", m_pFeature, m_pRootItem);
@@ -75,11 +81,6 @@ void LibraryFolderModel::reloadFoldersTree() {
     QSqlQuery query(m_pTrackCollection->getDatabase());
     query.prepare(queryStr);
 
-    m_pFoldersRoot = new TreeItem(tr("Folders"), "", m_pFeature, m_pRootItem);
-    QIcon icon(WPixmapStore::getLibraryIcon(":/images/library/ic_library_folder.png"));
-    m_pFoldersRoot->setIcon(icon);
-    m_pRootItem->appendChild(m_pFoldersRoot);
-
     for (const QString& dir : dirs) {
         query.bindValue(":dir", dir + "%");
 
@@ -96,7 +97,7 @@ void LibraryFolderModel::reloadFoldersTree() {
 void LibraryFolderModel::createTreeFromSource(const QString& dir, QSqlQuery& query) {
     QStringList lastUsed;
     QList<TreeItem*> parent;
-    parent.append(m_pFoldersRoot);
+    parent.append(m_pRootItem);
     bool first = true;
     
     while (query.next()) {
@@ -117,9 +118,9 @@ void LibraryFolderModel::createTreeFromSource(const QString& dir, QSqlQuery& que
             if (m_folderRecursive) {
                 path.append("*");
             }
-            TreeItem* pTree = new TreeItem(dir, path, m_pFeature, m_pFoldersRoot);
+            TreeItem* pTree = new TreeItem(dir, path, m_pFeature, m_pRootItem);
             pTree->setDivider(true);
-            m_pFoldersRoot->appendChild(pTree);
+            m_pRootItem->appendChild(pTree);
         }
 
         // Do not add empty items

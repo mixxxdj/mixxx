@@ -871,6 +871,7 @@ class MixxxCore(Feature):
                    "library/autodj/autodjprocessor.cpp",
                    "library/dao/directorydao.cpp",
                    "library/mixxxlibraryfeature.cpp",
+                   "library/libraryfoldersfeature.cpp",
                    "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
                    "library/historyfeature.cpp",

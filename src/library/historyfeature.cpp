@@ -67,7 +67,7 @@ void HistoryFeature::onRightClick(const QPoint&) {
     // menu.exec(globalPos);
 }
 
-void HistoryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void HistoryFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex &index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     bool ok;

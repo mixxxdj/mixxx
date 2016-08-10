@@ -18,7 +18,8 @@ class TreeItemModel : public QAbstractItemModel {
         RoleBold,
         RoleDivider,
         RoleQuery,
-        RoleBreadCrumb
+        RoleBreadCrumb,
+        RoleSettings
     };
 
     TreeItemModel(QObject* parent = nullptr);
@@ -48,6 +49,7 @@ class TreeItemModel : public QAbstractItemModel {
     static QString getBreadCrumbString(TreeItem* pTree);
     
   public slots:
+    virtual void reloadTree();
     void triggerRepaint();
 
   protected:

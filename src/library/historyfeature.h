@@ -29,7 +29,7 @@ public:
 
   public slots:
     void onRightClick(const QPoint&) override;
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotJoinWithNext();
     void slotGetNewPlaylist();
 
