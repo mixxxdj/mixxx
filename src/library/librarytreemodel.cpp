@@ -146,8 +146,15 @@ QVariant LibraryTreeModel::getQuery(TreeItem* pTree) const {
     TreeItem* pAux = pTree;
     QStringList result;
     
-    // Generate the query
+    // We need to know the depth before doing anything
     while (pAux->parent() != m_pRootItem && pAux->parent() != nullptr) {
+        pAux = pAux->parent();
+        ++depth;
+    }
+    
+    // Generate the query
+    pAux = pTree;
+    while (depth >= 0) {
         QString value = pAux->dataPath().toString();
         if (pAux->isDivider()) {
             value.append("*");
@@ -155,7 +162,7 @@ QVariant LibraryTreeModel::getQuery(TreeItem* pTree) const {
         result << param.arg(m_sortOrder[depth], value);
         
         pAux = pAux->parent();
-        ++depth;
+        --depth;
     }    
     
     return result.join(" ");
@@ -176,7 +183,9 @@ void LibraryTreeModel::createTracksTree() {
 #else
     sortColumns = m_sortOrder;
 #endif
-
+    
+    // Sorting is required to create the tree because the tree is sorted and 
+    // in order to create a tree with levels it must be sorted too.
     QString queryStr = "SELECT COUNT(%3),%1,%2 "
                        "FROM library LEFT JOIN track_locations "
                        "ON (%3 = %4) "
@@ -201,8 +210,8 @@ void LibraryTreeModel::createTracksTree() {
     }
     //qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
     
-    int size = columns.size();
-    if (size <= 0) {
+    int treeDepth = columns.size();
+    if (treeDepth <= 0) {
         return;
     }
     QSqlRecord record = query.record();
@@ -215,23 +224,26 @@ void LibraryTreeModel::createTracksTree() {
     cIndex.iCoverType = record.indexOf(LIBRARYTABLE_COVERART_TYPE);
     cIndex.iTrackLoc = record.indexOf(TRACKLOCATIONSTABLE_LOCATION);
     
-    int extraSize = m_coverQuery.size() + 1;
-    QVector<QString> lastUsed(size);
+    int treeStartQueryIndex = m_coverQuery.size() + 1;
+    QVector<QString> lastUsed(treeDepth);
     QChar lastHeader;
-    QVector<TreeItem*> parent(size + 1, nullptr);
+    // We add 1 to the total parents because the first parent is the root item
+    // with this we can always use parent[i] to get the parent of the element at
+    // depth i and to set the parent we avoid checking that i + 1 < treeDepth
+    QVector<TreeItem*> parent(treeDepth + 1, nullptr);
     parent[0] = m_pRootItem;
     
     while (query.next()) {
-        for (int i = 0; i < size; ++i) {
-            QString value = query.value(extraSize + i).toString();
-            QString valueP = value;
+        for (int i = 0; i < treeDepth; ++i) {
+            QString treeItemLabel = query.value(treeStartQueryIndex + i).toString();
+            QString dataPath = treeItemLabel;
             
-            bool unknown = valueP.isNull();
+            bool unknown = dataPath.isNull();
             if (unknown) {
-                valueP = "";
-                value = tr("Unknown");
+                dataPath = "";
+                treeItemLabel = tr("Unknown");
             }            
-            if (!lastUsed[i].isNull() && valueP.localeAwareCompare(lastUsed[i]) == 0) {                
+            if (!lastUsed[i].isNull() && dataPath.localeAwareCompare(lastUsed[i]) == 0) {                
                 continue;
             }
 
@@ -241,7 +253,7 @@ void LibraryTreeModel::createTracksTree() {
                 lastUsed.fill(QString());
                 
                 // Check if a header must be added
-                QChar c = StringHelper::getFirstCharForGrouping(value);
+                QChar c = StringHelper::getFirstCharForGrouping(treeItemLabel);
                 if (lastHeader != c) {
                     lastHeader = c;
                     TreeItem* pTree = new TreeItem(lastHeader, lastHeader, 
@@ -251,23 +263,24 @@ void LibraryTreeModel::createTracksTree() {
                 }   
             }
             
-            lastUsed[i] = valueP;
+            lastUsed[i] = dataPath;
             
             // We need to create a new item
-            TreeItem* pTree = new TreeItem(value, valueP, m_pFeature, parent[i]);
+            TreeItem* pTree = new TreeItem(treeItemLabel, dataPath, 
+                                           m_pFeature, parent[i]);
             pTree->setTrackCount(0);
             parent[i]->appendChild(pTree);
             parent[i + 1] = pTree;
             
             // Add coverart info
-            if (extraSize + i == iAlbum && !unknown) {
+            if (treeStartQueryIndex + i == iAlbum && !unknown) {
                 addCoverArt(cIndex, query, pTree);
             }
         }
         
         // Set track count
         int val = query.value(0).toInt();
-        for (int i = 1; i < size + 1; ++i) {
+        for (int i = 1; i < treeDepth + 1; ++i) {
             TreeItem* pTree = parent[i];
             if (pTree == nullptr) {
                 continue;

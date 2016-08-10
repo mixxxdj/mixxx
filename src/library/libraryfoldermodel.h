@@ -25,7 +25,7 @@ class LibraryFolderModel : public TreeItemModel
 
   private:
     
-    void createTreeFromSource(const QString& dir, QSqlQuery& query);
+    void createTreeForLibraryDir(const QString& dir, QSqlQuery& query);
     
     LibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;
