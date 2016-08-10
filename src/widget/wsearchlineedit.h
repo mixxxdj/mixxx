@@ -1,14 +1,16 @@
 #ifndef WSEARCHLINEEDIT_H
 #define WSEARCHLINEEDIT_H
 
-#include <QLineEdit>
-#include <QToolButton>
-#include <QLabel>
-#include <QTimer>
-#include <QDomNode>
 #include <QColor>
+#include <QDomNode>
 #include <QEvent>
+#include <QLabel>
+#include <QLineEdit>
+#include <QModelIndex>
+#include <QTimer>
+#include <QToolButton>
 
+#include "library/libraryfeature.h"
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
@@ -16,6 +18,7 @@
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
+    
     explicit WSearchLineEdit(QWidget* pParent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
@@ -32,7 +35,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void searchStarting();
 
   public slots:
-    void restoreSearch(const QString& text);
+    void restoreSearch(const QString& text, QPointer<LibraryFeature> pFeature = nullptr);
     void slotTextChanged(const QString& text);
 
   private slots:
@@ -40,10 +43,14 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void slotSetupTimer(const QString& text);
     void triggerSearch();
     void onSearchTextCleared();
+    
+    void saveQuery();
+    void restoreQuery();
 
   private:
     void showPlaceholder();
 
+    QPointer<LibraryFeature> m_pCurrentFeature;
     QTimer m_searchTimer;
     QToolButton* m_pClearButton;
     QToolButton* m_pSaveButton;

@@ -92,6 +92,20 @@ void LibraryFeature::setFocusedPane(int paneId) {
     m_focusedPane = paneId;
 }
 
+void LibraryFeature::saveQuery(SavedSearchQuery& query) {
+    // A saved query goes the first in the list
+    m_savedQueries.prepend(query);
+}
+
+void LibraryFeature::restoreQuery(int index) {
+    // Move the used query to the first item in the list
+    m_savedQueries.move(index, 0);
+}
+
+const QList<SavedSearchQuery>& LibraryFeature::getSavedQueries() const {
+    return m_savedQueries;
+}
+
 WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboard,
                                                    int paneId) {
     WTrackTableView* pTrackTableView = 

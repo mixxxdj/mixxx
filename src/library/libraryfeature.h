@@ -25,6 +25,15 @@ class WLibrary;
 class WLibrarySidebar;
 class WTrackTableView;
 
+// This struct allows to save some data to allow interaction between
+// the search bar and the library features
+struct SavedSearchQuery {
+    QString query;
+    QString title;
+    QModelIndex selectedItem;
+    QString sortOrder;
+};
+
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {
     Q_OBJECT
@@ -73,6 +82,10 @@ class LibraryFeature : public QObject {
     virtual int getFeatureFocus();
     
     virtual void setFocusedPane(int paneId);
+    
+    virtual void saveQuery(SavedSearchQuery& query);
+    virtual void restoreQuery(int index);
+    virtual const QList<SavedSearchQuery> &getSavedQueries() const;
 
   public slots:
     // called when you single click on the root item
@@ -141,6 +154,8 @@ class LibraryFeature : public QObject {
     
     int m_featureFocus;
     int m_focusedPane;
+    
+    QList<SavedSearchQuery> m_savedQueries;
     
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);

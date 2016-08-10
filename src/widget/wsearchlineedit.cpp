@@ -2,10 +2,12 @@
 #include "wskincolor.h"
 #include "wsearchlineedit.h"
 
-#include <QtDebug>
-#include <QStyle>
+#include <QAction>
+#include <QDebug>
 #include <QFont>
+#include <QMenu>
 #include <QShortcut>
+#include <QStyle>
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QLineEdit(pParent),
@@ -69,6 +71,11 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     // Forces immediate update of tracktable
     connect(m_pClearButton, SIGNAL(clicked()),
             this, SLOT(triggerSearch()));
+    
+    connect(m_pSaveButton, SIGNAL(clicked()),
+            this, SLOT(saveQuery()));
+    connect(m_pDropButton, SIGNAL(clicked()),
+            this, SLOT(restoreQuery()));
 
     connect(this, SIGNAL(textChanged(const QString&)),
             this, SLOT(updateButtons(const QString&)));
@@ -172,7 +179,7 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
 }
 
 // slot
-void WSearchLineEdit::restoreSearch(const QString& text) {
+void WSearchLineEdit::restoreSearch(const QString& text, QPointer<LibraryFeature> pFeature) {
     if(text.isNull()) {
         // disable
         setEnabled(false);
@@ -181,9 +188,11 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
         blockSignals(false);
         m_pSaveButton->hide();
         m_pDropButton->hide();
+        m_pCurrentFeature = nullptr;
         return;
     }
     setEnabled(true);
+    m_pCurrentFeature = pFeature;
     qDebug() << "WSearchLineEdit::restoreSearch(" << text << ")";
     blockSignals(true);
     setText(text);
@@ -249,6 +258,45 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
 void WSearchLineEdit::onSearchTextCleared() {
     QLineEdit::clear();
     emit(searchCleared());
+}
+
+void WSearchLineEdit::saveQuery() {
+    SavedSearchQuery query;
+    query.title = query.query = text();
+    if (!m_pCurrentFeature.isNull()) {
+        m_pCurrentFeature->saveQuery(query);
+    }
+    setText("");
+}
+
+void WSearchLineEdit::restoreQuery() {
+    const QList<SavedSearchQuery>& savedQueries = m_pCurrentFeature->getSavedQueries();
+    
+    QMenu menu;
+    
+    if (savedQueries.size() <= 0) {
+        QAction* action = menu.addAction(tr("No saved queries"));
+        action->setData(-1);
+    }
+    for (int i = 0; i < savedQueries.size(); ++i) {
+        QAction* action = menu.addAction(savedQueries[i].title);
+        action->setData(i);
+    }
+    QPoint position = m_pDropButton->pos();
+    position += QPoint(0, m_pDropButton->height());
+    
+    QAction* selected = menu.exec(mapToGlobal(position));
+    if (selected == nullptr) {
+        return;
+    }
+    int index = selected->data().toInt();
+    
+    if (index < 0) {
+        return;
+    }
+    m_pCurrentFeature->restoreQuery(index);
+    
+    setText(savedQueries.at(index).query);
 }
 
 void WSearchLineEdit::slotTextChanged(const QString& text) {

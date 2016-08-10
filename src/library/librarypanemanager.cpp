@@ -114,7 +114,7 @@ void LibraryPaneManager::switchToFeature(LibraryFeature* pFeature) {
 
 void LibraryPaneManager::restoreSearch(const QString& text) {
     if (!m_pSearchBar.isNull()) {
-        m_pSearchBar->restoreSearch(text);
+        m_pSearchBar->restoreSearch(text, m_pCurrentFeature);
     }
 }
 
