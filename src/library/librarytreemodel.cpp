@@ -31,9 +31,6 @@ LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
         m_sortOrder = sort.split(",");
     }
     
-    QString recursive = m_pConfig->getValueString(ConfigKey("[Library]","FolderRecursive"));
-    m_folderRecursive = recursive.toInt() == 1;
-    
     m_coverQuery << LIBRARYTABLE_COVERART_HASH
                  << LIBRARYTABLE_COVERART_LOCATION 
                  << LIBRARYTABLE_COVERART_SOURCE
@@ -96,16 +93,6 @@ QStringList LibraryTreeModel::getSortOrder() {
     return m_sortOrder;
 }
 
-void LibraryTreeModel::setFolderRecursive(bool recursive) {
-    m_folderRecursive = recursive;
-    m_pConfig->set(ConfigKey("[Library]", "FolderRecursive"), 
-                   ConfigValue((int)recursive));
-}
-
-bool LibraryTreeModel::getFolderRecursive() {
-    return m_folderRecursive;
-}
-
 void LibraryTreeModel::reloadTracksTree() {    
     //qDebug() << "LibraryTreeModel::reloadTracksTree";
     
@@ -148,21 +135,6 @@ QVariant LibraryTreeModel::getQuery(TreeItem* pTree) const {
         return "";
     }
     const QString param("%1:=\"%2\"");
-    
-    // Find for folers root 
-    TreeItem* pAux = pTree;
-    bool isFolderItem = false;
-    while (pAux->parent() != nullptr && pAux->parent() != m_pRootItem) {
-        if (pAux->parent() == m_pFoldersRoot) {
-            isFolderItem = true;
-            break;
-        }
-        pAux = pAux->parent();
-    }
-    
-    if (isFolderItem) {
-        return param.arg("folder", pTree->dataPath().toString());
-    }
     
     // Find Artist / Album / Genre query
     int depth = 0;
@@ -311,39 +283,6 @@ void LibraryTreeModel::createTracksTree() {
     triggerRepaint();
 }
 
-void LibraryTreeModel::createFoldersTree() {
-    
-    // Get the Library directories
-    QStringList dirs(m_pTrackCollection->getDirectoryDAO().getDirs());
-    
-    QString queryStr = "SELECT DISTINCT %1 FROM %2 "
-                       "WHERE %3=0 AND %1 LIKE :dir "
-                       "ORDER BY %1 COLLATE localeAwareCompare";
-    queryStr = queryStr.arg(TRACKLOCATIONSTABLE_DIRECTORY,
-                            "track_locations",
-                            TRACKLOCATIONSTABLE_FSDELETED);
-    
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    query.prepare(queryStr);
-    
-    m_pFoldersRoot = new TreeItem(tr("Folders"), "", m_pFeature, m_pRootItem);
-    QIcon icon(WPixmapStore::getLibraryIcon(":/images/library/ic_library_folder.png"));
-    m_pFoldersRoot->setIcon(icon);
-    m_pRootItem->appendChild(m_pFoldersRoot);    
-    
-    for (const QString& dir : dirs) {
-        query.bindValue(":dir", dir + "%");
-        
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-            return;
-        }
-        
-        // For each source folder create the tree
-        createTreeFromSource(dir, query);
-    }
-}
-
 void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,
                                    const QSqlQuery& query, TreeItem* pTree) {
     CoverInfo c;
@@ -356,72 +295,4 @@ void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,
     c.source = static_cast<CoverInfo::Source>(source);
     c.type = static_cast<CoverInfo::Type>(type);
     pTree->setCoverInfo(c);
-}
-
-void LibraryTreeModel::createTreeFromSource(const QString& dir, QSqlQuery& query) {
-    
-    QStringList lastUsed;
-    QList<TreeItem*> parent;
-    parent.append(m_pFoldersRoot);
-    bool first = true;
-    
-    while (query.next()) {
-        QString value = query.value(0).toString();
-        qDebug() << value;
-        
-        
-        // Remove the 
-        QString dispValue = value.mid(dir.size());
-        if (dispValue.startsWith("/")) {
-            dispValue = dispValue.mid(1);
-        }
-        
-        // Add a header
-        if (first) {
-            first = false;
-            QString path = dir;
-            if (m_folderRecursive) {
-                path.append("*");
-            }
-            TreeItem* pTree = new TreeItem(dir, path, m_pFeature, m_pFoldersRoot);
-            pTree->setDivider(true);
-            m_pFoldersRoot->appendChild(pTree);
-        }
-
-        // Do not add empty items
-        if (dispValue.isEmpty()) {    
-            continue;
-        }
-        
-        QStringList parts = dispValue.split("/");
-        if (parts.size() > lastUsed.size()) {
-            for (int i = lastUsed.size(); i < parts.size(); ++i) {
-                lastUsed.append(QString());
-                parent.append(nullptr);
-            }
-        }
-        
-        bool change = false;
-        for (int i = 0; i < parts.size(); ++i) {
-            const QString& val = parts.at(i);
-            if (change || val != lastUsed.at(i)) {
-                change = true;
-                
-                QString fullPath = dir;
-                for (int j = 0; j <= i; ++j) {
-                    fullPath += "/" + parts.at(j);
-                }
-                
-                if (m_folderRecursive) {
-                    fullPath.append("*");
-                }
-                
-                TreeItem* pItem = new TreeItem(val, fullPath, m_pFeature, parent[i]);
-                parent[i]->appendChild(pItem);
-                
-                parent[i + 1] = pItem;
-                lastUsed[i] = val;
-            }
-        }
-    }
 }

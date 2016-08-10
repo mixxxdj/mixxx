@@ -883,6 +883,7 @@ class MixxxCore(Feature):
                    "library/dlgtrackinfo.cpp",
                    "library/maintenancefeature.cpp",
                    "library/historytreemodel.cpp",
+                   "library/libraryfoldermodel.cpp",
 
                    "library/browse/browsetablemodel.cpp",
                    "library/browse/browsethread.cpp",
