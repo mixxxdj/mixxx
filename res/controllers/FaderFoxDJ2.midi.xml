@@ -72,6 +72,18 @@
         <midino>0x1b</midino>
         <options><diff/></options>
       </control>
+      <control>
+	<group>[Channel1]</group>
+	<key>LoadSelectedTrack</key>
+	<status>0x90</status>
+	<midino>0x0F</midino>
+      </control>
+      <control>
+	<group>[Channel1]</group>
+	<key>LoadSelectedTrack</key>
+	<status>0x80</status>
+	<midino>0x0F</midino>
+      </control>
 
   <!-- Transport Buttons -->	
       <control>
@@ -392,6 +404,18 @@
         <options><diff/>
 	</options>
       </control>
+      <control>
+	<group>[Channel2]</group>
+	<key>LoadSelectedTrack</key>
+	<status>0x90</status>
+	<midino>0x10</midino>
+      </control>
+      <control>
+	<group>[Channel2]</group>
+	<key>LoadSelectedTrack</key>
+	<status>0x80</status>
+	<midino>0x10</midino>
+      </control>
 
   <!-- Transport Buttons -->
       <control>
@@ -710,37 +734,6 @@
 	<status>0x90</status>
 	<midino>0x0C</midino>
       </control>
-      <control>
-	<group>[Playlist]</group>
-	<key>SelectPrevTrack</key>
-	<status>0x80</status>
-	<midino>0x0C</midino>
-      </control>
-      <control>
-	<group>[Playlist]</group>
-	<key>LoadSelectedIntoFirstStopped</key>
-	<status>0x90</status>
-	<midino>0x0F</midino>
-      </control>
-      <control>
-	<group>[Playlist]</group>
-	<key>LoadSelectedIntoFirstStopped</key>
-	<status>0x80</status>
-	<midino>0x0F</midino>
-      </control>
-      <control>
-	<group>[Playlist]</group>
-	<key>LoadSelectedIntoFirstStopped</key>
-	<status>0x90</status>
-	<midino>0x10</midino>
-      </control>
-      <control>
-	<group>[Playlist]</group>
-	<key>LoadSelectedIntoFirstStopped</key>
-	<status>0x80</status>
-	<midino>0x10</midino>
-      </control>
-
     </controls>
   </controller>
 </MixxxMIDIPreset>
