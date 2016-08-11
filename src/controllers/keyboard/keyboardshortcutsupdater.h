@@ -46,7 +46,7 @@ class ShortcutChangeWatcher : public QObject {
 
     // Update shortcut of bound QAction. The shortcut is set to whatever
     // ConfigValueKbd is found in the given MultiHash that matches m_configKey
-    void updateShortcut(QMultiHash<ConfigValueKbd, ConfigKey>* pHash);
+    void updateShortcut(QMultiHash<QString, ConfigKey>* pHash);
 
     // Set the shortcut of the bound QAction to the default QKeySequence
     void restoreDefault();

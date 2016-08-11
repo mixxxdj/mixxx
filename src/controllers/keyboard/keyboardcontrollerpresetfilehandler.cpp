@@ -90,6 +90,8 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
             QString action = control.attributeNode("action").value();
             QString keyseq = !keyseqsRaw.isEmpty() ? keyseqsRawI->keysequence : "";
 
+            qDebug() << "BEFORE SHIZZLE HAPPENS: " << action << ", " << keyseq;
+
             if (keyseqNeedsTranslate && !keyseqsRaw.isEmpty()) {
                 QString scancode_string = keyseqsRawI->scancode;
                 unsigned char scancode = (unsigned char) scancode_string.toInt();
@@ -125,9 +127,8 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
             }
 
             // Load action into preset
-            ConfigValueKbd configValueKbd = ConfigValueKbd(keyseq);
             ConfigKey configKey = ConfigKey(groupName, action);
-            preset->m_mapping.insert(configValueKbd, configKey);
+            preset->m_mapping.insert(keyseq, configKey);
 
             // Store raw data so that it can be accessed later when saving the preset
             preset->m_mapping_raw.append(

@@ -31,13 +31,13 @@ class KeyboardControllerPreset : public ControllerPreset {
     QString getKeySequencesToString(ConfigKey configKey, QString separator);
 
     // Get all QKeySequences bound to a given ConfigKey
-    QList<QKeySequence> getKeySequences(ConfigKey configKey);
+    QStringList getKeySequences(ConfigKey configKey);
 
     // Get mapping info filtered by a given group name
-    QMultiHash<ConfigValueKbd, ConfigKey> getMappingByGroup(QString targetGroup);
+    QMultiHash<QString, ConfigKey> getMappingByGroup(QString targetGroup);
 
     // Multi-hash of config keys, bound to a specific key sequence
-    QMultiHash<ConfigValueKbd, ConfigKey> m_mapping;
+    QMultiHash<QString, ConfigKey> m_mapping;
 
     // List of Control structs, one for each parsed <control> element in the preset file
     QList<KbdControllerPresetControl> m_mapping_raw;

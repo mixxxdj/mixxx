@@ -24,7 +24,7 @@ ShortcutChangeWatcher* KeyboardShortcutsUpdater::getWatcher(ConfigKey configKey)
 }
 
 void KeyboardShortcutsUpdater::slotUpdateShortcuts(KeyboardControllerPresetPointer pKbdPreset) {
-    QMultiHash<ConfigValueKbd, ConfigKey> keyboardShortcuts =
+    QMultiHash<QString, ConfigKey> keyboardShortcuts =
             pKbdPreset->getMappingByGroup("[KeyboardShortcuts]");
 
     for (ShortcutChangeWatcher* watcher: m_shortcutChangeWatchers) {
@@ -45,19 +45,19 @@ ShortcutChangeWatcher::ShortcutChangeWatcher(QAction* action, ConfigKey configKe
 
 ShortcutChangeWatcher::~ShortcutChangeWatcher() { }
 
-void ShortcutChangeWatcher::updateShortcut(QMultiHash<ConfigValueKbd, ConfigKey>* pShortcuts) {
+void ShortcutChangeWatcher::updateShortcut(QMultiHash<QString, ConfigKey>* pShortcuts) {
     // Check if shortcut is found in the given QMultiHash
     bool shortcutFound = false;
 
     // Iterate over all keyboard shortcuts. If a shortcut is found
     // with the same ConfigKey, the bound KeySequence is bound to
     // the QAction
-    QMultiHash<ConfigValueKbd, ConfigKey>::iterator it;
+    QMultiHash<QString, ConfigKey>::iterator it;
     for (it = pShortcuts->begin(); it != pShortcuts->end(); ++it) {
         Q_ASSERT(it.value().group == "[KeyboardShortcuts]");
         if (it.value() == m_configKey) {
-            ConfigValueKbd configValueKbd = it.key();
-            m_pAction->setShortcut(configValueKbd.m_qKey);
+            QString keyseq = it.key();
+            m_pAction->setShortcut(keyseq);
             shortcutFound = true;
         }
     }
