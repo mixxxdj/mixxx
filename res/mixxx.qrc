@@ -112,5 +112,6 @@
         <file>images/library/ic_library_folder.png</file>
         <file>skins/save.png</file>
         <file>skins/downArrow.png</file>
+        <file>skins/cross_2.png</file>
     </qresource>
 </RCC>

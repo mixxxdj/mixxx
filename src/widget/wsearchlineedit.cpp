@@ -17,7 +17,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     QSize iconSize(height()/2, height()/2);
     
     m_pClearButton = new QToolButton(this);
-    m_pClearButton->setIcon(QIcon(":/skins/cross.png"));
+    m_pClearButton->setIcon(QIcon(":/skins/cross_2.png"));
     m_pClearButton->setIconSize(iconSize);
     m_pClearButton->setCursor(Qt::ArrowCursor);
     m_pClearButton->setToolTip(tr("Clear input" , "Clear the search bar input field"));
@@ -294,9 +294,10 @@ void WSearchLineEdit::restoreQuery() {
     if (index < 0) {
         return;
     }
-    m_pCurrentFeature->restoreQuery(index);
+    QString text = savedQueries.at(index).query;
     
-    setText(savedQueries.at(index).query);
+    m_pCurrentFeature->restoreQuery(index);
+    setText(text);
 }
 
 void WSearchLineEdit::slotTextChanged(const QString& text) {
