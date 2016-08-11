@@ -90,8 +90,6 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
             QString action = control.attributeNode("action").value();
             QString keyseq = !keyseqsRaw.isEmpty() ? keyseqsRawI->keysequence : "";
 
-            qDebug() << "BEFORE SHIZZLE HAPPENS: " << action << ", " << keyseq;
-
             if (keyseqNeedsTranslate && !keyseqsRaw.isEmpty()) {
                 QString scancode_string = keyseqsRawI->scancode;
                 unsigned char scancode = (unsigned char) scancode_string.toInt();
