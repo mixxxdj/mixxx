@@ -210,7 +210,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     int numOfTracks = rowCount();
     for (int i = 0; i < numOfTracks; i++) {
         int position = getPosition(index(i, 0));
-        TrackId trackId(trackId(index(i, 0)));
+        TrackId trackId(getTrackId(index(i, 0)));
         allIds.insert(position, trackId);
     }
     m_playlistDao.shuffleTracks(m_iPlaylistId, positions, allIds);
@@ -272,7 +272,32 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
 }
 
 void PlaylistTableModel::saveSelection(const QModelIndexList& selection) {
+    m_savedSelectionIndices.clear();
     
+    for (const QModelIndex& index : selection) {
+        m_savedSelectionIndices.insert(getPosition(index));
+    }
+}
+
+QModelIndexList PlaylistTableModel::getSavedSelection() {
+    QModelIndexList ret;
+    for (const int& pos : m_savedSelectionIndices) {
+        auto it = m_positionToRow.find(pos);
+        if (it != m_positionToRow.constEnd()) {
+            ret << index(*it, 0);
+        }
+    }
+    return ret;
+}
+
+void PlaylistTableModel::select() {
+    BaseSqlTableModel::select();
+    
+    m_positionToRow.clear();
+    for (int i = 0; i < rowCount(); ++i) {
+        int pos = getPosition(index(i, 0));
+        m_positionToRow[pos] = i;
+    }
 }
 
 void PlaylistTableModel::playlistChanged(int playlistId) {

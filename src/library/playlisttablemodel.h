@@ -34,6 +34,9 @@ class PlaylistTableModel : public BaseSqlTableModel {
     TrackModel::CapabilitiesFlags getCapabilities() const;
     
     void saveSelection(const QModelIndexList& selection);
+    QModelIndexList getSavedSelection();
+    
+    void select() override;
 
   private slots:
     void playlistChanged(int playlistId);
@@ -47,7 +50,8 @@ class PlaylistTableModel : public BaseSqlTableModel {
     QSet<int> m_playlistIds;
     bool m_showAll;
     
-    QSet<int> m_savedSelection;
+    QHash<int, int> m_positionToRow;
+    QSet<int> m_savedSelectionIndices;
 };
 
 #endif
