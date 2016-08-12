@@ -39,6 +39,8 @@ class PortMIDI(Dependence):
         # Check for PortMidi
         libs = ['portmidi', 'libportmidi']
         headers = ['portmidi.h']
+        if build.platform_is_windows and build.static_dependencies:
+            conf.CheckLib('advapi32')
         if build.platform_is_windows:
             # We have this special branch here because on Windows we might want
             # to link PortMidi statically which we don't want to do on other
@@ -254,7 +256,7 @@ class Qt(Dependence):
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
         
-        if build.static_dependencies:
+        if build.static_qt:
             build.env.Append(CPPDEFINES='QT_NODLL')
         else:
             build.env.Append(CPPDEFINES='QT_SHARED')
@@ -352,14 +354,14 @@ class Qt(Dependence):
             # appropriate.
             if qt5:
                 build.env.EnableQt5Modules(qt_modules,
-                                           staticdeps=build.static_dependencies,
+                                           staticdeps=build.static_qt,
                                            debug=build.build_is_debug)
             else:
                 build.env.EnableQt4Modules(qt_modules,
-                                           staticdeps=build.static_dependencies,
+                                           staticdeps=build.static_qt,
                                            debug=build.build_is_debug)
 
-            if build.static_dependencies:
+            if build.static_qt:
                 # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
                 # QtCore
                 build.env.Append(LIBS = 'kernel32')
@@ -370,7 +372,7 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'advapi32') # QtGui, portaudio, portmidi
                 build.env.Append(LIBS = 'ws2_32')   # QtGui, QtNetwork, libshout
                 # QtGui
-                build.env.Append(LIBS = 'gdi32') #QtOpenGL
+                build.env.Append(LIBS = 'gdi32') #QtOpenGL, libshout
                 build.env.Append(LIBS = 'comdlg32')
                 build.env.Append(LIBS = 'oleaut32')
                 build.env.Append(LIBS = 'imm32')
@@ -985,11 +987,11 @@ class MixxxCore(Feature):
                    "waveform/renderers/waveformmark.cpp",
                    "waveform/renderers/waveformmarkset.cpp",
                    "waveform/renderers/waveformmarkrange.cpp",
-		   "waveform/renderers/glwaveformrenderersimplesignal.cpp",
-		   "waveform/renderers/glwaveformrendererrgb.cpp",
-		   "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
-		   "waveform/renderers/glslwaveformrenderersignal.cpp",
-		   "waveform/renderers/glvsynctestrenderer.cpp",
+                   "waveform/renderers/glwaveformrenderersimplesignal.cpp",
+                   "waveform/renderers/glwaveformrendererrgb.cpp",
+                   "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/glslwaveformrenderersignal.cpp",
+                   "waveform/renderers/glvsynctestrenderer.cpp",
 
                    "waveform/widgets/waveformwidgetabstract.cpp",
                    "waveform/widgets/emptywaveformwidget.cpp",
@@ -1085,6 +1087,7 @@ class MixxxCore(Feature):
                    "util/rotary.cpp",
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
+                   "util/audiosignal.cpp",
                    "util/stringhelper.cpp",
 
                    '#res/mixxx.qrc'

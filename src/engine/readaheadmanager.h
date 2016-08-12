@@ -26,8 +26,8 @@ class RateControl;
 // point.
 class ReadAheadManager {
   public:
-    explicit ReadAheadManager(); // Only for testing: ReadAheadManagerMock
-    explicit ReadAheadManager(CachingReader* reader,
+    ReadAheadManager(); // Only for testing: ReadAheadManagerMock
+     ReadAheadManager(CachingReader* reader,
                               LoopingControl* pLoopingControl);
     virtual ~ReadAheadManager();
 
@@ -36,7 +36,7 @@ class ReadAheadManager {
     // direction the audio is progressing in. Returns the total number of
     // samples read into buffer. Note that it is very common that the total
     // samples read is less than the requested number of samples.
-    virtual int getNextSamples(double dRate, CSAMPLE* buffer, int requested_samples);
+    virtual SINT getNextSamples(double dRate, CSAMPLE* buffer, SINT requested_samples);
 
 
     // Used to add a new EngineControls that ReadAheadManager will use to decide
@@ -45,17 +45,17 @@ class ReadAheadManager {
     void addRateControl(RateControl* pRateControl);
 
     // Get the current read-ahead position in samples.
-    virtual inline int getPlaypos() const {
+    virtual inline SINT getPlaypos() const {
         return m_iCurrentPosition;
     }
 
-    virtual void notifySeek(int iSeekPosition);
+    virtual void notifySeek(SINT iSeekPosition);
 
     // hintReader allows the ReadAheadManager to provide hints to the reader to
     // indicate that the given portion of a song is about to be read.
     virtual void hintReader(double dRate, HintVector* hintList);
 
-    virtual int getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
+    virtual SINT getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
                                                        double numConsumedSamples);
 
     virtual void setReader(CachingReader* pReader) {
@@ -120,7 +120,7 @@ class ReadAheadManager {
     LoopingControl* m_pLoopingControl;
     RateControl* m_pRateControl;
     QLinkedList<ReadLogEntry> m_readAheadLog;
-    int m_iCurrentPosition;
+    SINT m_iCurrentPosition;
     CachingReader* m_pReader;
     CSAMPLE* m_pCrossFadeBuffer;
 };

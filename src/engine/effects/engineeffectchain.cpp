@@ -202,7 +202,7 @@ void EngineEffectChain::process(const ChannelHandle& handle,
                 if (pEffect == NULL || !pEffect->enabled()) {
                     continue;
                 }
-                const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
+                const CSAMPLE* pIntermediateInput = (anyProcessed) ?  m_pBuffer : pInOut;
                 CSAMPLE* pIntermediateOutput = m_pBuffer;
                 pEffect->process(handle, pIntermediateInput, pIntermediateOutput,
                                  numSamples, sampleRate,

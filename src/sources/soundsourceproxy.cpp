@@ -25,6 +25,7 @@
 #include "sources/soundsourceflac.h"
 
 #include "library/coverartutils.h"
+#include "library/coverartcache.h"
 #include "util/cmdlineargs.h"
 #include "util/regex.h"
 
@@ -464,6 +465,7 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
         if (!coverImg.isNull()) {
             // Cover image has been parsed from the file
             coverArt.image = coverImg;
+            // TODO() here we may introduce a duplicate hash code
             coverArt.info.hash = CoverArtUtils::calculateHash(coverArt.image);
             coverArt.info.coverLocation = QString();
             coverArt.info.type = CoverInfo::METADATA;
@@ -490,7 +492,7 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     // Dump the trackMetadata extracted from the file back into the track.
     m_pTrack->setTrackMetadata(trackMetadata, parsedFromFile);
     if (parsedCoverArt) {
-        m_pTrack->setCoverArt(coverArt);
+        m_pTrack->setCoverInfo(coverArt.info);
     }
 }
 
@@ -583,35 +585,32 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                      << getUrl().toString()
                      << "with provider"
                      << getSoundSourceProvider()->getName();
-            if (mixxx::SoundSource::OpenResult::FAILED == openResult) {
+            if ((mixxx::SoundSource::OpenResult::SUCCEEDED == openResult) && m_pSoundSource->verifyReadable()) {
+                m_pAudioSource =
+                        AudioSourceProxy::create(m_pTrack, m_pSoundSource);
+                if (m_pAudioSource->isEmpty()) {
+                    qWarning() << "Empty audio data in file"
+                               << getUrl().toString();
+                }
+                // Overwrite metadata with actual audio properties
+                if (!m_pTrack.isNull()) {
+                    m_pTrack->setChannels(m_pAudioSource->getChannelCount());
+                    m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
+                    if (m_pAudioSource->hasDuration()) {
+                        m_pTrack->setDuration(m_pAudioSource->getDuration());
+                    }
+                    if (m_pAudioSource->hasBitrate()) {
+                        m_pTrack->setBitrate(m_pAudioSource->getBitrate());
+                    }
+                }
+                return m_pAudioSource; // success -> exit loop
+            } else {
                 qWarning() << "Invalid audio data in file"
                            << getUrl().toString();
                 // Do NOT retry with the next SoundSource provider if
                 // the file itself is malformed!
                 m_pSoundSource->close();
                 break; // exit loop
-            } else {
-                DEBUG_ASSERT(mixxx::SoundSource::OpenResult::SUCCEEDED == openResult);
-                if (m_pSoundSource->isValid()) {
-                    m_pAudioSource =
-                            AudioSourceProxy::create(m_pTrack, m_pSoundSource);
-                    if (m_pAudioSource->isEmpty()) {
-                        qWarning() << "Empty audio data in file"
-                                   << getUrl().toString();
-                    }
-                    // Overwrite metadata with actual audio properties
-                    if (!m_pTrack.isNull()) {
-                        m_pTrack->setChannels(m_pAudioSource->getChannelCount());
-                        m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
-                        if (m_pAudioSource->hasDuration()) {
-                            m_pTrack->setDuration(m_pAudioSource->getDuration());
-                        }
-                        if (m_pAudioSource->hasBitrate()) {
-                            m_pTrack->setBitrate(m_pAudioSource->getBitrate());
-                        }
-                    }
-                    return m_pAudioSource; // success -> exit loop
-                }
             }
         }
         qWarning() << "Failed to open AudioSource for file"

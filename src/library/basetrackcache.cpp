@@ -557,7 +557,8 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
         int mid = min + (max - min) / 2;
         TrackId otherTrackId(trackIds[mid]);
 
-        // This should not happen, but it's a recoverable error so we should only log it.
+        // This should not happen, but it's a recoverable error so we should
+        // only log it.
         if (!m_trackInfo.contains(otherTrackId)) {
             qDebug() << "WARNING: track" << otherTrackId << "was not in index";
             //updateTrackInIndex(otherTrackId);
@@ -565,7 +566,8 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
 
         int compare = 0;
         for (int i = 0; i < sortColumns.count(); i++) {
-            QVariant tableValue = data(otherTrackId, sortColumns[i].m_column - columnOffset);
+            QVariant tableValue =
+                    data(otherTrackId, sortColumns[i].m_column - columnOffset);
 
             compare = compareColumnValues(
                     sortColumns[i].m_column - columnOffset,
@@ -596,13 +598,18 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                                         QVariant val1, QVariant val2) const {
     int result = 0;
 
-    if (sortColumn == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION) ||
+    if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) ||
-            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) ||
-            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
+            sortColumn == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION)
+    ) {
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 
@@ -613,8 +620,7 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
         else
             result = -1;
     } else {
-        // Default to case-insensitive string comparison
-        result = val1.toString().compare(val2.toString(), Qt::CaseInsensitive);
+        result = val1.toString().localeAwareCompare(val2.toString());
     }
 
     // If we're in descending order, flip the comparison.
