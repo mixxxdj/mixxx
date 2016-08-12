@@ -6,19 +6,9 @@
 #include <QString>
 
 #include "library/dao/dao.h"
-#include "library/libraryfeature.h"
 #include "util/dbid.h"
 
 #define SAVEDQUERYTABLE "savedQueries"
-
-const QString SAVEDQUERYTABLE_QUERY = "query";
-const QString SAVEDQUERYTABLE_TITLE = "title";
-const QString SAVEDQUERYTABLE_SELECTEDITEMS = "selectedItems";
-const QString SAVEDQUERYTABLE_SORTORDER = "sortOrder";
-const QString SAVEDQUERYTABLE_VSCROLLBARPOS = "vScrollbarPos";
-const QString SAVEDQUERYTABLE_SORTCOLUMN = "sortColumn";
-const QString SAVEDQUERYTABLE_SORTASCENDINGORDER = "sortAscendingOrder";
-const QString SAVEDQUERYTABLE_PINNED = "pinned";
 
 // This struct allows to save some data to allow interaction between
 // the search bar and the library features
@@ -34,6 +24,8 @@ struct SavedSearchQuery {
     bool pinned;
 };
 
+class LibraryFeature;
+
 class SavedQueriesDAO : public DAO
 {
   public:
@@ -44,8 +36,8 @@ class SavedQueriesDAO : public DAO
     QList<SavedSearchQuery> getSavedQueries(LibraryFeature* pFeature);
     
   private:
-    static QString serializeItems(const QSet<DbId>& items) const;
-    static QSet<DbId> deserializeItems(const QString& text) const;
+    static QString serializeItems(const QSet<DbId>& items);
+    static QSet<DbId> deserializeItems(const QString& text);
     
     QSqlDatabase& m_database;
 };

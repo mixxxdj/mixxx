@@ -1100,6 +1100,7 @@ QString BaseSqlTableModel::serializedSortColumns() const {
 
 void BaseSqlTableModel::deserialzeSortColumns(QString serialized) {
     QTextStream in(&serialized);
+    m_sortColumns.clear();
     
     while (!in.atEnd()) {
         int ordI = -1;

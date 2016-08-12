@@ -1,6 +1,7 @@
 #include <QString>
 
 #include "library/dao/savedqueriesdao.h"
+#include "library/libraryfeature.h"
 #include "library/queryutil.h"
 
 SavedQueriesDAO::SavedQueriesDAO(QSqlDatabase& database)
@@ -18,11 +19,14 @@ void SavedQueriesDAO::setSavedQueries(LibraryFeature* pFeature,
     }
     
     // First of all delete previous saved queries
-    QString queryStr = "DELETE FROM " SAVEDQUERYTABLE " WHERE libraryFeature = %1";
-    queryStr = queryStr.arg(pFeature->getSettingsName());
+    QString queryStr = "DELETE FROM " SAVEDQUERYTABLE " WHERE libraryFeature = :featureName";
+    
+    qDebug() << pFeature->getSettingsName();
     
     QSqlQuery query(m_database);
-    if (!query.exec(queryStr)) {
+    query.prepare(queryStr);
+    query.bindValue(":featureName", pFeature->getSettingsName());
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
     
@@ -60,10 +64,9 @@ QList<SavedSearchQuery> SavedQueriesDAO::getSavedQueries(LibraryFeature* pFeatur
     QString queryStr = "SELECT query, title, selectedItems, sortOrder, "
                        "vScrollbarPos, sortColumn, sortAscendingOrder, pinned "
                        "FROM " SAVEDQUERYTABLE 
-                       " WHERE libraryFeature = %1";
-    queryStr = queryStr.arg(pFeature->getSettingsName());
-    
+                       " WHERE libraryFeature = :featureName";
     query.prepare(queryStr);
+    query.bindValue(":featureName", pFeature->getSettingsName());
     
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -86,7 +89,7 @@ QList<SavedSearchQuery> SavedQueriesDAO::getSavedQueries(LibraryFeature* pFeatur
     return res;
 }
 
-QString SavedQueriesDAO::serializeItems(const QSet<DbId>& items) const {
+QString SavedQueriesDAO::serializeItems(const QSet<DbId>& items) {
     QStringList ret;
     
     for (const DbId& id : items) {
@@ -95,7 +98,7 @@ QString SavedQueriesDAO::serializeItems(const QSet<DbId>& items) const {
     return ret.join(" ");
 }
 
-QSet<DbId> SavedQueriesDAO::deserializeItems(const QString& text) const {
+QSet<DbId> SavedQueriesDAO::deserializeItems(const QString& text) {
     QSet<DbId> ret;
     QStringList items = text.split(" ");
     for (const QString& item : items) {

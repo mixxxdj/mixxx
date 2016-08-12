@@ -41,11 +41,10 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
 }
 
 LibraryFeature::~LibraryFeature() {
-    
 }
 
 QString LibraryFeature::getSettingsName() {
-    return QString;
+    return QString("");
 }
 
 QIcon LibraryFeature::getIcon() {    
@@ -110,6 +109,7 @@ void LibraryFeature::saveQuery(SavedSearchQuery& query) {
     
     // A saved query goes the first in the list
     m_savedQueries.prepend(query);
+    m_pTrackCollection->getSavedQueriesDAO().setSavedQueries(this, m_savedQueries);
 }
 
 void LibraryFeature::restoreQuery(int index) {
@@ -121,6 +121,7 @@ void LibraryFeature::restoreQuery(int index) {
     pTable->restoreQuery(m_savedQueries.at(index));
     // Move the used query to the first item in the list
     m_savedQueries.move(index, 0);
+    m_pTrackCollection->getSavedQueriesDAO().setSavedQueries(this, m_savedQueries);
 }
 
 const QList<SavedSearchQuery>& LibraryFeature::getSavedQueries() const {

@@ -887,6 +887,7 @@ class MixxxCore(Feature):
                    "library/maintenancefeature.cpp",
                    "library/historytreemodel.cpp",
                    "library/libraryfoldermodel.cpp",
+                   "library/dao/savedqueriesdao.cpp",
 
                    "library/browse/browsetablemodel.cpp",
                    "library/browse/browsethread.cpp",

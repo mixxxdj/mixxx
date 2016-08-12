@@ -12,7 +12,7 @@
 #include "library/libraryview.h"
 #include "track/track.h"
 #include "library/coverartcache.h"
-#include "library/savedsearchquery.h"
+#include "library/dao/savedqueriesdao.h"
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
