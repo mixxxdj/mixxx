@@ -155,15 +155,15 @@ class TrackModel {
         return QModelIndexList();
     }
 
-    virtual void setSavedQuery(const SavedSearchQuery&) {
+    virtual void restoreQuery(const SavedSearchQuery&) {
     }
     
-    virtual SavedSearchQuery getSavedQuery(const QModelIndexList& /* selected */, 
-                                           SavedSearchQuery query = SavedSearchQuery()) const {
+    virtual SavedSearchQuery saveQuery(const QModelIndexList& /* selected */, 
+                                       SavedSearchQuery query = SavedSearchQuery()) const {
         return query;
     }
     
-    virtual SavedSearchQuery getSavedQuery(SavedSearchQuery = SavedSearchQuery()) {
+    virtual SavedSearchQuery saveQuery(SavedSearchQuery = SavedSearchQuery()) {
         return SavedSearchQuery();
     }
     

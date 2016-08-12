@@ -25,8 +25,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     ~WLibraryTableView() override;
     void moveSelection(int delta) override;
 
-    virtual void setSavedQuery(const SavedSearchQuery& query);
-    virtual SavedSearchQuery getSavedQuery(SavedSearchQuery query = SavedSearchQuery()) const;
+    virtual void restoreQuery(const SavedSearchQuery& query);
+    virtual SavedSearchQuery saveQuery(SavedSearchQuery query = SavedSearchQuery()) const;
     
   signals:
     void loadTrack(TrackPointer pTrack);

@@ -1304,21 +1304,30 @@ void WTrackTableView::setScrollBar(WMiniViewScrollBar *pScrollbar) {
     setVerticalScrollBar(pScrollbar);
 }
 
-void WTrackTableView::setSavedQuery(const SavedSearchQuery& query) {
+void WTrackTableView::restoreQuery(const SavedSearchQuery& query) {
     
     TrackModel* trackModel = getTrackModel();
-    if (trackModel != nullptr) {
-        trackModel->setSavedQuery(query);
+    if (trackModel == nullptr) {
+        return;
+    }
+    
+    trackModel->restoreQuery(query);
+    QModelIndexList selectedIndeces = trackModel->getSavedSelectionIndices();
+    QItemSelectionModel* selectionM = selectionModel();
+    selectionM->clearSelection();
+    for (const QModelIndex& index : selectedIndeces) {
+        selectionM->select(index, QItemSelectionModel::Rows |
+                                  QItemSelectionModel::Select);
     }
     
     // First of all the track model must be set in order to get the correct
     // table size for the WLibraryTableView parameters that are going to be
     // restored
-    WLibraryTableView::setSavedQuery(query);
+    WLibraryTableView::restoreQuery(query);
 }
 
-SavedSearchQuery WTrackTableView::getSavedQuery(SavedSearchQuery query) const {
-    query = WLibraryTableView::getSavedQuery(query);
+SavedSearchQuery WTrackTableView::saveQuery(SavedSearchQuery query) const {
+    query = WLibraryTableView::saveQuery(query);
     
     TrackModel* trackModel = getTrackModel();
     if (trackModel == nullptr) {
@@ -1326,7 +1335,7 @@ SavedSearchQuery WTrackTableView::getSavedQuery(SavedSearchQuery query) const {
     }
     
     QModelIndexList rowsSelected = selectionModel()->selectedRows();
-    query = trackModel->getSavedQuery(rowsSelected, query);
+    query = trackModel->saveQuery(rowsSelected, query);
     return query;
 }
 

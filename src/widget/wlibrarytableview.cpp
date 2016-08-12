@@ -117,7 +117,7 @@ void WLibraryTableView::moveSelection(int delta) {
     }
 }
 
-void WLibraryTableView::setSavedQuery(const SavedSearchQuery& query) {
+void WLibraryTableView::restoreQuery(const SavedSearchQuery& query) {
     verticalScrollBar()->setValue(query.vScrollBarPos);
     
     Qt::SortOrder order;
@@ -130,7 +130,7 @@ void WLibraryTableView::setSavedQuery(const SavedSearchQuery& query) {
     horizontalHeader()->setSortIndicator(query.sortColumn, order);
 }
 
-SavedSearchQuery WLibraryTableView::getSavedQuery(SavedSearchQuery query) const {
+SavedSearchQuery WLibraryTableView::saveQuery(SavedSearchQuery query) const {
     query.vScrollBarPos = verticalScrollBar()->value();
     query.sortColumn = horizontalHeader()->sortIndicatorSection();
     query.sortAscendingOrder = 

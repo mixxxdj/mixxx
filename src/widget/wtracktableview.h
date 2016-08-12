@@ -38,8 +38,8 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrackToGroup(QString group, bool play) override;
     void setSorting(bool sorting);
     void setScrollBar(WMiniViewScrollBar* pScrollbar);
-    void setSavedQuery(const SavedSearchQuery& query) override;
-    SavedSearchQuery getSavedQuery(SavedSearchQuery query = SavedSearchQuery()) const override;
+    void restoreQuery(const SavedSearchQuery& query) override;
+    SavedSearchQuery saveQuery(SavedSearchQuery query = SavedSearchQuery()) const override;
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
