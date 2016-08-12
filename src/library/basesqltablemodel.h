@@ -78,7 +78,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void saveSelection(const QModelIndexList& selection) override;
     QModelIndexList getSavedSelectionIndices() override;
     
-    SavedSearchQuery getSavedQuery(const QModelIndexList &indices, SavedSearchQuery query) const override;
+    void restoreQuery(const SavedSearchQuery& query) override;
+    SavedSearchQuery saveQuery(const QModelIndexList &indices, SavedSearchQuery query) const override;
 
   public slots:
     void select();

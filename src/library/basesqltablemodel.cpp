@@ -1018,13 +1018,26 @@ QModelIndexList BaseSqlTableModel::getSavedSelectionIndices() {
     return ret;
 }
 
-SavedSearchQuery BaseSqlTableModel::getSavedQuery(const QModelIndexList& indices, 
+void BaseSqlTableModel::restoreQuery(const SavedSearchQuery& query) {
+    // Restore selection
+    m_savedSelectionIndices.clear();
+    for (const DbId& id : query.selectedItems) {
+        m_savedSelectionIndices.insert(TrackId(id.toVariant()));
+    }
+    
+    deserialzeSortColumns(query.sortOrder);
+}
+
+SavedSearchQuery BaseSqlTableModel::saveQuery(const QModelIndexList& indices, 
                                       SavedSearchQuery query) const {
     query.selectedItems.clear();
     auto ids = getTrackIdsFromIndices(indices);
     for (const TrackId& id : ids) {
         query.selectedItems.insert(id);
     }
+    
+    query.sortOrder = serializedSortColumns();
+    
     return query;
 }
 
