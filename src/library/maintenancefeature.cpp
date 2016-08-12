@@ -31,6 +31,10 @@ QString MaintenanceFeature::getIconPath() {
     return ":/images/library/ic_library_maintenance.png";
 }
 
+QString MaintenanceFeature::getSettingsName() {
+    return "MaintenanceFeature";
+}
+
 TreeItemModel* MaintenanceFeature::getChildModel() {
     return nullptr;
 }

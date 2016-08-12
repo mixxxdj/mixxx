@@ -30,6 +30,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
 
     QVariant title() override;
     QString getIconPath() override;
+    QString getSettingsName() override;
 
     virtual TreeItemModel* getChildModel();
 

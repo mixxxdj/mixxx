@@ -116,6 +116,10 @@ QString ITunesFeature::getIconPath() {
     return ":/images/library/ic_library_itunes.png";
 }
 
+QString ITunesFeature::getSettingsName() {
+    return "ITunesFeature";
+}
+
 void ITunesFeature::activate() {
     activate(false);
     emit(enableCoverArtDisplay(false));

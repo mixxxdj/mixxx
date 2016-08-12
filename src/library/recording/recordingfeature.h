@@ -30,6 +30,7 @@ class RecordingFeature : public LibraryFeature {
 
     QVariant title() override;
     QString getIconPath() override;
+    QString getSettingsName() override;
 
     QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int paneId) override;
     QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;

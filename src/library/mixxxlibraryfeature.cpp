@@ -124,6 +124,10 @@ QString MixxxLibraryFeature::getIconPath() {
     return ":/images/library/ic_library_library.png";
 }
 
+QString MixxxLibraryFeature::getSettingsName() {
+    return "MixxxLibraryFeature";
+}
+
 TreeItemModel* MixxxLibraryFeature::getChildModel() {
     return m_pChildModel;
 }

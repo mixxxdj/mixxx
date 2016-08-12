@@ -127,6 +127,10 @@ QString CrateFeature::getIconPath() {
     return ":/images/library/ic_library_crates.png";
 }
 
+QString CrateFeature::getSettingsName() {
+    return "CrateFeature";
+}
+
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {

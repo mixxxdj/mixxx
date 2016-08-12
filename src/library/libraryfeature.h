@@ -12,6 +12,7 @@
 #include <QUrl>
 
 #include "preferences/usersettings.h"
+#include "library/savedsearchquery.h"
 #include "track/track.h"
 
 class Library;
@@ -24,22 +25,6 @@ class WBaseLibrary;
 class WLibrary;
 class WLibrarySidebar;
 class WTrackTableView;
-
-// This struct allows to save some data to allow interaction between
-// the search bar and the library features
-struct SavedSearchQuery {
-    QString query;
-    QString title;
-    QSet<DbId> selectedItems;
-    QString sortOrder;
-    
-    int vScrollBarPos;
-    int sortColumn;
-    bool sortAscendingOrder;
-    
-    // Used when saving and restoring from the DB
-    int id;
-};
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {
@@ -55,6 +40,10 @@ class LibraryFeature : public QObject {
 
     virtual QVariant title() = 0;
     virtual QString getIconPath() = 0;
+    
+    // This name must be unique for each feature
+    virtual QString getSettingsName(); 
+
     QIcon getIcon();
 
     virtual bool dropAccept(QList<QUrl> /* urls */, 

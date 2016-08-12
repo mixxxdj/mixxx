@@ -23,6 +23,10 @@ QString LibraryFoldersFeature::getIconPath() {
     return ":/images/library/ic_library_folder.png";
 }
 
+QString LibraryFoldersFeature::getSettingsName() {
+    return "LibraryFoldersFeature";
+}
+
 void LibraryFoldersFeature::onRightClickChild(const QPoint&pos, 
                                               const QModelIndex&) {
     

@@ -34,10 +34,25 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
           m_featureFocus(-1) {
+    
+    // Restore saved queries
+    QStringList queryColumns;
+    queryColumns << SAVEDQUERYTABLE_QUERY
+                 << SAVEDQUERYTABLE_TITLE
+                 << SAVEDQUERYTABLE_SELECTEDITEMS
+                 << SAVEDQUERYTABLE_SORTORDER
+                 << SAVEDQUERYTABLE_VSCROLLBARPOS
+                 << SAVEDQUERYTABLE_SORTCOLUMN
+                 << SAVEDQUERYTABLE_SORTASCENDINGORDER
+                 << SAVEDQUERYTABLE_PINNED;
 }
 
 LibraryFeature::~LibraryFeature() {
     
+}
+
+QString LibraryFeature::getSettingsName() {
+    return QString;
 }
 
 QIcon LibraryFeature::getIcon() {    

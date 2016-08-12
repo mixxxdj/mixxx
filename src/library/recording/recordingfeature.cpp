@@ -40,6 +40,10 @@ QString RecordingFeature::getIconPath() {
     return ":/images/library/ic_library_recordings.png";
 }
 
+QString RecordingFeature::getSettingsName() {
+    return "RecordingFeature";
+}
+
 TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }

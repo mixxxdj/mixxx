@@ -62,6 +62,10 @@ QString BansheeFeature::getIconPath() {
     return ":/images/library/ic_library_banshee.png";
 }
 
+QString BansheeFeature::getSettingsName() {
+    return "BansheeFeature";
+}
+
 void BansheeFeature::activate() {
     //qDebug("BansheeFeature::activate()");
 
