@@ -4,8 +4,10 @@
 
 #include <QFile>
 #include <QDir>
+#include "layout.h"
 
 typedef QList<QStringList> LayoutNamesData;
+typedef KeyboardLayoutPointer (*GetLayout_t)(std::string layoutName);
 
 class LayoutsFileHandler {
 public:
@@ -30,7 +32,7 @@ private:
     //// }
     void appendGetLayoutsFunction(QFile &cppFile, const LayoutNamesData &layoutNames);
 
-    void compileLayoutsFile(const QString cppPath);
+    void compileLayoutsFile(const QString cppPath, GetLayout_t &pFunction, void *&handle);
 };
 
 

@@ -15,10 +15,19 @@ void LayoutsFileHandler::open(const QString cppPath) {
     LayoutNamesData layoutNames = getLayoutNames(f);
     appendGetLayoutsFunction(f, layoutNames);
 
-    compileLayoutsFile(cppPath);
+    GetLayout_t getLayout = nullptr;
+    void *handle = nullptr;
+
+    compileLayoutsFile(cppPath, getLayout, handle);
+
+    // TODO(Tomasito) Create Layout objects into memory
+
+    // Close layouts library
+    qDebug() << "Closing layouts library...\n";
+    dlclose(handle);
 }
 
-void LayoutsFileHandler::compileLayoutsFile(const QString cppPath) {
+void LayoutsFileHandler::compileLayoutsFile(const QString cppPath, GetLayout_t &pGetLayoutFn, void *&handle) {
     const QDir dir = QFileInfo(cppPath).absoluteDir();
     const QString soPath = dir.filePath("layouts.so");
 
@@ -27,24 +36,19 @@ void LayoutsFileHandler::compileLayoutsFile(const QString cppPath) {
 
     // Open layouts
     qDebug() << "Opening " << soPath;
-    void* handle = dlopen(soPath.toLatin1().data(), RTLD_LAZY);
+    handle = dlopen(soPath.toLatin1().data(), RTLD_LAZY);
     if (!handle) {
         qFatal("Could not open layouts library");
     }
 
     // Load getLayout function
     qDebug() << "Loading getLayout function symbol...";
-    typedef KeyboardLayoutPointer (*getLayout_t)(std::string layoutName);
-    getLayout_t getLayout = (getLayout_t) dlsym(handle, "getLayout");
-    if (!getLayout) {
+    pGetLayoutFn = (GetLayout_t) dlsym(handle, "getLayout");
+    if (!pGetLayoutFn) {
         qCritical() << dlerror();
         dlclose(handle);
         qFatal("Couldn't load symbol 'getLayout'");
     }
-
-    // Close layouts library
-    qDebug() << "Closing layouts library...\n";
-    dlclose(handle);
 }
 
 void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNamesData &layoutNames) {
