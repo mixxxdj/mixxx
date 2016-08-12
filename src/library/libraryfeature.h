@@ -81,7 +81,7 @@ class LibraryFeature : public QObject {
     
     virtual void saveQuery(SavedSearchQuery& query);
     virtual void restoreQuery(int index);
-    virtual const QList<SavedSearchQuery> &getSavedQueries() const;
+    virtual const QList<SavedSearchQuery> &getSavedQueries();
 
   public slots:
     // called when you single click on the root item
@@ -150,6 +150,7 @@ class LibraryFeature : public QObject {
     
     int m_featureFocus;
     int m_focusedPane;
+    bool m_queriesLoaded;
     
     QList<SavedSearchQuery> m_savedQueries;
     

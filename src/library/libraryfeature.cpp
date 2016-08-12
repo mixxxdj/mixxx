@@ -34,10 +34,8 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
-          m_featureFocus(-1) {
-    
-    // Restore saved queries
-    m_savedQueries = m_pTrackCollection->getSavedQueriesDAO().getSavedQueries(this);
+          m_featureFocus(-1),
+          m_queriesLoaded(false) {
 }
 
 LibraryFeature::~LibraryFeature() {
@@ -124,7 +122,15 @@ void LibraryFeature::restoreQuery(int index) {
     m_pTrackCollection->getSavedQueriesDAO().setSavedQueries(this, m_savedQueries);
 }
 
-const QList<SavedSearchQuery>& LibraryFeature::getSavedQueries() const {
+const QList<SavedSearchQuery>& LibraryFeature::getSavedQueries() {
+
+    if (!m_queriesLoaded) {
+        m_queriesLoaded = true;
+        
+        // Restore saved queries
+        m_savedQueries = m_pTrackCollection->getSavedQueriesDAO().getSavedQueries(this);
+    }
+    
     return m_savedQueries;
 }
 
