@@ -62,7 +62,7 @@ QString BansheeFeature::getIconPath() {
     return ":/images/library/ic_library_banshee.png";
 }
 
-QString BansheeFeature::getSettingsName() {
+QString BansheeFeature::getSettingsName() const {
     return "BansheeFeature";
 }
 

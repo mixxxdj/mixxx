@@ -60,7 +60,7 @@ QString AnalysisFeature::getIconPath() {
     return ":/images/library/ic_library_prepare.png";
 }
 
-QString AnalysisFeature::getSettingsName() {
+QString AnalysisFeature::getSettingsName() const {
     return "AnalysisFeature";
 }
 

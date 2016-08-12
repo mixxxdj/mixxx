@@ -42,7 +42,7 @@ class LibraryFeature : public QObject {
     virtual QString getIconPath() = 0;
     
     // This name must be unique for each feature
-    virtual QString getSettingsName(); 
+    virtual QString getSettingsName() const; 
 
     QIcon getIcon();
 
@@ -79,9 +79,9 @@ class LibraryFeature : public QObject {
     
     virtual void setFocusedPane(int paneId);
     
-    virtual void saveQuery(SavedSearchQuery& query);
-    virtual void restoreQuery(int index);
-    virtual const QList<SavedSearchQuery> &getSavedQueries();
+    virtual SavedSearchQuery saveQuery(SavedSearchQuery query);
+    virtual void restoreQuery(int id);
+    virtual QList<SavedSearchQuery> getSavedQueries() const;
 
   public slots:
     // called when you single click on the root item
@@ -147,12 +147,10 @@ class LibraryFeature : public QObject {
     UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
     TrackCollection* m_pTrackCollection;
+    SavedQueriesDAO& m_savedDAO;
     
     int m_featureFocus;
     int m_focusedPane;
-    bool m_queriesLoaded;
-    
-    QList<SavedSearchQuery> m_savedQueries;
     
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);

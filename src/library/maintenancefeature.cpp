@@ -31,7 +31,7 @@ QString MaintenanceFeature::getIconPath() {
     return ":/images/library/ic_library_maintenance.png";
 }
 
-QString MaintenanceFeature::getSettingsName() {
+QString MaintenanceFeature::getSettingsName() const {
     return "MaintenanceFeature";
 }
 

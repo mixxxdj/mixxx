@@ -107,7 +107,7 @@ QString RhythmboxFeature::getIconPath() {
     return ":/images/library/ic_library_rhythmbox.png";
 }
 
-QString RhythmboxFeature::getSettingsName() {
+QString RhythmboxFeature::getSettingsName() const {
     return "RhythmboxFeature";
 }
 

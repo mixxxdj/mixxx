@@ -127,7 +127,7 @@ QString CrateFeature::getIconPath() {
     return ":/images/library/ic_library_crates.png";
 }
 
-QString CrateFeature::getSettingsName() {
+QString CrateFeature::getSettingsName() const {
     return "CrateFeature";
 }
 

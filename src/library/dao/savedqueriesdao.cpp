@@ -4,6 +4,10 @@
 #include "library/libraryfeature.h"
 #include "library/queryutil.h"
 
+const QString SavedQueriesDAO::kSelectStart =
+        "SELECT query, title, selectedItems, sortOrder, "
+        "vScrollbarPos, sortColumn, sortAscendingOrder, pinned, id ";
+
 SavedQueriesDAO::SavedQueriesDAO(QSqlDatabase& database)
         : m_database(database) {
 
@@ -12,10 +16,10 @@ SavedQueriesDAO::SavedQueriesDAO(QSqlDatabase& database)
 void SavedQueriesDAO::initialize() {
 }
 
-void SavedQueriesDAO::setSavedQueries(LibraryFeature* pFeature,
-                                      const QList<SavedSearchQuery>& queries) {
+SavedSearchQuery SavedQueriesDAO::saveQuery(LibraryFeature* pFeature,
+                                            SavedSearchQuery sQuery) {
     if (pFeature == nullptr) {
-        return;
+        return SavedSearchQuery();
     }
     
     // First of all delete previous saved queries
@@ -37,36 +41,38 @@ void SavedQueriesDAO::setSavedQueries(LibraryFeature* pFeature,
                   "VALUES (:libraryFeature, :query, :title, :selectedItems, "
                   ":sortOrder, :vScrollbarPos, :sortColumn, :sortAscendingOrder, :pinned)");
     
-    for (const SavedSearchQuery& sQuery : queries) {
-        query.bindValue(":libraryFeature", pFeature->getSettingsName());
-        query.bindValue(":query", sQuery.query);
-        query.bindValue(":title", sQuery.title);        
-        query.bindValue(":selectedItems", serializeItems(sQuery.selectedItems));
-        query.bindValue(":sortOrder", sQuery.sortOrder);
-        query.bindValue(":vScrollbarPos", sQuery.vScrollBarPos);
-        query.bindValue(":sortColumn", sQuery.sortColumn);
-        query.bindValue(":sortAscendingOrder", sQuery.sortAscendingOrder);
-        query.bindValue(":pinned", sQuery.pinned);
-        
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-        }
+    query.bindValue(":libraryFeature", pFeature->getSettingsName());
+    query.bindValue(":query", sQuery.query);
+    query.bindValue(":title", sQuery.title);        
+    query.bindValue(":selectedItems", serializeItems(sQuery.selectedItems));
+    query.bindValue(":sortOrder", sQuery.sortOrder);
+    query.bindValue(":vScrollbarPos", sQuery.vScrollBarPos);
+    query.bindValue(":sortColumn", sQuery.sortColumn);
+    query.bindValue(":sortAscendingOrder", sQuery.sortAscendingOrder);
+    query.bindValue(":pinned", sQuery.pinned);
+    
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
     }
+    
+    if (!query.exec("SELECT id FROM " SAVEDQUERYTABLE
+                    " WHERE ROWID=last_inserted_rowid()")) {
+        LOG_FAILED_QUERY(query);
+    }
+    
+    query.next();
+    sQuery.id = query.value(0).toInt();
+    return sQuery;
 }
 
-QList<SavedSearchQuery> SavedQueriesDAO::getSavedQueries(LibraryFeature* pFeature) {
-    
-    if (pFeature == nullptr) {
-        return QList<SavedSearchQuery>();
-    }
-    
+QList<SavedSearchQuery> SavedQueriesDAO::getSavedQueries(const QString& settingsName) const {    
     QSqlQuery query(m_database);
-    QString queryStr = "SELECT query, title, selectedItems, sortOrder, "
-                       "vScrollbarPos, sortColumn, sortAscendingOrder, pinned "
+    QString queryStr = kSelectStart + 
                        "FROM " SAVEDQUERYTABLE 
-                       " WHERE libraryFeature = :featureName";
+                       " WHERE libraryFeature = :featureName "
+                       "ORDER BY id DESC";
     query.prepare(queryStr);
-    query.bindValue(":featureName", pFeature->getSettingsName());
+    query.bindValue(":featureName", settingsName);
     
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -74,19 +80,53 @@ QList<SavedSearchQuery> SavedQueriesDAO::getSavedQueries(LibraryFeature* pFeatur
     
     QList<SavedSearchQuery> res;
     while (query.next()) {
-        SavedSearchQuery q;
-        q.query = query.value(0).toString();
-        q.title = query.value(1).toString();
-        q.selectedItems = deserializeItems(query.value(2).toString());
-        q.sortOrder = query.value(3).toString();
-        q.vScrollBarPos = query.value(4).toInt();
-        q.sortColumn = query.value(5).toInt();
-        q.sortAscendingOrder = query.value(6).toBool();
-        q.pinned = query.value(7).toBool();
-        
-        res << q;
+        res << valueToQuery(query);
     }
     return res;
+}
+
+QList<SavedSearchQuery> SavedQueriesDAO::getSavedQueries(const LibraryFeature* pFeature) const {
+    if (pFeature == nullptr) {
+        return QList<SavedSearchQuery>();
+    }
+    
+    return getSavedQueries(pFeature->getSettingsName());
+}
+
+SavedSearchQuery SavedQueriesDAO::getSavedQuery(int id) const {
+    QSqlQuery query(m_database);
+    QString queryStr = kSelectStart +
+                       "FROM " SAVEDQUERYTABLE 
+                       " WHERE id = :id "
+                       "ORDER BY id DESC";
+    query.prepare(queryStr);
+    query.bindValue(":id", id);
+    
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+    
+    query.next();
+    return valueToQuery(query);
+}
+
+SavedSearchQuery SavedQueriesDAO::moveToFirst(LibraryFeature* pFeature,
+                                              const SavedSearchQuery& sQuery) {
+    // To move to the first item we delete the item and insert againt it
+    // to assign it a new ID
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM " SAVEDQUERYTABLE " WHERE id=:id");
+    query.bindValue(":id", sQuery.id);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    return saveQuery(pFeature, sQuery);
+}
+
+SavedSearchQuery SavedQueriesDAO::moveToFirst(LibraryFeature* pFeature, int id) {
+    return moveToFirst(pFeature, getSavedQuery(id));
 }
 
 QString SavedQueriesDAO::serializeItems(const QSet<DbId>& items) {
@@ -105,4 +145,19 @@ QSet<DbId> SavedQueriesDAO::deserializeItems(const QString& text) {
         ret.insert(DbId(QVariant(item)));
     }
     return ret;
+}
+
+SavedSearchQuery SavedQueriesDAO::valueToQuery(const QSqlQuery& query) {
+    SavedSearchQuery q;
+    q.query = query.value(0).toString();
+    q.title = query.value(1).toString();
+    q.selectedItems = deserializeItems(query.value(2).toString());
+    q.sortOrder = query.value(3).toString();
+    q.vScrollBarPos = query.value(4).toInt();
+    q.sortColumn = query.value(5).toInt();
+    q.sortAscendingOrder = query.value(6).toBool();
+    q.pinned = query.value(7).toBool();
+    q.id = query.value(8).toInt();
+    
+    return q;
 }

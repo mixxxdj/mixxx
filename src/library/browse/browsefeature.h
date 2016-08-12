@@ -38,7 +38,7 @@ class BrowseFeature : public LibraryFeature {
 
     QVariant title() override;
     QString getIconPath() override;
-    QString getSettingsName() override;
+    QString getSettingsName() const override;
 
     QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
 

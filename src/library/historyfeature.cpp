@@ -57,7 +57,7 @@ QString HistoryFeature::getIconPath() {
     return ":/images/library/ic_library_history.png";
 }
 
-QString HistoryFeature::getSettingsName() {
+QString HistoryFeature::getSettingsName() const {
     return "HistoryFeature";
 }
 

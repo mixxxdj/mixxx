@@ -99,7 +99,7 @@ QString AutoDJFeature::getIconPath() {
     return ":/images/library/ic_library_autodj.png";
 }
 
-QString AutoDJFeature::getSettingsName() {
+QString AutoDJFeature::getSettingsName() const {
     return "AutoDJFeature";
 }
 

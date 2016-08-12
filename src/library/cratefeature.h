@@ -33,7 +33,7 @@ class CrateFeature : public LibraryFeature {
 
     QVariant title() override;
     QString getIconPath() override;
-    QString getSettingsName() override;
+    QString getSettingsName() const override;
     
     void onSearch(QString&) {}
 

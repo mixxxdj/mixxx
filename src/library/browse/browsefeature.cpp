@@ -145,7 +145,7 @@ QString BrowseFeature::getIconPath() {
     return ":/images/library/ic_library_browse.png";
 }
 
-QString BrowseFeature::getSettingsName() {
+QString BrowseFeature::getSettingsName() const {
     return "BrowseFeature";
 }
 

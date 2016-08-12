@@ -116,7 +116,7 @@ QString ITunesFeature::getIconPath() {
     return ":/images/library/ic_library_itunes.png";
 }
 
-QString ITunesFeature::getSettingsName() {
+QString ITunesFeature::getSettingsName() const {
     return "ITunesFeature";
 }
 

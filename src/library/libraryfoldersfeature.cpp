@@ -23,7 +23,7 @@ QString LibraryFoldersFeature::getIconPath() {
     return ":/images/library/ic_library_folder.png";
 }
 
-QString LibraryFoldersFeature::getSettingsName() {
+QString LibraryFoldersFeature::getSettingsName() const {
     return "LibraryFoldersFeature";
 }
 

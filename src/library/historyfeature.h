@@ -25,7 +25,7 @@ public:
 
     QVariant title() override;
     QString getIconPath() override;
-    QString getSettingsName() override;
+    QString getSettingsName() const override;
     void decorateChild(TreeItem *pChild, int playlist_id) override;
 
   public slots:

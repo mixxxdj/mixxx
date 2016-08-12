@@ -124,7 +124,7 @@ QString MixxxLibraryFeature::getIconPath() {
     return ":/images/library/ic_library_library.png";
 }
 
-QString MixxxLibraryFeature::getSettingsName() {
+QString MixxxLibraryFeature::getSettingsName() const {
     return "MixxxLibraryFeature";
 }
 

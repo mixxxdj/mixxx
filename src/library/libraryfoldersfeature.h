@@ -15,7 +15,7 @@ class LibraryFoldersFeature : public MixxxLibraryFeature
     
     QVariant title() override;
     QString getIconPath() override;
-    QString getSettingsName() override;
+    QString getSettingsName() const override;
     
   public slots:
     void onRightClickChild(const QPoint& pos, const QModelIndex&) override;

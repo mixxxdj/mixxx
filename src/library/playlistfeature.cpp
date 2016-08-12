@@ -41,7 +41,7 @@ QString PlaylistFeature::getIconPath() {
     return ":/images/library/ic_library_playlist.png";
 }
 
-QString PlaylistFeature::getSettingsName() {
+QString PlaylistFeature::getSettingsName() const {
     return "PlaylistFeature";
 }
 

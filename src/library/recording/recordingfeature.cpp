@@ -40,7 +40,7 @@ QString RecordingFeature::getIconPath() {
     return ":/images/library/ic_library_recordings.png";
 }
 
-QString RecordingFeature::getSettingsName() {
+QString RecordingFeature::getSettingsName() const {
     return "RecordingFeature";
 }
 

@@ -28,7 +28,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
     QVariant title() override;
     QString getIconPath() override;
-    QString getSettingsName() override;
+    QString getSettingsName() const override;
 
     bool dragMoveAccept(QUrl url);
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
