@@ -93,11 +93,24 @@ void LibraryFeature::setFocusedPane(int paneId) {
 }
 
 void LibraryFeature::saveQuery(SavedSearchQuery& query) {
+    WTrackTableView* pTable = getFocusedTable();
+    if (pTable == nullptr) {
+        return;
+    }
+    
+    query = pTable->saveQuery(query);
+    
     // A saved query goes the first in the list
     m_savedQueries.prepend(query);
 }
 
 void LibraryFeature::restoreQuery(int index) {
+    WTrackTableView* pTable = getFocusedTable();
+    if (pTable == nullptr) {
+        return;
+    }
+    
+    pTable->restoreQuery(m_savedQueries.at(index));
     // Move the used query to the first item in the list
     m_savedQueries.move(index, 0);
 }
