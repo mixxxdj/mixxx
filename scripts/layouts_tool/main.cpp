@@ -1,5 +1,6 @@
 #include <QtCore/QCoreApplication>
 #include <QTimer>
+#include <QDebug>
 #include "layoutstoolmain.h"
 
 int main(int argc, char *argv[]) {
