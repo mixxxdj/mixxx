@@ -32,15 +32,22 @@ class PlaylistTableModel : public BaseSqlTableModel {
     bool isLocked();
     void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
     TrackModel::CapabilitiesFlags getCapabilities() const;
+    
+    void saveSelection(const QModelIndexList& selection);
 
   private slots:
     void playlistChanged(int playlistId);
 
   private:
+    
+    int getPosition(const QModelIndex& index);
+    
     PlaylistDAO& m_playlistDao;
     int m_iPlaylistId;
     QSet<int> m_playlistIds;
     bool m_showAll;
+    
+    QSet<int> m_savedSelection;
 };
 
 #endif

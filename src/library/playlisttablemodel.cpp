@@ -96,9 +96,8 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     if (locations.isEmpty()) {
         return 0;
     }
-
-    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
-    int position = index.sibling(index.row(), positionColumn).data().toInt();
+    
+    int position = getPosition(index);
 
     // Handle weird cases like a drag and drop to an invalid index
     if (position <= 0) {
@@ -138,9 +137,7 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index) {
         return;
     }
 
-    const int positionColumnIndex = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
-    int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
-    m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
+    m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, getPosition(index));
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
@@ -148,24 +145,18 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         return;
     }
 
-    const int positionColumnIndex = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
-
     QList<int> trackPositions;
     foreach (QModelIndex index, indices) {
-        int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
-        trackPositions.append(trackPosition);
+        trackPositions.append(getPosition(index));
     }
 
-    m_playlistDao.removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
+    m_playlistDao.removeTracksFromPlaylist(m_iPlaylistId, trackPositions);
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
                                    const QModelIndex& destIndex) {
-
-    int playlistPositionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
-
-    int newPosition = destIndex.sibling(destIndex.row(), playlistPositionColumn).data().toInt();
-    int oldPosition = sourceIndex.sibling(sourceIndex.row(), playlistPositionColumn).data().toInt();
+    int newPosition = getPosition(destIndex);
+    int oldPosition = getPosition(sourceIndex);
 
     if (newPosition > oldPosition) {
         // new position moves up due to closing the gap of the old position
@@ -192,17 +183,15 @@ bool PlaylistTableModel::isLocked() {
 void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude) {
     QList<int> positions;
     QHash<int,TrackId> allIds;
-    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
-    const int idColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID);
     int excludePos = -1;
     if (exclude.row() > -1) {
         // this is used to exclude the already loaded track at pos #1 if used from running Auto-DJ
-        excludePos = exclude.sibling(exclude.row(), positionColumn).data().toInt();
+        excludePos = getPosition(exclude);
     }
     if (shuffle.count() > 1) {
         // if there is more then one track selected, shuffle selection only
         foreach(QModelIndex shuffleIndex, shuffle) {
-            int oldPosition = shuffleIndex.sibling(shuffleIndex.row(), positionColumn).data().toInt();
+            int oldPosition = getPosition(shuffleIndex);
             if (oldPosition != excludePos) {
                 positions.append(oldPosition);
             }
@@ -211,7 +200,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
         // if there is only one track selected, shuffle all tracks
         int numOfTracks = rowCount();
         for (int i = 0; i < numOfTracks; i++) {
-            int oldPosition = index(i, positionColumn).data().toInt();
+            int oldPosition =  getPosition(index(i, 0));
             if (oldPosition != excludePos) {
                 positions.append(oldPosition);
             }
@@ -220,8 +209,8 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     // Set up list of all IDs
     int numOfTracks = rowCount();
     for (int i = 0; i < numOfTracks; i++) {
-        int position = index(i, positionColumn).data().toInt();
-        TrackId trackId(index(i, idColumn).data());
+        int position = getPosition(index(i, 0));
+        TrackId trackId(trackId(index(i, 0)));
         allIds.insert(position, trackId);
     }
     m_playlistDao.shuffleTracks(m_iPlaylistId, positions, allIds);
@@ -282,8 +271,17 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     return caps;
 }
 
+void PlaylistTableModel::saveSelection(const QModelIndexList& selection) {
+    
+}
+
 void PlaylistTableModel::playlistChanged(int playlistId) {
     if (playlistId == m_iPlaylistId) {
         select(); // Repopulate the data model.
     }
+}
+
+int PlaylistTableModel::getPosition(const QModelIndex& index) {
+    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    return index.sibling(index.row(), positionColumn).data().toInt();
 }
