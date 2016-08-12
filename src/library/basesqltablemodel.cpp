@@ -1026,6 +1026,7 @@ void BaseSqlTableModel::restoreQuery(const SavedSearchQuery& query) {
     }
     
     deserialzeSortColumns(query.sortOrder);
+    search(query.query);
 }
 
 SavedSearchQuery BaseSqlTableModel::saveQuery(const QModelIndexList& indices, 
