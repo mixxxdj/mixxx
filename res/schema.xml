@@ -423,6 +423,7 @@ METADATA
     </description>
     <sql>
       CREATE TABLE IF NOT EXISTS savedQueries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         libraryFeature TEXT,
         query TEXT,
         title TEXT,
