@@ -175,12 +175,11 @@ TEST_F(CoverArtUtilTest, searchImage) {
     EXPECT_TRUE(img.save(cLoc_foo, format));
 
     // looking for cover in an directory with one image will select that one.
-    expected2.coverLocation = "foo.jpg";
-    expected2.hash = CoverArtUtils::calculateProvisionalHash(QImage(cLoc_foo));
-    covers << QFileInfo(cLoc_foo);
-    CoverInfoRelative res2 = CoverArtUtils::selectCoverArtForTrack(
-            trackBaseName, trackAlbum, covers);
-    EXPECT_EQ(expected2, res2);
+    QFileInfo expectedInfo(cLoc_foo);
+    covers << expectedInfo;
+    const QFileInfo* pResInfo = CoverArtUtils::selectBestCoverFile(
+            covers, trackBaseName, trackAlbum);
+    EXPECT_EQ(expectedInfo, *pResInfo);
     QFile::remove(cLoc_foo);
 
     QStringList extraCovers;
@@ -238,23 +237,18 @@ TEST_F(CoverArtUtilTest, searchImage) {
     while (!prefCovers.isEmpty()) {
         QFileInfo cover = prefCovers.first();
 
+        pResInfo = CoverArtUtils::selectBestCoverFile(
+                prefCovers, trackBaseName, trackAlbum);
+
         // We expect no cover selected for other1 since there are 2 covers,
         // neither of which match our preferred cover names. other2 will be
         // selected once we get to it since it is the only cover available.
         if (cover.baseName() == "other1") {
-            expected2.type = CoverInfo::NONE;
-            expected2.coverLocation = QString();
-            expected2.hash = CoverInfoRelative().hash;
+            EXPECT_EQ(nullptr, pResInfo);
         } else {
-            expected2.type = CoverInfo::FILE;
-            expected2.coverLocation = cover.fileName();
-            expected2.hash = CoverArtUtils::calculateProvisionalHash(QImage(cover.filePath()));
+            EXPECT_EQ(cover, *pResInfo);
+            expectedInfo = cover;
         }
-        res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                    prefCovers);
-        EXPECT_QSTRING_EQ(expected2.coverLocation, res2.coverLocation);
-        EXPECT_EQ(expected2.hash, res2.hash);
-        EXPECT_EQ(expected2, res2);
 
         QFile::remove(cover.filePath());
         prefCovers.pop_front();
@@ -268,17 +262,16 @@ TEST_F(CoverArtUtilTest, searchImage) {
     // (it must always prefer the lighter cover)
     QString cLoc_coverJPG = trackdir % "/" % "cover." % "JPG";
     EXPECT_TRUE(img.scaled(200,200).save(cLoc_coverJPG, "JPG"));
-    prefCovers.append(QFileInfo(cLoc_coverJPG));
+    expectedInfo = QFileInfo(cLoc_coverJPG);
+    prefCovers.append(expectedInfo);
     QString cLoc_coverjpg = trackdir % "/" % "cover." % "jpg";
     EXPECT_TRUE(img.scaled(400,400).save(cLoc_coverjpg, "jpg"));
     prefCovers.append(QFileInfo(cLoc_coverjpg));
     extraCovers << cLoc_coverJPG << cLoc_coverjpg;
 
-    res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                prefCovers);
-    expected2.hash = CoverArtUtils::calculateProvisionalHash(QImage(cLoc_coverJPG));
-    expected2.coverLocation = "cover.JPG";
-    EXPECT_EQ(expected2, res2);
+    pResInfo = CoverArtUtils::selectBestCoverFile(
+            prefCovers, trackBaseName, trackAlbum);
+    EXPECT_EQ(expectedInfo, *pResInfo);
 
     // As we are looking for %album%.jpg and %base_track.jpg%,
     // we need to check if everything works with UTF8 chars.
@@ -290,23 +283,20 @@ TEST_F(CoverArtUtilTest, searchImage) {
     // 2. album_name.jpg
     cLoc_albumName = QString(trackdir % "/" % trackAlbum % "." % qFormat);
     EXPECT_TRUE(img.save(cLoc_albumName, format));
-    prefCovers.append(QFileInfo(cLoc_albumName));
-    res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                prefCovers);
-    expected2.hash = CoverArtUtils::calculateProvisionalHash(QImage(cLoc_albumName));
-    expected2.coverLocation = trackAlbum % ".jpg";
-    EXPECT_EQ(expected2, res2);
+    expectedInfo = QFileInfo(cLoc_albumName);
+    prefCovers.append(QFileInfo(expectedInfo));
+    pResInfo = CoverArtUtils::selectBestCoverFile(
+            prefCovers, trackBaseName, trackAlbum);
+    EXPECT_EQ(expectedInfo, *pResInfo);
 
     // 1. track_filename.jpg
     cLoc_filename = QString(trackdir % "/" % trackBaseName % "." % qFormat);
     EXPECT_TRUE(img.save(cLoc_filename, format));
-    prefCovers.append(QFileInfo(cLoc_filename));
-    res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                prefCovers);
-
-    expected2.hash = CoverArtUtils::calculateProvisionalHash(QImage(cLoc_filename));
-    expected2.coverLocation = trackBaseName % ".jpg";
-    EXPECT_EQ(expected2, res2);
+    expectedInfo = QFileInfo(cLoc_filename);
+    prefCovers.append(expectedInfo);
+    pResInfo = CoverArtUtils::selectBestCoverFile(
+            prefCovers, trackBaseName, trackAlbum);
+    EXPECT_EQ(expectedInfo, *pResInfo);
 
     QFile::remove(cLoc_filename);
     QFile::remove(cLoc_albumName);

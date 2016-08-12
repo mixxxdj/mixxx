@@ -137,15 +137,28 @@ QLinkedList<QFileInfo> CoverArtUtils::findPossibleCoversInFolder(const QString& 
 CoverInfo CoverArtUtils::selectCoverArtForTrack(
         const Track& track,
         const QLinkedList<QFileInfo>& covers) {
+    CoverInfo coverInfo;
+
+    coverInfo.source = CoverInfo::GUESSED;
+    coverInfo.trackLocation = track.getLocation();
 
     const QString trackBaseName = track.getFileInfo().baseName();
     const QString albumName = track.getAlbum();
-    const QString trackLocation = track.getLocation();
-    CoverInfoRelative coverInfoRelative =
-            selectCoverArtForTrack(trackBaseName, albumName, covers);
 
+    const QFileInfo* bestInfo = selectBestCoverFile(
+            covers, trackBaseName, albumName);
 
-    return CoverInfo(coverInfoRelative, trackLocation);
+    if (bestInfo != NULL) {
+        QImage image(bestInfo->filePath());
+        if (!image.isNull()) {
+            coverInfo.type = CoverInfo::FILE;
+            // TODO() here we may introduce a duplicate hash code
+            coverInfo.hash = CoverArtUtils::calculateProvisionalHash(image);
+            coverInfo.coverLocation = bestInfo->fileName();
+        }
+    }
+
+    return coverInfo;
 }
 
 const QFileInfo* CoverArtUtils::selectBestCoverFile(
@@ -153,7 +166,7 @@ const QFileInfo* CoverArtUtils::selectBestCoverFile(
         const QString& trackBaseName,
         const QString& albumName) {
     PreferredCoverType bestType = NONE;
-    const QFileInfo* bestInfo = NULL;
+    const QFileInfo* bestInfo = nullptr;
     // If there is a single image then we use it unconditionally. Otherwise
     // we use the priority order described in PreferredCoverType. Notably,
     // if there are multiple image files in the folder we require they match
@@ -203,30 +216,4 @@ const QFileInfo* CoverArtUtils::selectBestCoverFile(
         }
     }
     return bestInfo;
-}
-
-//static
-CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
-        const QString& trackBaseName,
-        const QString& albumName,
-        const QLinkedList<QFileInfo>& covers) {
-    CoverInfoRelative coverInfoRelative;
-    coverInfoRelative.source = CoverInfo::GUESSED;
-
-    const QFileInfo* bestInfo = selectBestCoverFile(
-            covers, trackBaseName, albumName);
-
-    if (bestInfo != NULL) {
-        QImage image(bestInfo->filePath());
-        if (!image.isNull()) {
-            coverInfoRelative.source = CoverInfo::GUESSED;
-            coverInfoRelative.type = CoverInfo::FILE;
-            // TODO() here we may introduce a duplicate hash code
-            coverInfoRelative.hash = calculateProvisionalHash(image);
-            coverInfoRelative.coverLocation = bestInfo->fileName();
-            return coverInfoRelative;
-        }
-    }
-
-    return coverInfoRelative;
 }
