@@ -38,6 +38,8 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrackToGroup(QString group, bool play) override;
     void setSorting(bool sorting);
     void setScrollBar(WMiniViewScrollBar* pScrollbar);
+    void setSavedQuery(const SavedSearchQuery& query) override;
+    SavedSearchQuery getSavedQuery(SavedSearchQuery query = SavedSearchQuery()) const override;
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
@@ -100,7 +102,7 @@ class WTrackTableView : public WLibraryTableView {
     void mouseMoveEvent(QMouseEvent *pEvent) override;
 
     // Returns the current TrackModel, or returns NULL if none is set.
-    TrackModel* getTrackModel();
+    TrackModel* getTrackModel() const;
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities);
 
     UserSettingsPointer m_pConfig;

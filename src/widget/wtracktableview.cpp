@@ -1262,7 +1262,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     restoreView();
 }
 
-TrackModel* WTrackTableView::getTrackModel() {
+TrackModel* WTrackTableView::getTrackModel() const {
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
     return trackModel;
 }
@@ -1302,6 +1302,30 @@ void WTrackTableView::setSorting(bool sorting) {
 void WTrackTableView::setScrollBar(WMiniViewScrollBar *pScrollbar) {
     m_pScrollBar = pScrollbar;
     setVerticalScrollBar(pScrollbar);
+}
+
+void WTrackTableView::setSavedQuery(const SavedSearchQuery& query) {
+    WLibraryTableView::setSavedQuery(query);
+    
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == nullptr) {
+        return;
+    }
+    
+    trackModel->setSavedQuery(query);
+}
+
+SavedSearchQuery WTrackTableView::getSavedQuery(SavedSearchQuery query) const {
+    query = WLibraryTableView::getSavedQuery(query);
+    
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == nullptr) {
+        return query;
+    }
+    
+    QModelIndexList rowsSelected = selectionModel()->selectedRows();
+    query = trackModel->getSavedQuery(rowsSelected, query);
+    return query;
 }
 
 void WTrackTableView::slotSendToAutoDJ() {

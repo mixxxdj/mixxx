@@ -117,6 +117,18 @@ void WLibraryTableView::moveSelection(int delta) {
     }
 }
 
+void WLibraryTableView::setSavedQuery(const SavedSearchQuery& query) {
+    
+}
+
+SavedSearchQuery WLibraryTableView::getSavedQuery(SavedSearchQuery query) const {
+    query.vScrollBarPos = verticalScrollBar()->value();
+    query.sortColumn = horizontalHeader()->sortIndicatorSection();
+    query.sortAscendingOrder = 
+            horizontalHeader()->sortIndicatorOrder() == Qt::AscendingOrder;
+    return query;
+}
+
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
     setFont(font);
     setTrackTableRowHeight(verticalHeader()->defaultSectionSize());

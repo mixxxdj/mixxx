@@ -9,6 +9,7 @@
 
 #include "track/track.h"
 #include "library/dao/settingsdao.h"
+#include "library/libraryfeature.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
@@ -154,6 +155,18 @@ class TrackModel {
         return QModelIndexList();
     }
 
+    virtual void setSavedQuery(const SavedSearchQuery&) {
+    }
+    
+    virtual SavedSearchQuery getSavedQuery(const QModelIndexList& /* selected */, 
+                                           SavedSearchQuery query = SavedSearchQuery()) {
+        return query;
+    }
+    
+    virtual SavedSearchQuery getSavedQuery(SavedSearchQuery = SavedSearchQuery()) {
+        return SavedSearchQuery();
+    }
+    
   private:
     QSqlDatabase m_db;
     QString m_settingsNamespace;
