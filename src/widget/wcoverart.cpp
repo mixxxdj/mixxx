@@ -30,9 +30,9 @@ WCoverArt::WCoverArt(QWidget* parent,
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const int,
+        connect(pCache, SIGNAL(coverFound(const QObject*,
                                           const CoverInfo&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const int,
+                this, SLOT(slotCoverFound(const QObject*,
                                           const CoverInfo&, QPixmap, bool)));
     }
     connect(m_pMenu, SIGNAL(coverArtSelected(const CoverArt&)),
@@ -96,7 +96,7 @@ void WCoverArt::slotReloadCoverArt() {
 void WCoverArt::slotCoverArtSelected(const CoverArt& art) {
     if (m_loadedTrack) {
         // Will trigger slotTrackCoverArtUpdated().
-        m_loadedTrack->setCoverArt(art);
+        m_loadedTrack->setCoverInfo(art.info);
     }
 }
 
@@ -128,7 +128,11 @@ void WCoverArt::slotReset() {
     update();
 }
 
-void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
+void WCoverArt::slotTrackCoverArtUpdated() {
+    CoverArtCache::requestCover(m_loadedTrack.data(), this);
+}
+
+void WCoverArt::slotCoverFound(const QObject* pRequestor,
                                const CoverInfo& info, QPixmap pixmap,
                                bool fromCache) {
     Q_UNUSED(info);
@@ -138,24 +142,12 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
     }
 
     if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getId().toInt() == requestReference) {
+            m_loadedTrack->getCoverInfo().hash == info.hash) {
         qDebug() << "WCoverArt::slotCoverFound" << pRequestor << info
                  << pixmap.size();
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();
-    }
-}
-
-void WCoverArt::slotTrackCoverArtUpdated() {
-    if (m_loadedTrack) {
-        m_lastRequestedCover = m_loadedTrack->getCoverInfo();
-        m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache != nullptr) {
-            // TODO(rryan): Don't use track id.
-            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId().toInt());
-        }
     }
 }
 
@@ -229,7 +221,7 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
-            m_pDlgFullSize->init(m_lastRequestedCover);
+            m_pDlgFullSize->init(m_loadedCover);
         }
     }
 }

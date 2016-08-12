@@ -165,7 +165,8 @@ class TrackDAO : public QObject, public virtual DAO {
     bool verifyRemainingTracks(
             const QStringList& libraryRootDirs,
             volatile const bool* pCancel);
-    void detectCoverArtForUnknownTracks(volatile const bool* pCancel,
+
+    void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                                         QSet<TrackId>* pTracksChanged);
 
   signals:

@@ -79,18 +79,6 @@ const int kiPlaypositionUpdateRate = 10; // updates per second
 // Number of kiUpdateRates that go by before we update BPM.
 const int kiBpmUpdateCnt = 4; // about 2.5 updates per sec
 
-// End of track mode constants
-const int TRACK_END_MODE_STOP = 0;
-const int TRACK_END_MODE_NEXT = 1;
-const int TRACK_END_MODE_LOOP = 2;
-const int TRACK_END_MODE_PING = 3;
-
-const int ENGINE_RAMP_DOWN = -1;
-const int ENGINE_RAMP_NONE = 0;
-const int ENGINE_RAMP_UP = 1;
-
-//const int kiRampLength = 3;
-
 class EngineBuffer : public EngineObject {
      Q_OBJECT
   private:
@@ -381,15 +369,9 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<double> m_queuedSeekPosition;
 
-    // Holds the last sample value of the previous buffer. This is used when ramping to
-    // zero in case of an immediate stop of the playback
-    float m_fLastSampleValue[2];
     // Is true if the previous buffer was silent due to pausing
-    bool m_bLastBufferPaused;
     QAtomicInt m_iTrackLoading;
     bool m_bPlayAfterLoading;
-    float m_fRampValue;
-    int m_iRampState;
     // Records the sample rate so we can detect when it changes. Initialized to
     // 0 to guarantee we see a change on the first callback.
     int m_iSampleRate;
@@ -399,8 +381,6 @@ class EngineBuffer : public EngineObject {
     QFile df;
     QTextStream writer;
 #endif
-    CSAMPLE* m_pDitherBuffer;
-    unsigned int m_iDitherBufferReadIndex;
 
     // Certain operations like seeks and engine changes need to be crossfaded
     // to eliminate clicks and pops.

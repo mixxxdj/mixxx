@@ -30,7 +30,7 @@ class WCoverArtLabel : public QLabel {
       void slotCoverMenu(const QPoint& pos);
 
   private:
-    CoverInfo m_coverInfo;
+    QPixmap m_loadedCover;
     WCoverArtMenu* m_pCoverMenu;
     DlgCoverArtFullSize* m_pDlgFullSize;
     QPixmap m_defaultCover;

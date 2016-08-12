@@ -496,7 +496,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     } else {
         qDebug() << "Number of channels in input stream" << numChannels;
     }
-    if (audioSrcCfg.hasChannelCount()) {
+    if (audioSrcCfg.hasValidChannelCount()) {
         numChannels = audioSrcCfg.getChannelCount();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_NUM_CHANNELS, numChannels);
@@ -520,7 +520,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     } else {
         qDebug() << "Samples per second in input stream" << samplesPerSecond;
     }
-    if (audioSrcCfg.hasSamplingRate()) {
+    if (audioSrcCfg.hasValidSamplingRate()) {
         samplesPerSecond = audioSrcCfg.getSamplingRate();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_SAMPLES_PER_SECOND, samplesPerSecond);

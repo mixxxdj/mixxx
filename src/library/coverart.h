@@ -28,12 +28,14 @@ struct CoverInfo {
         FILE = 2
     };
 
+    static const quint16 kNullImageHash;
+
     CoverInfo() : source(UNKNOWN),
                   type(NONE),
                   coverLocation(QString()),
                   trackLocation(QString()),
                   // This default value is fine: qChecksum(NULL, 0) is 0.
-                  hash(0) {}
+                  hash(CoverInfo::kNullImageHash) {}
     
     CoverInfo(const CoverInfo& c) = default;
 
@@ -52,7 +54,7 @@ struct CoverInfo {
 
     Source source;
     Type type;
-    QString coverLocation;
+    QString coverLocation; // Relative path, starting from trackLocation
     QString trackLocation;
     quint16 hash;
 };

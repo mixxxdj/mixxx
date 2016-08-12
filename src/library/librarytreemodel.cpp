@@ -73,7 +73,7 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
     
     CoverArtCache* pCache = CoverArtCache::instance();
     // Set a maximum size of 32px to not use many cache
-    QPixmap pixmap = pCache->requestCover(info, this, info.hash, 32);
+    QPixmap pixmap = pCache->requestCover(info, this, 32, false, true);
     
     if (pixmap.isNull()) {
         // The icon is not in the cache so we need to wait until the

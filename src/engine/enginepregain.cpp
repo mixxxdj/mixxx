@@ -115,6 +115,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // As the speed approaches zero, hearing small bursts of sound at full volume
     // is distracting and doesn't mimic the way that vinyl sounds when played slowly.
     // Instead, reduce gain to provide a soft rolloff.
+    // This is also applied for for fading from and to pause
     const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
     if (fabs(m_dSpeed) < kThresholdSpeed) {
         totalGain *= fabs(m_dSpeed) / kThresholdSpeed;
