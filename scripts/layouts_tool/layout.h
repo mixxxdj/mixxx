@@ -10,17 +10,18 @@ struct KbdKeyChar {
     bool is_dead;
 };
 
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+
 class Layout {
 public:
-    Layout();
+    Layout(QString varName, QString name, KeyboardLayoutPointer data);
     virtual ~Layout();
 
 private:
-    const QString name;
-    const QString varName;
+    QString varName;
+    QString name;
     KbdKeyChar data[LAYOUT_LEN][2];
 };
 
-typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
 
 #endif // LAYOUT_H

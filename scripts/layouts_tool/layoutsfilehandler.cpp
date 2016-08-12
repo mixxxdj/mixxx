@@ -20,6 +20,17 @@ void LayoutsFileHandler::open(const QString cppPath) {
 
     compileLayoutsFile(cppPath, getLayout, handle);
 
+    QList<Layout> layouts;
+    for (QStringList &names : layoutNames) {
+        QString &varName = names[0];
+        QString &name = names[1];
+        KeyboardLayoutPointer layoutData = getLayout(varName.toLatin1().data());
+
+        // Construct layout object and append to layouts
+        Layout layout(varName, name, layoutData);
+        layouts.append(layout);
+    }
+
     // TODO(Tomasito) Create Layout objects into memory
 
     // Close layouts library
