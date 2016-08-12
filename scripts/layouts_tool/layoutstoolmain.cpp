@@ -11,8 +11,7 @@ LayoutsToolMain::LayoutsToolMain(QObject *parent) : QObject(parent) {
 void LayoutsToolMain::run() {
     qDebug() << "Welcome to the Layouts tool :)";
 
-    QDir layoutsPath(LAYOUTS_CPP_PATH);
-    pLayoutsFileHandler->open(layoutsPath);
+    pLayoutsFileHandler->open(LAYOUTS_CPP_PATH);
 
     quit();
 }

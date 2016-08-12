@@ -3,25 +3,27 @@
 #include <QDebug>
 
 #include "layoutsfilehandler.h"
+#include "layout.h"
 
 LayoutsFileHandler::LayoutsFileHandler() {}
 
 LayoutsFileHandler::~LayoutsFileHandler() {}
 
-void LayoutsFileHandler::open(QDir &layoutsPath) {
+void LayoutsFileHandler::open(const QString cppPath) {
+    QFile f(cppPath);
 
-    // Setup path where .so will be saved
-    QDir layoutsSoDir = layoutsPath;
-    layoutsSoDir.cdUp();
-    layoutsSoDir = QDir(layoutsSoDir.canonicalPath() + "/layouts.so");
+    LayoutNamesData layoutNames = getLayoutNames(f);
+    appendGetLayoutsFunction(f, layoutNames);
 
-    const QString cppPath = layoutsPath.canonicalPath();
-    const QString soPath = layoutsSoDir.canonicalPath();
+    compileLayoutsFile(cppPath);
+}
 
-    qDebug() << "SO PATH: " << soPath;
+void LayoutsFileHandler::compileLayoutsFile(const QString cppPath) {
+    const QDir dir = QFileInfo(cppPath).absoluteDir();
+    const QString soPath = dir.filePath("layouts.so");
 
     // Compile layouts
-    system(("c++ " + cppPath + " -o " + soPath + " -shared -fPIC").toLatin1().data());
+    system(("gcc -std=c++11 -shared -o " + soPath + " -fPIC " + cppPath).toLatin1().data());
 
     // Open layouts
     qDebug() << "Opening " << soPath;
@@ -32,7 +34,7 @@ void LayoutsFileHandler::open(QDir &layoutsPath) {
 
     // Load getLayout function
     qDebug() << "Loading getLayout function symbol...";
-    typedef void (*getLayout_t)(std::string layoutName);
+    typedef KeyboardLayoutPointer (*getLayout_t)(std::string layoutName);
     getLayout_t getLayout = (getLayout_t) dlsym(handle, "getLayout");
     if (!getLayout) {
         qCritical() << dlerror();
@@ -40,13 +42,72 @@ void LayoutsFileHandler::open(QDir &layoutsPath) {
         qFatal("Couldn't load symbol 'getLayout'");
     }
 
-    // use it to do the calculation
-    qDebug() << "Calling hello...";
-    getLayout("de_DE");
-
-    // close the library
-    qDebug() << "Closing library...\n";
+    // Close layouts library
+    qDebug() << "Closing layouts library...\n";
     dlclose(handle);
+}
+
+void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNamesData &layoutNames) {
+    QStringList fn;
+
+    fn.append("");
+    fn.append("/* @START GENERATED */");
+    fn.append("extern \"C\" KeyboardLayoutPointer getLayout(std::string layoutName) {");
+    for (QStringList names : layoutNames) {
+        fn.append("    if (layoutName == \"" + names[0] + "\") return " + names[0] + ";");
+    }
+    fn.append("    else {");
+    fn.append("        return nullptr;");
+    fn.append("    }");
+    fn.append("}");
+    fn.append("/* @END GENERATED */");
+
+    if (cppFile.open(QIODevice::ReadWrite | QIODevice::Append)) {
+        QTextStream stream(&cppFile);
+        for (QStringList::Iterator it = fn.begin(); it != fn.end(); ++it) {
+            stream << *it << "\n";
+        }
+        cppFile.close();
+    }
+}
+
+LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile &cppFile) {
+    LayoutNamesData names;
+
+    if (cppFile.open(QIODevice::ReadOnly)) {
+        QRegExp bracketRegex("\\[");
+        QString type = "static const KbdKeyChar";
+        QTextStream in(&cppFile);
+
+        QString prevLine;
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+
+            if (!line.startsWith(type)) {
+                prevLine = line;
+                continue;
+            }
+
+            // Retrieve variable name by chopping line
+            line = line.mid(24);
+            line = line.mid(0, bracketRegex.indexIn(line));
+
+            QString varName = line;
+            QString name = prevLine.startsWith("//") ? prevLine.mid(3) : "";
+
+            // Create QStringList and append it to names
+            QStringList currentLayoutNames;
+            currentLayoutNames.append(varName);
+            currentLayoutNames.append(name);
+            names.append(currentLayoutNames);
+
+            prevLine = line;
+        }
+
+        cppFile.close();
+    }
+
+    return names;
 }
 
 void LayoutsFileHandler::save(QFile &file) {

@@ -21,5 +21,6 @@ private:
     KbdKeyChar data[LAYOUT_LEN][2];
 };
 
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
 
 #endif // LAYOUT_H
