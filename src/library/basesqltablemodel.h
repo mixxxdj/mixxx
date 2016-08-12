@@ -74,6 +74,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role=Qt::DisplayRole) const;
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
+    
+    void saveSelection(const QModelIndexList& selection) override;
+    QModelIndexList getSavedSelection() override;
 
   public slots:
     void select();
@@ -152,6 +155,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QList<SortColumn> m_savedSortColumns;
     QVector<QHash<int, QVariant> > m_headerInfo;
     QString m_trackSourceOrderBy;
+    QSet<TrackId> m_savedSelectionIndices;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };

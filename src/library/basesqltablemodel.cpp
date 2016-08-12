@@ -1026,6 +1026,24 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
+void BaseSqlTableModel::saveSelection(const QModelIndexList& selection) {
+    m_savedSelectionIndices.clear();
+    for (const QModelIndex& index : selection) {
+        m_savedSelectionIndices.insert(getTrackId(index));
+    }
+}
+
+QModelIndexList BaseSqlTableModel::getSavedSelection() {
+    QModelIndexList ret;
+    for (const TrackId& id : m_savedSelectionIndices) {
+        QLinkedList<int> rows = getTrackRows(id);
+        for (const int row : rows) {
+            ret << index(row, 0);
+        }
+    }
+    return ret;
+}
+
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);

@@ -1512,64 +1512,30 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
 
 void WTrackTableView::doSortByColumn(int headerSection) {
     TrackModel* trackModel = getTrackModel();
-    QAbstractItemModel* itemModel = model();
 
-    if (trackModel == nullptr || itemModel == nullptr || !m_sorting) {
+    if (trackModel == nullptr || !m_sorting) {
         return;
     }
 
-    // Save the selection
-    QModelIndexList selection = selectionModel()->selectedRows();
-    QSet<TrackId> trackIds;
-    for (const auto& index: selection) {
-        trackIds.insert(trackModel->getTrackId(index));
-    }
-
+    trackModel->saveSelection(selectionModel()->selectedRows());
     sortByColumn(headerSection);
 
     QItemSelectionModel* currentSelection = selectionModel();
-
-    // Find a visible column
-    int visibleColumn = 0;
-    while (isColumnHidden(visibleColumn) && visibleColumn < itemModel->columnCount()) {
-        visibleColumn++;
-    }
-
     currentSelection->reset(); // remove current selection
-
-    QMap<int,int> selectedRows;
-    for (const auto& trackId : trackIds) {
-
-        // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
-        // code is broken for playlists because it assumes each trackid is in
-        // the table once. This will erroneously select all instances of the
-        // track for playlists, but it works fine for every other view. The way
-        // to fix this that we should do is to delegate the selection saving to
-        // the TrackModel. This will allow the playlist table model to use the
-        // table index as the unique id instead of this code stupidly using
-        // trackid.
-        QLinkedList<int> rows = trackModel->getTrackRows(trackId);
-        for (int row : rows) {
-            // Restore sort order by rows, so the following commands will act as expected
-            selectedRows.insert(row,0);
-        }
-    }
-
+    
+    QModelIndexList savedSelection = trackModel->getSavedSelection();
     QModelIndex first;
-    QMapIterator<int,int> i(selectedRows);
-    while (i.hasNext()) {
-        i.next();
-        QModelIndex tl = itemModel->index(i.key(), visibleColumn);
-        currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
-
+    for (const QModelIndex& index : savedSelection) {
+        currentSelection->select(index, 
+                                 QItemSelectionModel::Rows |
+                                 QItemSelectionModel::Select);
         if (!first.isValid()) {
-            first = tl;
+            first = index.sibling(index.row(), getVisibleColumn());
         }
     }
-
+        
     if (first.isValid()) {
         scrollTo(first, QAbstractItemView::EnsureVisible);
-        //scrollTo(first, QAbstractItemView::PositionAtCenter);
     }
     
     if (!m_pScrollBar.isNull()) {
@@ -1617,6 +1583,19 @@ void WTrackTableView::lockBpm(bool lock) {
         TrackPointer track = trackModel->getTrack(index);
         track->setBpmLocked(lock);
     }
+}
+
+int WTrackTableView::getVisibleColumn() {
+    QAbstractItemModel* itemModel = model();
+    if (itemModel == nullptr) {
+        return -1;
+    }
+    
+    int column = 0;
+    while (isColumnHidden(column) && column < itemModel->columnCount()) {
+        column++;
+    }
+    return column;
 }
 
 void WTrackTableView::slotClearBeats() {

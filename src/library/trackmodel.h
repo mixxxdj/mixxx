@@ -4,6 +4,7 @@
 #include <QList>
 #include <QLinkedList>
 #include <QItemDelegate>
+#include <QItemSelection>
 #include <QtSql>
 
 #include "track/track.h"
@@ -144,6 +145,13 @@ class TrackModel {
     }
 
     virtual void select() {
+    }
+    
+    virtual void saveSelection(const QModelIndexList&) {
+    }
+    
+    virtual QModelIndexList getSavedSelection() {
+        return QModelIndexList();
     }
 
   private:
