@@ -30,8 +30,15 @@ class WTrackTableView;
 struct SavedSearchQuery {
     QString query;
     QString title;
-    QModelIndex selectedItem;
+    QSet<int> selectedItems;
     QString sortOrder;
+    
+    int vScrollBarPos;
+    int sortColumn;
+    bool sortAscendingOrder;
+    
+    // Used when saving and restoring from the DB
+    int id;
 };
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
