@@ -15,6 +15,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/libraryfeature.h"
+#include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
 #include "widget/wbaselibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -36,15 +37,7 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_featureFocus(-1) {
     
     // Restore saved queries
-    QStringList queryColumns;
-    queryColumns << SAVEDQUERYTABLE_QUERY
-                 << SAVEDQUERYTABLE_TITLE
-                 << SAVEDQUERYTABLE_SELECTEDITEMS
-                 << SAVEDQUERYTABLE_SORTORDER
-                 << SAVEDQUERYTABLE_VSCROLLBARPOS
-                 << SAVEDQUERYTABLE_SORTCOLUMN
-                 << SAVEDQUERYTABLE_SORTASCENDINGORDER
-                 << SAVEDQUERYTABLE_PINNED;
+    m_savedQueries = m_pTrackCollection->getSavedQueriesDAO().getSavedQueries(this);
 }
 
 LibraryFeature::~LibraryFeature() {

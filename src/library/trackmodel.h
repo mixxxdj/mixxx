@@ -8,8 +8,8 @@
 #include <QtSql>
 
 #include "track/track.h"
+#include "library/dao/savedqueriesdao.h"
 #include "library/dao/settingsdao.h"
-#include "library/libraryfeature.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */

@@ -12,7 +12,7 @@
 #include <QUrl>
 
 #include "preferences/usersettings.h"
-#include "library/savedsearchquery.h"
+#include "library/dao/savedqueriesdao.h"
 #include "track/track.h"
 
 class Library;
@@ -33,7 +33,7 @@ class LibraryFeature : public QObject {
 
     // The parent does not necessary be the Library
     LibraryFeature(UserSettingsPointer pConfig,
-                   Library* pLibrary, TrackCollection *pTrackCollection, 
+                   Library* pLibrary, TrackCollection* pTrackCollection, 
                    QObject* parent = nullptr);
     
     virtual ~LibraryFeature();

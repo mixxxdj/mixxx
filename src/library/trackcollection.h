@@ -32,6 +32,7 @@
 #include "library/dao/analysisdao.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
+#include "library/dao/savedqueriesdao.h"
 
 #ifdef __SQLITE3__
 typedef struct sqlite3_context sqlite3_context;
@@ -63,6 +64,7 @@ class TrackCollection : public QObject {
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
     DirectoryDAO& getDirectoryDAO();
+    SavedQueriesDAO& getSavedQueriesDAO();
     AnalysisDao& getAnalysisDAO() {
         return m_analysisDao;
     }
@@ -108,6 +110,7 @@ class TrackCollection : public QObject {
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
     LibraryHashDAO m_libraryHashDao;
+    SavedQueriesDAO m_savedDao;
     TrackDAO m_trackDao;
 };
 
