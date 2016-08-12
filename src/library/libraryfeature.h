@@ -30,7 +30,7 @@ class WTrackTableView;
 struct SavedSearchQuery {
     QString query;
     QString title;
-    QSet<int> selectedItems;
+    QSet<DbId> selectedItems;
     QString sortOrder;
     
     int vScrollBarPos;

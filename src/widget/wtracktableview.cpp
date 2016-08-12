@@ -1305,14 +1305,16 @@ void WTrackTableView::setScrollBar(WMiniViewScrollBar *pScrollbar) {
 }
 
 void WTrackTableView::setSavedQuery(const SavedSearchQuery& query) {
-    WLibraryTableView::setSavedQuery(query);
     
     TrackModel* trackModel = getTrackModel();
-    if (trackModel == nullptr) {
-        return;
+    if (trackModel != nullptr) {
+        trackModel->setSavedQuery(query);
     }
     
-    trackModel->setSavedQuery(query);
+    // First of all the track model must be set in order to get the correct
+    // table size for the WLibraryTableView parameters that are going to be
+    // restored
+    WLibraryTableView::setSavedQuery(query);
 }
 
 SavedSearchQuery WTrackTableView::getSavedQuery(SavedSearchQuery query) const {

@@ -110,6 +110,14 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("ReplayGain"), 50);
 }
 
+QSet<TrackId> BaseSqlTableModel::getTrackIdsFromIndices(const QModelIndexList& list) const {
+    QSet<TrackId> ret;
+    for (const QModelIndex& index : list) {
+        ret.insert(getTrackId(index));
+    }
+    return ret;
+}
+
 QSqlDatabase BaseSqlTableModel::database() const {
     return m_database;
 }
@@ -412,22 +420,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     // There's no item to sort already, load from Settings last sort
     if (m_sortColumns.isEmpty()) {
         QString val = getModelSetting(COLUMNS_SORTING);
-        QTextStream in(&val);
-        
-        while (!in.atEnd()) {
-            int ordI = -1;
-            QString name;
-            
-            in >> name >> ordI;
-            
-            int col = fieldIndex(name);
-            if (col < 0) continue;
-            
-            Qt::SortOrder ord;
-            ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
-            
-            m_sortColumns << SortColumn(col, ord);
-        }
+        deserialzeSortColumns(val);
     }
     if (m_sortColumns.size() > 0 && m_sortColumns.at(0).m_column == column) {
          // Only the order has changed
@@ -451,23 +444,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     }
     
     // Write new sortColumns order to user settings
-    QString val;
-    QTextStream out(&val);
-    for (SortColumn& sc : m_sortColumns) {
-
-        QString name;        
-        if (sc.m_column > 0 && sc.m_column < m_tableColumns.size()) {
-            name = m_tableColumns[sc.m_column];
-        } else {
-            // ccColumn between 1..x to skip the id column
-            int ccColumn = sc.m_column - m_tableColumns.size() + 1;
-            name = m_trackSource->columnNameForFieldIndex(ccColumn);
-        }
-
-        out << name << " ";
-        out << (sc.m_order == Qt::AscendingOrder ? 1 : -1) << " ";
-    }
-    out.flush();
+    QString val = serializedSortColumns();
     setModelSetting(COLUMNS_SORTING, val);
 
     if (sDebug) {
@@ -1027,10 +1004,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 void BaseSqlTableModel::saveSelection(const QModelIndexList& selection) {
-    m_savedSelectionIndices.clear();
-    for (const QModelIndex& index : selection) {
-        m_savedSelectionIndices.insert(getTrackId(index));
-    }
+    m_savedSelectionIndices = getTrackIdsFromIndices(selection);
 }
 
 QModelIndexList BaseSqlTableModel::getSavedSelectionIndices() {
@@ -1042,6 +1016,16 @@ QModelIndexList BaseSqlTableModel::getSavedSelectionIndices() {
         }
     }
     return ret;
+}
+
+SavedSearchQuery BaseSqlTableModel::getSavedQuery(const QModelIndexList& indices, 
+                                      SavedSearchQuery query) const {
+    query.selectedItems.clear();
+    auto ids = getTrackIdsFromIndices(indices);
+    for (const TrackId& id : ids) {
+        query.selectedItems.insert(id);
+    }
+    return query;
 }
 
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
@@ -1077,4 +1061,44 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
     select(); //Repopulate the data model.
+}
+
+QString BaseSqlTableModel::serializedSortColumns() const {
+    QString val;
+    QTextStream out(&val);
+    for (const SortColumn& sc : m_sortColumns) {
+
+        QString name;        
+        if (sc.m_column > 0 && sc.m_column < m_tableColumns.size()) {
+            name = m_tableColumns[sc.m_column];
+        } else {
+            // ccColumn between 1..x to skip the id column
+            int ccColumn = sc.m_column - m_tableColumns.size() + 1;
+            name = m_trackSource->columnNameForFieldIndex(ccColumn);
+        }
+
+        out << name << " ";
+        out << (sc.m_order == Qt::AscendingOrder ? 1 : -1) << " ";
+    }
+    out.flush();
+    return val;
+}
+
+void BaseSqlTableModel::deserialzeSortColumns(QString serialized) {
+    QTextStream in(&serialized);
+    
+    while (!in.atEnd()) {
+        int ordI = -1;
+        QString name;
+        
+        in >> name >> ordI;
+        
+        int col = fieldIndex(name);
+        if (col < 0) continue;
+        
+        Qt::SortOrder ord;
+        ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
+        
+        m_sortColumns << SortColumn(col, ord);
+    }
 }
