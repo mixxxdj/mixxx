@@ -21,5 +21,9 @@ public slots:
 private:
     QCoreApplication *app;
     LayoutsFileHandler *pLayoutsFileHandler;
+    QList<Layout> mLayouts;
+    QString mFilePath;
+
+    void mainMenu();
 };
 #endif // LAYOUTS_TOOL_MAIN_H

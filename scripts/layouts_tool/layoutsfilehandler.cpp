@@ -9,7 +9,15 @@ LayoutsFileHandler::LayoutsFileHandler() {}
 
 LayoutsFileHandler::~LayoutsFileHandler() {}
 
-void LayoutsFileHandler::open(const QString cppPath) {
+void LayoutsFileHandler::open(QString &cppPath, QList<Layout> &layouts) {
+    QFileInfo check_file(cppPath);
+    if (!check_file.exists() || !check_file.isFile()) {
+        cppPath = "";
+        qDebug() << "Not loading layouts. Path doesn't exist: " << cppPath;
+        return;
+    }
+
+
     QFile f(cppPath);
 
     LayoutNamesData layoutNames = getLayoutNames(f);
@@ -20,7 +28,7 @@ void LayoutsFileHandler::open(const QString cppPath) {
 
     compileLayoutsFile(cppPath, getLayout, handle);
 
-    QList<Layout> layouts;
+    layouts;
     for (QStringList &names : layoutNames) {
         QString &varName = names[0];
         QString &name = names[1];
@@ -30,8 +38,6 @@ void LayoutsFileHandler::open(const QString cppPath) {
         Layout layout(varName, name, layoutData);
         layouts.append(layout);
     }
-
-    // TODO(Tomasito) Create Layout objects into memory
 
     // Close layouts library
     qDebug() << "Closing layouts library...\n";
