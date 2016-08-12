@@ -76,7 +76,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
     
     void saveSelection(const QModelIndexList& selection) override;
-    QModelIndexList getSavedSelection() override;
+    QModelIndexList getSavedSelectionIndices() override;
 
   public slots:
     void select();

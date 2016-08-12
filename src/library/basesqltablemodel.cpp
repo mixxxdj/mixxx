@@ -1033,7 +1033,7 @@ void BaseSqlTableModel::saveSelection(const QModelIndexList& selection) {
     }
 }
 
-QModelIndexList BaseSqlTableModel::getSavedSelection() {
+QModelIndexList BaseSqlTableModel::getSavedSelectionIndices() {
     QModelIndexList ret;
     for (const TrackId& id : m_savedSelectionIndices) {
         QLinkedList<int> rows = getTrackRows(id);

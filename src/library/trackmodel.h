@@ -150,7 +150,7 @@ class TrackModel {
     virtual void saveSelection(const QModelIndexList&) {
     }
     
-    virtual QModelIndexList getSavedSelection() {
+    virtual QModelIndexList getSavedSelectionIndices() {
         return QModelIndexList();
     }
 

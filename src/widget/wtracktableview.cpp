@@ -1523,7 +1523,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     QItemSelectionModel* currentSelection = selectionModel();
     currentSelection->reset(); // remove current selection
     
-    QModelIndexList savedSelection = trackModel->getSavedSelection();
+    QModelIndexList savedSelection = trackModel->getSavedSelectionIndices();
     QModelIndex first;
     for (const QModelIndex& index : savedSelection) {
         currentSelection->select(index, 
