@@ -27,6 +27,8 @@ class KeyboardControllerPreset : public ControllerPreset {
 
     virtual bool isMappable() const override { return true; }
 
+    void translate(QString layout);
+
     // Get all QKeySequences bound to a given ConfigKey, separated by a given separator
     QString getKeySequencesToString(ConfigKey configKey, QString separator);
 

@@ -85,4 +85,5 @@ void KeyboardController::onKeySeqPressed(ConfigKey configKey) {
 
 void KeyboardController::reloadPreset(QString layout) {
     // Reload preset
+    m_preset.translate(layout);
 }
