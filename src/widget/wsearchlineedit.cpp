@@ -270,6 +270,10 @@ void WSearchLineEdit::saveQuery() {
 }
 
 void WSearchLineEdit::restoreQuery() {
+    if (m_pCurrentFeature.isNull()) {
+        return;
+    }
+    
     const QList<SavedSearchQuery>& savedQueries = m_pCurrentFeature->getSavedQueries();
     
     QMenu menu;
