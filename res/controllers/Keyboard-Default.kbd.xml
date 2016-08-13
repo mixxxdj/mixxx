@@ -40,10 +40,10 @@
         <keyseq lang="en_US" scancode="33">f</keyseq>
       </control>
       <control action="cue_gotoandstop">
-        <keyseq lang="en_US" scancode="33">Shift+f</keyseq>
+        <keyseq lang="en_US" scancode="33">Shift+F</keyseq>
       </control>
       <control action="cue_set">
-        <keyseq lang="en_US" scancode="32">Shift+d</keyseq>
+        <keyseq lang="en_US" scancode="32">Shift+D</keyseq>
       </control>
       <control action="eject">
         <keyseq lang="en_US" scancode="universal_key">Alt+Shift+Left</keyseq>
@@ -55,40 +55,31 @@
         <keyseq lang="en_US" scancode="6">5</keyseq>
       </control>
       <control action="fwd">
-        <!-- TODO(XXX) The greek alphabet has three characters for the letter Sigma:
-                       upper-case, lower-case and lower-case at the end of a word. The
-                       'normal' lower- and upper-case characters are bound to the S
-                       key on a US layout, and the upper-case is bound to the W key.
-                       The problem with this us that both the key W and S are the same
-                       to Qt. So, if we map 'fwd' to S and 'loop_halve' to W, both
-                       keys will trigger both actions. Therefore, we can't use key S
-                       nor W. This issue will have to be looked on though when changing
-                       to Qt 5. -->
         <keyseq lang="en_US" scancode="31">s</keyseq>
       </control>
       <control action="hotcue_1_activate">
         <keyseq lang="en_US" scancode="12">z</keyseq>
       </control>
       <control action="hotcue_1_clear">
-        <keyseq lang="en_US" scancode="12">Shift+z</keyseq>
+        <keyseq lang="en_US" scancode="12">Shift+Z</keyseq>
       </control>
       <control action="hotcue_2_activate">
         <keyseq lang="en_US" scancode="45">x</keyseq>
       </control>
       <control action="hotcue_2_clear">
-        <keyseq lang="en_US" scancode="45">Shift+x</keyseq>
+        <keyseq lang="en_US" scancode="45">Shift+X</keyseq>
       </control>
       <control action="hotcue_3_activate">
         <keyseq lang="en_US" scancode="46">c</keyseq>
       </control>
       <control action="hotcue_3_clear">
-        <keyseq lang="en_US" scancode="46">Shift+c</keyseq>
+        <keyseq lang="en_US" scancode="46">Shift+C</keyseq>
       </control>
       <control action="hotcue_4_activate">
         <keyseq lang="en_US" scancode="47">v</keyseq>
       </control>
       <control action="hotcue_4_clear">
-        <keyseq lang="en_US" scancode="47">Shift+v</keyseq>
+        <keyseq lang="en_US" scancode="47">Shift+V</keyseq>
       </control>
       <control action="loop_double">
         <keyseq lang="en_US" scancode="18">e</keyseq>
@@ -141,7 +132,7 @@
         <keyseq lang="en_US" scancode="5">4</keyseq>
       </control>
       <control action="reverse">
-        <keyseq lang="en_US" scancode="30">Shift+a</keyseq>
+        <keyseq lang="en_US" scancode="30">Shift+A</keyseq>
       </control>
       <control action="vinylcontrol_cueing">
         <keyseq lang="en_US" scancode="21">Ctrl+Alt+Y</keyseq>
@@ -276,7 +267,7 @@
         <keyseq lang="en_US" scancode="10">9</keyseq>
       </control>
       <control action="reverse">
-        <keyseq lang="en_US" scancode="36">Shift+j</keyseq>
+        <keyseq lang="en_US" scancode="36">Shift+J</keyseq>
       </control>
       <control action="vinylcontrol_cueing">
         <keyseq lang="en_US" scancode="22">Ctrl+Alt+U</keyseq>
@@ -349,13 +340,13 @@
         <keyseq lang="en_US" scancode="34">g</keyseq>
       </control>
       <control action="crossfader_down_small">
-        <keyseq lang="en_US" scancode="34">Shift+g</keyseq>
+        <keyseq lang="en_US" scancode="34">Shift+G</keyseq>
       </control>
       <control action="crossfader_up">
         <keyseq lang="en_US" scancode="35">h</keyseq>
       </control>
       <control action="crossfader_up_small">
-        <keyseq lang="en_US" scancode="35">Shift+h</keyseq>
+        <keyseq lang="en_US" scancode="35">Shift+H</keyseq>
       </control>
     </group>
     <group name="[Microphone]">
