@@ -236,9 +236,26 @@ void WMiniViewScrollBar::computeLettersSize() {
         m_computedPosition[i].character = m_letters[i].character;
     }
     
+    QStyleOptionSlider opt;
+    opt.init(this);
+    opt.maximum = maximum();
+    opt.minimum = minimum();
+    opt.orientation = orientation();
+    opt.pageStep = pageStep();
+    opt.singleStep = singleStep();
+    opt.sliderPosition = sliderPosition();
+    opt.sliderValue = value();
+    
+    const int addLineSize = 
+            style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
+                                    QStyle::SC_ScrollBarAddLine, this).height();
+    const int subLineSize = 
+            style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
+                                    QStyle::SC_ScrollBarSubLine, this).height();
+            
     // Height of a letter
     const int letterSize = fontMetrics().height();
-    const int totalLinearSize = rect().height();
+    const int totalLinearSize = rect().height() - addLineSize - subLineSize;
     float nextAvailableScrollPosition = 0.0;
     float optimalScrollPosition = 0.0;
     

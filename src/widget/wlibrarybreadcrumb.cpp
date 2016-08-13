@@ -13,8 +13,10 @@ WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent)
     layout->addWidget(m_pIcon);
     layout->addWidget(m_pText);
     layout->addItem(new QSpacerItem(0,0, QSizePolicy::MinimumExpanding));
-    layout->setSpacing(0);
+    layout->setSpacing(2);
     layout->setContentsMargins(0,0,0,0);
+    layout->setAlignment(Qt::AlignVCenter);
+    
     setContentsMargins(0,0,0,0);
     setLayout(layout);
 }

@@ -1162,16 +1162,16 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
-    WSearchLineEdit* pSearchLineEdit = new WSearchLineEdit(m_pParent);
     
     int id = -1;
-    if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
-        //qDebug() << "SearchBox ID:" << id;
-        m_pLibrary->bindSearchBar(pSearchLineEdit, id);
-    }
-    else {
+    if (!m_pContext->hasNodeSelectInt(node, "Id", &id)) {
         SKIN_WARNING(node, *m_pContext) << "SearchBox Id not found";
+        return nullptr;
     }
+    //qDebug() << "SearchBox ID:" << id;
+
+    WSearchLineEdit* pSearchLineEdit = new WSearchLineEdit(m_pParent);
+    m_pLibrary->bindSearchBar(pSearchLineEdit, id);
     pSearchLineEdit->setup(node, *m_pContext);
     commonWidgetSetup(node, pSearchLineEdit, false);
 
@@ -1286,17 +1286,17 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 	QFrame* pContainer = new QFrame(m_pParent);
 	QVBoxLayout* pLayout = new QVBoxLayout(pContainer);
 	pContainer->setLayout(pLayout);    
+    
+    WLibraryBreadCrumb* pBreadCrumb = new WLibraryBreadCrumb(pContainer);
+    m_pLibrary->bindBreadCrumb(pBreadCrumb, m_paneId);
+    setupWidget(node, pBreadCrumb);
+    pLayout->addWidget(pBreadCrumb);
 	
 	WSearchLineEdit* pSearchBox = new WSearchLineEdit(pContainer);
 	pSearchBox->setup(node, *m_pContext);
 	m_pLibrary->bindSearchBar(pSearchBox, m_paneId);
 	commonWidgetSetup(node, pSearchBox);
 	pLayout->addWidget(pSearchBox);
-    
-    WLibraryBreadCrumb* pBreadCrumb = new WLibraryBreadCrumb(pContainer);
-    m_pLibrary->bindBreadCrumb(pBreadCrumb, m_paneId);
-    setupWidget(node, pBreadCrumb);
-    pLayout->addWidget(pBreadCrumb);
 	
 	WLibrary* pLibraryWidget = new WLibrary(pContainer);
 	pLibraryWidget->installEventFilter(m_pKeyboard);
