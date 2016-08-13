@@ -54,7 +54,6 @@ void KeyboardControllerPreset::translate(QString layoutName) {
     }
 
     // Reset mapping
-    // TODO(Tomasito) Does this work?
     m_mapping.clear();
 
     // Iterate through all KbdControllerPresetControl
@@ -130,6 +129,3 @@ void KeyboardControllerPreset::translate(QString layoutName) {
         qDebug() << "Keyseq: " << keyseq << ", ConfigKey: " << configKey;
     }
 }
-
-
-
