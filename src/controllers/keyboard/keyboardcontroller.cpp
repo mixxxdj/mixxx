@@ -19,6 +19,9 @@ KeyboardController::KeyboardController(KeyboardEventFilter* pKbdEventFilter) :
 
     connect(this, SIGNAL(keyboardControllerPresetLoaded(KeyboardControllerPresetPointer)),
             m_pKbdEventFilter, SLOT(slotSetKeyboardMapping(KeyboardControllerPresetPointer)));
+
+    connect(m_pKbdEventFilter, SIGNAL(keyboardLayoutChanged(QString)),
+            this, SLOT(reloadPreset(QString)));
 }
 
 KeyboardController::~KeyboardController() {
@@ -78,4 +81,8 @@ void KeyboardController::onKeySeqPressed(ConfigKey configKey) {
     // a route that would eventually clear the active
     // key list, do that last.
     control->setValueFromMidi(MIDI_NOTE_ON, 1);
+}
+
+void KeyboardController::reloadPreset(QString layout) {
+    // Reload preset
 }

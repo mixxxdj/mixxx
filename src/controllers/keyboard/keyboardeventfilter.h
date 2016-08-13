@@ -24,8 +24,9 @@ class KeyboardEventFilter : public QObject {
     };
 
   signals:
-    void keySeqPressed(QKeySequence keySeq);
+    void keyseqPressed(QKeySequence keyseq);
     void controlKeySeqPressed(ConfigKey configKey);
+    void keyboardLayoutChanged(QString layout);
 
   private:
     struct KeyDownInformation {

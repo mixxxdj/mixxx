@@ -42,6 +42,7 @@ class KeyboardController : public Controller {
   public slots:
     // Sets a control, only if the keyboard is enabled
     void onKeySeqPressed(ConfigKey configKey);
+    void reloadPreset(QString layout);
 
   signals:
     void keyboardControllerPresetLoaded(KeyboardControllerPresetPointer presetPointer);

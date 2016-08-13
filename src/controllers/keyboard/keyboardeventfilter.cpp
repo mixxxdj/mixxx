@@ -45,7 +45,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         }
 
         QString ks = getKeySeq(ke);
-        emit keySeqPressed(ks);
+        emit keyseqPressed(ks);
 
         // If no key-mapping info is known, there is nothing to check
         if (m_kbdPreset.isNull()) {
@@ -127,7 +127,15 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     } else if (e->type() == QEvent::KeyboardLayoutChange) {
         // This event is not fired on ubunty natty, why?
         // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
-        //qDebug() << "QEvent::KeyboardLayoutChange";
+
+        static QString prevLayout;
+        QString layout = inputLocale().name();
+
+        if (layout != prevLayout) {
+            qDebug() << "QEvent::KeyboardLayoutChange" << layout;
+            emit keyboardLayoutChanged(layout);
+            prevLayout = layout;
+        }
     }
     return false;
 }
