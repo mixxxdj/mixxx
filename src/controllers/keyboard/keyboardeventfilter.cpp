@@ -128,6 +128,10 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // This event is not fired on ubunty natty, why?
         // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
 
+        // TODO(Tomasito) Event is not fired when Mixxx has no focus. So, if a user loses focus on Mixxx,
+        // ...            changes the keyboard layout and gets back to Mixxx, the keyboard mapping will not
+        // ...            be translated to his current locale: Add a check on focusInEvent (on MixxxMainWindow)
+
         static QString prevLayout;
         QString layout = inputLocale().name();
 
