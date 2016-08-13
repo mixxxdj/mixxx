@@ -48,6 +48,7 @@ class WMiniViewScrollBar : public QScrollBar
     // paintEvent function which can block the GUI thread
     void computeLettersSize();
     void triggerUpdate();
+    QStyleOptionSlider getStyleOptions();
 
     int m_sortColumn;
     int m_dataRole;

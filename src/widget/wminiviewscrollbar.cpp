@@ -67,17 +67,7 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
     }
     
     QStylePainter painter(this);
-    QStyleOptionSlider opt;
-    opt.init(this);
-    opt.subControls = QStyle::SC_None;
-    opt.activeSubControls = QStyle::SC_None;
-    opt.orientation = orientation();
-    opt.minimum = minimum();
-    opt.maximum = maximum();
-    opt.sliderPosition = sliderPosition();
-    opt.sliderValue = value();
-    opt.singleStep = singleStep();
-    opt.pageStep = pageStep();
+    QStyleOptionSlider opt(getStyleOptions());
     painter.drawComplexControl(QStyle::CC_ScrollBar, opt);
     
     painter.setBrush(palette().color(QPalette::Text));
@@ -106,6 +96,8 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
     opt.subControls = QStyle::SC_ScrollBarSlider;
     opt.activeSubControls = QStyle::SC_ScrollBarSlider;
     painter.drawControl(QStyle::CE_ScrollBarSlider, opt);
+    painter.drawControl(QStyle::CE_ScrollBarAddLine, opt);
+    painter.drawControl(QStyle::CE_ScrollBarSubLine, opt);
 }
 
 void WMiniViewScrollBar::resizeEvent(QResizeEvent* pEvent) {
@@ -236,15 +228,7 @@ void WMiniViewScrollBar::computeLettersSize() {
         m_computedPosition[i].character = m_letters[i].character;
     }
     
-    QStyleOptionSlider opt;
-    opt.init(this);
-    opt.maximum = maximum();
-    opt.minimum = minimum();
-    opt.orientation = orientation();
-    opt.pageStep = pageStep();
-    opt.singleStep = singleStep();
-    opt.sliderPosition = sliderPosition();
-    opt.sliderValue = value();
+    QStyleOptionSlider opt(getStyleOptions());
     
     const int addLineSize = 
             style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
@@ -289,4 +273,20 @@ void WMiniViewScrollBar::triggerUpdate() {
     refreshCharMap();
     computeLettersSize();
     update();
+}
+
+QStyleOptionSlider WMiniViewScrollBar::getStyleOptions() {
+    QStyleOptionSlider opt;
+    opt.init(this);
+    opt.subControls = QStyle::SC_ScrollBarAddLine | QStyle::SC_ScrollBarSubLine;
+    opt.activeSubControls = QStyle::SC_ScrollBarAddLine | QStyle::SC_ScrollBarSubLine;
+    opt.orientation = orientation();
+    opt.minimum = minimum();
+    opt.maximum = maximum();
+    opt.sliderPosition = sliderPosition();
+    opt.sliderValue = value();
+    opt.singleStep = singleStep();
+    opt.pageStep = pageStep();
+    
+    return opt;
 }
