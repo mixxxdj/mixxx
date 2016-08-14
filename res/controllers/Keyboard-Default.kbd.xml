@@ -8,21 +8,21 @@
   <controller>
     <group name="[AutoDJ]">
       <control action="enabled">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F12</keyseq>
+        <keyseq final="1">Shift+F12</keyseq>
       </control>
       <control action="fade_now">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F11</keyseq>
+        <keyseq final="1">Shift+F11</keyseq>
       </control>
       <control action="shuffle_playlist">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F9</keyseq>
+        <keyseq final="1">Shift+F9</keyseq>
       </control>
       <control action="skip_next">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F10</keyseq>
+        <keyseq final="1">Shift+F10</keyseq>
       </control>
     </group>
     <group name="[Channel1]">
       <control action="LoadSelectedTrack">
-        <keyseq lang="en_US" scancode="universal_key">Shift+Left</keyseq>
+        <keyseq final="1">Shift+Left</keyseq>
       </control>
       <control action="back">
         <keyseq lang="en_US" scancode="30">a</keyseq>
@@ -46,7 +46,7 @@
         <keyseq lang="en_US" scancode="32">Shift+D</keyseq>
       </control>
       <control action="eject">
-        <keyseq lang="en_US" scancode="universal_key">Alt+Shift+Left</keyseq>
+        <keyseq final="1">Alt+Shift+Left</keyseq>
       </control>
       <control action="filterLowKill">
         <keyseq lang="en_US" scancode="48">b</keyseq>
@@ -105,28 +105,28 @@
         <keyseq lang="en_US" scancode="32">d</keyseq>
       </control>
       <control action="rate_perm_down">
-        <keyseq lang="en_US" scancode="universal_key">F1</keyseq>
+        <keyseq final="1">F1</keyseq>
       </control>
       <control action="rate_perm_down_small">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F1</keyseq>
+        <keyseq final="1">Shift+F1</keyseq>
       </control>
       <control action="rate_perm_up">
-        <keyseq lang="en_US" scancode="universal_key">F2</keyseq>
+        <keyseq final="1">F2</keyseq>
       </control>
       <control action="rate_perm_up_small">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F2</keyseq>
+        <keyseq final="1">Shift+F2</keyseq>
       </control>
       <control action="rate_temp_down">
-        <keyseq lang="en_US" scancode="universal_key">F3</keyseq>
+        <keyseq final="1">F3</keyseq>
       </control>
       <control action="rate_temp_down_small">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F3</keyseq>
+        <keyseq final="1">Shift+F3</keyseq>
       </control>
       <control action="rate_temp_up">
-        <keyseq lang="en_US" scancode="universal_key">F4</keyseq>
+        <keyseq final="1">F4</keyseq>
       </control>
       <control action="rate_temp_up_small">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F4</keyseq>
+        <keyseq final="1">Shift+F4</keyseq>
       </control>
       <control action="reloop_exit">
         <keyseq lang="en_US" scancode="5">4</keyseq>
@@ -143,7 +143,7 @@
     </group>
     <group name="[Channel2]">
       <control action="LoadSelectedTrack">
-        <keyseq lang="en_US" scancode="universal_key">Shift+Right</keyseq>
+        <keyseq final="1">Shift+Right</keyseq>
       </control>
       <control action="back">
         <keyseq lang="en_US" scancode="36">j</keyseq>
@@ -173,7 +173,7 @@
         <keyseq lang="da_DK" scancode="2">Shift+!</keyseq>
       </control>
       <control action="eject">
-        <keyseq lang="en_US" scancode="universal_key">Alt+Shift+Right</keyseq>
+        <keyseq final="1">Alt+Shift+Right</keyseq>
       </control>
       <control action="filterLowKill">
         <keyseq lang="en_US" scancode="49">n</keyseq>
@@ -240,28 +240,28 @@
         <keyseq lang="en_US" scancode="38">l</keyseq>
       </control>
       <control action="rate_perm_down">
-        <keyseq lang="en_US" scancode="universal_key">F5</keyseq>
+        <keyseq final="1">F5</keyseq>
       </control>
       <control action="rate_perm_down_small">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F5</keyseq>
+        <keyseq final="1">Shift+F5</keyseq>
       </control>
       <control action="rate_perm_up">
-        <keyseq lang="en_US" scancode="universal_key">F6</keyseq>
+        <keyseq final="1">F6</keyseq>
       </control>
       <control action="rate_perm_up_small">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F6</keyseq>
+        <keyseq final="1">Shift+F6</keyseq>
       </control>
       <control action="rate_temp_down">
-        <keyseq lang="en_US" scancode="universal_key">F7</keyseq>
+        <keyseq final="1">F7</keyseq>
       </control>
       <control action="rate_temp_down_small">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F7</keyseq>
+        <keyseq final="1">Shift+F7</keyseq>
       </control>
       <control action="rate_temp_up">
-        <keyseq lang="en_US" scancode="universal_key">F8</keyseq>
+        <keyseq final="1">F8</keyseq>
       </control>
       <control action="rate_temp_up_small">
-        <keyseq lang="en_US" scancode="universal_key">Shift+F8</keyseq>
+        <keyseq final="1">Shift+F8</keyseq>
       </control>
       <control action="reloop_exit">
         <keyseq lang="en_US" scancode="10">9</keyseq>
@@ -278,61 +278,61 @@
     </group>
     <group name="[KeyboardShortcuts]">
       <control action="FileMenu_LoadDeck1">
-        <keyseq>Ctrl+o</keyseq>
+        <keyseq final="1">Ctrl+o</keyseq>
       </control>
       <control action="FileMenu_LoadDeck2">
-        <keyseq>Ctrl+Shift+O</keyseq>
+        <keyseq final="1">Ctrl+Shift+O</keyseq>
       </control>
       <control action="FileMenu_Quit">
-        <keyseq>Ctrl+q</keyseq>
+        <keyseq final="1">Ctrl+q</keyseq>
       </control>
       <control action="LibraryMenu_NewCrate">
-        <keyseq>Ctrl+Shift+N</keyseq>
+        <keyseq final="1">Ctrl+Shift+N</keyseq>
       </control>
       <control action="LibraryMenu_NewPlaylist">
-        <keyseq>Ctrl+n</keyseq>
+        <keyseq final="1">Ctrl+n</keyseq>
       </control>
       <control action="OptionsMenu_EnableLiveBroadcasting">
-        <keyseq>Ctrl+l</keyseq>
+        <keyseq final="1">Ctrl+l</keyseq>
       </control>
       <control action="OptionsMenu_EnableVinyl1">
-        <keyseq>Ctrl+t</keyseq>
+        <keyseq final="1">Ctrl+t</keyseq>
       </control>
       <control action="OptionsMenu_EnableVinyl2">
-        <keyseq>Ctrl+y</keyseq>
+        <keyseq final="1">Ctrl+y</keyseq>
       </control>
       <control action="OptionsMenu_EnableVinyl3">
-        <keyseq>Ctrl+u</keyseq>
+        <keyseq final="1">Ctrl+u</keyseq>
       </control>
       <control action="OptionsMenu_EnableVinyl4">
-        <keyseq>Ctrl+i</keyseq>
+        <keyseq final="1">Ctrl+i</keyseq>
       </control>
       <control action="OptionsMenu_RecordMix">
-        <keyseq>Ctrl+r</keyseq>
+        <keyseq final="1">Ctrl+r</keyseq>
       </control>
       <control action="OptionsMenu_ReloadSkin">
-        <keyseq>Ctrl+Shift+R</keyseq>
+        <keyseq final="1">Ctrl+Shift+R</keyseq>
       </control>
       <control action="ViewMenu_MaximizeLibrary">
-        <keyseq>Space</keyseq>
+        <keyseq final="1">Space</keyseq>
       </control>
       <control action="ViewMenu_ShowCoverArt">
-        <keyseq>Ctrl+6</keyseq>
+        <keyseq final="1">Ctrl+6</keyseq>
       </control>
       <control action="ViewMenu_ShowEffects">
-        <keyseq>Ctrl+5</keyseq>
+        <keyseq final="1">Ctrl+5</keyseq>
       </control>
       <control action="ViewMenu_ShowMicrophone">
-        <keyseq>Ctrl+2</keyseq>
+        <keyseq final="1">Ctrl+2</keyseq>
       </control>
       <control action="ViewMenu_ShowPreviewDeck">
-        <keyseq>Ctrl+4</keyseq>
+        <keyseq final="1">Ctrl+4</keyseq>
       </control>
       <control action="ViewMenu_ShowSamplers">
-        <keyseq>Ctrl+1</keyseq>
+        <keyseq final="1">Ctrl+1</keyseq>
       </control>
       <control action="ViewMenu_ShowVinylControl">
-        <keyseq>Ctrl+3</keyseq>
+        <keyseq final="1">Ctrl+3</keyseq>
       </control>
     </group>
     <group name="[Master]">
@@ -366,16 +366,16 @@
     </group>
     <group name="[PreviewDeck1]">
       <control action="LoadSelectedTrackAndPlay">
-        <keyseq lang="en_US" scancode="universal_key">Alt+Return</keyseq>
+        <keyseq final="1">Alt+Return</keyseq>
       </control>
       <control action="back">
-        <keyseq lang="en_US" scancode="universal_key">Alt+Left</keyseq>
+        <keyseq final="1">Alt+Left</keyseq>
       </control>
       <control action="fwd">
-        <keyseq lang="en_US" scancode="universal_key">Alt+Right</keyseq>
+        <keyseq final="1">Alt+Right</keyseq>
       </control>
       <control action="start_stop">
-        <keyseq lang="en_US" scancode="universal_key">Return</keyseq>
+        <keyseq final="1">Return</keyseq>
       </control>
     </group>
   </controller>

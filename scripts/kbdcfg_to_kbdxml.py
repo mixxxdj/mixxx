@@ -378,6 +378,7 @@ class App(Tk):
                 # Retrieve master control key info
                 master_control_keyseq = master_control.keysequence
                 master_control_split_keyseq = KeyboardKey.split_keysequence(master_control_keyseq)
+                master_control_key = master_control_split_keyseq[-1] if master_control_split_keyseq else ""
                 master_control_mods = list(master_control_split_keyseq)
                 master_control_mods.pop()
                 if string_in_array_case_insensitive("Shift", master_control_mods):
@@ -388,18 +389,22 @@ class App(Tk):
                     master_control_keyseq,
                     master_control_mod_int
                 )[0]
+                master_control_key_is_universal = KeyboardLayout.is_universal_key(master_control_key)
 
                 # Create <keyseq> element for master control key
                 master_keyseq_element = SubElement(control_element, 'keyseq')
                 master_keyseq_element.text = master_control_keyseq
 
                 # We don't need to add lang or scancode information, nor check for other mappings when the
-                # group is [KeyboardShortcuts]. This key sequences are translated in Mixxx using Qt::tr()
-                if group_name == "[KeyboardShortcuts]":
+                # group is [KeyboardShortcuts]. This key sequences are translated in Mixxx using Qt::tr().
+                # Key sequences whose key is a universal key, like function- or arrow keys also also do not
+                # need any language or scancode information, because the keys are the same for each layout.
+                if group_name == "[KeyboardShortcuts]" or master_control_key_is_universal:
+                    master_keyseq_element.set('final', '1')
                     continue
-
-                master_keyseq_element.set('lang', master_mapping.get_locale_name())
-                master_keyseq_element.set('scancode', str(master_control_scancode))
+                else:
+                    master_keyseq_element.set('lang', master_mapping.get_locale_name())
+                    master_keyseq_element.set('scancode', str(master_control_scancode))
 
                 # Check if there is a control with the same group and action
                 # in other mappings. If one is found, iterate over given layouts
@@ -457,6 +462,8 @@ class App(Tk):
 
                     reference_control_keyseq = reference_control.keysequence
                     reference_control_split_keyseq = KeyboardKey.split_keysequence(reference_control_keyseq)
+                    reference_control_key = reference_control_split_keyseq[-1]\
+                        if reference_control_split_keyseq else ""
                     reference_control_mods = list(reference_control_split_keyseq)
                     reference_control_mods.pop()
                     if string_in_array_case_insensitive("SHIFT", reference_control_mods):
@@ -467,6 +474,7 @@ class App(Tk):
                         reference_control_keyseq,
                         reference_control_mod_int
                     )[0]
+                    master_control_key_is_universal = KeyboardLayout.is_universal_key(master_control_key)
 
                     # Check if reference modifiers are the same as master's.
                     # We check with a set() so that it's unordered.
@@ -1163,7 +1171,7 @@ class KeyboardLayout:
 
         # Check if this key is universal (for example: F-keys or Space)
         if KeyboardLayout.is_universal_key(char):
-            scancode = "universal_key"
+            scancode = ""
 
         if scancodes_found != 1 and scancode != "universal_key" and not auto_case:
             print("No scancode found in " + self.name + " for character: '" +
