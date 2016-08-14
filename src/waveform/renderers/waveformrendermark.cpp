@@ -94,9 +94,11 @@ void WaveformRenderMark::slotCuesUpdated() {
         }
 
         QString newLabel = (*it)->getLabel();
+        QColor newColor = (*it)->getColor();
         WaveformMark& mark = m_marks.getHotCueMark(hotCue);
-        if (newLabel != mark.m_text) {
+        if (newLabel != mark.m_text || newColor != mark.m_color) {
             mark.m_text = newLabel;
+            mark.m_color = newColor;
             generateMarkImage(mark);
         }
         ++it;
