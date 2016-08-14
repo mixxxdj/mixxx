@@ -119,6 +119,9 @@ class LibraryFeature : public QObject {
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer);
     
+  protected slots:
+    void restoreSaveButton();
+    
   protected:
     inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
     inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }

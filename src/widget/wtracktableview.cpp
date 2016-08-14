@@ -78,7 +78,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 
-
     // Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -105,6 +104,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
         QKeySequence(tr("ESC", "Focus")), this);
     connect(setFocusShortcut, SIGNAL(activated()),
             this, SLOT(setFocus()));
+    
+    QScrollBar* pScroll = verticalScrollBar();
+    connect(pScroll, SIGNAL(valueChanged(int)), this, SIGNAL(tableChanged()));
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -1302,6 +1304,7 @@ void WTrackTableView::setSorting(bool sorting) {
 
 void WTrackTableView::setScrollBar(WMiniViewScrollBar *pScrollbar) {
     m_pScrollBar = pScrollbar;
+    connect(pScrollbar, SIGNAL(valueChanged(int)), this, SIGNAL(tableChanged()));
     setVerticalScrollBar(pScrollbar);
 }
 
@@ -1577,6 +1580,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     if (!m_pScrollBar.isNull()) {
         m_pScrollBar->setSortColumn(headerSection);
     }
+    
+    emit(tableChanged());
 }
 
 void WTrackTableView::slotLockBpm() {

@@ -95,6 +95,7 @@ public:
     void showBreadCrumb(TreeItem* pTree);
     void showBreadCrumb(const QString& text, const QIcon& icon);
     void restoreSearch(const QString& text);
+    void restoreSaveButton();
 
   public slots:
     
@@ -141,7 +142,7 @@ public:
   private:
     
     // If the pane exists returns it, otherwise it creates the pane
-    LibraryPaneManager *getPane(int paneId);
+    LibraryPaneManager* getPane(int paneId);
     LibraryPaneManager* getFocusedPane();
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);

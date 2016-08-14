@@ -43,13 +43,12 @@ class LibraryPaneManager : public QObject {
     void clearFocus();
     
     void restoreSearch(const QString& text);
+    void restoreSaveButton();
     void switchToFeature(LibraryFeature* pFeature);
     void showBreadCrumb(TreeItem* pTree);
     void showBreadCrumb(const QString& text, const QIcon &icon);
     
-    inline int getPaneId() { 
-        return m_paneId;
-    }
+    int getPaneId();
 
   signals:
     

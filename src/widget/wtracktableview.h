@@ -50,6 +50,9 @@ class WTrackTableView : public WLibraryTableView {
     void onSearchCleared() override;
     void slotSendToAutoDJ() override;
     void slotSendToAutoDJTop() override;
+    
+  signals:
+    void tableChanged();
 
   private slots:
     void slotRemove();

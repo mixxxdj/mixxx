@@ -117,12 +117,20 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     setPalette(pal);
 }
 
+void WSearchLineEdit::slotRestoreSaveButton() {
+    m_pSaveButton->setEnabled(true);
+}
+
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QLineEdit::resizeEvent(e);
     
+    int left, top, right, bottom;
+    getContentsMargins(&left, &top, &right, &bottom);
+    
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     
-    QSize iconSize(height()/2, height()/2);
+    const int size = fontMetrics().height();
+    QSize iconSize(size, size);
     m_pDropButton->setIconSize(iconSize);
     m_pSaveButton->setIconSize(iconSize);
     m_pClearButton->setIconSize(iconSize);
@@ -249,9 +257,9 @@ void WSearchLineEdit::showPlaceholder() {
 void WSearchLineEdit::updateButtons(const QString& text)
 {
     bool visible = !text.isEmpty() && !m_place;
-    m_pDropButton->show();
-    m_pSaveButton->setVisible(visible);
-    m_pSaveButton->setEnabled(visible);
+    m_pDropButton->setVisible(true);
+    m_pSaveButton->setVisible(true);
+    m_pSaveButton->setEnabled(true);
     m_pClearButton->setVisible(visible);
 }
 
