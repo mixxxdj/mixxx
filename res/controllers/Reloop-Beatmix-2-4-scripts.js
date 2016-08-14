@@ -77,13 +77,13 @@ var FxMode = 1; // Single effect mode by default
 
 // Jog Led variables
 var JogRPM = 33.0 + 1/3, // Jog Wheel simulate a 33.3RPM turntable
-    RoundTripTime = 60.0 / JogRPM, // Time for a complete turn
+    RoundTripTime = 60.0 / JogRPM, // Time in seconds for a complete turn
     JogLedNumber = 16, // number of leds (sections) on the jog wheel
-    JogBaseLed = 0x3f, // Midino of last led (we count backward to turn in the right orientation)
+    JogBaseLed = 0x3f, // Midino of last led (we count backward to turn in the right side)
     JogFlashWarningTime = 30, // number of seconds to slowly blink at the end of track
-    JogFlashWarningDelay = 400, // number of ms to wait when flashing slowly
+    JogFlashWarningInterval = 400, // number of ms to wait when flashing slowly
     JogFlashCriticalTime = 15, // number of seconds to quickly blink at the end of track
-    JogFlashCriticalDelay = 200; // number of ms to wait when flashing slowly
+    JogFlashCriticalInterval = 200; // number of ms to wait when flashing quickly
 
 var JogLedLit = [];
 var channelPlaying = []; // Keeping track of channel playing
@@ -483,6 +483,7 @@ ReloopBeatmix24.ChannelPlay = function(value, group, control) {
     if (value) {
         channelPlaying[group] = true;
     } else {
+        // Stop JogWheel blinking when we stop playing and resume virtual needle
         if (JogBlinking[group]) {
             engine.stopTimer(jogWheelTimers[group]);
             delete jogWheelTimers[group];
@@ -500,13 +501,14 @@ ReloopBeatmix24.JogLed = function(value, group, control) {
 
     // time computation
     var trackDuration = engine.getValue(group, "duration");
-    var timePosition = trackDuration * value;
     var timeLeft = trackDuration * (1.0 - value);
 
     var channelRegEx = /\[Channel(\d+)\]/;
     var channelChan = parseInt(channelRegEx.exec(group)[1]);
+
+    // Start JogWheel blinking if playing and time left < warning time
     if (channelPlaying[group] && timeLeft <= JogFlashWarningTime) {
-        if (!JogBlinking[group]) {
+        if (!JogBlinking[group]) { // only if not already blinking
             // turn jog single led off
             if (JogLedLit[group] !== undefined) { // if some led on, shut it down
                 midi.sendShortMsg(0x90 + channelChan,
@@ -519,7 +521,7 @@ ReloopBeatmix24.JogLed = function(value, group, control) {
             // Set timer for shut off leds
             jogWheelTimers[group] = engine.beginTimer(
                 timeLeft <= JogFlashCriticalTime ?
-                    JogFlashCriticalDelay : JogFlashWarningDelay,
+                    JogFlashCriticalInterval : JogFlashWarningInterval,
                 "ReloopBeatmix24.jogLedFlash(\"" + group + "\", " + ON + ")",
                 true);
             JogBlinking[group] = true;
@@ -527,8 +529,9 @@ ReloopBeatmix24.JogLed = function(value, group, control) {
         return;
     }
 
-    var rotationNumber = timePosition / RoundTripTime;
-    var positionInCircle = rotationNumber - Math.floor(rotationNumber);
+    var timePosition = trackDuration * value;
+    var rotationNumber = timePosition / RoundTripTime; // number of turn since beginning
+    var positionInCircle = rotationNumber - Math.floor(rotationNumber); // decimal part
     var ledToLit = Math.round(positionInCircle * JogLedNumber);
     if (JogLedLit[group] === ledToLit) { // exit if there is no change
         return;
@@ -555,7 +558,7 @@ ReloopBeatmix24.jogLedFlash = function(group, state) {
     if (timeleft < JogFlashWarningTime) {
         // Set timer for leds shut off
         var nextTime = (timeleft < JogFlashCriticalTime ?
-            JogFlashCriticalDelay : JogFlashWarningDelay);
+            JogFlashCriticalInterval : JogFlashWarningInterval);
         jogWheelTimers[group] = engine.beginTimer(nextTime,
             "ReloopBeatmix24.jogLedFlash(\"" + group + "\", " +
             (state ? OFF : ON) + ")", true);
@@ -707,7 +710,7 @@ ReloopBeatmix24.FxEncoderTurn = function(channel, control, value, status, group)
     if (FxMode == 1) {
         engine.setValue(group, newValue > 0 ? "mix_up" : "mix_down", 1);
     } else {
-        engine.setValue(group, newValue > 0 ? "super1_up" : "super1_down", 1);
+        engine.setValue(group, newValue > 0 ? "super1_up_small" : "super1_down_small", 1);
     }
 };
 
