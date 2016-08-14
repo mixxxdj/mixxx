@@ -20,21 +20,27 @@ TEST(StringHelperTest, Null) {
 }
 
 TEST(StringHelperTest, Change) {
+    QLocale prev;
+    QLocale::setDefault(QLocale::Catalan);
     QString s1 = QString::fromUtf8("ç");
     QString s2 = QString::fromUtf8("C");
     QChar c1 = StringHelper::getFirstCharForGrouping(s1);
     QChar c2 = s2.at(0);
     ASSERT_EQ(QString::localeAwareCompare(c1, c2), 0) 
             << qPrintable(c1) << " " << qPrintable(c2);
+    QLocale::setDefault(prev);
 }
 
 TEST(StringHelperTest, RemoveAccent) {
+    QLocale prev;
+    QLocale::setDefault(QLocale::Catalan);
     QString s1 = QString::fromUtf8("à");
     QString s2 = QString::fromUtf8("A");
     QChar c1 = StringHelper::getFirstCharForGrouping(s1);
     QChar c2 = s2.at(0);
     ASSERT_EQ(QString::localeAwareCompare(c1, c2), 0) 
             << qPrintable(c1) << " " << qPrintable(c2);
+    QLocale::setDefault(prev);
 }
 
 TEST(StringHelperTest, Finnish) {

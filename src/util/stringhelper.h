@@ -1,6 +1,8 @@
 #ifndef STRINGHELPER_H
 #define STRINGHELPER_H
 
+#include <QChar>
+
 class StringHelper
 {
   public:
