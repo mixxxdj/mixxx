@@ -60,6 +60,10 @@ QString AnalysisFeature::getIconPath() {
     return ":/images/library/ic_library_prepare.png";
 }
 
+QString AnalysisFeature::getSettingsName() const {
+    return "AnalysisFeature";
+}
+
 QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
                                            int paneId) {        
     WTrackTableView* pTable = LibraryFeature::createTableWidget(pKeyboard, paneId);

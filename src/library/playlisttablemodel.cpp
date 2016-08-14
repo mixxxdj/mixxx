@@ -279,7 +279,7 @@ void PlaylistTableModel::saveSelection(const QModelIndexList& selection) {
     }
 }
 
-QModelIndexList PlaylistTableModel::getSavedSelection() {
+QModelIndexList PlaylistTableModel::getSavedSelectionIndices() {
     QModelIndexList ret;
     for (const int& pos : m_savedSelectionIndices) {
         auto it = m_positionToRow.find(pos);

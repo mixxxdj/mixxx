@@ -99,6 +99,10 @@ QString AutoDJFeature::getIconPath() {
     return ":/images/library/ic_library_autodj.png";
 }
 
+QString AutoDJFeature::getSettingsName() const {
+    return "AutoDJFeature";
+}
+
 QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
     WTrackTableView* pTrackTableView = LibraryFeature::createTableWidget(pKeyboard, paneId);        
     connect(pTrackTableView->selectionModel(),

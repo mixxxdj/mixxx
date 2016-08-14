@@ -76,7 +76,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
     
     void saveSelection(const QModelIndexList& selection) override;
-    QModelIndexList getSavedSelection() override;
+    QModelIndexList getSavedSelectionIndices() override;
+    
+    void restoreQuery(const SavedSearchQuery& query) override;
+    SavedSearchQuery saveQuery(const QModelIndexList &indices, SavedSearchQuery query) const override;
 
   public slots:
     void select();
@@ -89,6 +92,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
                   const QStringList& tableColumns,
                   QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderData();
+    
+    QSet<TrackId> getTrackIdsFromIndices(const QModelIndexList& list) const;
 
     // Use this if you want a model that is read-only.
     Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
@@ -120,6 +125,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // called.
     QString orderByClause() const;
     QSqlDatabase database() const;
+    QString serializedSortColumns() const;
+    void deserialzeSortColumns(QString serialized);
 
     struct RowInfo {
         TrackId trackId;

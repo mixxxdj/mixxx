@@ -46,6 +46,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
 
     QVariant title() override;
     QString getIconPath() override;
+    QString getSettingsName() const override;
     static bool isSupported();
 
     TreeItemModel* getChildModel();

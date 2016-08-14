@@ -57,6 +57,10 @@ QString HistoryFeature::getIconPath() {
     return ":/images/library/ic_library_history.png";
 }
 
+QString HistoryFeature::getSettingsName() const {
+    return "HistoryFeature";
+}
+
 void HistoryFeature::onRightClick(const QPoint&) {
     m_lastRightClickedIndex = QModelIndex();
 

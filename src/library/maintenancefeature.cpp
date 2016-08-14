@@ -31,6 +31,10 @@ QString MaintenanceFeature::getIconPath() {
     return ":/images/library/ic_library_maintenance.png";
 }
 
+QString MaintenanceFeature::getSettingsName() const {
+    return "MaintenanceFeature";
+}
+
 TreeItemModel* MaintenanceFeature::getChildModel() {
     return nullptr;
 }
@@ -64,6 +68,7 @@ void MaintenanceFeature::selectionChanged(const QItemSelection&,
     } else if (*it == Pane::Missing) {
         m_pMissingView->setSelectedIndexes(selection);
     }
+    const QModelIndexList& selection2 = pTable->selectionModel()->selectedRows();
 }
 
 void MaintenanceFeature::selectAll() {
@@ -167,6 +172,9 @@ void MaintenanceFeature::slotPurge() {
         return;
     }
     pTable->slotPurge();
+    
+    m_pMissingView->onShow();
+    m_pHiddenView->onShow();
 }
 
 HiddenTableModel* MaintenanceFeature::getHiddenTableModel() {

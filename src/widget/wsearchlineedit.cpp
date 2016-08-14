@@ -293,15 +293,18 @@ void WSearchLineEdit::restoreQuery() {
     if (selected == nullptr) {
         return;
     }
-    int index = selected->data().toInt();
     
+    int index = selected->data().toInt();
     if (index < 0) {
         return;
     }
-    QString text = savedQueries.at(index).query;
+    QString text = savedQueries[index].query;
+    blockSignals(true);
+    setText(text);
+    updateButtons(text);
+    blockSignals(false);    
     
     m_pCurrentFeature->restoreQuery(index);
-    setText(text);
 }
 
 void WSearchLineEdit::slotTextChanged(const QString& text) {

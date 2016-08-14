@@ -34,7 +34,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     TrackModel::CapabilitiesFlags getCapabilities() const;
     
     void saveSelection(const QModelIndexList& selection);
-    QModelIndexList getSavedSelection();
+    QModelIndexList getSavedSelectionIndices();
     
     void select() override;
 

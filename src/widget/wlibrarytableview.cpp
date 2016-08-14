@@ -117,6 +117,27 @@ void WLibraryTableView::moveSelection(int delta) {
     }
 }
 
+void WLibraryTableView::restoreQuery(const SavedSearchQuery& query) {
+    verticalScrollBar()->setValue(query.vScrollBarPos);
+    
+    Qt::SortOrder order;
+    if (query.sortAscendingOrder) {
+        order = Qt::AscendingOrder;
+    } else {
+        order = Qt::DescendingOrder;
+    }
+    
+    horizontalHeader()->setSortIndicator(query.sortColumn, order);
+}
+
+SavedSearchQuery WLibraryTableView::saveQuery(SavedSearchQuery query) const {
+    query.vScrollBarPos = verticalScrollBar()->value();
+    query.sortColumn = horizontalHeader()->sortIndicatorSection();
+    query.sortAscendingOrder = 
+            horizontalHeader()->sortIndicatorOrder() == Qt::AscendingOrder;
+    return query;
+}
+
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
     setFont(font);
     setTrackTableRowHeight(verticalHeader()->defaultSectionSize());

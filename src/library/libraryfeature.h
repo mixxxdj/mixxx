@@ -12,6 +12,7 @@
 #include <QUrl>
 
 #include "preferences/usersettings.h"
+#include "library/dao/savedqueriesdao.h"
 #include "track/track.h"
 
 class Library;
@@ -25,15 +26,6 @@ class WLibrary;
 class WLibrarySidebar;
 class WTrackTableView;
 
-// This struct allows to save some data to allow interaction between
-// the search bar and the library features
-struct SavedSearchQuery {
-    QString query;
-    QString title;
-    QModelIndex selectedItem;
-    QString sortOrder;
-};
-
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {
     Q_OBJECT
@@ -41,13 +33,17 @@ class LibraryFeature : public QObject {
 
     // The parent does not necessary be the Library
     LibraryFeature(UserSettingsPointer pConfig,
-                   Library* pLibrary, TrackCollection *pTrackCollection, 
+                   Library* pLibrary, TrackCollection* pTrackCollection, 
                    QObject* parent = nullptr);
     
     virtual ~LibraryFeature();
 
     virtual QVariant title() = 0;
     virtual QString getIconPath() = 0;
+    
+    // This name must be unique for each feature
+    virtual QString getSettingsName() const; 
+
     QIcon getIcon();
 
     virtual bool dropAccept(QList<QUrl> /* urls */, 
@@ -83,9 +79,9 @@ class LibraryFeature : public QObject {
     
     virtual void setFocusedPane(int paneId);
     
-    virtual void saveQuery(SavedSearchQuery& query);
-    virtual void restoreQuery(int index);
-    virtual const QList<SavedSearchQuery> &getSavedQueries() const;
+    virtual SavedSearchQuery saveQuery(SavedSearchQuery query);
+    virtual void restoreQuery(int id);
+    virtual QList<SavedSearchQuery> getSavedQueries() const;
 
   public slots:
     // called when you single click on the root item
@@ -151,11 +147,10 @@ class LibraryFeature : public QObject {
     UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
     TrackCollection* m_pTrackCollection;
+    SavedQueriesDAO& m_savedDAO;
     
     int m_featureFocus;
     int m_focusedPane;
-    
-    QList<SavedSearchQuery> m_savedQueries;
     
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);

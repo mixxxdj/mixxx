@@ -8,6 +8,7 @@
 #include <QtSql>
 
 #include "track/track.h"
+#include "library/dao/savedqueriesdao.h"
 #include "library/dao/settingsdao.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
@@ -150,10 +151,22 @@ class TrackModel {
     virtual void saveSelection(const QModelIndexList&) {
     }
     
-    virtual QModelIndexList getSavedSelection() {
+    virtual QModelIndexList getSavedSelectionIndices() {
         return QModelIndexList();
     }
 
+    virtual void restoreQuery(const SavedSearchQuery&) {
+    }
+    
+    virtual SavedSearchQuery saveQuery(const QModelIndexList& /* selected */, 
+                                       SavedSearchQuery query = SavedSearchQuery()) const {
+        return query;
+    }
+    
+    virtual SavedSearchQuery saveQuery(SavedSearchQuery = SavedSearchQuery()) {
+        return SavedSearchQuery();
+    }
+    
   private:
     QSqlDatabase m_db;
     QString m_settingsNamespace;

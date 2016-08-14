@@ -126,6 +126,10 @@ QString TraktorFeature::getIconPath() {
     return ":/images/library/ic_library_traktor.png";
 }
 
+QString TraktorFeature::getSettingsName() const {
+    return "TraktorFeature";
+}
+
 bool TraktorFeature::isSupported() {
     return (QFile::exists(getTraktorMusicDatabase()));
 }

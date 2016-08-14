@@ -510,6 +510,7 @@ void WTrackTableView::slotRemove() {
 
 void WTrackTableView::slotPurge() {
     QModelIndexList indices = selectionModel()->selectedRows();
+    indices = selectionModel()->selectedIndexes();
     if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
@@ -1262,7 +1263,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     restoreView();
 }
 
-TrackModel* WTrackTableView::getTrackModel() {
+TrackModel* WTrackTableView::getTrackModel() const {
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
     return trackModel;
 }
@@ -1302,6 +1303,41 @@ void WTrackTableView::setSorting(bool sorting) {
 void WTrackTableView::setScrollBar(WMiniViewScrollBar *pScrollbar) {
     m_pScrollBar = pScrollbar;
     setVerticalScrollBar(pScrollbar);
+}
+
+void WTrackTableView::restoreQuery(const SavedSearchQuery& query) {
+    
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == nullptr) {
+        return;
+    }
+    
+    trackModel->restoreQuery(query);
+    QModelIndexList selectedIndeces = trackModel->getSavedSelectionIndices();
+    QItemSelectionModel* selectionM = selectionModel();
+    selectionM->clearSelection();
+    for (const QModelIndex& index : selectedIndeces) {
+        selectionM->select(index, QItemSelectionModel::Rows |
+                                  QItemSelectionModel::Select);
+    }
+    
+    // First of all the track model must be set in order to get the correct
+    // table size for the WLibraryTableView parameters that are going to be
+    // restored
+    WLibraryTableView::restoreQuery(query);
+}
+
+SavedSearchQuery WTrackTableView::saveQuery(SavedSearchQuery query) const {
+    query = WLibraryTableView::saveQuery(query);
+    
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == nullptr) {
+        return query;
+    }
+    
+    QModelIndexList rowsSelected = selectionModel()->selectedRows();
+    query = trackModel->saveQuery(rowsSelected, query);
+    return query;
 }
 
 void WTrackTableView::slotSendToAutoDJ() {
@@ -1523,7 +1559,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     QItemSelectionModel* currentSelection = selectionModel();
     currentSelection->reset(); // remove current selection
     
-    QModelIndexList savedSelection = trackModel->getSavedSelection();
+    QModelIndexList savedSelection = trackModel->getSavedSelectionIndices();
     QModelIndex first;
     for (const QModelIndex& index : savedSelection) {
         currentSelection->select(index, 

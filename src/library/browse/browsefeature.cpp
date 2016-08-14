@@ -145,6 +145,10 @@ QString BrowseFeature::getIconPath() {
     return ":/images/library/ic_library_browse.png";
 }
 
+QString BrowseFeature::getSettingsName() const {
+    return "BrowseFeature";
+}
+
 void BrowseFeature::slotAddQuickLink() {
     if (!m_pLastRightClickedItem) {
         return;

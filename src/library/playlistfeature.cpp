@@ -41,6 +41,10 @@ QString PlaylistFeature::getIconPath() {
     return ":/images/library/ic_library_playlist.png";
 }
 
+QString PlaylistFeature::getSettingsName() const {
+    return "PlaylistFeature";
+}
+
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 

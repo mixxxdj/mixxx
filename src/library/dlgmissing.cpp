@@ -9,7 +9,6 @@ DlgMissing::DlgMissing(QWidget* parent)
            Ui::DlgMissing() {
     setupUi(this);    
  
-    connect(btnPurge, SIGNAL(clicked()), this, SLOT(onShow()));
     connect(btnPurge, SIGNAL(clicked()), this, SIGNAL(purge()));
     connect(btnSelect, SIGNAL(clicked()), this, SIGNAL(selectAll()));
 }

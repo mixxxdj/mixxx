@@ -19,7 +19,11 @@ WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* pare
     setIcon(m_pFeature->getIcon());
     m_textControl.connectValueChanged(SLOT(slotTextDisplayChanged(double)));
 
-    slotTextDisplayChanged(m_textControl.get());
+    if (m_textControl.valid()) {
+        slotTextDisplayChanged(m_textControl.get());
+    } else {
+        slotTextDisplayChanged(1.0);
+    }
 }
 
 void WFeatureClickButton::mousePressEvent(QMouseEvent* event) {

@@ -15,6 +15,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/libraryfeature.h"
+#include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
 #include "widget/wbaselibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -33,11 +34,15 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
+          m_savedDAO(m_pTrackCollection->getSavedQueriesDAO()),
           m_featureFocus(-1) {
 }
 
 LibraryFeature::~LibraryFeature() {
-    
+}
+
+QString LibraryFeature::getSettingsName() const {
+    return QString("");
 }
 
 QIcon LibraryFeature::getIcon() {    
@@ -92,18 +97,31 @@ void LibraryFeature::setFocusedPane(int paneId) {
     m_focusedPane = paneId;
 }
 
-void LibraryFeature::saveQuery(SavedSearchQuery& query) {
+SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery query) {
+    WTrackTableView* pTable = getFocusedTable();
+    if (pTable == nullptr) {
+        return SavedSearchQuery();
+    }
+    
+    query = pTable->saveQuery(query);
+    
     // A saved query goes the first in the list
-    m_savedQueries.prepend(query);
+    return m_savedDAO.saveQuery(this, query);
 }
 
-void LibraryFeature::restoreQuery(int index) {
-    // Move the used query to the first item in the list
-    m_savedQueries.move(index, 0);
+void LibraryFeature::restoreQuery(int id) {
+    WTrackTableView* pTable = getFocusedTable();
+    if (pTable == nullptr) {
+        return;
+    }
+    
+    // Move the query to the first position to be reused later by the user
+    const SavedSearchQuery& sQuery = m_savedDAO.moveToFirst(this, id);
+    pTable->restoreQuery(sQuery);
 }
 
-const QList<SavedSearchQuery>& LibraryFeature::getSavedQueries() const {
-    return m_savedQueries;
+QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {    
+    return m_savedDAO.getSavedQueries(this);
 }
 
 WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboard,
