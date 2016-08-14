@@ -244,7 +244,7 @@ void BrowseFeature::activate() {
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->restoreSearch(QString());
     
-    emit(enableCoverArtDisplay(false));
+    enableCoverArtDisplay(true);
 }
 
 // Note: This is executed whenever you single click on an child item

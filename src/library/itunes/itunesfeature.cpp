@@ -122,7 +122,7 @@ QString ITunesFeature::getSettingsName() const {
 
 void ITunesFeature::activate() {
     activate(false);
-    emit(enableCoverArtDisplay(false));
+    enableCoverArtDisplay(true);
 }
 
 void ITunesFeature::activate(bool forceReload) {
@@ -184,7 +184,7 @@ void ITunesFeature::activate(bool forceReload) {
 
     showTrackModel(m_pITunesTrackModel);
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
-    emit(enableCoverArtDisplay(false));
+    enableCoverArtDisplay(true);
 }
 
 void ITunesFeature::activateChild(const QModelIndex& index) {
@@ -195,7 +195,7 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     
     showTrackModel(m_pITunesPlaylistModel);
     m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
-    emit(enableCoverArtDisplay(false));
+    enableCoverArtDisplay(true);
 }
 
 TreeItemModel* ITunesFeature::getChildModel() {
