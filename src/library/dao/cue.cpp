@@ -22,7 +22,7 @@ Cue::Cue(TrackId trackId)
           m_iLength(0),
           m_iHotCue(-1),
           m_label(""),
-		  m_color(defaultColor) {
+          m_color(defaultColor) {
 }
 
 
@@ -36,7 +36,7 @@ Cue::Cue(int id, TrackId trackId, Cue::CueType type, int position, int length,
           m_iLength(length),
           m_iHotCue(hotCue),
           m_label(label),
-		  m_color(color) {
+          m_color(color) {
 }
 
 int Cue::getId() const {
