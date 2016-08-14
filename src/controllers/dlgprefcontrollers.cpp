@@ -54,6 +54,10 @@ void DlgPrefControllers::slotCancel() {
     }
 }
 
+void DlgPrefControllers::slotKeyboardEnabled(bool enabled) {
+    slotHighlightDevice(m_pKbdPrefController, enabled);
+}
+
 void DlgPrefControllers::slotApply() {
     // Update our sub-windows.
     foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
@@ -111,6 +115,8 @@ void DlgPrefControllers::setupControllerWidgets() {
             m_pControllerManager->getControllerList(false, true);
     qSort(controllerList.begin(), controllerList.end(), controllerCompare);
 
+    Controller* pKbdController = m_pControllerManager->getKeyboardController();
+
     for (Controller* pController : controllerList) {
         DlgPrefController* controllerDlg = new DlgPrefController(
             this, pController, m_pControllerManager, m_pConfig);
@@ -138,6 +144,10 @@ void DlgPrefControllers::setupControllerWidgets() {
         QFont temp = controllerWindowLink->font(0);
         temp.setBold(pController->isOpen());
         controllerWindowLink->setFont(0, temp);
+
+        if (pController == pKbdController) {
+            m_pKbdPrefController = controllerDlg;
+        }
     }
 
     // If no controllers are available, show the "No controllers available"

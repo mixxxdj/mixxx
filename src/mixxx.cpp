@@ -905,6 +905,7 @@ void MixxxMainWindow::slotToggleKeyboard(bool enabled) {
     m_pMenuBar->onKeyboardEnabled(enabled);
 
     // TODO(Tomasito) Update highlighted label in controller preferences
+    m_pPrefDlg->slotKeyboardEnabled(enabled);
 }
 
 void MixxxMainWindow::slotDeveloperTools(bool visible) {
