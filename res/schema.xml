@@ -416,4 +416,13 @@ METADATA
       ALTER TABLE library ADD COLUMN tracktotal TEXT DEFAULT '//';
     </sql>
   </revision>
+  <revision version="27" min_compatible="3">
+    <description>
+      Add cue color support. Default color is #FF0000.
+      See library/dao/cue.h.
+    </description>
+    <sql>
+      ALTER TABLE cues ADD COLUMN color CHARACTER(6) DEFAULT "FF0000" NOT NULL;
+    </sql>
+  </revision>
 </schema>
