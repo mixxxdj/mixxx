@@ -53,6 +53,7 @@ void WLibraryBreadCrumb::resizeEvent(QResizeEvent* pEvent) {
 
 void WLibraryBreadCrumb::setText(const QString &text) {
     m_longText = text;
+    setToolTip(m_longText);
     refreshWidth();
 }
 

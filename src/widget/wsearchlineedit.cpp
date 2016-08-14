@@ -323,6 +323,7 @@ void WSearchLineEdit::restoreQuery() {
 }
 
 void WSearchLineEdit::slotTextChanged(const QString& text) {
+    setToolTip(text);
     if (text.isEmpty()) {
         triggerSearch();
         emit(searchCleared());
