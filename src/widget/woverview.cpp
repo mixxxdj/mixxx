@@ -441,18 +441,43 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     painter.drawLine(line);
 
                     if (!currentMark.m_text.isEmpty()) {
+                        Qt::Alignment halign = currentMark.m_align & Qt::AlignHorizontal_Mask;
+                        Qt::Alignment valign = currentMark.m_align & Qt::AlignVertical_Mask;
                         QFontMetricsF metric(markerFont);
+                        QRectF textRect = metric.tightBoundingRect(currentMark.m_text);
                         QPointF textPoint;
                         if (m_orientation == Qt::Horizontal) {
-                            textPoint.setX(markPosition + 0.5f);
-                            if (currentMark.m_align == Qt::AlignTop) {
-                                textPoint.setY(metric.tightBoundingRect(currentMark.m_text).height() + 0.5f);
-                            } else {
+                            if (halign == Qt::AlignLeft) {
+                                textPoint.setX(markPosition - textRect.width());
+                            } else if (halign == Qt::AlignHCenter) {
+                                textPoint.setX(markPosition - textRect.width() / 2);
+                            } else {  // AlignRight
+                                textPoint.setX(markPosition + 0.5f);
+                            }
+
+                            if (valign == Qt::AlignTop) {
+                                textPoint.setY(textRect.height() + 0.5f);
+                            } else if (valign == Qt::AlignVCenter) {
+                                textPoint.setY((textRect.height() + height()) / 2);
+                            } else {  // AlignBottom
                                 textPoint.setY(float(height()) - 0.5f);
                             }
-                        } else {
-                            textPoint.setX(1.0f);
-                            textPoint.setY(markPosition + metric.ascent());
+                        } else {  // Vertical
+                            if (halign == Qt::AlignLeft) {
+                                textPoint.setX(1.0f);
+                            } else if (halign == Qt::AlignHCenter) {
+                                textPoint.setX((width() - textRect.width()) / 2);
+                            } else {  // AlignRight
+                                textPoint.setX(width() - textRect.width());
+                            }
+
+                            if (valign == Qt::AlignTop) {
+                                textPoint.setY(markPosition - 1.0f);
+                            } else if (valign == Qt::AlignVCenter) {
+                                textPoint.setY(markPosition + textRect.height() / 2);
+                            } else {  // AlignBottom
+                                textPoint.setY(markPosition + metric.ascent());
+                            }
                         }
 
                         painter.setPen(shadowPen);

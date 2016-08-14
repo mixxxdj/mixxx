@@ -88,9 +88,6 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
 
     QPainter painter;
 
-    int labelRectWidth = 0;
-    int labelRectHeight = 0;
-
     // If no text is provided, leave m_markImage as a null image
     if (!mark.m_text.isNull()) {
         //QFont font("Bitstream Vera Sans");
@@ -107,28 +104,44 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         const int marginY = 1;
         wordRect.moveTop(marginX + 1);
         wordRect.moveLeft(marginY + 1);
+        wordRect.setHeight(wordRect.height() + (wordRect.height()%2));
         wordRect.setWidth(wordRect.width() + (wordRect.width())%2);
         //even wordrect to have an even Image >> draw the line in the middle !
 
-        labelRectWidth = wordRect.width() + 2*marginX + 4;
-        labelRectHeight = wordRect.height() + 2*marginY + 4 ;
+        int labelRectWidth = wordRect.width() + 2 * marginX + 4;
+        int labelRectHeight = wordRect.height() + 2 * marginY + 4 ;
 
         QRectF labelRect(0, 0,
                 (float)labelRectWidth, (float)labelRectHeight);
 
+        int width;
+        int height;
+
         if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-            mark.m_image = QImage(labelRectWidth + 1,
-                                  m_waveformRenderer->getHeight(),
-                                  QImage::Format_ARGB32_Premultiplied);
+            width = 2 * labelRectWidth + 1;
+            height = m_waveformRenderer->getHeight();
         } else {
-            mark.m_image = QImage(m_waveformRenderer->getWidth(),
-                                  2 * labelRectHeight + 1,
-                                  QImage::Format_ARGB32_Premultiplied);
-            labelRect.moveLeft((m_waveformRenderer->getWidth() - labelRectWidth) / 2);
+            width = m_waveformRenderer->getWidth();
+            height = 2 * labelRectHeight + 1;
         }
 
-        if (mark.m_align == Qt::AlignBottom) {
-            labelRect.moveBottom(mark.m_image.height()-1);
+        mark.m_image = QImage(width,
+                              height,
+                              QImage::Format_ARGB32_Premultiplied);
+
+        Qt::Alignment markAlignH = mark.m_align & Qt::AlignHorizontal_Mask;
+        Qt::Alignment markAlignV = mark.m_align & Qt::AlignVertical_Mask;
+
+        if (markAlignH == Qt::AlignHCenter) {
+            labelRect.moveLeft((width - labelRectWidth) / 2);
+        } else if (markAlignH == Qt::AlignRight) {
+            labelRect.moveRight(width - 1);
+        }
+
+        if (markAlignV == Qt::AlignVCenter) {
+            labelRect.moveTop((height - labelRectHeight) / 2);
+        } else if (markAlignV == Qt::AlignBottom) {
+            labelRect.moveBottom(height - 1);
         }
 
         // Fill with transparent pixels
@@ -139,55 +152,83 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
 
         painter.setWorldMatrixEnabled(false);
 
-        //draw the label rect
+        // Prepare colors for drawing of marker lines
+        QColor lineColor = mark.m_color;
+        lineColor.setAlpha(200);
+        QColor contrastLineColor(0,0,0,120);
+
+        // Draw marker lines
+        if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
+            int middle = width / 2;
+            if (markAlignH == Qt::AlignHCenter) {
+                if (labelRect.top() > 0) {
+                    painter.setPen(lineColor);
+                    painter.drawLine(middle, 0, middle, labelRect.top());
+
+                    painter.setPen(contrastLineColor);
+                    painter.drawLine(middle - 1, 0, middle - 1, labelRect.top());
+                    painter.drawLine(middle + 1, 0, middle + 1, labelRect.top());
+                }
+
+                if (labelRect.bottom() < height) {
+                    painter.setPen(lineColor);
+                    painter.drawLine(middle, labelRect.bottom(), middle, height);
+
+                    painter.setPen(contrastLineColor);
+                    painter.drawLine(middle - 1, labelRect.bottom(), middle - 1, height);
+                    painter.drawLine(middle + 1, labelRect.bottom(), middle + 1, height);
+                }
+            } else {  // AlignLeft || AlignRight
+                painter.setPen(lineColor);
+                painter.drawLine(middle, 0, middle, height);
+
+                painter.setPen(contrastLineColor);
+                painter.drawLine(middle - 1, 0, middle - 1, height);
+                painter.drawLine(middle + 1, 0, middle + 1, height);
+            }
+        } else {  // Vertical
+            int middle = height / 2;
+            if (markAlignV == Qt::AlignVCenter) {
+                if (labelRect.left() > 0) {
+                    painter.setPen(lineColor);
+                    painter.drawLine(0, middle, labelRect.left(), middle);
+
+                    painter.setPen(contrastLineColor);
+                    painter.drawLine(0, middle - 1, labelRect.left(), middle - 1);
+                    painter.drawLine(0, middle + 1, labelRect.left(), middle + 1);
+                }
+
+                if (labelRect.right() < width) {
+                    painter.setPen(lineColor);
+                    painter.drawLine(labelRect.right(), middle, width, middle);
+
+                    painter.setPen(contrastLineColor);
+                    painter.drawLine(labelRect.right(), middle - 1, width, middle - 1);
+                    painter.drawLine(labelRect.right(), middle + 1, width, middle + 1);
+                }
+            } else {  // AlignTop || AlignBottom
+                painter.setPen(lineColor);
+                painter.drawLine(0, middle, width, middle);
+
+                painter.setPen(contrastLineColor);
+                painter.drawLine(0, middle - 1, width, middle - 1);
+                painter.drawLine(0, middle + 1, width, middle + 1);
+            }
+        }
+
+        // Draw the label rect
         QColor rectColor = mark.m_color;
-        rectColor.setAlpha(150);
+        rectColor.setAlpha(200);
         painter.setPen(mark.m_color);
         painter.setBrush(QBrush(rectColor));
         painter.drawRoundedRect(labelRect, 2.0, 2.0);
-        //painter.drawRect(labelRect);
 
-        //draw text
+        // Draw text
         painter.setBrush(QBrush(QColor(0,0,0,0)));
         font.setWeight(75);
         painter.setFont(font);
         painter.setPen(mark.m_textColor);
         painter.drawText(labelRect, Qt::AlignCenter, mark.m_text);
-
-        //draw line
-        QColor lineColor = mark.m_color;
-        lineColor.setAlpha(200);
-        painter.setPen(lineColor);
-
-        if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-            float middle = mark.m_image.width() / 2.0;
-            //Default line align top
-            float lineTop = labelRectHeight + 1;
-            float lineBottom = mark.m_image.height();
-
-            if (mark.m_align == Qt::AlignBottom) {
-                lineTop = 0.0;
-                lineBottom = mark.m_image.height() - labelRectHeight - 1;
-            }
-
-            painter.drawLine(middle, lineTop, middle, lineBottom);
-
-            //other lines to increase contrast
-            painter.setPen(QColor(0,0,0,120));
-            painter.drawLine(middle - 1, lineTop, middle - 1, lineBottom);
-            painter.drawLine(middle + 1, lineTop, middle + 1, lineBottom);
-        } else {
-            float middle = mark.m_image.height() / 2.0;
-            float lineLeft = 0.0;
-            float lineRight = mark.m_image.width();
-
-            painter.drawLine(lineLeft, middle, lineRight, middle);
-
-            //other lines to increase contrast
-            painter.setPen(QColor(0,0,0,120));
-            painter.drawLine(lineLeft, middle - 1, lineRight, middle - 1);
-            painter.drawLine(lineLeft, middle + 1, lineRight, middle + 1);
-        }
     }
     else //no text draw triangle
     {
