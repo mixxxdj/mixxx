@@ -46,11 +46,15 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
             // current <control> element and append it to keyseqsRaw
             QDomElement keyseq_element = control.firstChildElement("keyseq");
             while(!keyseq_element.isNull()) {
+                const QDomAttr finalAttr = keyseq_element.attributeNode("final");
+                bool isFinal = !finalAttr.isNull() && finalAttr.value() == "1";
                 keyseqsRaw.append(
                         {
                                 keyseq_element.text(),                            // Key sequence
                                 keyseq_element.attributeNode("lang").value(),     // Lang
-                                keyseq_element.attributeNode("scancode").value()  // Scancode
+                                keyseq_element.attributeNode("scancode").value(), // Scancode
+                                isFinal                                           // Final
+
                         }
                 );
                 keyseq_element = keyseq_element.nextSiblingElement("keyseq");

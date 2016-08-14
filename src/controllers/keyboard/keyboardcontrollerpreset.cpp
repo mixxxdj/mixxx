@@ -70,18 +70,17 @@ void KeyboardControllerPreset::translate(QString layoutName) {
 
         // Try to find a key sequence that targets the current keyboard layout. If not found,
         // use the first key sequence of the list and indicate that it needs a translation.
-        // TODO(Tomasito) Shouldn't we also avoid translation when group == [KeyboardShortcuts] ?
         QList<KbdControllerPresetKeyseq>::const_iterator keyseqsRawI = keyseqsRaw.constEnd();
         while (keyseqsRawI != keyseqsRaw.constBegin()) {
             --keyseqsRawI;
 
-            // Check if this key sequence is a universal key and thus doesn't need a translation
-            bool isUniversalKey = keyseqsRawI->scancode == "universal_key";
-
             // Check if this key sequence's target layout is the same as the user's language
             bool keyboardLayoutIsSame = keyseqsRawI->lang == layoutName;
 
-            if (isUniversalKey || keyboardLayoutIsSame) {
+            // Check if this key sequence is final and thus does not need any translation
+            bool isFinal = keyseqsRawI->final;
+
+            if (keyboardLayoutIsSame || isFinal) {
                 keyseqNeedsTranslate = false;
                 break;
             }
