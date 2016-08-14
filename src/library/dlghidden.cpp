@@ -10,7 +10,6 @@ DlgHidden::DlgHidden(QWidget* parent)
            Ui::DlgHidden() {
     setupUi(this);
     
-    connect(btnPurge, SIGNAL(clicked()), this, SLOT(onShow()));
     connect(btnSelect, SIGNAL(clicked()), this, SIGNAL(selectAll()));
     connect(btnPurge, SIGNAL(clicked()), this, SIGNAL(purge()));
     connect(btnUnhide, SIGNAL(clicked()), this, SIGNAL(unhide()));

@@ -510,6 +510,7 @@ void WTrackTableView::slotRemove() {
 
 void WTrackTableView::slotPurge() {
     QModelIndexList indices = selectionModel()->selectedRows();
+    indices = selectionModel()->selectedIndexes();
     if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
