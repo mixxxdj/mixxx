@@ -7,6 +7,8 @@
 #include "library/dao/cue.h"
 #include "util/assert.h"
 
+const QString defaultColor = "#FF0000";
+
 Cue::~Cue() {
     qDebug() << "~Cue()" << m_iId;
 }
@@ -19,7 +21,8 @@ Cue::Cue(TrackId trackId)
           m_iPosition(-1),
           m_iLength(0),
           m_iHotCue(-1),
-          m_label("") {
+          m_label(""),
+		  m_color(defaultColor) {
 }
 
 

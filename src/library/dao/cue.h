@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QMutex>
 #include <QSharedPointer>
+#include <QColor>
 
 #include "track/trackid.h"
 
@@ -46,6 +47,9 @@ class Cue : public QObject {
     QString getLabel() const;
     void setLabel(const QString label);
 
+    QColor getColor() const;
+    void setColor(const QColor color);
+
   signals:
     void updated();
 
@@ -67,6 +71,7 @@ class Cue : public QObject {
     int m_iLength;
     int m_iHotCue;
     QString m_label;
+    QColor m_color;
 
     friend class Track;
     friend class CueDAO;
