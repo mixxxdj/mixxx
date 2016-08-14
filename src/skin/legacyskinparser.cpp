@@ -852,6 +852,11 @@ QWidget* LegacySkinParser::parseStandardWidget(const QDomElement& element,
     pWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
     pWidget->Init();
+
+    // If any widget has focus, set focus on this widget
+    if (!QApplication::focusWidget()) {
+        pWidget->setFocus();
+    }
     return pWidget;
 }
 

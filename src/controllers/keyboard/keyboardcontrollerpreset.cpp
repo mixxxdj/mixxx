@@ -125,6 +125,5 @@ void KeyboardControllerPreset::translate(QString layoutName) {
 
         // Load action into preset
         m_mapping.insert(keyseq, configKey);
-        qDebug() << "Keyseq: " << keyseq << ", ConfigKey: " << configKey;
     }
 }
