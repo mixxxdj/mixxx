@@ -8,6 +8,7 @@
 #include <QMenu>
 #include <QShortcut>
 #include <QStyle>
+#include <QStyleOption>
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QLineEdit(pParent),
@@ -124,29 +125,37 @@ void WSearchLineEdit::slotRestoreSaveButton() {
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QLineEdit::resizeEvent(e);
     
-    int left, top, right, bottom;
-    getContentsMargins(&left, &top, &right, &bottom);
-    
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     
-    const int size = fontMetrics().height();
-    QSize iconSize(size, size);
+    QStyleOption option;
+    option.initFrom(this);
+    const QRect contentsRect = 
+            style()->subElementRect(QStyle::SE_LineEditContents, &option, this);
+    
+    const int Ydeviation = contentsRect.top();
+    const int height = contentsRect.height();
+    const int fontHeight = fontMetrics().height();
+    QSize iconSize(fontHeight, fontHeight);
+    m_pDropButton->resize(iconSize);
+    m_pSaveButton->resize(iconSize);
+    m_pClearButton->resize(iconSize);
+    
     m_pDropButton->setIconSize(iconSize);
     m_pSaveButton->setIconSize(iconSize);
     m_pClearButton->setIconSize(iconSize);
     
-    const QSize sizeDrop = m_pDropButton->sizeHint();
-    const QSize sizeSave = m_pSaveButton->sizeHint();
-    const QSize sizeClear = m_pClearButton->sizeHint();
-    const int space = 1; // 1px of space between items
+    const QSize sizeDrop = m_pDropButton->size();
+    const QSize sizeSave = m_pSaveButton->size();
+    const QSize sizeClear = m_pClearButton->size();
+    const int space = 2; // 1px of space between items
     
     int posXDrop = frameWidth + 1;
     int posXSave = posXDrop + sizeDrop.width() + space;
     int posXClear = posXSave + sizeSave.width() + space;
     
-    int posYDrop = (height() - sizeDrop.height())/2;
-    int posYSave = (height() - sizeSave.height())/2;
-    int posYClear = (height() - sizeClear.height())/2;
+    int posYDrop = (height - sizeDrop.height())/2 + Ydeviation;
+    int posYSave = (height - sizeSave.height())/2 + Ydeviation;
+    int posYClear = (height - sizeClear.height())/2 + Ydeviation;
     
     if (layoutDirection() == Qt::LeftToRight) {
         posXDrop += sizeDrop.width();
