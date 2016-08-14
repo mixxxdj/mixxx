@@ -369,6 +369,11 @@ void ControllerManager::openController(Controller* pController) {
         m_pConfig->setValue(ConfigKey(
             "[Controller]", presetFilenameFromName(pController->getName())), 1);
     }
+
+    // TODO(Tomasito) Remove duplicate code (see ControllerManager::closeController())
+    if (dynamic_cast<void*>(pController) == dynamic_cast<void*>(getKeyboardController())) {
+        emit keyboardEnabled(true);
+    }
 }
 
 void ControllerManager::closeController(Controller* pController) {
@@ -380,6 +385,10 @@ void ControllerManager::closeController(Controller* pController) {
     // Update configuration to reflect controller is disabled.
     m_pConfig->setValue(ConfigKey(
         "[Controller]", presetFilenameFromName(pController->getName())), 0);
+
+    if (dynamic_cast<void*>(pController) == dynamic_cast<void*>(getKeyboardController())) {
+        emit keyboardEnabled(false);
+    }
 }
 
 bool ControllerManager::loadPreset(Controller* pController,

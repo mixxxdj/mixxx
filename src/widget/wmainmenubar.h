@@ -49,6 +49,7 @@ class WMainMenuBar : public QMenuBar {
     void onFullScreenStateChange(bool fullscreen);
     void onVinylControlDeckEnabledStateChange(int deck, bool enabled);
     void onNumberOfDecksChanged(int decks);
+    void onKeyboardEnabled(bool enabled);
 
   signals:
     void createCrate();
@@ -92,6 +93,7 @@ class WMainMenuBar : public QMenuBar {
     QList<QAction*> m_loadToDeckActions;
     QSignalMapper m_vinylControlEnabledMapper;
     QList<QAction*> m_vinylControlEnabledActions;
+    QAction* m_pOptionsKeyboard;
 };
 
 #endif /* WIDGET_WMAINMENUBAR */

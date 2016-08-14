@@ -398,21 +398,21 @@ void WMainMenuBar::initialize() {
 
     bool keyboardShortcutsEnabled = m_pConfig->getValueString(
         ConfigKey("[Controller]", "Keyboard")) == "1";
-    auto pOptionsKeyboard = new QAction(keyboardShortcutTitle, this);
+    m_pOptionsKeyboard = new QAction(keyboardShortcutTitle, this);
     m_pKbdShortcutsUpdater->addWatcher(new ShortcutChangeWatcher(
-            pOptionsKeyboard,
+            m_pOptionsKeyboard,
             ConfigKey("[KeyboardShortcuts]", "OptionsMenu_EnableShortcuts"),
             tr("Ctrl+`")
     ));
-    pOptionsKeyboard->setShortcutContext(Qt::ApplicationShortcut);
-    pOptionsKeyboard->setCheckable(true);
-    pOptionsKeyboard->setChecked(keyboardShortcutsEnabled);
-    pOptionsKeyboard->setStatusTip(keyboardShortcutText);
-    pOptionsKeyboard->setWhatsThis(buildWhatsThis(keyboardShortcutTitle, keyboardShortcutText));
-    connect(pOptionsKeyboard, SIGNAL(triggered(bool)),
+    m_pOptionsKeyboard->setShortcutContext(Qt::ApplicationShortcut);
+    m_pOptionsKeyboard->setCheckable(true);
+    m_pOptionsKeyboard->setChecked(keyboardShortcutsEnabled);
+    m_pOptionsKeyboard->setStatusTip(keyboardShortcutText);
+    m_pOptionsKeyboard->setWhatsThis(buildWhatsThis(keyboardShortcutTitle, keyboardShortcutText));
+    connect(m_pOptionsKeyboard, SIGNAL(triggered(bool)),
             this, SIGNAL(toggleKeyboardShortcuts(bool)));
 
-    pOptionsMenu->addAction(pOptionsKeyboard);
+    pOptionsMenu->addAction(m_pOptionsKeyboard);
 
     pOptionsMenu->addSeparator();
 
@@ -708,6 +708,14 @@ void WMainMenuBar::onNumberOfDecksChanged(int decks) {
     deck = 0;
     for (QAction* pLoadToDeck : m_loadToDeckActions) {
         pLoadToDeck->setVisible(deck++ < decks);
+    }
+}
+
+void WMainMenuBar::onKeyboardEnabled(bool enabled) {
+    qDebug() << "WMainMenuBar::onKeyboardEnabled";
+    bool checkboxChecked = m_pOptionsKeyboard->isChecked();
+    if (checkboxChecked != enabled) {
+        m_pOptionsKeyboard->setChecked(enabled);
     }
 }
 

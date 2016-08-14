@@ -64,6 +64,7 @@ class ControllerManager : public QObject {
     void requestSave(bool onlyActive);
     void requestInitialize();
     void keyboardPresetChanged(KeyboardControllerPresetPointer pKbdPreset);
+    void keyboardEnabled(bool enabled);
 
   public slots:
     void updateControllerList();

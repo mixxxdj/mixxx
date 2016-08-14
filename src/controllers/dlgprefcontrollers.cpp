@@ -102,6 +102,8 @@ void DlgPrefControllers::destroyControllerWidgets() {
     }
 }
 
+// TODO(Tomasito) This function is called twice at startup, find out why.
+// ...            Shouldn't it be just called once?
 void DlgPrefControllers::setupControllerWidgets() {
     // For each controller, create a dialog and put a little link to it in the
     // treepane on the left.
@@ -109,7 +111,7 @@ void DlgPrefControllers::setupControllerWidgets() {
             m_pControllerManager->getControllerList(false, true);
     qSort(controllerList.begin(), controllerList.end(), controllerCompare);
 
-    foreach (Controller* pController, controllerList) {
+    for (Controller* pController : controllerList) {
         DlgPrefController* controllerDlg = new DlgPrefController(
             this, pController, m_pControllerManager, m_pConfig);
         connect(controllerDlg, SIGNAL(mappingStarted()),

@@ -76,7 +76,7 @@ class MixxxMainWindow : public QMainWindow {
 
     void slotFileLoadSongPlayer(int deck);
     // toogle keyboard on-off
-    void slotOptionsKeyboard(bool toggle);
+    void slotToggleKeyboard(bool toggle);
     // Preference dialog
     void slotOptionsPreferences();
     // shows an about dlg

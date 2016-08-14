@@ -304,10 +304,15 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // (long)
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(pConfig, m_pKeyboard);
+
     connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(KeyboardControllerPresetPointer)),
             m_pKbdShortcutsUpdater, SLOT(slotUpdateShortcuts(KeyboardControllerPresetPointer)));
+
     connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(KeyboardControllerPresetPointer)),
             m_pSkinLoader->getTooltipUpdater(), SLOT(updateShortcuts(KeyboardControllerPresetPointer)));
+
+    connect(m_pControllerManager, SIGNAL(keyboardEnabled(bool)),
+            this, SLOT(slotToggleKeyboard(bool)));
 
     launchProgress(47);
 
@@ -777,7 +782,7 @@ void MixxxMainWindow::connectMenuBar() {
 
     // Keyboard shortcuts
     connect(m_pMenuBar, SIGNAL(toggleKeyboardShortcuts(bool)),
-            this, SLOT(slotOptionsKeyboard(bool)));
+            this, SLOT(slotToggleKeyboard(bool)));
 
     // Help
     connect(m_pMenuBar, SIGNAL(showAbout()),
@@ -879,16 +884,27 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
 }
 
 
-void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
+void MixxxMainWindow::slotToggleKeyboard(bool enabled) {
+    qDebug() << "MixxxMainWindow::slotToggleKeyboard";
+
+    // Update mixxx.cfg
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(toggle ? 1 : 0));
+    pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(enabled ? 1 : 0));
 
     KeyboardController* pKeyboardController = m_pControllerManager->getKeyboardController();
-    if (toggle) {
-        m_pControllerManager->openController(pKeyboardController);
+    bool isOpen = pKeyboardController->isOpen();
+
+    // Update keyboard controller
+    if (enabled) {
+        if (!isOpen) m_pControllerManager->openController(pKeyboardController);
     } else {
-        m_pControllerManager->closeController(pKeyboardController);
+        if (isOpen) m_pControllerManager->closeController(pKeyboardController);
     }
+
+    // Update menu bar "Enable Keyboard Shortcuts" checkbox
+    m_pMenuBar->onKeyboardEnabled(enabled);
+
+    // TODO(Tomasito) Update highlighted label in controller preferences
 }
 
 void MixxxMainWindow::slotDeveloperTools(bool visible) {
