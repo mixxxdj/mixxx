@@ -113,5 +113,6 @@
         <file>skins/save.png</file>
         <file>skins/downArrow.png</file>
         <file>skins/cross_2.png</file>
+        <file>skins/save_disabled.png</file>
     </qresource>
 </RCC>

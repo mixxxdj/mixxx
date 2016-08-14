@@ -25,7 +25,13 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_pClearButton->hide();
     
     m_pSaveButton = new QToolButton(this);
-    m_pSaveButton->setIcon(QIcon(":/skins/save.png"));
+    QIcon saveIcon;
+    saveIcon.addPixmap(QPixmap(":/skins/save.png"), QIcon::Active, QIcon::Off);
+    saveIcon.addPixmap(QPixmap(":/skins/save_disabled.png"), QIcon::Disabled, QIcon::Off);
+    saveIcon.addPixmap(QPixmap(":/skins/save.png"), QIcon::Active, QIcon::On);
+    saveIcon.addPixmap(QPixmap(":/skins/save_disabled.png"), QIcon::Disabled, QIcon::On);
+    
+    m_pSaveButton->setIcon(saveIcon);
     m_pSaveButton->setIconSize(iconSize);
     m_pSaveButton->setCursor(Qt::ArrowCursor);
     m_pSaveButton->setToolTip(tr("Save query", "Save the current query for later use"));
@@ -245,6 +251,7 @@ void WSearchLineEdit::updateButtons(const QString& text)
     bool visible = !text.isEmpty() && !m_place;
     m_pDropButton->show();
     m_pSaveButton->setVisible(visible);
+    m_pSaveButton->setEnabled(visible);
     m_pClearButton->setVisible(visible);
 }
 
@@ -266,7 +273,7 @@ void WSearchLineEdit::saveQuery() {
     if (!m_pCurrentFeature.isNull()) {
         m_pCurrentFeature->saveQuery(query);
     }
-    setText("");
+    m_pSaveButton->setEnabled(false);
 }
 
 void WSearchLineEdit::restoreQuery() {
