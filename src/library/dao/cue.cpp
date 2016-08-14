@@ -138,6 +138,19 @@ void Cue::setLabel(const QString label) {
     emit(updated());
 }
 
+QColor Cue::getColor() const {
+    QMutexLocker lock(&m_mutex);
+    return m_color;
+}
+
+void Cue::setColor(const QColor color) {
+    QMutexLocker lock(&m_mutex);
+    m_color = color;
+    m_bDirty = true;
+    lock.unlock();
+    emit(updated());
+}
+
 bool Cue::isDirty() const {
     QMutexLocker lock(&m_mutex);
     return m_bDirty;
