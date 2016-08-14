@@ -27,7 +27,7 @@ Cue::Cue(TrackId trackId)
 
 
 Cue::Cue(int id, TrackId trackId, Cue::CueType type, int position, int length,
-         int hotCue, QString label)
+         int hotCue, QString label, QColor color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
@@ -35,7 +35,8 @@ Cue::Cue(int id, TrackId trackId, Cue::CueType type, int position, int length,
           m_iPosition(position),
           m_iLength(length),
           m_iHotCue(hotCue),
-          m_label(label) {
+          m_label(label),
+		  m_color(color) {
 }
 
 int Cue::getId() const {

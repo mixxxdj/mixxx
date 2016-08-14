@@ -56,7 +56,7 @@ class Cue : public QObject {
   private:
     explicit Cue(TrackId trackId);
     Cue(int id, TrackId trackId, CueType type, int position, int length,
-        int hotCue, QString label);
+        int hotCue, QString label, QColor color);
     void setDirty(bool dirty);
     void setId(int id);
     void setTrackId(TrackId trackId);
