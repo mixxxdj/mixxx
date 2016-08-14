@@ -40,24 +40,30 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
         return m_folderRecursive;
     }
     
-    if (role != TreeItemModel::RoleQuery) {
-        return TreeItemModel::data(index, role);
-    }
-
-    // Role is Get query
     TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
     DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
-        return QVariant();
-    }
-
-    // User has clicked the show all item
-    if (pTree == m_pShowAllItem) {
-        return "";
+        return TreeItemModel::data(index, role);
     }
     
-    const QString param("%1:=\"%2\"");
+    if (role == TreeItemModel::RoleBreadCrumb) {
+        if (pTree == m_pShowAllItem) {
+            return m_pFeature->title();
+        } else {
+            return TreeItemModel::data(index, role);
+        }
+    }
+    
+    if (role == TreeItemModel::RoleQuery) {
+        // User has clicked the show all item
+        if (pTree == m_pShowAllItem) {
+            return "";
+        }
+        
+        const QString param("%1:=\"%2\"");
+        return param.arg("folder", pTree->dataPath().toString());
+    }
 
-    return param.arg("folder", pTree->dataPath().toString());
+    return TreeItemModel::data(index, role);
 }
 
 void LibraryFolderModel::reloadTree() {
