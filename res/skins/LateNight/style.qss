@@ -1366,8 +1366,19 @@ QSpinBox:editable { background: transparent; color: #cfb32c; }
 QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
 
 /* library search bar */
-WSearchLineEdit { padding: 2px; border: 1px solid #656565; background: #181818; color: #cfb32c; }
-WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; background: #0f0f0f; color: #eece33;}
+WSearchLineEdit { 
+  margin-bottom: 2px;
+  padding: 2px; 
+  border: 1px solid #656565; 
+  background: #181818; 
+  color: #cfb32c; 
+}
+
+WSearchLineEdit:focus { 
+  border: 2px solid #FF6600; 
+  background: #0f0f0f; 
+  color: #eece33;
+}
 
 /* cover art */
 WCoverArt { background: transparent; color: #ACACAC; }
@@ -1420,11 +1431,11 @@ QTreeView::item:selected {
 }
 
 WLibrary[showFocus="0"] {
-  padding: 1px 0 0 0;
+  padding: 2px 0 0 0;
   border: none;
 }
 
 WLibrary[showFocus="1"] {
-  padding: 1px 0 0 0;
-  border-top: 1px solid #FF7100 !important;
+  padding: 2px 0 0 0;
+  border-top: 2px solid #FF7100 !important;
 }

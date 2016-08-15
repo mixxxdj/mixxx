@@ -248,39 +248,28 @@ void TreeItemModel::reloadTree() {
 bool TreeItemModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
                                QObject* pSource) {
     //qDebug() << "TreeItemModel::dropAccept() index=" << index << urls;
-    bool result = false;
-    if (index.isValid()) {
-        LibraryFeature* pFeature;
-        if (index.internalPointer() == this) {
-            pFeature = m_pRootItem->getFeature();
-        } else {
-            TreeItem* treeItem = (TreeItem*) index.internalPointer();
-            if (!treeItem) {
-                return false;
-            }
-            pFeature = treeItem->getFeature();
-        }
-        
-        result = pFeature->dropAcceptChild(index, urls, pSource);
+    LibraryFeature* pFeature = getFeatureFromIndex(index);
+    if (pFeature == nullptr) {
+        return false;
     }
-    return result;
+    
+    return pFeature->dropAcceptChild(index, urls, pSource);
 }
 
 bool TreeItemModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
-    //qDebug() << "TreeItemModel::dragMoveAccept() index=" << index << url;
-    bool result = false;
-    if (index.isValid()) {
-        LibraryFeature* pFeature;
-        if (index.internalPointer() == this) {
-            pFeature = m_pRootItem->getFeature();
-        } else {
-            TreeItem* treeItem = (TreeItem*) index.internalPointer();
-            if (treeItem) {
-                pFeature = treeItem->getFeature();
-            }
-        }
-        
-        result = pFeature->dragMoveAcceptChild(index, url);
+    //qDebug() << "TreeItemModel::dragMoveAccept() index=" << index << url;    
+    LibraryFeature* pFeature = getFeatureFromIndex(index);
+    if (pFeature == nullptr) {
+        return false;
     }
-    return result;
+    
+    return pFeature->dragMoveAcceptChild(index, url);
+}
+
+LibraryFeature* TreeItemModel::getFeatureFromIndex(const QModelIndex& index) const {
+    TreeItem* pTree = getItem(index);
+    if (pTree == nullptr) {
+        return nullptr;
+    }
+    return pTree->getFeature();
 }

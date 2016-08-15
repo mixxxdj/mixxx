@@ -1312,23 +1312,25 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 }
 
 
-QWidget *LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
+QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
     // We must create both LibrarySidebarButtons and LibrarySidebarExpanded
-	// to allow support for old skins
+	// to allow support for old skins    
 	QFrame* pContainer = new QFrame(m_pParent);
 	QHBoxLayout* pLayout = new QHBoxLayout(pContainer);
 	pContainer->setLayout(pLayout);
 	
-	QScrollArea* scroll = new QScrollArea(pContainer);
-    scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-	scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	scroll->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    // Create config object for WButtonBar
+    ConfigKey confKey("[Library]", "show_icon_text");
+	controlFromConfigKey(confKey, true, nullptr);
+    m_pConfig->set(confKey, QString::number(1.0));
+    
+    WVerticalScrollArea* scroll = new WVerticalScrollArea(pContainer);
+    pLayout->addWidget(scroll);
 	
-	WButtonBar* pLibrarySidebar = new WButtonBar(pContainer);
+    WButtonBar* pLibrarySidebar = new WButtonBar(scroll);
 	pLibrarySidebar->installEventFilter(m_pKeyboard);
 	m_pLibrary->bindSidebarWidget(pLibrarySidebar);
 	scroll->setWidget(pLibrarySidebar);
-	pLayout->addWidget(scroll);
 
 	WBaseLibrary* pLibrarySidebarExpanded = new WBaseLibrary(pContainer);
 	pLibrarySidebarExpanded->installEventFilter(m_pKeyboard);
@@ -1337,7 +1339,7 @@ QWidget *LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
 	pLayout->addWidget(pLibrarySidebarExpanded);
 	
     setupWidget(node, pLibrarySidebar);
-	commonWidgetSetup(node, pLibrarySidebarExpanded, false);
+	commonWidgetSetup(node, pLibrarySidebarExpanded, false);    
 	return pContainer;
 }
 

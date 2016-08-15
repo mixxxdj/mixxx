@@ -164,7 +164,7 @@ void Library::destroyInterface() {
     m_panes.clear();
 }
 
-LibraryView *Library::getActiveView() {
+LibraryView* Library::getActiveView() {
     WBaseLibrary* pPane = m_panes[m_focusedPane]->getPaneWidget();
     WLibrary* pLibrary = qobject_cast<WLibrary*>(pPane);
     DEBUG_ASSERT_AND_HANDLE(pLibrary) {
@@ -196,21 +196,36 @@ void Library::switchToFeature(LibraryFeature* pFeature) {
     m_pSidebarExpanded->switchToFeature(pFeature);
     slotUpdateFocus(pFeature);
     
-    WBaseLibrary* pWLibrary = m_panes[m_focusedPane]->getPaneWidget();
+    LibraryPaneManager* pPane = getFocusedPane();
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
+        return;
+    }
+    
+    WBaseLibrary* pWLibrary = pPane->getPaneWidget();
     // Only change the current pane if it's not shown already
     if (pWLibrary->getCurrentFeature() != pFeature) {
-        m_panes[m_focusedPane]->switchToFeature(pFeature);
+        pPane->switchToFeature(pFeature);
     }
     
     handleFocus();
 }
 
 void Library::showBreadCrumb(TreeItem *pTree) {
-    m_panes[m_focusedPane]->showBreadCrumb(pTree);
+    LibraryPaneManager* pPane = getFocusedPane();
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
+        return;
+    }
+    
+    pPane->showBreadCrumb(pTree);
 }
 
 void Library::showBreadCrumb(const QString &text, const QIcon &icon) {
-    m_panes[m_focusedPane]->showBreadCrumb(text, icon);
+    LibraryPaneManager* pPane = getFocusedPane();
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
+        return;
+    }
+    
+    pPane->showBreadCrumb(text, icon);
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
@@ -230,12 +245,22 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
 }
 
 void Library::restoreSearch(const QString& text) {
-    LibraryPaneManager* pane = getFocusedPane();
-    DEBUG_ASSERT_AND_HANDLE(pane) {
+    LibraryPaneManager* pPane = getFocusedPane();
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
         return;
     }
-    pane->restoreSearch(text);
+    pPane->restoreSearch(text);
 }
+
+
+void Library::restoreSaveButton() {
+    LibraryPaneManager* pPane = getFocusedPane();
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
+        return;
+    }
+    pPane->restoreSaveButton();
+}
+
 
 void Library::slotRefreshLibraryModels() {
    m_pMixxxLibraryFeature->refreshLibraryModels();
@@ -396,7 +421,7 @@ void Library::paneUncollapsed(int paneId) {
     }    
 }
 
-void Library::slotActivateFeature(LibraryFeature *pFeature) {
+void Library::slotActivateFeature(LibraryFeature* pFeature) {
     // The feature is being shown currently in the focused pane
     if (m_panes[m_focusedPane]->getCurrentFeature() == pFeature) {
         m_pSidebarExpanded->switchToFeature(pFeature);
@@ -487,15 +512,14 @@ LibraryPaneManager* Library::getPane(int paneId) {
     return pPane;
 }
 
-LibraryPaneManager *Library::getFocusedPane() {
+LibraryPaneManager* Library::getFocusedPane() {
     //qDebug() << "Focused" << m_focusedPane;
-    if (m_focusedPane == -1) {
-        return m_pSidebarExpanded;
+    auto it = m_panes.find(m_focusedPane);
+    if (it == m_panes.end()) {
+        return nullptr;
     }
-    else if (m_panes.contains(m_focusedPane)) {
-        return m_panes[m_focusedPane];
-    }
-    return nullptr;
+    
+    return *it;
 }
 
 void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface* pPlayerManager) {

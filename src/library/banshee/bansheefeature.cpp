@@ -127,7 +127,7 @@ void BansheeFeature::activate() {
     
     showTrackModel(m_pBansheePlaylistModel);
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
-    emit(enableCoverArtDisplay(false));
+    enableCoverArtDisplay(true);
 }
 
 void BansheeFeature::activateChild(const QModelIndex& index) {
@@ -141,7 +141,7 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
         
         showTrackModel(m_pBansheePlaylistModel);
         m_pLibrary->showBreadCrumb(item);
-        emit(enableCoverArtDisplay(false));
+        enableCoverArtDisplay(true);
     }
 }
 

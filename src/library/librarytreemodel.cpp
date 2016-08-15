@@ -43,49 +43,59 @@ LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
     reloadTree();
 }
 
+
 QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
-    
     if (role == TreeItemModel::RoleSettings) {
         return m_sortOrder;
     }
     
-        // The decoration role contains the icon in QTreeView
-    if (role != Qt::DecorationRole && role != TreeItemModel::RoleQuery) {
+    TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
+    DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
         return TreeItemModel::data(index, role);
     }
     
-    
-    TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
-    DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
-        return QVariant();
+    if (role == TreeItemModel::RoleBreadCrumb) {
+        if (pTree == m_pLibraryItem) {
+            return m_pFeature->title();
+        } else {
+            return TreeItemModel::data(index, role);
+        }
     }
+    
     if (role == TreeItemModel::RoleQuery) {
         return getQuery(pTree);
     }
     
-    // Role is decoration role, we need to show the cover art
-    const CoverInfo& info = pTree->getCoverInfo();    
-    
-    // Currently we only support this two types of cover info
-    if (info.type != CoverInfo::METADATA && info.type != CoverInfo::FILE) {
-        return TreeItemModel::data(index, role);
+    // The decoration role contains the icon in QTreeView
+    if (role == Qt::DecorationRole) {
+        // Role is decoration role, we need to show the cover art
+        const CoverInfo& info = pTree->getCoverInfo();
+        
+        // Currently we only support this two types of cover info
+        if (info.type != CoverInfo::METADATA && info.type != CoverInfo::FILE) {
+            return TreeItemModel::data(index, role);
+        }
+        
+        CoverArtCache* pCache = CoverArtCache::instance();
+        // Set a maximum size of 32px to not use many cache
+        QPixmap pixmap = pCache->requestCover(info, this, 32, false, true);
+        
+        if (pixmap.isNull()) {
+            // The icon is not in the cache so we need to wait until the
+            // coverFound slot is called. Since the data function is const
+            // and we cannot change that we use m_hashToIndex in an anonymous
+            // namespace to store the future value that we will get
+            m_hashToIndex.insert(info.type, index);
+            
+            // Return a temporary icon
+            return QIcon(":/images/library/cover_default.png");
+        } else {
+            // Good luck icon found
+            return QIcon(pixmap);
+        }
     }
     
-    CoverArtCache* pCache = CoverArtCache::instance();
-    // Set a maximum size of 32px to not use many cache
-    QPixmap pixmap = pCache->requestCover(info, this, 32, false, true);
-    
-    if (pixmap.isNull()) {
-        // The icon is not in the cache so we need to wait until the
-        // coverFound slot is called. Since the data function is const
-        // and we cannot change that we use m_hashToIndex in an anonymous
-        // namespace to store the future value that we will get
-        m_hashToIndex.insert(info.type, index);
-    } else {
-        // Good luck icon found
-        return QIcon(pixmap);
-    }
-    return QVariant();
+    return TreeItemModel::data(index, role);
 }
 
 bool LibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, int role) {
@@ -301,4 +311,5 @@ void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,
     c.source = static_cast<CoverInfo::Source>(source);
     c.type = static_cast<CoverInfo::Type>(type);
     pTree->setCoverInfo(c);
+    pTree->setIcon(QIcon(":/images/library/cover_default.png"));
 }

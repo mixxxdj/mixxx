@@ -76,7 +76,7 @@ void RecordingFeature::activate() {
     showBreadCrumb();
     restoreSearch("");
     
-    emit(enableCoverArtDisplay(false));
+    enableCoverArtDisplay(true);
 }
 
 BrowseTableModel* RecordingFeature::getBrowseTableModel() {

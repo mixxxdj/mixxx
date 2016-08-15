@@ -55,12 +55,12 @@
 							<WidgetGroup>
 								<Layout>vertical</Layout>
 								<Children>
-									<SearchBox>
-										<Id>1</Id>
-									</SearchBox>
 									<LibraryBreadCrumb>
 										<Id>1</Id>
 									</LibraryBreadCrumb>
+									<SearchBox>
+										<Id>1</Id>
+									</SearchBox>
 									<LibraryPane>
 										<Id>1</Id>
 									</LibraryPane>
@@ -69,12 +69,12 @@
 							<WidgetGroup>
 								<Layout>vertical</Layout>
 								<Children>
-									<SearchBox>
-										<Id>2</Id>
-									</SearchBox>
 									<LibraryBreadCrumb>
 										<Id>2</Id>
 									</LibraryBreadCrumb>
+									<SearchBox>
+										<Id>2</Id>
+									</SearchBox>
 									<LibraryPane>
 										<Id>2</Id>
 									</LibraryPane>

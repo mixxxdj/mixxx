@@ -8,6 +8,7 @@
 #include <QMenu>
 #include <QShortcut>
 #include <QStyle>
+#include <QStyleOption>
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QLineEdit(pParent),
@@ -25,7 +26,13 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_pClearButton->hide();
     
     m_pSaveButton = new QToolButton(this);
-    m_pSaveButton->setIcon(QIcon(":/skins/save.png"));
+    QIcon saveIcon;
+    saveIcon.addPixmap(QPixmap(":/skins/save.png"), QIcon::Active, QIcon::Off);
+    saveIcon.addPixmap(QPixmap(":/skins/save_disabled.png"), QIcon::Disabled, QIcon::Off);
+    saveIcon.addPixmap(QPixmap(":/skins/save.png"), QIcon::Active, QIcon::On);
+    saveIcon.addPixmap(QPixmap(":/skins/save_disabled.png"), QIcon::Disabled, QIcon::On);
+    
+    m_pSaveButton->setIcon(saveIcon);
     m_pSaveButton->setIconSize(iconSize);
     m_pSaveButton->setCursor(Qt::ArrowCursor);
     m_pSaveButton->setToolTip(tr("Save query", "Save the current query for later use"));
@@ -111,28 +118,44 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     setPalette(pal);
 }
 
+void WSearchLineEdit::slotRestoreSaveButton() {
+    m_pSaveButton->setEnabled(true);
+}
+
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QLineEdit::resizeEvent(e);
     
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     
-    QSize iconSize(height()/2, height()/2);
+    QStyleOption option;
+    option.initFrom(this);
+    const QRect contentsRect = 
+            style()->subElementRect(QStyle::SE_LineEditContents, &option, this);
+    
+    const int Ydeviation = contentsRect.top();
+    const int height = contentsRect.height();
+    const int fontHeight = fontMetrics().height();
+    QSize iconSize(fontHeight, fontHeight);
+    m_pDropButton->resize(iconSize);
+    m_pSaveButton->resize(iconSize);
+    m_pClearButton->resize(iconSize);
+    
     m_pDropButton->setIconSize(iconSize);
     m_pSaveButton->setIconSize(iconSize);
     m_pClearButton->setIconSize(iconSize);
     
-    const QSize sizeDrop = m_pDropButton->sizeHint();
-    const QSize sizeSave = m_pSaveButton->sizeHint();
-    const QSize sizeClear = m_pClearButton->sizeHint();
-    const int space = 1; // 1px of space between items
+    const QSize sizeDrop = m_pDropButton->size();
+    const QSize sizeSave = m_pSaveButton->size();
+    const QSize sizeClear = m_pClearButton->size();
+    const int space = 2; // 1px of space between items
     
     int posXDrop = frameWidth + 1;
     int posXSave = posXDrop + sizeDrop.width() + space;
     int posXClear = posXSave + sizeSave.width() + space;
     
-    int posYDrop = (height() - sizeDrop.height())/2;
-    int posYSave = (height() - sizeSave.height())/2;
-    int posYClear = (height() - sizeClear.height())/2;
+    int posYDrop = (height - sizeDrop.height())/2 + Ydeviation;
+    int posYSave = (height - sizeSave.height())/2 + Ydeviation;
+    int posYClear = (height - sizeClear.height())/2 + Ydeviation;
     
     if (layoutDirection() == Qt::LeftToRight) {
         posXDrop += sizeDrop.width();
@@ -243,8 +266,9 @@ void WSearchLineEdit::showPlaceholder() {
 void WSearchLineEdit::updateButtons(const QString& text)
 {
     bool visible = !text.isEmpty() && !m_place;
-    m_pDropButton->show();
-    m_pSaveButton->setVisible(visible);
+    m_pDropButton->setVisible(true);
+    m_pSaveButton->setVisible(true);
+    m_pSaveButton->setEnabled(true);
     m_pClearButton->setVisible(visible);
 }
 
@@ -266,7 +290,7 @@ void WSearchLineEdit::saveQuery() {
     if (!m_pCurrentFeature.isNull()) {
         m_pCurrentFeature->saveQuery(query);
     }
-    setText("");
+    m_pSaveButton->setEnabled(false);
 }
 
 void WSearchLineEdit::restoreQuery() {
@@ -308,6 +332,7 @@ void WSearchLineEdit::restoreQuery() {
 }
 
 void WSearchLineEdit::slotTextChanged(const QString& text) {
+    setToolTip(text);
     if (text.isEmpty()) {
         triggerSearch();
         emit(searchCleared());

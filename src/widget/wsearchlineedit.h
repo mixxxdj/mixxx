@@ -37,6 +37,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
   public slots:
     void restoreSearch(const QString& text, QPointer<LibraryFeature> pFeature = nullptr);
     void slotTextChanged(const QString& text);
+    void slotRestoreSaveButton();
 
   private slots:
     void updateButtons(const QString& text);

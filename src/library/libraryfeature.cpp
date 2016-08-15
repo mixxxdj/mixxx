@@ -140,6 +140,8 @@ WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboar
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(tableChanged()),
+            this, SLOT(restoreSaveButton()));
     
     connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
@@ -193,6 +195,10 @@ void LibraryFeature::switchToFeature() {
 
 void LibraryFeature::restoreSearch(const QString& search) {
     m_pLibrary->restoreSearch(search);
+}
+
+void LibraryFeature::restoreSaveButton() {
+    m_pLibrary->restoreSaveButton();
 }
 
 void LibraryFeature::showBreadCrumb(TreeItem *pTree) {

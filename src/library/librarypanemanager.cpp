@@ -118,6 +118,12 @@ void LibraryPaneManager::restoreSearch(const QString& text) {
     }
 }
 
+void LibraryPaneManager::restoreSaveButton() {
+    if (!m_pSearchBar.isNull()) {
+        m_pSearchBar->slotRestoreSaveButton();
+    }
+}
+
 void LibraryPaneManager::showBreadCrumb(TreeItem *pTree) {
     DEBUG_ASSERT_AND_HANDLE(!m_pBreadCrumb.isNull()) {
         return;
@@ -131,6 +137,10 @@ void LibraryPaneManager::showBreadCrumb(const QString &text, const QIcon& icon) 
         return;
     }
     m_pBreadCrumb->showBreadCrumb(text, icon);
+}
+
+int LibraryPaneManager::getPaneId() {
+    return m_paneId;
 }
 
 void LibraryPaneManager::slotPaneCollapsed() {
