@@ -18,10 +18,11 @@
  * 2016-07-28 - v1.0 - Initial revision for Mixxx 2.1.0
  * 2016-07-31 - v1.1 - fix some bugs, Improved pad mapping, and lots of small improvements
  * 2016-08-13 - v1.2 - Improved jog leds
+ * 2016-08-15 - v1.2.1 - fix small typos and bugs
  ***********************************************************************
  *                           GPL v2 licence
  *                           --------------
- * Reloop Beatmix controller script script 1.2 for Mixxx 2.1.0
+ * Reloop Beatmix controller script script 1.2.1 for Mixxx 2.1.0
  * Copyright (C) 2016 Sébastien Blaisot
  *
  * This program is free software; you can redistribute it and/or
