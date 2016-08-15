@@ -296,35 +296,11 @@ void BasePlaylistFeature::slotCreatePlaylist() {
         return;
     }
 
-    QString name;
-    bool validNameGiven = false;
-
-    while (!validNameGiven) {
-        bool ok = false;
-        name = QInputDialog::getText(NULL,
-                                     tr("Create New Playlist"),
-                                     tr("Enter name for new playlist:"),
-                                     QLineEdit::Normal,
-                                     tr("New Playlist"),
-                                     &ok).trimmed();
-        if (!ok)
-            return;
-
-        int existingId = m_playlistDao.getPlaylistIdFromName(name);
-
-        if (existingId != -1) {
-            QMessageBox::warning(NULL,
-                                 tr("Playlist Creation Failed"),
-                                 tr("A playlist by that name already exists."));
-        } else if (name.isEmpty()) {
-            QMessageBox::warning(NULL,
-                                 tr("Playlist Creation Failed"),
-                                 tr("A playlist cannot have a blank name."));
-        } else {
-            validNameGiven = true;
-        }
+    QString name = getValidPlaylistName();
+    if (name.isNull()) {
+        // The user has canceled
+        return;
     }
-
     int playlistId = m_playlistDao.createPlaylist(name);
 
     if (playlistId != -1) {
@@ -611,10 +587,43 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     }
 }
 
+QString BasePlaylistFeature::getValidPlaylistName() const {
+    QString name;
+    bool validNameGiven = false;
+
+    while (!validNameGiven) {
+        bool ok = false;
+        name = QInputDialog::getText(nullptr,
+                                     tr("Create New Playlist"),
+                                     tr("Enter name for new playlist:"),
+                                     QLineEdit::Normal,
+                                     tr("New Playlist"),
+                                     &ok).trimmed();
+        if (!ok) {
+            // Cancel button clicked
+            return QString();
+        }
+
+        int existingId = m_playlistDao.getPlaylistIdFromName(name);
+
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                 tr("Playlist Creation Failed"),
+                                 tr("A playlist by that name already exists."));
+        } else if (name.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                 tr("Playlist Creation Failed"),
+                                 tr("A playlist cannot have a blank name."));
+        } else {
+            validNameGiven = true;
+        }
+    }
+    return name;
+}
+
 QSet<int> BasePlaylistFeature::playlistIdsFromIndex(const QModelIndex &index) const {
-    QString dataPath = index.data(TreeItemModel::RoleDataPath).toString();
     bool ok = false;
-    int playlistId = dataPath.toInt(&ok);
+    int playlistId = index.data(TreeItemModel::RoleDataPath).toInt(&ok);
     if (!ok) {
         return QSet<int>();
     }
@@ -627,7 +636,7 @@ int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
     QSet<int> playlistIds = playlistIdsFromIndex(index);
     if (playlistIds.empty() || playlistIds.size() > 1) {
         return -1;
-    } 
+    }
     
     return *playlistIds.begin();
 }

@@ -120,11 +120,21 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
         }
     }
 
+    // Request a name for the playlist if it's a new playlist
+    if (playlistId < 0) {
+        QString name = getValidPlaylistName();
+        if (name.isNull()) {
+            // The user has canceled
+            return false;
+        }
+        playlistId = m_playlistDao.createPlaylist(name);
+    }
+    
     // Return whether appendTracksToPlaylist succeeded.
     return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
-bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {    
     int playlistId = playlistIdFromIndex(index);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 

@@ -73,6 +73,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void buildPlaylistList() = 0;
     virtual void decorateChild(TreeItem *pChild, int playlist_id) = 0;
     virtual void addToAutoDJ(bool bTop);
+    QString getValidPlaylistName() const;
     
     QPointer<PlaylistTableModel> getPlaylistTableModel(int paneId);
     virtual PlaylistTableModel* constructTableModel() = 0;

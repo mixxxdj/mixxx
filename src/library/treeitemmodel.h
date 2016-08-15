@@ -8,6 +8,7 @@
 #include <QUrl>
 
 class TreeItem;
+class LibraryFeature;
 
 class TreeItemModel : public QAbstractItemModel {
     Q_OBJECT
@@ -53,6 +54,8 @@ class TreeItemModel : public QAbstractItemModel {
     void triggerRepaint();
 
   protected:
+    LibraryFeature* getFeatureFromIndex(const QModelIndex& index) const;
+    
     TreeItem* m_pRootItem;
 };
 
