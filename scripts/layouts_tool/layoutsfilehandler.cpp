@@ -76,6 +76,9 @@ void LayoutsFileHandler::compileLayoutsFile(const QString cppPath, GetLayout_t &
         dlclose(handle);
         qFatal("Couldn't load symbol 'getLayout'");
     }
+
+    // Remove so file
+    system(QString("rm %1").arg(soPath).toLatin1().data());
 }
 
 void LayoutsFileHandler::prependDefs(QFile &cppFile) {
@@ -223,6 +226,21 @@ LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile &cppFile) {
 
 void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     QStringList lines;
+
+    // Add comments telling that this file was generated
+    lines.append("/**********************************************************************");
+    lines.append("** This code was generated with layoutstool");
+    lines.append("**");
+    lines.append("** WARNING: Changes to this file may be overridden by the tool!");
+    lines.append("**");
+    lines.append("**          If you want to add or delete layouts, please use the tool.");
+    lines.append("**          Layoutstool can be found in mixxx/scripts/layouts_tool.");
+    lines.append("**          Build with build.sh. Note that layoutstool only ");
+    lines.append("**");
+    lines.append("**          Layoutstool does only work on Linux (make sure you have GCC");
+    lines.append("**          and CMake installed in order to successfully build and run ");
+    lines.append("**          the tool.");
+    lines.append("**********************************************************************/");
 
     // Open namespace
     lines.append("namespace layouts {");
