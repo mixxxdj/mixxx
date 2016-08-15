@@ -112,8 +112,8 @@ void LayoutsFileHandler::prependDefs(QFile &cppFile) {
 }
 
 void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNamesData &layoutNames) {
-    const QString beginLayoutComment = "/* @BEGIN_GET_LAYOUT */";
-    const QString endLayoutComment = "/* @END_GET_LAYOUT */";
+    QString beginLayoutComment = "/* @BEGIN_GET_LAYOUT */";
+    QString endLayoutComment = "/* @END_GET_LAYOUT */";
 
     // Remove previous getLayout function
     QStringList fileLines;
@@ -122,24 +122,23 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNa
         bool skip = false;
         while (!in.atEnd()) {
             QString line = in.readLine();
+            QString trimmedLine = line.trimmed();
 
             // If we are within beginLayoutComment and endLayoutComment,
             // do not add those lines in
-            if (line.contains(beginLayoutComment)) skip = true;
-            if (!skip) fileLines.append(in.readLine());
-            if (line.contains(endLayoutComment)) skip = false;
+            if (trimmedLine.startsWith(beginLayoutComment)) skip = true;
+            if (!skip) fileLines.append(line);
+            if (trimmedLine.startsWith(endLayoutComment)) skip = false;
         }
         cppFile.close();
     }
 
-
     QStringList fn;
-
     fn.append("");
     fn.append(beginLayoutComment);
     fn.append("extern \"C\" KeyboardLayoutPointer getLayout(std::string layoutName) {");
     for (QStringList names : layoutNames) {
-        fn.append("    if (layoutName == \"" + names[0] + "\") return " + names[0] + ";");
+        fn.append("    if (layoutName == \"" + names[0] + "\") return layouts::" + names[0] + ";");
     }
     fn.append("    else {");
     fn.append("        return nullptr;");
@@ -147,9 +146,12 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNa
     fn.append("}");
     fn.append(endLayoutComment);
 
-    if (cppFile.open(QIODevice::ReadWrite | QIODevice::Append)) {
+    fileLines += fn;
+
+
+    if (cppFile.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
         QTextStream stream(&cppFile);
-        for (QStringList::Iterator it = fn.begin(); it != fn.end(); ++it) {
+        for (QStringList::Iterator it = fileLines.begin(); it != fileLines.end(); ++it) {
             stream << *it << "\n";
         }
         cppFile.close();
@@ -166,7 +168,9 @@ LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile &cppFile) {
 
         QString prevLine;
         while (!in.atEnd()) {
-            QString line = in.readLine();
+
+            // Get current line and trim to get rid of indentation
+            QString line = in.readLine().trimmed();
 
             if (!line.startsWith(type)) {
                 prevLine = line;
@@ -198,11 +202,22 @@ LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile &cppFile) {
 void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     QStringList lines;
 
-    // Add layouts
+    // Open namespace
+    lines.append("namespace layouts {");
+    lines.append("");
+
+    // Add layouts and add indentation for namespace
     for (Layout &layout : layouts) {
-        lines += layout.generateCode();
+        QStringList layoutCode = layout.generateCode();
+        for (QString &line : layoutCode) {
+            lines.append("    " + line);
+        }
+
         lines.append("");
     }
+
+    // Close namespace
+    lines.append("}");
 
     if (f.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
         QTextStream stream(&f);
@@ -213,5 +228,4 @@ void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     }
 
     appendGetLayoutsFunction(f, getLayoutNames(f));
-
 }
