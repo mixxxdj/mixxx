@@ -9,7 +9,7 @@ function build {
     DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     TEMP_DIR=${DIR}/.cmake_temp
     BIN_DIR=${DIR}/bin
-    EXECUTABLE=${TEMP_DIR}/layouts_tool
+    EXECUTABLE=${TEMP_DIR}/layoutstool
 
     # Create temp dir (after removing old one, if necessary)
     $(rm -rf ${TEMP_DIR})

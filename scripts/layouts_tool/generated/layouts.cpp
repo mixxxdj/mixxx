@@ -1,3 +1,63 @@
+#include <iostream>
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+#include <iostream>
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+#include <iostream>
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+#include <iostream>
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+#include <iostream>
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+#include <iostream>
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+#include <iostream>
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+#include <iostream>
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+#include <iostream>
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+#include <iostream>
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
 // English (US)
 static const KbdKeyChar en_US[48][2] = {
         // Digits row
@@ -292,7 +352,6 @@ static const KbdKeyChar fr_FR[48][2] = {
         /* <AB09> */ {{':'}, {'/'}},
         /* <AB10> */ {{'!'}, {u'\u00a7'}}
 };
-
 
 /* @BEGIN_GET_LAYOUT */
 extern "C" KeyboardLayoutPointer getLayout(std::string layoutName) {
