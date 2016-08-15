@@ -115,7 +115,7 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNa
     QString beginLayoutComment = "/* @BEGIN_GET_LAYOUT */";
     QString endLayoutComment = "/* @END_GET_LAYOUT */";
 
-    // Remove previous getLayout function
+    // Remove old 'getLayout' function definition(s)
     QStringList fileLines;
     if (cppFile.open(QIODevice::ReadOnly)) {
         QTextStream in(&cppFile);
@@ -133,22 +133,35 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNa
         cppFile.close();
     }
 
-    QStringList fn;
-    fn.append("");
-    fn.append(beginLayoutComment);
-    fn.append("extern \"C\" KeyboardLayoutPointer getLayout(std::string layoutName) {");
-    for (QStringList names : layoutNames) {
-        fn.append("    if (layoutName == \"" + names[0] + "\") return layouts::" + names[0] + ";");
+    // Generate new 'getLayout' function definition
+    QStringList fnLines;
+    QString indent = "    ";
+    fnLines.append("");
+    fnLines.append(beginLayoutComment);
+    fnLines.append("extern \"C\" KeyboardLayoutPointer getLayout(std::string layoutName) {");
+
+    // Create one if-statement per layout
+    for (QStringList names : layoutNames)
+        fnLines.append(
+                QString("%1if (layoutName == \"%2\") return layouts::%2;").arg(indent, names[0])
+        );
+
+    // Create 'else' if there is an 'if', if no 'if', return nullptr directly
+    if (!layoutNames.isEmpty()) {
+        fnLines.append(QString("%1else {").arg(indent));
+        fnLines.append(QString("%1%1return nullptr;").arg(indent));
+        fnLines.append(QString("%1}").arg(indent));
+    } else {
+        fnLines.append(QString("%1// There are no layouts in this file, so I can't return any").arg(indent));
+        fnLines.append(QString("%1return nullptr;").arg(indent));
     }
-    fn.append("    else {");
-    fn.append("        return nullptr;");
-    fn.append("    }");
-    fn.append("}");
-    fn.append(endLayoutComment);
+    fnLines.append("}");
+    fnLines.append(endLayoutComment);
 
-    fileLines += fn;
+    // Append new definition to buffered file
+    fileLines += fnLines;
 
-
+    // Rewrite file from buffer
     if (cppFile.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
         QTextStream stream(&cppFile);
         for (QStringList::Iterator it = fileLines.begin(); it != fileLines.end(); ++it) {
