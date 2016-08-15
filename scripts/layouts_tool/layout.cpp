@@ -84,6 +84,8 @@ QStringList Layout::generateCode() {
     QStringList lines;
     QString indent = "    ";
 
+    lines.append(QString("// %1").arg(name));
+
     lines.append(
             QString("static const KbdKeyChar %1[%2][2] = {")
                     .arg(varName,QString::number(LAYOUT_LEN))
