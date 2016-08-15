@@ -12,7 +12,7 @@ Layout::Layout(QString varName, QString name, KeyboardLayoutPointer pData) :
     qDebug() << "Loading layout " << name;
 
     // Copy layout data
-    for (int i = 0; i < LAYOUT_LEN; i++, pData++) {
+    for (int i = 0; i < LAYOUT_LEN; i++) {
         data[i][0] = pData[i][0]; // Unmodified KbdKeyChar
         data[i][1] = pData[i][1]; // Shift modified KbdKeyChar
     }
@@ -82,7 +82,7 @@ Layout::Layout(QString varName, QString name) :
 
 QStringList Layout::generateCode() {
     QStringList lines;
-    QString indent = "    ";
+    QString indent = "        ";
 
     lines.append(QString("// %1").arg(name));
 
