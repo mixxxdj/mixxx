@@ -14,7 +14,7 @@ public:
     LayoutsFileHandler();
     virtual ~LayoutsFileHandler();
 
-    void open(QString &layoutsPath, QList<Layout> &layouts);
+    void open(QString layoutsPath, QList<Layout> &layouts);
     void save(QFile& file);
 
 private:

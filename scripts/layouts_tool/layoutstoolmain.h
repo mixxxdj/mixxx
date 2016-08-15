@@ -25,5 +25,7 @@ private:
     QString mFilePath;
 
     void mainMenu();
+    void editLayoutMenu();
+    void clearScreen();
 };
 #endif // LAYOUTS_TOOL_MAIN_H
