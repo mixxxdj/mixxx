@@ -3,8 +3,27 @@
 #include <QDebug>
 
 LayoutsToolMain::LayoutsToolMain(QObject *parent) :
-        QObject(parent),
-        mFilePath(LAYOUTS_CPP_PATH) {
+        QObject(parent) {
+
+    // Find layouts.h path (check for Mixxx directory four directories up)
+    bool layoutsFound = false;
+    QDir cp = QDir::currentPath();
+
+    for (int i = 0; i < 5; i++) {
+        QString path(cp.absolutePath()+"/src/controllers/keyboard/layouts.cpp");
+        QFileInfo checkFile(path);
+
+        if (checkFile.exists() && checkFile.isFile()) {
+            mFilePath = path;
+            qDebug() << "Found path: " << path;
+            layoutsFound = true;
+        }
+        cp.cdUp();
+    }
+
+    if (!layoutsFound) {
+        mFilePath = "";
+    }
 
     app = qApp;
     pLayoutsFileHandler = new LayoutsFileHandler();
