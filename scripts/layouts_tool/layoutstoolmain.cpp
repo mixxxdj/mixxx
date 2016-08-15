@@ -1,7 +1,6 @@
 #include "layoutstoolmain.h"
 #include "utils.h"
 #include <QDebug>
-#include <QX11Info>
 
 LayoutsToolMain::LayoutsToolMain(QObject *parent) :
         QObject(parent),
@@ -39,7 +38,7 @@ void LayoutsToolMain::mainMenu() {
 
         // Print menu
         utils::clearTerminal();
-        qDebug() << "********** LAYOUT TOOLS MAIN MENU **********";
+        qDebug() << "********** LAYOUTS TOOL - MAIN MENU **********";
         if (loaded) qDebug() << "Currently opened file: " << mFilePath;
         qDebug() << "(1): Open file";
         qDebug() << "(2): Save file";
@@ -104,7 +103,7 @@ void LayoutsToolMain::editLayoutMenu() {
 
         // Print menu
         utils::clearTerminal();
-        qDebug() << "********** LAYOUT TOOLS - EDIT LAYOUT FILE **********";
+        qDebug() << "********** LAYOUTS TOOL - EDIT **********";
         qDebug() << "Editing file: " << mFilePath;
         qDebug() << "(1): Remove layout";
         qDebug() << "(2): Add layout";
@@ -146,7 +145,7 @@ void LayoutsToolMain::addLayoutMenu() {
     QString kbdLocale = utils::inputLocaleName();
 
     utils::clearTerminal();
-    qDebug() << "********** LAYOUT TOOLS - ADD LAYOUT **********";
+    qDebug() << "********** LAYOUTS TOOL - ADD LAYOUT **********";
     qDebug() << "Qt keyboard locale: " << kbdLocale
              << " (NOTE: This is not accurate any more when changing layout runtime)";
 
@@ -176,7 +175,7 @@ void LayoutsToolMain::removeLayoutMenu() {
 
         // Print menu
         utils::clearTerminal();
-        qDebug() << "********** LAYOUT TOOLS - REMOVE LAYOUT **********";
+        qDebug() << "********** LAYOUTS TOOL - REMOVE LAYOUT **********";
         showLayouts();
         qDebug("(%d)  %s", mLayouts.size(), "Back to edit menu");
 
