@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QX11Info>
+#include <QStringList>
 #include "defs.h"
 
 struct KbdKeyChar {
@@ -17,6 +18,8 @@ public:
     Layout(QString varName, QString name, KeyboardLayoutPointer pData);
     Layout(QString varName, QString name);
     virtual ~Layout();
+
+    QStringList generateCode();
 
     QString varName;
     QString name;

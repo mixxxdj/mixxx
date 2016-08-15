@@ -131,5 +131,5 @@ LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile &cppFile) {
 }
 
 void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
-    
+    QStringList lines;
 }

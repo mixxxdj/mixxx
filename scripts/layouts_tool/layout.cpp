@@ -80,5 +80,54 @@ Layout::Layout(QString varName, QString name) :
 
 }
 
+QStringList Layout::generateCode() {
+    QStringList lines;
+    QString indent = "    ";
+
+    lines.append(
+            QString("static const KbdKeyChar %1[%2][2] = {")
+                    .arg(varName,QString::number(LAYOUT_LEN))
+    );
+
+    for (int i = 0; i < LAYOUT_LEN; i++) {
+        int keycode = utils::layoutIndexToKeycode(i);
+        QString keyName = utils::keycodeToKeyname(keycode);
+
+        // If this key is the first key of the row, place an extra white
+        // line and a comment telling which row we are talking about
+        bool firstOfRow = keycode == TLDE || keycode == AD01 || keycode == AC01 || keycode == LSGT;
+        if (firstOfRow) {
+            QString rowName;
+            if (keycode == TLDE)      rowName = "Digits row";
+            else if (keycode == AD01) rowName = "Upper row";
+            else if (keycode == AC01) rowName = "Home row";
+            else if (keycode == LSGT) rowName = "Lower row";
+
+            lines.append("");
+            lines.append(QString("%1// %2").arg(indent, rowName));
+        }
+
+        KbdKeyChar &keyCharNoMods = data[i][0];
+        KbdKeyChar &keyCharShift = data[i][1];
+
+        QString line = QString("%1/* %2 */ ").arg(indent, keyName);
+        line += QString("{%1, %2}").arg(
+                utils::createKbdKeyCharLiteral(keyCharNoMods),
+                utils::createKbdKeyCharLiteral(keyCharShift)
+        );
+
+        // If not last, place a separation comma
+        if (i < LAYOUT_LEN - 1) {
+            line += ",";
+        }
+
+        lines.append(line);
+    }
+
+    lines.append("};");
+
+    return lines;
+}
+
 
 Layout::~Layout() {}

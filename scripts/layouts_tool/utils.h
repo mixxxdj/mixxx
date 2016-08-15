@@ -11,6 +11,7 @@ namespace utils {
     void clearTerminal();
     QString keycodeToKeyname(int keycode);
     int keycodeToLayoutIndex(int keycode);
+    int layoutIndexToKeycode(int layoutIndex);
     int keysymToUnicode(KeySym keysym);
     QString createKbdKeyCharLiteral(KbdKeyChar &kbdKeyChar);
     QString inputLocaleName();

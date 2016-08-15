@@ -100,6 +100,10 @@ namespace utils {
         return pos;
     }
 
+    int layoutIndexToKeycode(int layoutIndex) {
+        return keyboardMap[layoutIndex];
+    }
+
     QString inputLocaleName() {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         return QApplication::keyboardInputLocale().name();
