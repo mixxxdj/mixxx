@@ -13,6 +13,8 @@ class WaveformRenderMark : public WaveformRendererAbstract {
     virtual void setup(const QDomNode& node, const SkinContext& context);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
+    virtual void onResize() override;
+
   private:
     void generateMarkImage(WaveformMark& mark);
 

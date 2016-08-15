@@ -72,6 +72,13 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->restore();
 }
 
+void WaveformRenderMark::onResize() {
+    // Delete all marks' images. New images will be created on next paint.
+    for (int i = 0; i < m_marks.size(); i++) {
+        m_marks[i].m_image = QImage();
+    }
+}
+
 void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
     // Load the pixmap from file -- takes precedence over text.
     if (mark.m_pixmapPath != "") {
