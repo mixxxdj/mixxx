@@ -26,6 +26,8 @@ private:
 
     void mainMenu();
     void editLayoutMenu();
+    void removeLayoutsMenu();
+    void showLayouts();
     void clearScreen();
 };
 #endif // LAYOUTS_TOOL_MAIN_H

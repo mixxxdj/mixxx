@@ -17,9 +17,10 @@ public:
     Layout(QString varName, QString name, KeyboardLayoutPointer data);
     virtual ~Layout();
 
-private:
     QString varName;
     QString name;
+
+private:
     KbdKeyChar data[LAYOUT_LEN][2];
 };
 

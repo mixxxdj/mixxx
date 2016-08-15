@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QString>
 #include <QProcess>
+#include "layout.h"
 
 LayoutsToolMain::LayoutsToolMain(QObject *parent) :
         QObject(parent),
@@ -96,7 +97,6 @@ void LayoutsToolMain::editLayoutMenu() {
         return;
     }
 
-
     bool backToMain = false;
     do {
         int menuChoice = 0;
@@ -116,6 +116,7 @@ void LayoutsToolMain::editLayoutMenu() {
             case 1: {
                 // Remove layouts
                 qDebug() << "Remove layouts...";
+                removeLayoutsMenu();
                 break;
             }
 
@@ -136,6 +137,43 @@ void LayoutsToolMain::editLayoutMenu() {
                 break;
         }
     } while (!backToMain);
+}
+
+void LayoutsToolMain::removeLayoutsMenu() {
+    QTextStream qtin(stdin);
+
+    bool backToEdit;
+    do {
+        int menuChoice = 0;
+
+        // Print menu
+        clearScreen();
+        qDebug() << "********** LAYOUT TOOLS - REMOVE LAYOUT FILE **********";
+        showLayouts();
+        qDebug("(%d)  %s", mLayouts.size(), "Back to edit menu");
+
+        // Prompt user for choice
+        qtin >> menuChoice;
+
+        if (menuChoice == mLayouts.size()) {
+            break;
+        }
+
+        if (menuChoice >= mLayouts.size() || menuChoice < 0) {
+            qDebug() << "ERROR! You have selected an invalid choice.";
+            continue;
+        }
+
+        mLayouts.removeAt(menuChoice);
+        backToEdit = true;
+    } while (!backToEdit);
+}
+
+void LayoutsToolMain::showLayouts() {
+    int i = 0;
+    for (Layout &layout : mLayouts) {
+        qDebug("(%d)  %s, [%s]", i++, layout.name.toLatin1().data(), layout.varName.toLatin1().data());
+    }
 }
 
 void LayoutsToolMain::clearScreen() {
