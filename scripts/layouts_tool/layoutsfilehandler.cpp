@@ -25,7 +25,7 @@ void LayoutsFileHandler::open(QString &cppPath, QList<Layout> &layouts) {
 
     // Add some code in order for this tool to compile
     prependDefs(f);
-    appendGetLayoutsFunction(f, layoutNames);
+    appendGetLayoutsFunction(f, layoutNames, true);
 
     // Compile the file and get the function pointer to the getLayout
     // function (and the handle to be able to close it when we are done)
@@ -115,7 +115,10 @@ void LayoutsFileHandler::prependDefs(QFile &cppFile) {
     }
 }
 
-void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNamesData &layoutNames) {
+void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile,
+                                                  const LayoutNamesData &layoutNames,
+                                                  bool forInternUse) {
+
     QString beginLayoutComment = "/* @BEGIN_GET_LAYOUT */";
     QString endLayoutComment = "/* @END_GET_LAYOUT */";
 
@@ -142,7 +145,9 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNa
     QString indent = "    ";
     fnLines.append("");
     fnLines.append(beginLayoutComment);
-    fnLines.append("extern \"C\" KeyboardLayoutPointer getLayout(std::string layoutName) {");
+    fnLines.append(QString("%1KeyboardLayoutPointer getLayout(std::string layoutName) {")
+                           .arg(forInternUse ? ("extern \"C\" ") : "")
+    );
 
     // Create one if-statement per layout
     for (QStringList names : layoutNames)
@@ -244,5 +249,5 @@ void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
         f.close();
     }
 
-    appendGetLayoutsFunction(f, getLayoutNames(f));
+    appendGetLayoutsFunction(f, getLayoutNames(f), false);
 }

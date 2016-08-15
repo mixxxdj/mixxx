@@ -40,7 +40,11 @@ private:
     ////        return nullptr;
     ////    }
     //// }
-    void appendGetLayoutsFunction(QFile &cppFile, const LayoutNamesData &layoutNames);
+    ////
+    //// If forInternUse is false, it doesn't add 'extern "C" '
+    void appendGetLayoutsFunction(QFile &cppFile,
+                                  const LayoutNamesData &layoutNames,
+                                  bool forInternUse);
 
     void compileLayoutsFile(const QString cppPath, GetLayout_t &pFunction, void *&handle);
 };
