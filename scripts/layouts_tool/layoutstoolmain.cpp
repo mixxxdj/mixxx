@@ -9,9 +9,6 @@ LayoutsToolMain::LayoutsToolMain(QObject *parent) :
 
     app = QCoreApplication::instance();
     pLayoutsFileHandler = new LayoutsFileHandler();
-
-    QProcess::execute("export TERM=${TERM:-dumb}");
-    system("export TERM=${TERM:-dumb}");
 }
 
 void LayoutsToolMain::run() {
