@@ -16,7 +16,6 @@ void LayoutsFileHandler::open(QString &cppPath, QList<Layout> &layouts) {
         return;
     }
 
-
     QFile f(cppPath);
     LayoutNamesData layoutNames = getLayoutNames(f);
 
@@ -45,6 +44,10 @@ void LayoutsFileHandler::open(QString &cppPath, QList<Layout> &layouts) {
     // Close layouts library
     qDebug() << "Closing layouts library...\n";
     dlclose(handle);
+
+    // Write a clean version of the loaded layouts (remove definitions
+    // noise added in prependDefs)
+    save(f, layouts);
 }
 
 void LayoutsFileHandler::compileLayoutsFile(const QString cppPath, GetLayout_t &pGetLayoutFn, void *&handle) {
