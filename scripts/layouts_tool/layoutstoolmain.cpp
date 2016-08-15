@@ -1,8 +1,7 @@
 #include "layoutstoolmain.h"
+#include "utils.h"
 #include <QDebug>
-#include <QString>
 #include <QProcess>
-#include "layout.h"
 
 LayoutsToolMain::LayoutsToolMain(QObject *parent) :
         QObject(parent),
@@ -39,7 +38,7 @@ void LayoutsToolMain::mainMenu() {
         int menuChoice = 0;
 
         // Print menu
-        clearScreen();
+        utils::clearTerminal();
         qDebug() << "********** LAYOUT TOOLS MAIN MENU **********";
         if (loaded) qDebug() << "Currently opened file: " << mFilePath;
         qDebug() << "(1): Open file";
@@ -52,7 +51,7 @@ void LayoutsToolMain::mainMenu() {
 
         switch(menuChoice) {
             case 1: {
-                clearScreen();
+                utils::clearTerminal();
                 qDebug() << "Please tell me the path to the layouts cpp file (no spaces please): ";
                 qtin >> mFilePath;
                 pLayoutsFileHandler->open(mFilePath, mLayouts);
@@ -102,7 +101,7 @@ void LayoutsToolMain::editLayoutMenu() {
         int menuChoice = 0;
 
         // Print menu
-        clearScreen();
+        utils::clearTerminal();
         qDebug() << "********** LAYOUT TOOLS - EDIT LAYOUT FILE **********";
         qDebug() << "Editing file: " << mFilePath;
         qDebug() << "(1): Remove layouts";
@@ -147,7 +146,7 @@ void LayoutsToolMain::removeLayoutsMenu() {
         int menuChoice = 0;
 
         // Print menu
-        clearScreen();
+        utils::clearTerminal();
         qDebug() << "********** LAYOUT TOOLS - REMOVE LAYOUT FILE **********";
         showLayouts();
         qDebug("(%d)  %s", mLayouts.size(), "Back to edit menu");
@@ -176,16 +175,3 @@ void LayoutsToolMain::showLayouts() {
     }
 }
 
-void LayoutsToolMain::clearScreen() {
-    bool termEnvVarDefined = QProcessEnvironment::systemEnvironment().contains("TERM");
-
-    if (!termEnvVarDefined) {
-
-        // TODO(Tomasito) Find a way of clearing the screen when TERM environment variable is not defined
-        qDebug() << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-
-        return;
-    }
-
-    QProcess::execute("clear");
-}
