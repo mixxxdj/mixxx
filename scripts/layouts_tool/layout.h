@@ -2,7 +2,7 @@
 #define LAYOUT_H
 
 #include <QString>
-
+#include <QX11Info>
 #include "defs.h"
 
 struct KbdKeyChar {
@@ -14,7 +14,8 @@ typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
 
 class Layout {
 public:
-    Layout(QString varName, QString name, KeyboardLayoutPointer data);
+    Layout(QString varName, QString name, KeyboardLayoutPointer pData);
+    Layout(QString varName, QString name);
     virtual ~Layout();
 
     QString varName;

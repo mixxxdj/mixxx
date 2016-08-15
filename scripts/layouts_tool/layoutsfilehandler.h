@@ -1,7 +1,6 @@
 #ifndef LAYOUTSFILEHANDLER_H
 #define LAYOUTSFILEHANDLER_H
 
-
 #include <QFile>
 #include <QDir>
 #include "layout.h"
@@ -14,7 +13,7 @@ public:
     LayoutsFileHandler();
     virtual ~LayoutsFileHandler();
 
-    void open(QString layoutsPath, QList<Layout> &layouts);
+    void open(QString &layoutsPath, QList<Layout> &layouts);
     void save(QFile& file);
 
 private:
@@ -34,7 +33,5 @@ private:
 
     void compileLayoutsFile(const QString cppPath, GetLayout_t &pFunction, void *&handle);
 };
-
-
 
 #endif // LAYOUTSFILEHANDLER_H

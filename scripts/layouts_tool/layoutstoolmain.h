@@ -1,5 +1,6 @@
 #ifndef LAYOUTS_TOOL_MAIN_H
 #define LAYOUTS_TOOL_MAIN_H
+
 #include <QObject>
 #include <QApplication>
 #include "layoutsfilehandler.h"
@@ -23,6 +24,7 @@ private:
     LayoutsFileHandler *pLayoutsFileHandler;
     QList<Layout> mLayouts;
     QString mFilePath;
+    Display* m_xDisplay;
 
     void mainMenu();
     void editLayoutMenu();
@@ -30,4 +32,5 @@ private:
     void removeLayoutMenu();
     void showLayouts();
 };
+
 #endif // LAYOUTS_TOOL_MAIN_H

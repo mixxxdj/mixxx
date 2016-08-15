@@ -1,7 +1,7 @@
 #include "layoutstoolmain.h"
 #include "utils.h"
 #include <QDebug>
-#include <QProcess>
+#include <QX11Info>
 
 LayoutsToolMain::LayoutsToolMain(QObject *parent) :
         QObject(parent),
@@ -16,6 +16,9 @@ void LayoutsToolMain::run() {
 
     pLayoutsFileHandler->open(mFilePath, mLayouts);
     mainMenu();
+
+    // Get display from X
+    m_xDisplay = QX11Info::display();
 }
 
 void LayoutsToolMain::quit() {
@@ -158,7 +161,8 @@ void LayoutsToolMain::addLayoutMenu() {
             .toStdString()
             .c_str();
 
-    // TODO(Tomasito) Get XKB keyboard and add new Layout to mLayouts
+    Layout layout(layoutName, varName);
+    mLayouts.append(layout);
 }
 
 void LayoutsToolMain::removeLayoutMenu() {
@@ -197,4 +201,3 @@ void LayoutsToolMain::showLayouts() {
         qDebug("(%d)  %s, [%s]", i++, layout.name.toLatin1().data(), layout.varName.toLatin1().data());
     }
 }
-

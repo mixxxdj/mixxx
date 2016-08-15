@@ -3,13 +3,12 @@
 #include <QDebug>
 
 #include "layoutsfilehandler.h"
-#include "layout.h"
 
 LayoutsFileHandler::LayoutsFileHandler() {}
 
 LayoutsFileHandler::~LayoutsFileHandler() {}
 
-void LayoutsFileHandler::open(QString cppPath, QList<Layout> &layouts) {
+void LayoutsFileHandler::open(QString &cppPath, QList<Layout> &layouts) {
     QFileInfo check_file(cppPath);
     if (!check_file.exists() || !check_file.isFile()) {
         cppPath = "";
