@@ -76,7 +76,8 @@ var traxMode = 2;
 var FxMode = 1; // Single effect mode by default
 
 // Jog Led variables
-var JogRPM = 33.0 + 1/3, // Jog Wheel simulate a 33.3RPM turntable
+// set JogFlashWarningTime and JogFlashCriticalTime to -1 to disable jog wheel flash
+var JogRPM = 33.0 + 1/3, // Jog Wheel simulates a 33.3RPM turntable
     RoundTripTime = 60.0 / JogRPM, // Time in seconds for a complete turn
     JogLedNumber = 16, // number of leds (sections) on the jog wheel
     JogBaseLed = 0x3f, // Midino of last led (we count backward to turn in the right side)
@@ -98,6 +99,10 @@ var ON = 0x7F,
     SHIFT = 0x40,
     DOWN = 0x7F,
     UP = 0x00;
+
+// Some useful regex
+var channelRegEx = /\[Channel(\d+)\]/;
+var samplerRegEx = /\[Sampler(\d+)\]/;
 
 // Initialise and shutdown stuff.
 // ========================================================
@@ -187,10 +192,10 @@ ReloopBeatmix24.shutdown = function() {
 
 // Button functions.
 // ========================================================
-ReloopBeatmix24.GetNextRange = function(OV) {
+ReloopBeatmix24.GetNextRange = function(previous) {
     var len = RateRangeArray.length;
-    var pos = RateRangeArray.indexOf(OV);
-    // If OV is not found in the array, pos == -1 and (pos+1) == 0,
+    var pos = RateRangeArray.indexOf(previous);
+    // If 'previous' is not found in the array, pos == -1 and (pos+1) == 0,
     // so this function will return the first element
     return RateRangeArray[(pos + 1) % len];
 };
@@ -219,7 +224,7 @@ ReloopBeatmix24.LoopSet = function(channel, control, value, status, group) {
 };
 
 ReloopBeatmix24.PitchSlider = function(channel, control, value, status, group) {
-    engine.setValue(group, "rate", -script.pitch(control, value, status));
+    engine.setValue(group, "rate", -script.midiPitch(control, value, status));
 };
 
 // Trax navigation functions
@@ -395,7 +400,6 @@ ReloopBeatmix24.deckLoaded = function(value, group, control) {
     var i;
     switch (group.substr(1, 7)) {
         case "Channel":
-            var channelRegEx = /\[Channel(\d+)\]/;
             var channelChan = parseInt(channelRegEx.exec(group)[1]);
             if (channelChan <= 4) {
                 // shut down load button
@@ -412,7 +416,6 @@ ReloopBeatmix24.deckLoaded = function(value, group, control) {
             }
             break;
         case "Sampler":
-            var samplerRegEx = /\[Sampler(\d+)\]/;
             var samplerChan = parseInt(samplerRegEx.exec(group)[1]);
             if (samplerChan <= 8) { // We only handle 8 samplers (1 per pad)
                 for (i = 0x91; i <= 0x94; i++) {
@@ -437,7 +440,6 @@ ReloopBeatmix24.deckLoaded = function(value, group, control) {
 };
 
 ReloopBeatmix24.SamplerPlay = function(value, group, control) {
-    var samplerRegEx = /\[Sampler(\d+)\]/;
     var samplerChan = parseInt(samplerRegEx.exec(group)[1]);
     if (samplerChan <= 8) { // We only handle 8 samplers (1 per pad)
         var ledColor;
@@ -469,7 +471,6 @@ ReloopBeatmix24.SamplerPlay = function(value, group, control) {
 };
 
 ReloopBeatmix24.loopDefined = function(value, group, control) {
-    var channelRegEx = /\[Channel(\d+)\]/;
     var channelChan = parseInt(channelRegEx.exec(group)[1]);
     if (channelChan <= 4) {
         midi.sendShortMsg(0x90 + channelChan, 0x44, value < 0 ? OFF :
@@ -488,22 +489,22 @@ ReloopBeatmix24.ChannelPlay = function(value, group, control) {
             engine.stopTimer(jogWheelTimers[group]);
             delete jogWheelTimers[group];
             JogBlinking[group] = false;
-            var channelRegEx = /\[Channel(\d+)\]/;
             var channelChan = parseInt(channelRegEx.exec(group)[1]);
             ReloopBeatmix24.AllJogLEDsToggle(0x90 + channelChan, OFF, 2);
-            engine.trigger(group, "playposition"); // lit up jog position led
+            engine.trigger(group, "playposition"); // light up jog position led
         }
         channelPlaying[group] = false;
     }
 };
 
+// This function will light jog led and is connected to playposition,
+// so value here represent the position in the track in the range [-0.14..1.14]
+// (0 = beginning, 1 = end)
 ReloopBeatmix24.JogLed = function(value, group, control) {
 
     // time computation
     var trackDuration = engine.getValue(group, "duration");
     var timeLeft = trackDuration * (1.0 - value);
-
-    var channelRegEx = /\[Channel(\d+)\]/;
     var channelChan = parseInt(channelRegEx.exec(group)[1]);
 
     // Start JogWheel blinking if playing and time left < warning time
@@ -516,7 +517,7 @@ ReloopBeatmix24.JogLed = function(value, group, control) {
                     JogLedNumber, OFF);
                 delete JogLedLit[group];
             }
-            // lit all jog leds
+            // light all jog leds
             ReloopBeatmix24.AllJogLEDsToggle(0x90 + channelChan, ON, 2);
             // Set timer for shut off leds
             jogWheelTimers[group] = engine.beginTimer(
@@ -532,8 +533,8 @@ ReloopBeatmix24.JogLed = function(value, group, control) {
     var timePosition = trackDuration * value;
     var rotationNumber = timePosition / RoundTripTime; // number of turn since beginning
     var positionInCircle = rotationNumber - Math.floor(rotationNumber); // decimal part
-    var ledToLit = Math.round(positionInCircle * JogLedNumber);
-    if (JogLedLit[group] === ledToLit) { // exit if there is no change
+    var ledToLight = Math.round(positionInCircle * JogLedNumber);
+    if (JogLedLit[group] === ledToLight) { // exit if there is no change
         return;
     }
     if (JogLedLit[group] !== undefined) { // if other led on, shut it down
@@ -542,8 +543,8 @@ ReloopBeatmix24.JogLed = function(value, group, control) {
             OFF);
     }
     midi.sendShortMsg(0x90 + channelChan,
-        JogBaseLed - (ledToLit + JogLedNumber - 1) % JogLedNumber, ON);
-    JogLedLit[group] = ledToLit; // save last led lit
+        JogBaseLed - (ledToLight + JogLedNumber - 1) % JogLedNumber, ON);
+    JogLedLit[group] = ledToLight; // save last led lit
 };
 
 ReloopBeatmix24.jogLedFlash = function(group, state) {
