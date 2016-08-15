@@ -1,13 +1,3 @@
-#include <iostream>
-
-struct KbdKeyChar {
-    char16_t character;
-    bool is_dead;
-};
-
-typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
-
-
 // English (US)
 static const KbdKeyChar en_US[48][2] = {
         // Digits row
@@ -302,3 +292,17 @@ static const KbdKeyChar fr_FR[48][2] = {
         /* <AB09> */ {{':'}, {'/'}},
         /* <AB10> */ {{'!'}, {u'\u00a7'}}
 };
+
+
+/* @BEGIN_GET_LAYOUT */
+extern "C" KeyboardLayoutPointer getLayout(std::string layoutName) {
+    if (layoutName == "en_US") return en_US;
+    if (layoutName == "en_GB") return en_GB;
+    if (layoutName == "es_ES") return es_ES;
+    if (layoutName == "es_MX") return es_MX;
+    if (layoutName == "fr_FR") return fr_FR;
+    else {
+        return nullptr;
+    }
+}
+/* @END_GET_LAYOUT */

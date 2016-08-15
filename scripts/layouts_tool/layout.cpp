@@ -105,7 +105,7 @@ QStringList Layout::generateCode() {
             else if (keycode == AC01) rowName = "Home row";
             else if (keycode == LSGT) rowName = "Lower row";
 
-            lines.append("");
+            if (i > 0) lines.append("");
             lines.append(QString("%1// %2").arg(indent, rowName));
         }
 
