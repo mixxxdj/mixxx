@@ -1,5 +1,7 @@
 #include <QProcess>
 #include <QDebug>
+#include <sstream>
+#include <iomanip>
 
 #include "utils.h"
 #include "defs.h"
@@ -1804,5 +1806,40 @@ namespace utils {
             }
         }
         return 0;
+    }
+
+    QString createKbdKeyCharLiteral(KbdKeyChar &kbdKeyChar) {
+        QChar plainChar = kbdKeyChar.character;
+
+        // Escape " and \ if necessary
+        bool needsEscape = (
+                plainChar == QChar('\"') ||
+                plainChar == QChar('\'') ||
+                plainChar == QChar('\\')
+        );
+
+        // Generate unicode literal
+        std::stringstream b;
+        b << "\\u" << std::hex << std::setw(4) << std::setfill('0') << kbdKeyChar.character;
+        QString unicodeLiteral = QString::fromUtf8(b.str().c_str());
+
+        // Check whether the character is within ASCII range or not
+        bool isAscii = kbdKeyChar.character < 128;
+
+        // If the character is within ASCII range, charLiteral will be 'a', for example.
+        // However, if the character is not within ASCII range, charLiteral will be u'\u0061', for example.
+        QString charLiteral;
+        if (isAscii) {
+            charLiteral = plainChar;
+            if (needsEscape) {
+                charLiteral = "\\" + charLiteral;
+            }
+            charLiteral = "'" + charLiteral + "'";
+        } else {
+            charLiteral = "u'" + unicodeLiteral + "\'";
+        }
+
+        bool dead = kbdKeyChar.is_dead;
+        return !dead ? "{" + charLiteral + "}" : "{" + charLiteral + ", true}";
     }
 }

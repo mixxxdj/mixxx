@@ -76,10 +76,7 @@ Layout::Layout(QString varName, QString name) :
             // Load KbdKeyChar
             data[layoutIndex][i] = kbdKeyChar;
         }
-
-
     }
-
 
 }
 

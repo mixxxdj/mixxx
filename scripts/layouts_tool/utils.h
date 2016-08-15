@@ -3,6 +3,7 @@
 
 
 #include <QApplication>
+#include "layout.h"
 
 typedef unsigned long KeySym;
 
@@ -11,6 +12,7 @@ namespace utils {
     QString keycodeToKeyname(int keycode);
     int keycodeToLayoutIndex(int keycode);
     int keysymToUnicode(KeySym keysym);
+    QString createKbdKeyCharLiteral(KbdKeyChar &kbdKeyChar);
     QString inputLocaleName();
 }
 

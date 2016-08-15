@@ -14,7 +14,7 @@ public:
     virtual ~LayoutsFileHandler();
 
     void open(QString &layoutsPath, QList<Layout> &layouts);
-    void save(QFile& file);
+    void save(QFile &f, QList<Layout> &layouts);
 
 private:
     LayoutNamesData getLayoutNames(QFile &cppFile);
