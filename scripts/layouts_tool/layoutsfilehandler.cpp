@@ -18,16 +18,20 @@ void LayoutsFileHandler::open(QString &cppPath, QList<Layout> &layouts) {
 
 
     QFile f(cppPath);
-
     LayoutNamesData layoutNames = getLayoutNames(f);
+
+    // Add some code in order for this tool to compile
+    prependDefs(f);
     appendGetLayoutsFunction(f, layoutNames);
 
+    // Compile the file and get the function pointer to the getLayout
+    // function (and the handle to be able to close it when we are done)
     GetLayout_t getLayout = nullptr;
     void *handle = nullptr;
+    compileLayoutsFile(cppPath,
+                       getLayout,
+                       handle);
 
-    compileLayoutsFile(cppPath, getLayout, handle);
-
-    layouts;
     for (QStringList &names : layoutNames) {
         QString &varName = names[0];
         QString &name = names[1];
@@ -67,11 +71,47 @@ void LayoutsFileHandler::compileLayoutsFile(const QString cppPath, GetLayout_t &
     }
 }
 
+void LayoutsFileHandler::prependDefs(QFile &cppFile) {
+    QStringList lines;
+
+    // Include iostream
+    lines.append("#include <iostream>");
+
+    // Add KbdKeyChar struct definition
+    lines.append("struct KbdKeyChar {");
+    lines.append("    char16_t character;");
+    lines.append("    bool is_dead;");
+    lines.append("};");
+
+    // Add KeyboardLayoutPointer definition
+    lines.append("typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];");
+
+    // Load each line of file into QStringList
+    QStringList fileLines;
+    if (cppFile.open(QIODevice::ReadOnly)) {
+        QTextStream in(&cppFile);
+        while (!in.atEnd()) {
+            fileLines.append(in.readLine());
+        }
+        cppFile.close();
+    }
+
+    lines += fileLines;
+
+    // Overwrite file with prepended definitions
+    if (cppFile.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
+        QTextStream stream(&cppFile);
+        for (QStringList::Iterator it = lines.begin(); it != lines.end(); ++it) {
+            stream << *it << "\n";
+        }
+        cppFile.close();
+    }
+}
+
 void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNamesData &layoutNames) {
     QStringList fn;
 
     fn.append("");
-    fn.append("/* @START GENERATED */");
     fn.append("extern \"C\" KeyboardLayoutPointer getLayout(std::string layoutName) {");
     for (QStringList names : layoutNames) {
         fn.append("    if (layoutName == \"" + names[0] + "\") return " + names[0] + ";");
@@ -80,7 +120,6 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile, const LayoutNa
     fn.append("        return nullptr;");
     fn.append("    }");
     fn.append("}");
-    fn.append("/* @END GENERATED */");
 
     if (cppFile.open(QIODevice::ReadWrite | QIODevice::Append)) {
         QTextStream stream(&cppFile);
@@ -132,4 +171,18 @@ LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile &cppFile) {
 
 void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     QStringList lines;
+
+    // Add layouts
+    for (Layout &layout : layouts) {
+        lines += layout.generateCode();
+        lines.append("");
+    }
+
+    if (f.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
+        QTextStream stream(&f);
+        for (QStringList::Iterator it = lines.begin(); it != lines.end(); ++it) {
+            stream << *it << "\n";
+        }
+        f.close();
+    }
 }

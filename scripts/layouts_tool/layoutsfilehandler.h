@@ -19,6 +19,17 @@ public:
 private:
     LayoutNamesData getLayoutNames(QFile &cppFile);
 
+    //// Prepends definitions to layouts.h in order for this tool to be able to compile
+    //// the layouts. It adds this:
+    ////
+    ////  struct KbdKeyChar {
+    ////      char16_t character;
+    ////      bool is_dead;
+    ////  };
+    ////
+    ////  typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
+    void prependDefs(QFile &cppFile);
+
     //// Appends function to layouts.h to retrieve layouts. Function could look like this:
     ////
     //// extern "C" KeyboardLayoutPointer getLayout(std::string layoutName) {

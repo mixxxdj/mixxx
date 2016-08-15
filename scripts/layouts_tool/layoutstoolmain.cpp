@@ -60,6 +60,8 @@ void LayoutsToolMain::mainMenu() {
 
             case 2: {
                 qDebug() << "Save file...";
+                QFile f(mFilePath);
+                pLayoutsFileHandler->save(f, mLayouts);
                 break;
             }
 
