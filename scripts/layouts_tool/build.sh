@@ -22,7 +22,8 @@ function build {
     eval "make -C ${TEMP_DIR}"
 
     echo "Copying executable to bin folder..."
-    eval "cp ${TEMP_DIR}/${EXECUTABLE} ${BIN_DIR}"
+    eval "mkdir ${BIN_DIR}"
+    eval "mv ${EXECUTABLE} ${BIN_DIR}"
 
     echo "Cleaning up the mess I made... :)"
     eval "rm -rf ${TEMP_DIR}"
