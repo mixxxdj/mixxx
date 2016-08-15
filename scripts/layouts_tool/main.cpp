@@ -1,10 +1,11 @@
 #include <QtCore/QCoreApplication>
 #include <QTimer>
 #include <QDebug>
+#include <QApplication>
 #include "layoutstoolmain.h"
 
 int main(int argc, char *argv[]) {
-    QCoreApplication app(argc, argv);
+    QApplication app(argc, argv);
     LayoutsToolMain layoutTools;
 
     // Connect up the signals

@@ -7,7 +7,7 @@ LayoutsToolMain::LayoutsToolMain(QObject *parent) :
         QObject(parent),
         mFilePath(LAYOUTS_CPP_PATH) {
 
-    app = QCoreApplication::instance();
+    app = qApp;
     pLayoutsFileHandler = new LayoutsFileHandler();
 }
 
@@ -101,8 +101,8 @@ void LayoutsToolMain::editLayoutMenu() {
         utils::clearTerminal();
         qDebug() << "********** LAYOUT TOOLS - EDIT LAYOUT FILE **********";
         qDebug() << "Editing file: " << mFilePath;
-        qDebug() << "(1): Remove layouts";
-        qDebug() << "(2): Add layouts";
+        qDebug() << "(1): Remove layout";
+        qDebug() << "(2): Add layout";
         qDebug() << "(3): Back to main menu";
 
         // Prompt user for choice
@@ -112,13 +112,14 @@ void LayoutsToolMain::editLayoutMenu() {
             case 1: {
                 // Remove layouts
                 qDebug() << "Remove layouts...";
-                removeLayoutsMenu();
+                removeLayoutMenu();
                 break;
             }
 
             case 2: {
-                // Add layouts
-                qDebug() << "Add layouts...";
+                // Add layout
+                qDebug() << "Add layout...";
+                addLayoutMenu();
                 break;
             }
 
@@ -135,7 +136,32 @@ void LayoutsToolMain::editLayoutMenu() {
     } while (!backToMain);
 }
 
-void LayoutsToolMain::removeLayoutsMenu() {
+void LayoutsToolMain::addLayoutMenu() {
+    QTextStream qtin(stdin);
+    QString kbdLocale = utils::inputLocaleName();
+
+    utils::clearTerminal();
+    qDebug() << "********** LAYOUT TOOLS - ADD LAYOUT **********";
+    qDebug() << "Qt keyboard locale: " << kbdLocale
+             << " (NOTE: This is not accurate any more when changing layout runtime)";
+
+    qDebug() << "Enter layout name: ";
+    QString layoutName = kbdLocale;
+    qtin.skipWhiteSpace();
+    layoutName = qtin.readLine();
+
+    qDebug() << "Enter layout variable name (see Qt keyboard locale): ";
+    QString varName = kbdLocale;
+    qtin >> varName;
+
+    qDebug() << QString("\nAdding layout with:\n  Name:\t\t\t\t%1\n  Variable name:\t%2\n").arg(layoutName, varName)
+            .toStdString()
+            .c_str();
+
+    // TODO(Tomasito) Get XKB keyboard and add new Layout to mLayouts
+}
+
+void LayoutsToolMain::removeLayoutMenu() {
     QTextStream qtin(stdin);
 
     bool backToEdit;
@@ -144,7 +170,7 @@ void LayoutsToolMain::removeLayoutsMenu() {
 
         // Print menu
         utils::clearTerminal();
-        qDebug() << "********** LAYOUT TOOLS - REMOVE LAYOUT FILE **********";
+        qDebug() << "********** LAYOUT TOOLS - REMOVE LAYOUT **********";
         showLayouts();
         qDebug("(%d)  %s", mLayouts.size(), "Back to edit menu");
 

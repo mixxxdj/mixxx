@@ -1,7 +1,7 @@
 #ifndef LAYOUTS_TOOL_MAIN_H
 #define LAYOUTS_TOOL_MAIN_H
 #include <QObject>
-#include <QCoreApplication>
+#include <QApplication>
 #include "layoutsfilehandler.h"
 
 class LayoutsToolMain : public QObject {
@@ -19,14 +19,15 @@ public slots:
     void aboutToQuitApp();
 
 private:
-    QCoreApplication *app;
+    QApplication *app;
     LayoutsFileHandler *pLayoutsFileHandler;
     QList<Layout> mLayouts;
     QString mFilePath;
 
     void mainMenu();
     void editLayoutMenu();
-    void removeLayoutsMenu();
+    void addLayoutMenu();
+    void removeLayoutMenu();
     void showLayouts();
 };
 #endif // LAYOUTS_TOOL_MAIN_H

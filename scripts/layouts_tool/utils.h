@@ -2,9 +2,12 @@
 #define UTILS_H
 
 
+#include <QApplication>
+
 namespace utils {
     void clearTerminal();
-    std::string keycodeToKeyname(int keycode);
+    QString keycodeToKeyname(int keycode);
+    QString inputLocaleName();
 }
 
 #endif //LAYOUTS_TOOL_UTILS_H

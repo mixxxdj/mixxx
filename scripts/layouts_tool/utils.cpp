@@ -1,7 +1,3 @@
-//
-// Created by tomasito665 on 15-8-16.
-//
-
 #include <QProcess>
 #include <QDebug>
 
@@ -22,7 +18,7 @@ namespace utils {
         QProcess::execute("clear");
     }
 
-    std::string keycodeToKeyname(int keycode) {
+    QString keycodeToKeyname(int keycode) {
         switch (keycode) {
             // Numeric row
             case TLDE: return "<TLDE>";
@@ -82,5 +78,16 @@ namespace utils {
 
             default: return "";
         }
+    }
+
+    QString inputLocaleName() {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+        return QApplication::keyboardInputLocale().name();
+#else
+        // Use the default config for local keyboard
+        QInputMethod* pInputMethod = QGuiApplication::inputMethod();
+        return pInputMethod ? pInputMethod->locale().name() :
+                QLocale(QLocale::English).name();
+#endif
     }
 }

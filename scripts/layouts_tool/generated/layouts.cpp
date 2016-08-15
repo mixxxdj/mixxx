@@ -458,3 +458,16 @@ extern "C" KeyboardLayoutPointer getLayout(std::string layoutName) {
     }
 }
 /* @END GENERATED */
+
+/* @START GENERATED */
+extern "C" KeyboardLayoutPointer getLayout(std::string layoutName) {
+    if (layoutName == "en_US") return en_US;
+    if (layoutName == "en_GB") return en_GB;
+    if (layoutName == "es_ES") return es_ES;
+    if (layoutName == "es_MX") return es_MX;
+    if (layoutName == "fr_FR") return fr_FR;
+    else {
+        return nullptr;
+    }
+}
+/* @END GENERATED */
