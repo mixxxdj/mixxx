@@ -3,12 +3,6 @@
 
 static const int LAYOUT_LEN = 48;
 
-// TODO(Tomasito) Remove hardcoded paths
-static const QString LAYOUTS_CPP_PATH =
-        "/home/tomasito665/Development/Mixxx/scripts/layouts_tool/generated/layouts.cpp";
-static const QString LAYOUTS_SO_PATH =
-        "/home/tomasito665/Development/Mixxx/scripts/layouts_tool/generated/layouts.so";
-
 // See figure 2 at: http://www.charvolant.org/~doug/xkb/html/node5.html
 enum keycodes {
     // Digit row
