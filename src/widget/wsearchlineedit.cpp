@@ -302,10 +302,12 @@ void WSearchLineEdit::restoreQuery() {
         QAction* action = menu.addAction(tr("No saved queries"));
         action->setData(-1);
     }
-    for (int i = 0; i < savedQueries.size(); ++i) {
-        QAction* action = menu.addAction(savedQueries[i].title);
-        action->setData(i);
+    
+    for (const SavedSearchQuery& query : savedQueries) {
+        QAction* action = menu.addAction(query.title);
+        action->setData(query.id);
     }
+    
     QPoint position = m_pDropButton->pos();
     position += QPoint(0, m_pDropButton->height());
     
@@ -318,11 +320,6 @@ void WSearchLineEdit::restoreQuery() {
     if (index < 0) {
         return;
     }
-    QString text = savedQueries[index].query;
-    blockSignals(true);
-    setText(text);
-    updateButtons(text);
-    blockSignals(false);    
     
     m_pCurrentFeature->restoreQuery(index);
 }

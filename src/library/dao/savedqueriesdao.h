@@ -14,7 +14,15 @@
 // the search bar and the library features
 struct SavedSearchQuery {
     
-    SavedSearchQuery() : id(-1) {}
+    SavedSearchQuery() : 
+        vScrollBarPos(-1),
+        sortColumn(-1), 
+        sortAscendingOrder(false), 
+        pinned(false),
+        id(-1) {}
+    
+    SavedSearchQuery(const SavedSearchQuery& other) = default;
+    SavedSearchQuery& operator=(const SavedSearchQuery& other) = default;
     
     QString query;
     QString title;

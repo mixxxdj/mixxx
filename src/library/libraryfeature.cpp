@@ -130,6 +130,7 @@ void LibraryFeature::restoreQuery(int id) {
     // Move the query to the first position to be reused later by the user
     const SavedSearchQuery& sQuery = m_savedDAO.moveToFirst(this, id);
     pTable->restoreQuery(sQuery);
+    restoreSearch(sQuery.query.isNull() ? "" : sQuery.query);
 }
 
 QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {    
