@@ -101,6 +101,10 @@ var ON = 0x7F,
     DOWN = 0x7F,
     UP = 0x00;
 
+// The SysEx message to send to the controller to force the midi controller
+// to send the status of every item on the control surface.
+var ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
+
 // Some useful regex
 var channelRegEx = /\[Channel(\d+)\]/;
 var samplerRegEx = /\[Sampler(\d+)\]/;
@@ -182,6 +186,11 @@ ReloopBeatmix24.init = function(id, debug) {
     for (var i = 1; i <= 4; i++) {
         engine.trigger("[Channel" + i + "]", "loop_end_position");
     }
+
+    // After midi controller receive this Outbound Message request SysEx Message,
+    // midi controller will send the status of every item on the
+    // control surface. (Mixxx will be initialized with current values)
+    midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 
     print("Reloop Beatmix: " + id + " initialized.");
 };

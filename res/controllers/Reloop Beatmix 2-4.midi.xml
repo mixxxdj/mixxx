@@ -494,7 +494,7 @@
                 <status>0xB1</status>
                 <midino>0x10</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -504,7 +504,7 @@
                 <status>0xB1</status>
                 <midino>0x11</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -514,7 +514,7 @@
                 <status>0xB1</status>
                 <midino>0x12</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -524,7 +524,7 @@
                 <status>0xB1</status>
                 <midino>0x13</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -534,7 +534,7 @@
                 <status>0xB1</status>
                 <midino>0x14</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -1049,7 +1049,7 @@
                 <status>0xB2</status>
                 <midino>0x10</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -1059,7 +1059,7 @@
                 <status>0xB2</status>
                 <midino>0x11</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -1069,7 +1069,7 @@
                 <status>0xB2</status>
                 <midino>0x12</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -1079,7 +1079,7 @@
                 <status>0xB2</status>
                 <midino>0x13</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -1089,7 +1089,7 @@
                 <status>0xB2</status>
                 <midino>0x14</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -1604,7 +1604,7 @@
                 <status>0xB3</status>
                 <midino>0x10</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -1614,7 +1614,7 @@
                 <status>0xB3</status>
                 <midino>0x11</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -1624,7 +1624,7 @@
                 <status>0xB3</status>
                 <midino>0x12</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -1634,7 +1634,7 @@
                 <status>0xB3</status>
                 <midino>0x13</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -1644,7 +1644,7 @@
                 <status>0xB3</status>
                 <midino>0x14</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -2159,7 +2159,7 @@
                 <status>0xB4</status>
                 <midino>0x10</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -2169,7 +2169,7 @@
                 <status>0xB4</status>
                 <midino>0x11</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -2179,7 +2179,7 @@
                 <status>0xB4</status>
                 <midino>0x12</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -2189,7 +2189,7 @@
                 <status>0xB4</status>
                 <midino>0x13</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -2199,7 +2199,7 @@
                 <status>0xB4</status>
                 <midino>0x14</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
@@ -2664,7 +2664,7 @@
                 <status>0xB5</status>
                 <midino>0x2F</midino>
                 <options>
-                    <Soft-takeover/>
+                    <Normal/>
                 </options>
             </control>
             <control>
