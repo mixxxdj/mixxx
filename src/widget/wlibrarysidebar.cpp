@@ -30,12 +30,14 @@ void WSidebarItemDelegate::paint(QPainter* painter,
     
     QString text = index.data().toString();
     QRect rect(option.rect);
+    QFont font(option.font);
+    font.setBold(true);
     // Set small padding left
-    rect.setLeft(rect.left() + 2);
+    rect.setLeft(rect.left() + 3);
     
     // Draw the text
     painter->setPen(option.palette.color(QPalette::Text));
-    painter->setFont(option.font);
+    painter->setFont(font);
     painter->drawText(rect, text);
     
     // Draw line under text

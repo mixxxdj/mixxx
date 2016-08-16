@@ -281,7 +281,7 @@ void LibraryTreeModel::createTracksTree() {
             parent[i + 1] = pTree;
             
             // Add coverart info
-            if (treeStartQueryIndex + i == iAlbum && !unknown) {
+            if (treeStartQueryIndex + i == iAlbum) {
                 addCoverArt(cIndex, query, pTree);
             }
         }
