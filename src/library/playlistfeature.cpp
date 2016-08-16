@@ -10,7 +10,6 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
-#include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 #include "library/queryutil.h"
 #include "library/parser.h"

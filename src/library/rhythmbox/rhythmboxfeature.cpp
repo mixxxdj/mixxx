@@ -9,7 +9,6 @@
 #include "library/baseexternalplaylistmodel.h"
 #include "library/library.h"
 #include "library/queryutil.h"
-#include "library/treeitem.h"
 
 RhythmboxFeature::RhythmboxFeature(UserSettingsPointer pConfig,
                                    Library* pLibrary, 

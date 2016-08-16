@@ -12,7 +12,6 @@
 
 #include <QFileInfo>
 
-#include "library/treeitem.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/browse/browsefeature.h"
 #include "util/file.h"

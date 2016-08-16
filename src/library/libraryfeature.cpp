@@ -49,6 +49,18 @@ QIcon LibraryFeature::getIcon() {
     return WPixmapStore::getLibraryIcon(getIconPath());
 }
 
+bool LibraryFeature::dropAcceptChild(const QModelIndex&, QList<QUrl>, QObject*) {
+    return false;
+}
+
+bool LibraryFeature::dragMoveAccept(QUrl) {
+    return false;
+}
+
+bool LibraryFeature::dragMoveAcceptChild(const QModelIndex &, QUrl) {
+    return false;
+}
+
 QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                           int paneId) {
     return createTableWidget(pKeyboard, paneId);
@@ -203,6 +215,10 @@ void LibraryFeature::restoreSaveButton() {
 
 void LibraryFeature::showBreadCrumb(TreeItem *pTree) {
     m_pLibrary->showBreadCrumb(pTree);
+}
+
+void LibraryFeature::showBreadCrumb(const QModelIndex &index) {
+    showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
 }
 
 void LibraryFeature::showBreadCrumb(const QString &text, const QIcon& icon) {

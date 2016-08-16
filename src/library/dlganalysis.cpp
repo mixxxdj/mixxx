@@ -102,10 +102,10 @@ void DlgAnalysis::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
     //qDebug() << "DlgAnalysis::setSelectedIndexes" << selectedIndexes;
     m_selectedIndexes = selectedIndexes;
     pushButtonAnalyze->setEnabled(m_selectedIndexes.size() > 0 ||
-                                  m_bAnalysisActive);
+                                  !m_bAnalysisActive);
 }
 
-void DlgAnalysis::setTableModel(AnalysisLibraryTableModel *pTableModel) {
+void DlgAnalysis::setTableModel(AnalysisLibraryTableModel* pTableModel) {
     m_pAnalysisLibraryTableModel = pTableModel;
     
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()),

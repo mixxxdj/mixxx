@@ -5,7 +5,6 @@
 #include "library/libraryfeature.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "library/treeitem.h"
 
 LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
                                        TrackCollection* pTrackCollection,

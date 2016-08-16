@@ -3,7 +3,6 @@
 #include "widget/wlibrarybreadcrumb.h"
 
 #include "library/treeitemmodel.h"
-#include "library/treeitem.h"
 
 WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent) 
 		: QWidget(parent) {

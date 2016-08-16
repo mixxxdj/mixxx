@@ -1,14 +1,13 @@
 #include <QString>
 
 #include "library/coverartcache.h"
-#include "library/librarytreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "library/treeitem.h"
-
 #include "util/stringhelper.h"
 #include "widget/wpixmapstore.h"
+
+#include "library/librarytreemodel.h"
 
 namespace  {
 QHash<quint16, QModelIndex> m_hashToIndex;

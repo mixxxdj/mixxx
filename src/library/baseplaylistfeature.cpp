@@ -13,7 +13,6 @@
 #include "library/parsercsv.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
-#include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "widget/wlibrary.h"
@@ -167,7 +166,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
         m_featureFocus = -1;
         
         restoreSearch("");
-        showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+        showBreadCrumb(index);
                 
         emit(enableCoverArtDisplay(true));
     }

@@ -7,7 +7,8 @@
 #include <QList>
 #include <QUrl>
 
-class TreeItem;
+#include "library/treeitem.h"
+
 class LibraryFeature;
 
 class TreeItemModel : public QAbstractItemModel {

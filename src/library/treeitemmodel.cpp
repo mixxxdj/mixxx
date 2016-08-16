@@ -1,8 +1,7 @@
-#include "library/treeitemmodel.h"
-
 #include <QLatin1String>
 #include <QStringBuilder>
-#include "library/treeitem.h"
+
+#include "library/treeitemmodel.h"
 
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:

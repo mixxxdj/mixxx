@@ -19,7 +19,6 @@
 #include "library/parserpls.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "library/treeitem.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/duration.h"

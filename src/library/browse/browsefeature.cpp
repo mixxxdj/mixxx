@@ -8,15 +8,11 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QStringList>
-#include <QStringList>
-#include <QTreeView>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/browse/browsefeature.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
-#include "library/treeitem.h"
-#include "track/track.h"
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarystack.h"
