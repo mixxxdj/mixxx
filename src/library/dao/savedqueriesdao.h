@@ -53,7 +53,7 @@ class SavedQueriesDAO : public DAO
     
   private:
     static QString serializeItems(const QSet<DbId>& items);
-    static QSet<DbId> deserializeItems(const QString& text);
+    static QSet<DbId> deserializeItems(QString text);
     static SavedSearchQuery valueToQuery(const QSqlQuery& query);
     
     static const QString kSelectStart;

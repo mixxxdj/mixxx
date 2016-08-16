@@ -126,12 +126,14 @@ QString SavedQueriesDAO::serializeItems(const QSet<DbId>& items) {
     return ret.join(" ");
 }
 
-QSet<DbId> SavedQueriesDAO::deserializeItems(const QString& text) {
+QSet<DbId> SavedQueriesDAO::deserializeItems(QString text) {
     QSet<DbId> ret;
-    QStringList items = text.split(" ");
-    for (const QString& item : items) {
-        ret.insert(DbId(QVariant(item)));
-    }
+    QTextStream ss(&text);
+    while (!ss.atEnd()) {
+        int value;
+        ss >> value;
+        ret.insert(DbId(QVariant(value)));
+    }    
     return ret;
 }
 
