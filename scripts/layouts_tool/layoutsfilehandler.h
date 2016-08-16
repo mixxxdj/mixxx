@@ -16,6 +16,8 @@ public:
     void open(QString &layoutsPath, QList<Layout> &layouts);
     void save(QFile &f, QList<Layout> &layouts);
 
+    static const QString INDENT;
+
 private:
     LayoutNamesData getLayoutNames(QFile &cppFile);
 
@@ -48,7 +50,6 @@ private:
 
     void compileLayoutsFile(const QString cppPath, GetLayout_t &pFunction, void *&handle);
 
-    static const QString INDENT = "    ";
 };
 
 #endif // LAYOUTSFILEHANDLER_H

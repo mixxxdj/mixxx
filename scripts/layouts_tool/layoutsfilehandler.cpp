@@ -4,6 +4,8 @@
 
 #include "layoutsfilehandler.h"
 
+const QString LayoutsFileHandler::INDENT = "    ";
+
 LayoutsFileHandler::LayoutsFileHandler() {}
 
 LayoutsFileHandler::~LayoutsFileHandler() {}
