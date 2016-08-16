@@ -22,19 +22,7 @@ SavedSearchQuery SavedQueriesDAO::saveQuery(LibraryFeature* pFeature,
         return SavedSearchQuery();
     }
     
-    // First of all delete previous saved queries
-    QString queryStr = "DELETE FROM " SAVEDQUERYTABLE " WHERE libraryFeature = :featureName";
-    
-    qDebug() << pFeature->getSettingsName();
-    
-    QSqlQuery query(m_database);
-    query.prepare(queryStr);
-    query.bindValue(":featureName", pFeature->getSettingsName());
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-    
-    
+    QSqlQuery query(m_database);    
     query.prepare("INSERT INTO " SAVEDQUERYTABLE 
                   "(libraryFeature, query, title, selectedItems,"
                   "sortOrder, vScrollbarPos, sortColumn, sortAscendingOrder, pinned) "
