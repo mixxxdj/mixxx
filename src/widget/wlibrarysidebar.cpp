@@ -1,10 +1,10 @@
 #include "widget/wlibrarysidebar.h"
 
+#include <QDebug>
 #include <QFileInfo>
 #include <QHeaderView>
 #include <QMimeData>
 #include <QPainter>
-#include <QDebug>
 #include <QUrl>
 
 #include "library/treeitemmodel.h"
@@ -31,7 +31,7 @@ void WSidebarItemDelegate::paint(QPainter* painter,
     QString text = index.data().toString();
     QRect rect(option.rect);
     // Set small padding left
-    rect.setLeft(rect.left() + 20);
+    rect.setLeft(rect.left() + 2);
     
     // Draw the text
     painter->setPen(option.palette.color(QPalette::Text));
@@ -59,8 +59,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setAutoScroll(true);
     setAttribute(Qt::WA_MacShowFocusRect, false);
     header()->setStretchLastSection(false);
-    header()->setResizeMode(QHeaderView::ResizeToContents);
-    header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    header()->setResizeMode(QHeaderView::Stretch);
 }
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
