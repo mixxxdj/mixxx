@@ -57,6 +57,8 @@ void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchBar) {
             this, SLOT(slotSearchCleared()));
     connect(pSearchBar, SIGNAL(searchStarting()),
             this, SLOT(slotSearchStarting()));
+    connect(pSearchBar, SIGNAL(focused()),
+            this, SLOT(slotPaneFocused()));
     
     m_pSearchBar = pSearchBar;
 }
@@ -176,12 +178,12 @@ void LibraryPaneManager::slotSearchCleared() {
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
-    if (m_pPaneWidget.isNull()) {
+    if (m_pPaneWidget.isNull() || m_pSearchBar.isNull()) {
         return false;
     }
 
     if (event->type() == QEvent::MouseButtonPress &&
-        m_pPaneWidget->underMouse()) {
+        (m_pPaneWidget->underMouse() || m_pSearchBar->underMouse())) {
         m_pLibrary->slotPaneFocused(this);
     }
 
