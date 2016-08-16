@@ -174,6 +174,7 @@ void LayoutsToolMain::addLayoutMenu() {
     layoutName = qtin.readLine();
 
     qDebug() << "Enter layout variable name (see Qt keyboard locale): ";
+    qDebug() << "NOTE: Please switch to the layout you want to save before hitting ENTER!";
     QString varName = kbdLocale;
     qtin >> varName;
 
