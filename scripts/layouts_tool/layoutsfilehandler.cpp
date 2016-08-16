@@ -6,6 +6,24 @@
 
 const QString LayoutsFileHandler::INDENT = "    ";
 
+const QStringList LayoutsFileHandler::HEADER_COMMENT = QStringList()
+        << "/*************************************************************************"
+        << "** This code was generated with layoutstool                             **"
+        << "**                                                                      **"
+        << "** WARNING: Changes to this file may be overridden by the tool!         **"
+        << "**                                                                      **"
+        << "**          If you want to add or delete layouts, please use the tool.  **"
+        << "**          Layoutstool can be found in mixxx/scripts/layouts_tool and  **"
+        << "**          build with build.sh. The executable will be placed in       **"
+        << "**          mixxx/scripts/layouts_tool/bin                              **"
+        << "**                                                                      **"
+        << "** NOTE:    Layoutstool does only work on Linux (make sure you have GCC **"
+        << "**          and CMake installed in order to successfully build and run  **"
+        << "**          the tool.                                                   **"
+        << "*************************************************************************/";
+
+const QString LayoutsFileHandler::INCLUDE_STRING = "#include <string>";
+
 const QString LayoutsFileHandler::KBDLAYOUTPOINTER_DEF =
         "typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];";
 
@@ -14,8 +32,6 @@ const QStringList LayoutsFileHandler::KBDKEYCHAR_DEF = QStringList()
         << INDENT + "char16_t character;"
         << INDENT + "bool is_dead;"
         << "};";
-
-const QString LayoutsFileHandler::INCLUDE_STRING = "#include <string>";
 
 LayoutsFileHandler::LayoutsFileHandler() {}
 
@@ -236,21 +252,8 @@ LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile &cppFile) {
 void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     QStringList lines;
 
-    // Add comments telling that this file was generated
-    lines.append("/**********************************************************************");
-    lines.append("** This code was generated with layoutstool");
-    lines.append("**");
-    lines.append("** WARNING: Changes to this file may be overridden by the tool!");
-    lines.append("**");
-    lines.append("**          If you want to add or delete layouts, please use the tool.");
-    lines.append("**          Layoutstool can be found in mixxx/scripts/layouts_tool and");
-    lines.append("**          build with build.sh.");
-    lines.append("**");
-    lines.append("** NOTE:");
-    lines.append("**          Layoutstool does only work on Linux (make sure you have GCC");
-    lines.append("**          and CMake installed in order to successfully build and run ");
-    lines.append("**          the tool.");
-    lines.append("**********************************************************************/");
+    // Add comment telling that this file was generated
+    lines.append(HEADER_COMMENT);
     lines.append("");
 
     // Open namespace

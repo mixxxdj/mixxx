@@ -17,9 +17,10 @@ public:
     void save(QFile &f, QList<Layout> &layouts);
 
     static const QString INDENT;
-    static const QString KBDLAYOUTPOINTER_DEF;
-    static const QStringList KBDKEYCHAR_DEF;
     static const QString INCLUDE_STRING;
+    static const QString KBDLAYOUTPOINTER_DEF;
+    static const QStringList HEADER_COMMENT;
+    static const QStringList KBDKEYCHAR_DEF;
 
 private:
     LayoutNamesData getLayoutNames(QFile &cppFile);
