@@ -22,6 +22,9 @@ WMiniViewScrollBar::WMiniViewScrollBar(QWidget* parent)
           m_dataRole(Qt::DisplayRole),
           m_showLetters(true) {
     setMouseTracking(true);
+    
+    connect(this, SIGNAL(rangeChanged(int,int)),
+            this, SLOT(triggerUpdate()));
 }
 
 void WMiniViewScrollBar::setShowLetters(bool show) {
@@ -179,8 +182,8 @@ void WMiniViewScrollBar::refreshCharMap() {
     
     for (int i = 0; i < size; ++i) {
         const QModelIndex& index = rootIndex.sibling(i, m_sortColumn);
-        int count = getVisibleChildCount(index);
         QString text = index.data(m_dataRole).toString();
+        int count = getVisibleChildCount(index);
         QChar c;
         
         if (m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) && 
@@ -290,7 +293,7 @@ void WMiniViewScrollBar::addToLastCharCount(const QChar& c, int sum) {
     } else {
         CharCount& lastC = m_letters.last();
         if (lastC.character == c) {
-            ++lastC.count;
+            lastC.count += sum;
         } else {
             m_letters.append({c, sum});
         }
