@@ -151,54 +151,42 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 void PlaylistFeature::buildPlaylistList() {
     m_playlistList.clear();
 
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
-        "AS SELECT "
-        "  Playlists.id as id, "
-        "  Playlists.name as name, "
-        "  COUNT(library.id) as count, "
-        "  SUM(library.duration) as durationSeconds "
-        "FROM Playlists "
-        "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
-        "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
-        "WHERE Playlists.hidden = 0 "
-        "GROUP BY Playlists.id;");
+    QString queryString = "SELECT "
+                          "Playlists.id as id, "
+                          "Playlists.name as name, "
+                          "COUNT(library.id) as count, "
+                          "SUM(library.duration) as durationSeconds "
+                          "FROM Playlists "
+                          "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
+                          "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
+                          "WHERE Playlists.hidden = 0 "
+                          "GROUP BY Playlists.id "
+                          "ORDER BY name";
     QSqlQuery query(m_pTrackCollection->getDatabase());
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
-
-    // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
-    playlistTableModel.setTable("PlaylistsCountsDurations");
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("name"),
-                               Qt::AscendingOrder);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
-    int countColumn = record.indexOf("count");
-    int durationColumn = record.indexOf("durationSeconds");
-
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id = playlistTableModel.data(
-            playlistTableModel.index(row, idColumn)).toInt();
-        QString name = playlistTableModel.data(
-            playlistTableModel.index(row, nameColumn)).toString();
-        int count = playlistTableModel.data(
-            playlistTableModel.index(row, countColumn)).toInt();
-        int duration = playlistTableModel.data(
-            playlistTableModel.index(row, durationColumn)).toInt();
-        m_playlistList.append(qMakePair(id, QString("%1 (%2) %3")
-                                        .arg(name, QString::number(count),
-                                                mixxx::Duration::formatSeconds(duration))));
+    
+    QSqlRecord record = query.record();
+    int iName = record.indexOf("name");
+    int iId = record.indexOf("id");
+    int iCount = record.indexOf("count");
+    int iDuration = record.indexOf("durationSeconds");
+    
+    while (query.next()) {
+        int id = query.value(iId).toInt();
+        QString name = query.value(iName).toString();
+        int count = query.value(iCount).toInt();
+        int duration = query.value(iDuration).toInt();
+        QString itemName = "%1 (%2) %3";
+        itemName = itemName.arg(name, 
+                                QString::number(count),
+                                mixxx::Duration::formatSeconds(duration));
+        m_playlistList << PlaylistItem(id, itemName);
     }
 }
 
-void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
+void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {    
     if (m_playlistDao.isPlaylistLocked(playlist_id)) {
         item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
     } else {

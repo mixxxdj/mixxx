@@ -17,7 +17,7 @@ class TreeItem {
   public:
     TreeItem(); //creates an invisible root item for the tree
     TreeItem(const QVariant &data,
-             const QVariant &data_path,
+             const QVariant &dataPath,
              LibraryFeature* pFeature,
              TreeItem* parent);
     TreeItem(LibraryFeature* pFeature);
@@ -44,7 +44,9 @@ class TreeItem {
     bool removeChildren(int position, int count);
 
     /** sets data **/
-    bool setData(const QVariant& data, const QVariant& data_path);
+    void setData(const QVariant& data);
+    void setData(const QVariant& data, const QVariant& dataPath);
+    void setDataPath(const QVariant& dataPath);
     /** simple name of the playlist **/
     QVariant data() const;
     /** Full path of the playlist **/

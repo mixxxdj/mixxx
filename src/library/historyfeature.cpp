@@ -126,7 +126,7 @@ void HistoryFeature::buildPlaylistList() {
     while (query.next()) {
         int id = query.value(iId).toInt();
         QString name = query.value(iName).toString();
-        m_playlistList.append(qMakePair(id, name));
+        m_playlistList << PlaylistItem(id, name);
     }
 }
 
