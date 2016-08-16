@@ -1,12 +1,12 @@
-#include <QEvent>
 #include <QDebug>
+#include <QResizeEvent>
 #include <QScrollBar>
 
 #include "wverticalscrollarea.h"
 
 WVerticalScrollArea::WVerticalScrollArea(QWidget* parent)
         : QScrollArea(parent) {
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setAlignment(Qt::AlignTop);
     setWidgetResizable(true);
@@ -17,12 +17,14 @@ void WVerticalScrollArea::setWidget(QWidget* widget) {
     QScrollArea::setWidget(widget);
 }
 
-bool WVerticalScrollArea::eventFilter(QObject* o, QEvent* e) {
-    if (o == widget() && e->type() == QEvent::Resize) {
-        int width = widget()->minimumSizeHint().width();
-        int vScrollWidth = verticalScrollBar()->width();
-        // + 2 for a Gap between scroll area and bar 
-        setFixedWidth(width + vScrollWidth);
+void WVerticalScrollArea::resizeEvent(QResizeEvent *e) {
+    QScrollArea::resizeEvent(e);
+    
+    int width = widget()->minimumSizeHint().width();
+    int vScrollWidth = 0;
+    
+    if (e->size().height() <= widget()->minimumSizeHint().height()) {
+        vScrollWidth = verticalScrollBar()->width();
     }
-    return false;
+    setFixedWidth(width + vScrollWidth);
 }
