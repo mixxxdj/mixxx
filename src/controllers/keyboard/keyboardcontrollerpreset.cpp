@@ -1,4 +1,5 @@
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
+#include "controllers/keyboard/layouts.h"
 
 QString KeyboardControllerPreset::getKeySequencesToString(ConfigKey configKey, QString separator) {
     QStringList keyseqs = getKeySequences(configKey);
@@ -40,7 +41,7 @@ QMultiHash<QString, ConfigKey> KeyboardControllerPreset::getMappingByGroup(QStri
 
 void KeyboardControllerPreset::translate(QString layoutName) {
     qDebug() << "KeyboardControllerPreset::translate() " << layoutName;
-    KeyboardLayoutPointer layout = layoutUtils::getLayout(layoutName);
+    KeyboardLayoutPointer layout = getLayout(layoutName.toStdString());
 
     // Default to American English layout if no layout
     // found with given layout name
@@ -48,7 +49,7 @@ void KeyboardControllerPreset::translate(QString layoutName) {
         qDebug() << "Couldn't find layout translation tables for "
                  << layoutName << ", falling back to \"en_US\"";
         layoutName = "en_US";
-        layout = layoutUtils::getLayout("en_US");
+        layout = getLayout("en_US");
 
         // TODO(Tomasito) - If previous layout was also en_US, return
     }
