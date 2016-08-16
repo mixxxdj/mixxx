@@ -79,6 +79,7 @@ class CrateFeature : public LibraryFeature {
     void slotResetSelectedTrack();
 
   private:
+    QString getValidCrateName();
     QString getRootViewHtml() const;
     QModelIndex constructChildModel(int selected_id);
     void updateChildModel(int selected_id);

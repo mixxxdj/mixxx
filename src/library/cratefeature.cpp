@@ -155,9 +155,7 @@ bool CrateFeature::dragMoveAccept(QUrl url) {
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     int crateId = crateIdFromIndex(index);
-    if (crateId == -1) {
-        return false;
-    }
+    
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     QList<TrackId> trackIds;
     if (pSource) {
@@ -167,23 +165,35 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
         // Adds track, does not insert duplicates, handles unremoving logic.
         trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
     }
-    qDebug() << "CrateFeature::dropAcceptChild adding tracks"
-            << trackIds.size() << " to crate "<< crateId;
+    //qDebug() << "CrateFeature::dropAcceptChild adding tracks"
+    //        << trackIds.size() << " to crate "<< crateId;
     // remove tracks that could not be added
     for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); ++trackIdIndex) {
         if (!trackIds.at(trackIdIndex).isValid()) {
             trackIds.removeAt(trackIdIndex--);
         }
     }
+    
+    // Request a name for the crate if it's a new crate
+    if (crateId < 0) {
+        QString name = getValidCrateName();
+        if (name.isNull()) {
+            return false;
+        }
+        
+        crateId = m_crateDao.createCrate(name);
+        // An error happened
+        if (crateId < 0) {
+            return false;
+        }
+    }
+    
     m_crateDao.addTracksToCrate(crateId, &trackIds);
     return true;
 }
 
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     int crateId = crateIdFromIndex(index);
-    if (crateId == -1) {
-        return false;
-    }
     bool locked = m_crateDao.isCrateLocked(crateId);
     bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
@@ -320,33 +330,10 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 }
 
 void CrateFeature::slotCreateCrate() {
-    QString name;
-    bool validNameGiven = false;
-
-    while (!validNameGiven) {
-        bool ok = false;
-        name = QInputDialog::getText(NULL,
-                                     tr("Create New Crate"),
-                                     tr("Enter name for new crate:"),
-                                     QLineEdit::Normal, tr("New Crate"),
-                                     &ok).trimmed();
-
-        if (!ok)
-            return;
-
-        int existingId = m_crateDao.getCrateIdByName(name);
-
-        if (existingId != -1) {
-            QMessageBox::warning(NULL,
-                                 tr("Creating Crate Failed"),
-                                 tr("A crate by that name already exists."));
-        } else if (name.isEmpty()) {
-            QMessageBox::warning(NULL,
-                                 tr("Creating Crate Failed"),
-                                 tr("A crate cannot have a blank name."));
-        } else {
-            validNameGiven = true;
-        }
+    QString name = getValidCrateName();
+    if (name.isNull()) {
+        // The user canceled
+        return;
     }
 
     int crateId = m_crateDao.createCrate(name);
@@ -354,7 +341,7 @@ void CrateFeature::slotCreateCrate() {
         activateCrate(crateId);
     } else {
         qDebug() << "Error creating crate with name " << name;
-        QMessageBox::warning(NULL,
+        QMessageBox::warning(nullptr,
                              tr("Creating Crate Failed"),
                              tr("An unknown error occurred while creating crate: ")
                              + name);
@@ -897,6 +884,39 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
 
 void CrateFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackPointer());
+}
+
+QString CrateFeature::getValidCrateName() {
+    QString name;
+    bool validNameGiven = false;
+
+    while (!validNameGiven) {
+        bool ok = false;
+        name = QInputDialog::getText(nullptr,
+                                     tr("Create New Crate"),
+                                     tr("Enter name for new crate:"),
+                                     QLineEdit::Normal, tr("New Crate"),
+                                     &ok).trimmed();
+
+        if (!ok) {
+            return QString();
+        }
+
+        int existingId = m_crateDao.getCrateIdByName(name);
+
+        if (existingId != -1) {
+            QMessageBox::warning(nullptr,
+                                 tr("Creating Crate Failed"),
+                                 tr("A crate by that name already exists."));
+        } else if (name.isEmpty()) {
+            QMessageBox::warning(nullptr,
+                                 tr("Creating Crate Failed"),
+                                 tr("A crate cannot have a blank name."));
+        } else {
+            validNameGiven = true;
+        }
+    }
+    return name;
 }
 
 QModelIndex CrateFeature::indexFromCrateId(int crateId) {

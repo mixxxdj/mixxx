@@ -127,7 +127,12 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
             // The user has canceled
             return false;
         }
+        
         playlistId = m_playlistDao.createPlaylist(name);
+        // An error happened
+        if (playlistId < 0) {
+            return false;
+        }
     }
     
     // Return whether appendTracksToPlaylist succeeded.
