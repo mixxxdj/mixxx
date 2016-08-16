@@ -87,7 +87,7 @@ void LayoutsToolMain::mainMenu() {
                 if (loaded) {
                     editLayoutMenu();
                 } else {
-                    qDebug() << "Exit...";
+                    userWantsToQuit = true;
                     quit();
                 }
                 break;
