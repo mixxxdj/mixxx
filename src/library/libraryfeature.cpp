@@ -176,8 +176,9 @@ WLibrarySidebar *LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter 
     
     // Set sidebar mini view
     WMiniViewScrollBar* pMiniView = new WMiniViewScrollBar(pSidebar);
+    pMiniView->setTreeView(pSidebar);
     pMiniView->setSortColumn(0);
-    pMiniView->setRole(TreeItemModel::RoleDataPath);
+    pMiniView->setRole(Qt::DisplayRole);
     pMiniView->setModel(pModel);
     pSidebar->setVerticalScrollBar(pMiniView);
     
