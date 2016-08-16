@@ -47,6 +47,8 @@ private:
                                   bool forInternUse);
 
     void compileLayoutsFile(const QString cppPath, GetLayout_t &pFunction, void *&handle);
+
+    static const QString INDENT = "    ";
 };
 
 #endif // LAYOUTSFILEHANDLER_H

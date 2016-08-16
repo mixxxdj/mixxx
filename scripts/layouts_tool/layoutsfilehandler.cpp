@@ -89,8 +89,8 @@ void LayoutsFileHandler::prependDefs(QFile &cppFile) {
 
     // Add KbdKeyChar struct definition
     lines.append("struct KbdKeyChar {");
-    lines.append("    char16_t character;");
-    lines.append("    bool is_dead;");
+    lines.append(INDENT + "char16_t character;");
+    lines.append(INDENT + "bool is_dead;");
     lines.append("};");
 
     // Add KeyboardLayoutPointer definition
@@ -145,7 +145,6 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile,
 
     // Generate new 'getLayout' function definition
     QStringList fnLines;
-    QString indent = "    ";
     fnLines.append("");
     fnLines.append(beginLayoutComment);
     fnLines.append(QString("%1KeyboardLayoutPointer getLayout(std::string layoutName) {")
@@ -155,17 +154,17 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile,
     // Create one if-statement per layout
     for (QStringList names : layoutNames)
         fnLines.append(
-                QString("%1if (layoutName == \"%2\") return layouts::%2;").arg(indent, names[0])
+                QString(INDENT + "if (layoutName == \"%1\") return layouts::%1;").arg(names[0])
         );
 
     // Create 'else' if there is an 'if', if no 'if', return nullptr directly
     if (!layoutNames.isEmpty()) {
-        fnLines.append(QString("%1else {").arg(indent));
-        fnLines.append(QString("%1%1return nullptr;").arg(indent));
-        fnLines.append(QString("%1}").arg(indent));
+        fnLines.append(INDENT + "else {");
+        fnLines.append(INDENT + INDENT + "return nullptr;");
+        fnLines.append(INDENT + "}");
     } else {
-        fnLines.append(QString("%1// There are no layouts in this file, so I can't return any").arg(indent));
-        fnLines.append(QString("%1return nullptr;").arg(indent));
+        fnLines.append(INDENT + "// There are no layouts in this file, so I can't return any");
+        fnLines.append(INDENT + "return nullptr;");
     }
     fnLines.append("}");
     fnLines.append(endLayoutComment);
@@ -234,13 +233,15 @@ void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     lines.append("** WARNING: Changes to this file may be overridden by the tool!");
     lines.append("**");
     lines.append("**          If you want to add or delete layouts, please use the tool.");
-    lines.append("**          Layoutstool can be found in mixxx/scripts/layouts_tool.");
-    lines.append("**          Build with build.sh. Note that layoutstool only ");
+    lines.append("**          Layoutstool can be found in mixxx/scripts/layouts_tool and");
+    lines.append("**          build with build.sh.");
     lines.append("**");
+    lines.append("** NOTE:");
     lines.append("**          Layoutstool does only work on Linux (make sure you have GCC");
     lines.append("**          and CMake installed in order to successfully build and run ");
     lines.append("**          the tool.");
     lines.append("**********************************************************************/");
+    lines.append("");
 
     // Open namespace
     lines.append("namespace layouts {");
@@ -250,7 +251,7 @@ void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     for (Layout &layout : layouts) {
         QStringList layoutCode = layout.generateCode();
         for (QString &line : layoutCode) {
-            lines.append("    " + line);
+            lines.append(INDENT + line);
         }
 
         lines.append("");
