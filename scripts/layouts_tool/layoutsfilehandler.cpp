@@ -22,12 +22,36 @@ const QStringList LayoutsFileHandler::HEADER_COMMENT = QStringList()
         << "**          the tool.                                                   **"
         << "*************************************************************************/";
 
-const QString LayoutsFileHandler::INCLUDE_STRING = "#include <string>";
+const QString LayoutsFileHandler::SKIP_HEAD = "/* @SKIP */";
+const QString LayoutsFileHandler::SKIP_TAIL = "/* @/SKIP */";
 
-const QString LayoutsFileHandler::KBDLAYOUTPOINTER_DEF =
+/******************
+*** Header file ***
+******************/
+
+const QStringList LayoutsFileHandler::INCLUDE_GUARD_HEAD = QStringList()
+        << "#ifndef LAYOUTS_H"
+        << "#define LAYOUTS_H";
+
+const QString LayoutsFileHandler::KBDKEYCHAR_PROTOTYPE =
+        "struct KbdKeyChar;";
+
+const QString LayoutsFileHandler::KBDLAYOUTPOINTER_TYPEDEF =
         "typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];";
 
-const QStringList LayoutsFileHandler::KBDKEYCHAR_DEF = QStringList()
+const QString LayoutsFileHandler::GETLAYOUT_FUNCTION_PROTOTYPE =
+        "KeyboardLayoutPointer getLayout(std::string layoutName);";
+
+const QString LayoutsFileHandler::INCLUDE_GUARD_TAIL = "#endif // LAYOUTS_H";
+
+
+/**************************
+*** Implementation file ***
+**************************/
+
+const QString LayoutsFileHandler::INCLUDE_STRING = "#include <string>";
+
+const QStringList LayoutsFileHandler::KBDKEYCHAR_IMPLEMENTATION = QStringList()
         << "struct KbdKeyChar {"
         << INDENT + "char16_t character;"
         << INDENT + "bool is_dead;"
@@ -52,7 +76,8 @@ void LayoutsFileHandler::open(QString &cppPath, QList<Layout> &layouts) {
     QFile f(cppPath);
     LayoutNamesData layoutNames = getLayoutNames(f);
 
-    // Add some code in order for this tool to compile
+    // Remove old code and add new code in order for the file to compile
+    removeSkipParts(f);
     prependDefs(f);
     appendGetLayoutsFunction(f, layoutNames, true);
 
@@ -116,11 +141,11 @@ void LayoutsFileHandler::prependDefs(QFile &cppFile) {
     // Include string for getLayout(std::string name) : KeyboardLayoutPointer
     lines.append(INCLUDE_STRING);
 
-    // Add KbdKeyChar struct definition
-    lines.append(KBDKEYCHAR_DEF);
+    // Add KbdKeyChar struct declaration
+    lines.append(KBDKEYCHAR_IMPLEMENTATION);
 
-    // Add KeyboardLayoutPointer definition
-    lines.append(KBDLAYOUTPOINTER_DEF);
+    // Add KeyboardLayoutPointer declaration
+    lines.append(KBDLAYOUTPOINTER_TYPEDEF);
 
     // Load each line of file into QStringList
     QStringList fileLines;
@@ -148,31 +173,10 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile,
                                                   const LayoutNamesData &layoutNames,
                                                   bool forInternUse) {
 
-    QString beginLayoutComment = "/* @BEGIN_GET_LAYOUT */";
-    QString endLayoutComment = "/* @END_GET_LAYOUT */";
-
-    // Remove old 'getLayout' function definition(s)
-    QStringList fileLines;
-    if (cppFile.open(QIODevice::ReadOnly)) {
-        QTextStream in(&cppFile);
-        bool skip = false;
-        while (!in.atEnd()) {
-            QString line = in.readLine();
-            QString trimmedLine = line.trimmed();
-
-            // If we are within beginLayoutComment and endLayoutComment,
-            // do not add those lines in
-            if (trimmedLine.startsWith(beginLayoutComment)) skip = true;
-            if (!skip) fileLines.append(line);
-            if (trimmedLine.startsWith(endLayoutComment)) skip = false;
-        }
-        cppFile.close();
-    }
-
     // Generate new 'getLayout' function definition
     QStringList fnLines;
     fnLines.append("");
-    fnLines.append(beginLayoutComment);
+    fnLines.append(SKIP_HEAD);
     fnLines.append(QString("%1KeyboardLayoutPointer getLayout(std::string layoutName) {")
                            .arg(forInternUse ? ("extern \"C\" ") : "")
     );
@@ -193,15 +197,12 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile,
         fnLines.append(INDENT + "return nullptr;");
     }
     fnLines.append("}");
-    fnLines.append(endLayoutComment);
-
-    // Append new definition to buffered file
-    fileLines += fnLines;
+    fnLines.append(SKIP_TAIL);
 
     // Rewrite file from buffer
-    if (cppFile.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
+    if (cppFile.open(QIODevice::ReadWrite | QIODevice::Append)) {
         QTextStream stream(&cppFile);
-        for (QStringList::Iterator it = fileLines.begin(); it != fileLines.end(); ++it) {
+        for (QStringList::Iterator it = fnLines.begin(); it != fnLines.end(); ++it) {
             stream << *it << "\n";
         }
         cppFile.close();
@@ -252,13 +253,28 @@ LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile &cppFile) {
 void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     QStringList lines;
 
+    // Assemble header file
+    const QFileInfo fileInfo(f.fileName());
+    const QString name = fileInfo.baseName();
+    QDir dir = fileInfo.absoluteDir();
+    QString headerName = name + ".h";
+    QString hPath = dir.filePath(headerName);
+    createHeaderFile(hPath);
+
     // Add comment telling that this file was generated
     lines.append(HEADER_COMMENT);
     lines.append("");
 
+    // Include header file (avoid this section from compiling when loading next time)
+    lines.append(SKIP_HEAD);
+    lines.append(QString("#include \"%1\"").arg(headerName));
+    lines.append("");
+    lines.append(KBDKEYCHAR_IMPLEMENTATION);
+    lines.append(SKIP_TAIL);
+    lines.append("");
+
     // Open namespace
     lines.append("namespace layouts {");
-    lines.append("");
 
     // Add layouts and add indentation for namespace
     for (Layout &layout : layouts) {
@@ -267,7 +283,9 @@ void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
             lines.append(INDENT + line);
         }
 
-        lines.append("");
+        if (&layout != &layouts.last()) {
+            lines.append("");
+        }
     }
 
     // Close namespace
@@ -282,4 +300,61 @@ void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     }
 
     appendGetLayoutsFunction(f, getLayoutNames(f), false);
+}
+
+void LayoutsFileHandler::createHeaderFile(const QString path) {
+    QFile f(path);
+    QStringList lines;
+
+    // Assemble header file body
+    lines.append(HEADER_COMMENT);
+    lines.append("");
+    lines.append(INCLUDE_GUARD_HEAD);
+    lines.append("");
+    lines.append(INCLUDE_STRING);
+    lines.append("");
+    lines.append(KBDKEYCHAR_PROTOTYPE);
+    lines.append(KBDLAYOUTPOINTER_TYPEDEF);
+    lines.append(GETLAYOUT_FUNCTION_PROTOTYPE);
+    lines.append("");
+    lines.append(INCLUDE_GUARD_TAIL);
+
+    if (f.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
+        QTextStream stream(&f);
+        for (QStringList::Iterator it = lines.begin(); it != lines.end(); ++it) {
+            stream << *it << "\n";
+        }
+        f.close();
+    }
+}
+
+void LayoutsFileHandler::removeSkipParts(QFile &f) {
+    QStringList code;
+
+    // Store all lines in given file into code filtering out
+    // lines in between SKIP_HEAD and SKIP_TAIL
+    if (f.open(QIODevice::ReadOnly)) {
+        QTextStream in(&f);
+        bool skip = false;
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            QString trimmedLine = line.trimmed();
+
+            // If we are within beginLayoutComment and endLayoutComment,
+            // do not add those lines in
+            if (trimmedLine.startsWith(SKIP_HEAD)) skip = true;
+            if (!skip) code.append(line);
+            if (trimmedLine.startsWith(SKIP_TAIL)) skip = false;
+        }
+        f.close();
+    }
+
+    // Rewrite file
+    if (f.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
+        QTextStream stream(&f);
+        for (QStringList::Iterator it = code.begin(); it != code.end(); ++it) {
+            stream << *it << "\n";
+        }
+        f.close();
+    }
 }

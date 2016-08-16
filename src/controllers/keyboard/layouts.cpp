@@ -1,23 +1,28 @@
-/**********************************************************************
-** This code was generated with layoutstool
-**
-** WARNING: Changes to this file may be overridden by the tool!
-**
-**          If you want to add or delete layouts, please use the tool.
-**          Layoutstool can be found in mixxx/scripts/layouts_tool and
-**          build with build.sh.
-**
-** NOTE:
-**          Layoutstool does only work on Linux (make sure you have GCC
-**          and CMake installed in order to successfully build and run 
-**          the tool.
-**********************************************************************/
+/*************************************************************************
+** This code was generated with layoutstool                             **
+**                                                                      **
+** WARNING: Changes to this file may be overridden by the tool!         **
+**                                                                      **
+**          If you want to add or delete layouts, please use the tool.  **
+**          Layoutstool can be found in mixxx/scripts/layouts_tool and  **
+**          build with build.sh. The executable will be placed in       **
+**          mixxx/scripts/layouts_tool/bin                              **
+**                                                                      **
+** NOTE:    Layoutstool does only work on Linux (make sure you have GCC **
+**          and CMake installed in order to successfully build and run  **
+**          the tool.                                                   **
+*************************************************************************/
 
-// TODO(Tomasito) Make Layoutstool add this in as well
-#include "controllers/keyboard/layouts.h"
+/* @SKIP */
+#include "layouts.h"
+
+struct KbdKeyChar {
+    char16_t character;
+    bool is_dead;
+};
+/* @/SKIP */
 
 namespace layouts {
-
     // English (US)
     static const KbdKeyChar en_US[48][2] = {
             // Digits row
@@ -961,10 +966,9 @@ namespace layouts {
             /* <AB09> */ {{'.'}, {':'}},
             /* <AB10> */ {{'-'}, {'_'}}
     };
-
 }
 
-/* @BEGIN_GET_LAYOUT */
+/* @SKIP */
 KeyboardLayoutPointer getLayout(std::string layoutName) {
     if (layoutName == "en_US") return layouts::en_US;
     if (layoutName == "en_GB") return layouts::en_GB;
@@ -986,4 +990,4 @@ KeyboardLayoutPointer getLayout(std::string layoutName) {
         return nullptr;
     }
 }
-/* @END_GET_LAYOUT */
+/* @/SKIP */
