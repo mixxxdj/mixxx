@@ -86,13 +86,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     connect(this, SIGNAL(textChanged(const QString&)),
             this, SLOT(updateButtons(const QString&)));
-
-    // The width of the frame for the widget based on the styling.
-    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-
-    // Ensures the text does not obscure the clear image.
-    setStyleSheet(QString("QLineEdit { padding-right: %1px; } ").
-                  arg(m_pClearButton->sizeHint().width() + frameWidth + 1));
 }
 
 void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
@@ -170,6 +163,9 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
         m_pSaveButton->move(posXSave, posYSave);
         m_pClearButton->move(posXClear, posYClear);
     }
+    
+    // Ensures the text does not obscure the clear image.
+    setStyleSheet(QString("QLineEdit { padding-right: %1px; }").arg(posXClear));
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
@@ -232,9 +228,7 @@ void WSearchLineEdit::restoreSearch(const QString& text, QPointer<LibraryFeature
     updateButtons(text);
 }
 
-void WSearchLineEdit::slotSetupTimer(const QString& text)
-{
-    Q_UNUSED(text);
+void WSearchLineEdit::slotSetupTimer(const QString&) {
     m_searchTimer.stop();
     //300 milliseconds timeout
     m_searchTimer.start(300);
