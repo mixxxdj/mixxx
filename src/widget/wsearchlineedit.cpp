@@ -5,8 +5,10 @@
 #include <QAction>
 #include <QDebug>
 #include <QFont>
+#include <QInputDialog>
 #include <QMenu>
 #include <QShortcut>
+#include <QString>
 #include <QStyle>
 #include <QStyleOption>
 
@@ -284,6 +286,21 @@ void WSearchLineEdit::saveQuery() {
     SavedSearchQuery query;
     query.title = query.query = text();
     if (!m_pCurrentFeature.isNull()) {
+        if (query.title.isEmpty()) {
+            // Request a title
+            bool ok = false;
+            query.title = 
+                QInputDialog::getText(nullptr,
+                                      tr("Create search query"),
+                                      tr("Enter name for empty search query"),
+                                      QLineEdit::Normal,
+                                      tr("New query"),
+                                      &ok).trimmed();
+            if (ok == false) {
+                return;
+            }
+        }
+        
         m_pCurrentFeature->saveQuery(query);
     }
     m_pSaveButton->setEnabled(false);
