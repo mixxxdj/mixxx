@@ -6,6 +6,17 @@
 
 const QString LayoutsFileHandler::INDENT = "    ";
 
+const QString LayoutsFileHandler::KBDLAYOUTPOINTER_DEF =
+        "typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];";
+
+const QStringList LayoutsFileHandler::KBDKEYCHAR_DEF = QStringList()
+        << "struct KbdKeyChar {"
+        << INDENT + "char16_t character;"
+        << INDENT + "bool is_dead;"
+        << "};";
+
+const QString LayoutsFileHandler::INCLUDE_STRING = "#include <string>";
+
 LayoutsFileHandler::LayoutsFileHandler() {}
 
 LayoutsFileHandler::~LayoutsFileHandler() {}
@@ -86,17 +97,14 @@ void LayoutsFileHandler::compileLayoutsFile(const QString cppPath, GetLayout_t &
 void LayoutsFileHandler::prependDefs(QFile &cppFile) {
     QStringList lines;
 
-    // Include iostream
-    lines.append("#include <iostream>");
+    // Include string for getLayout(std::string name) : KeyboardLayoutPointer
+    lines.append(INCLUDE_STRING);
 
     // Add KbdKeyChar struct definition
-    lines.append("struct KbdKeyChar {");
-    lines.append(INDENT + "char16_t character;");
-    lines.append(INDENT + "bool is_dead;");
-    lines.append("};");
+    lines.append(KBDKEYCHAR_DEF);
 
     // Add KeyboardLayoutPointer definition
-    lines.append("typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];");
+    lines.append(KBDLAYOUTPOINTER_DEF);
 
     // Load each line of file into QStringList
     QStringList fileLines;
