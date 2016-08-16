@@ -11,7 +11,7 @@ class WVerticalScrollArea : public QScrollArea
     void setWidget(QWidget* widget);
 
   protected:
-    virtual bool eventFilter(QObject* o, QEvent* e);
+    virtual void resizeEvent(QResizeEvent* e);
 };
 
 #endif // WVERTICALSCROLLAREA_H

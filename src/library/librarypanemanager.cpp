@@ -57,12 +57,15 @@ void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchBar) {
             this, SLOT(slotSearchCleared()));
     connect(pSearchBar, SIGNAL(searchStarting()),
             this, SLOT(slotSearchStarting()));
+    connect(pSearchBar, SIGNAL(focused()),
+            this, SLOT(slotPaneFocused()));
     
     m_pSearchBar = pSearchBar;
 }
 
-void LibraryPaneManager::setBreadCrumb(WLibraryBreadCrumb *pBreadCrumb) {
+void LibraryPaneManager::setBreadCrumb(WLibraryBreadCrumb* pBreadCrumb) {
     m_pBreadCrumb = pBreadCrumb;
+    pBreadCrumb->installEventFilter(this);
 }
 
 void LibraryPaneManager::addFeature(LibraryFeature* feature) {
@@ -176,12 +179,15 @@ void LibraryPaneManager::slotSearchCleared() {
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
-    if (m_pPaneWidget.isNull()) {
+    if (m_pPaneWidget.isNull() || m_pSearchBar.isNull() || 
+        m_pBreadCrumb.isNull()) {
         return false;
     }
 
     if (event->type() == QEvent::MouseButtonPress &&
-        m_pPaneWidget->underMouse()) {
+        (m_pPaneWidget->underMouse() || 
+         m_pSearchBar->underMouse() || 
+         m_pBreadCrumb->underMouse())) {
         m_pLibrary->slotPaneFocused(this);
     }
 

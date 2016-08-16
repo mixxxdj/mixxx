@@ -4,7 +4,6 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/recording/dlgrecording.h"
 #include "track/track.h"
-#include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
 #include "library/library.h"
 #include "library/trackcollection.h"

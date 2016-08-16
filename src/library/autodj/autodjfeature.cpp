@@ -15,7 +15,6 @@
 #include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"
 #include "library/autodj/dlgautodj.h"
-#include "library/treeitem.h"
 #include "mixer/playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"

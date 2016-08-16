@@ -129,6 +129,9 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
     
     // Get the value once to avoid searching again in the hash
     LibraryPaneManager* pPane = getPane(paneId);
+    if (pPane == nullptr) {
+        return;
+    }
     pPane->bindPaneWidget(pLibraryWidget, pKeyboard); 
     
     // Set the current font and row height on all the WTrackTableViews that were
@@ -501,6 +504,12 @@ LibraryPaneManager* Library::getPane(int paneId) {
     auto it = m_panes.find(paneId);
     if (it != m_panes.end()) {
         return *it;
+    }
+    
+    // Create a new pane only if there are more features than panes
+    if (m_panes.size() >= m_features.size()) {
+        qWarning() << "Library: there are more panes declared than features";
+        return nullptr;
     }
     
     LibraryPaneManager* pPane = new LibraryPaneManager(paneId, this);

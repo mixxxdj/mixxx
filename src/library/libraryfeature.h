@@ -52,16 +52,10 @@ class LibraryFeature : public QObject {
     }
     virtual bool dropAcceptChild(const QModelIndex& /* index */,
                                  QList<QUrl> /* urls */, 
-                                 QObject* /* pSource */) {
-        return false;
-    }
-    virtual bool dragMoveAccept(QUrl /* url */) {
-        return false;
-    }
+                                 QObject* /* pSource */);
+    virtual bool dragMoveAccept(QUrl /* url */);
     virtual bool dragMoveAcceptChild(const QModelIndex& /* index */, 
-                                     QUrl /* url */) {
-        return false;
-    }
+                                     QUrl /* url */);
     
     // Reimplement this to register custom views with the library widget
     // at the right pane.
@@ -87,22 +81,17 @@ class LibraryFeature : public QObject {
     // called when you single click on the root item
     virtual void activate() = 0;
     // called when you single click on a child item, e.g., a concrete playlist or crate
-    virtual void activateChild(const QModelIndex&) {
-    }
+    virtual void activateChild(const QModelIndex&) {}
     // called when you right click on the root item
-    virtual void onRightClick(const QPoint&) {
-    }
+    virtual void onRightClick(const QPoint&) {}
     // called when you right click on a child item, e.g., a concrete playlist or crate
     virtual void onRightClickChild(const QPoint& /* globalPos */, 
-                                   const QModelIndex& /* index */) {
-    }
+                                   const QModelIndex& /* index */) {}
     // Only implement this, if using incremental or lazy childmodels, see BrowseFeature.
     // This method is executed whenever you **double** click child items
-    virtual void onLazyChildExpandation(const QModelIndex&) {
-    }
+    virtual void onLazyChildExpandation(const QModelIndex&) {}
     
-    virtual void onSearch(const QString&) {
-    }
+    virtual void onSearch(const QString&) {}
     
   signals:
     
@@ -123,11 +112,15 @@ class LibraryFeature : public QObject {
     void restoreSaveButton();
     
   protected:
-    inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
-    inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
+    inline QStringList getPlaylistFiles() { 
+        return getPlaylistFiles(QFileDialog::ExistingFiles); 
+    }
+    inline QString getPlaylistFile() { 
+        return getPlaylistFiles(QFileDialog::ExistingFile).first(); 
+    }
     
     // Creates a table widget with no model
-    virtual WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
+    WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
                                                int paneId);
     
     // Creates a WLibrarySidebar widget with the getChildModel() function as
@@ -138,10 +131,11 @@ class LibraryFeature : public QObject {
     // the default widget is a WLibrarySidebar widget
     virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
     
-    void showTrackModel(QAbstractItemModel *model);
+    void showTrackModel(QAbstractItemModel* model);
     void switchToFeature();
     void restoreSearch(const QString& search);
     void showBreadCrumb(TreeItem* pTree);
+    void showBreadCrumb(const QModelIndex& index);
     void showBreadCrumb(const QString& text, const QIcon &icon);
     void showBreadCrumb();
     

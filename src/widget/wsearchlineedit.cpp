@@ -275,6 +275,8 @@ void WSearchLineEdit::updateButtons(const QString& text)
 bool WSearchLineEdit::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
+    } else if (pEvent->type() == QEvent::FocusIn) {
+        emit(focused());
     }
     return QLineEdit::event(pEvent);
 }

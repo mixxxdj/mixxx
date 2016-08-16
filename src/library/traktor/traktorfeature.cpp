@@ -15,7 +15,6 @@
 #include "library/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "library/treeitem.h"
 #include "util/sandbox.h"
 
 TraktorTrackModel::TraktorTrackModel(QObject* parent,

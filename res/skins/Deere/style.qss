@@ -121,14 +121,16 @@
  *******************************************************************************/
 
 /* library table */
-QTableView {
+QTableView, QTreeView {
   color: #d2d2d2;
   background-color: #1F1F1F;
   alternate-background-color: #1A1A1A;
-  selection-background-color: #006596 !important;
-  selection-color: #D6D6D6;
+  selection-background-color: #006596;
   border: 1px solid #1A1A1A;
-  gridline-color: red;
+}
+
+QTreeView::branch:selected, QTableView::item:selected, QTreeView::item:selected {
+  background-color: #006596;
 }
 
 /* checkbox in library "Played" column */

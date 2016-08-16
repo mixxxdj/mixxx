@@ -3,7 +3,6 @@
 #include "library/historyfeature.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "library/treeitem.h"
 
 #include "library/historytreemodel.h"
 

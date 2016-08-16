@@ -13,7 +13,6 @@
 #include "library/parsercsv.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
-#include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "widget/wlibrary.h"
@@ -167,7 +166,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
         m_featureFocus = -1;
         
         restoreSearch("");
-        showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+        showBreadCrumb(index);
                 
         emit(enableCoverArtDisplay(true));
     }
@@ -689,42 +688,40 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
   * we require the sidebar model not to reset.
   * This method queries the database and does dynamic insertion
 */
-QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
+QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
     buildPlaylistList();
+    
     m_childModel->setRootItem(new TreeItem("$root", "$root", this, nullptr));
     QList<TreeItem*> data_list;
-    int selected_row = -1;
+    int selectedRow = -1;
     // Access the invisible root item
     TreeItem* root = m_childModel->getItem(QModelIndex());
 
     int row = 0;
-    for (const QPair<int, QString>& p : m_playlistList) {
-        int playlist_id = p.first;
-        QString playlist_name = p.second;
-
-        if (selected_id == playlist_id) {
+    for (const PlaylistItem& p : m_playlistList) {
+        if (selectedId == p.id) {
             // save index for selection
-            selected_row = row;
+            selectedRow = row;
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(playlist_name, QString::number(playlist_id), this, root);
-        item->setBold(m_playlistsSelectedTrackIsIn.contains(playlist_id));
+        TreeItem* item = new TreeItem(p.name, QString::number(p.id), this, root);
+        item->setBold(m_playlistsSelectedTrackIsIn.contains(p.id));
 
-        decorateChild(item, playlist_id);
+        decorateChild(item, p.id);
         data_list.append(item);
         ++row;
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_childModel->insertRows(data_list, 0, m_playlistList.size());
-    return m_childModel->index(selected_row, 0);
+    return m_childModel->index(selectedRow, 0);
 }
 
-void BasePlaylistFeature::updateChildModel(int selected_id) {
+void BasePlaylistFeature::updateChildModel(int selectedId) {
     buildPlaylistList();
     
-    QModelIndex index = indexFromPlaylistId(selected_id);
+    QModelIndex index = indexFromPlaylistId(selectedId);
     if (!index.isValid()) {
         return;
     }
@@ -733,19 +730,23 @@ void BasePlaylistFeature::updateChildModel(int selected_id) {
     DEBUG_ASSERT_AND_HANDLE(item) {
         return;
     }
-    decorateChild(item, selected_id);
+    // Update the name
+    int pos = m_playlistList.indexOf(PlaylistItem(selectedId));
+    if (pos < 0) {
+        return;
+    }
+    item->setData(m_playlistList[pos].name);
+    
+    decorateChild(item, selectedId);
 }
 
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) const {
-    int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
-        int current_id = it->first;
-        if (playlistId == current_id) {
-            return m_childModel->index(row, 0);
-        }
+    int row = m_playlistList.indexOf(PlaylistItem(playlistId));
+    if (row < 0) {
+        return QModelIndex();
     }
-    return QModelIndex();
+    
+    return m_childModel->index(row, 0);
 }
 
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
@@ -764,16 +765,15 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+    for (const PlaylistItem& p : m_playlistList) {        
         TreeItem* playlist = rootItem->child(row);
         if (playlist == nullptr) {
             continue;
         }
-
-        int playlistId = it->first;
-        bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
+        
+        bool shouldBold = m_playlistsSelectedTrackIsIn.contains(p.id);
         playlist->setBold(shouldBold);
+        ++row;
     }
 
     m_childModel->triggerRepaint();

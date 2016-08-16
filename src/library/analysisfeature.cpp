@@ -11,7 +11,6 @@
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
-#include "library/treeitem.h"
 #include "sources/soundsourceproxy.h"
 #include "util/debug.h"
 #include "util/dnd.h"
@@ -33,8 +32,6 @@ AnalysisFeature::AnalysisFeature(UserSettingsPointer pConfig,
 }
 
 AnalysisFeature::~AnalysisFeature() {
-    // TODO(XXX) delete these
-    //delete m_pLibraryTableModel;
     cleanupAnalyzer();
 }
 
@@ -64,9 +61,9 @@ QString AnalysisFeature::getSettingsName() const {
     return "AnalysisFeature";
 }
 
-QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
-                                           int paneId) {        
-    WTrackTableView* pTable = LibraryFeature::createTableWidget(pKeyboard, paneId);
+QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
+    WTrackTableView* pTable = createTableWidget(pKeyboard, paneId);
+    pTable->loadTrackModel(getAnalysisTableModel());
     connect(pTable->selectionModel(), 
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, 

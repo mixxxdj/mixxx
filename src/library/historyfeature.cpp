@@ -9,7 +9,6 @@
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "widget/wlibrarysidebar.h"
@@ -126,7 +125,7 @@ void HistoryFeature::buildPlaylistList() {
     while (query.next()) {
         int id = query.value(iId).toInt();
         QString name = query.value(iName).toString();
-        m_playlistList.append(qMakePair(id, name));
+        m_playlistList << PlaylistItem(id, name);
     }
 }
 

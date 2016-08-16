@@ -1,8 +1,7 @@
-#include "library/treeitemmodel.h"
-
 #include <QLatin1String>
 #include <QStringBuilder>
-#include "library/treeitem.h"
+
+#include "library/treeitemmodel.h"
 
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:
@@ -55,7 +54,17 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     // We use Qt::UserRole to ask for the datapath.    
     switch(role) {
         case Qt::DisplayRole:
-            return item->data();        
+            return item->data();
+        case Qt::SizeHintRole:
+        {
+            QIcon icon(item->getIcon());
+            if (icon.isNull()) {
+                return QVariant();
+            }
+            QSize size(getDefaultIconSize());
+            size.setHeight(size.height() + 2);
+            return size;
+        }
         case Qt::DecorationRole:
             return item->getIcon();
         case Role::RoleDataPath:
@@ -239,6 +248,10 @@ QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {
     QString text = pTree->data().toString();
     QString next = getBreadCrumbString(pTree->parent());
     return next % QLatin1String(" > ") % text;
+}
+
+QSize TreeItemModel::getDefaultIconSize() {
+    return QSize(32, 32);
 }
 
 void TreeItemModel::reloadTree() {

@@ -7,7 +7,8 @@
 #include <QList>
 #include <QUrl>
 
-class TreeItem;
+#include "library/treeitem.h"
+
 class LibraryFeature;
 
 class TreeItemModel : public QAbstractItemModel {
@@ -48,6 +49,7 @@ class TreeItemModel : public QAbstractItemModel {
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
     
     static QString getBreadCrumbString(TreeItem* pTree);
+    static QSize getDefaultIconSize();
     
   public slots:
     virtual void reloadTree();

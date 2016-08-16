@@ -79,6 +79,7 @@ class CrateFeature : public LibraryFeature {
     void slotResetSelectedTrack();
 
   private:
+    QString getValidCrateName();
     QString getRootViewHtml() const;
     QModelIndex constructChildModel(int selected_id);
     void updateChildModel(int selected_id);
@@ -93,17 +94,17 @@ class CrateFeature : public LibraryFeature {
 
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
-    QAction *m_pCreateCrateAction;
-    QAction *m_pDeleteCrateAction;
-    QAction *m_pRenameCrateAction;
-    QAction *m_pLockCrateAction;
-    QAction *m_pDuplicateCrateAction;
-    QAction *m_pAutoDjTrackSource;
-    QAction *m_pImportPlaylistAction;
-    QAction *m_pCreateImportPlaylistAction;
-    QAction *m_pExportPlaylistAction;
-    QAction *m_pExportTrackFilesAction;
-    QAction *m_pAnalyzeCrateAction;
+    QAction* m_pCreateCrateAction;
+    QAction* m_pDeleteCrateAction;
+    QAction* m_pRenameCrateAction;
+    QAction* m_pLockCrateAction;
+    QAction* m_pDuplicateCrateAction;
+    QAction* m_pAutoDjTrackSource;
+    QAction* m_pImportPlaylistAction;
+    QAction* m_pCreateImportPlaylistAction;
+    QAction* m_pExportPlaylistAction;
+    QAction* m_pExportTrackFilesAction;
+    QAction* m_pAnalyzeCrateAction;
     QList<QPair<int, QString> > m_crateList;
     QHash<int, QPointer<CrateTableModel> > m_crateTableModel;
     CrateTableModel* m_pCrateTableModel;

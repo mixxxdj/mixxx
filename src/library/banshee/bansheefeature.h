@@ -11,7 +11,6 @@
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
-#include "library/treeitem.h"
 #include "library/banshee/bansheedbconnection.h"
 
 

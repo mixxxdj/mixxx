@@ -13,7 +13,6 @@
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
-#include "library/treeitem.h"
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;

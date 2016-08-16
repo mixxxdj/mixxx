@@ -31,10 +31,10 @@
  * - cratefeature.cpp
  * - *feature.cpp
  */
-TreeItem::TreeItem(const QVariant& data, const QVariant& data_path,
+TreeItem::TreeItem(const QVariant& data, const QVariant& dataPath,
                    LibraryFeature* pFeature, TreeItem* parent)
         : m_data(data),
-          m_dataPath(data_path),
+          m_dataPath(dataPath),
           m_pFeature(pFeature),
           m_bold(false),
           m_divider(false),
@@ -182,10 +182,17 @@ bool TreeItem::removeChildren(int position, int count) {
     return true;
 }
 
-bool TreeItem::setData(const QVariant& data, const QVariant& data_path) {
-    m_data = data.toString();
-    m_dataPath = data_path.toString();
-    return true;
+void TreeItem::setData(const QVariant& data) {
+    m_data = data;
+}
+
+void TreeItem::setData(const QVariant& data, const QVariant& dataPath) {
+    m_data = data;
+    m_dataPath = dataPath;
+}
+
+void TreeItem::setDataPath(const QVariant& dataPath) {
+    m_dataPath = dataPath;
 }
 
 QIcon TreeItem::getIcon() const {

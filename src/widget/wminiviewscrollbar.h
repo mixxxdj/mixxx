@@ -4,9 +4,13 @@
 #include <QAbstractItemModel>
 #include <QPointer>
 #include <QScrollBar>
+#include <QTreeView>
+
+#include "library/columncache.h"
 
 class WMiniViewScrollBar : public QScrollBar
 {
+  Q_OBJECT
   public:
     WMiniViewScrollBar(QWidget* parent = nullptr);
 
@@ -15,6 +19,9 @@ class WMiniViewScrollBar : public QScrollBar
 
     void setSortColumn(int column);
     int sortColumn() const;
+    
+    void setTreeView(QPointer<QTreeView> pTreeView);
+    QPointer<QTreeView> getTreeView();
     
     void setRole(int role);
     int role() const;
@@ -41,14 +48,18 @@ class WMiniViewScrollBar : public QScrollBar
     };
     
   private slots:
-    void refreshCharMap();
+    void triggerUpdate();
 
   private:
     // The purpose of this function is to avoid computing all the sizes in the
     // paintEvent function which can block the GUI thread
+    void refreshCharMap();
     void computeLettersSize();
-    void triggerUpdate();
     QStyleOptionSlider getStyleOptions();
+    int getFieldIndex(ColumnCache::Column col);
+    bool isValidColumn();
+    void addToLastCharCount(const QChar& c, int sum = 1);
+    int getVisibleChildCount(const QModelIndex &index);
 
     int m_sortColumn;
     int m_dataRole;
@@ -60,6 +71,7 @@ class WMiniViewScrollBar : public QScrollBar
     // Contains each character's vertical position
     QVector<CharPosition> m_computedPosition;
     QPointer<QAbstractItemModel> m_pModel;
+    QPointer<QTreeView> m_pTreeView;
 };
 
 #endif // WMINIVIEWSCROLLBAR_H

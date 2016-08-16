@@ -22,6 +22,9 @@ WMiniViewScrollBar::WMiniViewScrollBar(QWidget* parent)
           m_dataRole(Qt::DisplayRole),
           m_showLetters(true) {
     setMouseTracking(true);
+    
+    connect(this, SIGNAL(rangeChanged(int,int)),
+            this, SLOT(triggerUpdate()));
 }
 
 void WMiniViewScrollBar::setShowLetters(bool show) {
@@ -41,6 +44,14 @@ int WMiniViewScrollBar::sortColumn() const {
     return m_sortColumn;
 }
 
+void WMiniViewScrollBar::setTreeView(QPointer<QTreeView> pTreeView) {
+    m_pTreeView = pTreeView;
+}
+
+QPointer<QTreeView> WMiniViewScrollBar::getTreeView() {
+    return m_pTreeView;
+}
+
 void WMiniViewScrollBar::setRole(int role) {
     m_dataRole = role;
     triggerUpdate();
@@ -53,8 +64,8 @@ int WMiniViewScrollBar::role() const {
 void WMiniViewScrollBar::setModel(QAbstractItemModel* model) {
     m_pModel = model;
     if (!m_pModel.isNull()) {
-        connect(m_pModel.data(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
-                this, SLOT(refreshCharMap()));
+        connect(m_pModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+                this, SLOT(triggerUpdate()));
         
         triggerUpdate();
     }
@@ -76,10 +87,11 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
     // Get total size
     int letterSize = fontMetrics().height();
     int w = width();
+    const QPoint bottom(w, letterSize);
     
     // Draw each letter in its position
     for (const CharPosition& p : m_computedPosition) {
-        if (p.position < 0) {
+        if (p.position < 0 || p.character.isNull()) {
             continue;
         }
         QFont f(font());
@@ -87,8 +99,7 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
         painter.setFont(f);
         
         QPoint topLeft = QPoint(0, p.position);
-        QPoint bottomRight = topLeft + QPoint(w, letterSize);
-        painter.drawText(QRect(topLeft, bottomRight), flags, p.character);
+        painter.drawText(QRect(topLeft, topLeft + bottom), flags, p.character);
     }
     
     opt.rect = style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
@@ -164,58 +175,24 @@ void WMiniViewScrollBar::refreshCharMap() {
     setMaximum(size);
     const QModelIndex& rootIndex = m_pModel->index(0, 0);
     
-    int digits = 0;
-    bool isNumber;
-    rootIndex.sibling(0, m_sortColumn).data(m_dataRole).toString().toInt(&isNumber);
-    if (isNumber) {
-        // Search the max number of digits, since we know that the model is
-        // sorted then we search the first and the last element for the number
-        // of digits
-        const QModelIndex& firstIndex = rootIndex.sibling(0, m_sortColumn);
-        QString first = firstIndex.data(m_dataRole).toString();
-        const QModelIndex& lastIndex = rootIndex.sibling(size - 1, m_sortColumn);
-        QString last  = lastIndex.data(m_dataRole).toString();
-        
-        digits = qMax(first.length(), last.length());
+    m_letters.clear();
+    if (!isValidColumn()) {
+        return;
     }
     
-    bool isYear = false;
-    QPointer<BaseSqlTableModel> pModel = qobject_cast<BaseSqlTableModel*>(m_pModel);
-    if (!pModel.isNull()) {
-        int index = pModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
-        isYear = index == m_sortColumn;
-    }    
-    
-    m_letters.clear();
     for (int i = 0; i < size; ++i) {
         const QModelIndex& index = rootIndex.sibling(i, m_sortColumn);
         QString text = index.data(m_dataRole).toString();
+        int count = getVisibleChildCount(index);
         QChar c;
-        if (isNumber) {
-            if (text.length() == digits) {
-                c = text.at(0);
-            } else {
-                c = '0';
-            }
-        } else if (isYear && text.size() >= 3) {
-            // 4 digits year, we take the decade which is the most 
-            // representative in one single digit show
+        
+        if (m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) && 
+            text.size() >= 3) {
             c = text.at(2);
         } else {
             c = StringHelper::getFirstCharForGrouping(text);
         }
-        
-        if (m_letters.size() <= 0) {
-            m_letters.append({c, 1});
-        } else {
-            CharCount& last = m_letters.last();
-            
-            if (last.character == c) {
-                ++last.count;
-            } else {
-                m_letters.append({c, 1});
-            }
-        }
+        addToLastCharCount(c, count);
     }
 }
 
@@ -229,19 +206,15 @@ void WMiniViewScrollBar::computeLettersSize() {
     }
     
     QStyleOptionSlider opt(getStyleOptions());
-    
-    const int addLineSize = 
-            style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
-                                    QStyle::SC_ScrollBarAddLine, this).height();
-    const int subLineSize = 
-            style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
-                                    QStyle::SC_ScrollBarSubLine, this).height();
+    QRect grooveRect = 
+            style()->subControlRect(QStyle::CC_ScrollBar, &opt,
+                                    QStyle::SC_ScrollBarGroove, this);
             
     // Height of a letter
     const int letterSize = fontMetrics().height();
-    const int totalLinearSize = rect().height() - addLineSize - subLineSize;
-    float nextAvailableScrollPosition = 0.0;
-    float optimalScrollPosition = 0.0;
+    const int totalLinearSize = grooveRect.bottom();
+    float nextAvailableScrollPosition = grooveRect.top();
+    float optimalScrollPosition = grooveRect.top();
     
     int totalCount = 0;
     // Get the total count of letters appearance to make a linear interpolation
@@ -254,8 +227,9 @@ void WMiniViewScrollBar::computeLettersSize() {
         float size = interpolSize(p.position, totalCount, totalLinearSize);
         float percentage = 100.0*p.position/float(totalCount);
         
-        if ((optimalScrollPosition + size) < (nextAvailableScrollPosition + letterSize) 
-                || percentage < 1.0) {
+        if ((optimalScrollPosition + size) < (nextAvailableScrollPosition + letterSize) ||
+                percentage < 1.0 || 
+                (optimalScrollPosition + letterSize) > totalLinearSize) {
             // If a very small percentage letter takes the space for a letter
             // with more high ocupacy percentage this can be annoying
             
@@ -289,4 +263,60 @@ QStyleOptionSlider WMiniViewScrollBar::getStyleOptions() {
     opt.pageStep = pageStep();
     
     return opt;
+}
+
+int WMiniViewScrollBar::getFieldIndex(ColumnCache::Column col) {
+    QPointer<BaseSqlTableModel> pModel = qobject_cast<BaseSqlTableModel*>(m_pModel);
+    if (pModel.isNull()) {
+        return -1;
+    }
+    
+    return pModel->fieldIndex(col);
+}
+
+bool WMiniViewScrollBar::isValidColumn() {
+    return m_sortColumn == 0 || 
+        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM) ||
+        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) ||
+        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST) ||
+        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) ||
+        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) ||
+        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE) ||
+        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) ||
+        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_ARTIST) ||
+            m_sortColumn == getFieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TITLE);
+}
+
+void WMiniViewScrollBar::addToLastCharCount(const QChar& c, int sum) {
+    if (m_letters.size() <= 0) {
+        m_letters.append({c, sum});
+    } else {
+        CharCount& lastC = m_letters.last();
+        if (lastC.character == c) {
+            lastC.count += sum;
+        } else {
+            m_letters.append({c, sum});
+        }
+    }
+}
+
+int WMiniViewScrollBar::getVisibleChildCount(const QModelIndex& index) {
+    if (!index.isValid()) {
+        return 0;
+    }
+    
+    if (m_pTreeView.isNull()) {
+        return 1;
+    }
+    
+    if (!m_pTreeView->isExpanded(index)) {
+        return 1;
+    }
+    
+    int total = 1;
+    int rowCount = m_pModel->rowCount(index);
+    for (int i = 0; i < rowCount; ++i) {
+        total += getVisibleChildCount(index.child(i, m_sortColumn));
+    }
+    return total;
 }
