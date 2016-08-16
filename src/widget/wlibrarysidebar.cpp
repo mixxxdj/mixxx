@@ -35,10 +35,13 @@ void WSidebarItemDelegate::paint(QPainter* painter,
     // Set small padding left
     rect.setLeft(rect.left() + 3);
     
+    QFontMetrics fontMetrics(font);
+    QString elidedText = fontMetrics.elidedText(text, Qt::ElideRight, rect.width() - 3);
+    
     // Draw the text
     painter->setPen(option.palette.color(QPalette::Text));
     painter->setFont(font);
-    painter->drawText(rect, text);
+    painter->drawText(rect, elidedText);
     
     // Draw line under text
     painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
