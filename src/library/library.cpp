@@ -427,6 +427,7 @@ void Library::paneUncollapsed(int paneId) {
 void Library::slotActivateFeature(LibraryFeature* pFeature) {
     // The feature is being shown currently in the focused pane
     if (m_panes[m_focusedPane]->getCurrentFeature() == pFeature) {
+        pFeature->setFeatureFocus(m_focusedPane);
         m_pSidebarExpanded->switchToFeature(pFeature);
         handleFocus();
         return;
@@ -451,10 +452,22 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
     }
 
     // Set all features in this pane inactive
-    for (LibraryFeature* f : m_features) {
+    /*for (LibraryFeature* f : m_features) {
         if (f->getFeatureFocus() == m_focusedPane &&
                 pFeature->getActive()) {
             f->setInactive();
+        }
+    } */
+    
+    LibraryFeature* pCurrentFeature = m_panes[m_focusedPane]->getCurrentFeature();
+    if (pCurrentFeature != pFeature && 
+        pCurrentFeature->getFeatureFocus() == m_focusedPane) {
+        // If this feature it's still shown in another pane change the feature 
+        // focus to the other pane
+        for (LibraryPaneManager* p : m_panes) {
+            if (p->getCurrentFeature() == pCurrentFeature) {
+                pCurrentFeature->setFeatureFocus(p->getPaneId());
+            }
         }
     }
     
@@ -487,7 +500,6 @@ void Library::slotPaneFocused(LibraryPaneManager* pPane) {
     
     if (pPane != m_pSidebarExpanded) {
         m_focusedPane = pPane->getPaneId();
-        pPane->getCurrentFeature()->setFeatureFocus(m_focusedPane);
         DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
             return;
         }
@@ -498,7 +510,7 @@ void Library::slotPaneFocused(LibraryPaneManager* pPane) {
     //qDebug() << "Library::slotPaneFocused" << m_focusedPane;
 }
 
-void Library::slotUpdateFocus(LibraryFeature *pFeature) {
+void Library::slotUpdateFocus(LibraryFeature* pFeature) {
     if (pFeature->getFeatureFocus() >= 0) {
         m_focusedPane = pFeature->getFeatureFocus();
         setFocusedPane();
