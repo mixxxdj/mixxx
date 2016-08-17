@@ -127,9 +127,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
     // If no text is provided, leave m_markImage as a null image
     if (!mark.m_text.isNull()) {
         // Determine mark text.
-        QString label =  mark.m_text;
+        QString label = mark.m_text;
         if (mark.m_iIndex != -1) {
-            if (label != "") label.prepend(": ");
+            if (!label.isEmpty()) {
+                label.prepend(": ");
+            }
             label.prepend(QString::number(mark.m_iIndex));
             if (label.size() > iMaxCueLabelLenght) {
                 label = label.left(iMaxCueLabelLenght - 3) + "...";

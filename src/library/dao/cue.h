@@ -45,10 +45,10 @@ class Cue : public QObject {
     void setHotCue(int hotCue);
 
     QString getLabel() const;
-    void setLabel(const QString label);
+    void setLabel(QString label);
 
     QColor getColor() const;
-    void setColor(const QColor color);
+    void setColor(QColor color);
 
   signals:
     void updated();

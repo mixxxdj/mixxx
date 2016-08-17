@@ -48,7 +48,9 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
         child = child.nextSibling();
     }
 
-    if (NUM_HOT_CUES >= 1) m_iFirstHotCue = m_marks.size();
+    if (NUM_HOT_CUES >= 1) {
+        m_iFirstHotCue = m_marks.size();
+    }
 
     // check if there is a default mark and compare declared
     // and to create all missing hot_cues
