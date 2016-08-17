@@ -1,3 +1,17 @@
+/***********************************************************************
+ * ==============             User Options             =================
+ * Track End Warning
+ * ---------------
+ * By default, when you reach the end of the track, the jog wheel is flashing.
+ * It flashes slowly when there is less than JogFlashWarningTime seconds left,
+ * and quickly in the last JogFlashCriticalTime seconds.
+ * You can adjust these values to suit your needs by setting the two variables below.
+ * Set them to -1 if you want to completely disable flashing at the end of track.
+ **************************/
+ var JogFlashWarningTime = 30; // number of seconds to slowly blink at the end of track
+ var JogFlashCriticalTime = 15; // number of seconds to quickly blink at the end of track
+
+
 /************************  GPL v2 licence  *****************************
  * Reloop Beatmix 2/4 controller script
  * Author: Sébastien Blaisot <sebastien@blaisot.org>
@@ -82,9 +96,7 @@ var JogRPM = 33.0 + 1/3, // Jog Wheel simulates a 33.3RPM turntable
     RoundTripTime = 60.0 / JogRPM, // Time in seconds for a complete turn
     JogLedNumber = 16, // number of leds (sections) on the jog wheel
     JogBaseLed = 0x3f, // Midino of last led (we count backward to turn in the right side)
-    JogFlashWarningTime = 30, // number of seconds to slowly blink at the end of track
     JogFlashWarningInterval = 400, // number of ms to wait when flashing slowly
-    JogFlashCriticalTime = 15, // number of seconds to quickly blink at the end of track
     JogFlashCriticalInterval = 200; // number of ms to wait when flashing quickly
 
 var JogLedLit = [];
