@@ -8,7 +8,7 @@
 #include "util/assert.h"
 
 namespace {
-    const QColor defaultColor = QColor("#FF0000");
+    const QColor kDefaultColor = QColor("#FF0000");
 }
 
 Cue::~Cue() {
@@ -24,7 +24,7 @@ Cue::Cue(TrackId trackId)
           m_iLength(0),
           m_iHotCue(-1),
           m_label(),
-          m_color(defaultColor) {
+          m_color(kDefaultColor) {
 }
 
 

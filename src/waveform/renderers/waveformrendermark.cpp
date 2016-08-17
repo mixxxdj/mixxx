@@ -13,7 +13,7 @@
 #include "widget/wimagestore.h"
 
 namespace {
-    const int iMaxCueLabelLenght = 23;
+    const int kMaxCueLabelLength = 23;
 }
 
 WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidgetRenderer) :
@@ -133,8 +133,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
                 label.prepend(": ");
             }
             label.prepend(QString::number(mark.m_iIndex));
-            if (label.size() > iMaxCueLabelLenght) {
-                label = label.left(iMaxCueLabelLenght - 3) + "...";
+            if (label.size() > kMaxCueLabelLength) {
+                label = label.left(kMaxCueLabelLength - 3) + "...";
             }
         }
 
