@@ -38,6 +38,8 @@ class CoverInfoRelative {
               hash(kNullImageHash) {
     }
 
+    virtual ~CoverInfoRelative() {};
+
     Source source;
     Type type;
     QString coverLocation; // relative path, from track location
@@ -57,6 +59,8 @@ class CoverInfo : public CoverInfoRelative {
           trackLocation(tl) {
     }
 
+    virtual ~CoverInfo() {};
+
     QString trackLocation;
 };
 
@@ -75,6 +79,8 @@ class CoverArt : public CoverInfo {
           image(img),
           resizedToWidth(rtw) {
     }
+
+    virtual ~CoverArt() {};
 
     // it is not a QPixmap, because it is not safe to use pixmaps 
     // outside the GUI thread
