@@ -44,14 +44,48 @@ QString coverInfoToString(const CoverInfo& info) {
 }
 } // anonymous namespace
 
+
+bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b) {
+    return a.source == b.source &&
+            a.type == b.type &&
+            a.coverLocation == b.coverLocation &&
+            a.hash == b.hash;
+}
+
+bool operator!=(const CoverInfoRelative& a, const CoverInfoRelative& b) {
+    return !(a == b);
+}
+
 QDebug operator<<(QDebug dbg, const CoverInfoRelative& infoRelative) {
     return dbg.maybeSpace() << QString("CoverInfoRelative(%1)")
             .arg(coverInfoRelativeToString(infoRelative));
 }
 
+bool operator==(const CoverInfo& a, const CoverInfo& b) {
+    return static_cast<CoverInfoRelative>(a) ==
+                    static_cast<CoverInfoRelative>(b) &&
+            a.trackLocation == b.trackLocation;
+}
+
+bool operator!=(const CoverInfo& a, const CoverInfo& b) {
+    return !(a == b);
+}
+
 QDebug operator<<(QDebug dbg, const CoverInfo& info) {
     return dbg.maybeSpace() << QString("CoverInfo(%1)")
             .arg(coverInfoToString(info));
+}
+
+bool operator==(const CoverArt& a, const CoverArt& b) {
+    // Only count image in the equality if both are non-null.
+    return static_cast<CoverInfo>(a) ==
+                    static_cast<CoverInfo>(b) &&
+            (a.image.isNull() || b.image.isNull() ||
+             a.image == b.image);
+}
+
+bool operator!=(const CoverArt& a, const CoverArt& b) {
+    return !(a == b);
 }
 
 QDebug operator<<(QDebug dbg, const CoverArt& art) {

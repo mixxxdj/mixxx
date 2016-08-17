@@ -38,21 +38,15 @@ class CoverInfoRelative {
               hash(kNullImageHash) {
     }
 
-    bool operator==(const CoverInfoRelative& other) const {
-        return other.source == source &&
-                other.type == type &&
-                other.coverLocation == coverLocation &&
-                other.hash == hash;
-    }
-    bool operator!=(const CoverInfoRelative& other) const {
-        return !(*this == other);
-    }
-
     Source source;
     Type type;
     QString coverLocation; // relative path, from track location
     quint16 hash;
 };
+
+bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b);
+bool operator!=(const CoverInfoRelative& a, const CoverInfoRelative& b);
+QDebug operator<<(QDebug dbg, const CoverInfoRelative& info);
 
 class CoverInfo : public CoverInfoRelative {
   public:
@@ -63,17 +57,12 @@ class CoverInfo : public CoverInfoRelative {
           trackLocation(tl) {
     }
 
-    bool operator==(const CoverInfo& other) const {
-        return static_cast<CoverInfoRelative>(other) == 
-                        static_cast<CoverInfoRelative>(*this) &&
-                other.trackLocation == trackLocation;
-    }
-    bool operator!=(const CoverInfo& other) const {
-        return !(*this == other);
-    }
-
     QString trackLocation;
 };
+
+bool operator==(const CoverInfo& a, const CoverInfo& b);
+bool operator!=(const CoverInfo& a, const CoverInfo& b);
+QDebug operator<<(QDebug dbg, const CoverInfo& info);
 
 class CoverArt : public CoverInfo {
   public:
@@ -87,25 +76,14 @@ class CoverArt : public CoverInfo {
           resizedToWidth(rtw) {
     }
 
-    bool operator==(const CoverArt& other) const {
-        // Only count image in the equality if both are non-null.
-        return static_cast<CoverInfo>(other) ==
-                        static_cast<CoverInfo>(*this) &&
-                (other.image.isNull() || image.isNull() ||
-                 other.image == image);
-    }
-    bool operator!=(const CoverArt& other) const {
-        return !(*this == other);
-    }
-
     // it is not a QPixmap, because it is not safe to use pixmaps 
     // outside the GUI thread
     QImage image; 
     int resizedToWidth;
 };
 
-QDebug operator<<(QDebug dbg, const CoverInfoRelative& info);
-QDebug operator<<(QDebug dbg, const CoverInfo& info);
+bool operator==(const CoverArt& a, const CoverArt& b);
+bool operator!=(const CoverArt& a, const CoverArt& b);
 QDebug operator<<(QDebug dbg, const CoverArt& art);
 
 #endif /* COVERART_H */
