@@ -7,7 +7,9 @@
 #include "library/dao/cue.h"
 #include "util/assert.h"
 
-const QString defaultColor = "#FF0000";
+namespace {
+    const QColor defaultColor = QColor("#FF0000");
+}
 
 Cue::~Cue() {
     qDebug() << "~Cue()" << m_iId;
