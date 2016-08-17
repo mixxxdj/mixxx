@@ -23,7 +23,7 @@ Cue::Cue(TrackId trackId)
           m_iPosition(-1),
           m_iLength(0),
           m_iHotCue(-1),
-          m_label(""),
+          m_label(),
           m_color(defaultColor) {
 }
 
