@@ -79,5 +79,7 @@ void WaveformMarkSet::clear() {
 }
 
 WaveformMark& WaveformMarkSet::getHotCueMark(int hotCue) {
+    DEBUG_ASSERT(hotCue >= 0);
+    DEBUG_ASSERT(hotCue < NUM_HOT_CUES);
     return m_marks[m_iFirstHotCue + hotCue];
 }
