@@ -12,7 +12,9 @@
 #include "widget/wwidget.h"
 #include "widget/wimagestore.h"
 
-const int iMaxCueLabelLenght = 23;
+namespace {
+    const int iMaxCueLabelLenght = 23;
+}
 
 WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
