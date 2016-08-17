@@ -107,7 +107,7 @@ void WaveformRenderMark::slotCuesUpdated() {
 
 void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
     // Load the pixmap from file -- takes precedence over text.
-    if (mark.m_pixmapPath != "") {
+    if (!mark.m_pixmapPath.isEmpty()) {
         QString path =  mark.m_pixmapPath;
         QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
