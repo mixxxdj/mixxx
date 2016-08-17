@@ -85,25 +85,23 @@ void WaveformRenderMark::slotCuesUpdated() {
     }
 
     QList<CuePointer> loadedCues = trackInfo->getCuePoints();
-
-    // This assumes no two cues can have the same hotcue assigned.
-    QList<CuePointer>::iterator it = loadedCues.begin();
-    while (it != loadedCues.end()) {
-        int hotCue = (*it)->getHotCue();
+    for (const CuePointer pCue: loadedCues) {
+        int hotCue = pCue->getHotCue();
         if (hotCue == -1) {
-            ++it;
             continue;
         }
 
-        QString newLabel = (*it)->getLabel();
-        QColor newColor = (*it)->getColor();
+        QString newLabel = pCue->getLabel();
+        QColor newColor = pCue->getColor();
+
+        // Here we assume no two cues can have the same hotcue assigned,
+        // because WaveformMarkSet stores one mark for each hotcue.
         WaveformMark& mark = m_marks.getHotCueMark(hotCue);
         if (mark.m_text.isNull() || newLabel != mark.m_text || !mark.m_color.isValid() || newColor != mark.m_color) {
             mark.m_text = newLabel;
             mark.m_color = newColor;
             generateMarkImage(mark);
         }
-        ++it;
     }
 }
 
