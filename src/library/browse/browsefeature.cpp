@@ -241,6 +241,7 @@ void BrowseFeature::activate() {
     m_pLibrary->restoreSearch(QString());
     
     enableCoverArtDisplay(true);
+    m_active = true;
 }
 
 // Note: This is executed whenever you single click on an child item

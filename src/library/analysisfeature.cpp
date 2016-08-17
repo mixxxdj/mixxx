@@ -118,6 +118,7 @@ void AnalysisFeature::activate() {
         restoreSearch(m_pAnalysisView->currentSearch());
     }
     emit(enableCoverArtDisplay(true));
+    m_active = true;
 }
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {

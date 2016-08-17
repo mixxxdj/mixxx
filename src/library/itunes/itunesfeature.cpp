@@ -123,6 +123,7 @@ QString ITunesFeature::getSettingsName() const {
 void ITunesFeature::activate() {
     activate(false);
     enableCoverArtDisplay(true);
+    m_active = true;
 }
 
 void ITunesFeature::activate(bool forceReload) {
@@ -185,6 +186,7 @@ void ITunesFeature::activate(bool forceReload) {
     showTrackModel(m_pITunesTrackModel);
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     enableCoverArtDisplay(true);
+    m_active = true;
 }
 
 void ITunesFeature::activateChild(const QModelIndex& index) {

@@ -48,6 +48,7 @@ void MaintenanceFeature::activate() {
 
     switchToFeature();
     emit(enableCoverArtDisplay(true));
+    m_active = true;
 }
 
 void MaintenanceFeature::selectionChanged(const QItemSelection&,

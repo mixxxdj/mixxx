@@ -70,6 +70,8 @@ class LibraryFeature : public QObject {
     
     virtual void setFeatureFocus(int focus);
     virtual int getFeatureFocus();
+    virtual bool getActive() const;
+    virtual void setInactive();
     
     virtual void setFocusedPane(int paneId);
     
@@ -148,6 +150,7 @@ class LibraryFeature : public QObject {
     
     int m_featureFocus;
     int m_focusedPane;
+    bool m_active;
     
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);

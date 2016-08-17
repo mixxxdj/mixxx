@@ -141,6 +141,7 @@ void BasePlaylistFeature::activate() {
     restoreSearch(QString()); // Null String disables search box
     emit(enableCoverArtDisplay(true));
     m_featureFocus = -1;
+    m_active = true;
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
@@ -169,6 +170,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
         showBreadCrumb(index);
                 
         emit(enableCoverArtDisplay(true));
+        m_active = true;
     }
 }
 
@@ -182,6 +184,7 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
         // Update selection
         emit(featureSelect(this, m_lastRightClickedIndex));
         activateChild(m_lastRightClickedIndex);
+        m_active = true;
     }
 }
 

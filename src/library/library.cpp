@@ -431,23 +431,31 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
         handleFocus();
         return;
     }
-    int featureFocus = pFeature->getFeatureFocus();
 
-    // The feature is not focused anywhere
-    if (featureFocus < 0 || m_collapsedPanes.contains(featureFocus)) {
-        // Remove the previous focused feature in this pane
-        for (LibraryFeature* f : m_features) {
-            if (f->getFeatureFocus() == m_focusedPane) {
-                f->setFeatureFocus(-1);
+    if (m_pSidebarExpanded->getCurrentFeature() != pFeature) {
+        // If the feature is not already shown, follow restore in old pane
+        int featureFocus = pFeature->getFeatureFocus();
+        if (featureFocus >= 0 && !m_collapsedPanes.contains(featureFocus)) {
+            // The feature is shown in some not collapsed pane
+            m_focusedPane = featureFocus;
+            setFocusedPane();
+
+            /*
+            if (pFeature->getActive()) {
+                m_pSidebarExpanded->switchToFeature(pFeature);
+                handleFocus();
+                return;
             }
+            */
         }
-    } else {
-    	// The feature is shown in some not collapsed pane
-        m_focusedPane = featureFocus;
-        setFocusedPane();
-        m_pSidebarExpanded->switchToFeature(pFeature);
-		handleFocus();
-		return;
+    }
+
+    // Set all features in this pane inactive
+    for (LibraryFeature* f : m_features) {
+        if (f->getFeatureFocus() == m_focusedPane &&
+                pFeature->getActive()) {
+            f->setInactive();
+        }
     }
     
     m_panes[m_focusedPane]->setCurrentFeature(pFeature);

@@ -138,6 +138,7 @@ void RhythmboxFeature::activate() {
     showTrackModel(m_pRhythmboxTrackModel);
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     enableCoverArtDisplay(true);
+    m_active = true;
 }
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {

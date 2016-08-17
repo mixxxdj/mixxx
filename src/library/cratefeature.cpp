@@ -237,6 +237,7 @@ void CrateFeature::activate() {
     restoreSearch(QString()); //disable search on crate home
     m_featureFocus = -1;
     emit(enableCoverArtDisplay(true));
+    m_active = true;
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {

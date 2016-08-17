@@ -35,7 +35,9 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
           m_savedDAO(m_pTrackCollection->getSavedQueriesDAO()),
-          m_featureFocus(-1) {
+          m_featureFocus(-1),
+          m_focusedPane(-1),
+          m_active(false) {
 }
 
 LibraryFeature::~LibraryFeature() {
@@ -103,6 +105,14 @@ void LibraryFeature::setFeatureFocus(int focus) {
 
 int LibraryFeature::getFeatureFocus() {
     return m_featureFocus;
+}
+
+bool LibraryFeature::getActive() const {
+    return m_active;
+}
+
+void LibraryFeature::setInactive() {
+    m_active = false;
 }
 
 void LibraryFeature::setFocusedPane(int paneId) {

@@ -155,6 +155,7 @@ void AutoDJFeature::activate() {
     restoreSearch(QString()); //Null String disables search box
     
     emit(enableCoverArtDisplay(true));
+    m_active = true;
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
