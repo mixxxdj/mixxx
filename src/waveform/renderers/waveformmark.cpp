@@ -17,7 +17,7 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
                          const WaveformSignalColors& signalColors) {
     QString item = context.selectString(node, "Control");
     if (!item.isEmpty()) {
-        m_pPointCos = std::make_unique(group, item);
+        m_pPointCos = std::make_unique<ControlProxy>(group, item);
     }
 
     m_color = context.selectString(node, "Color");
