@@ -25,7 +25,9 @@ class WaveformMarkSet {
     const WaveformMark* getDefaultMark() const { return m_pDefaultMark.get();}
 
     // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
-    WaveformMark* getHotCueMark(int hotCue);
+    const WaveformMark* getHotCueMark(int hotCue);
+    // Takes ownership of mark
+    void setHotCueMark(int hotCue, WaveformMark* mark);
 
   private:
     std::unique_ptr<WaveformMark> m_pDefaultMark;

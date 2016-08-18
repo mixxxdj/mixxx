@@ -96,11 +96,14 @@ void WaveformRenderMark::slotCuesUpdated() {
 
         // Here we assume no two cues can have the same hotcue assigned,
         // because WaveformMarkSet stores one mark for each hotcue.
-        WaveformMark* mark = m_marks.getHotCueMark(hotCue);
-        if (mark->m_text.isNull() || newLabel != mark->m_text || !mark->m_color.isValid() || newColor != mark->m_color) {
-            mark->m_text = newLabel;
-            mark->m_color = newColor;
-            generateMarkImage(mark);
+        const WaveformMark* p_oldMark = m_marks.getHotCueMark(hotCue);
+        WaveformMark* p_newMark = new WaveformMark(p_oldMark);
+        p_newMark->setKeyAndIndex(p_oldMark->m_pPointCos->getKey(), hotCue);
+        if (p_newMark->m_text.isNull() || newLabel != p_newMark->m_text || !p_newMark->m_color.isValid() || newColor != p_newMark->m_color) {
+            p_newMark->m_text = newLabel;
+            p_newMark->m_color = newColor;
+            generateMarkImage(p_newMark);
+            m_marks.setHotCueMark(hotCue, p_newMark);
         }
     }
 }

@@ -79,8 +79,13 @@ void WaveformMarkSet::clear() {
     m_marks.clear();
 }
 
-WaveformMark* WaveformMarkSet::getHotCueMark(int hotCue) {
+const WaveformMark* WaveformMarkSet::getHotCueMark(int hotCue) {
     DEBUG_ASSERT(hotCue >= 0);
     DEBUG_ASSERT(hotCue < NUM_HOT_CUES);
     return m_marks[m_iFirstHotCue + hotCue];
+}
+
+void WaveformMarkSet::setHotCueMark(int hotCue, WaveformMark* mark) {
+    delete m_marks[m_iFirstHotCue + hotCue];
+    m_marks[m_iFirstHotCue + hotCue] = mark;
 }
