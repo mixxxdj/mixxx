@@ -75,11 +75,12 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 
 void WaveformMarkSet::clear() {
     m_defaultMark = WaveformMark();
+    qDeleteAll(m_marks);
     m_marks.clear();
 }
 
 WaveformMark* WaveformMarkSet::getHotCueMark(int hotCue) {
     DEBUG_ASSERT(hotCue >= 0);
     DEBUG_ASSERT(hotCue < NUM_HOT_CUES);
-    return &m_marks[m_iFirstHotCue + hotCue];
+    return m_marks[m_iFirstHotCue + hotCue];
 }

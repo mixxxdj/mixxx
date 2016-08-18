@@ -19,7 +19,7 @@ class WaveformMarkSet {
     void clear();
 
     int size() const { return m_marks.size();}
-    WaveformMark* operator[] (int i) { return &m_marks[i]; }
+    WaveformMark* operator[] (int i) { return m_marks[i]; }
 
     const WaveformMark* getDefaultMark() const { return &m_defaultMark;}
 
@@ -28,7 +28,7 @@ class WaveformMarkSet {
 
   private:
     WaveformMark m_defaultMark;
-    QList<WaveformMark> m_marks;
+    QList<WaveformMark*> m_marks;
     int m_iFirstHotCue;
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
 };
