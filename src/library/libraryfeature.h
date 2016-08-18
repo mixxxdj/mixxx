@@ -43,6 +43,7 @@ class LibraryFeature : public QObject {
     
     // This name must be unique for each feature
     virtual QString getSettingsName() const; 
+    virtual bool isSinglePane() const;
 
     QIcon getIcon();
 
@@ -69,11 +70,13 @@ class LibraryFeature : public QObject {
     virtual TreeItemModel* getChildModel() = 0;
     
     virtual void setFeatureFocus(int focus);
-    virtual int getFeatureFocus();
-    virtual bool getActive() const;
-    virtual void setInactive();
+    int getFeatureFocus();
     
-    virtual void setFocusedPane(int paneId);
+    void setFocusedPane(int paneId);
+    int getFocusedPane();
+    
+    void setSavedPane(int paneId);
+    int getSavedPane();
     
     virtual SavedSearchQuery saveQuery(SavedSearchQuery query);
     virtual void restoreQuery(int id);
@@ -150,7 +153,7 @@ class LibraryFeature : public QObject {
     
     int m_featureFocus;
     int m_focusedPane;
-    bool m_active;
+    int m_savedPane;
     
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);

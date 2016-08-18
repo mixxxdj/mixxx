@@ -166,7 +166,6 @@ void TraktorFeature::activate() {
     showTrackModel(m_pTraktorTableModel);
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     enableCoverArtDisplay(true);
-    m_active = true;
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {

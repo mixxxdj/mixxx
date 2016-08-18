@@ -37,7 +37,7 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_savedDAO(m_pTrackCollection->getSavedQueriesDAO()),
           m_featureFocus(-1),
           m_focusedPane(-1),
-          m_active(false) {
+          m_savedPane(-1) {
 }
 
 LibraryFeature::~LibraryFeature() {
@@ -45,6 +45,10 @@ LibraryFeature::~LibraryFeature() {
 
 QString LibraryFeature::getSettingsName() const {
     return QString("");
+}
+
+bool LibraryFeature::isSinglePane() const {
+    return true;
 }
 
 QIcon LibraryFeature::getIcon() {    
@@ -107,16 +111,21 @@ int LibraryFeature::getFeatureFocus() {
     return m_featureFocus;
 }
 
-bool LibraryFeature::getActive() const {
-    return m_active;
-}
-
-void LibraryFeature::setInactive() {
-    m_active = false;
-}
-
 void LibraryFeature::setFocusedPane(int paneId) {
     m_focusedPane = paneId;
+}
+
+int LibraryFeature::getFocusedPane() {
+    return m_focusedPane;
+}
+
+void LibraryFeature::setSavedPane(int paneId) {
+    m_savedPane = paneId;
+    setFocusedPane(m_savedPane);
+}
+
+int LibraryFeature::getSavedPane() {
+    return m_savedPane;
 }
 
 SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery query) {

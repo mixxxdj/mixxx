@@ -291,9 +291,10 @@ void Library::onSkinLoadFinished() {
         while (itP != m_panes.end() && itF != m_features.end()) {
             m_focusedPane = itP.key();
             
-            (*itF)->setFeatureFocus(itP.key());
+            (*itF)->setFeatureFocus(m_focusedPane);
+            (*itF)->setSavedPane(m_focusedPane);
             (*itF)->activate();
-            m_savedFeatures[itP.key()] = *itF;
+            m_savedFeatures[m_focusedPane] = *itF;
             
             ++itP;
             ++itF;
@@ -427,7 +428,7 @@ void Library::paneUncollapsed(int paneId) {
 void Library::slotActivateFeature(LibraryFeature* pFeature) {
     // The feature is being shown currently in the focused pane
     if (m_panes[m_focusedPane]->getCurrentFeature() == pFeature) {
-        pFeature->setFeatureFocus(m_focusedPane);
+        pFeature->setSavedPane(m_focusedPane);
         m_pSidebarExpanded->switchToFeature(pFeature);
         handleFocus();
         return;
@@ -435,29 +436,13 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
 
     if (m_pSidebarExpanded->getCurrentFeature() != pFeature) {
         // If the feature is not already shown, follow restore in old pane
-        int featureFocus = pFeature->getFeatureFocus();
+        int featureFocus = pFeature->getSavedPane();
         if (featureFocus >= 0 && !m_collapsedPanes.contains(featureFocus)) {
             // The feature is shown in some not collapsed pane
             m_focusedPane = featureFocus;
             setFocusedPane();
-
-            /*
-            if (pFeature->getActive()) {
-                m_pSidebarExpanded->switchToFeature(pFeature);
-                handleFocus();
-                return;
-            }
-            */
         }
     }
-
-    // Set all features in this pane inactive
-    /*for (LibraryFeature* f : m_features) {
-        if (f->getFeatureFocus() == m_focusedPane &&
-                pFeature->getActive()) {
-            f->setInactive();
-        }
-    } */
     
     LibraryFeature* pCurrentFeature = m_panes[m_focusedPane]->getCurrentFeature();
     if (pCurrentFeature != pFeature && 
@@ -466,13 +451,13 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
         // focus to the other pane
         for (LibraryPaneManager* p : m_panes) {
             if (p->getCurrentFeature() == pCurrentFeature) {
-                pCurrentFeature->setFeatureFocus(p->getPaneId());
+                pCurrentFeature->setSavedPane(p->getPaneId());
             }
         }
     }
     
     m_panes[m_focusedPane]->setCurrentFeature(pFeature);
-    pFeature->setFeatureFocus(m_focusedPane);    
+    pFeature->setSavedPane(m_focusedPane);    
     pFeature->activate();
     handleFocus();
 }
@@ -500,6 +485,7 @@ void Library::slotPaneFocused(LibraryPaneManager* pPane) {
     
     if (pPane != m_pSidebarExpanded) {
         m_focusedPane = pPane->getPaneId();
+        pPane->getCurrentFeature()->setFeatureFocus(m_focusedPane);
         DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
             return;
         }

@@ -130,6 +130,10 @@ QString CrateFeature::getSettingsName() const {
     return "CrateFeature";
 }
 
+bool CrateFeature::isSinglePane() const {
+    return false;
+}
+
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
@@ -237,7 +241,6 @@ void CrateFeature::activate() {
     restoreSearch(QString()); //disable search on crate home
     m_featureFocus = -1;
     emit(enableCoverArtDisplay(true));
-    m_active = true;
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {

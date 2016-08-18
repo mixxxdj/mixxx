@@ -34,6 +34,7 @@ class CrateFeature : public LibraryFeature {
     QVariant title() override;
     QString getIconPath() override;
     QString getSettingsName() const override;
+    bool isSinglePane() const override;
     
     void onSearch(QString&) {}
 

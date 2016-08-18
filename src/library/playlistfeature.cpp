@@ -44,6 +44,10 @@ QString PlaylistFeature::getSettingsName() const {
     return "PlaylistFeature";
 }
 
+bool PlaylistFeature::isSinglePane() const {
+    return false;
+}
+
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 

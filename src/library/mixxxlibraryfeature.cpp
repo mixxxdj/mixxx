@@ -177,7 +177,6 @@ void MixxxLibraryFeature::activate() {
     showBreadCrumb();
     
     emit(enableCoverArtDisplay(true));
-    m_active = true;
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
