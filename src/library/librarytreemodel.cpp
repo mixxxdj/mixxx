@@ -30,6 +30,15 @@ LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
         m_sortOrder = sort.split(",");
     }
     
+    TrackDAO& trackDAO(pTrackCollection->getTrackDAO());
+    connect(&trackDAO, SIGNAL(forceModelUpdate()), this, SLOT(reloadTree()));
+    connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)), 
+            this, SLOT(reloadTree()));
+    connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
+            this, SLOT(reloadTree()));
+    connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
+            this, SLOT(reloadTree()));
+    
     m_coverQuery << LIBRARYTABLE_COVERART_HASH
                  << LIBRARYTABLE_COVERART_LOCATION 
                  << LIBRARYTABLE_COVERART_SOURCE

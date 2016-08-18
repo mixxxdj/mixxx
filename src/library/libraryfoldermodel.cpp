@@ -19,6 +19,15 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
     QString recursive = m_pConfig->getValueString(ConfigKey("[Library]",
                                                             "FolderRecursive"));
     m_folderRecursive = recursive.toInt() == 1;
+    
+    TrackDAO& trackDAO(pTrackCollection->getTrackDAO());
+    connect(&trackDAO, SIGNAL(forceModelUpdate()), this, SLOT(reloadTree()));
+    connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)), 
+            this, SLOT(reloadTree()));
+    connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
+            this, SLOT(reloadTree()));
+    connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
+            this, SLOT(reloadTree()));
 
     reloadTree();
 }
