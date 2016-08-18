@@ -15,48 +15,56 @@ WLibraryStack::~WLibraryStack() {
 int WLibraryStack::addWidget(QWidget* w) {
     //qDebug() << "WLibraryStack::addWidget" << w;
     checkAndWarning(w);
+    w->installEventFilter(this);
     return QStackedWidget::addWidget(w);
 }
 
 int WLibraryStack::insertWidget(int index, QWidget* w) {
     checkAndWarning(w);
+    w->installEventFilter(this);
     return QStackedWidget::insertWidget(index, w);
 }
 
 void WLibraryStack::onShow() {
-
+    LibraryView* pView = getCurrentView();
+    if (pView) {
+        pView->onShow();
+    }
 }
 
 void WLibraryStack::onSearch(const QString& text) {
-    LibraryView* pView = dynamic_cast<LibraryView*>(currentWidget());
-
+    LibraryView* pView = getCurrentView();
     if (pView) {
         pView->onSearch(text);
     }
 }
 
 void WLibraryStack::loadSelectedTrack() {
-    LibraryView* pView = dynamic_cast<LibraryView*>(currentWidget());
-
+    LibraryView* pView = getCurrentView();
     if (pView) {
         pView->loadSelectedTrack();
     }
 }
 
 void WLibraryStack::slotSendToAutoDJ() {
-    LibraryView* pView = dynamic_cast<LibraryView*>(currentWidget());
-
+    LibraryView* pView = getCurrentView();
     if (pView) {
         pView->slotSendToAutoDJ();
     }
 }
 
 void WLibraryStack::slotSendToAutoDJTop() {
-    LibraryView* pView = dynamic_cast<LibraryView*>(currentWidget());
-
+    LibraryView* pView = getCurrentView();
     if (pView) {
         pView->slotSendToAutoDJTop();
     }
+}
+
+bool WLibraryStack::eventFilter(QObject* o, QEvent* e) {
+    if (e->type() == QEvent::FocusIn) {
+        parent()->event(e);
+    }
+    return QStackedWidget::eventFilter(o, e);
 }
 
 bool WLibraryStack::checkAndWarning(QWidget* w) {
@@ -66,4 +74,8 @@ bool WLibraryStack::checkAndWarning(QWidget* w) {
         return false;
     }
     return true;
+}
+
+LibraryView *WLibraryStack::getCurrentView() {
+    return dynamic_cast<LibraryView*>(currentWidget());
 }

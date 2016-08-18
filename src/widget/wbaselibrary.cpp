@@ -65,6 +65,8 @@ bool WBaseLibrary::eventFilter(QObject*, QEvent* pEvent) {
 bool WBaseLibrary::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
+    } else if (pEvent->type() == QEvent::FocusIn) {
+        emit(focused());
     }
 
     return QStackedWidget::event(pEvent);

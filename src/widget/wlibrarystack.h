@@ -25,10 +25,13 @@ class WLibraryStack : public QStackedWidget, public LibraryView {
     void loadSelectedTrack();
     void slotSendToAutoDJ();
     void slotSendToAutoDJTop();
+    
+    bool eventFilter(QObject*o, QEvent* e);
 
   private:
     
     bool checkAndWarning(QWidget *w);
+    LibraryView* getCurrentView();
 };
 
 #endif /* WLIBRARYSTACK_H */
