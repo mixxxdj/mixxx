@@ -54,7 +54,7 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
 // TODO(XXX): subclass and override WaveformMark::setup
 void WaveformMark::setKeyAndIndex(const ConfigKey& key, int i) {
     DEBUG_ASSERT(m_pPointCos == NULL);
-    m_pPointCos = std::make_unique(key);
+    m_pPointCos = std::make_unique<ControlProxy>(key);
     m_text = m_text.arg(i);
     m_iIndex = i;
 }
