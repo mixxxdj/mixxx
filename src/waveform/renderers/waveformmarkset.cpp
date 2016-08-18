@@ -29,7 +29,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.nodeName() == "DefaultMark") {
-            m_defaultMark->setup(group, child, context, signalColors);
+            m_pDefaultMark->setup(group, child, context, signalColors);
             hasDefaultMark = true;
         } else if (child.nodeName() == "Mark") {
             m_marks.push_back(new WaveformMark());
@@ -65,7 +65,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 
             if (controlItemSet.insert(hotCueControlItem).second) {
                 //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
-                m_marks.push_back(m_defaultMark);
+                m_marks.push_back(m_pDefaultMark);
                 WaveformMark* mark = m_marks.back();
                 mark->setKeyAndIndex(pHotcue->getKey(), i);
             }
@@ -74,7 +74,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 }
 
 void WaveformMarkSet::clear() {
-    m_defaultMark = std:make_unique<WaveformMark>();
+    m_pDefaultMark = std:make_unique<WaveformMark>();
     qDeleteAll(m_marks);
     m_marks.clear();
 }

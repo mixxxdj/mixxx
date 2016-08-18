@@ -22,13 +22,13 @@ class WaveformMarkSet {
     int size() const { return m_marks.size();}
     WaveformMark* operator[] (int i) { return m_marks[i]; }
 
-    const WaveformMark* getDefaultMark() const { return m_defaultMark;}
+    const WaveformMark* getDefaultMark() const { return m_pDefaultMark;}
 
     // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
     WaveformMark* getHotCueMark(int hotCue);
 
   private:
-    std::unique_ptr<WaveformMark> m_defaultMark;
+    std::unique_ptr<WaveformMark> m_pDefaultMark;
     QList<WaveformMark*> m_marks;
     int m_iFirstHotCue;
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
