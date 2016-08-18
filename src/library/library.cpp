@@ -446,7 +446,7 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
     
     LibraryFeature* pCurrentFeature = m_panes[m_focusedPane]->getCurrentFeature();
     if (pCurrentFeature != pFeature && 
-        pCurrentFeature->getFeatureFocus() == m_focusedPane) {
+        pCurrentFeature->getSavedPane() == m_focusedPane) {
         // If this feature it's still shown in another pane change the feature 
         // focus to the other pane
         for (LibraryPaneManager* p : m_panes) {

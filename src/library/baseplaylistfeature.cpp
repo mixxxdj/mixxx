@@ -128,6 +128,10 @@ QPointer<PlaylistTableModel> BasePlaylistFeature::getPlaylistTableModel(int pane
 }
 
 void BasePlaylistFeature::activate() {
+    if (m_lastChildClicked.isValid()) {
+        activateChild(m_lastChildClicked);
+    }
+    
     auto it = m_panes.find(m_featureFocus);
     auto itId = m_idBrowse.find(m_featureFocus);
     if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
@@ -143,6 +147,7 @@ void BasePlaylistFeature::activate() {
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
+    m_lastChildClicked = index;
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     QSet<int> playlistIds = playlistIdsFromIndex(index);
     m_pPlaylistTableModel = getPlaylistTableModel(m_focusedPane);
