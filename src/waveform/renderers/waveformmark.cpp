@@ -6,14 +6,10 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "widget/wskincolor.h"
+#include "util/memory.h"
 
 WaveformMark::WaveformMark()
-    : m_pPointCos(nullptr),
-      m_iIndex(-1) {
-}
-
-WaveformMark::~WaveformMark() {
-    delete m_pPointCos;
+    : m_iIndex(-1) {
 }
 
 void WaveformMark::setup(const QString& group, const QDomNode& node,
@@ -21,7 +17,7 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
                          const WaveformSignalColors& signalColors) {
     QString item = context.selectString(node, "Control");
     if (!item.isEmpty()) {
-        m_pPointCos = new ControlProxy(group, item);
+        m_pPointCos = std::make_unique(group, item);
     }
 
     m_color = context.selectString(node, "Color");
@@ -58,7 +54,7 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
 // TODO(XXX): subclass and override WaveformMark::setup
 void WaveformMark::setKeyAndIndex(const ConfigKey& key, int i) {
     DEBUG_ASSERT(m_pPointCos == NULL);
-    m_pPointCos = new ControlProxy(key);
+    m_pPointCos = std::make_unique(key);
     m_text = m_text.arg(i);
     m_iIndex = i;
 }
