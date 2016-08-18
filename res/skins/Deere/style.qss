@@ -297,12 +297,20 @@ QHeaderView::section:selected {
   border-right: none;
 }
 
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background: #1A1A1A;
+  width: 12px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
 QHeaderView::up-arrow {
-  image: url(skin:/image/style_sort_up.svg)
+  image: url(skin:/image/style_sort_up.svg);
 }
 
 QHeaderView::down-arrow {
-  image: url(skin:/image/style_sort_down.svg)
+  image: url(skin:/image/style_sort_down.svg);
 }
 
 /* library search bar */

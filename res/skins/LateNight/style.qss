@@ -1319,8 +1319,26 @@ QHeaderView::section {
   height: 18px;
   border: 1px solid #585858;
   border-left: 0px;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
 }
+
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+  width: 12px;
+  padding-left: 3px;
+  padding-right: 3px;
+  border-bottom: 1px solid #585858;
+}
+
+QHeaderView::up-arrow {
+  image: url(skin:/image/style_sort_up.svg);
+}
+
+QHeaderView::down-arrow {
+  image: url(skin:/image/style_sort_down.svg);
+}
+
 
 /* QScrollbar styling is even harder */
 QScrollBar {
