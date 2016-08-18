@@ -12,6 +12,14 @@ WaveformMark::WaveformMark()
     : m_iIndex(-1) {
 }
 
+WaveformMark::WaveformMark(WaveformMark* p_waveformMark)
+    : m_color(p_waveformMark->m_color),
+      m_textColor(p_waveformMark->m_textColor),
+      m_text(p_waveformMark->m_text),
+      m_align(p_waveformMark->m_align),
+      m_pixmapPath(p_waveformMark->m_pixmapPath) {
+}
+
 void WaveformMark::setup(const QString& group, const QDomNode& node,
                          const SkinContext& context,
                          const WaveformSignalColors& signalColors) {
