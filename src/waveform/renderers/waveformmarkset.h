@@ -19,12 +19,12 @@ class WaveformMarkSet {
     void clear();
 
     int size() const { return m_marks.size();}
-    WaveformMark& operator[] (int i) { return m_marks[i]; }
+    WaveformMark* operator[] (int i) { return &m_marks[i]; }
 
-    const WaveformMark& getDefaultMark() const { return m_defaultMark;}
+    const WaveformMark* getDefaultMark() const { return &m_defaultMark;}
 
     // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
-    WaveformMark& getHotCueMark(int hotCue);
+    WaveformMark* getHotCueMark(int hotCue);
 
   private:
     WaveformMark m_defaultMark;

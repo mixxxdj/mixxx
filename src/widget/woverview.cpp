@@ -93,9 +93,9 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_marks.setup(m_group, node, context, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
-        WaveformMark& mark = m_marks[i];
-        if (mark.m_pPointCos) {
-            mark.m_pPointCos->connectValueChanged(this,
+        WaveformMark* mark = m_marks[i];
+        if (mark->m_pPointCos) {
+            mark->m_pPointCos->connectValueChanged(this,
                     SLOT(onMarkChanged(double)));
         }
     }
@@ -392,37 +392,37 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             painter.setOpacity(0.9);
 
             for (int i = 0; i < m_marks.size(); ++i) {
-                WaveformMark& currentMark = m_marks[i];
-                if (currentMark.m_pPointCos && currentMark.m_pPointCos->get() >= 0.0) {
+                WaveformMark* currentMark = m_marks[i];
+                if (currentMark->m_pPointCos && currentMark->m_pPointCos->get() >= 0.0) {
                     //const float markPosition = 1.0 +
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-                    const float markPosition = offset + currentMark.m_pPointCos->get() * gain;
+                    const float markPosition = offset + currentMark->m_pPointCos->get() * gain;
 
                     const QLineF line(markPosition, 0.0, markPosition, static_cast<float>(height()));
                     painter.setPen(shadowPen);
                     painter.drawLine(line);
 
-                    painter.setPen(currentMark.m_color);
+                    painter.setPen(currentMark->m_color);
                     painter.drawLine(line);
 
-                    if (!currentMark.m_text.isEmpty()) {
+                    if (!currentMark->m_text.isEmpty()) {
                         QPointF textPoint;
                         textPoint.setX(markPosition + 0.5f);
 
-                        if (currentMark.m_align == Qt::AlignTop) {
+                        if (currentMark->m_align == Qt::AlignTop) {
                             QFontMetricsF metric(markerFont);
-                            textPoint.setY(metric.tightBoundingRect(currentMark.m_text).height()+0.5f);
+                            textPoint.setY(metric.tightBoundingRect(currentMark->m_text).height()+0.5f);
                         } else {
                             textPoint.setY(float(height())-0.5f);
                         }
 
                         painter.setPen(shadowPen);
                         painter.setFont(shadowFont);
-                        painter.drawText(textPoint,currentMark.m_text);
+                        painter.drawText(textPoint,currentMark->m_text);
 
-                        painter.setPen(currentMark.m_textColor);
+                        painter.setPen(currentMark->m_textColor);
                         painter.setFont(markerFont);
-                        painter.drawText(textPoint,currentMark.m_text);
+                        painter.drawText(textPoint,currentMark->m_text);
                     }
                 }
             }
