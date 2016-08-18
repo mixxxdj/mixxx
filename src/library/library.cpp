@@ -436,10 +436,10 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
 
     if (m_pSidebarExpanded->getCurrentFeature() != pFeature) {
         // If the feature is not already shown, follow restore in old pane
-        int featureFocus = pFeature->getSavedPane();
-        if (featureFocus >= 0 && !m_collapsedPanes.contains(featureFocus)) {
+        int savedPane = pFeature->getSavedPane();
+        if (savedPane >= 0 && !m_collapsedPanes.contains(savedPane)) {
             // The feature is shown in some not collapsed pane
-            m_focusedPane = featureFocus;
+            m_focusedPane = savedPane;
             setFocusedPane();
         }
     }
@@ -450,8 +450,10 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
         // If this feature it's still shown in another pane change the feature 
         // focus to the other pane
         for (LibraryPaneManager* p : m_panes) {
-            if (p->getCurrentFeature() == pCurrentFeature) {
+            if (!m_collapsedPanes.contains(p->getPaneId()) && 
+                p->getCurrentFeature() == pCurrentFeature) {
                 pCurrentFeature->setSavedPane(p->getPaneId());
+                break;
             }
         }
     }

@@ -120,6 +120,7 @@ class BasePlaylistFeature : public LibraryFeature {
     TreeItemModel* m_childModel;
     TrackPointer m_pSelectedTrack;
     QModelIndex m_lastChildClicked;
+    int m_lastClickedFocus;
 
   private slots:
     void slotTrackSelected(TrackPointer pTrack);

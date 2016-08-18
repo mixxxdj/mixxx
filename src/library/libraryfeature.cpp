@@ -121,7 +121,7 @@ int LibraryFeature::getFocusedPane() {
 
 void LibraryFeature::setSavedPane(int paneId) {
     m_savedPane = paneId;
-    setFocusedPane(m_savedPane);
+    setFeatureFocus(m_savedPane);
 }
 
 int LibraryFeature::getSavedPane() {
