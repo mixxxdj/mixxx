@@ -32,13 +32,13 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             m_defaultMark.setup(group, child, context, signalColors);
             hasDefaultMark = true;
         } else if (child.nodeName() == "Mark") {
-            m_marks.push_back(WaveformMark());
-            WaveformMark& mark = m_marks.back();
-            mark.setup(group, child, context, signalColors);
+            m_marks.push_back(new WaveformMark());
+            WaveformMark* mark = m_marks.back();
+            mark->setup(group, child, context, signalColors);
 
-            if (mark.m_pPointCos) {
+            if (mark->m_pPointCos) {
                 // guarantee uniqueness even if there is a misdesigned skin
-                QString item = mark.m_pPointCos->getKey().item;
+                QString item = mark->m_pPointCos->getKey().item;
                 if (!controlItemSet.insert(item).second) {
                     qWarning() << "WaveformRenderMark::setup - redefinition of" << item;
                     m_marks.removeAt(m_marks.size() - 1);
@@ -65,9 +65,9 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 
             if (controlItemSet.insert(hotCueControlItem).second) {
                 //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
-                m_marks.push_back(m_defaultMark);
-                WaveformMark& mark = m_marks.back();
-                mark.setKeyAndIndex(pHotcue->getKey(), i);
+                m_marks.push_back(&m_defaultMark);
+                WaveformMark* mark = m_marks.back();
+                mark->setKeyAndIndex(pHotcue->getKey(), i);
             }
         }
     }
