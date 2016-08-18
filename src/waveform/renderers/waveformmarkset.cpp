@@ -74,8 +74,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 }
 
 void WaveformMarkSet::clear() {
-    delete m_defaultMark;
-    m_defaultMark = new WaveformMark();
+    m_defaultMark = std:make_unique<WaveformMark>();
     qDeleteAll(m_marks);
     m_marks.clear();
 }

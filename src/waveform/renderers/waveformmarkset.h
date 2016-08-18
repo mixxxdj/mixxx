@@ -5,6 +5,7 @@
 
 #include "waveformmark.h"
 #include "skin/skincontext.h"
+#include "util/memory.h"
 
 class WaveformWidgetRenderer;
 
@@ -27,7 +28,7 @@ class WaveformMarkSet {
     WaveformMark* getHotCueMark(int hotCue);
 
   private:
-    WaveformMark* m_defaultMark;
+    std::unique_ptr<WaveformMark> m_defaultMark;
     QList<WaveformMark*> m_marks;
     int m_iFirstHotCue;
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
