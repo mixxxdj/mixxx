@@ -153,6 +153,7 @@ void MixxxLibraryFeature::selectAll() {
 }
 
 void MixxxLibraryFeature::onSearch(const QString&) {
+    showBreadCrumb();
     m_pSidebar->clearSelection();
 }
 
