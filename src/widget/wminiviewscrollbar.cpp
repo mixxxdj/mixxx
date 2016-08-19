@@ -171,8 +171,6 @@ void WMiniViewScrollBar::refreshCharMap() {
     }
     
     int size = m_pModel->rowCount();
-    setMinimum(0);
-    setMaximum(size);
     const QModelIndex& rootIndex = m_pModel->index(0, 0);
     
     m_letters.clear();
