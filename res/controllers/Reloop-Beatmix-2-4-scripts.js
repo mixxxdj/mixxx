@@ -738,7 +738,7 @@ ReloopBeatmix24.FxEncoderTurn = function(channel, control, value, status, group)
     if (FxMode == 1) {
         engine.setValue(group, newValue > 0 ? "mix_up" : "mix_down", 1);
     } else {
-        engine.setValue(group, newValue > 0 ? "super1_up_small" : "super1_down_small", 1);
+        engine.setValue(group, newValue > 0 ? "super1_up" : "super1_down", 1);
     }
 };
 
