@@ -25,7 +25,7 @@ void SoundSourceProviderRegistry::registerProvider(
 void SoundSourceProviderRegistry::registerPluginLibrary(
         const SoundSourcePluginLibraryPointer& pPluginLibrary) {
     SoundSourceProviderPointer pProvider(
-            pPluginLibrary->createSoundSourceProvider());
+            pPluginLibrary->getSoundSourceProvider());
     if (!pProvider) {
         qWarning() << "Failed to obtain SoundSource provider from plugin library"
                 << pPluginLibrary->getFilePath();

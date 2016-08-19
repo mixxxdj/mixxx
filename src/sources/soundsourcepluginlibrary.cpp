@@ -86,7 +86,7 @@ bool SoundSourcePluginLibrary::init() {
     }
 }
 
-SoundSourceProviderPointer SoundSourcePluginLibrary::createSoundSourceProvider() const {
+SoundSourceProviderPointer SoundSourcePluginLibrary::getSoundSourceProvider() const {
     DEBUG_ASSERT(m_createSoundSourceProviderFunc);
     DEBUG_ASSERT(m_destroySoundSourceProviderFunc);
     return SoundSourceProviderPointer(

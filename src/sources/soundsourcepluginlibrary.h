@@ -30,7 +30,7 @@ public:
         return m_apiVersion;
     }
 
-    SoundSourceProviderPointer createSoundSourceProvider() const;
+    SoundSourceProviderPointer getSoundSourceProvider() const;
 
 protected:
     explicit SoundSourcePluginLibrary(const QString& libFilePath);
