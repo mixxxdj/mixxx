@@ -692,10 +692,14 @@ ReloopBeatmix24.ShiftFxKnobTurn = function(channel, control, value, status,
             if (value - previousValue[storeIndex] > 5) {
                 engine.setValue("[EffectRack1_EffectUnit" + effectUnit +
                     "_Effect" + Effect + "]", "next_effect", 1);
+                engine.setValue("[EffectRack1_EffectUnit" + effectUnit +
+                    "_Effect" + Effect + "]", "next_effect", 0);
                 previousValue[storeIndex] = value;
             } else if (value - previousValue[storeIndex] < -5) {
                 engine.setValue("[EffectRack1_EffectUnit" + effectUnit +
                     "_Effect" + Effect + "]", "prev_effect", 1);
+                engine.setValue("[EffectRack1_EffectUnit" + effectUnit +
+                    "_Effect" + Effect + "]", "prev_effect", 0);
                 previousValue[storeIndex] = value;
             }
         } else {
