@@ -285,11 +285,19 @@ void Library::onSkinLoadFinished() {
         
         auto itF = m_features.begin();
         auto itP = m_panes.begin();
+        bool first = true;
         
         // Assign a feature to show on each pane unless there are more panes
         // than features
         while (itP != m_panes.end() && itF != m_features.end()) {
             m_focusedPane = itP.key();
+            if (first) {
+                first = false;
+                // Set the first pane as saved pane to all features
+                for (LibraryFeature* pFeature : m_features) {
+                    pFeature->setSavedPane(m_focusedPane);
+                }
+            }
             
             (*itF)->setFeatureFocus(m_focusedPane);
             (*itF)->setSavedPane(m_focusedPane);
@@ -432,7 +440,7 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
         m_pSidebarExpanded->switchToFeature(pFeature);
         handleFocus();
         return;
-    }
+    } 
 
     if (m_pSidebarExpanded->getCurrentFeature() != pFeature) {
         // If the feature is not already shown, follow restore in old pane
@@ -442,16 +450,25 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
             m_focusedPane = savedPane;
             setFocusedPane();
         }
+    } else if (pFeature->isSinglePane()) {
+        // Swap panes in case of a single Pane feature
+        LibraryFeature* pOldFeature = m_panes[m_focusedPane]->getCurrentFeature();
+        int newFocusPane = m_focusedPane;
+        m_focusedPane = pFeature->getSavedPane();
+        m_panes[m_focusedPane]->setCurrentFeature(pOldFeature);
+        pOldFeature->setSavedPane(m_focusedPane);
+        pOldFeature->activate();
+        m_focusedPane = newFocusPane;
     }
     
     LibraryFeature* pCurrentFeature = m_panes[m_focusedPane]->getCurrentFeature();
     if (pCurrentFeature != pFeature && 
-        pCurrentFeature->getSavedPane() == m_focusedPane) {
+            pCurrentFeature->getSavedPane() == m_focusedPane) {
         // If this feature it's still shown in another pane change the feature 
         // focus to the other pane
         for (LibraryPaneManager* p : m_panes) {
             if (!m_collapsedPanes.contains(p->getPaneId()) && 
-                p->getCurrentFeature() == pCurrentFeature) {
+                    p->getCurrentFeature() == pCurrentFeature) {
                 pCurrentFeature->setSavedPane(p->getPaneId());
                 break;
             }
