@@ -55,7 +55,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     // check if there is a default mark and compare declared
     // and to create all missing hot_cues
     if (hasDefaultMark) {
-        for (int i = 1; i < NUM_HOT_CUES; ++i) {
+        for (int i = 1; i <= NUM_HOT_CUES; ++i) {
             QString hotCueControlItem = "hotcue_" + QString::number(i) + "_position";
             ControlObject* pHotcue = ControlObject::getControl(
                     ConfigKey(group, hotCueControlItem));
