@@ -20,6 +20,9 @@ WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent)
     setLayout(layout);
 }
 
+// Do not remove this, if the minimum size hint is not 0 width then when
+// the user resizes a panel with the breadcrumb it never shows elided text and
+// the minimum size becomes the text lenght
 QSize WLibraryBreadCrumb::minimumSizeHint() const {
     return QSize(0, height());
 }
@@ -60,9 +63,10 @@ void WLibraryBreadCrumb::refreshWidth() {
     QFontMetrics metrics(fontMetrics());
     
     // Measure the text for the label width
-    int mLText, mRText;
+    int mLText, mRText, mLIcon, mRIcon;
     m_pText->getContentsMargins(&mLText, nullptr, &mRText, nullptr);
-    int margins = mLText + mRText;
+    m_pIcon->getContentsMargins(&mLIcon, nullptr, &mRIcon, nullptr);
+    int margins = mLText + mRText + layout()->spacing() + mLIcon + mRIcon;
     
     int newSize = width() - m_pIcon->width() - margins;
     QString elidedText = metrics.elidedText(m_longText, Qt::ElideRight, newSize);

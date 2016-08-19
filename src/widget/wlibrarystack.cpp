@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QEvent>
 
 #include "widget/wlibrarystack.h"
 

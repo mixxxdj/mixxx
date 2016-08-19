@@ -17,13 +17,23 @@ void WVerticalScrollArea::setWidget(QWidget* widget) {
     QScrollArea::setWidget(widget);
 }
 
+bool WVerticalScrollArea::eventFilter(QObject* o, QEvent* e) {
+    if (o == widget() && e->type() == QEvent::Resize) {
+        calcSize();
+    }
+    return false;
+}
+
 void WVerticalScrollArea::resizeEvent(QResizeEvent *e) {
     QScrollArea::resizeEvent(e);
-    
+    calcSize();
+}
+
+void WVerticalScrollArea::calcSize() {
     int width = widget()->minimumSizeHint().width();
     int vScrollWidth = 0;
     
-    if (e->size().height() <= widget()->minimumSizeHint().height()) {
+    if (height() <= widget()->minimumSizeHint().height()) {
         vScrollWidth = verticalScrollBar()->width();
     }
     setFixedWidth(width + vScrollWidth);

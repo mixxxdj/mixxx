@@ -174,9 +174,15 @@ WBaseLibrary[showFocus="1"] {
   background-color: #4B4B4B;
 }
 
-WLibraryBreadCrumb QLabel,
-WBaseLibrary QLabel {
+WLibraryBreadCrumb QLabel {
   margin: 4px 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #B3B3B3;
+}
+
+WBaseLibrary QLabel {
+  margin: 4px 4px 0px 4px;
   font-size: 12px;
   font-weight: bold;
   color: #B3B3B3;
