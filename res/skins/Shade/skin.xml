@@ -427,8 +427,8 @@
 
                     <!--library search bar-->
                     WSearchLineEdit {
-                        margin: 0px 0px 5px 5px;
-                        padding: 2px;
+                        margin: 3px 0px 3px 0px;
+                        padding: 1px;
                         border: 1px solid #656565;
                         font: 12px/14px sans-serif;
                         font-family: "Open Sans";
@@ -577,7 +577,7 @@
                     }
 
                     WLibraryBreadCrumb QLabel {
-                        margin: 2px 4px;
+                        margin: 2px 0px 2px 3px;
                     }
 
                     WBaseLibrary QLabel {
@@ -838,14 +838,15 @@
                                                     <Orientation>vertical</Orientation>
                                                     <SplitSizes>8,2</SplitSizes>
                                                     <SizePolicy>me,me</SizePolicy>
+                                                    <MinimumSize>30,30</MinimumSize>
                                                     <Children>
                                                         <LibrarySidebarExpanded>
                                                             <ObjectName>LibrarySidebarExpanded</ObjectName>
+                                                            <MinimumSize>100,100</MinimumSize>
                                                         </LibrarySidebarExpanded>
                                                         <!--Cover Art-->
                                                         <CoverArt>
                                                             <MinimumSize>30,30</MinimumSize>
-                                                            <SizePolicy>me,me</SizePolicy>
                                                             <Connection>
                                                                 <ConfigKey>[Library],show_coverart</ConfigKey>
                                                                 <BindProperty>visible</BindProperty>

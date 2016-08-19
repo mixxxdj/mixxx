@@ -13,7 +13,6 @@ class WLibraryBreadCrumb : public QWidget {
 
     WLibraryBreadCrumb(QWidget* parent = nullptr);
 
-    
     virtual QSize minimumSizeHint() const;
 
   public slots:

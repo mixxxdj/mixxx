@@ -43,6 +43,7 @@ class LibraryFeature : public QObject {
     
     // This name must be unique for each feature
     virtual QString getSettingsName() const; 
+    virtual bool isSinglePane() const;
 
     QIcon getIcon();
 
@@ -69,9 +70,13 @@ class LibraryFeature : public QObject {
     virtual TreeItemModel* getChildModel() = 0;
     
     virtual void setFeatureFocus(int focus);
-    virtual int getFeatureFocus();
+    int getFeatureFocus();
     
-    virtual void setFocusedPane(int paneId);
+    void setFocusedPane(int paneId);
+    int getFocusedPane();
+    
+    void setSavedPane(int paneId);
+    int getSavedPane();
     
     virtual SavedSearchQuery saveQuery(SavedSearchQuery query);
     virtual void restoreQuery(int id);
@@ -125,7 +130,7 @@ class LibraryFeature : public QObject {
     
     // Creates a WLibrarySidebar widget with the getChildModel() function as
     // model
-    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter* pKeyboard);
+    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter*);
     
     // Override this function to create a custom inner widget for the sidebar,
     // the default widget is a WLibrarySidebar widget
@@ -148,6 +153,7 @@ class LibraryFeature : public QObject {
     
     int m_featureFocus;
     int m_focusedPane;
+    int m_savedPane;
     
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);

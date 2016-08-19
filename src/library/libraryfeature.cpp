@@ -35,7 +35,9 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
           m_savedDAO(m_pTrackCollection->getSavedQueriesDAO()),
-          m_featureFocus(-1) {
+          m_featureFocus(-1),
+          m_focusedPane(-1),
+          m_savedPane(-1) {
 }
 
 LibraryFeature::~LibraryFeature() {
@@ -43,6 +45,10 @@ LibraryFeature::~LibraryFeature() {
 
 QString LibraryFeature::getSettingsName() const {
     return QString("");
+}
+
+bool LibraryFeature::isSinglePane() const {
+    return true;
 }
 
 QIcon LibraryFeature::getIcon() {    
@@ -109,6 +115,19 @@ void LibraryFeature::setFocusedPane(int paneId) {
     m_focusedPane = paneId;
 }
 
+int LibraryFeature::getFocusedPane() {
+    return m_focusedPane;
+}
+
+void LibraryFeature::setSavedPane(int paneId) {
+    m_savedPane = paneId;
+    setFeatureFocus(m_savedPane);
+}
+
+int LibraryFeature::getSavedPane() {
+    return m_savedPane;
+}
+
 SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery query) {
     WTrackTableView* pTable = getFocusedTable();
     if (pTable == nullptr) {
@@ -130,6 +149,7 @@ void LibraryFeature::restoreQuery(int id) {
     // Move the query to the first position to be reused later by the user
     const SavedSearchQuery& sQuery = m_savedDAO.moveToFirst(this, id);
     pTable->restoreQuery(sQuery);
+    restoreSearch(sQuery.query.isNull() ? "" : sQuery.query);
 }
 
 QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {    
@@ -168,9 +188,8 @@ QWidget* LibraryFeature::createInnerSidebarWidget(KeyboardEventFilter *pKeyboard
     return createLibrarySidebarWidget(pKeyboard);
 }
 
-WLibrarySidebar *LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter *pKeyboard) {
+WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*) {
     WLibrarySidebar* pSidebar = new WLibrarySidebar(nullptr);
-    pSidebar->installEventFilter(pKeyboard);
     QAbstractItemModel* pModel = getChildModel();
     pSidebar->setModel(pModel);
     
@@ -182,7 +201,7 @@ WLibrarySidebar *LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter 
     pMiniView->setModel(pModel);
     pSidebar->setVerticalScrollBar(pMiniView);
     
-    connect(pSidebar, SIGNAL(clicked(const QModelIndex&)),
+    connect(pSidebar, SIGNAL(pressed(const QModelIndex&)),
             this, SLOT(activateChild(const QModelIndex&)));
     connect(pSidebar, SIGNAL(doubleClicked(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));

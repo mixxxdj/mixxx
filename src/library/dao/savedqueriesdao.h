@@ -14,7 +14,15 @@
 // the search bar and the library features
 struct SavedSearchQuery {
     
-    SavedSearchQuery() : id(-1) {}
+    SavedSearchQuery() : 
+        vScrollBarPos(-1),
+        sortColumn(-1), 
+        sortAscendingOrder(false), 
+        pinned(false),
+        id(-1) {}
+    
+    SavedSearchQuery(const SavedSearchQuery& other) = default;
+    SavedSearchQuery& operator=(const SavedSearchQuery& other) = default;
     
     QString query;
     QString title;
@@ -45,7 +53,7 @@ class SavedQueriesDAO : public DAO
     
   private:
     static QString serializeItems(const QSet<DbId>& items);
-    static QSet<DbId> deserializeItems(const QString& text);
+    static QSet<DbId> deserializeItems(QString text);
     static SavedSearchQuery valueToQuery(const QSqlQuery& query);
     
     static const QString kSelectStart;

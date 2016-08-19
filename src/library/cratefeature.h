@@ -34,6 +34,7 @@ class CrateFeature : public LibraryFeature {
     QVariant title() override;
     QString getIconPath() override;
     QString getSettingsName() const override;
+    bool isSinglePane() const override;
     
     void onSearch(QString&) {}
 
@@ -115,6 +116,7 @@ class CrateFeature : public LibraryFeature {
     QHash<int, QPointer<QStackedWidget> > m_panes;
     QHash<int,int> m_idBrowse;
     QHash<int,int> m_idTable;
+    QModelIndex m_lastClickedIndex;
 };
 
 #endif /* CRATEFEATURE_H */

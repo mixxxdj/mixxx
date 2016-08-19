@@ -130,6 +130,10 @@ QString CrateFeature::getSettingsName() const {
     return "CrateFeature";
 }
 
+bool CrateFeature::isSinglePane() const {
+    return false;
+}
+
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
@@ -224,6 +228,11 @@ TreeItemModel* CrateFeature::getChildModel() {
 }
 
 void CrateFeature::activate() {
+    if (m_lastClickedIndex.isValid()) {
+        activateChild(m_lastClickedIndex);
+        return;
+    }
+    
     auto it = m_panes.find(m_featureFocus);
     auto itId = m_idBrowse.find(m_featureFocus);
     if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
@@ -240,6 +249,7 @@ void CrateFeature::activate() {
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
+    m_lastClickedIndex = index;
     if (!index.isValid()) {
         return;
     }

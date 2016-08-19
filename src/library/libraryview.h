@@ -7,6 +7,7 @@
 #ifndef LIBRARYVIEW_H
 #define LIBRARYVIEW_H
 
+#include <QObject>
 #include <QString>
 
 class LibraryView {

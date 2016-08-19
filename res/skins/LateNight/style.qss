@@ -1226,7 +1226,7 @@
 }
 
 #LibrarySidebarExpanded {
-  margin-left: 5px;
+  margin: -5px 0px 0px 5px;
 }
 
 #LibrarySidebarExpanded QPushButton {
@@ -1262,6 +1262,7 @@
 
 #LibrarySidebarButtons WButtonBar {
   background-color: #191919;
+  margin: 0px 2px 0px 0px;
 }
 
 #LibrarySidebarButtons, QTableView, QTextBrowser, QTreeView {
@@ -1276,7 +1277,14 @@
 }
 
 WLibraryBreadCrumb QLabel {
-  margin: 4px 2px;
+  margin: 4px 0px 6px 3px;
+}
+
+WBaseLibrary QLabel {
+  padding: 0px 0px 0px 0px;
+  margin: 100px 100px 100px 100px;
+  background-color: blue;
+  border: 0px solid blue;
 }
 
 /* checkbox in library "Played" column */
@@ -1319,8 +1327,26 @@ QHeaderView::section {
   height: 18px;
   border: 1px solid #585858;
   border-left: 0px;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
 }
+
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+  width: 12px;
+  padding-left: 3px;
+  padding-right: 3px;
+  border-bottom: 1px solid #585858;
+}
+
+QHeaderView::up-arrow {
+  image: url(skin:/image/style_sort_up.svg);
+}
+
+QHeaderView::down-arrow {
+  image: url(skin:/image/style_sort_down.svg);
+}
+
 
 /* QScrollbar styling is even harder */
 QScrollBar {

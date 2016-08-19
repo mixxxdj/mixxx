@@ -51,9 +51,10 @@ TEST(StringHelperTest, Finnish) {
     QString s2 = QString::fromUtf8("Å");
     QChar c1 = StringHelper::getFirstCharForGrouping(s1);
     QChar c2 = s2.at(0);
+#if __LINUX__
     ASSERT_EQ(QString::localeAwareCompare(c1, c2), 0) 
             << qPrintable(c1) << " " << qPrintable(c2);
-    
+#endif
     QLocale::setDefault(prev);
 }
 

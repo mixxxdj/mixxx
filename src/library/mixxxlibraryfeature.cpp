@@ -153,6 +153,7 @@ void MixxxLibraryFeature::selectAll() {
 }
 
 void MixxxLibraryFeature::onSearch(const QString&) {
+    showBreadCrumb();
     m_pSidebar->clearSelection();
 }
 
@@ -171,6 +172,11 @@ void MixxxLibraryFeature::setChildModel(TreeItemModel* pChild) {
 }
 
 void MixxxLibraryFeature::activate() {
+    if (m_lastClickedIndex.isValid()) {
+        activateChild(m_lastClickedIndex);
+        return;
+    }
+    
     //qDebug() << "MixxxLibraryFeature::activate()";
     showTrackModel(m_pLibraryTableModel);
     restoreSearch("");
@@ -180,6 +186,7 @@ void MixxxLibraryFeature::activate() {
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
+    m_lastClickedIndex = index;
     QString query = index.data(TreeItemModel::RoleQuery).toString();
     //qDebug() << "MixxxLibraryFeature::activateChild" << query;
     

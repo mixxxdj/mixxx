@@ -5,8 +5,10 @@
 #include <QAction>
 #include <QDebug>
 #include <QFont>
+#include <QInputDialog>
 #include <QMenu>
 #include <QShortcut>
+#include <QString>
 #include <QStyle>
 #include <QStyleOption>
 
@@ -86,13 +88,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     connect(this, SIGNAL(textChanged(const QString&)),
             this, SLOT(updateButtons(const QString&)));
-
-    // The width of the frame for the widget based on the styling.
-    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-
-    // Ensures the text does not obscure the clear image.
-    setStyleSheet(QString("QLineEdit { padding-right: %1px; } ").
-                  arg(m_pClearButton->sizeHint().width() + frameWidth + 1));
 }
 
 void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
@@ -170,6 +165,9 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
         m_pSaveButton->move(posXSave, posYSave);
         m_pClearButton->move(posXClear, posYClear);
     }
+    
+    // Ensures the text does not obscure the clear image.
+    setStyleSheet(QString("QLineEdit { padding-right: %1px; }").arg(posXClear));
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
@@ -232,9 +230,7 @@ void WSearchLineEdit::restoreSearch(const QString& text, QPointer<LibraryFeature
     updateButtons(text);
 }
 
-void WSearchLineEdit::slotSetupTimer(const QString& text)
-{
-    Q_UNUSED(text);
+void WSearchLineEdit::slotSetupTimer(const QString&) {
     m_searchTimer.stop();
     //300 milliseconds timeout
     m_searchTimer.start(300);
@@ -290,6 +286,21 @@ void WSearchLineEdit::saveQuery() {
     SavedSearchQuery query;
     query.title = query.query = text();
     if (!m_pCurrentFeature.isNull()) {
+        if (query.title.isEmpty()) {
+            // Request a title
+            bool ok = false;
+            query.title = 
+                QInputDialog::getText(nullptr,
+                                      tr("Create search query"),
+                                      tr("Enter name for empty search query"),
+                                      QLineEdit::Normal,
+                                      tr("New query"),
+                                      &ok).trimmed();
+            if (ok == false) {
+                return;
+            }
+        }
+        
         m_pCurrentFeature->saveQuery(query);
     }
     m_pSaveButton->setEnabled(false);
@@ -308,10 +319,12 @@ void WSearchLineEdit::restoreQuery() {
         QAction* action = menu.addAction(tr("No saved queries"));
         action->setData(-1);
     }
-    for (int i = 0; i < savedQueries.size(); ++i) {
-        QAction* action = menu.addAction(savedQueries[i].title);
-        action->setData(i);
+    
+    for (const SavedSearchQuery& query : savedQueries) {
+        QAction* action = menu.addAction(query.title);
+        action->setData(query.id);
     }
+    
     QPoint position = m_pDropButton->pos();
     position += QPoint(0, m_pDropButton->height());
     
@@ -324,11 +337,6 @@ void WSearchLineEdit::restoreQuery() {
     if (index < 0) {
         return;
     }
-    QString text = savedQueries[index].query;
-    blockSignals(true);
-    setText(text);
-    updateButtons(text);
-    blockSignals(false);    
     
     m_pCurrentFeature->restoreQuery(index);
 }

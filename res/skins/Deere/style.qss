@@ -174,9 +174,15 @@ WBaseLibrary[showFocus="1"] {
   background-color: #4B4B4B;
 }
 
-WLibraryBreadCrumb QLabel,
-WBaseLibrary QLabel {
+WLibraryBreadCrumb QLabel {
   margin: 4px 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #B3B3B3;
+}
+
+WBaseLibrary QLabel {
+  margin: 4px 4px 0px 4px;
   font-size: 12px;
   font-weight: bold;
   color: #B3B3B3;
@@ -297,12 +303,20 @@ QHeaderView::section:selected {
   border-right: none;
 }
 
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background: #1A1A1A;
+  width: 12px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
 QHeaderView::up-arrow {
-  image: url(skin:/image/style_sort_up.svg)
+  image: url(skin:/image/style_sort_up.svg);
 }
 
 QHeaderView::down-arrow {
-  image: url(skin:/image/style_sort_down.svg)
+  image: url(skin:/image/style_sort_down.svg);
 }
 
 /* library search bar */

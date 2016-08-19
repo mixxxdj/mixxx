@@ -80,6 +80,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     QPointer<WLibrarySidebar> m_pSidebar;
     LibraryTableModel* m_pLibraryTableModel;
     TrackDAO& m_trackDao;
+    QModelIndex m_lastClickedIndex;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

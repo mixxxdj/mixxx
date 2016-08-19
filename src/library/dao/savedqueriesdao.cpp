@@ -22,19 +22,7 @@ SavedSearchQuery SavedQueriesDAO::saveQuery(LibraryFeature* pFeature,
         return SavedSearchQuery();
     }
     
-    // First of all delete previous saved queries
-    QString queryStr = "DELETE FROM " SAVEDQUERYTABLE " WHERE libraryFeature = :featureName";
-    
-    qDebug() << pFeature->getSettingsName();
-    
-    QSqlQuery query(m_database);
-    query.prepare(queryStr);
-    query.bindValue(":featureName", pFeature->getSettingsName());
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-    
-    
+    QSqlQuery query(m_database);    
     query.prepare("INSERT INTO " SAVEDQUERYTABLE 
                   "(libraryFeature, query, title, selectedItems,"
                   "sortOrder, vScrollbarPos, sortColumn, sortAscendingOrder, pinned) "
@@ -138,12 +126,14 @@ QString SavedQueriesDAO::serializeItems(const QSet<DbId>& items) {
     return ret.join(" ");
 }
 
-QSet<DbId> SavedQueriesDAO::deserializeItems(const QString& text) {
+QSet<DbId> SavedQueriesDAO::deserializeItems(QString text) {
     QSet<DbId> ret;
-    QStringList items = text.split(" ");
-    for (const QString& item : items) {
-        ret.insert(DbId(QVariant(item)));
-    }
+    QTextStream ss(&text);
+    while (!ss.atEnd()) {
+        int value;
+        ss >> value;
+        ret.insert(DbId(QVariant(value)));
+    }    
     return ret;
 }
 
