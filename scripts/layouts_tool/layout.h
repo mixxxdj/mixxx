@@ -25,7 +25,7 @@ class Layout {
     QString name;
 
   private:
-    KbdKeyChar data[LAYOUT_LEN][2];
+    KbdKeyChar data[kLayoutLen][2];
 };
 
 

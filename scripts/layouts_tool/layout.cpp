@@ -12,7 +12,7 @@ Layout::Layout(const QString& varName, QString name, KeyboardLayoutPointer pData
     qDebug() << "Loading layout " << name;
 
     // Copy layout data
-    for (int i = 0; i < LAYOUT_LEN; i++) {
+    for (int i = 0; i < kLayoutLen; i++) {
         data[i][0] = pData[i][0]; // Unmodified KbdKeyChar
         data[i][1] = pData[i][1]; // Shift modified KbdKeyChar
     }
@@ -88,10 +88,10 @@ QStringList Layout::generateCode() const {
 
     lines.append(
             QString("static const KbdKeyChar %1[%2][2] = {")
-                    .arg(varName,QString::number(LAYOUT_LEN))
+                    .arg(varName,QString::number(kLayoutLen))
     );
 
-    for (int i = 0; i < LAYOUT_LEN; i++) {
+    for (int i = 0; i < kLayoutLen; i++) {
         int keycode = utils::layoutIndexToKeycode(i);
         QString keyName = utils::keycodeToKeyname(keycode);
 
@@ -119,7 +119,7 @@ QStringList Layout::generateCode() const {
         );
 
         // If not last, place a separation comma
-        if (i < LAYOUT_LEN - 1) {
+        if (i < kLayoutLen - 1) {
             line += ",";
         }
 

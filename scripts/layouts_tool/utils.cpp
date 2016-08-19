@@ -7,7 +7,7 @@
 #include "defs.h"
 
 namespace utils {
-    int keyboardMap[LAYOUT_LEN] = {
+    int keyboardMap[kLayoutLen] = {
             TLDE, AE01, AE02, AE03, AE04, AE05, AE06, AE07, AE08, AE09, AE10, AE11, AE12,
             AD01, AD02, AD03, AD04, AD05, AD06, AD07, AD08, AD09, AD10, AD11, AD12,
             AC01, AC02, AC03, AC04, AC05, AC06, AC07, AC08, AC09, AC10, AC11, BKSL,
@@ -91,7 +91,7 @@ namespace utils {
 
     int keycodeToLayoutIndex(int keycode) {
         int pos = -1;
-        for (int i = 0; i < LAYOUT_LEN; i++) {
+        for (int i = 0; i < kLayoutLen; i++) {
             if (keyboardMap[i] == keycode) {
                 pos = i;
                 break;

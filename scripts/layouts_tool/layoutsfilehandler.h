@@ -16,22 +16,6 @@ class LayoutsFileHandler {
     void open(QString& layoutsPath, QList<Layout>& layouts);
     void save(QFile& f, QList<Layout>& layouts);
 
-    static const QString INDENT;
-    static const QStringList HEADER_COMMENT;
-    static const QString SKIP_HEAD;
-    static const QString SKIP_TAIL;
-
-    // Header file
-    static const QStringList INCLUDE_GUARD_HEAD;
-    static const QString KBDKEYCHAR_PROTOTYPE;
-    static const QString KBDLAYOUTPOINTER_TYPEDEF;
-    static const QString GETLAYOUT_FUNCTION_PROTOTYPE;
-    static const QString INCLUDE_GUARD_TAIL;
-
-    // Implementation file
-    static const QString INCLUDE_STRING;
-    static const QStringList KBDKEYCHAR_IMPLEMENTATION;
-
   private:
     LayoutNamesData getLayoutNames(QFile& cppFile);
 

@@ -1,7 +1,9 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-static const int LAYOUT_LEN = 48;
+namespace {
+    const int kLayoutLen = 48;
+}
 
 // See figure 2 at: http://www.charvolant.org/~doug/xkb/html/node5.html
 enum keycodes {
