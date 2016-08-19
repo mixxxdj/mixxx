@@ -89,9 +89,9 @@ void LayoutsFileHandler::open(QString& cppPath, QList<Layout>& layouts) {
                        getLayout,
                        handle);
 
-    for (QStringList& names : layoutNames) {
-        QString& varName = names[0];
-        QString& name = names[1];
+    for (const QStringList& names : layoutNames) {
+        const QString& varName = names[0];
+        const QString& name = names[1];
         KeyboardLayoutPointer layoutData = getLayout(varName.toLatin1().data());
 
         // Construct layout object and append to layouts
@@ -162,7 +162,7 @@ void LayoutsFileHandler::prependDefs(QFile& cppFile) {
     // Overwrite file with prepended definitions
     if (cppFile.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
         QTextStream stream(&cppFile);
-        for (QStringList::Iterator it = lines.begin(); it != lines.end(); ++it) {
+        for (auto it = lines.begin(); it != lines.end(); ++it) {
             stream << *it << "\n";
         }
         cppFile.close();
@@ -182,7 +182,7 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile& cppFile,
     );
 
     // Create one if-statement per layout
-    for (QStringList names : layoutNames)
+    for (const QStringList& names : layoutNames)
         fnLines.append(
                 QString(INDENT + "if (layoutName == \"%1\") return layouts::%1;").arg(names[0])
         );
@@ -202,7 +202,7 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile& cppFile,
     // Rewrite file from buffer
     if (cppFile.open(QIODevice::ReadWrite | QIODevice::Append)) {
         QTextStream stream(&cppFile);
-        for (QStringList::Iterator it = fnLines.begin(); it != fnLines.end(); ++it) {
+        for (auto it = fnLines.begin(); it != fnLines.end(); ++it) {
             stream << *it << "\n";
         }
         cppFile.close();
@@ -279,7 +279,7 @@ void LayoutsFileHandler::save(QFile& f, QList<Layout>& layouts) {
     // Add layouts and add indentation for namespace
     for (const Layout& layout : layouts) {
         QStringList layoutCode = layout.generateCode();
-        for (QString& line : layoutCode) {
+        for (const QString& line : layoutCode) {
             lines.append(INDENT + line);
         }
 
@@ -293,7 +293,7 @@ void LayoutsFileHandler::save(QFile& f, QList<Layout>& layouts) {
 
     if (f.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
         QTextStream stream(&f);
-        for (QStringList::Iterator it = lines.begin(); it != lines.end(); ++it) {
+        for (auto it = lines.begin(); it != lines.end(); ++it) {
             stream << *it << "\n";
         }
         f.close();
@@ -321,7 +321,7 @@ void LayoutsFileHandler::createHeaderFile(const QString& path) {
 
     if (f.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
         QTextStream stream(&f);
-        for (QStringList::Iterator it = lines.begin(); it != lines.end(); ++it) {
+        for (auto it = lines.begin(); it != lines.end(); ++it) {
             stream << *it << "\n";
         }
         f.close();
@@ -352,7 +352,7 @@ void LayoutsFileHandler::removeSkipParts(QFile& f) {
     // Rewrite file
     if (f.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
         QTextStream stream(&f);
-        for (QStringList::Iterator it = code.begin(); it != code.end(); ++it) {
+        for (auto it = code.begin(); it != code.end(); ++it) {
             stream << *it << "\n";
         }
         f.close();
