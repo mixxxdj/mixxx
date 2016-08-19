@@ -98,7 +98,7 @@ void WaveformRenderMark::slotCuesUpdated() {
         // because WaveformMarkSet stores one mark for each hotcue.
         const WaveformMark* p_oldMark = m_marks.getHotCueMark(hotCue);
         WaveformMark* p_newMark = new WaveformMark(p_oldMark);
-        p_newMark->setKeyAndIndex(p_oldMark->m_pPointCos->getKey(), hotCue);
+        p_newMark->setKeyAndIndex(p_oldMark->m_pPointCos->getKey(), hotCue + 1);
         if (p_newMark->m_text.isNull() || newLabel != p_newMark->m_text || !p_newMark->m_color.isValid() || newColor != p_newMark->m_color) {
             p_newMark->m_text = newLabel;
             p_newMark->m_color = newColor;
