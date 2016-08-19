@@ -130,7 +130,7 @@ class LibraryFeature : public QObject {
     
     // Creates a WLibrarySidebar widget with the getChildModel() function as
     // model
-    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter* pKeyboard);
+    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter*);
     
     // Override this function to create a custom inner widget for the sidebar,
     // the default widget is a WLibrarySidebar widget

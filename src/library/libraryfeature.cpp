@@ -188,9 +188,8 @@ QWidget* LibraryFeature::createInnerSidebarWidget(KeyboardEventFilter *pKeyboard
     return createLibrarySidebarWidget(pKeyboard);
 }
 
-WLibrarySidebar *LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter *pKeyboard) {
+WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*) {
     WLibrarySidebar* pSidebar = new WLibrarySidebar(nullptr);
-    pSidebar->installEventFilter(pKeyboard);
     QAbstractItemModel* pModel = getChildModel();
     pSidebar->setModel(pModel);
     
@@ -202,7 +201,7 @@ WLibrarySidebar *LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter 
     pMiniView->setModel(pModel);
     pSidebar->setVerticalScrollBar(pMiniView);
     
-    connect(pSidebar, SIGNAL(clicked(const QModelIndex&)),
+    connect(pSidebar, SIGNAL(pressed(const QModelIndex&)),
             this, SLOT(activateChild(const QModelIndex&)));
     connect(pSidebar, SIGNAL(doubleClicked(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
