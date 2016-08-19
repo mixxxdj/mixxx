@@ -14,17 +14,17 @@ struct KbdKeyChar {
 typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
 
 class Layout {
-public:
-    Layout(QString varName, QString name, KeyboardLayoutPointer pData);
-    Layout(QString varName, QString name);
+  public:
+    Layout(const QString& varName, QString name, KeyboardLayoutPointer pData);
+    Layout(const QString& varName, QString name);
     virtual ~Layout();
 
-    QStringList generateCode();
+    QStringList generateCode() const;
 
     QString varName;
     QString name;
 
-private:
+  private:
     KbdKeyChar data[LAYOUT_LEN][2];
 };
 

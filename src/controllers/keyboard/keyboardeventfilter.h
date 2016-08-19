@@ -42,7 +42,7 @@ class KeyboardEventFilter : public QObject {
     };
 
     // Returns a valid QString with modifier keys from a QKeyEvent
-    QString getKeySeq(QKeyEvent *e);
+    QString getKeySeq(QKeyEvent* e);
 
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;

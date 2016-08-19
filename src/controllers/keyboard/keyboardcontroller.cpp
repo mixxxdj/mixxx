@@ -56,7 +56,7 @@ void KeyboardController::visit(const HidControllerPreset* preset) {
     // TODO(XXX): throw a hissy fit.
 }
 
-bool KeyboardController::matchPreset(const PresetInfo &preset) {
+bool KeyboardController::matchPreset(const PresetInfo& preset) {
     // Product info mapping not implemented for Keyboards yet
     Q_UNUSED(preset);
     return false;

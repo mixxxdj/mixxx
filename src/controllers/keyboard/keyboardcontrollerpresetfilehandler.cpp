@@ -79,8 +79,8 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
     return ControllerPresetPointer(preset);
 }
 
-bool KeyboardControllerPresetFileHandler::save(const KeyboardControllerPreset &preset, const QString deviceName,
-                                               const QString fileName) const {
+bool KeyboardControllerPresetFileHandler::save(const KeyboardControllerPreset& preset, const QString& deviceName,
+                                               const QString& fileName) const {
     QDomDocument doc = buildRootWithScripts(preset, deviceName);
     addControlsToDocument(preset, &doc);
     return writeDocument(doc, fileName);
@@ -120,7 +120,7 @@ void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardCo
         controlNode.setAttribute("action", action);
 
         // Create <keyseq> element for each keyseq of current PresetControl
-        for (auto &keyseq : iterator->keyseqs) {
+        for (const auto& keyseq : iterator->keyseqs) {
             QDomElement keyseqNode = doc->createElement("keyseq");
             keyseqNode.setAttribute("lang", keyseq.lang);
             keyseqNode.setAttribute("scancode", keyseq.scancode);

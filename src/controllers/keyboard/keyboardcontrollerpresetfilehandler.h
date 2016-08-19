@@ -10,7 +10,7 @@ class KeyboardControllerPresetFileHandler : public ControllerPresetFileHandler {
     virtual ~KeyboardControllerPresetFileHandler();
 
     bool save(const KeyboardControllerPreset& preset,
-              const QString deviceName, const QString fileName) const;
+              const QString& deviceName, const QString& fileName) const;
 
   private:
     // Parse *.kbd.xml file and load into a KeyboardControllerPreset. Returns a

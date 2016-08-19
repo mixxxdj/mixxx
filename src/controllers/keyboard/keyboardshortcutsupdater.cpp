@@ -56,7 +56,7 @@ void ShortcutChangeWatcher::updateShortcut(QMultiHash<QString, ConfigKey>* pShor
     for (it = pShortcuts->begin(); it != pShortcuts->end(); ++it) {
         Q_ASSERT(it.value().group == "[KeyboardShortcuts]");
         if (it.value() == m_configKey) {
-            const char *keyseq = it.key().toLatin1().data();
+            const char* keyseq = it.key().toLatin1().data();
             m_pAction->setShortcut(
                     QKeySequence(tr(keyseq))
             );

@@ -55,8 +55,8 @@ namespace layoutUtils {
     const KbdKeyChar* getKbdKeyChar(KeyboardLayoutPointer pLayout,
                                     unsigned char scancode,
                                     Qt::KeyboardModifier modifier);
-    QString getCharFromKeysequence(QString keysequence);
-    QStringList getModifiersFromKeysequence(QString keyseq);
+    QString getCharFromKeysequence(const QString& keysequence);
+    QStringList getModifiersFromKeysequence(const QString& keyseq);
 }
 
 

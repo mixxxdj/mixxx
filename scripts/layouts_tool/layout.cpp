@@ -5,7 +5,7 @@
 #include <X11/XKBlib.h>
 
 
-Layout::Layout(QString varName, QString name, KeyboardLayoutPointer pData) :
+Layout::Layout(const QString& varName, QString name, KeyboardLayoutPointer pData) :
         varName(varName),
         name(name) {
 
@@ -18,16 +18,16 @@ Layout::Layout(QString varName, QString name, KeyboardLayoutPointer pData) :
     }
 }
 
-Layout::Layout(QString varName, QString name) :
+Layout::Layout(const QString& varName, QString name) :
         varName(varName),
         name(name) {
 
-    Display *display = XOpenDisplay(NULL);
+    Display* display = XOpenDisplay(NULL);
 
     // Get keyboard data from X
     XkbDescPtr descPtr = XkbGetKeyboard(display, XkbAllComponentsMask, XkbUseCoreKbd);
     XkbClientMapPtr map = descPtr->map;
-    KeySym *syms = map->syms;
+    KeySym* syms = map->syms;
 
     for (int keycode = AE01; keycode <= LSGT; keycode++) {
 
@@ -60,7 +60,7 @@ Layout::Layout(QString varName, QString name) :
             }
 
             // Get keysym
-            KeySym &keysym = syms[offset + i];
+            KeySym& keysym = syms[offset + i];
 
             // Get name of keysym
             std::string keysymName = XKeysymToString(keysym);
@@ -80,7 +80,7 @@ Layout::Layout(QString varName, QString name) :
 
 }
 
-QStringList Layout::generateCode() {
+QStringList Layout::generateCode() const {
     QStringList lines;
     QString indent = "        ";
 
@@ -109,8 +109,8 @@ QStringList Layout::generateCode() {
             lines.append(QString("%1// %2").arg(indent, rowName));
         }
 
-        KbdKeyChar &keyCharNoMods = data[i][0];
-        KbdKeyChar &keyCharShift = data[i][1];
+        const KbdKeyChar& keyCharNoMods = data[i][0];
+        const KbdKeyChar& keyCharShift = data[i][1];
 
         QString line = QString("%1/* %2 */ ").arg(indent, keyName);
         line += QString("{%1, %2}").arg(

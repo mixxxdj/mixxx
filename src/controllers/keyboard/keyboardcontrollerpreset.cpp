@@ -26,7 +26,7 @@ QStringList KeyboardControllerPreset::getKeySequences(ConfigKey configKey) {
     return keyseqs;
 }
 
-QMultiHash<QString, ConfigKey> KeyboardControllerPreset::getMappingByGroup(QString targetGroup) {
+QMultiHash<QString, ConfigKey> KeyboardControllerPreset::getMappingByGroup(const QString& targetGroup) {
     QMultiHash<QString, ConfigKey> filteredKeySequenceHash;
     QMultiHash<QString, ConfigKey>::iterator it;
 

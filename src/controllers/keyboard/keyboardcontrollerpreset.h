@@ -36,7 +36,7 @@ class KeyboardControllerPreset : public ControllerPreset {
     QStringList getKeySequences(ConfigKey configKey);
 
     // Get mapping info filtered by a given group name
-    QMultiHash<QString, ConfigKey> getMappingByGroup(QString targetGroup);
+    QMultiHash<QString, ConfigKey> getMappingByGroup(const QString& targetGroup);
 
     // Multi-hash of config keys, bound to a specific key sequence
     QMultiHash<QString, ConfigKey> m_mapping;

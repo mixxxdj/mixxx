@@ -1812,7 +1812,7 @@ namespace utils {
         return 0;
     }
 
-    QString createKbdKeyCharLiteral(KbdKeyChar &kbdKeyChar) {
+    QString createKbdKeyCharLiteral(const KbdKeyChar& kbdKeyChar) {
         QChar plainChar = kbdKeyChar.character;
 
         // Escape " and \ if necessary

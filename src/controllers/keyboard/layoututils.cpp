@@ -32,7 +32,7 @@ namespace layoutUtils {
         return (unsigned char) -1;
     }
 
-    const KbdKeyChar * getKbdKeyChar(KeyboardLayoutPointer pLayout,
+    const KbdKeyChar* getKbdKeyChar(KeyboardLayoutPointer pLayout,
                                      unsigned char scancode,
                                      Qt::KeyboardModifier modifier) {
 
@@ -51,11 +51,11 @@ namespace layoutUtils {
         return pKeyChar;
     }
 
-    QString getCharFromKeysequence(QString keyseq) {
+    QString getCharFromKeysequence(const QString& keyseq) {
         return keyseq.split(keysequenceSeparator).last();
     }
 
-    QStringList getModifiersFromKeysequence(QString keyseq) {
+    QStringList getModifiersFromKeysequence(const QString& keyseq) {
         QStringList splitKeyseq = keyseq.split(keysequenceSeparator);
         splitKeyseq.pop_back();
         return splitKeyseq;

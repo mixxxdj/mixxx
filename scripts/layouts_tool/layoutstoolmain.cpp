@@ -2,7 +2,7 @@
 #include "utils.h"
 #include <QDebug>
 
-LayoutsToolMain::LayoutsToolMain(QObject *parent) :
+LayoutsToolMain::LayoutsToolMain(QObject* parent) :
         QObject(parent) {
 
     // Find layouts.h path (check for Mixxx directory four directories up)
@@ -34,9 +34,6 @@ void LayoutsToolMain::run() {
 
     pLayoutsFileHandler->open(mFilePath, mLayouts);
     mainMenu();
-
-    // Get display from X
-    m_xDisplay = QX11Info::display();
 }
 
 void LayoutsToolMain::quit() {
@@ -182,7 +179,7 @@ void LayoutsToolMain::addLayoutMenu() {
             .toStdString()
             .c_str();
 
-    Layout layout(layoutName, varName);
+    Layout layout(varName, layoutName);
     mLayouts.append(layout);
 }
 
@@ -218,7 +215,7 @@ void LayoutsToolMain::removeLayoutMenu() {
 
 void LayoutsToolMain::showLayouts() {
     int i = 0;
-    for (Layout &layout : mLayouts) {
+    for (const Layout& layout : mLayouts) {
         qDebug("(%d)  %s, [%s]", i++, layout.name.toLatin1().data(), layout.varName.toLatin1().data());
     }
 }

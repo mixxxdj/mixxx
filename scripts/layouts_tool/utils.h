@@ -13,7 +13,7 @@ namespace utils {
     int keycodeToLayoutIndex(int keycode);
     int layoutIndexToKeycode(int layoutIndex);
     int keysymToUnicode(KeySym keysym);
-    QString createKbdKeyCharLiteral(KbdKeyChar &kbdKeyChar);
+    QString createKbdKeyCharLiteral(const KbdKeyChar &kbdKeyChar);
     QString inputLocaleName();
 }
 

@@ -61,7 +61,7 @@ LayoutsFileHandler::LayoutsFileHandler() {}
 
 LayoutsFileHandler::~LayoutsFileHandler() {}
 
-void LayoutsFileHandler::open(QString &cppPath, QList<Layout> &layouts) {
+void LayoutsFileHandler::open(QString& cppPath, QList<Layout>& layouts) {
     if (cppPath.isEmpty()) {
         return;
     }
@@ -84,14 +84,14 @@ void LayoutsFileHandler::open(QString &cppPath, QList<Layout> &layouts) {
     // Compile the file and get the function pointer to the getLayout
     // function (and the handle to be able to close it when we are done)
     GetLayout_t getLayout = nullptr;
-    void *handle = nullptr;
+    void* handle = nullptr;
     compileLayoutsFile(cppPath,
                        getLayout,
                        handle);
 
-    for (QStringList &names : layoutNames) {
-        QString &varName = names[0];
-        QString &name = names[1];
+    for (QStringList& names : layoutNames) {
+        QString& varName = names[0];
+        QString& name = names[1];
         KeyboardLayoutPointer layoutData = getLayout(varName.toLatin1().data());
 
         // Construct layout object and append to layouts
@@ -108,7 +108,7 @@ void LayoutsFileHandler::open(QString &cppPath, QList<Layout> &layouts) {
     save(f, layouts);
 }
 
-void LayoutsFileHandler::compileLayoutsFile(const QString cppPath, GetLayout_t &pGetLayoutFn, void *&handle) {
+void LayoutsFileHandler::compileLayoutsFile(const QString& cppPath, GetLayout_t& pGetLayoutFn, void*& handle) {
     const QDir dir = QFileInfo(cppPath).absoluteDir();
     const QString soPath = dir.filePath("layouts.so");
 
@@ -135,7 +135,7 @@ void LayoutsFileHandler::compileLayoutsFile(const QString cppPath, GetLayout_t &
     system(QString("rm %1").arg(soPath).toLatin1().data());
 }
 
-void LayoutsFileHandler::prependDefs(QFile &cppFile) {
+void LayoutsFileHandler::prependDefs(QFile& cppFile) {
     QStringList lines;
 
     // Include string for getLayout(std::string name) : KeyboardLayoutPointer
@@ -169,8 +169,8 @@ void LayoutsFileHandler::prependDefs(QFile &cppFile) {
     }
 }
 
-void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile,
-                                                  const LayoutNamesData &layoutNames,
+void LayoutsFileHandler::appendGetLayoutsFunction(QFile& cppFile,
+                                                  const LayoutNamesData& layoutNames,
                                                   bool forInternUse) {
 
     // Generate new 'getLayout' function definition
@@ -209,7 +209,7 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile &cppFile,
     }
 }
 
-LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile &cppFile) {
+LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile& cppFile) {
     LayoutNamesData names;
 
     if (cppFile.open(QIODevice::ReadOnly)) {
@@ -250,7 +250,7 @@ LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile &cppFile) {
     return names;
 }
 
-void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
+void LayoutsFileHandler::save(QFile& f, QList<Layout>& layouts) {
     QStringList lines;
 
     // Assemble header file
@@ -277,9 +277,9 @@ void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     lines.append("namespace layouts {");
 
     // Add layouts and add indentation for namespace
-    for (Layout &layout : layouts) {
+    for (const Layout& layout : layouts) {
         QStringList layoutCode = layout.generateCode();
-        for (QString &line : layoutCode) {
+        for (QString& line : layoutCode) {
             lines.append(INDENT + line);
         }
 
@@ -302,7 +302,7 @@ void LayoutsFileHandler::save(QFile &f, QList<Layout> &layouts) {
     appendGetLayoutsFunction(f, getLayoutNames(f), false);
 }
 
-void LayoutsFileHandler::createHeaderFile(const QString path) {
+void LayoutsFileHandler::createHeaderFile(const QString& path) {
     QFile f(path);
     QStringList lines;
 
@@ -328,7 +328,7 @@ void LayoutsFileHandler::createHeaderFile(const QString path) {
     }
 }
 
-void LayoutsFileHandler::removeSkipParts(QFile &f) {
+void LayoutsFileHandler::removeSkipParts(QFile& f) {
     QStringList code;
 
     // Store all lines in given file into code filtering out

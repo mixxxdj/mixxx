@@ -6,25 +6,24 @@
 #include "layoutsfilehandler.h"
 
 class LayoutsToolMain : public QObject {
-Q_OBJECT
+  Q_OBJECT
 
-public:
-    explicit LayoutsToolMain(QObject *parent = 0);
+  public:
+    explicit LayoutsToolMain(QObject* parent = 0);
     void quit();
 
-signals:
+  signals:
     void finished();
 
-public slots:
+  public slots:
     void run();
     void aboutToQuitApp();
 
-private:
+  private:
     QApplication *app;
     LayoutsFileHandler *pLayoutsFileHandler;
     QList<Layout> mLayouts;
     QString mFilePath;
-    Display* m_xDisplay;
 
     void mainMenu();
     void editLayoutMenu();
