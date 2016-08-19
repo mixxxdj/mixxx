@@ -352,7 +352,7 @@ void SoundSourceProxy::nextSoundSourceProvider() {
         ++m_soundSourceProviderRegistrationIndex;
         // Discard SoundSource and AudioSource from previous provider
         closeAudioSource();
-        m_pSoundSource.clear();
+        m_pSoundSource = mixxx::SoundSourcePointer();
     }
 }
 
@@ -631,7 +631,7 @@ void SoundSourceProxy::closeAudioSource() {
     if (m_pAudioSource) {
         DEBUG_ASSERT(m_pSoundSource);
         m_pSoundSource->close();
-        m_pAudioSource.clear();
+        m_pAudioSource = mixxx::AudioSourcePointer();
         qDebug() << "Closed AudioSource for file"
                  << getUrl().toString();
     }
