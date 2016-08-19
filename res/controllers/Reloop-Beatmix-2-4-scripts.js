@@ -413,7 +413,7 @@ ReloopBeatmix24.WheelTurn = function(channel, control, value, status, group) {
 // Led Feedback functions
 // ========================================================
 ReloopBeatmix24.AllJogLEDsToggle = function(deck, state, step) {
-    var step = typeof step !== 'undefined' ? step : 1; // default value
+    step = typeof step !== 'undefined' ? step : 1; // default value
     for (var j = 0x30; j <= 0x3F; j += step) {
         midi.sendShortMsg(deck, j, state);
     }
