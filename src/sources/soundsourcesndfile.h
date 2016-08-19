@@ -45,7 +45,7 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceSndFile(url));
+        return newSoundSourceFromUrl<SoundSourceSndFile>(url);
     }
 };
 

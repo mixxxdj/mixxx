@@ -4,19 +4,10 @@
 
 namespace mixxx {
 
-namespace {
-
-void deleteSoundSource(SoundSource* pSoundSource) {
-    // The SoundSource must be deleted from within the external library
-    // that has allocated it.
+void deleteSoundSourcePlugin(SoundSource* pSoundSource) {
+    // The SoundSource must be deleted from within the external
+    // library that has allocated it.
     delete pSoundSource;
-}
-
-} // anonymous namespace
-
-SoundSourcePointer exportSoundSourcePlugin(
-        SoundSourcePlugin* pSoundSourcePlugin) {
-    return SoundSourcePointer(pSoundSourcePlugin, deleteSoundSource);
 }
 
 } // namespace mixxx
