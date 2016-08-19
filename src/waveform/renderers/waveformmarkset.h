@@ -22,8 +22,6 @@ class WaveformMarkSet {
     int size() const { return m_marks.size();}
     WaveformMark* operator[] (int i) { return m_marks[i]; }
 
-    const WaveformMark* getDefaultMark() const { return m_pDefaultMark.get();}
-
     // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
     const WaveformMark* getHotCueMark(int hotCue);
     // Takes ownership of mark
