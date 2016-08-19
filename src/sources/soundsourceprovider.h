@@ -53,6 +53,12 @@ public:
 };
 
 typedef QSharedPointer<SoundSourceProvider> SoundSourceProviderPointer;
+
+template<typename T>
+static SoundSourceProviderPointer newSoundSourceProvider() {
+    return SoundSourceProviderPointer(new T);
+}
+
 } // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEPROVIDER_H
