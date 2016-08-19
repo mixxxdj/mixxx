@@ -52,6 +52,7 @@ public:
     virtual SoundSourcePointer newSoundSource(const QUrl& url) = 0;
 };
 
+typedef QSharedPointer<SoundSourceProvider> SoundSourceProviderPointer;
 } // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEPROVIDER_H
