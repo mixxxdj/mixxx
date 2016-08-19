@@ -662,7 +662,7 @@ QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() con
 }
 
 SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
-    return exportSoundSourcePlugin(new SoundSourceMediaFoundation(url));
+    return newSoundSourcePluginFromUrl<SoundSourceMediaFoundation>(url);
 }
 
 } // namespace mixxx

@@ -126,7 +126,7 @@ QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
 }
 
 SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
-    return exportSoundSourcePlugin(new SoundSourceWV(url));
+    return newSoundSourcePluginFromUrl<SoundSourceWV>(url);
 }
 
 //static
