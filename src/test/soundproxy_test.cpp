@@ -70,7 +70,7 @@ TEST_F(SoundSourceProxyTest, open) {
         // Obtaining an AudioSource may fail for unsupported file formats,
         // even if the corresponding file extension is supported, e.g.
         // AAC vs. ALAC in .m4a files
-        if (pAudioSource.isNull()) {
+        if (!pAudioSource) {
             // skip test file
             continue;
         }
@@ -123,7 +123,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
         // Obtaining an AudioSource may fail for unsupported file formats,
         // even if the corresponding file extension is supported, e.g.
         // AAC vs. ALAC in .m4a files
-        if (pContReadSource.isNull()) {
+        if (!pContReadSource) {
             // skip test file
             continue;
         }
@@ -149,7 +149,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
                     pContReadSource->readSampleFrames(kReadFrameCount, &contReadData[0]);
 
             mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath));
-            ASSERT_FALSE(pSeekReadSource.isNull());
+            ASSERT_FALSE(!pSeekReadSource);
             ASSERT_EQ(pContReadSource->getChannelCount(), pSeekReadSource->getChannelCount());
             ASSERT_EQ(pContReadSource->getFrameCount(), pSeekReadSource->getFrameCount());
 
