@@ -3,6 +3,7 @@
 
 #include <QString>
 #include "control/controlobject.h"
+#include "controllers/keyboard/layouts.h"
 
 struct KbdKeyChar {
     char16_t character;
@@ -46,8 +47,6 @@ struct KbdControllerPresetControl {
     // extra one (or more)
     QList<KbdControllerPresetKeyseq> keyseqs;
 };
-
-typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
 
 namespace layoutUtils {
     unsigned char layoutIndexToScancode(const unsigned char layoutIndex);
