@@ -28,7 +28,10 @@ class LayoutsToolMain : public QObject {
     void editLayoutMenu();
     void addLayoutMenu();
     void removeLayoutMenu();
+    void miscToolsMenu();
     void showLayouts();
+
+    void findSharedKeyCharsMenu();
 };
 
 #endif // LAYOUTS_TOOL_MAIN_H

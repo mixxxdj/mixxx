@@ -47,6 +47,9 @@ void LayoutsToolMain::aboutToQuitApp() {
 void LayoutsToolMain::mainMenu() {
     QTextStream qtin(stdin);
 
+    // TODO(Tomasito) Make Menu class to avoid this "if (loaded)"
+    // ...            mess as well as this switch statement mess
+
     bool userWantsToQuit = false;
     do {
         bool loaded = !m_FilePath.isEmpty();
@@ -59,7 +62,8 @@ void LayoutsToolMain::mainMenu() {
         qDebug() << "(1): Open file";
         qDebug() << "(2): Save file";
         if (loaded) qDebug() << "(3): Edit file";
-        qDebug() << (loaded ? "(4): Quit" : "(3): Quit");
+        if (loaded) qDebug() << "(4): Miscellaneous tools";
+        qDebug() << (loaded ? "(5): Quit" : "(3): Quit");
 
         // Prompt user for choice
         qtin >> menuChoice;
@@ -92,10 +96,18 @@ void LayoutsToolMain::mainMenu() {
 
             case 4: {
                 if (loaded) {
+                    // Miscellaneous tools
+                    miscToolsMenu();
+                    break;
+                }
+            }
+
+            case 5: {
+                if (loaded) {
                     userWantsToQuit = true;
                     quit();
+                    break;
                 }
-                break;
             }
 
             default:
@@ -211,6 +223,117 @@ void LayoutsToolMain::removeLayoutMenu() {
         m_Layouts.removeAt(menuChoice);
         backToEdit = true;
     } while (!backToEdit);
+}
+
+void LayoutsToolMain::miscToolsMenu() {
+    QTextStream qtin(stdin);
+    bool loaded = !m_FilePath.isEmpty();
+    if (!loaded) {
+        qDebug() << "Miscellaneous tools do only work when a "
+                 << "layouts file is loaded. Going back to main menu.";
+        return;
+    }
+
+    bool backToMain = false;
+    do {
+        int menuChoice = 0;
+
+        // Print menu
+        utils::clearTerminal();
+        qDebug() << "********** LAYOUTS TOOL - MISCELLANEOUS TOOLS **********";
+        qDebug() << "Miscellaneous tools on file: " << m_FilePath;
+        qDebug() << "(1): Find shared key chars (keys on one single layout that share the same character)";
+        qDebug() << "(2): Back to main menu";
+
+        // Prompt user for choice
+        qtin >> menuChoice;
+
+        switch(menuChoice) {
+            case 1: {
+                qDebug() << "Find shared key chars...";
+                findSharedKeyCharsMenu();
+                break;
+            }
+
+            case 2: {
+                // Back to main menu
+                backToMain = true;
+                break;
+            }
+
+            default:
+                qDebug() << "ERROR! You have selected an invalid choice.";
+                break;
+        }
+    } while (!backToMain);
+}
+
+void LayoutsToolMain::findSharedKeyCharsMenu() {
+    QTextStream qtin(stdin);
+
+    bool backToMain = false;
+    do {
+        int menuChoice = 0;
+
+        // Print menu
+        utils::clearTerminal();
+        qDebug() << "********** LAYOUTS TOOL - FIND SHARED KEY CHARS **********";
+        qDebug() << "Finding shared key chars on layout: " << m_FilePath;
+
+        // Show shared key chars
+        for (const auto& layout : m_Layouts) {
+            // Iterate through each KbdKeyChar in current layout
+            for (int i = 0; i < kLayoutLen; i++) {
+                int keycode = utils::layoutIndexToKeycode(i);
+
+                // Do some code for non modified KbdKeyChar, then for shifted one
+                for (bool shift : {false, true}) {
+                    const KbdKeyChar& kbdKeyChar = layout.m_data[i][shift];
+
+                    // Find layout indexes of KbdKeyChars that match current one
+                    QList<int> foundMatches;
+                    for (int j = 0; j < kLayoutLen && j != i; j++) {
+                        if (kbdKeyChar.character == layout.m_data[j][shift].character) {
+                            foundMatches.push_back(j);
+                        }
+                    }
+
+                    if (foundMatches.isEmpty()) continue;
+
+                    // Let's inform the user about the duplicate key(s) we found for this layout
+                    for (const int& k : foundMatches) {
+                        int otherKeycode = utils::layoutIndexToKeycode(k);
+
+                        qDebug() << "On layout " << layout.m_name << ", "
+                                 << utils::keycodeToKeyname(keycode)
+                                 << "is identical to"
+                                 << utils::keycodeToKeyname(otherKeycode)
+                                 << (shift ? "with" : "without") << "shift."
+                                 << "Character: " << QChar(kbdKeyChar.character);
+                    }
+                }
+            }
+        }
+
+        qDebug() << "";
+        qDebug() << "(1): Back to miscellaneous tools";
+
+        // Prompt user for choice
+        qtin >> menuChoice;
+
+        switch(menuChoice) {
+            case 1: {
+                // Back to main menu
+                backToMain = true;
+                break;
+            }
+
+            default:
+                qDebug() << "ERROR! You have selected an invalid choice.";
+                break;
+        }
+    } while (!backToMain);
+
 }
 
 void LayoutsToolMain::showLayouts() {
