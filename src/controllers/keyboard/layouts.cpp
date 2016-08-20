@@ -18,7 +18,7 @@
 
 struct KbdKeyChar {
     char16_t character;
-    bool is_dead;
+    bool isDead;
 };
 /* @/SKIP */
 

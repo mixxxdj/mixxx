@@ -5,9 +5,9 @@
 #include <X11/XKBlib.h>
 
 
-Layout::Layout(const QString& varName, QString name, KeyboardLayoutPointer pData) :
-        varName(varName),
-        name(name) {
+Layout::Layout(const QString& variableName, QString name, KeyboardLayoutPointer pData) :
+        m_variableName(variableName),
+        m_name(name) {
 
     qDebug() << "Loading layout " << name;
 
@@ -18,9 +18,9 @@ Layout::Layout(const QString& varName, QString name, KeyboardLayoutPointer pData
     }
 }
 
-Layout::Layout(const QString& varName, QString name) :
-        varName(varName),
-        name(name) {
+Layout::Layout(const QString& variableName, QString name) :
+        m_variableName(variableName),
+        m_name(name) {
 
     Display* display = XOpenDisplay(NULL);
 
@@ -71,7 +71,7 @@ Layout::Layout(const QString& varName, QString name) :
             // Construct final package, ready to be added to the layout
             KbdKeyChar kbdKeyChar;
             kbdKeyChar.character = (char16_t) keysym;
-            kbdKeyChar.is_dead = isDeadKey;
+            kbdKeyChar.isDead = isDeadKey;
 
             // Load KbdKeyChar
             data[layoutIndex][i] = kbdKeyChar;
@@ -84,11 +84,11 @@ QStringList Layout::generateCode() const {
     QStringList lines;
     QString indent = "        ";
 
-    lines.append(QString("// %1").arg(name));
+    lines.append(QString("// %1").arg(m_name));
 
     lines.append(
             QString("static const KbdKeyChar %1[%2][2] = {")
-                    .arg(varName,QString::number(kLayoutLen))
+                    .arg(m_variableName, QString::number(kLayoutLen))
     );
 
     for (int i = 0; i < kLayoutLen; i++) {

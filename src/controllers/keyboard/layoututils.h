@@ -6,7 +6,7 @@
 
 struct KbdKeyChar {
     char16_t character;
-    bool is_dead;
+    bool isDead;
 };
 
 // Representation of one <keyseq> element, parented to <control> elements

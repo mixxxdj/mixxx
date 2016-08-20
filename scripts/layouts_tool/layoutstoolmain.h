@@ -20,10 +20,9 @@ class LayoutsToolMain : public QObject {
     void aboutToQuitApp();
 
   private:
-    QApplication *app;
-    LayoutsFileHandler *pLayoutsFileHandler;
-    QList<Layout> mLayouts;
-    QString mFilePath;
+    LayoutsFileHandler *m_pLayoutsFileHandler;
+    QList<Layout> m_Layouts;
+    QString m_FilePath;
 
     void mainMenu();
     void editLayoutMenu();

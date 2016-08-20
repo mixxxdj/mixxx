@@ -14,7 +14,7 @@ LayoutsToolMain::LayoutsToolMain(QObject* parent) :
         QFileInfo checkFile(path);
 
         if (checkFile.exists() && checkFile.isFile()) {
-            mFilePath = path;
+            m_FilePath = path;
             qDebug() << "Found path: " << path;
             layoutsFound = true;
         }
@@ -22,17 +22,17 @@ LayoutsToolMain::LayoutsToolMain(QObject* parent) :
     }
 
     if (!layoutsFound) {
-        mFilePath = "";
+        m_FilePath = "";
     }
 
-    app = qApp;
-    pLayoutsFileHandler = new LayoutsFileHandler();
+    qApp;
+    m_pLayoutsFileHandler = new LayoutsFileHandler();
 }
 
 void LayoutsToolMain::run() {
     qDebug() << "Welcome to the Layouts tool :)";
 
-    pLayoutsFileHandler->open(mFilePath, mLayouts);
+    m_pLayoutsFileHandler->open(m_FilePath, m_Layouts);
     mainMenu();
 }
 
@@ -41,7 +41,7 @@ void LayoutsToolMain::quit() {
 }
 
 void LayoutsToolMain::aboutToQuitApp() {
-    delete pLayoutsFileHandler;
+    delete m_pLayoutsFileHandler;
 }
 
 void LayoutsToolMain::mainMenu() {
@@ -49,13 +49,13 @@ void LayoutsToolMain::mainMenu() {
 
     bool userWantsToQuit = false;
     do {
-        bool loaded = !mFilePath.isEmpty();
+        bool loaded = !m_FilePath.isEmpty();
         int menuChoice = 0;
 
         // Print menu
         utils::clearTerminal();
         qDebug() << "********** LAYOUTS TOOL - MAIN MENU **********";
-        if (loaded) qDebug() << "Currently opened file: " << mFilePath;
+        if (loaded) qDebug() << "Currently opened file: " << m_FilePath;
         qDebug() << "(1): Open file";
         qDebug() << "(2): Save file";
         if (loaded) qDebug() << "(3): Edit file";
@@ -68,15 +68,15 @@ void LayoutsToolMain::mainMenu() {
             case 1: {
                 utils::clearTerminal();
                 qDebug() << "Please tell me the path to the layouts cpp file (no spaces please): ";
-                qtin >> mFilePath;
-                pLayoutsFileHandler->open(mFilePath, mLayouts);
+                qtin >> m_FilePath;
+                m_pLayoutsFileHandler->open(m_FilePath, m_Layouts);
                 break;
             }
 
             case 2: {
                 qDebug() << "Save file...";
-                QFile f(mFilePath);
-                pLayoutsFileHandler->save(f, mLayouts);
+                QFile f(m_FilePath);
+                m_pLayoutsFileHandler->save(f, m_Layouts);
                 break;
             }
 
@@ -107,7 +107,7 @@ void LayoutsToolMain::mainMenu() {
 
 void LayoutsToolMain::editLayoutMenu() {
     QTextStream qtin(stdin);
-    bool loaded = !mFilePath.isEmpty();
+    bool loaded = !m_FilePath.isEmpty();
     if (!loaded) {
         qDebug() << "Can't edit any layout, any layout loaded.";
         return;
@@ -120,7 +120,7 @@ void LayoutsToolMain::editLayoutMenu() {
         // Print menu
         utils::clearTerminal();
         qDebug() << "********** LAYOUTS TOOL - EDIT **********";
-        qDebug() << "Editing file: " << mFilePath;
+        qDebug() << "Editing file: " << m_FilePath;
         qDebug() << "(1): Remove layout";
         qDebug() << "(2): Add layout";
         qDebug() << "(3): Back to main menu";
@@ -172,15 +172,15 @@ void LayoutsToolMain::addLayoutMenu() {
 
     qDebug() << "Enter layout variable name (see Qt keyboard locale): ";
     qDebug() << "NOTE: Please switch to the layout you want to save before hitting ENTER!";
-    QString varName = kbdLocale;
-    qtin >> varName;
+    QString variableName = kbdLocale;
+    qtin >> variableName;
 
-    qDebug() << QString("\nAdding layout with:\n  Name:\t\t\t\t%1\n  Variable name:\t%2\n").arg(layoutName, varName)
+    qDebug() << QString("\nAdding layout with:\n  Name:\t\t\t\t%1\n  Variable name:\t%2\n").arg(layoutName, variableName)
             .toStdString()
             .c_str();
 
-    Layout layout(varName, layoutName);
-    mLayouts.append(layout);
+    Layout layout(variableName, layoutName);
+    m_Layouts.append(layout);
 }
 
 void LayoutsToolMain::removeLayoutMenu() {
@@ -194,28 +194,28 @@ void LayoutsToolMain::removeLayoutMenu() {
         utils::clearTerminal();
         qDebug() << "********** LAYOUTS TOOL - REMOVE LAYOUT **********";
         showLayouts();
-        qDebug("(%d)  %s", mLayouts.size(), "Back to edit menu");
+        qDebug("(%d)  %s", m_Layouts.size(), "Back to edit menu");
 
         // Prompt user for choice
         qtin >> menuChoice;
 
-        if (menuChoice == mLayouts.size()) {
+        if (menuChoice == m_Layouts.size()) {
             break;
         }
 
-        if (menuChoice >= mLayouts.size() || menuChoice < 0) {
+        if (menuChoice >= m_Layouts.size() || menuChoice < 0) {
             qDebug() << "ERROR! You have selected an invalid choice.";
             continue;
         }
 
-        mLayouts.removeAt(menuChoice);
+        m_Layouts.removeAt(menuChoice);
         backToEdit = true;
     } while (!backToEdit);
 }
 
 void LayoutsToolMain::showLayouts() {
     int i = 0;
-    for (const Layout& layout : mLayouts) {
-        qDebug("(%d)  %s, [%s]", i++, layout.name.toLatin1().data(), layout.varName.toLatin1().data());
+    for (const Layout& layout : m_Layouts) {
+        qDebug("(%d)  %s, [%s]", i++, layout.m_name.toLatin1().data(), layout.m_variableName.toLatin1().data());
     }
 }

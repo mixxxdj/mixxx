@@ -1843,7 +1843,7 @@ namespace utils {
             charLiteral = "u'" + unicodeLiteral + "\'";
         }
 
-        bool dead = kbdKeyChar.is_dead;
+        bool dead = kbdKeyChar.isDead;
         return !dead ? "{" + charLiteral + "}" : "{" + charLiteral + ", true}";
     }
 }

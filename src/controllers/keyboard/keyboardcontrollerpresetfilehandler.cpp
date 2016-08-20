@@ -63,7 +63,7 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
             // Store raw data so that it can be accessed later when saving the preset
             QString action = control.attributeNode("action").value();
             ConfigKey configKey = ConfigKey(groupName, action);
-            preset->m_mapping_raw.append(
+            preset->m_mappingRaw.append(
                     {configKey, keyseqsRaw}
             );
 
@@ -95,7 +95,7 @@ void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardCo
     QMultiHash<QString, QDomElement>::iterator groupNodesIterator;
 
     // Iterate over all key sequences bound to one or more actions
-    const QList<KbdControllerPresetControl> mapping = preset.m_mapping_raw;
+    const QList<KbdControllerPresetControl> mapping = preset.m_mappingRaw;
     QList<KbdControllerPresetControl>::const_iterator iterator;
 
     for (iterator = mapping.begin(); iterator != mapping.end(); ++iterator) {

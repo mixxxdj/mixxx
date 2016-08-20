@@ -42,7 +42,7 @@ class KeyboardControllerPreset : public ControllerPreset {
     QMultiHash<QString, ConfigKey> m_mapping;
 
     // List of Control structs, one for each parsed <control> element in the preset file
-    QList<KbdControllerPresetControl> m_mapping_raw;
+    QList<KbdControllerPresetControl> m_mappingRaw;
 };
 
 typedef QSharedPointer<KeyboardControllerPreset> KeyboardControllerPresetPointer;

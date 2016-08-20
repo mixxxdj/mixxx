@@ -44,7 +44,7 @@ namespace {
     const QStringList kKbdCharImplementation = QStringList()
             << "struct KbdKeyChar {"
             << kIndent + "char16_t character;"
-            << kIndent + "bool is_dead;"
+            << kIndent + "bool isDead;"
             << "};";
 
     const QString kKbdLayoutPointerTypedef = "typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];";
@@ -85,12 +85,12 @@ void LayoutsFileHandler::open(QString& cppPath, QList<Layout>& layouts) {
                        handle);
 
     for (const QStringList& names : layoutNames) {
-        const QString& varName = names[0];
+        const QString& variableName = names[0];
         const QString& name = names[1];
-        KeyboardLayoutPointer layoutData = getLayout(varName.toLatin1().data());
+        KeyboardLayoutPointer layoutData = getLayout(variableName.toLatin1().data());
 
         // Construct layout object and append to layouts
-        Layout layout(varName, name, layoutData);
+        Layout layout(variableName, name, layoutData);
         layouts.append(layout);
     }
 
@@ -219,12 +219,12 @@ LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile& cppFile) {
             line = line.mid(24);
             line = line.mid(0, bracketRegex.indexIn(line));
 
-            QString varName = line;
+            QString variableName = line;
             QString name = prevLine.startsWith("//") ? prevLine.mid(3) : "";
 
             // Create QStringList and append it to names
             QStringList currentLayoutNames;
-            currentLayoutNames.append(varName);
+            currentLayoutNames.append(variableName);
             currentLayoutNames.append(name);
             names.append(currentLayoutNames);
 

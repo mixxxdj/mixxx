@@ -59,7 +59,7 @@ void KeyboardControllerPreset::translate(QString layoutName) {
 
     // Iterate through all KbdControllerPresetControl
     QList<KbdControllerPresetControl>::const_iterator ctrlI;
-    for (ctrlI = m_mapping_raw.constBegin(); ctrlI != m_mapping_raw.constEnd(); ++ctrlI) {
+    for (ctrlI = m_mappingRaw.constBegin(); ctrlI != m_mappingRaw.constEnd(); ++ctrlI) {
 
         // True if there is no key sequence object which has the same
         // keyboardlayout as the user's layout. False if there is.
@@ -106,7 +106,7 @@ void KeyboardControllerPreset::translate(QString layoutName) {
 
                 // If key is not dead, reconstruct key sequence with translated character.
                 // Otherwise, warn the user about the key that is not going to work.
-                if (!keyChar->is_dead) {
+                if (!keyChar->isDead) {
                     QString modifiersString = modifiers.join("+");
                     if (!modifiersString.isEmpty()) {
                         modifiersString += "+";

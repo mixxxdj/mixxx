@@ -8,21 +8,21 @@
 
 struct KbdKeyChar {
     char16_t character;
-    bool is_dead;
+    bool isDead;
 };
 
 typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
 
 class Layout {
   public:
-    Layout(const QString& varName, QString name, KeyboardLayoutPointer pData);
-    Layout(const QString& varName, QString name);
+    Layout(const QString& variableName, QString name, KeyboardLayoutPointer pData);
+    Layout(const QString& variableName, QString name);
     virtual ~Layout();
 
     QStringList generateCode() const;
 
-    QString varName;
-    QString name;
+    QString m_variableName;
+    QString m_name;
 
   private:
     KbdKeyChar data[kLayoutLen][2];
