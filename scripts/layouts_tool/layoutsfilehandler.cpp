@@ -132,31 +132,10 @@ void LayoutsFileHandler::compileLayoutsFile(const QString& cppPath, GetLayout_t&
 
 void LayoutsFileHandler::prependDefs(QFile& cppFile) {
     QStringList code;
-
     code << kIncludeString
          << kKbdCharImplementation
          << kKbdLayoutPointerTypedef;
-
-    // Load each line of file into QStringList
-    QStringList codeInFile;
-    if (cppFile.open(QIODevice::ReadOnly)) {
-        QTextStream in(&cppFile);
-        while (!in.atEnd()) {
-            codeInFile << in.readLine();
-        }
-        cppFile.close();
-    }
-
-    code += codeInFile;
-
-    // Overwrite file with prepended definitions
-    if (cppFile.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
-        QTextStream stream(&cppFile);
-        for (auto it = code.begin(); it != code.end(); ++it) {
-            stream << *it << "\n";
-        }
-        cppFile.close();
-    }
+    prependToFile(cppFile, code);
 }
 
 void LayoutsFileHandler::appendGetLayoutsFunction(QFile& cppFile,
@@ -186,14 +165,7 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile& cppFile,
     fnLines << "}"
             << kSkipCommentTail;
 
-    // Rewrite file from buffer
-    if (cppFile.open(QIODevice::ReadWrite | QIODevice::Append)) {
-        QTextStream stream(&cppFile);
-        for (auto it = fnLines.begin(); it != fnLines.end(); ++it) {
-            stream << *it << "\n";
-        }
-        cppFile.close();
-    }
+    appendToFile(cppFile, fnLines);
 }
 
 LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile& cppFile) {
@@ -281,14 +253,7 @@ void LayoutsFileHandler::save(QFile& f, QList<Layout>& layouts) {
     // Close namespace
     code << "}";
 
-    if (f.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
-        QTextStream stream(&f);
-        for (auto it = code.begin(); it != code.end(); ++it) {
-            stream << *it << "\n";
-        }
-        f.close();
-    }
-
+    overwriteFile(f, code);
     appendGetLayoutsFunction(f, getLayoutNames(f), false);
 }
 
@@ -309,13 +274,7 @@ void LayoutsFileHandler::createHeaderFile(const QString& path) {
          << ""
          << kIncludeGuardTail;
 
-    if (f.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
-        QTextStream stream(&f);
-        for (auto it = code.begin(); it != code.end(); ++it) {
-            stream << *it << "\n";
-        }
-        f.close();
-    }
+    overwriteFile(f, code);
 }
 
 void LayoutsFileHandler::removeSkipParts(QFile& f) {
@@ -339,12 +298,40 @@ void LayoutsFileHandler::removeSkipParts(QFile& f) {
         f.close();
     }
 
-    // Rewrite file
-    if (f.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
-        QTextStream stream(&f);
-        for (auto it = code.begin(); it != code.end(); ++it) {
+    overwriteFile(f, code);
+}
+
+void LayoutsFileHandler::overwriteFile(QFile &file, const QStringList &lines) {
+    if (file.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
+        QTextStream stream(&file);
+        for (auto it = lines.begin(); it != lines.end(); ++it) {
             stream << *it << "\n";
         }
-        f.close();
+        file.close();
     }
+}
+
+void LayoutsFileHandler::appendToFile(QFile &file, const QStringList &lines) {
+    if (file.open(QIODevice::ReadWrite | QIODevice::Append)) {
+        QTextStream stream(&file);
+        for (auto it = lines.begin(); it != lines.end(); ++it) {
+            stream << *it << "\n";
+        }
+        file.close();
+    }
+}
+
+void LayoutsFileHandler::prependToFile(QFile &file, const QStringList &lines) {
+
+    // Load each line of file into QStringList
+    QStringList codeInFile;
+    if (file.open(QIODevice::ReadOnly)) {
+        QTextStream in(&file);
+        while (!in.atEnd()) {
+            codeInFile << in.readLine();
+        }
+        file.close();
+    }
+
+    overwriteFile(file, lines + codeInFile);
 }
