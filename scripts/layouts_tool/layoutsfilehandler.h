@@ -60,6 +60,10 @@ class LayoutsFileHandler {
 
     // Prepend given QStringList to given file
     void prependToFile(QFile& file, const QStringList& lines);
+
+    // Generate code for one layout. That is, generate code that initializes a
+    // two-dimensional KbdKeyChar array holding the m_data of the given Layout object
+    QStringList generateCodeForLayout(const Layout& layout);
 };
 
 #endif // LAYOUTSFILEHANDLER_H

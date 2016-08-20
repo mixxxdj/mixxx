@@ -3,6 +3,7 @@
 #include <QDebug>
 
 #include "layoutsfilehandler.h"
+#include "utils.h"
 
 // Code snippets used for code generation
 namespace {
@@ -240,7 +241,7 @@ void LayoutsFileHandler::save(QFile& f, QList<Layout>& layouts) {
 
     // Add layouts and add indentation for namespace
     for (const Layout& layout : layouts) {
-        QStringList layoutCode = layout.generateCode();
+        QStringList layoutCode = generateCodeForLayout(layout);
         for (const QString& line : layoutCode) {
             code << kIndent + line;
         }
@@ -334,4 +335,51 @@ void LayoutsFileHandler::prependToFile(QFile &file, const QStringList &lines) {
     }
 
     overwriteFile(file, lines + codeInFile);
+}
+
+QStringList LayoutsFileHandler::generateCodeForLayout(const Layout &layout) {
+    QStringList code;
+
+    code << QString("// %1").arg(layout.m_name);
+
+    code << QString("static const KbdKeyChar %1[%2][2] = {")
+            .arg(layout.m_variableName, QString::number(kLayoutLen));
+
+    for (int i = 0; i < kLayoutLen; i++) {
+        int keycode = utils::layoutIndexToKeycode(i);
+        QString keyName = utils::keycodeToKeyname(keycode);
+
+        // If this key is the first key of the row, place an extra white
+        // line and a comment telling which row we are talking about
+        bool firstOfRow = keycode == TLDE || keycode == AD01 || keycode == AC01 || keycode == LSGT;
+        if (firstOfRow) {
+            QString rowName;
+            if (keycode == TLDE)      rowName = "Digits row";
+            else if (keycode == AD01) rowName = "Upper row";
+            else if (keycode == AC01) rowName = "Home row";
+            else if (keycode == LSGT) rowName = "Lower row";
+
+            if (i > 0) code << "";
+            code << QString("%1// %2").arg(kIndent + kIndent, rowName);
+        }
+
+        const KbdKeyChar& keyCharNoMods = layout.m_data[i][0];
+        const KbdKeyChar& keyCharShift = layout.m_data[i][1];
+
+        QString line = QString("%1/* %2 */ ").arg(kIndent + kIndent, keyName);
+        line += QString("{%1, %2}").arg(
+                utils::createKbdKeyCharLiteral(keyCharNoMods),
+                utils::createKbdKeyCharLiteral(keyCharShift)
+        );
+
+        // If not last, place a separation comma
+        if (i < kLayoutLen - 1) {
+            line += ",";
+        }
+
+        code << line;
+    }
+
+    code << "};";
+    return code;
 }

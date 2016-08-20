@@ -19,13 +19,15 @@ class Layout {
     Layout(const QString& variableName, QString name);
     virtual ~Layout();
 
-    QStringList generateCode() const;
-
+    // This name represents the variable name
+    // of the layout in the layouts cpp file
     QString m_variableName;
+
+    // This name represents the name as described in the comment
+    // just above the layout declaration in the layouts cpp file
     QString m_name;
 
-  private:
-    KbdKeyChar data[kLayoutLen][2];
+    KbdKeyChar m_data[kLayoutLen][2];
 };
 
 

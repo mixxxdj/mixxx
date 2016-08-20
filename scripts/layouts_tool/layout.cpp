@@ -11,10 +11,10 @@ Layout::Layout(const QString& variableName, QString name, KeyboardLayoutPointer 
 
     qDebug() << "Loading layout " << name;
 
-    // Copy layout data
+    // Copy layout m_data
     for (int i = 0; i < kLayoutLen; i++) {
-        data[i][0] = pData[i][0]; // Unmodified KbdKeyChar
-        data[i][1] = pData[i][1]; // Shift modified KbdKeyChar
+        m_data[i][0] = pData[i][0]; // Unmodified KbdKeyChar
+        m_data[i][1] = pData[i][1]; // Shift modified KbdKeyChar
     }
 }
 
@@ -22,12 +22,12 @@ Layout::Layout(const QString& variableName, QString name) :
         m_variableName(variableName),
         m_name(name) {
 
-    Display* display = XOpenDisplay(NULL);
+    Display *display = XOpenDisplay(NULL);
 
-    // Get keyboard data from X
+    // Get keyboard m_data from X
     XkbDescPtr descPtr = XkbGetKeyboard(display, XkbAllComponentsMask, XkbUseCoreKbd);
     XkbClientMapPtr map = descPtr->map;
-    KeySym* syms = map->syms;
+    KeySym *syms = map->syms;
 
     for (int keycode = AE01; keycode <= LSGT; keycode++) {
 
@@ -37,7 +37,7 @@ Layout::Layout(const QString& variableName, QString name) :
         }
 
         // Get keysyms for current key
-        _XkbSymMapRec& keysymMap = map->key_sym_map[keycode];
+        _XkbSymMapRec &keysymMap = map->key_sym_map[keycode];
 
         // Get keysym offset (the index of this keysym in syms)
         unsigned short offset = keysymMap.offset;
@@ -60,7 +60,7 @@ Layout::Layout(const QString& variableName, QString name) :
             }
 
             // Get keysym
-            KeySym& keysym = syms[offset + i];
+            KeySym &keysym = syms[offset + i];
 
             // Get name of keysym
             std::string keysymName = XKeysymToString(keysym);
@@ -74,62 +74,9 @@ Layout::Layout(const QString& variableName, QString name) :
             kbdKeyChar.isDead = isDeadKey;
 
             // Load KbdKeyChar
-            data[layoutIndex][i] = kbdKeyChar;
+            m_data[layoutIndex][i] = kbdKeyChar;
         }
     }
-
 }
-
-QStringList Layout::generateCode() const {
-    QStringList lines;
-    QString indent = "        ";
-
-    lines.append(QString("// %1").arg(m_name));
-
-    lines.append(
-            QString("static const KbdKeyChar %1[%2][2] = {")
-                    .arg(m_variableName, QString::number(kLayoutLen))
-    );
-
-    for (int i = 0; i < kLayoutLen; i++) {
-        int keycode = utils::layoutIndexToKeycode(i);
-        QString keyName = utils::keycodeToKeyname(keycode);
-
-        // If this key is the first key of the row, place an extra white
-        // line and a comment telling which row we are talking about
-        bool firstOfRow = keycode == TLDE || keycode == AD01 || keycode == AC01 || keycode == LSGT;
-        if (firstOfRow) {
-            QString rowName;
-            if (keycode == TLDE)      rowName = "Digits row";
-            else if (keycode == AD01) rowName = "Upper row";
-            else if (keycode == AC01) rowName = "Home row";
-            else if (keycode == LSGT) rowName = "Lower row";
-
-            if (i > 0) lines.append("");
-            lines.append(QString("%1// %2").arg(indent, rowName));
-        }
-
-        const KbdKeyChar& keyCharNoMods = data[i][0];
-        const KbdKeyChar& keyCharShift = data[i][1];
-
-        QString line = QString("%1/* %2 */ ").arg(indent, keyName);
-        line += QString("{%1, %2}").arg(
-                utils::createKbdKeyCharLiteral(keyCharNoMods),
-                utils::createKbdKeyCharLiteral(keyCharShift)
-        );
-
-        // If not last, place a separation comma
-        if (i < kLayoutLen - 1) {
-            line += ",";
-        }
-
-        lines.append(line);
-    }
-
-    lines.append("};");
-
-    return lines;
-}
-
 
 Layout::~Layout() {}
