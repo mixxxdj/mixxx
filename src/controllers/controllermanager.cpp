@@ -178,15 +178,17 @@ void ControllerManager::updateControllerList() {
 
     // Since there is only one KeyboardController, it is not
     // enumerated by an enumerator but added directly here.
-    KeyboardController* kbdController = new KeyboardController(m_pKeyboard);
-    newDeviceList.prepend(kbdController);
+    KeyboardController* pKbdController = new KeyboardController(m_pKeyboard);
+    newDeviceList.prepend(pKbdController);
 
     locker.relock();
     if (newDeviceList != m_controllers) {
         m_controllers = newDeviceList;
-        m_pKeyboardController = kbdController;
+        m_pKeyboardController = pKbdController;
         connect(m_pKeyboardController, SIGNAL(keyboardControllerPresetLoaded(KeyboardControllerPresetPointer)),
                 this, SIGNAL(keyboardPresetChanged(KeyboardControllerPresetPointer)));
+        connect(m_pKeyboardController, SIGNAL(enabled(bool)),
+                this, SIGNAL(keyboardEnabled(bool)));
         locker.unlock();
         emit(devicesChanged());
     }
@@ -369,11 +371,6 @@ void ControllerManager::openController(Controller* pController) {
         m_pConfig->setValue(ConfigKey(
             "[Controller]", presetFilenameFromName(pController->getName())), 1);
     }
-
-    // TODO(Tomasito) Remove duplicate code (see ControllerManager::closeController())
-    if (dynamic_cast<void*>(pController) == dynamic_cast<void*>(getKeyboardController())) {
-        emit keyboardEnabled(true);
-    }
 }
 
 void ControllerManager::closeController(Controller* pController) {
@@ -385,10 +382,6 @@ void ControllerManager::closeController(Controller* pController) {
     // Update configuration to reflect controller is disabled.
     m_pConfig->setValue(ConfigKey(
         "[Controller]", presetFilenameFromName(pController->getName())), 0);
-
-    if (dynamic_cast<void*>(pController) == dynamic_cast<void*>(getKeyboardController())) {
-        emit keyboardEnabled(false);
-    }
 }
 
 bool ControllerManager::loadPreset(Controller* pController,

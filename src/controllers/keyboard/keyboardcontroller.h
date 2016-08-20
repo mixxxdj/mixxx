@@ -46,6 +46,7 @@ class KeyboardController : public Controller {
 
   signals:
     void keyboardControllerPresetLoaded(KeyboardControllerPresetPointer presetPointer);
+    void enabled(bool);
 
   private:
     virtual void send(QByteArray data) override {

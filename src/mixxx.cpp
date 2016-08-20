@@ -904,7 +904,7 @@ void MixxxMainWindow::slotToggleKeyboard(bool enabled) {
     // Update menu bar "Enable Keyboard Shortcuts" checkbox
     m_pMenuBar->onKeyboardEnabled(enabled);
 
-    // TODO(Tomasito) Update highlighted label in controller preferences
+    // Update highlighted label in controller preferences
     m_pPrefDlg->slotKeyboardEnabled(enabled);
 }
 

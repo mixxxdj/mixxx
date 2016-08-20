@@ -64,11 +64,13 @@ bool KeyboardController::matchPreset(const PresetInfo& preset) {
 
 int KeyboardController::open() {
     setOpen(true);
+    emit enabled(true);
     return 0;
 }
 
 int KeyboardController::close() {
     setOpen(false);
+    emit enabled(false);
     return 0;
 }
 
