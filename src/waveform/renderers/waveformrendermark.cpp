@@ -39,7 +39,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setWorldMatrixEnabled(false);
 
     for (int i = 0; i < m_marks.size(); i++) {
-        WaveformMark* mark = m_marks[i];
+        QSharedPointer<WaveformMark> mark = m_marks[i];
 
         if (!mark->m_pPointCos)
             continue;
@@ -47,7 +47,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
         // Generate image on first paint can't be done in setup since we need
         // render widget to be resized yet ...
         if (mark->m_image.isNull()) {
-            generateMarkImage(mark);
+            generateMarkImage(mark.data());
         }
 
         int samplePosition = mark->m_pPointCos->get();
@@ -96,22 +96,25 @@ void WaveformRenderMark::slotCuesUpdated() {
 
         // Here we assume no two cues can have the same hotcue assigned,
         // because WaveformMarkSet stores one mark for each hotcue.
-        const WaveformMark* p_oldMark = m_marks.getHotCueMark(hotCue);
-        WaveformMark* p_newMark = new WaveformMark(p_oldMark);
-        p_newMark->setKeyAndIndex(p_oldMark->m_pPointCos->getKey(), hotCue + 1);
-        if (p_newMark->m_text.isNull() || newLabel != p_newMark->m_text || !p_newMark->m_color.isValid() || newColor != p_newMark->m_color) {
-            p_newMark->m_text = newLabel;
-            p_newMark->m_color = newColor;
-            generateMarkImage(p_newMark);
-            m_marks.setHotCueMark(hotCue, p_newMark);
+        WaveformMark* pMark = m_marks.getHotCueMark(hotCue).data();
+        WaveformMarkProperties markProperties = pMark->properties();
+        markProperties.m_iHotCue = hotCue + 1;
+        if (markProperties.m_text.isNull() || newLabel != markProperties.m_text ||
+            !markProperties.m_color.isValid() || newColor != markProperties.m_color) {
+            markProperties.m_text = newLabel;
+            markProperties.m_color = newColor;
+            pMark->setProperties(markProperties);
+            generateMarkImage(pMark);
         }
     }
 }
 
 void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
+    const WaveformMarkProperties& markProperties = mark->properties();
+
     // Load the pixmap from file -- takes precedence over text.
-    if (!mark->m_pixmapPath.isEmpty()) {
-        QString path = mark->m_pixmapPath;
+    if (!markProperties.m_pixmapPath.isEmpty()) {
+        QString path = markProperties.m_pixmapPath;
         QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
@@ -128,14 +131,14 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
     int labelRectHeight = 0;
 
     // If no text is provided, leave m_markImage as a null image
-    if (!mark->m_text.isNull()) {
+    if (!markProperties.m_text.isNull()) {
         // Determine mark text.
-        QString label = mark->m_text;
-        if (mark->m_iIndex != -1) {
+        QString label = markProperties.m_text;
+        if (markProperties.m_iHotCue != -1) {
             if (!label.isEmpty()) {
                 label.prepend(": ");
             }
-            label.prepend(QString::number(mark->m_iIndex));
+            label.prepend(QString::number(markProperties.m_iHotCue));
             if (label.size() > kMaxCueLabelLength) {
                 label = label.left(kMaxCueLabelLength - 3) + "...";
             }
@@ -168,7 +171,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
                 m_waveformRenderer->getHeight(),
                 QImage::Format_ARGB32_Premultiplied);
 
-        if (mark->m_align == Qt::AlignBottom) {
+        if (markProperties.m_align == Qt::AlignBottom) {
             labelRect.moveBottom(mark->m_image.height()-1);
         }
 
@@ -181,9 +184,9 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
         painter.setWorldMatrixEnabled(false);
 
         //draw the label rect
-        QColor rectColor = mark->m_color;
+        QColor rectColor = markProperties.m_color;
         rectColor.setAlpha(150);
-        painter.setPen(mark->m_color);
+        painter.setPen(markProperties.m_color);
         painter.setBrush(QBrush(rectColor));
         painter.drawRoundedRect(labelRect, 2.0, 2.0);
         //painter.drawRect(labelRect);
@@ -192,11 +195,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
         painter.setBrush(QBrush(QColor(0,0,0,0)));
         font.setWeight(75);
         painter.setFont(font);
-        painter.setPen(mark->m_textColor);
+        painter.setPen(markProperties.m_textColor);
         painter.drawText(labelRect, Qt::AlignCenter, label);
 
         //draw line
-        QColor lineColor = mark->m_color;
+        QColor lineColor = markProperties.m_color;
         lineColor.setAlpha(200);
         painter.setPen(lineColor);
 
@@ -205,7 +208,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
         float lineTop = labelRectHeight + 1;
         float lineBottom = mark->m_image.height();
 
-        if (mark->m_align == Qt::AlignBottom) {
+        if (markProperties.m_align == Qt::AlignBottom) {
             lineTop = 0.0;
             lineBottom = mark->m_image.height() - labelRectHeight - 1;
         }
@@ -231,7 +234,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
 
         painter.setWorldMatrixEnabled(false);
 
-        QColor triangleColor = mark->m_color;
+        QColor triangleColor = markProperties.m_color;
         triangleColor.setAlpha(140);
         painter.setPen(QColor(0,0,0,0));
         painter.setBrush(QBrush(triangleColor));
@@ -255,7 +258,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
 
         //TODO vRince duplicated code make a method
         //draw line
-        QColor lineColor = mark->m_color;
+        QColor lineColor = markProperties.m_color;
         lineColor.setAlpha(140);
         painter.setPen(lineColor);
         float middle = mark->m_image.width() / 2.0;
