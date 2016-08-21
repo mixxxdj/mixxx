@@ -22,8 +22,8 @@ class WaveformMark {
 
     std::unique_ptr<ControlProxy> m_pPointCos;
 
-    const WaveformMarkProperties& getProperties() const;
-    void setProperties(const WaveformMarkProperties& properties);
+    const WaveformMarkProperties& getProperties() const { return m_properties; };
+    void setProperties(const WaveformMarkProperties& properties) { m_properties = properties; };
 
     int getHotCue() const { return m_iHotCue; };
     void setHotCue(int hotCue) { m_iHotCue = hotCue; };
