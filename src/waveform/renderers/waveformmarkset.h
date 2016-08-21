@@ -21,10 +21,10 @@ class WaveformMarkSet {
     void clear();
 
     int size() const { return m_marks.size();}
-    QSharedPointer<WaveformMark> operator[] (int i) { return m_marks[i]; };
+    QSharedPointer<WaveformMark> operator[] (int i) const { return m_marks[i]; };
 
     // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
-    QSharedPointer<WaveformMark> getHotCueMark(int hotCue);
+    QSharedPointer<WaveformMark> getHotCueMark(int hotCue) const;
     void setHotCueMark(int hotCue, QSharedPointer<WaveformMark> pMark);
 
   private:
