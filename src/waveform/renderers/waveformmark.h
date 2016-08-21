@@ -14,6 +14,8 @@ class WaveformSignalColors;
 
 class WaveformMark {
   public:
+    WaveformMark();
+
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
                const WaveformSignalColors& signalColors);
@@ -23,8 +25,12 @@ class WaveformMark {
     const WaveformMarkProperties& getProperties() const;
     void setProperties(const WaveformMarkProperties& properties);
 
+    int getHotCue() const { return m_iHotCue; };
+    void setHotCue(int hotCue) { m_iHotCue = hotCue; };
+
   private:
     WaveformMarkProperties m_properties;
+    int m_iHotCue;
     QImage m_image;
 
     friend class WaveformRenderMark;

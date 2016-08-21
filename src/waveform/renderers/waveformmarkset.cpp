@@ -68,7 +68,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
                 //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
                 QSharedPointer<WaveformMark> pMark(new WaveformMark());
                 WaveformMarkProperties defaultProperties = m_defaultMark.getProperties();
-                defaultProperties.m_iHotCue = i;
+                pMark->setHotCue(i);
                 pMark->setProperties(defaultProperties);
                 pMark->m_pPointCos = std::make_unique<ControlProxy>(pHotcue->getKey());
                 m_marks.push_back(pMark);

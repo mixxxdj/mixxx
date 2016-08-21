@@ -9,7 +9,7 @@ class WaveformSignalColors;
 
 class WaveformMarkProperties final {
   public:
-    WaveformMarkProperties();
+    WaveformMarkProperties() = default;
     WaveformMarkProperties(const QDomNode& node,
                            const SkinContext& context,
                            const WaveformSignalColors& signalColors);
@@ -19,8 +19,6 @@ class WaveformMarkProperties final {
     QString m_text;
     Qt::Alignment m_align;
     QString m_pixmapPath;
-
-    int m_iHotCue;
 };
 
 #endif // WAVEFORMMARKPROPERTIES_H

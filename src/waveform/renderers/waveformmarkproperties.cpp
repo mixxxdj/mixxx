@@ -4,14 +4,9 @@
 
 #include "waveform/renderers/waveformmarkproperties.h"
 
-WaveformMarkProperties::WaveformMarkProperties()
-    : m_iHotCue(-1) {
-}
-
 WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
                                                const SkinContext& context,
-                                               const WaveformSignalColors& signalColors)
-    : WaveformMarkProperties() {
+                                               const WaveformSignalColors& signalColors) {
     m_color = context.selectString(node, "Color");
     if (!m_color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor

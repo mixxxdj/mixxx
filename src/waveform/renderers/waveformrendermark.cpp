@@ -98,7 +98,6 @@ void WaveformRenderMark::slotCuesUpdated() {
         // because WaveformMarkSet stores one mark for each hotcue.
         WaveformMark* pMark = m_marks.getHotCueMark(hotCue).data();
         WaveformMarkProperties markProperties = pMark->getProperties();
-        markProperties.m_iHotCue = hotCue + 1;
         if (markProperties.m_text.isNull() || newLabel != markProperties.m_text ||
             !markProperties.m_color.isValid() || newColor != markProperties.m_color) {
             markProperties.m_text = newLabel;
@@ -134,11 +133,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
     if (!markProperties.m_text.isNull()) {
         // Determine mark text.
         QString label = markProperties.m_text;
-        if (markProperties.m_iHotCue != -1) {
+        if (mark->m_iHotCue != -1) {
             if (!label.isEmpty()) {
                 label.prepend(": ");
             }
-            label.prepend(QString::number(markProperties.m_iHotCue));
+            label.prepend(QString::number(mark->m_iHotCue));
             if (label.size() > kMaxCueLabelLength) {
                 label = label.left(kMaxCueLabelLength - 3) + "...";
             }
