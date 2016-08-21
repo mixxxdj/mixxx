@@ -62,8 +62,8 @@ QDebug operator<<(QDebug dbg, const CoverInfoRelative& infoRelative) {
 }
 
 bool operator==(const CoverInfo& a, const CoverInfo& b) {
-    return static_cast<CoverInfoRelative>(a) ==
-                    static_cast<CoverInfoRelative>(b) &&
+    return static_cast<const CoverInfoRelative&>(a) ==
+                    static_cast<const CoverInfoRelative&>(b) &&
             a.trackLocation == b.trackLocation;
 }
 
@@ -78,8 +78,8 @@ QDebug operator<<(QDebug dbg, const CoverInfo& info) {
 
 bool operator==(const CoverArt& a, const CoverArt& b) {
     // Only count image in the equality if both are non-null.
-    return static_cast<CoverInfo>(a) ==
-                    static_cast<CoverInfo>(b) &&
+    return static_cast<const CoverInfo&>(a) ==
+                    static_cast<const CoverInfo&>(b) &&
             (a.image.isNull() || b.image.isNull() ||
              a.image == b.image);
 }
