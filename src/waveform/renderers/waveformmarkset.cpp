@@ -81,10 +81,6 @@ void WaveformMarkSet::clear() {
     m_marks.clear();
 }
 
-QSharedPointer<WaveformMark> WaveformMarkSet::operator[] (int i) {
-    return QSharedPointer<WaveformMark>(m_marks[i]);
-}
-
 QSharedPointer<WaveformMark> WaveformMarkSet::getHotCueMark(int hotCue) {
     DEBUG_ASSERT(hotCue >= 0);
     DEBUG_ASSERT(hotCue < NUM_HOT_CUES);
