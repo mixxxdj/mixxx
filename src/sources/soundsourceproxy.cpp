@@ -146,33 +146,33 @@ void SoundSourceProxy::loadPlugins() {
     // only matters among providers with equal priority.
 #ifdef __FFMPEGFILE__
     // Use FFmpeg as the last resort.
-    s_soundSourceProviders.registerProvider(mixxx::SoundSourceProviderPointer(
-            new mixxx::SoundSourceProviderFFmpeg));
+    s_soundSourceProviders.registerProvider(
+            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderFFmpeg>());
 #endif
 #ifdef __SNDFILE__
     // libsndfile is another fallback
-    s_soundSourceProviders.registerProvider(mixxx::SoundSourceProviderPointer(
-            new mixxx::SoundSourceProviderSndFile));
+    s_soundSourceProviders.registerProvider(
+            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderSndFile>());
 #endif
-    s_soundSourceProviders.registerProvider(mixxx::SoundSourceProviderPointer(
-            new mixxx::SoundSourceProviderFLAC));
-    s_soundSourceProviders.registerProvider(mixxx::SoundSourceProviderPointer(
-            new mixxx::SoundSourceProviderOggVorbis));
+    s_soundSourceProviders.registerProvider(
+            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderFLAC>());
+    s_soundSourceProviders.registerProvider(
+            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderOggVorbis>());
 #ifdef __OPUS__
-    s_soundSourceProviders.registerProvider(mixxx::SoundSourceProviderPointer(
-            new mixxx::SoundSourceProviderOpus));
+    s_soundSourceProviders.registerProvider(
+            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderOpus>());
 #endif
 #ifdef __MAD__
-    s_soundSourceProviders.registerProvider(mixxx::SoundSourceProviderPointer(
-            new mixxx::SoundSourceProviderMp3));
+    s_soundSourceProviders.registerProvider(
+            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderMp3>());
 #endif
 #ifdef __MODPLUG__
-    s_soundSourceProviders.registerProvider(mixxx::SoundSourceProviderPointer(
-            new mixxx::SoundSourceProviderModPlug));
+    s_soundSourceProviders.registerProvider(
+            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderModPlug>());
 #endif
 #ifdef __COREAUDIO__
-    s_soundSourceProviders.registerProvider(mixxx::SoundSourceProviderPointer(
-            new mixxx::SoundSourceProviderCoreAudio));
+    s_soundSourceProviders.registerProvider(
+            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderCoreAudio>());
 #endif
 
     // Scan for and initialize all plugins.
