@@ -28,7 +28,7 @@ class WaveformMarkSet {
     void setHotCueMark(int hotCue, QSharedPointer<WaveformMark> pMark);
 
   private:
-    WaveformMark m_pDefaultMark;
+    WaveformMark m_defaultMark;
     QList<QSharedPointer<WaveformMark>> m_marks;
     int m_iFirstHotCue;
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
