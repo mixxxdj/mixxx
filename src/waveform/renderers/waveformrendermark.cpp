@@ -108,8 +108,8 @@ void WaveformRenderMark::slotCuesUpdated() {
     }
 }
 
-void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
-    const WaveformMarkProperties& markProperties = mark->getProperties();
+void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
+    const WaveformMarkProperties& markProperties = pMark->getProperties();
 
     // Load the pixmap from file -- takes precedence over text.
     if (!markProperties.m_pixmapPath.isEmpty()) {
@@ -118,8 +118,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
         if (!image.isNull()) {
-            mark->m_image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
-            WImageStore::correctImageColors(&mark->m_image);
+            pMark->m_image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+            WImageStore::correctImageColors(&pMark->m_image);
             return;
         }
     }
@@ -133,11 +133,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
     if (!markProperties.m_text.isNull()) {
         // Determine mark text.
         QString label = markProperties.m_text;
-        if (mark->m_iHotCue != -1) {
+        if (pMark->m_iHotCue != -1) {
             if (!label.isEmpty()) {
                 label.prepend(": ");
             }
-            label.prepend(QString::number(mark->m_iHotCue));
+            label.prepend(QString::number(pMark->m_iHotCue));
             if (label.size() > kMaxCueLabelLength) {
                 label = label.left(kMaxCueLabelLength - 3) + "...";
             }
@@ -167,18 +167,18 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
         QRectF labelRect(0, 0,
                 (float)labelRectWidth, (float)labelRectHeight);
 
-        mark->m_image = QImage(labelRectWidth+1,
+        pMark->m_image = QImage(labelRectWidth+1,
                 m_waveformRenderer->getHeight(),
                 QImage::Format_ARGB32_Premultiplied);
 
         if (markProperties.m_align == Qt::AlignBottom) {
-            labelRect.moveBottom(mark->m_image.height()-1);
+            labelRect.moveBottom(pMark->m_image.height()-1);
         }
 
         // Fill with transparent pixels
-        mark->m_image.fill(QColor(0,0,0,0).rgba());
+        pMark->m_image.fill(QColor(0,0,0,0).rgba());
 
-        painter.begin(&mark->m_image);
+        painter.begin(&pMark->m_image);
         painter.setRenderHint(QPainter::TextAntialiasing);
 
         painter.setWorldMatrixEnabled(false);
@@ -202,14 +202,14 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
         lineColor.setAlpha(200);
         painter.setPen(lineColor);
 
-        float middle = mark->m_image.width() / 2.0;
+        float middle = pMark->m_image.width() / 2.0;
         //Default line align top
         float lineTop = labelRectHeight + 1;
-        float lineBottom = mark->m_image.height();
+        float lineBottom = pMark->m_image.height();
 
         if (markProperties.m_align == Qt::AlignBottom) {
             lineTop = 0.0;
-            lineBottom = mark->m_image.height() - labelRectHeight - 1;
+            lineBottom = pMark->m_image.height() - labelRectHeight - 1;
         }
 
         painter.drawLine(middle, lineTop, middle, lineBottom);
@@ -223,12 +223,12 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
     else //no text draw triangle
     {
         float triangleSize = 9.0;
-        mark->m_image = QImage(labelRectWidth+1,
+        pMark->m_image = QImage(labelRectWidth+1,
                 m_waveformRenderer->getHeight(),
                 QImage::Format_ARGB32_Premultiplied);
-        mark->m_image.fill(QColor(0,0,0,0).rgba());
+        pMark->m_image.fill(QColor(0,0,0,0).rgba());
 
-        painter.begin(&mark->m_image);
+        painter.begin(&pMark->m_image);
         painter.setRenderHint(QPainter::TextAntialiasing);
 
         painter.setWorldMatrixEnabled(false);
@@ -249,9 +249,9 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
         painter.drawPolygon(triangle);
 
         triangle.clear();
-        triangle.append(QPointF(0.0,mark->m_image.height()));
-        triangle.append(QPointF(triangleSize+0.5,mark->m_image.height()));
-        triangle.append(QPointF(triangleSize*0.5 + 0.1, mark->m_image.height() - triangleSize*0.5 - 2.1));
+        triangle.append(QPointF(0.0,pMark->m_image.height()));
+        triangle.append(QPointF(triangleSize+0.5,pMark->m_image.height()));
+        triangle.append(QPointF(triangleSize*0.5 + 0.1, pMark->m_image.height() - triangleSize*0.5 - 2.1));
 
         painter.drawPolygon(triangle);
 
@@ -260,10 +260,10 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
         QColor lineColor = markProperties.m_color;
         lineColor.setAlpha(140);
         painter.setPen(lineColor);
-        float middle = mark->m_image.width() / 2.0;
+        float middle = pMark->m_image.width() / 2.0;
 
         float lineTop = triangleSize * 0.5 + 1;
-        float lineBottom = mark->m_image.height() - triangleSize * 0.5 - 1;
+        float lineBottom = pMark->m_image.height() - triangleSize * 0.5 - 1;
 
         painter.drawLine(middle, lineTop, middle, lineBottom);
 

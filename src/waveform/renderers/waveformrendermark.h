@@ -28,7 +28,7 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     void slotCuesUpdated();
 
   private:
-    void generateMarkImage(WaveformMark* mark);
+    void generateMarkImage(WaveformMark* pMark);
 
     WaveformMarkSet m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
