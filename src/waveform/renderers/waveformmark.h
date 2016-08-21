@@ -15,6 +15,7 @@ class WaveformSignalColors;
 class WaveformMark {
   public:
     WaveformMark();
+    WaveformMark(int hotCue);
 
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,

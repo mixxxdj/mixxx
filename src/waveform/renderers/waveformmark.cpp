@@ -10,6 +10,10 @@ WaveformMark::WaveformMark()
     : m_iHotCue(-1) {
 }
 
+WaveformMark::WaveformMark(int hotCue)
+    : m_iHotCue(hotCue) {
+}
+
 void WaveformMark::setup(const QString& group, const QDomNode& node,
                          const SkinContext& context,
                          const WaveformSignalColors& signalColors) {
