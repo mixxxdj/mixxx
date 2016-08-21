@@ -149,6 +149,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
         QFont font; // Uses the application default
         font.setPointSize(10);
         font.setStretch(100);
+        font.setWeight(75);
 
         QFontMetrics metrics(font);
 
@@ -193,7 +194,6 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
 
         //draw text
         painter.setBrush(QBrush(QColor(0,0,0,0)));
-        font.setWeight(75);
         painter.setFont(font);
         painter.setPen(markProperties.m_textColor);
         painter.drawText(labelRect, Qt::AlignCenter, label);
