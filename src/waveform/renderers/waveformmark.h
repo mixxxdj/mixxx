@@ -37,4 +37,6 @@ class WaveformMark {
     friend class WaveformRenderMark;
 };
 
+typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
+
 #endif // WAVEFORMMARK_H

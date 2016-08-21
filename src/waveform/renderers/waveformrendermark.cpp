@@ -39,7 +39,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setWorldMatrixEnabled(false);
 
     for (int i = 0; i < m_marks.size(); i++) {
-        QSharedPointer<WaveformMark> mark = m_marks[i];
+        WaveformMarkPointer mark = m_marks[i];
 
         if (!mark->m_pPointCos)
             continue;

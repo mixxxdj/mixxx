@@ -33,7 +33,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             m_defaultMark.setup(group, child, context, signalColors);
             hasDefaultMark = true;
         } else if (child.nodeName() == "Mark") {
-            QSharedPointer<WaveformMark> pMark(new WaveformMark());
+            WaveformMarkPointer pMark(new WaveformMark());
             pMark->setup(group, child, context, signalColors);
 
             bool uniqueMark = true;
@@ -69,7 +69,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 
             if (controlItemSet.insert(hotCueControlItem).second) {
                 //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
-                QSharedPointer<WaveformMark> pMark(new WaveformMark(i));
+                WaveformMarkPointer pMark(new WaveformMark(i));
                 WaveformMarkProperties defaultProperties = m_defaultMark.getProperties();
                 pMark->setProperties(defaultProperties);
                 pMark->m_pPointCos = std::make_unique<ControlProxy>(pHotcue->getKey());
@@ -84,12 +84,12 @@ void WaveformMarkSet::clear() {
     m_marks.clear();
 }
 
-QSharedPointer<WaveformMark> WaveformMarkSet::getHotCueMark(int hotCue) const {
+WaveformMarkPointer WaveformMarkSet::getHotCueMark(int hotCue) const {
     DEBUG_ASSERT(hotCue >= 0);
     DEBUG_ASSERT(hotCue < NUM_HOT_CUES);
     return operator[](m_iFirstHotCue + hotCue);
 }
 
-void WaveformMarkSet::setHotCueMark(int hotCue, QSharedPointer<WaveformMark> pMark) {
+void WaveformMarkSet::setHotCueMark(int hotCue, WaveformMarkPointer pMark) {
     m_marks[m_iFirstHotCue + hotCue] = pMark;
 }
