@@ -26,11 +26,7 @@ void SoundSourceProviderRegistry::registerPluginLibrary(
         const SoundSourcePluginLibraryPointer& pPluginLibrary) {
     SoundSourceProviderPointer pProvider(
             pPluginLibrary->getSoundSourceProvider());
-    if (!pProvider) {
-        qWarning() << "Failed to obtain SoundSource provider from plugin library"
-                << pPluginLibrary->getFilePath();
-        return; // abort registration
-    }
+    DEBUG_ASSERT(pProvider);
     const QStringList supportedFileExtensions(
             pProvider->getSupportedFileExtensions());
     if (supportedFileExtensions.isEmpty()) {

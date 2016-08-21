@@ -41,13 +41,14 @@ private:
     static QMutex s_loadedPluginLibrariesMutex;
     static QMap<QString, mixxx::SoundSourcePluginLibraryPointer> s_loadedPluginLibraries;
 
+    bool initFailedForIncompatiblePlugin() const;
+
     QLibrary m_library;
 
     int m_apiVersion;
     QStringList m_supportedFileExtensions;
 
-    SoundSourcePluginAPI_createSoundSourceProviderFunc m_createSoundSourceProviderFunc;
-    SoundSourcePluginAPI_destroySoundSourceProviderFunc m_destroySoundSourceProviderFunc;
+    SoundSourceProviderPointer m_pSoundSourceProvider;
 };
 
 } // namespace mixxx

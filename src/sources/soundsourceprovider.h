@@ -22,6 +22,9 @@ enum class SoundSourceProviderPriority {
 };
 
 // Factory interface for SoundSources
+//
+// The implementation of a SoundSourceProvider must be thread-safe, because
+// a single instance might be accessed concurrently from different threads.
 class SoundSourceProvider {
 public:
     virtual ~SoundSourceProvider() {}
