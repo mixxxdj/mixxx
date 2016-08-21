@@ -8,10 +8,6 @@ WaveformMarkProperties::WaveformMarkProperties()
     : m_iHotCue(-1) {
 }
 
-WaveformMarkProperties::~WaveformMarkProperties() {
-}
-
-
 WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
                                                const SkinContext& context,
                                                const WaveformSignalColors& signalColors)

@@ -7,13 +7,12 @@
 class SkinContext;
 class WaveformSignalColors;
 
-class WaveformMarkProperties {
+class WaveformMarkProperties final {
   public:
     WaveformMarkProperties();
     WaveformMarkProperties(const QDomNode& node,
                            const SkinContext& context,
                            const WaveformSignalColors& signalColors);
-    virtual ~WaveformMarkProperties();
 
     QColor m_color;
     QColor m_textColor;
