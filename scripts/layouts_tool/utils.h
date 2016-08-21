@@ -3,6 +3,7 @@
 
 
 #include <QApplication>
+#include <QTextStream>
 #include "layout.h"
 
 typedef unsigned long KeySym;
@@ -15,6 +16,16 @@ namespace utils {
     int keysymToUnicode(KeySym keysym);
     QString createKbdKeyCharLiteral(const KbdKeyChar &kbdKeyChar);
     QString inputLocaleName();
+
+    inline QTextStream& qout() {
+        static QTextStream out{stdout};
+        return out;
+    }
+
+    inline QTextStream& qin() {
+        static QTextStream in{stdin};
+        return in;
+    }
 }
 
 struct KeysymUnicodePair {

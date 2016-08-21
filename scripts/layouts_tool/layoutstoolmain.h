@@ -20,7 +20,7 @@ class LayoutsToolMain : public QObject {
     void aboutToQuitApp();
 
   private:
-    LayoutsFileHandler *m_pLayoutsFileHandler;
+    LayoutsFileHandler* m_pLayoutsFileHandler;
     QList<Layout> m_Layouts;
     QString m_FilePath;
 

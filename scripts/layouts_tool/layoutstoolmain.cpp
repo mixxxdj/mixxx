@@ -1,6 +1,7 @@
 #include "layoutstoolmain.h"
 #include "utils.h"
 #include <QDebug>
+#include <iostream>
 
 LayoutsToolMain::LayoutsToolMain(QObject* parent) :
         QObject(parent) {
@@ -30,8 +31,7 @@ LayoutsToolMain::LayoutsToolMain(QObject* parent) :
 }
 
 void LayoutsToolMain::run() {
-    qDebug() << "Welcome to the Layouts tool :)";
-
+    utils::qout() << "Welcome to the Layouts tool :)" << endl;
     m_pLayoutsFileHandler->open(m_FilePath, m_Layouts);
     mainMenu();
 }
@@ -45,8 +45,6 @@ void LayoutsToolMain::aboutToQuitApp() {
 }
 
 void LayoutsToolMain::mainMenu() {
-    QTextStream qtin(stdin);
-
     // TODO(Tomasito) Make Menu class to avoid this "if (loaded)"
     // ...            mess as well as this switch statement mess
 
@@ -57,28 +55,28 @@ void LayoutsToolMain::mainMenu() {
 
         // Print menu
         utils::clearTerminal();
-        qDebug() << "********** LAYOUTS TOOL - MAIN MENU **********";
-        if (loaded) qDebug() << "Currently opened file: " << m_FilePath;
-        qDebug() << "(1): Open file";
-        qDebug() << "(2): Save file";
-        if (loaded) qDebug() << "(3): Edit file";
-        if (loaded) qDebug() << "(4): Miscellaneous tools";
-        qDebug() << (loaded ? "(5): Quit" : "(3): Quit");
+        utils::qout() << "********** LAYOUTS TOOL - MAIN MENU **********" << endl;
+        if (loaded) utils::qout() << "Currently opened file: " << m_FilePath << endl;
+        utils::qout() << "(1): Open file" << endl;
+        utils::qout() << "(2): Save file" << endl;
+        if (loaded) utils::qout() << "(3): Edit file" << endl;
+        if (loaded) utils::qout() << "(4): Miscellaneous tools" << endl;
+        utils::qout() << (loaded ? "(5): Quit" : "(3): Quit") << endl;
 
         // Prompt user for choice
-        qtin >> menuChoice;
+        utils::qin() >> menuChoice;
 
         switch(menuChoice) {
             case 1: {
                 utils::clearTerminal();
-                qDebug() << "Please tell me the path to the layouts cpp file (no spaces please): ";
-                qtin >> m_FilePath;
+                utils::qout() << "Please tell me the path to the layouts cpp file (no spaces please): " << endl;
+                utils::qin() >> m_FilePath;
                 m_pLayoutsFileHandler->open(m_FilePath, m_Layouts);
                 break;
             }
 
             case 2: {
-                qDebug() << "Save file...";
+                utils::qout() << "Save file..." << endl;
                 QFile f(m_FilePath);
                 m_pLayoutsFileHandler->save(f, m_Layouts);
                 break;
@@ -118,7 +116,6 @@ void LayoutsToolMain::mainMenu() {
 }
 
 void LayoutsToolMain::editLayoutMenu() {
-    QTextStream qtin(stdin);
     bool loaded = !m_FilePath.isEmpty();
     if (!loaded) {
         qDebug() << "Can't edit any layout, any layout loaded.";
@@ -131,26 +128,24 @@ void LayoutsToolMain::editLayoutMenu() {
 
         // Print menu
         utils::clearTerminal();
-        qDebug() << "********** LAYOUTS TOOL - EDIT **********";
-        qDebug() << "Editing file: " << m_FilePath;
-        qDebug() << "(1): Remove layout";
-        qDebug() << "(2): Add layout";
-        qDebug() << "(3): Back to main menu";
+        utils::qout() << "********** LAYOUTS TOOL - EDIT **********" << endl;
+        utils::qout() << "Editing file: " << m_FilePath << endl;
+        utils::qout() << "(1): Remove layout" << endl;
+        utils::qout() << "(2): Add layout" << endl;
+        utils::qout() << "(3): Back to main menu" << endl;
 
         // Prompt user for choice
-        qtin >> menuChoice;
+        utils::qin() >> menuChoice;
 
         switch(menuChoice) {
             case 1: {
                 // Remove layouts
-                qDebug() << "Remove layouts...";
                 removeLayoutMenu();
                 break;
             }
 
             case 2: {
                 // Add layout
-                qDebug() << "Add layout...";
                 addLayoutMenu();
                 break;
             }
@@ -169,23 +164,22 @@ void LayoutsToolMain::editLayoutMenu() {
 }
 
 void LayoutsToolMain::addLayoutMenu() {
-    QTextStream qtin(stdin);
     QString kbdLocale = utils::inputLocaleName();
 
     utils::clearTerminal();
-    qDebug() << "********** LAYOUTS TOOL - ADD LAYOUT **********";
-    qDebug() << "Qt keyboard locale: " << kbdLocale
-             << " (NOTE: This is not accurate any more when changing layout runtime)";
+    utils::qout() << "********** LAYOUTS TOOL - ADD LAYOUT **********" << endl;
+    utils::qout() << "Qt keyboard locale: " << kbdLocale
+             << " (NOTE: This is not accurate any more when changing layout runtime)" << endl;
 
-    qDebug() << "Enter layout name: ";
+    utils::qout() << "Enter layout name: " << endl;
     QString layoutName = kbdLocale;
-    qtin.skipWhiteSpace();
-    layoutName = qtin.readLine();
+    utils::qin().skipWhiteSpace();
+    layoutName = utils::qin().readLine();
 
-    qDebug() << "Enter layout variable name (see Qt keyboard locale): ";
-    qDebug() << "NOTE: Please switch to the layout you want to save before hitting ENTER!";
+    utils::qout() << "Enter layout variable name (see Qt keyboard locale): " << endl;
+    utils::qout() << "NOTE: Please switch to the layout you want to save before hitting ENTER!" << endl;
     QString variableName = kbdLocale;
-    qtin >> variableName;
+    utils::qin() >> variableName;
 
     qDebug() << QString("\nAdding layout with:\n  Name:\t\t\t\t%1\n  Variable name:\t%2\n").arg(layoutName, variableName)
             .toStdString()
@@ -196,20 +190,18 @@ void LayoutsToolMain::addLayoutMenu() {
 }
 
 void LayoutsToolMain::removeLayoutMenu() {
-    QTextStream qtin(stdin);
-
     bool backToEdit;
     do {
         int menuChoice = 0;
 
         // Print menu
         utils::clearTerminal();
-        qDebug() << "********** LAYOUTS TOOL - REMOVE LAYOUT **********";
+        utils::qout() << "********** LAYOUTS TOOL - REMOVE LAYOUT **********" << endl;
         showLayouts();
-        qDebug("(%d)  %s", m_Layouts.size(), "Back to edit menu");
+        utils::qout() << "(" << m_Layouts.size() << ") " << "Back to edit menu";
 
         // Prompt user for choice
-        qtin >> menuChoice;
+        utils::qin() >> menuChoice;
 
         if (menuChoice == m_Layouts.size()) {
             break;
@@ -226,7 +218,6 @@ void LayoutsToolMain::removeLayoutMenu() {
 }
 
 void LayoutsToolMain::miscToolsMenu() {
-    QTextStream qtin(stdin);
     bool loaded = !m_FilePath.isEmpty();
     if (!loaded) {
         qDebug() << "Miscellaneous tools do only work when a "
@@ -240,17 +231,17 @@ void LayoutsToolMain::miscToolsMenu() {
 
         // Print menu
         utils::clearTerminal();
-        qDebug() << "********** LAYOUTS TOOL - MISCELLANEOUS TOOLS **********";
-        qDebug() << "Miscellaneous tools on file: " << m_FilePath;
-        qDebug() << "(1): Find shared key chars (keys on one single layout that share the same character)";
-        qDebug() << "(2): Back to main menu";
+        utils::qout() << "********** LAYOUTS TOOL - MISCELLANEOUS TOOLS **********" << endl;
+        utils::qout() << "Miscellaneous tools on file: " << m_FilePath << endl;
+        utils::qout() << "(1): Find shared key chars (keys on one single layout that share the same character)" << endl;
+        utils::qout() << "(2): Back to main menu" << endl;
 
         // Prompt user for choice
-        qtin >> menuChoice;
+        utils::qin() >> menuChoice;
 
         switch(menuChoice) {
             case 1: {
-                qDebug() << "Find shared key chars...";
+                utils::qout() << "Find shared key chars..." << endl;
                 findSharedKeyCharsMenu();
                 break;
             }
@@ -269,16 +260,14 @@ void LayoutsToolMain::miscToolsMenu() {
 }
 
 void LayoutsToolMain::findSharedKeyCharsMenu() {
-    QTextStream qtin(stdin);
-
     bool backToMain = false;
     do {
         int menuChoice = 0;
 
         // Print menu
         utils::clearTerminal();
-        qDebug() << "********** LAYOUTS TOOL - FIND SHARED KEY CHARS **********";
-        qDebug() << "Finding shared key chars on layout: " << m_FilePath;
+        utils::qout() << "********** LAYOUTS TOOL - FIND SHARED KEY CHARS **********" << endl;
+        utils::qout() << "Finding shared key chars on layout: " << m_FilePath << endl;
 
         // Show shared key chars
         for (const auto& layout : m_Layouts) {
@@ -304,22 +293,23 @@ void LayoutsToolMain::findSharedKeyCharsMenu() {
                     for (const int& k : foundMatches) {
                         int otherKeycode = utils::layoutIndexToKeycode(k);
 
-                        qDebug() << "On layout " << layout.m_name << ", "
-                                 << utils::keycodeToKeyname(keycode)
-                                 << "is identical to"
-                                 << utils::keycodeToKeyname(otherKeycode)
-                                 << (shift ? "with" : "without") << "shift."
-                                 << "Character: " << QChar(kbdKeyChar.character);
+                        utils::qout() << "On layout " << layout.m_name << ", "
+                                      << utils::keycodeToKeyname(keycode)
+                                      << " is identical to "
+                                      << utils::keycodeToKeyname(otherKeycode) << " "
+                                      << (shift ? "with" : "without") << " shift. "
+                                      << "Character: '" << QChar(kbdKeyChar.character) << "'"
+                                      << endl;
                     }
                 }
             }
         }
 
-        qDebug() << "";
-        qDebug() << "(1): Back to miscellaneous tools";
+        utils::qout() << endl;
+        utils::qout() << "(1): Back to miscellaneous tools" << endl;
 
         // Prompt user for choice
-        qtin >> menuChoice;
+        utils::qin() >> menuChoice;
 
         switch(menuChoice) {
             case 1: {
@@ -339,6 +329,7 @@ void LayoutsToolMain::findSharedKeyCharsMenu() {
 void LayoutsToolMain::showLayouts() {
     int i = 0;
     for (const Layout& layout : m_Layouts) {
-        qDebug("(%d)  %s, [%s]", i++, layout.m_name.toLatin1().data(), layout.m_variableName.toLatin1().data());
+        utils::qout() << "(" << i++ << ") "
+                      << layout.m_variableName << "\t" << layout.m_name;
     }
 }
