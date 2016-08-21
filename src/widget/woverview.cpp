@@ -393,7 +393,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
             for (int i = 0; i < m_marks.size(); ++i) {
                 WaveformMark* currentMark = m_marks[i].data();
-                const WaveformMarkProperties& markProperties = currentMark->properties();
+                const WaveformMarkProperties& markProperties = currentMark->getProperties();
                 if (currentMark->m_pPointCos && currentMark->m_pPointCos->get() >= 0.0) {
                     //const float markPosition = 1.0 +
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);

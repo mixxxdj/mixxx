@@ -97,7 +97,7 @@ void WaveformRenderMark::slotCuesUpdated() {
         // Here we assume no two cues can have the same hotcue assigned,
         // because WaveformMarkSet stores one mark for each hotcue.
         WaveformMark* pMark = m_marks.getHotCueMark(hotCue).data();
-        WaveformMarkProperties markProperties = pMark->properties();
+        WaveformMarkProperties markProperties = pMark->getProperties();
         markProperties.m_iHotCue = hotCue + 1;
         if (markProperties.m_text.isNull() || newLabel != markProperties.m_text ||
             !markProperties.m_color.isValid() || newColor != markProperties.m_color) {
@@ -110,7 +110,7 @@ void WaveformRenderMark::slotCuesUpdated() {
 }
 
 void WaveformRenderMark::generateMarkImage(WaveformMark* mark) {
-    const WaveformMarkProperties& markProperties = mark->properties();
+    const WaveformMarkProperties& markProperties = mark->getProperties();
 
     // Load the pixmap from file -- takes precedence over text.
     if (!markProperties.m_pixmapPath.isEmpty()) {

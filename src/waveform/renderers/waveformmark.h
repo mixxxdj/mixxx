@@ -20,7 +20,7 @@ class WaveformMark {
 
     std::unique_ptr<ControlProxy> m_pPointCos;
 
-    const WaveformMarkProperties& properties() const;
+    const WaveformMarkProperties& getProperties() const;
     void setProperties(const WaveformMarkProperties& properties);
 
   private:

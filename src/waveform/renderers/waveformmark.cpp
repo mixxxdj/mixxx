@@ -17,7 +17,7 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
     m_properties = WaveformMarkProperties(node, context, signalColors);
 }
 
-const WaveformMarkProperties& WaveformMark::properties() const {
+const WaveformMarkProperties& WaveformMark::getProperties() const {
     return m_properties;
 }
 
