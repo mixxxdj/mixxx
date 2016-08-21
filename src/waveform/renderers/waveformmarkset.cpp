@@ -33,17 +33,20 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             m_defaultMark.setup(group, child, context, signalColors);
             hasDefaultMark = true;
         } else if (child.nodeName() == "Mark") {
-            m_marks.push_back(QSharedPointer<WaveformMark>(new WaveformMark()));
-            WaveformMark* mark = m_marks.back().data();
-            mark->setup(group, child, context, signalColors);
+            QSharedPointer<WaveformMark> pMark(new WaveformMark());
+            pMark->setup(group, child, context, signalColors);
 
-            if (mark->m_pPointCos) {
+            bool uniqueMark = true;
+            if (pMark->m_pPointCos) {
                 // guarantee uniqueness even if there is a misdesigned skin
-                QString item = mark->m_pPointCos->getKey().item;
+                QString item = pMark->m_pPointCos->getKey().item;
                 if (!controlItemSet.insert(item).second) {
                     qWarning() << "WaveformRenderMark::setup - redefinition of" << item;
-                    m_marks.removeAt(m_marks.size() - 1);
+                    uniqueMark = false;
                 }
+            }
+            if (uniqueMark) {
+                m_marks.push_back(pMark);
             }
         }
         child = child.nextSibling();
