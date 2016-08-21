@@ -13,7 +13,23 @@ from xml.etree.ElementTree import Element, SubElement, tostring, Comment
 
 def main():
     app = App()
+
+    # Try to find directory containing the *.kbd.cfg
+    # files. If found, load them all in.
+    legacy_dir = App.get_keyboard_res_dir()
+    if legacy_dir:
+        for file in os.listdir(legacy_dir):
+            if file.endswith(Mapping.LEGACY_EXTENSION):
+                path = os.path.join(legacy_dir, file)
+                mapping = Mapping(path)
+                app.add_mapping(mapping)
+
+                # Default master mapping to en_US, if such layout exists
+                if mapping.lang == "en" and mapping.country == "US":
+                    app.set_master_mapping(mapping)
+
     app.mainloop()
+
 
 
 class App(Tk):
@@ -43,6 +59,12 @@ class App(Tk):
         'normal': ("Helvetica", 10),
         'small': ("Helvetica", 7)
     }
+
+    @staticmethod
+    def get_keyboard_res_dir():
+        legacy_keyboard_dir = os.path.join(App.SCRIPT_DIR, '..', 'res', 'keyboard')
+        legacy_keyboard_dir = os.path.realpath(legacy_keyboard_dir)
+        return legacy_keyboard_dir if os.path.exists(legacy_keyboard_dir) else ""
 
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
@@ -637,7 +659,7 @@ class DlgSave(Frame):
         self.start_button.pack(side=BOTTOM, pady=10, padx=10, fill=X)
 
         # Try to find layouts header file
-        layouts_path = os.path.join(app.SCRIPT_DIR, '..', 'src', 'controllers', 'keyboard', 'layouts.h')
+        layouts_path = os.path.join(app.SCRIPT_DIR, '..', 'src', 'controllers', 'keyboard', 'layouts.cpp')
         layouts_path_canonical = os.path.realpath(layouts_path)
         if os.path.isfile(layouts_path_canonical):
             self.layouts_path.set(layouts_path_canonical)
@@ -746,7 +768,8 @@ class DlgSidebar(Frame):
     def _add_command(self):
         paths_string = filedialog.askopenfilenames(
             filetypes=(("Keyboard config files", "kbd.cfg"), ("All Files", "*")),
-            title="Add a legacy mapping file"
+            title="Add a legacy mapping file",
+            initialdir=App.get_keyboard_res_dir()
         )
 
         # Paths_string is just one long string. Split them up and make a list
