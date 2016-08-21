@@ -422,6 +422,7 @@ METADATA
       See library/dao/cue.h.
     </description>
     <sql>
+      <!-- Default color is #FFFF0000 (in base 10) -->
       ALTER TABLE cues ADD COLUMN color INTEGER DEFAULT 4294901760 NOT NULL;
     </sql>
   </revision>
