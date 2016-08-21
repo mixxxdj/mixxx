@@ -417,16 +417,19 @@ class App(Tk):
                 master_keyseq_element = SubElement(control_element, 'keyseq')
                 master_keyseq_element.text = master_control_keyseq
 
+                # Add scancode in comment (right before master_keyseq_element)
+                master_keyseq_element_index = control_element.getchildren().index(master_keyseq_element)
+                comment = Comment(" Scancode: " + str(master_control_scancode) + " ")
+                control_element.insert(master_keyseq_element_index, comment)
+
                 # We don't need to add lang or scancode information, nor check for other mappings when the
                 # group is [KeyboardShortcuts]. This key sequences are translated in Mixxx using Qt::tr().
                 # Key sequences whose key is a universal key, like function- or arrow keys also also do not
                 # need any language or scancode information, because the keys are the same for each layout.
                 if group_name == "[KeyboardShortcuts]" or master_control_key_is_universal:
-                    master_keyseq_element.set('final', '1')
                     continue
                 else:
-                    master_keyseq_element.set('lang', master_mapping.get_locale_name())
-                    master_keyseq_element.set('scancode', str(master_control_scancode))
+                    master_keyseq_element.set('byPositionOf', master_mapping.get_locale_name())
 
                 # Check if there is a control with the same group and action
                 # in other mappings. If one is found, iterate over given layouts
@@ -514,8 +517,12 @@ class App(Tk):
                     if not scancodes_are_equal:
                         overloaded_keyseq_element = SubElement(control_element, 'keyseq')
                         overloaded_keyseq_element.set('lang', mapping.get_locale_name())
-                        overloaded_keyseq_element.set('scancode', str(reference_control_scancode))
                         overloaded_keyseq_element.text = reference_control_keyseq
+
+                        # Add scancode in comment (right before overloaded_keyseq_element)
+                        overloaded_keyseq_element_index = control_element.getchildren().index(overloaded_keyseq_element)
+                        comment = Comment(" Scancode: " + str(reference_control_scancode))
+                        control_element.insert(overloaded_keyseq_element_index, comment)
 
         return root_element
 
