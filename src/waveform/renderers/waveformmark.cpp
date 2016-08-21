@@ -1,6 +1,5 @@
 #include <QtDebug>
 
-#include "control/controlproxy.h"
 #include "skin/skincontext.h"
 #include "waveform/renderers/waveformmarkproperties.h"
 

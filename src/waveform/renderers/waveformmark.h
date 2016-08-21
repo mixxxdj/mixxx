@@ -4,11 +4,11 @@
 #include <QDomNode>
 #include <QImage>
 
+#include "control/controlproxy.h"
 #include "util/memory.h"
 
 #include "waveform/renderers/waveformmarkproperties.h"
 
-class ControlProxy;
 class SkinContext;
 class WaveformSignalColors;
 
