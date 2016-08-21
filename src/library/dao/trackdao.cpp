@@ -1517,6 +1517,8 @@ bool TrackDAO::updateTrack(Track* pTrack) {
     const TrackId trackId(pTrack->getId());
     DEBUG_ASSERT(trackId.isValid());
 
+    makeTrackCoverHashUnique(pTrack);
+
     ScopedTransaction transaction(m_database);
     // PerformanceTimer time;
     // time.start();
@@ -2258,4 +2260,21 @@ int TrackDAO::calculateUniqueCoverHash(const QImage& image) {
     } while (!verifyCoverHashUnique(image, hash));
     return hash;
 }
+
+void TrackDAO::makeTrackCoverHashUnique(Track* pTrack) {
+    CoverInfo info = pTrack->getCoverInfo();
+    if (info.type == CoverInfo::NONE ||
+            !CoverArtUtils::isHashProvisional(info.hash)) {
+        // nothing to do
+        return;
+    }
+
+    // We cannot use the cover art cache here since an
+    // provisional hash is ambigious.
+    QImage image = CoverArtUtils::loadCover(info);
+    info.hash = calculateUniqueCoverHash(image);
+    pTrack->setCoverInfo(info);
+}
+
+
 

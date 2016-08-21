@@ -174,6 +174,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     bool verifyCoverHashUnique(const QImage& image, int hash);
     int calculateUniqueCoverHash(const QImage& image);
+    void makeTrackCoverHashUnique(Track* pTrack);
 
   signals:
     void trackDirty(TrackId trackId) const;
