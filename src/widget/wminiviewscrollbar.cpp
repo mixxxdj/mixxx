@@ -79,6 +79,8 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
     
     QStylePainter painter(this);
     QStyleOptionSlider opt(getStyleOptions());
+    opt.subControls &= ~(QStyle::SC_ScrollBarSlider);
+    
     painter.drawComplexControl(QStyle::CC_ScrollBar, opt);
     
     painter.setBrush(palette().color(QPalette::Text));
@@ -102,13 +104,11 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
         painter.drawText(QRect(topLeft, topLeft + bottom), flags, p.character);
     }
     
+    opt.subControls = QStyle::SC_ScrollBarSlider;
     opt.rect = style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
                                        QStyle::SC_ScrollBarSlider, this);
-    opt.subControls = QStyle::SC_ScrollBarSlider;
-    opt.activeSubControls = QStyle::SC_ScrollBarSlider;
+    //painter.drawComplexControl(QStyle::CC_ScrollBar, opt);
     painter.drawControl(QStyle::CE_ScrollBarSlider, opt);
-    painter.drawControl(QStyle::CE_ScrollBarAddLine, opt);
-    painter.drawControl(QStyle::CE_ScrollBarSubLine, opt);
 }
 
 void WMiniViewScrollBar::resizeEvent(QResizeEvent* pEvent) {
@@ -250,8 +250,9 @@ void WMiniViewScrollBar::triggerUpdate() {
 QStyleOptionSlider WMiniViewScrollBar::getStyleOptions() {
     QStyleOptionSlider opt;
     opt.init(this);
-    opt.subControls = QStyle::SC_ScrollBarAddLine | QStyle::SC_ScrollBarSubLine;
-    opt.activeSubControls = QStyle::SC_ScrollBarAddLine | QStyle::SC_ScrollBarSubLine;
+    opt.subControls = QStyle::SC_ScrollBarAddLine | QStyle::SC_ScrollBarSubLine | 
+            QStyle::SC_ScrollBarFirst | QStyle::SC_ScrollBarLast | 
+            QStyle::SC_ScrollBarGroove | QStyle::SC_ScrollBarSlider;
     opt.orientation = orientation();
     opt.minimum = minimum();
     opt.maximum = maximum();
