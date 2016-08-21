@@ -93,7 +93,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_marks.setup(m_group, node, context, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
-        WaveformMark* mark = m_marks[i].data();
+        const QSharedPointer<WaveformMark>& mark = m_marks[i];
         if (mark->m_pPointCos) {
             mark->m_pPointCos->connectValueChanged(this,
                     SLOT(onMarkChanged(double)));
@@ -392,7 +392,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             painter.setOpacity(0.9);
 
             for (int i = 0; i < m_marks.size(); ++i) {
-                WaveformMark* currentMark = m_marks[i].data();
+                const QSharedPointer<WaveformMark> currentMark = m_marks[i];
                 const WaveformMarkProperties& markProperties = currentMark->getProperties();
                 if (currentMark->m_pPointCos && currentMark->m_pPointCos->get() >= 0.0) {
                     //const float markPosition = 1.0 +
