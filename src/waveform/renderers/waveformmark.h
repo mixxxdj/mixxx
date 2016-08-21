@@ -1,43 +1,35 @@
 #ifndef WAVEFORMMARK_H
 #define WAVEFORMMARK_H
 
-#include <QString>
+#include <QDomNode>
 #include <QImage>
-#include <QColor>
 
-#include "preferences/usersettings.h"
-#include "skin/skincontext.h"
 #include "util/memory.h"
 
+#include "waveform/renderers/waveformmarkproperties.h"
+
 class ControlProxy;
-class QDomNode;
+class SkinContext;
 class WaveformSignalColors;
 
 class WaveformMark {
   public:
     WaveformMark();
-    WaveformMark(const WaveformMark* p_waveformMark);
 
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
                const WaveformSignalColors& signalColors);
-    void setKeyAndIndex(const ConfigKey& key, int i);
 
-  private:
     std::unique_ptr<ControlProxy> m_pPointCos;
 
-    QColor m_color;
-    QColor m_textColor;
-    QString m_text;
-    Qt::Alignment m_align;
-    QString m_pixmapPath;
-    QImage m_image;
-    // Number of the corresponding Hotcue.
-    int m_iIndex;
+    const WaveformMarkProperties& properties() const;
+    void setProperties(const WaveformMarkProperties& properties);
 
-    friend class WaveformMarkSet;
+  private:
+    WaveformMarkProperties m_properties;
+    QImage m_image;
+
     friend class WaveformRenderMark;
-    friend class WOverview;
 };
 
 #endif // WAVEFORMMARK_H
