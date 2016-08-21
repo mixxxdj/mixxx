@@ -84,17 +84,14 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
 }
 
 //static
-CoverInfo CoverArtUtils::guessCoverInfo(const Track* pTrack) {
+CoverInfo CoverArtUtils::guessCoverInfo(const Track& track) {
     CoverInfo coverInfo;
-    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr){
-        return coverInfo;
-    }
 
-    coverInfo.trackLocation = pTrack->getLocation();
+    coverInfo.trackLocation = track.getLocation();
     coverInfo.source = CoverInfo::GUESSED;
 
-    const QFileInfo fileInfo(pTrack->getFileInfo());
-    QImage image = extractEmbeddedCover(fileInfo, pTrack->getSecurityToken());
+    const QFileInfo fileInfo(track.getFileInfo());
+    QImage image = extractEmbeddedCover(fileInfo, track.getSecurityToken());
     if (!image.isNull()) {
         // TODO() here we my introduce a duplicate hash code
         coverInfo.hash = calculateHash(image);
@@ -106,7 +103,7 @@ CoverInfo CoverArtUtils::guessCoverInfo(const Track* pTrack) {
 
     QLinkedList<QFileInfo> possibleCovers = findPossibleCoversInFolder(
             fileInfo.absolutePath());
-    coverInfo = selectCoverArtForTrack(pTrack, possibleCovers);
+    coverInfo = selectCoverArtForTrack(track, possibleCovers);
     if (coverInfo.type == CoverInfo::FILE) {
         qDebug() << "CoverArtUtils::guessCover found file art" << coverInfo;
     } else {
@@ -138,15 +135,12 @@ QLinkedList<QFileInfo> CoverArtUtils::findPossibleCoversInFolder(const QString& 
 
 //static
 CoverInfo CoverArtUtils::selectCoverArtForTrack(
-        const Track* pTrack,
+        const Track& track,
         const QLinkedList<QFileInfo>& covers) {
-    if (pTrack == NULL) {
-        return CoverInfo();
-    }
 
-    const QString trackBaseName = pTrack->getFileInfo().baseName();
-    const QString albumName = pTrack->getAlbum();
-    const QString trackLocation = pTrack->getLocation();
+    const QString trackBaseName = track.getFileInfo().baseName();
+    const QString albumName = track.getAlbum();
+    const QString trackLocation = track.getLocation();
     CoverInfoRelative coverInfoRelative =
             selectCoverArtForTrack(trackBaseName, albumName, covers);
     return CoverInfo(coverInfoRelative, trackLocation);

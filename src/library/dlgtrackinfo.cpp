@@ -240,7 +240,7 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
 void DlgTrackInfo::slotReloadCoverArt() {
     if (m_pLoadedTrack) {
         CoverInfo coverInfo =
-                CoverArtUtils::guessCoverInfo(m_pLoadedTrack.data());
+                CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
         slotCoverInfoSelected(coverInfo);
     }
 }

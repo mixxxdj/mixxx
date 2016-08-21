@@ -123,7 +123,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     QLinkedList<QFileInfo> covers;
     CoverInfo res;
     // looking for cover in an empty directory
-    res = CoverArtUtils::selectCoverArtForTrack(pTrack.data(), covers);
+    res = CoverArtUtils::selectCoverArtForTrack(*pTrack, covers);
     CoverInfo expected1;
     expected1.source = CoverInfo::GUESSED;
     expected1.trackLocation = pTrack->getLocation();

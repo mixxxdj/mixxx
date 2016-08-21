@@ -197,7 +197,7 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 
 void CoverArtCache::guessCover(TrackPointer pTrack) {
     if (pTrack) {
-        CoverInfo cover = CoverArtUtils::guessCoverInfo(pTrack.data());
+        CoverInfo cover = CoverArtUtils::guessCoverInfo(*pTrack);
         pTrack->setCoverInfo(cover);
     }
 }
