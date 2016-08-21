@@ -14,8 +14,6 @@ class WaveformSignalColors;
 
 class WaveformMark {
   public:
-    WaveformMark();
-
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
                const WaveformSignalColors& signalColors);

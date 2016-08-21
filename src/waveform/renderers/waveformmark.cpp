@@ -6,9 +6,6 @@
 
 #include "waveformmark.h"
 
-WaveformMark::WaveformMark() {
-}
-
 void WaveformMark::setup(const QString& group, const QDomNode& node,
                          const SkinContext& context,
                          const WaveformSignalColors& signalColors) {
