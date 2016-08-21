@@ -2,6 +2,7 @@
 #define WAVEFORMMARKSET_H
 
 #include <QList>
+#include <QSharedPointer>
 
 #include "waveformmark.h"
 #include "skin/skincontext.h"
@@ -20,16 +21,15 @@ class WaveformMarkSet {
     void clear();
 
     int size() const { return m_marks.size();}
-    WaveformMark* operator[] (int i) { return m_marks[i]; }
+    QSharedPointer<WaveformMark> operator[] (int i);
 
     // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
-    const WaveformMark* getHotCueMark(int hotCue);
-    // Takes ownership of mark
-    void setHotCueMark(int hotCue, WaveformMark* mark);
+    QSharedPointer<WaveformMark> getHotCueMark(int hotCue);
+    void setHotCueMark(int hotCue, QSharedPointer<WaveformMark> pMark);
 
   private:
-    std::unique_ptr<WaveformMark> m_pDefaultMark;
-    QList<WaveformMark*> m_marks;
+    WaveformMark m_pDefaultMark;
+    QList<QSharedPointer<WaveformMark>> m_marks;
     int m_iFirstHotCue;
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
 };
