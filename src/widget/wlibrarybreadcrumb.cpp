@@ -30,7 +30,7 @@ QSize WLibraryBreadCrumb::minimumSizeHint() const {
 
 void WLibraryBreadCrumb::showBreadCrumb(TreeItem* pTree) {
     LibraryFeature* pFeature = pTree->getFeature();
-    DEBUG_ASSERT_AND_HANDLE(pFeature) {
+    DEBUG_ASSERT_AND_HANDLE(pFeature != nullptr) {
         return;
     }
     

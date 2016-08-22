@@ -247,7 +247,7 @@ void LibraryFeature::showBreadCrumb(TreeItem *pTree) {
     m_pLibrary->showBreadCrumb(pTree);
 }
 
-void LibraryFeature::showBreadCrumb(const QModelIndex &index) {
+void LibraryFeature::showBreadCrumb(const QModelIndex& index) {
     showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
 }
 

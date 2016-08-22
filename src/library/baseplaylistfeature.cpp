@@ -345,6 +345,12 @@ void BasePlaylistFeature::slotDeletePlaylist() {
         DEBUG_ASSERT_AND_HANDLE(playlistId >= 0) {
             return;
         }
+        
+        // This avoids a bug where the m_lastChildClicked index is still a valid
+        // index but it's not true since we just deleted it
+        if (m_lastChildClicked == m_lastRightClickedIndex) {
+            m_lastChildClicked = QModelIndex();
+        }
 
         m_playlistDao.deletePlaylist(playlistId);
         activate();

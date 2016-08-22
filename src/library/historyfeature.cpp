@@ -72,7 +72,7 @@ void HistoryFeature::onRightClick(const QPoint&) {
 
 void HistoryFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex &index) {
     //Save the model index so we can get it in the action slots...
-    m_lastRightClickedIndex = index;
+    m_lastChildClicked = m_lastRightClickedIndex = index;
     bool ok;
     int playlistId = index.data(TreeItemModel::RoleDataPath).toInt(&ok);
     if (!ok || playlistId < 0) {
@@ -322,7 +322,7 @@ void HistoryFeature::slotPlaylistTableChanged(int playlistId) {
     PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        m_lastRightClickedIndex = constructChildModel(playlistId);
+        m_lastChildClicked = m_lastRightClickedIndex = constructChildModel(playlistId);
     }
 }
 
@@ -349,7 +349,7 @@ void HistoryFeature::slotPlaylistTableRenamed(int playlistId,
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        m_lastRightClickedIndex = constructChildModel(playlistId);
+        m_lastChildClicked = m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
             activatePlaylist(playlistId);
         }
