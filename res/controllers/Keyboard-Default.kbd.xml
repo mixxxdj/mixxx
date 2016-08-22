@@ -8,374 +8,381 @@
   <controller>
     <group name="[AutoDJ]">
       <control action="enabled">
-        <keyseq final="1">Shift+F12</keyseq>
+        <keyseq>Shift+F12</keyseq>
       </control>
       <control action="fade_now">
-        <keyseq final="1">Shift+F11</keyseq>
+        <keyseq>Shift+F11</keyseq>
       </control>
       <control action="shuffle_playlist">
-        <keyseq final="1">Shift+F9</keyseq>
+        <keyseq>Shift+F9</keyseq>
       </control>
       <control action="skip_next">
-        <keyseq final="1">Shift+F10</keyseq>
+        <keyseq>Shift+F10</keyseq>
       </control>
     </group>
     <group name="[Channel1]">
       <control action="LoadSelectedTrack">
-        <keyseq final="1">Shift+Left</keyseq>
+        <keyseq>Shift+Left</keyseq>
       </control>
       <control action="back">
-        <keyseq lang="en_US" scancode="30">a</keyseq>
+        <keyseq byPositionOf="en_US">a</keyseq>
       </control>
       <control action="beatloop_4_toggle">
-        <keyseq lang="en_US" scancode="16">q</keyseq>
+        <keyseq byPositionOf="en_US">q</keyseq>
       </control>
       <control action="beatsync">
-        <keyseq lang="en_US" scancode="2">1</keyseq>
+        <keyseq byPositionOf="en_US">1</keyseq>
       </control>
       <control action="bpm_tap">
-        <keyseq lang="en_US" scancode="2">Shift+!</keyseq>
+        <keyseq byPositionOf="en_US">Shift+!</keyseq>
       </control>
       <control action="cue_default">
-        <keyseq lang="en_US" scancode="33">f</keyseq>
+        <keyseq byPositionOf="en_US">f</keyseq>
       </control>
       <control action="cue_gotoandstop">
-        <keyseq lang="en_US" scancode="33">Shift+F</keyseq>
+        <keyseq byPositionOf="en_US">Shift+F</keyseq>
       </control>
       <control action="cue_set">
-        <keyseq lang="en_US" scancode="32">Shift+D</keyseq>
+        <keyseq byPositionOf="en_US">Shift+D</keyseq>
       </control>
       <control action="eject">
-        <keyseq final="1">Alt+Shift+Left</keyseq>
+        <keyseq>Alt+Shift+Left</keyseq>
       </control>
       <control action="filterLowKill">
-        <keyseq lang="en_US" scancode="48">b</keyseq>
+        <keyseq byPositionOf="en_US">b</keyseq>
       </control>
       <control action="flanger">
-        <keyseq lang="en_US" scancode="6">5</keyseq>
+        <keyseq byPositionOf="en_US">5</keyseq>
       </control>
       <control action="fwd">
-        <keyseq lang="en_US" scancode="31">s</keyseq>
+        <keyseq byPositionOf="en_US">s</keyseq>
       </control>
       <control action="hotcue_1_activate">
-        <keyseq lang="en_US" scancode="12">z</keyseq>
+        <keyseq byPositionOf="en_US">z</keyseq>
       </control>
       <control action="hotcue_1_clear">
-        <keyseq lang="en_US" scancode="12">Shift+Z</keyseq>
+        <keyseq byPositionOf="en_US">Shift+Z</keyseq>
       </control>
       <control action="hotcue_2_activate">
-        <keyseq lang="en_US" scancode="45">x</keyseq>
+        <keyseq byPositionOf="en_US">x</keyseq>
       </control>
       <control action="hotcue_2_clear">
-        <keyseq lang="en_US" scancode="45">Shift+X</keyseq>
+        <keyseq byPositionOf="en_US">Shift+X</keyseq>
       </control>
       <control action="hotcue_3_activate">
-        <keyseq lang="en_US" scancode="46">c</keyseq>
+        <keyseq byPositionOf="en_US">c</keyseq>
       </control>
       <control action="hotcue_3_clear">
-        <keyseq lang="en_US" scancode="46">Shift+C</keyseq>
+        <keyseq byPositionOf="en_US">Shift+C</keyseq>
       </control>
       <control action="hotcue_4_activate">
-        <keyseq lang="en_US" scancode="47">v</keyseq>
+        <keyseq byPositionOf="en_US">v</keyseq>
       </control>
       <control action="hotcue_4_clear">
-        <keyseq lang="en_US" scancode="47">Shift+V</keyseq>
+        <keyseq byPositionOf="en_US">Shift+V</keyseq>
       </control>
       <control action="loop_double">
-        <keyseq lang="en_US" scancode="18">e</keyseq>
+        <keyseq byPositionOf="en_US">e</keyseq>
       </control>
       <control action="loop_halve">
-        <!-- TODO(XXX) Overload W for Greek keyboard layout. See other
-        TODO at control for action "fwd" at group "[Channel1]" -->
-        <keyseq lang="en_US" scancode="17">w</keyseq>
+        <keyseq byPositionOf="en_US">w</keyseq>
       </control>
       <control action="loop_in">
-        <keyseq lang="en_US" scancode="3">2</keyseq>
+        <keyseq byPositionOf="en_US">2</keyseq>
       </control>
       <control action="loop_out">
-        <keyseq lang="en_US" scancode="4">3</keyseq>
+        <keyseq byPositionOf="en_US">3</keyseq>
       </control>
       <control action="passthrough">
-        <keyseq lang="en_US" scancode="36">Ctrl+j</keyseq>
+        <keyseq byPositionOf="en_US">Ctrl+j</keyseq>
       </control>
       <control action="pfl">
-        <keyseq lang="en_US" scancode="20">t</keyseq>
+        <keyseq byPositionOf="en_US">t</keyseq>
       </control>
       <control action="play">
-        <keyseq lang="en_US" scancode="32">d</keyseq>
+        <keyseq byPositionOf="en_US">d</keyseq>
       </control>
       <control action="rate_perm_down">
-        <keyseq final="1">F1</keyseq>
+        <keyseq>F1</keyseq>
       </control>
       <control action="rate_perm_down_small">
-        <keyseq final="1">Shift+F1</keyseq>
+        <keyseq>Shift+F1</keyseq>
       </control>
       <control action="rate_perm_up">
-        <keyseq final="1">F2</keyseq>
+        <keyseq>F2</keyseq>
       </control>
       <control action="rate_perm_up_small">
-        <keyseq final="1">Shift+F2</keyseq>
+        <keyseq>Shift+F2</keyseq>
       </control>
       <control action="rate_temp_down">
-        <keyseq final="1">F3</keyseq>
+        <keyseq>F3</keyseq>
       </control>
       <control action="rate_temp_down_small">
-        <keyseq final="1">Shift+F3</keyseq>
+        <keyseq>Shift+F3</keyseq>
       </control>
       <control action="rate_temp_up">
-        <keyseq final="1">F4</keyseq>
+        <keyseq>F4</keyseq>
       </control>
       <control action="rate_temp_up_small">
-        <keyseq final="1">Shift+F4</keyseq>
+        <keyseq>Shift+F4</keyseq>
       </control>
       <control action="reloop_exit">
-        <keyseq lang="en_US" scancode="5">4</keyseq>
+        <keyseq byPositionOf="en_US">4</keyseq>
       </control>
       <control action="reverse">
-        <keyseq lang="en_US" scancode="30">Shift+A</keyseq>
+        <keyseq byPositionOf="en_US">Shift+A</keyseq>
       </control>
       <control action="vinylcontrol_cueing">
-        <keyseq lang="en_US" scancode="21">Ctrl+Alt+Y</keyseq>
+        <keyseq byPositionOf="en_US">Ctrl+Alt+Y</keyseq>
       </control>
       <control action="vinylcontrol_mode">
-        <keyseq lang="en_US" scancode="21">Ctrl+Shift+Y</keyseq>
+        <keyseq byPositionOf="en_US">Ctrl+Shift+Y</keyseq>
       </control>
     </group>
     <group name="[Channel2]">
       <control action="LoadSelectedTrack">
-        <keyseq final="1">Shift+Right</keyseq>
+        <keyseq>Shift+Right</keyseq>
       </control>
       <control action="back">
-        <keyseq lang="en_US" scancode="36">j</keyseq>
+        <keyseq byPositionOf="en_US">j</keyseq>
       </control>
       <control action="beatloop_4_toggle">
-        <keyseq lang="en_US" scancode="22">u</keyseq>
+        <keyseq byPositionOf="en_US">u</keyseq>
       </control>
       <control action="beatsync">
-        <keyseq lang="en_US" scancode="7">6</keyseq>
-        <keyseq lang="fr_FR" scancode="TODO: No scancode found in fr_FR for character: '§'">§</keyseq>
+        <keyseq byPositionOf="en_US">6</keyseq>
       </control>
       <control action="bpm_tap">
-        <keyseq lang="en_US" scancode="7">Shift+^</keyseq>
-        <keyseq lang="es_ES" scancode="8">Shift+/</keyseq>
-        <keyseq lang="ru_RU" scancode="53">Shift+,</keyseq>
+        <keyseq byPositionOf="en_US">Shift+^</keyseq>
+        <keyseq lang="ru_RU">Shift+,</keyseq>
+        <keyseq lang="es_ES">Shift+/</keyseq>
       </control>
       <control action="cue_default">
-        <keyseq lang="en_US" scancode="39">;</keyseq>
-        <keyseq lang="el_GR" scancode="TODO: No scancode found in el_GR for character: '´'">´</keyseq>
+        <keyseq byPositionOf="en_US">;</keyseq>
+
+        <!-- Scancode: TODO: No scancode found in el_GR for character: '&#180;'-->
+        <keyseq lang="el_GR">´</keyseq>
       </control>
       <control action="cue_gotoandstop">
-        <keyseq lang="en_US" scancode="39">Shift+:</keyseq>
-        <keyseq lang="el_GR" scancode="40">Shift+&quot;</keyseq>
+        <keyseq byPositionOf="en_US">Shift+:</keyseq>
+        <keyseq lang="el_GR">Shift+&quot;</keyseq>
       </control>
       <control action="cue_set">
-        <keyseq lang="en_US" scancode="38">Shift+l</keyseq>
-        <keyseq lang="da_DK" scancode="2">Shift+!</keyseq>
+        <keyseq byPositionOf="en_US">Shift+L</keyseq>
+        <keyseq lang="da_DK">Shift+!</keyseq>
       </control>
       <control action="eject">
-        <keyseq final="1">Alt+Shift+Right</keyseq>
+        <keyseq>Alt+Shift+Right</keyseq>
       </control>
       <control action="filterLowKill">
-        <keyseq lang="en_US" scancode="49">n</keyseq>
+        <keyseq byPositionOf="en_US">n</keyseq>
       </control>
       <control action="flanger">
-        <keyseq lang="en_US" scancode="11">0</keyseq>
-        <keyseq lang="cs_CZ" scancode="TODO: No scancode found in cs_CZ for character: '0'">0</keyseq>
+        <keyseq byPositionOf="en_US">0</keyseq>
+
+        <!-- Scancode: TODO: No scancode found in cs_CZ for character: '0'-->
+        <keyseq lang="cs_CZ">0</keyseq>
       </control>
       <control action="fwd">
-        <keyseq lang="en_US" scancode="37">k</keyseq>
+        <keyseq byPositionOf="en_US">k</keyseq>
       </control>
       <control action="hotcue_1_activate">
-        <keyseq lang="en_US" scancode="50">m</keyseq>
+        <keyseq byPositionOf="en_US">m</keyseq>
       </control>
       <control action="hotcue_1_clear">
-        <keyseq lang="en_US" scancode="50">Shift+M</keyseq>
+        <keyseq byPositionOf="en_US">Shift+M</keyseq>
       </control>
       <control action="hotcue_2_activate">
-        <keyseq lang="en_US" scancode="51">,</keyseq>
+        <keyseq byPositionOf="en_US">,</keyseq>
       </control>
       <control action="hotcue_2_clear">
-        <keyseq lang="en_US" scancode="51">Shift+&lt;</keyseq>
-        <keyseq lang="es_ES" scancode="13">Shift+¿</keyseq>
+        <keyseq byPositionOf="en_US">Shift+&lt;</keyseq>
+        <keyseq lang="es_ES">Shift+¿</keyseq>
       </control>
       <control action="hotcue_3_activate">
-        <keyseq lang="en_US" scancode="52">.</keyseq>
+        <keyseq byPositionOf="en_US">.</keyseq>
       </control>
       <control action="hotcue_3_clear">
-        <keyseq lang="en_US" scancode="52">Shift+&gt;</keyseq>
-        <keyseq lang="es_ES" scancode="TODO: No scancode found in es_ES for character: '?'">Shift+?</keyseq>
+        <keyseq byPositionOf="de_DE">Shift+:</keyseq>
+
+        <!-- TODO(Tomasito) The Spanish keyboard does have this '?' character on scancode 12 with the shift modifier.
+             ...            Find out which bug in kbdcfg_to_kbdxml is causing it to not find the scancode -->
+        <!-- Scancode: TODO: No scancode found in es_ES for character: '?'-->
+        <keyseq lang="es_ES">Shift+?</keyseq>
       </control>
       <control action="hotcue_4_activate">
-        <keyseq lang="en_US" scancode="53">/</keyseq>
-        <keyseq lang="es_ES" scancode="43">ç</keyseq>
-        <keyseq lang="fr_FR" scancode="13">=</keyseq>
-        <keyseq lang="ru_RU" scancode="94">/</keyseq>
+        <keyseq byPositionOf="en_US">/</keyseq>
+        <keyseq lang="ru_RU">/</keyseq>
+        <keyseq lang="fr_FR">=</keyseq>
+        <keyseq lang="es_ES">ç</keyseq>
       </control>
       <control action="hotcue_4_clear">
-        <keyseq lang="en_US" scancode="53">Shift+?</keyseq>
-        <keyseq lang="es_ES" scancode="43">Shift+Ç</keyseq>
-        <keyseq lang="fr_FR" scancode="13">Shift++</keyseq>
-        <keyseq lang="ru_RU" scancode="8">Shift+?</keyseq>
+        <keyseq byPositionOf="en_US">Shift+?</keyseq>
+        <keyseq lang="ru_RU">Shift+?</keyseq>
+        <keyseq lang="fr_FR">Shift++</keyseq>
+        <keyseq lang="es_ES">Shift+Ç</keyseq>
       </control>
       <control action="loop_double">
-        <keyseq lang="en_US" scancode="24">o</keyseq>
+        <keyseq byPositionOf="en_US">o</keyseq>
       </control>
       <control action="loop_halve">
-        <keyseq lang="en_US" scancode="23">i</keyseq>
+        <keyseq byPositionOf="en_US">i</keyseq>
       </control>
       <control action="loop_in">
-        <keyseq lang="en_US" scancode="8">7</keyseq>
+        <keyseq byPositionOf="en_US">7</keyseq>
       </control>
       <control action="loop_out">
-        <keyseq lang="en_US" scancode="9">8</keyseq>
-        <keyseq lang="fr_FR" scancode="53">!</keyseq>
+        <keyseq byPositionOf="en_US">8</keyseq>
+        <keyseq lang="fr_FR">!</keyseq>
       </control>
       <control action="passthrough">
-        <keyseq lang="en_US" scancode="37">Ctrl+k</keyseq>
+        <keyseq byPositionOf="en_US">Ctrl+k</keyseq>
       </control>
       <control action="pfl">
-        <keyseq lang="en_US" scancode="21">y</keyseq>
+        <keyseq byPositionOf="en_US">y</keyseq>
       </control>
       <control action="play">
-        <keyseq lang="en_US" scancode="38">l</keyseq>
+        <keyseq byPositionOf="en_US">l</keyseq>
       </control>
       <control action="rate_perm_down">
-        <keyseq final="1">F5</keyseq>
+        <keyseq>F5</keyseq>
       </control>
       <control action="rate_perm_down_small">
-        <keyseq final="1">Shift+F5</keyseq>
+        <keyseq>Shift+F5</keyseq>
       </control>
       <control action="rate_perm_up">
-        <keyseq final="1">F6</keyseq>
+        <keyseq>F6</keyseq>
       </control>
       <control action="rate_perm_up_small">
-        <keyseq final="1">Shift+F6</keyseq>
+        <keyseq>Shift+F6</keyseq>
       </control>
       <control action="rate_temp_down">
-        <keyseq final="1">F7</keyseq>
+        <keyseq>F7</keyseq>
       </control>
       <control action="rate_temp_down_small">
-        <keyseq final="1">Shift+F7</keyseq>
+        <keyseq>Shift+F7</keyseq>
       </control>
       <control action="rate_temp_up">
-        <keyseq final="1">F8</keyseq>
+        <keyseq>F8</keyseq>
       </control>
       <control action="rate_temp_up_small">
-        <keyseq final="1">Shift+F8</keyseq>
+        <keyseq>Shift+F8</keyseq>
       </control>
       <control action="reloop_exit">
-        <keyseq lang="en_US" scancode="10">9</keyseq>
+        <keyseq byPositionOf="en_US">9</keyseq>
       </control>
       <control action="reverse">
-        <keyseq lang="en_US" scancode="36">Shift+J</keyseq>
+        <keyseq byPositionOf="en_US">Shift+J</keyseq>
       </control>
       <control action="vinylcontrol_cueing">
-        <keyseq lang="en_US" scancode="22">Ctrl+Alt+U</keyseq>
+        <keyseq byPositionOf="en_US">Ctrl+Alt+U</keyseq>
       </control>
       <control action="vinylcontrol_mode">
-        <keyseq lang="en_US" scancode="22">Ctrl+Shift+U</keyseq>
+        <keyseq byPositionOf="en_US">Ctrl+Shift+U</keyseq>
       </control>
     </group>
     <group name="[KeyboardShortcuts]">
       <control action="FileMenu_LoadDeck1">
-        <keyseq final="1">Ctrl+o</keyseq>
+        <keyseq>Ctrl+o</keyseq>
       </control>
       <control action="FileMenu_LoadDeck2">
-        <keyseq final="1">Ctrl+Shift+O</keyseq>
+        <keyseq>Ctrl+Shift+O</keyseq>
       </control>
       <control action="FileMenu_Quit">
-        <keyseq final="1">Ctrl+q</keyseq>
+        <keyseq>Ctrl+q</keyseq>
       </control>
       <control action="LibraryMenu_NewCrate">
-        <keyseq final="1">Ctrl+Shift+N</keyseq>
+        <keyseq>Ctrl+Shift+N</keyseq>
       </control>
       <control action="LibraryMenu_NewPlaylist">
-        <keyseq final="1">Ctrl+n</keyseq>
+        <keyseq>Ctrl+n</keyseq>
       </control>
       <control action="OptionsMenu_EnableLiveBroadcasting">
-        <keyseq final="1">Ctrl+l</keyseq>
+        <keyseq>Ctrl+l</keyseq>
       </control>
       <control action="OptionsMenu_EnableVinyl1">
-        <keyseq final="1">Ctrl+t</keyseq>
+        <keyseq>Ctrl+t</keyseq>
       </control>
       <control action="OptionsMenu_EnableVinyl2">
-        <keyseq final="1">Ctrl+y</keyseq>
+        <keyseq>Ctrl+y</keyseq>
       </control>
       <control action="OptionsMenu_EnableVinyl3">
-        <keyseq final="1">Ctrl+u</keyseq>
+        <keyseq>Ctrl+u</keyseq>
       </control>
       <control action="OptionsMenu_EnableVinyl4">
-        <keyseq final="1">Ctrl+i</keyseq>
+        <keyseq>Ctrl+i</keyseq>
       </control>
       <control action="OptionsMenu_RecordMix">
-        <keyseq final="1">Ctrl+r</keyseq>
+        <keyseq>Ctrl+r</keyseq>
       </control>
       <control action="OptionsMenu_ReloadSkin">
-        <keyseq final="1">Ctrl+Shift+R</keyseq>
+        <keyseq>Ctrl+Shift+R</keyseq>
       </control>
       <control action="ViewMenu_MaximizeLibrary">
-        <keyseq final="1">Space</keyseq>
+        <keyseq>Space</keyseq>
       </control>
       <control action="ViewMenu_ShowCoverArt">
-        <keyseq final="1">Ctrl+6</keyseq>
+        <keyseq>Ctrl+6</keyseq>
       </control>
       <control action="ViewMenu_ShowEffects">
-        <keyseq final="1">Ctrl+5</keyseq>
+        <keyseq>Ctrl+5</keyseq>
       </control>
       <control action="ViewMenu_ShowMicrophone">
-        <keyseq final="1">Ctrl+2</keyseq>
+        <keyseq>Ctrl+2</keyseq>
       </control>
       <control action="ViewMenu_ShowPreviewDeck">
-        <keyseq final="1">Ctrl+4</keyseq>
+        <keyseq>Ctrl+4</keyseq>
       </control>
       <control action="ViewMenu_ShowSamplers">
-        <keyseq final="1">Ctrl+1</keyseq>
+        <keyseq>Ctrl+1</keyseq>
       </control>
       <control action="ViewMenu_ShowVinylControl">
-        <keyseq final="1">Ctrl+3</keyseq>
+        <keyseq>Ctrl+3</keyseq>
       </control>
     </group>
     <group name="[Master]">
       <control action="crossfader_down">
-        <keyseq lang="en_US" scancode="34">g</keyseq>
+        <keyseq byPositionOf="en_US">g</keyseq>
       </control>
       <control action="crossfader_down_small">
-        <keyseq lang="en_US" scancode="34">Shift+G</keyseq>
+        <keyseq byPositionOf="en_US">Shift+G</keyseq>
       </control>
       <control action="crossfader_up">
-        <keyseq lang="en_US" scancode="35">h</keyseq>
+        <keyseq byPositionOf="en_US">h</keyseq>
       </control>
       <control action="crossfader_up_small">
-        <keyseq lang="en_US" scancode="35">Shift+H</keyseq>
+        <keyseq byPositionOf="en_US">Shift+H</keyseq>
       </control>
     </group>
     <group name="[Microphone]">
       <control action="talkover">
-        <keyseq lang="en_US" scancode="41">`</keyseq>
-        <keyseq lang="cs_CZ" scancode="94">\</keyseq>
-        <keyseq lang="da_DK" scancode="94">&lt;</keyseq>
-        <keyseq lang="de_CH" scancode="94">&lt;</keyseq>
-        <keyseq lang="de_DE" scancode="94">&lt;</keyseq>
-        <keyseq lang="es_ES" scancode="94">&lt;</keyseq>
-        <keyseq lang="fi_FI" scancode="94">&lt;</keyseq>
-        <keyseq lang="fr_CH" scancode="94">&lt;</keyseq>
-        <keyseq lang="fr_FR" scancode="94">&lt;</keyseq>
-        <keyseq lang="it_IT" scancode="94">&lt;</keyseq>
-        <keyseq lang="ru_RU" scancode="TODO: No scancode found in ru_RU for character: ']'">]</keyseq>
+        <keyseq byPositionOf="de_DE">&lt;</keyseq>
+        <keyseq lang="en_US">`</keyseq>
+        <keyseq lang="el_GR">`</keyseq>
+
+        <!-- Scancode: TODO: No scancode found in ru_RU for character: ']'-->
+        <keyseq lang="ru_RU">]</keyseq>
       </control>
     </group>
     <group name="[PreviewDeck1]">
       <control action="LoadSelectedTrackAndPlay">
-        <keyseq final="1">Alt+Return</keyseq>
+        <keyseq>Alt+Return</keyseq>
       </control>
       <control action="back">
-        <keyseq final="1">Alt+Left</keyseq>
+        <keyseq>Alt+Left</keyseq>
       </control>
       <control action="fwd">
-        <keyseq final="1">Alt+Right</keyseq>
+        <keyseq>Alt+Right</keyseq>
       </control>
       <control action="start_stop">
-        <keyseq final="1">Return</keyseq>
+        <keyseq>Return</keyseq>
+      </control>
+    </group>
+    <group name="[VinylControl]">
+      <control action="Toggle">
+        <!-- TODO(XXX) Ctrl+t is also assigned to [KeyboardShortcuts], OptionsMenu_EnableVinyl1. Find a new shortcuts
+             ...       for this action and uncomment it -->
+        <!--<keyseq byPositionOf="de_DE">Ctrl+t</keyseq>-->
       </control>
     </group>
   </controller>
