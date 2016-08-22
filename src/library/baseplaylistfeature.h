@@ -94,6 +94,8 @@ class BasePlaylistFeature : public LibraryFeature {
     
     virtual QSet<int> playlistIdsFromIndex(const QModelIndex& index) const;
     int playlistIdFromIndex(const QModelIndex& index) const;
+    void showTable(int paneId);
+    void showBrowse(int paneId);
     
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.

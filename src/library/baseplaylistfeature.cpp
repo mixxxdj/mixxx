@@ -133,13 +133,7 @@ void BasePlaylistFeature::activate() {
         return;
     }
     
-    auto it = m_panes.find(m_featureFocus);
-    auto itId = m_idBrowse.find(m_featureFocus);
-    if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
-        return;
-    }
-    
-    (*it)->setCurrentIndex(*itId);
+    showBrowse(m_featureFocus);
     switchToFeature();
     showBreadCrumb();
     
@@ -150,6 +144,8 @@ void BasePlaylistFeature::activate() {
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     if (index == m_lastChildClicked && m_lastClickedFocus == m_featureFocus) {
         restoreSearch("");
+        
+        showTable(m_lastClickedFocus);
         showBreadCrumb(index);
         switchToFeature();
         return;
@@ -163,14 +159,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     
     if (!playlistIds.isEmpty() && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistIds);
-        
-        auto it = m_panes.find(m_focusedPane);
-        auto itId = m_idTable.find(m_focusedPane);
-        if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
-            return;
-        }
-        
-        (*it)->setCurrentIndex(*itId);
+        showTable(m_focusedPane);
         
         // Set the feature Focus for a moment to allow the LibraryFeature class
         // to find the focused WTrackTable
@@ -657,6 +646,26 @@ int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
     }
     
     return *playlistIds.begin();
+}
+
+void BasePlaylistFeature::showTable(int paneId) {
+    auto it = m_panes.find(paneId);
+    auto itId = m_idTable.find(paneId);
+    if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
+        return;
+    }
+    
+    (*it)->setCurrentIndex(*itId);
+}
+
+void BasePlaylistFeature::showBrowse(int paneId) {
+    auto it = m_panes.find(paneId);
+    auto itId = m_idBrowse.find(paneId);
+    if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
+        return;
+    }
+    
+    (*it)->setCurrentIndex(*itId);
 }
 
 
