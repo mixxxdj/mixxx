@@ -622,15 +622,17 @@ void CrateFeature::clearChildModel() {
 void CrateFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
-    QString playlist_file = getPlaylistFile();
-    if (playlist_file.isEmpty()) return;
+    QString playlistFile = getPlaylistFile();
+    if (playlistFile.isEmpty()) {
+        return;
+    }
 
     // Update the import/export crate directory
-    QFileInfo fileName(playlist_file);
+    QFileInfo fileName(playlistFile);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
                    ConfigValue(fileName.dir().absolutePath()));
 
-    slotImportPlaylistFile(playlist_file);
+    slotImportPlaylistFile(playlistFile);
     activateChild(m_lastRightClickedIndex);
 }
 

@@ -121,7 +121,11 @@ class LibraryFeature : public QObject {
         return getPlaylistFiles(QFileDialog::ExistingFiles); 
     }
     inline QString getPlaylistFile() { 
-        return getPlaylistFiles(QFileDialog::ExistingFile).first(); 
+        QStringList files(getPlaylistFiles(QFileDialog::ExistingFile));
+        if (files.isEmpty()) {
+            return QString();
+        }
+        return files.first();
     }
     
     // Creates a table widget with no model
