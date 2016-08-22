@@ -24,7 +24,8 @@ WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent)
 // the user resizes a panel with the breadcrumb it never shows elided text and
 // the minimum size becomes the text lenght
 QSize WLibraryBreadCrumb::minimumSizeHint() const {
-    return QSize(0, m_pText->height());
+    QSize min = m_pText->minimumSizeHint();
+    return QSize(0, min.height());
 }
 
 void WLibraryBreadCrumb::showBreadCrumb(TreeItem* pTree) {
@@ -44,8 +45,10 @@ void WLibraryBreadCrumb::showBreadCrumb(const QString& text, const QIcon& icon) 
 
 void WLibraryBreadCrumb::setBreadIcon(const QIcon& icon) {
     // Get font height
-    int height = m_pText->fontMetrics().height();    
-    m_pIcon->setPixmap(icon.pixmap(height));
+    int height = m_pText->fontMetrics().height();
+    QPixmap pix = icon.pixmap(height);
+    m_pIcon->setContentsMargins(0, 0, 0, 0);
+    m_pIcon->setPixmap(pix);
 }
 
 void WLibraryBreadCrumb::resizeEvent(QResizeEvent* pEvent) {
