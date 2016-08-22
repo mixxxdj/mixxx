@@ -301,20 +301,20 @@ class App(Tk):
 
         <group name='[Master]'>
           <control action='crossfader_up'>
-            <keyseq lang='en_US' scancode='36'>h</keyseq>
+            <keyseq byPositionOf='en_US'>h</keyseq>
           </control>
 
           <control action='crossfader_down'>
-            <keyseq lang='en_US' scancode='35'>g</keyseq>
+            <keyseq byPositionOf='en_US'>g</keyseq>
           </control>
         </group>
 
         <group name='[Microphone]'>
           <control action='talkover'>
-            <keyseq lang='en_US' scancode='1'>`</keyseq>
+            <keyseq byPositionOf='en_US'>`</keyseq>
 
             <!-- In de_DE layout, '`' is a dead key, so it has to be overloaded -->
-            <keyseq lang='de_DE' scancode='45'><</keyseq>
+            <keyseq lang='de_DE'><</keyseq>
           </control>
         </group>
 
@@ -420,10 +420,10 @@ class App(Tk):
                 # Create <keyseq> element for master control key
                 master_keyseq_element = SubElement(control_element, 'keyseq')
                 master_keyseq_element.text = master_control_keyseq
+                master_keyseq_element_index = control_element.getchildren().index(master_keyseq_element)
 
                 # Add scancode in comment (right before master_keyseq_element) if scancode_comments is true in settings
                 if self.settings['scancode_comments']:
-                    master_keyseq_element_index = control_element.getchildren().index(master_keyseq_element)
                     comment = Comment(" Scancode: " + str(master_control_scancode) + " ")
                     control_element.insert(master_keyseq_element_index, comment)
 
@@ -483,11 +483,9 @@ class App(Tk):
                                               "' with modifier '" + mod_attribute + "' happens to be a " +
                                               "dead key on keyboard layout '" + reference_mapping_layout.name +
                                               "' and should therefore be overloaded. Please add: \"<keyseq lang='" +
-                                              reference_mapping_layout.name + "' scancode='" +
-                                              str(master_control_scancode) + "' modifier='" +
-                                              mod_attribute + "'> </keyseq>\" and fill it with a key sequence that " +
-                                              "exists on this keyboard layout.")
-                            control_element.insert(1, comment)
+                                              reference_mapping_layout.name + "'> </keyseq>\" and fill it with a " +
+                                              "key sequence that exists on this keyboard layout.")
+                            control_element.insert(master_keyseq_element_index + 1, comment)
                         continue
 
                     reference_control_keyseq = reference_control.keysequence
@@ -1217,7 +1215,7 @@ class KeyboardLayout:
 
         # Check if this key is universal (for example: F-keys or Space)
         if KeyboardLayout.is_universal_key(char):
-            scancode = ""
+            scancode = "universal_key"
 
         if scancodes_found != 1 and scancode != "universal_key" and not auto_case:
             print("No scancode found in " + self.name + " for character: '" +
