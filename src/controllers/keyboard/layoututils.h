@@ -20,19 +20,12 @@ struct KbdControllerPresetKeyseq {
     // found in the 'lang' attribute of the <keyseq> element
     QString lang;
 
-    // Scancode following the scancode-set 2:
-    // https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html#ss1.4
-    // The scancode is extracted from the 'scancode' attribute of the <keyseq> element
-    QString scancode;
-
-    // Indicates whether this key sequence should be translated or not. For example,
-    // key sequences like 'Ctrl+F1', 'Left', 'Shift+Right' or 'Space' do not need
-    // translation. In those cases, final will be true. It is extracted from the
-    // 'final' attribute of the <keyseq> element, where '1' => true and everything
-    // else => false (if no final attribute => false).
-    //
-    // Note: Final key sequences usually don't specify neither lang nor scancode.
-    bool final;
+    // If not null, Mixxx will map on the position of this key sequence's key.
+    // Hence the scancode of the key. In order for Mixxx to find the key's
+    // scancode it needs to know which keyboard layout this key sequence is
+    // targeted on. That layout will be stored in byPositionOf, found in the
+    // 'byPositionOf' attribute of the <keyseq> element
+    QString byPositionOf;
 };
 
 // Representation of one <control> element

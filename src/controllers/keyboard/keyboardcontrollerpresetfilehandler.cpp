@@ -46,14 +46,11 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElem
             // current <control> element and append it to keyseqsRaw
             QDomElement keyseq_element = control.firstChildElement("keyseq");
             while(!keyseq_element.isNull()) {
-                const QDomAttr finalAttr = keyseq_element.attributeNode("final");
-                bool isFinal = !finalAttr.isNull() && finalAttr.value() == "1";
                 keyseqsRaw.append(
                         {
-                                keyseq_element.text(),                            // Key sequence
-                                keyseq_element.attributeNode("lang").value(),     // Lang
-                                keyseq_element.attributeNode("scancode").value(), // Scancode
-                                isFinal                                           // Final
+                                keyseq_element.text(),                                // Key sequence
+                                keyseq_element.attributeNode("lang").value(),         // Lang
+                                keyseq_element.attributeNode("byPositionOf").value()  // By position of lang
 
                         }
                 );
@@ -122,8 +119,10 @@ void KeyboardControllerPresetFileHandler::addControlsToDocument(const KeyboardCo
         // Create <keyseq> element for each keyseq of current PresetControl
         for (const auto& keyseq : iterator->keyseqs) {
             QDomElement keyseqNode = doc->createElement("keyseq");
-            keyseqNode.setAttribute("lang", keyseq.lang);
-            keyseqNode.setAttribute("scancode", keyseq.scancode);
+            if (!keyseq.lang.isEmpty())
+                keyseqNode.setAttribute("lang", keyseq.lang);
+            if (!keyseq.byPositionOf.isEmpty())
+                keyseqNode.setAttribute("byPositionOf", keyseq.byPositionOf);
             QDomText keyseqText = doc->createTextNode(keyseq.keysequence);
             keyseqNode.appendChild(keyseqText);
             controlNode.appendChild(keyseqNode);
