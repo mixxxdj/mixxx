@@ -148,14 +148,22 @@ void WMiniViewScrollBar::mousePressEvent(QMouseEvent* pEvent) {
     // In this scrollbar maximum = model.size(), minimum = 0
     while (!found && itL != m_letters.end() && itC != m_computedPosition.end()) {
         if (itC->bold) {
-            found = true;
             setSliderPosition(totalSum);
-        } else {
-            totalSum += itL->count;
+            return;
         }
+        totalSum += itL->count;
         ++itL;
         ++itC;
     }
+    
+    // If we haven't found any bold letter it means that the user is clicking
+    // on the blank space so take the relative position.    
+    int posVert = pEvent->pos().y();
+    QStyleOptionSlider opt(getStyleOptions());
+    int maxHeight = style()->subControlRect(QStyle::CC_ScrollBar, &opt,
+                                    QStyle::SC_ScrollBarGroove, this).height();
+    float size = interpolSize(posVert, maxHeight, totalSum);
+    setSliderPosition(size);
 }
 
 void WMiniViewScrollBar::leaveEvent(QEvent* pEvent) {
