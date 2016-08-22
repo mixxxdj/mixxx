@@ -5,6 +5,7 @@
 #include "library/libraryfoldersfeature.h"
 
 #include "library/libraryfoldermodel.h"
+#include "widget/wlibrarysidebar.h"
 
 LibraryFoldersFeature::LibraryFoldersFeature(UserSettingsPointer pConfig,
                                              Library* pLibrary,
@@ -25,6 +26,10 @@ QString LibraryFoldersFeature::getIconPath() {
 
 QString LibraryFoldersFeature::getSettingsName() const {
     return "LibraryFoldersFeature";
+}
+
+QWidget* LibraryFoldersFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
+    return createLibrarySidebarWidget(pKeyboard);
 }
 
 void LibraryFoldersFeature::onRightClickChild(const QPoint&pos, 

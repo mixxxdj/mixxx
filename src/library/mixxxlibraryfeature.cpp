@@ -3,6 +3,8 @@
 
 #include <QDebug>
 #include <QMenu>
+#include <QStringList>
+#include <QVBoxLayout>
 
 #include "library/mixxxlibraryfeature.h"
 
@@ -20,6 +22,21 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarystack.h"
 #include "widget/wtracktableview.h"
+
+const QStringList MixxxLibraryFeature::kGroupingText = {
+    tr("Artist > Album"),
+    tr("Album"),
+    tr("Genre > Artist > Album"),
+    tr("Genre > Album")
+};
+
+const QList<QStringList> MixxxLibraryFeature::kGroupingOptions = {
+        { LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM },
+        { LIBRARYTABLE_ALBUM },
+        { LIBRARYTABLE_GENRE, LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM },
+        { LIBRARYTABLE_GENRE, LIBRARYTABLE_ALBUM }
+};
+        
 
 MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          Library* pLibrary,
@@ -133,10 +150,29 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 }
 
 QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
+    QWidget* pContainer = new QWidget;
+    QLayout* pLayout = new QVBoxLayout(pContainer);
+    m_pGroupingCombo = new QComboBox(pContainer);
+    for (int i = 0; i < kGroupingOptions.size(); ++i) {
+        m_pGroupingCombo->addItem(kGroupingText.at(i), kGroupingOptions.at(i));
+    }
+    
+    QVariant varData = m_pChildModel->data(QModelIndex(), TreeItemModel::RoleSettings);
+    m_pGroupingCombo->setCurrentIndex(kGroupingOptions.indexOf(varData.toStringList()));
+    
+    connect(m_pGroupingCombo.data(), SIGNAL(activated(int)),
+            this, SLOT(slotComboActivated(int)));
+    
+    pLayout->addWidget(m_pGroupingCombo);
+    
     m_pSidebar = createLibrarySidebarWidget(pKeyboard);
+    m_pSidebar->setParent(pContainer);
     m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());
+    pLayout->addWidget(m_pSidebar);
+    pContainer->setLayout(pLayout);
+    
     m_pChildModel->reloadTree();
-    return m_pSidebar;
+    return pContainer;
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {
@@ -204,49 +240,23 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& pos,
     QVariant varSort = m_pChildModel->data(QModelIndex(), TreeItemModel::RoleSettings);
     QStringList currentSort = varSort.toStringList();
     
-    QStringList orderArtistAlbum, orderAlbum, orderGenreArtist, orderGenreAlbum;
-    orderArtistAlbum    << LIBRARYTABLE_ARTIST << LIBRARYTABLE_ALBUM;
-    orderAlbum          << LIBRARYTABLE_ALBUM;
-    orderGenreArtist    << LIBRARYTABLE_GENRE << LIBRARYTABLE_ARTIST
-                        << LIBRARYTABLE_ALBUM;
-    orderGenreAlbum     << LIBRARYTABLE_GENRE << LIBRARYTABLE_ALBUM;
-    
-    QAction* artistAlbum = menu.addAction(tr("Artist > Album"));
-    QAction* album = menu.addAction(tr("Album"));
-    QAction* genreArtist = menu.addAction(tr("Genre > Artist > Album"));
-    QAction* genreAlbum  = menu.addAction(tr("Genre > Album"));
-    
     QActionGroup* orderGroup = new QActionGroup(&menu);
-    artistAlbum->setActionGroup(orderGroup);
-    album->setActionGroup(orderGroup);
-    genreArtist->setActionGroup(orderGroup);
-    genreAlbum->setActionGroup(orderGroup);
-    
-    artistAlbum->setCheckable(true);
-    album->setCheckable(true);
-    genreArtist->setCheckable(true);
-    genreAlbum->setCheckable(true);
-    
-    artistAlbum->setChecked(currentSort == orderArtistAlbum);
-    album->setChecked(currentSort == orderAlbum);
-    genreArtist->setChecked(currentSort == orderGenreArtist);
-    genreAlbum->setChecked(currentSort == orderGenreAlbum);
+    for (int i = 0; i < kGroupingOptions.size(); ++i) {
+        QAction* action = menu.addAction(kGroupingText.at(i));
+        action->setActionGroup(orderGroup);
+        action->setData(kGroupingOptions.at(i));
+        action->setCheckable(true);
+        action->setChecked(currentSort == kGroupingOptions.at(i));
+    }
     
     QAction* selected = menu.exec(pos);
-    
-    if (selected == artistAlbum) {
-        m_pChildModel->setData(QModelIndex(), orderArtistAlbum, TreeItemModel::RoleSettings);
-    } else if (selected == album) {
-        m_pChildModel->setData(QModelIndex(), orderAlbum, TreeItemModel::RoleSettings);
-    } else if (selected == genreArtist) {
-        m_pChildModel->setData(QModelIndex(), orderGenreArtist, TreeItemModel::RoleSettings);
-    } else if (selected == genreAlbum) {
-        m_pChildModel->setData(QModelIndex(), orderGenreAlbum, TreeItemModel::RoleSettings);
-    } else {
-        // Menu rejected
+    if (selected == nullptr) {
         return;
     }
-    m_pChildModel->reloadTree();
+    if (!m_pGroupingCombo.isNull()) {
+        m_pGroupingCombo->setCurrentIndex(kGroupingOptions.indexOf(selected->data().toStringList()));
+    }
+    setTreeSettings(selected->data());
 }
 
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
@@ -265,4 +275,19 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
+}
+
+void MixxxLibraryFeature::setTreeSettings(const QVariant& settings) {
+    if (m_pChildModel.isNull()) {
+        return;
+    }
+    m_pChildModel->setData(QModelIndex(), settings, TreeItemModel::RoleSettings);
+    m_pChildModel->reloadTree();
+}
+
+void MixxxLibraryFeature::slotComboActivated(int index) {
+    if (m_pGroupingCombo.isNull()) {
+        return;
+    }
+    setTreeSettings(m_pGroupingCombo->itemData(index));
 }

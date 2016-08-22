@@ -4,16 +4,17 @@
 #ifndef MIXXXLIBRARYFEATURE_H
 #define MIXXXLIBRARYFEATURE_H
 
+#include <QComboBox>
+#include <QIcon>
+#include <QList>
+#include <QModelIndex>
+#include <QPointer>
+#include <QSharedPointer>
+#include <QStackedWidget>
+#include <QString>
 #include <QStringListModel>
 #include <QUrl>
 #include <QVariant>
-#include <QIcon>
-#include <QModelIndex>
-#include <QList>
-#include <QSharedPointer>
-#include <QString>
-#include <QStackedWidget>
-#include <QPointer>
 
 #include "library/libraryfeature.h"
 #include "library/librarytreemodel.h"
@@ -75,12 +76,21 @@ class MixxxLibraryFeature : public LibraryFeature {
         Missing = 3
     };
     const QString kLibraryTitle;
-
+    
+  private slots:
+    void setTreeSettings(const QVariant &settings);
+    void slotComboActivated(int index);
+    
+  private:
+    QPointer<QComboBox> m_pGroupingCombo;
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     QPointer<WLibrarySidebar> m_pSidebar;
     LibraryTableModel* m_pLibraryTableModel;
     TrackDAO& m_trackDao;
     QModelIndex m_lastClickedIndex;
+    
+    static const QList<QStringList> kGroupingOptions;
+    static const QStringList kGroupingText;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */
