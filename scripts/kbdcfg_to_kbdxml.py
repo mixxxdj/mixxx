@@ -421,10 +421,11 @@ class App(Tk):
                 master_keyseq_element = SubElement(control_element, 'keyseq')
                 master_keyseq_element.text = master_control_keyseq
 
-                # Add scancode in comment (right before master_keyseq_element)
-                master_keyseq_element_index = control_element.getchildren().index(master_keyseq_element)
-                comment = Comment(" Scancode: " + str(master_control_scancode) + " ")
-                control_element.insert(master_keyseq_element_index, comment)
+                # Add scancode in comment (right before master_keyseq_element) if scancode_comments is true in settings
+                if self.settings['scancode_comments']:
+                    master_keyseq_element_index = control_element.getchildren().index(master_keyseq_element)
+                    comment = Comment(" Scancode: " + str(master_control_scancode) + " ")
+                    control_element.insert(master_keyseq_element_index, comment)
 
                 # We don't need to add lang or scancode information, nor check for other mappings when the
                 # group is [KeyboardShortcuts]. This key sequences are translated in Mixxx using Qt::tr().
@@ -523,10 +524,12 @@ class App(Tk):
                         overloaded_keyseq_element.set('lang', mapping.get_locale_name())
                         overloaded_keyseq_element.text = reference_control_keyseq
 
-                        # Add scancode in comment (right before overloaded_keyseq_element)
-                        overloaded_keyseq_element_index = control_element.getchildren().index(overloaded_keyseq_element)
-                        comment = Comment(" Scancode: " + str(reference_control_scancode))
-                        control_element.insert(overloaded_keyseq_element_index, comment)
+                        # Add scancode in comment (right before overloaded_keyseq_element) if scancode_comments true
+                        if self.settings['scancode_comments']:
+                            overloaded_keyseq_element_index = control_element.getchildren()\
+                                .index(overloaded_keyseq_element)
+                            comment = Comment(" Scancode: " + str(reference_control_scancode))
+                            control_element.insert(overloaded_keyseq_element_index, comment)
 
         return root_element
 
