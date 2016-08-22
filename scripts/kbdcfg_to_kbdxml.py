@@ -31,7 +31,6 @@ def main():
     app.mainloop()
 
 
-
 class App(Tk):
     """ Main class for kbdcfg_to_kbdxml, Tk root
 
@@ -89,6 +88,11 @@ class App(Tk):
         self.mappings = []
         self.selected_mapping = None
         self.master_mapping = None
+
+        # Settings
+        self.settings = {
+            'scancode_comments': self.dlg_save.scancode_comments.get()
+        }
 
     def add_mapping(self, mapping):
         """Add a new mapping to mappings
@@ -660,6 +664,12 @@ class DlgSave(Frame):
         self.preset_name = StringVar()
         Entry(body, textvariable=self.preset_name).grid(row=2, column=1, sticky='w')
 
+        self.scancode_comments = BooleanVar()
+        Checkbutton(
+            body, text="Add scancodes in comments",
+            variable=self.scancode_comments,
+            command=self._scancode_comments_checkbox_command).grid(row=3, column=0, sticky='e')
+
         body.pack(padx=6)
 
         self.start_button = Button(self, text="Start", state=DISABLED, command=self._start_button_command)
@@ -701,6 +711,9 @@ class DlgSave(Frame):
             self.layouts_path.get(),
             self.preset_name.get()
         )
+
+    def _scancode_comments_checkbox_command(self):
+        self.app.settings['scancode_comments'] = self.scancode_comments.get()
 
 
 class DlgSidebar(Frame):
