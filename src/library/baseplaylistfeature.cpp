@@ -459,9 +459,11 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {
-    if (!m_pPlaylistTableModel) {
+    QPointer<PlaylistTableModel> pTableModel = getPlaylistTableModel();
+    if (pTableModel.isNull()) {
         return;
     }
+    
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
     if (playlistId == -1) {
         return;
@@ -512,7 +514,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
         new PlaylistTableModel(this, m_pTrackCollection,
                                "mixxx.db.model.playlist_export"));
 
-    pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setTableModel(pTableModel->getPlaylist());
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
             ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     pPlaylistTableModel->select();
