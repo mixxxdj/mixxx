@@ -78,7 +78,7 @@ class LibraryFeature : public QObject {
     void setSavedPane(int paneId);
     int getSavedPane();
     
-    virtual SavedSearchQuery saveQuery(SavedSearchQuery query);
+    virtual SavedSearchQuery saveQuery(SavedSearchQuery sQuery);
     virtual void restoreQuery(int id);
     virtual QList<SavedSearchQuery> getSavedQueries() const;
 

@@ -117,6 +117,25 @@ SavedSearchQuery SavedQueriesDAO::moveToFirst(LibraryFeature* pFeature, int id) 
     return moveToFirst(pFeature, getSavedQuery(id));
 }
 
+bool SavedQueriesDAO::exists(const SavedSearchQuery& sQuery) {
+    return getQueryId(sQuery) >= 0;
+}
+
+int SavedQueriesDAO::getQueryId(const SavedSearchQuery& sQuery) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT id FROM " SAVEDQUERYTABLE " "
+                  "WHERE query=:query AND title=:title");
+    query.bindValue(":query", sQuery.query);
+    query.bindValue(":title", sQuery.title);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+    if (query.next()) {
+        return query.value(0).toInt();
+    }
+    return -1;
+}
+
 QString SavedQueriesDAO::serializeItems(const QSet<DbId>& items) {
     QStringList ret;
     

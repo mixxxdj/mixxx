@@ -283,26 +283,29 @@ void WSearchLineEdit::onSearchTextCleared() {
 }
 
 void WSearchLineEdit::saveQuery() {
+    if (m_pCurrentFeature.isNull()) {
+        return;
+    }
+    
     SavedSearchQuery query;
     query.title = query.query = text();
-    if (!m_pCurrentFeature.isNull()) {
-        if (query.title.isEmpty()) {
-            // Request a title
-            bool ok = false;
-            query.title = 
-                QInputDialog::getText(nullptr,
-                                      tr("Create search query"),
-                                      tr("Enter name for empty search query"),
-                                      QLineEdit::Normal,
-                                      tr("New query"),
-                                      &ok).trimmed();
-            if (ok == false) {
-                return;
-            }
+    
+    if (query.title.isEmpty()) {
+        // Request a title
+        bool ok = false;
+        query.title = 
+            QInputDialog::getText(nullptr,
+                                  tr("Create search query"),
+                                  tr("Enter name for empty search query"),
+                                  QLineEdit::Normal,
+                                  tr("New query"),
+                                  &ok).trimmed();
+        if (ok == false) {
+            return;
         }
-        
-        m_pCurrentFeature->saveQuery(query);
     }
+        
+    m_pCurrentFeature->saveQuery(query);
     m_pSaveButton->setEnabled(false);
 }
 

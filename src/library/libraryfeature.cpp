@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QLabel>
 #include <QModelIndex>
+#include <QString>
 #include <QTreeView>
 #include <QUrl>
 #include <QVariant>
@@ -128,16 +129,25 @@ int LibraryFeature::getSavedPane() {
     return m_savedPane;
 }
 
-SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery query) {
+SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery sQuery) {
     WTrackTableView* pTable = getFocusedTable();
     if (pTable == nullptr) {
         return SavedSearchQuery();
     }
     
-    query = pTable->saveQuery(query);
+    sQuery = pTable->saveQuery(sQuery);
+    if (m_savedDAO.exists(sQuery)) {
+        QMessageBox::warning(nullptr,
+                             tr("Query already exists"),
+                             tr("The query with title: \"%1\" and query: \"%2\""
+                                " already exists in the database")
+                             .arg(sQuery.title, sQuery.query));
+        m_savedDAO.moveToFirst(this, m_savedDAO.getQueryId(sQuery));
+        return sQuery;
+    }
     
     // A saved query goes the first in the list
-    return m_savedDAO.saveQuery(this, query);
+    return m_savedDAO.saveQuery(this, sQuery);
 }
 
 void LibraryFeature::restoreQuery(int id) {
