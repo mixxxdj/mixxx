@@ -81,7 +81,6 @@ void KeyboardControllerPreset::translate(QString layoutName) {
             // Check if this key sequence's target layout
             // is the same as the user's language
             if (keyseqsRawI->lang == layoutName) {
-                keyseqNeedsTranslate = false;
                 break;
             }
 
@@ -106,18 +105,6 @@ void KeyboardControllerPreset::translate(QString layoutName) {
                 // If lang is not given, that means that it is
                 // targeted at all not explicitly listed layouts
                 if (keyseqsRawI->lang.isEmpty()) {
-
-                    // Check if this keyseq is position based (if 'byPositionOf' attribute was given)
-                    bool positionBased = !keyseqsRawI->byPositionOf.isEmpty();
-
-                    // Check if this keyseq is position based, based on the current layout
-                    bool byPositionOfCurrentLayout = keyseqsRawI->byPositionOf == layoutName;
-
-                    // If 'byPositionOf' attribute not given, or given but where the
-                    // layout is matches the current local, no need to translate
-                    if (!positionBased || byPositionOfCurrentLayout) {
-                        keyseqNeedsTranslate = false;
-                    }
                     break;
                 }
 
@@ -137,6 +124,18 @@ void KeyboardControllerPreset::translate(QString layoutName) {
                        << "nor any translatable keyseq. Skipping"
                        << "mapping for ConfigKey" << configKey;
             continue;
+        }
+
+        // Check if this keyseq is position based (if 'byPositionOf' attribute was given)
+        bool positionBased = !keyseqsRawI->byPositionOf.isEmpty();
+
+        // Check if this keyseq is position based, based on the current layout
+        bool byPositionOfCurrentLayout = keyseqsRawI->byPositionOf == layoutName;
+
+        // If 'byPositionOf' attribute not given, or given but where the
+        // layout is matches the current local, no need to translate
+        if (!positionBased || byPositionOfCurrentLayout) {
+            keyseqNeedsTranslate = false;
         }
 
         // Key sequences for control. If key sequence does not need any translation,
