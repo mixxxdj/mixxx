@@ -152,6 +152,7 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
     QWidget* pContainer = new QWidget;
     QLayout* pLayout = new QVBoxLayout(pContainer);
+    pLayout->setContentsMargins(0, 0, 0, 0);
     m_pGroupingCombo = new QComboBox(pContainer);
     for (int i = 0; i < kGroupingOptions.size(); ++i) {
         m_pGroupingCombo->addItem(kGroupingText.at(i), kGroupingOptions.at(i));

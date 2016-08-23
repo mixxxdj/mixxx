@@ -497,6 +497,46 @@ WBaseLibrary QPushButton:pressed {
   border: 0px solid #006596;
 }
 
+QComboBox {
+  border: 1px solid #4B4B4B;
+  padding: 0px 5px 0px 5px;
+  border-radius: 3px;
+  background: #4B4B4B;
+  color: #d2d2d2;
+}
+
+QComboBox::drop-down {
+  border: none;
+}
+
+QComboBox::down-arrow {
+  image: url(skin:/image/style_sort_down_white.svg);
+  width: 12px;
+  margin-right: 2px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+QComboBox:hover {
+  border: 1px solid #0080BE;
+}
+
+QComboBox:focus {
+  border: 1px solid #006596;
+  background-color: #006596;
+}
+
+QComboBox:focus:hover {
+  border: 1px solid #0080BE;
+  background-color: #0080BE;
+}
+
+QComboBox QAbstractItemView {
+  background: #4B4B4B;
+  selection-background-color: #006596;
+  color: #d2d2d2;
+}
+
 /* Scroll bars */
 QScrollBar {
   color: #d2d2d2;
