@@ -347,7 +347,7 @@
         <keyseq byPositionOf="en_US">Shift+G</keyseq>
       </control>
       <control action="crossfader_up">
-        <keyseq byPositionOf="en_US" lang="ru_RU">h</keyseq>
+        <keyseq byPositionOf="en_US">h</keyseq>
       </control>
       <control action="crossfader_up_small">
         <keyseq byPositionOf="en_US">Shift+H</keyseq>

@@ -1,3 +1,4 @@
+#include <QKeySequence>
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "controllers/keyboard/layouts.h"
 
@@ -211,9 +212,30 @@ void KeyboardControllerPreset::translate(QString layoutName) {
             }
         }
 
-        // Load action into preset. Keyseqs will be more than one only
-        // if it returned more than one scancode when translating
-        for (QString keyseq : keyseqs) {
+        for (QString& keyseq : keyseqs) {
+            QString key = layoutUtils::getCharFromKeysequence(keyseq);
+            QStringList mods = layoutUtils::getModifiersFromKeysequence(keyseq);
+
+            // Clear keyseq
+            keyseq = "";
+
+            // NOTE: This order must be the same as in
+            // ...   KeyboardEventFilter::getKeySeq()
+            if (mods.contains("Shift")) keyseq += "Shift+";
+            if (mods.contains("Ctrl")) keyseq += "Ctrl+";
+            if (mods.contains("Alt")) keyseq += "Alt+";
+            if (mods.contains("Meta")) keyseq += "Meta+";
+
+            // If the key is modified, the comparisons in KeyboardEventFilter
+            // are based on QKeySequence::toString()
+            if (!keyseq.isEmpty()) {
+              key = QKeySequence(key).toString();
+            }
+
+            // Reconstruct key sequence with ordened modifiers
+            keyseq += key;
+
+            // Load action into preset
             m_mapping.insert(keyseq, configKey);
         }
     }
