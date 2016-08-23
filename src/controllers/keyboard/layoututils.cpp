@@ -51,6 +51,33 @@ namespace layoutUtils {
         return pKeyChar;
     }
 
+    QList<int> findScancodesForCharacter(KeyboardLayoutPointer pLayout,
+                                         const QChar& character,
+                                         Qt::KeyboardModifier modifier) {
+
+        // Keyboard layouts only support no modifier and shift modifier
+        if (modifier > Qt::ShiftModifier) {
+            return {};
+        }
+
+        // Get modifier offset (0 for no modifier, 1 for shift modifier)
+        int modIndex = modifier & Qt::ShiftModifier ? 1 : 0;
+
+        // Find scancodes that match the given character and modifier in pLayout
+        QList<int> scancodes;
+        for (int i = 0; i < kLayoutLen; i++) {
+            const KbdKeyChar& kbdKeyChar = pLayout[i][modIndex];
+            QChar currentCharacter = kbdKeyChar.character;
+
+            if (currentCharacter == character) {
+                int scancode = layoutUtils::layoutIndexToScancode((const unsigned char) i);
+                scancodes += scancode;
+            }
+        }
+
+        return scancodes;
+    }
+
     QString getCharFromKeysequence(const QString& keyseq) {
         return keyseq.split(keysequenceSeparator).last();
     }
