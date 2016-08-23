@@ -68,14 +68,12 @@ class MixxxLibraryFeature : public LibraryFeature {
     void setChildModel(TreeItemModel* pChild);
     
     QPointer<TreeItemModel> m_pChildModel;
+    QPointer<WLibrarySidebar> m_pSidebar;
 
   private:
-    enum Panes {
-        MixxxLibrary = 1,
-        Hidden = 2,
-        Missing = 3
-    };
-    const QString kLibraryTitle;
+    static const QString kLibraryTitle;
+    static const QList<QStringList> kGroupingOptions;
+    static const QStringList kGroupingText;
     
   private slots:
     void setTreeSettings(const QVariant &settings);
@@ -84,13 +82,10 @@ class MixxxLibraryFeature : public LibraryFeature {
   private:
     QPointer<QComboBox> m_pGroupingCombo;
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
-    QPointer<WLibrarySidebar> m_pSidebar;
     LibraryTableModel* m_pLibraryTableModel;
     TrackDAO& m_trackDao;
     QModelIndex m_lastClickedIndex;
     
-    static const QList<QStringList> kGroupingOptions;
-    static const QStringList kGroupingText;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

@@ -23,6 +23,8 @@
 #include "widget/wlibrarystack.h"
 #include "widget/wtracktableview.h"
 
+const QString MixxxLibraryFeature::kLibraryTitle = tr("Library");
+
 const QStringList MixxxLibraryFeature::kGroupingText = {
     tr("Artist > Album"),
     tr("Album"),
@@ -36,14 +38,12 @@ const QList<QStringList> MixxxLibraryFeature::kGroupingOptions = {
         { LIBRARYTABLE_GENRE, LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM },
         { LIBRARYTABLE_GENRE, LIBRARYTABLE_ALBUM }
 };
-        
 
 MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          Library* pLibrary,
                                          QObject* parent,
                                          TrackCollection* pTrackCollection)
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
-          kLibraryTitle(tr("Library")),
           m_trackDao(pTrackCollection->getTrackDAO()) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
@@ -190,7 +190,9 @@ void MixxxLibraryFeature::selectAll() {
 
 void MixxxLibraryFeature::onSearch(const QString&) {
     showBreadCrumb();
-    m_pSidebar->clearSelection();
+    if (!m_pSidebar.isNull()) {
+        m_pSidebar->clearSelection();
+    }
 }
 
 void MixxxLibraryFeature::setChildModel(TreeItemModel* pChild) {
@@ -237,7 +239,8 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& pos,
     
     // Create the sort menu
     QMenu menu;    
-    QVariant varSort = m_pChildModel->data(QModelIndex(), TreeItemModel::RoleSettings);
+    QVariant varSort = m_pChildModel->data(QModelIndex(), 
+                                           TreeItemModel::RoleSettings);
     QStringList currentSort = varSort.toStringList();
     
     QActionGroup* orderGroup = new QActionGroup(&menu);
@@ -254,7 +257,8 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& pos,
         return;
     }
     if (!m_pGroupingCombo.isNull()) {
-        m_pGroupingCombo->setCurrentIndex(kGroupingOptions.indexOf(selected->data().toStringList()));
+        int index = kGroupingOptions.indexOf(selected->data().toStringList());
+        m_pGroupingCombo->setCurrentIndex(index);
     }
     setTreeSettings(selected->data());
 }
@@ -263,7 +267,8 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+        QList<QFileInfo> files = 
+                DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
         // Adds track, does not insert duplicates, handles unremoving logic.
         QList<TrackId> trackIds = m_trackDao.addMultipleTracks(files, true);

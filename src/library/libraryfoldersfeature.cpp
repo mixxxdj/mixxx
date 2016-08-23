@@ -29,7 +29,8 @@ QString LibraryFoldersFeature::getSettingsName() const {
 }
 
 QWidget* LibraryFoldersFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    return createLibrarySidebarWidget(pKeyboard);
+    m_pSidebar = createLibrarySidebarWidget(pKeyboard);
+    return m_pSidebar;
 }
 
 void LibraryFoldersFeature::onRightClickChild(const QPoint&pos, 
