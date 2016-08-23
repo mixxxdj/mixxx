@@ -41,7 +41,7 @@ class FakeController : public Controller {
         }
     }
 
-    virtual bool savePreset(const QString fileName) const {
+    virtual bool savePreset(const QString fileName) const override {
         Q_UNUSED(fileName);
         return true;
     }
@@ -88,7 +88,7 @@ class FakeController : public Controller {
         return false;
     }
 
-    virtual bool matchPreset(const PresetInfo& preset) {
+    virtual bool matchPreset(const PresetInfo& preset) override {
         // We're not testing product info matching in this test.
         Q_UNUSED(preset);
         return false;
@@ -102,25 +102,25 @@ class FakeController : public Controller {
     }
 
   private slots:
-    int open() {
+    int open() override {
         return 0;
     }
-    int close() {
+    int close() override {
         return 0;
     }
 
   private:
-    virtual void send(QByteArray data) {
+    virtual void send(QByteArray data) override {
         Q_UNUSED(data);
     }
     virtual void send(QByteArray data, unsigned int reportID) {
         Q_UNUSED(data);
         Q_UNUSED(reportID);
     }
-    virtual bool isPolling() const {
+    virtual bool isPolling() const override {
         return false;
     }
-    virtual ControllerPreset* preset() {
+    virtual ControllerPreset* preset() override {
         if (m_bHidPreset) {
             return &m_hidPreset;
         } else if (m_bKbdPreset) {

@@ -50,7 +50,7 @@
 #define MIXXX_PORTMIDI_BUFFER_LEN 1024
 
 // Length of SysEx buffer in byte
-#define MIXXX_SYSEX_BUFFER_LEN 1024 
+#define MIXXX_SYSEX_BUFFER_LEN 1024
 
 // String to display for no MIDI devices present
 #define MIXXX_PORTMIDI_NO_DEVICE_STRING "None"
@@ -66,17 +66,17 @@ class PortMidiController : public MidiController {
     virtual ~PortMidiController();
 
   private slots:
-    virtual int open();
-    virtual int close();
-    virtual bool poll();
+    virtual int open() override;
+    virtual int close() override;
+    virtual bool poll() override;
 
   private:
-    void sendWord(unsigned int word);
+    void sendWord(unsigned int word) override;
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
-    void send(QByteArray data);
+    void send(QByteArray data) override;
 
-    virtual bool isPolling() const {
+    virtual bool isPolling() const override {
         return true;
     }
 

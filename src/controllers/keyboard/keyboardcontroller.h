@@ -32,7 +32,7 @@ class KeyboardController : public Controller {
     virtual void visit(const KeyboardControllerPreset* preset) override;
     virtual void visit(const MidiControllerPreset* preset) override;
     virtual void visit(const HidControllerPreset* preset) override;
-    virtual void accept(ControllerVisitor* visitor) {
+    virtual void accept(ControllerVisitor* visitor) override {
         if (visitor) {
             visitor->visit(this);
         }

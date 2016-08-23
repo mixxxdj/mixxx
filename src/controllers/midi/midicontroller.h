@@ -27,31 +27,31 @@ class MidiController : public Controller {
     MidiController();
     virtual ~MidiController();
 
-    virtual QString presetExtension();
+    virtual QString presetExtension() override;
 
-    virtual ControllerPresetPointer getPreset() const {
+    virtual ControllerPresetPointer getPreset() const override {
         MidiControllerPreset* pClone = new MidiControllerPreset();
         *pClone = m_preset;
         return ControllerPresetPointer(pClone);
     }
 
-    virtual bool savePreset(const QString fileName) const;
+    virtual bool savePreset(const QString fileName) const override;
 
-    virtual void visit(const KeyboardControllerPreset* preset);
-    virtual void visit(const MidiControllerPreset* preset);
-    virtual void visit(const HidControllerPreset* preset);
+    virtual void visit(const KeyboardControllerPreset* preset) override;
+    virtual void visit(const MidiControllerPreset* preset) override;
+    virtual void visit(const HidControllerPreset* preset) override;
 
-    virtual void accept(ControllerVisitor* visitor) {
+    virtual void accept(ControllerVisitor* visitor) override {
         if (visitor) {
             visitor->visit(this);
         }
     }
 
-    virtual bool isMappable() const {
+    virtual bool isMappable() const override {
         return m_preset.isMappable();
     }
 
-    virtual bool matchPreset(const PresetInfo& preset);
+    virtual bool matchPreset(const PresetInfo& preset) override;
 
   signals:
     void messageReceived(unsigned char status, unsigned char control,
@@ -68,12 +68,12 @@ class MidiController : public Controller {
     virtual void receive(unsigned char status, unsigned char control,
                          unsigned char value, mixxx::Duration timestamp);
     // For receiving System Exclusive messages
-    virtual void receive(const QByteArray data, mixxx::Duration timestamp);
-    virtual int close();
+    virtual void receive(const QByteArray data, mixxx::Duration timestamp) override;
+    virtual int close() override;
 
   private slots:
     // Initializes the engine and static output mappings.
-    bool applyPreset(QList<QString> scriptPaths, bool initializeScripts);
+    bool applyPreset(QList<QString> scriptPaths, bool initializeScripts) override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
@@ -97,7 +97,7 @@ class MidiController : public Controller {
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
-    virtual ControllerPreset* preset() {
+    virtual ControllerPreset* preset() override {
         return &m_preset;
     }
 

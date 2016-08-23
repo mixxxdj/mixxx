@@ -47,17 +47,17 @@ class Hss1394Controller : public MidiController {
     virtual ~Hss1394Controller();
 
   private slots:
-    virtual int open();
-    virtual int close();
+    virtual int open() override;
+    virtual int close() override;
 
   private:
-    void sendWord(unsigned int word);
+    void sendWord(unsigned int word) override;
 
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
-    void send(QByteArray data);
+    void send(QByteArray data) override;
 
-    virtual bool isPolling() const {
+    virtual bool isPolling() const override {
         return false;
     }
 
