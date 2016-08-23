@@ -233,7 +233,6 @@
       </control>
       <control action="loop_out">
         <keyseq byPositionOf="en_US">8</keyseq>
-        <keyseq lang="fr_FR">!</keyseq>
       </control>
       <control action="passthrough">
         <keyseq byPositionOf="en_US">Ctrl+k</keyseq>
@@ -348,7 +347,7 @@
         <keyseq byPositionOf="en_US">Shift+G</keyseq>
       </control>
       <control action="crossfader_up">
-        <keyseq byPositionOf="en_US">h</keyseq>
+        <keyseq byPositionOf="en_US" lang="ru_RU">h</keyseq>
       </control>
       <control action="crossfader_up_small">
         <keyseq byPositionOf="en_US">Shift+H</keyseq>
