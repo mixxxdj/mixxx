@@ -229,6 +229,11 @@ QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
 }
 
 void BrowseFeature::activate() {
+    if (m_lastClickedChild.isValid()) {
+        activateChild(m_lastClickedChild);
+        return;
+    }
+    
     auto it = m_panes.find(m_featureFocus);
     auto itId = m_idBrowse.find(m_featureFocus);
     if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
@@ -246,6 +251,7 @@ void BrowseFeature::activate() {
 // Note: This is executed whenever you single click on an child item
 // Single clicks will not populate sub folders
 void BrowseFeature::activateChild(const QModelIndex& index) {
+    m_lastClickedChild = index;
     QString data = index.data().toString();
     QString dataPath = index.data(TreeItemModel::RoleDataPath).toString();
     qDebug() << "BrowseFeature::activateChild " << data << dataPath;

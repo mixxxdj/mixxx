@@ -102,19 +102,43 @@ SavedSearchQuery SavedQueriesDAO::moveToFirst(LibraryFeature* pFeature,
                                               const SavedSearchQuery& sQuery) {
     // To move to the first item we delete the item and insert againt it
     // to assign it a new ID
-    QSqlQuery query(m_database);
-    query.prepare("DELETE FROM " SAVEDQUERYTABLE " WHERE id=:id");
-    query.bindValue(":id", sQuery.id);
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
+    deleteSavedQuery(sQuery.id);
     return saveQuery(pFeature, sQuery);
 }
 
 SavedSearchQuery SavedQueriesDAO::moveToFirst(LibraryFeature* pFeature, int id) {
     return moveToFirst(pFeature, getSavedQuery(id));
+}
+
+bool SavedQueriesDAO::deleteSavedQuery(int id) {
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM " SAVEDQUERYTABLE " WHERE id=:id");
+    query.bindValue(":id", id);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    return true;
+}
+
+bool SavedQueriesDAO::exists(const SavedSearchQuery& sQuery) {
+    return getQueryId(sQuery) >= 0;
+}
+
+int SavedQueriesDAO::getQueryId(const SavedSearchQuery& sQuery) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT id FROM " SAVEDQUERYTABLE " "
+                  "WHERE query=:query AND title=:title");
+    query.bindValue(":query", sQuery.query);
+    query.bindValue(":title", sQuery.title);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+    if (query.next()) {
+        return query.value(0).toInt();
+    }
+    return -1;
 }
 
 QString SavedQueriesDAO::serializeItems(const QSet<DbId>& items) {

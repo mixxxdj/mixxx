@@ -16,6 +16,7 @@ class LibraryFoldersFeature : public MixxxLibraryFeature
     QVariant title() override;
     QString getIconPath() override;
     QString getSettingsName() const override;
+    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
     
   public slots:
     void onRightClickChild(const QPoint& pos, const QModelIndex&) override;

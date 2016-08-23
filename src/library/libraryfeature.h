@@ -78,7 +78,7 @@ class LibraryFeature : public QObject {
     void setSavedPane(int paneId);
     int getSavedPane();
     
-    virtual SavedSearchQuery saveQuery(SavedSearchQuery query);
+    virtual SavedSearchQuery saveQuery(SavedSearchQuery sQuery);
     virtual void restoreQuery(int id);
     virtual QList<SavedSearchQuery> getSavedQueries() const;
 
@@ -121,7 +121,11 @@ class LibraryFeature : public QObject {
         return getPlaylistFiles(QFileDialog::ExistingFiles); 
     }
     inline QString getPlaylistFile() { 
-        return getPlaylistFiles(QFileDialog::ExistingFile).first(); 
+        QStringList files(getPlaylistFiles(QFileDialog::ExistingFile));
+        if (files.isEmpty()) {
+            return QString();
+        }
+        return files.first();
     }
     
     // Creates a table widget with no model

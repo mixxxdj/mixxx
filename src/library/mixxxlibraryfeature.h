@@ -4,16 +4,17 @@
 #ifndef MIXXXLIBRARYFEATURE_H
 #define MIXXXLIBRARYFEATURE_H
 
+#include <QComboBox>
+#include <QIcon>
+#include <QList>
+#include <QModelIndex>
+#include <QPointer>
+#include <QSharedPointer>
+#include <QStackedWidget>
+#include <QString>
 #include <QStringListModel>
 #include <QUrl>
 #include <QVariant>
-#include <QIcon>
-#include <QModelIndex>
-#include <QList>
-#include <QSharedPointer>
-#include <QString>
-#include <QStackedWidget>
-#include <QPointer>
 
 #include "library/libraryfeature.h"
 #include "library/librarytreemodel.h"
@@ -67,20 +68,23 @@ class MixxxLibraryFeature : public LibraryFeature {
     void setChildModel(TreeItemModel* pChild);
     
     QPointer<TreeItemModel> m_pChildModel;
+    QPointer<WLibrarySidebar> m_pSidebar;
 
   private:
-    enum Panes {
-        MixxxLibrary = 1,
-        Hidden = 2,
-        Missing = 3
-    };
-    const QString kLibraryTitle;
-
+    static const QString kLibraryTitle;
+    static const QList<QStringList> kGroupingOptions;
+    static const QStringList kGroupingText;
+    
+  private slots:
+    void setTreeSettings(const QVariant &settings);
+    
+  private:
+    QPointer<QComboBox> m_pGroupingCombo;
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
-    QPointer<WLibrarySidebar> m_pSidebar;
     LibraryTableModel* m_pLibraryTableModel;
     TrackDAO& m_trackDao;
     QModelIndex m_lastClickedIndex;
+    
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

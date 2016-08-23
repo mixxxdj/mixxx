@@ -79,6 +79,8 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
     
     QStylePainter painter(this);
     QStyleOptionSlider opt(getStyleOptions());
+    opt.subControls &= ~(QStyle::SC_ScrollBarSlider);
+    
     painter.drawComplexControl(QStyle::CC_ScrollBar, opt);
     
     painter.setBrush(palette().color(QPalette::Text));
@@ -102,13 +104,11 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
         painter.drawText(QRect(topLeft, topLeft + bottom), flags, p.character);
     }
     
+    opt.subControls = QStyle::SC_ScrollBarSlider;
     opt.rect = style()->subControlRect(QStyle::CC_ScrollBar, &opt, 
                                        QStyle::SC_ScrollBarSlider, this);
-    opt.subControls = QStyle::SC_ScrollBarSlider;
-    opt.activeSubControls = QStyle::SC_ScrollBarSlider;
+    //painter.drawComplexControl(QStyle::CC_ScrollBar, opt);
     painter.drawControl(QStyle::CE_ScrollBarSlider, opt);
-    painter.drawControl(QStyle::CE_ScrollBarAddLine, opt);
-    painter.drawControl(QStyle::CE_ScrollBarSubLine, opt);
 }
 
 void WMiniViewScrollBar::resizeEvent(QResizeEvent* pEvent) {
@@ -148,14 +148,22 @@ void WMiniViewScrollBar::mousePressEvent(QMouseEvent* pEvent) {
     // In this scrollbar maximum = model.size(), minimum = 0
     while (!found && itL != m_letters.end() && itC != m_computedPosition.end()) {
         if (itC->bold) {
-            found = true;
             setSliderPosition(totalSum);
-        } else {
-            totalSum += itL->count;
+            return;
         }
+        totalSum += itL->count;
         ++itL;
         ++itC;
     }
+    
+    // If we haven't found any bold letter it means that the user is clicking
+    // on the blank space so take the relative position.    
+    int posVert = pEvent->pos().y();
+    QStyleOptionSlider opt(getStyleOptions());
+    int maxHeight = style()->subControlRect(QStyle::CC_ScrollBar, &opt,
+                                    QStyle::SC_ScrollBarGroove, this).height();
+    float size = interpolSize(posVert, maxHeight, totalSum);
+    setSliderPosition(size);
 }
 
 void WMiniViewScrollBar::leaveEvent(QEvent* pEvent) {
@@ -250,8 +258,9 @@ void WMiniViewScrollBar::triggerUpdate() {
 QStyleOptionSlider WMiniViewScrollBar::getStyleOptions() {
     QStyleOptionSlider opt;
     opt.init(this);
-    opt.subControls = QStyle::SC_ScrollBarAddLine | QStyle::SC_ScrollBarSubLine;
-    opt.activeSubControls = QStyle::SC_ScrollBarAddLine | QStyle::SC_ScrollBarSubLine;
+    opt.subControls = QStyle::SC_ScrollBarAddLine | QStyle::SC_ScrollBarSubLine | 
+            QStyle::SC_ScrollBarFirst | QStyle::SC_ScrollBarLast | 
+            QStyle::SC_ScrollBarGroove | QStyle::SC_ScrollBarSlider;
     opt.orientation = orientation();
     opt.minimum = minimum();
     opt.maximum = maximum();

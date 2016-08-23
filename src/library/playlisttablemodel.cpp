@@ -33,6 +33,8 @@ void PlaylistTableModel::setTableModel(const QSet<int> &playlistIds) {
     if (playlistIds.size() > 1) {
         // If we are showing many playlist at once this is not a real playlist
         m_iPlaylistId = -1;
+    } else {
+        m_iPlaylistId = *playlistIds.begin();
     }
 
     m_playlistIds = playlistIds;

@@ -77,6 +77,7 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
+    QModelIndex m_lastClickedChild;
     
     QHash<int, QPointer<WLibraryStack> > m_panes;
     QHash<int, int> m_idBrowse;

@@ -320,21 +320,25 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
     m_pLockCrateAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
-    QMenu menu(NULL);
+    QMenu menu(nullptr);
     menu.addAction(m_pCreateCrateAction);
     menu.addSeparator();
-    menu.addAction(m_pRenameCrateAction);
-    menu.addAction(m_pDuplicateCrateAction);
-    menu.addAction(m_pDeleteCrateAction);
-    menu.addAction(m_pLockCrateAction);
-    menu.addSeparator();
-    menu.addAction(m_pAutoDjTrackSource);
-    menu.addSeparator();
-    menu.addAction(m_pAnalyzeCrateAction);
-    menu.addSeparator();
+    if (crateId >= 0) {
+        menu.addAction(m_pRenameCrateAction);
+        menu.addAction(m_pDuplicateCrateAction);
+        menu.addAction(m_pDeleteCrateAction);
+        menu.addAction(m_pLockCrateAction);
+        menu.addSeparator();
+        menu.addAction(m_pAutoDjTrackSource);
+        menu.addSeparator();
+        menu.addAction(m_pAnalyzeCrateAction);
+        menu.addSeparator();
+    }
     menu.addAction(m_pImportPlaylistAction);
-    menu.addAction(m_pExportPlaylistAction);
-    menu.addAction(m_pExportTrackFilesAction);
+    if (crateId >= 0) {
+        menu.addAction(m_pExportPlaylistAction);
+        menu.addAction(m_pExportTrackFilesAction);
+    }
     menu.exec(globalPos);
 }
 
@@ -618,15 +622,17 @@ void CrateFeature::clearChildModel() {
 void CrateFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
-    QString playlist_file = getPlaylistFile();
-    if (playlist_file.isEmpty()) return;
+    QString playlistFile = getPlaylistFile();
+    if (playlistFile.isEmpty()) {
+        return;
+    }
 
     // Update the import/export crate directory
-    QFileInfo fileName(playlist_file);
+    QFileInfo fileName(playlistFile);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
                    ConfigValue(fileName.dir().absolutePath()));
 
-    slotImportPlaylistFile(playlist_file);
+    slotImportPlaylistFile(playlistFile);
     activateChild(m_lastRightClickedIndex);
 }
 

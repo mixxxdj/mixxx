@@ -55,8 +55,8 @@ class LibraryTreeModel : public TreeItemModel {
     QStringList m_sortOrder;
     QStringList m_coverQuery;
     
+    TreeItem* m_pSettings;
     TreeItem* m_pLibraryItem;
-    TreeItem* m_pFoldersRoot;    
     
     bool m_folderRecursive;
 };

@@ -23,6 +23,9 @@ struct SavedSearchQuery {
     
     SavedSearchQuery(const SavedSearchQuery& other) = default;
     SavedSearchQuery& operator=(const SavedSearchQuery& other) = default;
+    bool operator==(const SavedSearchQuery& other) const {
+        return other.title == this->title && other.query == this->query;
+    }
     
     QString query;
     QString title;
@@ -50,6 +53,9 @@ class SavedQueriesDAO : public DAO
     SavedSearchQuery getSavedQuery(int id) const;
     SavedSearchQuery moveToFirst(LibraryFeature* pFeature, const SavedSearchQuery& sQuery);
     SavedSearchQuery moveToFirst(LibraryFeature* pFeature, int id);
+    bool deleteSavedQuery(int id);
+    bool exists(const SavedSearchQuery& sQuery);
+    int getQueryId(const SavedSearchQuery& sQuery);
     
   private:
     static QString serializeItems(const QSet<DbId>& items);

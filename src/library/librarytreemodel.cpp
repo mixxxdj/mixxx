@@ -125,8 +125,11 @@ void LibraryTreeModel::reloadTree() {
     pRootItem->setLibraryFeature(m_pFeature);
 
     m_pLibraryItem = new TreeItem(tr("Show all"), "", m_pFeature, pRootItem);
-
     pRootItem->appendChild(m_pLibraryItem);
+
+    QString groupTitle = tr("Grouping Options (%1)").arg(m_sortOrder.join(" > "));
+    m_pSettings = new TreeItem(groupTitle, "", m_pFeature, pRootItem);
+    pRootItem->appendChild(m_pSettings);
     
     // Deletes the old root item if the previous root item was not null
     setRootItem(pRootItem);
@@ -153,9 +156,12 @@ QVariant LibraryTreeModel::getQuery(TreeItem* pTree) const {
         return "";
     }
     
-    if (pTree == m_pLibraryItem || pTree == m_pFoldersRoot) {
+    if (pTree == m_pLibraryItem) {
         return "";
+    } else if (pTree == m_pSettings) {
+        return "$groupingSettings$";
     }
+    
     const QString param("%1:=\"%2\"");
     
     int depth = 0;
