@@ -150,28 +150,8 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 }
 
 QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    QWidget* pContainer = new QWidget;
-    QLayout* pLayout = new QVBoxLayout(pContainer);
-    pLayout->setContentsMargins(0, 0, 0, 0);
-    m_pGroupingCombo = new QComboBox(pContainer);
-    for (int i = 0; i < kGroupingOptions.size(); ++i) {
-        m_pGroupingCombo->addItem(kGroupingText.at(i), kGroupingOptions.at(i));
-    }
-    
-    QVariant varData = m_pChildModel->data(QModelIndex(), TreeItemModel::RoleSettings);
-    m_pGroupingCombo->setCurrentIndex(kGroupingOptions.indexOf(varData.toStringList()));
-    
-    connect(m_pGroupingCombo.data(), SIGNAL(activated(int)),
-            this, SLOT(slotComboActivated(int)));
-    
-    pLayout->addWidget(m_pGroupingCombo);
-    
     m_pSidebar = createLibrarySidebarWidget(pKeyboard);
-    m_pSidebar->setParent(pContainer);
-    m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());
-    pLayout->addWidget(m_pSidebar);
-    pContainer->setLayout(pLayout);
-    
+    m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());    
     m_pChildModel->reloadTree();
     return pContainer;
 }
@@ -228,6 +208,12 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
     QString query = index.data(TreeItemModel::RoleQuery).toString();
     //qDebug() << "MixxxLibraryFeature::activateChild" << query;
+    
+    if (query == "$groupingSettings$") {
+        // Act as right click
+        onRightClickChild(QCursor::pos(), QModelIndex());
+        return;
+    }
     
     m_pLibraryTableModel->search(query);
     switchToFeature();
@@ -289,11 +275,4 @@ void MixxxLibraryFeature::setTreeSettings(const QVariant& settings) {
     }
     m_pChildModel->setData(QModelIndex(), settings, TreeItemModel::RoleSettings);
     m_pChildModel->reloadTree();
-}
-
-void MixxxLibraryFeature::slotComboActivated(int index) {
-    if (m_pGroupingCombo.isNull()) {
-        return;
-    }
-    setTreeSettings(m_pGroupingCombo->itemData(index));
 }

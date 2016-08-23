@@ -77,7 +77,6 @@ class MixxxLibraryFeature : public LibraryFeature {
     
   private slots:
     void setTreeSettings(const QVariant &settings);
-    void slotComboActivated(int index);
     
   private:
     QPointer<QComboBox> m_pGroupingCombo;
