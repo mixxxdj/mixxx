@@ -69,5 +69,6 @@ class KeyboardController : public Controller {
     virtual int close() override;
 };
 
+typedef QSharedPointer<KeyboardController> KeyboardControllerPointer;
 
 #endif // KEYBOARDCONTROLLER_H

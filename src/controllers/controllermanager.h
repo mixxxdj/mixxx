@@ -35,7 +35,7 @@ class ControllerManager : public QObject {
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
 
-    KeyboardController* getKeyboardController();
+    KeyboardControllerPointer getKeyboardController();
 
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
     QSharedPointer<PresetInfoEnumerator> getMainThreadPresetEnumerator() {
@@ -103,7 +103,7 @@ class ControllerManager : public QObject {
     mutable QMutex m_mutex;
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
-    KeyboardController* m_pKeyboardController;
+    KeyboardControllerPointer m_pKeyboardController;
     QThread* m_pThread;
     QSharedPointer<PresetInfoEnumerator> m_pMainThreadPresetEnumerator;
     bool m_skipPoll;

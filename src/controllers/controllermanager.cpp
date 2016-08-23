@@ -156,8 +156,6 @@ void ControllerManager::slotShutdown() {
         delete pEnumerator;
     }
 
-    delete m_pKeyboardController;
-
     // Stop the processor after the enumerators since the engines live in it
     m_pThread->quit();
 }
@@ -178,16 +176,16 @@ void ControllerManager::updateControllerList() {
 
     // Since there is only one KeyboardController, it is not
     // enumerated by an enumerator but added directly here.
-    KeyboardController* pKbdController = new KeyboardController(m_pKeyboard);
-    newDeviceList.prepend(pKbdController);
+    KeyboardControllerPointer pKbdController(new KeyboardController(m_pKeyboard));
+    newDeviceList.prepend(pKbdController.data());
 
     locker.relock();
     if (newDeviceList != m_controllers) {
         m_controllers = newDeviceList;
         m_pKeyboardController = pKbdController;
-        connect(m_pKeyboardController, SIGNAL(keyboardControllerPresetLoaded(KeyboardControllerPresetPointer)),
+        connect(m_pKeyboardController.data(), SIGNAL(keyboardControllerPresetLoaded(KeyboardControllerPresetPointer)),
                 this, SIGNAL(keyboardPresetChanged(KeyboardControllerPresetPointer)));
-        connect(m_pKeyboardController, SIGNAL(enabled(bool)),
+        connect(m_pKeyboardController.data(), SIGNAL(enabled(bool)),
                 this, SIGNAL(keyboardEnabled(bool)));
         locker.unlock();
         emit(devicesChanged());
@@ -219,7 +217,7 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
-KeyboardController* ControllerManager::getKeyboardController() {
+KeyboardControllerPointer ControllerManager::getKeyboardController() {
     return m_pKeyboardController;
 }
 

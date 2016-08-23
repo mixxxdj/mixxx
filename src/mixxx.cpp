@@ -891,14 +891,14 @@ void MixxxMainWindow::slotToggleKeyboard(bool enabled) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(enabled ? 1 : 0));
 
-    KeyboardController* pKeyboardController = m_pControllerManager->getKeyboardController();
+    KeyboardControllerPointer pKeyboardController = m_pControllerManager->getKeyboardController();
     bool isOpen = pKeyboardController->isOpen();
 
     // Update keyboard controller
     if (enabled) {
-        if (!isOpen) m_pControllerManager->openController(pKeyboardController);
+        if (!isOpen) m_pControllerManager->openController(pKeyboardController.data());
     } else {
-        if (isOpen) m_pControllerManager->closeController(pKeyboardController);
+        if (isOpen) m_pControllerManager->closeController(pKeyboardController.data());
     }
 
     // Update menu bar "Enable Keyboard Shortcuts" checkbox

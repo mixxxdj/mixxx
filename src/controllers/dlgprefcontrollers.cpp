@@ -115,7 +115,7 @@ void DlgPrefControllers::setupControllerWidgets() {
             m_pControllerManager->getControllerList(false, true);
     qSort(controllerList.begin(), controllerList.end(), controllerCompare);
 
-    Controller* pKbdController = m_pControllerManager->getKeyboardController();
+    Controller* pKbdController = m_pControllerManager->getKeyboardController().data();
 
     for (Controller* pController : controllerList) {
         DlgPrefController* controllerDlg = new DlgPrefController(

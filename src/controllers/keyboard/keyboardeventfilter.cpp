@@ -47,8 +47,6 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         QString ks = getKeySeq(ke);
         emit keyseqPressed(ks);
 
-        qDebug() << "Keyseq: " << ks;
-
         // If no key-mapping info is known, there is nothing to check
         if (m_kbdPreset.isNull()) {
             return false;
