@@ -136,14 +136,28 @@ SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery sQuery) {
     }
     
     sQuery = pTable->saveQuery(sQuery);
-    if (m_savedDAO.exists(sQuery)) {
-        QMessageBox::warning(nullptr,
-                             tr("Query already exists"),
-                             tr("The query with title: \"%1\" and query: \"%2\""
-                                " already exists in the database")
-                             .arg(sQuery.title, sQuery.query));
-        m_savedDAO.moveToFirst(this, m_savedDAO.getQueryId(sQuery));
-        return sQuery;
+    int qId = m_savedDAO.getQueryId(sQuery);
+    if (qId >= 0) {
+        QMessageBox box;
+        box.setWindowTitle(tr("Query already exists"));
+        box.setText(tr("The query already exists in the database. Do you want "
+                       "to overwrite it?"));
+        box.setDetailedText(tr("The query has title: \"%1\" and query: \"%2\"")
+                                .arg(sQuery.title, sQuery.query));
+        box.setIcon(QMessageBox::Warning);
+        box.addButton(QMessageBox::Yes);
+        box.addButton(QMessageBox::No);
+        box.setDefaultButton(QMessageBox::Yes);
+        box.setEscapeButton(QMessageBox::No);
+        
+        if (box.exec() == QMessageBox::No) {
+            // No pressed
+            m_savedDAO.moveToFirst(this, qId);
+            return sQuery;
+        } else {
+            // Yes pressed 
+            m_savedDAO.deleteSavedQuery(qId);
+        }
     }
     
     // A saved query goes the first in the list
