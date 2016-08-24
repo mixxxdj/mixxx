@@ -66,6 +66,8 @@ void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchBar) {
 void LibraryPaneManager::setBreadCrumb(WLibraryBreadCrumb* pBreadCrumb) {
     m_pBreadCrumb = pBreadCrumb;
     pBreadCrumb->installEventFilter(this);
+    connect(m_pBreadCrumb, SIGNAL(preselected(bool)),
+            this, SLOT(slotPanePreselected(bool)));
 }
 
 void LibraryPaneManager::addFeature(LibraryFeature* feature) {
@@ -159,6 +161,11 @@ bool LibraryPaneManager::isPreselected() {
     return false;
 }
 
+void LibraryPaneManager::slotPanePreselected(bool value) {
+    setPreselected(value);
+    m_pLibrary->panePreselected(this, value);
+}
+
 void LibraryPaneManager::slotPaneCollapsed() {
     m_pLibrary->paneCollapsed(m_paneId);
 }
@@ -168,7 +175,7 @@ void LibraryPaneManager::slotPaneUncollapsed() {
 }
 
 void LibraryPaneManager::slotPaneFocused() {
-    m_pLibrary->slotPaneFocused(this);
+    m_pLibrary->paneFocused(this);
 }
 
 void LibraryPaneManager::slotSearch(const QString& text) {
@@ -201,7 +208,7 @@ bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
         (m_pPaneWidget->underMouse() || 
          m_pSearchBar->underMouse() || 
          m_pBreadCrumb->underMouse())) {
-        m_pLibrary->slotPaneFocused(this);
+        m_pLibrary->paneFocused(this);
     }
 
     // Since this event filter is for the entire application (to handle the

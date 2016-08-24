@@ -60,6 +60,7 @@ class LibraryPaneManager : public QObject {
 
   public slots:
 
+    void slotPanePreselected(bool value);
     void slotPaneCollapsed();
     void slotPaneUncollapsed();
     void slotPaneFocused();

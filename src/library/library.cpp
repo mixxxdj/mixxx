@@ -53,7 +53,8 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
         m_scanner(m_pTrackCollection, pConfig),
-        m_pSidebarExpanded(nullptr) {
+        m_pSidebarExpanded(nullptr),
+        m_preselectedPane(-1) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     connect(&m_scanner, SIGNAL(scanStarted()),
@@ -264,6 +265,37 @@ void Library::restoreSaveButton() {
     pPane->restoreSaveButton();
 }
 
+void Library::paneFocused(LibraryPaneManager* pPane) {
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
+        return;
+    }
+    
+    if (pPane != m_pSidebarExpanded) {
+        m_focusedPane = pPane->getPaneId();
+        pPane->getCurrentFeature()->setFeatureFocus(m_focusedPane);
+        DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
+            return;
+        }
+        setFocusedPane();
+        handleFocus();
+    }
+    
+    //qDebug() << "Library::slotPaneFocused" << m_focusedPane;
+}
+
+void Library::panePreselected(LibraryPaneManager* pPane, bool value) {
+    // Since only one pane can be preselected, set the other panes as not
+    // preselected
+    if (value) {
+        if (m_preselectedPane >= 0) {
+            m_panes[m_preselectedPane]->setPreselected(false);
+        }
+        pPane->setPreselected(true);
+        m_preselectedPane = pPane->getPaneId();
+    } else if (m_preselectedPane == pPane->getPaneId()) {
+        m_preselectedPane = -1;
+    }
+}
 
 void Library::slotRefreshLibraryModels() {
    m_pMixxxLibraryFeature->refreshLibraryModels();
@@ -495,24 +527,6 @@ void Library::slotSetTrackTableFont(const QFont& font) {
 void Library::slotSetTrackTableRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
     emit(setTrackTableRowHeight(rowHeight));
-}
-
-void Library::slotPaneFocused(LibraryPaneManager* pPane) {
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
-        return;
-    }
-    
-    if (pPane != m_pSidebarExpanded) {
-        m_focusedPane = pPane->getPaneId();
-        pPane->getCurrentFeature()->setFeatureFocus(m_focusedPane);
-        DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
-            return;
-        }
-        setFocusedPane();
-        handleFocus();
-    }
-    
-    //qDebug() << "Library::slotPaneFocused" << m_focusedPane;
 }
 
 void Library::slotUpdateFocus(LibraryFeature* pFeature) {

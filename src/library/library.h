@@ -96,6 +96,8 @@ public:
     void showBreadCrumb(const QString& text, const QIcon& icon);
     void restoreSearch(const QString& text);
     void restoreSaveButton();
+    void paneFocused(LibraryPaneManager *pPane);
+    void panePreselected(LibraryPaneManager* pPane, bool value);
 
   public slots:
     
@@ -115,7 +117,6 @@ public:
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
-    void slotPaneFocused(LibraryPaneManager *pPane);
     
     // Updates with the focus feature
     void slotUpdateFocus(LibraryFeature* pFeature);
