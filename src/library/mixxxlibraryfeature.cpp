@@ -153,7 +153,7 @@ QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKey
     m_pSidebar = createLibrarySidebarWidget(pKeyboard);
     m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());    
     m_pChildModel->reloadTree();
-    return pContainer;
+    return m_pSidebar;
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {
