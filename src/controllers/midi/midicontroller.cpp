@@ -31,7 +31,7 @@ QString MidiController::presetExtension() {
     return MIDI_PRESET_EXTENSION;
 }
 
-void MidiController::visit(const MidiControllerPreset* preset) {
+void MidiController::visitMidi(const MidiControllerPreset* preset) {
     m_preset = *preset;
     emit(presetLoaded(getPreset()));
 }
@@ -41,13 +41,13 @@ int MidiController::close() {
     return 0;
 }
 
-void MidiController::visit(const HidControllerPreset* preset) {
+void MidiController::visitHid(const HidControllerPreset* preset) {
     Q_UNUSED(preset);
     qWarning() << "ERROR: Attempting to load an HidControllerPreset to a MidiController!";
     // TODO(XXX): throw a hissy fit.
 }
 
-void MidiController::visit(const KeyboardControllerPreset* preset) {
+void MidiController::visitKeyboard(const KeyboardControllerPreset* preset) {
     Q_UNUSED(preset);
     qWarning() << "ERROR: Attempting to load a KeyboardControllerPreset to a MidiController!";
     // TODO(XXX): throw a hissy fit.

@@ -46,7 +46,7 @@ class FakeController : public Controller {
         return true;
     }
 
-    virtual void visit(const MidiControllerPreset* preset) override {
+    virtual void visitMidi(const MidiControllerPreset* preset) override {
         m_bMidiPreset = true;
         m_bHidPreset = false;
         m_bKbdPreset = false;
@@ -54,7 +54,7 @@ class FakeController : public Controller {
         m_hidPreset = HidControllerPreset();
         m_kbdPreset = KeyboardControllerPreset();
     }
-    virtual void visit(const HidControllerPreset* preset) override {
+    virtual void visitHid(const HidControllerPreset* preset) override {
         m_bMidiPreset = false;
         m_bHidPreset = true;
         m_bKbdPreset = false;

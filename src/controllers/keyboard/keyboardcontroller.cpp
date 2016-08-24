@@ -38,19 +38,19 @@ bool KeyboardController::savePreset(const QString fileName) const {
     return handler.save(m_preset, getName(), fileName);
 }
 
-void KeyboardController::visit(const KeyboardControllerPreset* preset) {
+void KeyboardController::visitKeyboard(const KeyboardControllerPreset* preset) {
     m_preset = *preset;
     emit(presetLoaded(getPreset()));
     emit(keyboardControllerPresetLoaded(getKeyboardPreset()));
 } 
 
-void KeyboardController::visit(const MidiControllerPreset* preset) {
+void KeyboardController::visitMidi(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     qWarning() << "ERROR: Attempting to load a MidiControllerPreset to a KeyboardController!";
     // TODO(XXX): throw a hissy fit.
 }
 
-void KeyboardController::visit(const HidControllerPreset* preset) {
+void KeyboardController::visitHid(const HidControllerPreset* preset) {
     Q_UNUSED(preset);
     qWarning() << "ERROR: Attempting to load an HidControllerPreset to a KeyboardController!";
     // TODO(XXX): throw a hissy fit.

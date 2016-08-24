@@ -121,19 +121,19 @@ QString HidController::presetExtension() {
     return HID_PRESET_EXTENSION;
 }
 
-void HidController::visit(const KeyboardControllerPreset* preset) {
+void HidController::visitKeyboard(const KeyboardControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
     qWarning() << "ERROR: Attempting to load a KeyboardControllerPreset to an HidController!";
 }
 
-void HidController::visit(const MidiControllerPreset* preset) {
+void HidController::visitMidi(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
     qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
 }
 
-void HidController::visit(const HidControllerPreset* preset) {
+void HidController::visitHid(const HidControllerPreset* preset) {
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.
     emit(presetLoaded(getPreset()));

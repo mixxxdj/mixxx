@@ -15,13 +15,13 @@ class KeyboardControllerPreset : public ControllerPreset {
 
     virtual void accept(ControllerPresetVisitor* visitor) override {
         if (visitor) {
-            visitor->visit(this);
+            visitor->visitKeyboard(this);
         }
     }
 
     virtual void accept(ConstControllerPresetVisitor* visitor) const override {
         if (visitor) {
-            visitor->visit(this);
+            visitor->visitKeyboard(this);
         }
     }
 

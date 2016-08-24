@@ -29,9 +29,9 @@ class KeyboardController : public Controller {
 
     virtual bool savePreset(const QString fileName) const override;
     virtual bool matchPreset(const PresetInfo& preset) override;
-    virtual void visit(const KeyboardControllerPreset* preset) override;
-    virtual void visit(const MidiControllerPreset* preset) override;
-    virtual void visit(const HidControllerPreset* preset) override;
+    virtual void visitKeyboard(const KeyboardControllerPreset* preset) override;
+    virtual void visitMidi(const MidiControllerPreset* preset) override;
+    virtual void visitHid(const HidControllerPreset* preset) override;
     virtual void accept(ControllerVisitor* visitor) override {
         if (visitor) {
             visitor->visit(this);
