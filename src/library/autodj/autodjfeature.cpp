@@ -103,7 +103,9 @@ QString AutoDJFeature::getSettingsName() const {
 }
 
 QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
-    WTrackTableView* pTrackTableView = LibraryFeature::createTableWidget(pKeyboard, paneId);        
+    WTrackTableView* pTrackTableView = createTableWidget(pKeyboard, paneId);      
+    pTrackTableView->loadTrackModel(m_pAutoDJProcessor->getTableModel());
+    
     connect(pTrackTableView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, 
@@ -150,7 +152,7 @@ void AutoDJFeature::activate() {
     
     m_pAutoDJView->onShow();
     
-    showTrackModel(m_pAutoDJProcessor->getTableModel());
+    switchToFeature();
     showBreadCrumb();
     restoreSearch(QString()); //Null String disables search box
     

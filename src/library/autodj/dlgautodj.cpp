@@ -61,14 +61,8 @@ void DlgAutoDJ::setSelectedRows(const QModelIndexList& selectedRows) {
 }
 
 void DlgAutoDJ::shufflePlaylistButton(bool) {    
-    LibraryView* pView = m_pLibrary->getActiveView();
-    WTrackTableView* pTrackTable = dynamic_cast<WTrackTableView*>(pView);
-    
-    if (pView) {
-        QModelIndexList indexList = pTrackTable->selectionModel()->selectedRows();
-        // Activate regardless of button being checked
-        m_pAutoDJProcessor->shufflePlaylist(indexList);
-    }
+    // Activate regardless of button being checked
+    m_pAutoDJProcessor->shufflePlaylist(m_selectedRows);
 }
 
 void DlgAutoDJ::skipNextButton(bool) {
