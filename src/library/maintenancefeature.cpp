@@ -57,7 +57,7 @@ void MaintenanceFeature::selectionChanged(const QItemSelection&,
         return;
     }
 
-    auto it = m_idPaneCurrent.find(m_featureFocus);
+    auto it = m_idPaneCurrent.find(m_featurePane);
     if (it == m_idPaneCurrent.end()) {
         return;
     }
@@ -124,7 +124,7 @@ void MaintenanceFeature::slotTabIndexChanged(int index) {
         DEBUG_ASSERT_AND_HANDLE(!m_pHiddenView.isNull()) {
             return;
         }
-        m_idPaneCurrent[m_featureFocus] = Pane::Hidden;
+        m_idPaneCurrent[m_featurePane] = Pane::Hidden;
         pTable->loadTrackModel(getHiddenTableModel());
 
         title = &kHiddenTitle;
@@ -134,7 +134,7 @@ void MaintenanceFeature::slotTabIndexChanged(int index) {
             return;
         }
 
-        m_idPaneCurrent[m_featureFocus] = Pane::Missing;
+        m_idPaneCurrent[m_featurePane] = Pane::Missing;
         pTable->loadTrackModel(getMissingTableModel());
 
         title = &kMissingTitle;

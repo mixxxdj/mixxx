@@ -133,7 +133,7 @@ void BasePlaylistFeature::activate() {
         return;
     }
     
-    showBrowse(m_featureFocus);
+    showBrowse(m_featurePane);
     switchToFeature();
     showBreadCrumb();
     
@@ -142,7 +142,7 @@ void BasePlaylistFeature::activate() {
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
-    if (index == m_lastChildClicked && m_lastClickedFocus == m_featureFocus) {
+    if (index == m_lastChildClicked && m_lastClickedFocus == m_featurePane) {
         restoreSearch("");
         
         showTable(m_lastClickedFocus);
@@ -152,7 +152,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     }
     
     m_lastChildClicked = index;
-    m_lastClickedFocus = m_featureFocus;
+    m_lastClickedFocus = m_featurePane;
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     QSet<int> playlistIds = playlistIdsFromIndex(index);
     m_pPlaylistTableModel = getPlaylistTableModel(m_focusedPane);
@@ -312,9 +312,9 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     }
 }
 
-void BasePlaylistFeature::setFeatureFocus(int focus) {
+void BasePlaylistFeature::setFeaturePane(int focus) {
     m_pPlaylistTableModel = getPlaylistTableModel(focus);
-    LibraryFeature::setFeatureFocus(focus);
+    LibraryFeature::setFeaturePane(focus);
 }
 
 void BasePlaylistFeature::slotDeletePlaylist() {

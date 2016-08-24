@@ -66,6 +66,8 @@ class BrowseFeature : public LibraryFeature {
     QStringList getDefaultQuickLinks() const;
     void saveQuickLinks();
     void loadQuickLinks();
+    void showBrowse(int paneId);
+    void showTable(int paneId);
 
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;

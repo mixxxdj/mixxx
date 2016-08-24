@@ -36,7 +36,7 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
           m_savedDAO(m_pTrackCollection->getSavedQueriesDAO()),
-          m_featureFocus(-1),
+          m_featurePane(-1),
           m_focusedPane(-1),
           m_savedPane(-1) {
 }
@@ -104,12 +104,12 @@ QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     return pContainer;
 }
 
-void LibraryFeature::setFeatureFocus(int focus) {
-    m_featureFocus = focus;
+void LibraryFeature::setFeaturePane(int paneId) {
+    m_featurePane = paneId;
 }
 
-int LibraryFeature::getFeatureFocus() {
-    return m_featureFocus;
+int LibraryFeature::getFeaturePane() {
+    return m_featurePane;
 }
 
 void LibraryFeature::setFocusedPane(int paneId) {
@@ -122,7 +122,7 @@ int LibraryFeature::getFocusedPane() {
 
 void LibraryFeature::setSavedPane(int paneId) {
     m_savedPane = paneId;
-    setFeatureFocus(m_savedPane);
+    setFeaturePane(m_savedPane);
 }
 
 int LibraryFeature::getSavedPane() {
@@ -237,7 +237,7 @@ WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*
 }
 
 void LibraryFeature::showTrackModel(QAbstractItemModel *model) {
-    auto it = m_trackTables.find(m_featureFocus);
+    auto it = m_trackTables.find(m_featurePane);
     if (it == m_trackTables.end() || it->isNull()) {
         return;
     }
@@ -262,7 +262,8 @@ void LibraryFeature::showBreadCrumb(TreeItem *pTree) {
 }
 
 void LibraryFeature::showBreadCrumb(const QModelIndex& index) {
-    showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+    showBreadCrumb(index.data(TreeItemModel::RoleBreadCrumb).toString(),
+                   getIcon());
 }
 
 void LibraryFeature::showBreadCrumb(const QString &text, const QIcon& icon) {
@@ -274,7 +275,7 @@ void LibraryFeature::showBreadCrumb() {
 }
 
 WTrackTableView *LibraryFeature::getFocusedTable() {
-    auto it = m_trackTables.find(m_featureFocus);
+    auto it = m_trackTables.find(m_featurePane);
     if (it == m_trackTables.end() || it->isNull()) {
         return nullptr;
     }

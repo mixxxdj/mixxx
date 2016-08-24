@@ -135,18 +135,9 @@ bool CrateFeature::isSinglePane() const {
 }
 
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
-    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-    if (item == nullptr) {
-        return -1;
-    }
-
-    QString dataPath = item->dataPath().toString();
     bool ok = false;
-    int playlistId = dataPath.toInt(&ok);
-    if (!ok) {
-        return -1;
-    }
-    return playlistId;
+    int crateId = index.data(TreeItemModel::RoleDataPath).toInt(&ok);
+    return ok ? crateId : -1;
 }
 
 bool CrateFeature::dragMoveAccept(QUrl url) {
@@ -233,50 +224,26 @@ void CrateFeature::activate() {
         return;
     }
     
-    auto it = m_panes.find(m_featureFocus);
-    auto itId = m_idBrowse.find(m_featureFocus);
-    if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
-        return;
-    }
-    
-    (*it)->setCurrentIndex(*itId);
-    
+    showBrowse(m_featurePane);    
     switchToFeature();
     showBreadCrumb();
     restoreSearch(QString()); //disable search on crate home
-    m_featureFocus = -1;
     emit(enableCoverArtDisplay(true));
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
-    if (!index.isValid()) {
-        return;
-    }
     int crateId = crateIdFromIndex(index);
     if (crateId == -1) {
         return;
     }
     
-    m_pCrateTableModel = getTableModel(m_focusedPane);
-    auto it = m_panes.find(m_focusedPane);
-    auto itId = m_idTable.find(m_focusedPane);
-    if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
-        return;
-    }
-    
-    (*it)->setCurrentIndex(*itId);
+    m_pCrateTableModel = getTableModel(m_featurePane);
     m_pCrateTableModel->setTableModel(crateId);
-    
-    // Set the feature Focus for a moment to allow the LibraryFeature class
-    // to find the focused WTrackTable
-    m_featureFocus = m_focusedPane;
-    showTrackModel(m_pCrateTableModel);
-    m_featureFocus = -1;
-    
+    showTable(m_featurePane);
     restoreSearch("");
-    showBreadCrumb(index.data(TreeItemModel::RoleBreadCrumb).toString(),
-                   getIcon());
+    showBreadCrumb(index);
+    showTrackModel(m_pCrateTableModel);
     emit(enableCoverArtDisplay(true));
 }
 
@@ -955,4 +922,20 @@ QPointer<CrateTableModel> CrateFeature::getTableModel(int paneId) {
                                       new CrateTableModel(this, m_pTrackCollection));
     }
     return *it;
+}
+
+void CrateFeature::showBrowse(int paneId) {
+    auto it = m_panes.find(paneId);
+    auto itId = m_idBrowse.find(paneId);
+    if (it != m_panes.end() && !it->isNull() && itId != m_idBrowse.end()) {
+        (*it)->setCurrentIndex(*itId);
+    }
+}
+
+void CrateFeature::showTable(int paneId) {
+    auto it = m_panes.find(paneId);
+    auto itId = m_idTable.find(paneId);
+    if (it != m_panes.end() && !it->isNull() && itId != m_idTable.end()) {
+        (*it)->setCurrentIndex(*itId);
+    }
 }

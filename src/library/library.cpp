@@ -163,7 +163,7 @@ void Library::destroyInterface() {
     }
     
     for (LibraryFeature* f : m_features) {
-        f->setFeatureFocus(-1);
+        f->setFeaturePane(-1);
     }
     m_panes.clear();
 }
@@ -272,7 +272,7 @@ void Library::paneFocused(LibraryPaneManager* pPane) {
     
     if (pPane != m_pSidebarExpanded) {
         m_focusedPane = pPane->getPaneId();
-        pPane->getCurrentFeature()->setFeatureFocus(m_focusedPane);
+        pPane->getCurrentFeature()->setFeaturePane(m_focusedPane);
         DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
             return;
         }
@@ -331,7 +331,7 @@ void Library::onSkinLoadFinished() {
                 }
             }
             
-            (*itF)->setFeatureFocus(m_focusedPane);
+            (*itF)->setFeaturePane(m_focusedPane);
             (*itF)->setSavedPane(m_focusedPane);
             (*itF)->activate();
             m_savedFeatures[m_focusedPane] = *itF;
@@ -342,7 +342,7 @@ void Library::onSkinLoadFinished() {
         
         // The first pane always shows the Mixxx Library feature on start
         m_focusedPane = m_panes.begin().key();
-        (*m_features.begin())->setFeatureFocus(m_focusedPane);
+        (*m_features.begin())->setFeaturePane(m_focusedPane);
         slotActivateFeature(*m_features.begin());
     }
     else {
@@ -452,14 +452,14 @@ void Library::paneUncollapsed(int paneId) {
     // pane feature, switch the feature from one pane to the other and set
     // instead the saved feature
     LibraryFeature* pPaneFeature = m_panes[paneId]->getCurrentFeature();
-    pPaneFeature->setFeatureFocus(m_panes[paneId]->getPaneId());
+    pPaneFeature->setFeaturePane(m_panes[paneId]->getPaneId());
     
     for (LibraryPaneManager* pPane : m_panes) {
         int auxId = pPane->getPaneId();
         if (auxId != paneId && pPaneFeature == pPane->getCurrentFeature()) {
             LibraryFeature* pSaved = m_savedFeatures[auxId];
             pPane->switchToFeature(pSaved);
-            pSaved->setFeatureFocus(auxId);
+            pSaved->setFeaturePane(auxId);
             pSaved->activate();
         }
     }    
@@ -530,8 +530,8 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
 }
 
 void Library::slotUpdateFocus(LibraryFeature* pFeature) {
-    if (pFeature->getFeatureFocus() >= 0) {
-        m_focusedPane = pFeature->getFeatureFocus();
+    if (pFeature->getFeaturePane() >= 0) {
+        m_focusedPane = pFeature->getFeaturePane();
         setFocusedPane();
     }
 }

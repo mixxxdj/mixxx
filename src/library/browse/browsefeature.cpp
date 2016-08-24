@@ -234,13 +234,7 @@ void BrowseFeature::activate() {
         return;
     }
     
-    auto it = m_panes.find(m_featureFocus);
-    auto itId = m_idBrowse.find(m_featureFocus);
-    if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
-        return;
-    }
-    
-    (*it)->setCurrentIndex(*itId);
+    showBrowse(m_featurePane);
     switchToFeature();
     m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     m_pLibrary->restoreSearch(QString());
@@ -274,18 +268,9 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         m_browseModel.setPath(dir);
     }
     
-    auto itId = m_idTable.find(m_featureFocus);
-    auto it = m_panes.find(m_featureFocus);
-    
-    if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
-        qDebug() << "BrowseFeature::activateChild item not found";
-        return;
-    }
-    
-    QString bread = index.data(TreeItemModel::RoleBreadCrumb).toString();
-    
-    (*it)->setCurrentIndex(*itId);
+    showTable(m_featurePane);
     showTrackModel(&m_proxyModel);
+    QString bread = index.data(TreeItemModel::RoleBreadCrumb).toString();
     showBreadCrumb(bread, getIcon());
     
     emit(enableCoverArtDisplay(true));
@@ -505,4 +490,20 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
 
     qDebug() << "Default quick links:" << result;
     return result;
+}
+
+void BrowseFeature::showBrowse(int paneId) {
+    auto it = m_panes.find(paneId);
+    auto itId = m_idBrowse.find(paneId);
+    if (it != m_panes.end() && !it->isNull() && itId != m_idBrowse.end()) {
+        (*it)->setCurrentIndex(*itId);
+    }
+}
+
+void BrowseFeature::showTable(int paneId) {
+    auto itId = m_idTable.find(paneId);
+    auto it = m_panes.find(paneId);
+    if (it != m_panes.end() && !it->isNull() && itId != m_idTable.end()) {
+        (*it)->setCurrentIndex(*itId);
+    }
 }

@@ -92,6 +92,8 @@ class CrateFeature : public LibraryFeature {
     QModelIndex indexFromCrateId(int crateId);
     
     QPointer<CrateTableModel> getTableModel(int paneId);
+    void showBrowse(int paneId);
+    void showTable(int paneId);
 
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;

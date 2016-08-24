@@ -69,8 +69,8 @@ class LibraryFeature : public QObject {
     
     virtual TreeItemModel* getChildModel() = 0;
     
-    virtual void setFeatureFocus(int focus);
-    int getFeatureFocus();
+    virtual void setFeaturePane(int paneId);
+    int getFeaturePane();
     
     void setFocusedPane(int paneId);
     int getFocusedPane();
@@ -155,7 +155,7 @@ class LibraryFeature : public QObject {
     TrackCollection* m_pTrackCollection;
     SavedQueriesDAO& m_savedDAO;
     
-    int m_featureFocus;
+    int m_featurePane;
     int m_focusedPane;
     int m_savedPane;
     
