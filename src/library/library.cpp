@@ -626,11 +626,8 @@ void Library::setFocusedPane() {
 void Library::handleFocus() {
     // Changes the visual focus effect, removes the existing one and adds the
     // new focus
-    m_panes[m_focusedPane]->setFocus();
-    for (auto it = m_panes.begin(); it != m_panes.end(); ++it) {
-        // Remove the focus from not focused panes
-        if (it.key() != m_focusedPane) {
-            it.value()->clearFocus();
-        }
+    for (LibraryPaneManager* pPane : m_panes) {
+        pPane->clearFocus();
     }
+    m_panes[m_focusedPane]->setFocus();
 }

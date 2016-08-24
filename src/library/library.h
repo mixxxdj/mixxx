@@ -171,6 +171,7 @@ public:
     
     // Can be any integer as it's used with a HashMap
     int m_focusedPane;
+    int m_preselectedPane;
 };
 
 #endif /* LIBRARY_H */

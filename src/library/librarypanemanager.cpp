@@ -146,6 +146,19 @@ int LibraryPaneManager::getPaneId() {
     return m_paneId;
 }
 
+void LibraryPaneManager::setPreselected(bool value) {
+    if (!m_pBreadCrumb.isNull()) {
+        m_pBreadCrumb->setPreselected(value);
+    }
+}
+
+bool LibraryPaneManager::isPreselected() {
+    if (!m_pBreadCrumb.isNull()) {
+        return m_pBreadCrumb->isPreselected();
+    }
+    return false;
+}
+
 void LibraryPaneManager::slotPaneCollapsed() {
     m_pLibrary->paneCollapsed(m_paneId);
 }

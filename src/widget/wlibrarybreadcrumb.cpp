@@ -26,6 +26,8 @@ WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent)
     m_preselectIcon.addPixmap(preOff, QIcon::Normal, QIcon::Off);
     m_pPreselectButton->setIcon(m_preselectIcon);
     m_pPreselectButton->setCheckable(true);
+    m_pPreselectButton->setChecked(m_preselected);
+    
     connect(m_pPreselectButton, SIGNAL(clicked()), 
             this, SLOT(slotPreselectClicked()));
     
@@ -49,7 +51,7 @@ QSize WLibraryBreadCrumb::minimumSizeHint() const {
 
 void WLibraryBreadCrumb::setPreselected(bool value) {
     m_preselected = value;
-    m_pPreselectButton->toggle();
+    m_pPreselectButton->setChecked(value);
     refreshWidth();
 }
 

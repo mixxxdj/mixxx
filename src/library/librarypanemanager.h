@@ -49,6 +49,9 @@ class LibraryPaneManager : public QObject {
     void showBreadCrumb(const QString& text, const QIcon &icon);
     
     int getPaneId();
+    
+    void setPreselected(bool value);
+    bool isPreselected();
 
   signals:
     
