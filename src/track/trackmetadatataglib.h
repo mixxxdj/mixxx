@@ -11,7 +11,7 @@
 #include "track/trackmetadata.h"
 #include "util/result.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // Read both track metadata and cover art of supported file types.
 // Both parameters are optional and might be NULL.
@@ -33,6 +33,6 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
         const TrackMetadata& trackMetadata);
 bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata);
 
-} //namespace Mixxx
+} //namespace mixxx
 
 #endif

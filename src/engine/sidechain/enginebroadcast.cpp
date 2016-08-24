@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QUrl>
 
 #include <signal.h>
 
@@ -28,15 +29,15 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
 EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
-        : m_pTextCodec(NULL),
+        : m_pTextCodec(nullptr),
           m_pMetaData(),
-          m_pShout(NULL),
-          m_pShoutMetaData(NULL),
+          m_pShout(nullptr),
+          m_pShoutMetaData(nullptr),
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
           m_iShoutFailures(0),
           m_pConfig(pConfig),
-          m_encoder(NULL),
+          m_encoder(nullptr),
           m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
           m_custom_metadata(false),
           m_firstCall(false),
@@ -47,7 +48,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
           m_threadWaiting(false),
-          m_pOutputFifo(NULL) {
+          m_pOutputFifo(nullptr) {
     const bool persist = true;
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
@@ -129,11 +130,21 @@ void EngineBroadcast::updateFromPreferences() {
     double dStatus = m_pStatusCO->get();
     if (dStatus == STATUSCO_CONNECTED ||
             dStatus == STATUSCO_CONNECTING) {
-        qDebug() << "EngineBroadcast::updateFromPreferences: Can't edit preferences when playing";
+        qDebug() << "EngineBroadcast::updateFromPreferences status:"
+                 << dStatus
+                 << ". Can't edit preferences when playing";
         return;
     }
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
+
+    if (m_encoder) {
+        qDebug() << "delete m_encoder";
+        // delete m_encoder if it has been initialized (with maybe) different
+        // bitrate
+        delete m_encoder;
+        m_encoder = nullptr;
+    }
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
@@ -157,17 +168,44 @@ void EngineBroadcast::updateFromPreferences() {
     // Indicates our metadata is in the provided charset.
     shout_metadata_add(m_pShoutMetaData, "charset",  baCodec.constData());
 
-    // Host, server type, port, mountpoint, login, password should be latin1.
-    QByteArray baHost = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "host")).toLatin1();
-    QByteArray baServerType = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "servertype")).toLatin1();
-    QByteArray baPort = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "port")).toLatin1();
-    QByteArray baMountPoint = m_pConfig->getValueString(
+    QString serverType = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "servertype"));
+
+    QString host = m_pConfig->getValueString(
+                ConfigKey(BROADCAST_PREF_KEY, "host"));
+    int start = host.indexOf(QLatin1String("//"));
+    if (start == -1) {
+        // the host part requires preceding //.
+        // Without them, the path is treated relative and goes to the
+        // path() section.
+        host.prepend(QLatin1String("//"));
+    }
+    QUrl serverUrl = host;
+
+    bool ok = false;
+    unsigned int port = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "port")).toUInt(&ok);
+    if (ok) {
+        serverUrl.setPort(port);
+    }
+
+    QString mountPoint = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "mountpoint")).toLatin1();
-    QByteArray baLogin = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "login")).toLatin1();
+    if (!mountPoint.isEmpty()) {
+        if (!mountPoint.startsWith('/')) {
+            mountPoint.prepend('/');
+        }
+        serverUrl.setPath(mountPoint);
+    }
+
+    QString login = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "login"));
+    if (!login.isEmpty()) {
+        serverUrl.setUserName(login);
+    }
+
+    qDebug() << "Using server URL:" << serverUrl;
+
     QByteArray baPassword = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "password")).toLatin1();
     QByteArray baFormat = m_pConfig->getValueString(
@@ -207,7 +245,8 @@ void EngineBroadcast::updateFromPreferences() {
     int format;
     int protocol;
 
-    if (shout_set_host(m_pShout, baHost.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_host(m_pShout, serverUrl.host().toLatin1().constData())
+            != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting hostname!"), shout_get_error(m_pShout));
         return;
     }
@@ -218,23 +257,24 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    if (shout_set_port(m_pShout, baPort.toUInt()) != SHOUTERR_SUCCESS) {
+    if (shout_set_port(m_pShout, static_cast<unsigned short>(serverUrl.port(BROADCAST_DEFAULT_PORT)))
+            != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting port!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_password(m_pShout, baPassword.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_password(m_pShout, baPassword.constData())
+            != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting password!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_mount(m_pShout, baMountPoint.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_mount(m_pShout, serverUrl.path().toLatin1().constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting mount!"), shout_get_error(m_pShout));
         return;
     }
 
-
-    if (shout_set_user(m_pShout, baLogin.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_user(m_pShout, serverUrl.userName().toLatin1().constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting username!"), shout_get_error(m_pShout));
         return;
     }
@@ -302,9 +342,9 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    m_protocol_is_icecast2 = !qstricmp(baServerType.constData(), BROADCAST_SERVER_ICECAST2);
-    m_protocol_is_shoutcast = !qstricmp(baServerType.constData(), BROADCAST_SERVER_SHOUTCAST);
-    m_protocol_is_icecast1 = !qstricmp(baServerType.constData(), BROADCAST_SERVER_ICECAST1);
+    m_protocol_is_icecast2 = serverType == BROADCAST_SERVER_ICECAST2;
+    m_protocol_is_shoutcast = serverType == BROADCAST_SERVER_SHOUTCAST;
+    m_protocol_is_icecast1 = serverType == BROADCAST_SERVER_ICECAST1;
 
 
     if (m_protocol_is_icecast2) {
@@ -330,27 +370,26 @@ void EngineBroadcast::updateFromPreferences() {
     }
 
     // Initialize m_encoder
-    if (m_encoder) {
-        // delete m_encoder if it has been initialized (with maybe) different bitrate
-        delete m_encoder;
-        m_encoder = NULL;
-    }
-
     if (m_format_is_mp3) {
         m_encoder = new EncoderMp3(this);
     } else if (m_format_is_ov) {
         m_encoder = new EncoderVorbis(this);
     } else {
         qDebug() << "**** Unknown Encoder Format";
+        setState(NETWORKSTREAMWORKER_STATE_ERROR);
+        m_lastErrorStr = "Encoder format error";
         return;
     }
 
     if (m_encoder->initEncoder(iBitrate, iMasterSamplerate) < 0) {
-        //e.g., if lame is not found
-        //init m_encoder itself will display a message box
+        // e.g., if lame is not found
+        // init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
         delete m_encoder;
-        m_encoder = NULL;
+        m_encoder = nullptr;
+        setState(NETWORKSTREAMWORKER_STATE_ERROR);
+        m_lastErrorStr = "Encoder error";
+        return;
     }
     setState(NETWORKSTREAMWORKER_STATE_READY);
 }
@@ -362,9 +401,17 @@ bool EngineBroadcast::serverConnect() {
 }
 
 bool EngineBroadcast::processConnect() {
+    qDebug() << "EngineBroadcast::processConnect()";
+
     // Make sure that we call updateFromPreferences always
-    if (m_encoder == NULL) {
-        updateFromPreferences();
+    updateFromPreferences();
+
+    if (!m_encoder) {
+        // updateFromPreferences failed
+        m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+        m_pBroadcastEnabled->set(0);
+        qDebug() << "EngineBroadcast::processConnect() returning false";
+        return false;
     }
 
     m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
@@ -378,7 +425,7 @@ bool EngineBroadcast::processConnect() {
     if(m_pMetaData) {
         m_pMetaData.clear();
     }
-    //If static metadata is available, we only need to send metadata one time
+    // If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
 
     while (m_iShoutFailures < kMaxShoutFailures) {
@@ -458,6 +505,7 @@ bool EngineBroadcast::processConnect() {
             m_threadWaiting = true;
             m_pStatusCO->setAndConfirm(STATUSCO_CONNECTED);
             emit(broadcastConnected());
+            qDebug() << "EngineBroadcast::processConnect() returning true";
             return true;
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
             m_lastErrorStr = "Socket error";
@@ -476,7 +524,7 @@ bool EngineBroadcast::processConnect() {
     if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
-        m_encoder = NULL;
+        m_encoder = nullptr;
     }
     if (m_pBroadcastEnabled->toBool()) {
         m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
@@ -484,6 +532,7 @@ bool EngineBroadcast::processConnect() {
     } else {
         m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
     }
+    qDebug() << "EngineBroadcast::processConnect() returning false";
     return false;
 }
 
@@ -501,7 +550,7 @@ void EngineBroadcast::processDisconnect() {
     if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
-        m_encoder = NULL;
+        m_encoder = nullptr;
     }
 }
 
@@ -645,7 +694,7 @@ void EngineBroadcast::updateMetaData() {
     // If we use either MP3 streaming or OGG streaming with dynamic update of
     // metadata being enabled, we want dynamic metadata changes
     if (!m_custom_metadata && (m_format_is_mp3 || m_ogg_dynamic_update)) {
-        if (m_pMetaData != NULL) {
+        if (m_pMetaData != nullptr) {
 
             QString artist = m_pMetaData->getArtist();
             QString title = m_pMetaData->getTitle();

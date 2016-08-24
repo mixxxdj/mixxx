@@ -11,9 +11,9 @@
 #endif
 #include <sndfile.h>
 
-namespace Mixxx {
+namespace mixxx {
 
-class SoundSourceSndFile: public Mixxx::SoundSource {
+class SoundSourceSndFile: public mixxx::SoundSource {
 public:
     explicit SoundSourceSndFile(const QUrl& url);
     ~SoundSourceSndFile() override;
@@ -45,10 +45,10 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceSndFile(url));
+        return newSoundSourceFromUrl<SoundSourceSndFile>(url);
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCESNDFILE_H

@@ -6,9 +6,9 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <opus/opusfile.h>
 
-namespace Mixxx {
+namespace mixxx {
 
-class SoundSourceOpus: public Mixxx::SoundSource {
+class SoundSourceOpus: public mixxx::SoundSource {
 public:
     explicit SoundSourceOpus(const QUrl& url);
     ~SoundSourceOpus() override;
@@ -41,10 +41,10 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceOpus(url));
+        return newSoundSourceFromUrl<SoundSourceOpus>(url);
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEOPUS_H

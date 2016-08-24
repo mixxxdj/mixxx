@@ -833,6 +833,7 @@ class LiveBroadcasting(Feature):
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
             conf.CheckLib('ws2_32')
+            conf.CheckLib('gdi32')
 
     def sources(self, build):
         depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')

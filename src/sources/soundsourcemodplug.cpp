@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -77,7 +77,7 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
     if (nullptr != pModFile) {
         pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
-        pTrackMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000);
+        pTrackMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000.0);
         pTrackMetadata->setBitrate(8); // not really, but fill in something...
         ModPlug::ModPlug_Unload(pModFile);
     }
@@ -204,4 +204,4 @@ QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

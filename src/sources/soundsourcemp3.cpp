@@ -5,7 +5,7 @@
 
 #include <id3tag.h>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -185,8 +185,8 @@ void SoundSourceMp3::finishDecoding() {
 }
 
 SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    DEBUG_ASSERT(!hasChannelCount());
-    DEBUG_ASSERT(!hasSamplingRate());
+    DEBUG_ASSERT(!hasValidChannelCount());
+    DEBUG_ASSERT(!hasValidSamplingRate());
 
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
@@ -718,4 +718,4 @@ QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

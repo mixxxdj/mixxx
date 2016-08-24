@@ -16,7 +16,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
-#include "util/time.h"
+#include "util/duration.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
@@ -170,7 +170,7 @@ void PlaylistFeature::buildPlaylistList() {
             playlistTableModel.index(row, durationColumn)).toInt();
         m_playlistList.append(qMakePair(id, QString("%1 (%2) %3")
                                         .arg(name, QString::number(count),
-                                             Time::formatSeconds(duration))));
+                                                mixxx::Duration::formatSeconds(duration))));
     }
 }
 

@@ -2,7 +2,7 @@
 
 #include "sources/soundsourcesndfile.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
         : SoundSource(url),
@@ -117,4 +117,4 @@ QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

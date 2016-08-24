@@ -42,7 +42,7 @@ void HidReader::run() {
             Trace process("HidReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData(reinterpret_cast<char*>(data), result);
-            emit(incomingData(outData, Time::elapsed()));
+            emit(incomingData(outData, mixxx::Time::elapsed()));
         }
     }
     delete [] data;

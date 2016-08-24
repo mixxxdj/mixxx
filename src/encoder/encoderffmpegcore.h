@@ -25,7 +25,6 @@ extern "C" {
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include <libavutil/audioconvert.h>
 #include <libavutil/common.h>
 #include <libavutil/mathematics.h>
 #include <libavutil/samplefmt.h>

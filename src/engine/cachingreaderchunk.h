@@ -23,7 +23,7 @@ public:
 
     // Returns the corresponding chunk index for a frame index
     inline static SINT indexForFrame(SINT frameIndex) {
-        DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= frameIndex);
+        DEBUG_ASSERT(mixxx::AudioSource::getMinFrameIndex() <= frameIndex);
         const SINT chunkIndex = frameIndex / kFrames;
         return chunkIndex;
     }
@@ -63,14 +63,14 @@ public:
     // Check if the audio source has sample data available
     // for this chunk.
     bool isReadable(
-            const Mixxx::AudioSourcePointer& pAudioSource,
+            const mixxx::AudioSourcePointer& pAudioSource,
             SINT maxReadableFrameIndex) const;
 
     // Read sample frames from the audio source and return the
     // number of frames that have been read. The in/out parameter
     // pMaxReadableFrameIndex is adjusted if reading fails.
     SINT readSampleFrames(
-            const Mixxx::AudioSourcePointer& pAudioSource,
+            const mixxx::AudioSourcePointer& pAudioSource,
             SINT* pMaxReadableFrameIndex);
 
     // Copy sampleCount samples starting at sampleOffset from

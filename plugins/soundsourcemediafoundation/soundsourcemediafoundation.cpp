@@ -60,7 +60,7 @@ template<class T> static void safeRelease(T **ppT) {
 
 } // anonymous namespace
 
-namespace Mixxx {
+namespace mixxx {
 
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
@@ -496,7 +496,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     } else {
         qDebug() << "Number of channels in input stream" << numChannels;
     }
-    if (audioSrcCfg.hasChannelCount()) {
+    if (audioSrcCfg.hasValidChannelCount()) {
         numChannels = audioSrcCfg.getChannelCount();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_NUM_CHANNELS, numChannels);
@@ -520,7 +520,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     } else {
         qDebug() << "Samples per second in input stream" << samplesPerSecond;
     }
-    if (audioSrcCfg.hasSamplingRate()) {
+    if (audioSrcCfg.hasValidSamplingRate()) {
         samplesPerSecond = audioSrcCfg.getSamplingRate();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_SAMPLES_PER_SECOND, samplesPerSecond);
@@ -662,20 +662,20 @@ QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() con
 }
 
 SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
-    return exportSoundSourcePlugin(new SoundSourceMediaFoundation(url));
+    return newSoundSourcePluginFromUrl<SoundSourceMediaFoundation>(url);
 }
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderMediaFoundation is stateless and a single instance
     // can safely be shared
-    static Mixxx::SoundSourceProviderMediaFoundation singleton;
+    static mixxx::SoundSourceProviderMediaFoundation singleton;
     return &singleton;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
     // The statically allocated instance must not be deleted!
 }

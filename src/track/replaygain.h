@@ -3,7 +3,7 @@
 
 #include "util/types.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // DTO for storing replay gain information.
 //
@@ -114,6 +114,6 @@ bool operator!=(const ReplayGain& lhs, const ReplayGain& rhs) {
 
 }
 
-Q_DECLARE_METATYPE(Mixxx::ReplayGain)
+Q_DECLARE_METATYPE(mixxx::ReplayGain)
 
 #endif // MIXXX_REPLAYGAIN_H

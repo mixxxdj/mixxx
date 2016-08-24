@@ -7,7 +7,7 @@
 
 #include "sources/soundsource.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // Providers for the same file extension are selected according
 // to the priority for which they have been registered. Only
@@ -22,6 +22,9 @@ enum class SoundSourceProviderPriority {
 };
 
 // Factory interface for SoundSources
+//
+// The implementation of a SoundSourceProvider must be thread-safe, because
+// a single instance might be accessed concurrently from different threads.
 class SoundSourceProvider {
 public:
     virtual ~SoundSourceProvider() {}
@@ -52,6 +55,13 @@ public:
     virtual SoundSourcePointer newSoundSource(const QUrl& url) = 0;
 };
 
-} // namespace Mixxx
+typedef QSharedPointer<SoundSourceProvider> SoundSourceProviderPointer;
+
+template<typename T>
+static SoundSourceProviderPointer newSoundSourceProvider() {
+    return SoundSourceProviderPointer(new T);
+}
+
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEPROVIDER_H

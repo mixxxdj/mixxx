@@ -368,11 +368,11 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
 }
 
 void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
-                                   QString searchQuery,
-                                   QString extraFilter,
-                                   QString orderByClause,
-                                   const int sortColumn,
-                                   Qt::SortOrder sortOrder,
+                                   const QString& searchQuery,
+                                   const QString& extraFilter,
+                                   const QString& orderByClause,
+                                   const QList<SortColumn>& sortColumns,
+                                   const int columnOffset,
                                    QHash<TrackId, int>* trackToIndex) {
     // Skip processing if there are no tracks to filter or sort.
     if (trackIds.size() == 0) {
@@ -381,11 +381,6 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
 
     if (!m_bIndexBuilt) {
         buildIndex();
-    }
-
-    if (sortColumn < 0 || sortColumn >= columnCount()) {
-        qDebug() << "ERROR: Invalid sort column provided to BaseTrackCache::filterAndSort";
-        return;
     }
 
     QStringList idStrings;
@@ -441,7 +436,7 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
     while (query.next()) {
         TrackId trackId(query.value(idColumn));
         (*trackToIndex)[trackId] = m_trackOrder.size();
-        m_trackOrder.push_back(trackId);
+        m_trackOrder.append(trackId);
     }
 
     // At this point, the original set of tracks have been divided into two
@@ -486,8 +481,8 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
 
             // Figure out where it is supposed to sort. The table is sorted by
             // the sort column, so we can binary search.
-            int insertRow = findSortInsertionPoint(pTrack, sortColumn,
-                                                   sortOrder, m_trackOrder);
+            int insertRow = findSortInsertionPoint(
+                    pTrack, sortColumns, columnOffset, m_trackOrder);
 
             if (sDebug) {
                 qDebug() << this
@@ -535,18 +530,25 @@ std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query, QString ext
 }
 
 int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
-                                           const int sortColumn,
-                                           Qt::SortOrder sortOrder,
-                                           const QVector<TrackId> trackIds) const {
-    QVariant trackValue;
-    getTrackValueForColumn(pTrack, sortColumn, trackValue);
+        const QList<SortColumn>& sortColumns,
+        const int columnOffset,
+        const QVector<TrackId>& trackIds) const {
+    QList<QVariant> trackValues;
+    if (sortColumns.isEmpty()) {
+        return 0;
+    }
+    for (const auto& sc: sortColumns) {
+        QVariant trackValue;
+        getTrackValueForColumn(pTrack, sc.m_column - columnOffset, trackValue);
+        trackValues.append(trackValue);
+    }
 
     int min = 0;
     int max = trackIds.size() - 1;
 
     if (sDebug) {
         qDebug() << this << "Trying to insertion sort:"
-                 << trackValue << "min" << min << "max" << max;
+                 << trackValues.at(0) << "min" << min << "max" << max;
     }
 
     // If trackIds is empty, min is 0 and max is -1 so findSortInsertionPoint
@@ -555,18 +557,27 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
         int mid = min + (max - min) / 2;
         TrackId otherTrackId(trackIds[mid]);
 
-        // This should not happen, but it's a recoverable error so we should only log it.
+        // This should not happen, but it's a recoverable error so we should
+        // only log it.
         if (!m_trackInfo.contains(otherTrackId)) {
             qDebug() << "WARNING: track" << otherTrackId << "was not in index";
             //updateTrackInIndex(otherTrackId);
         }
 
-        QVariant tableValue = data(otherTrackId, sortColumn);
-        int compare = compareColumnValues(sortColumn, sortOrder, trackValue, tableValue);
+        int compare = 0;
+        for (int i = 0; i < sortColumns.count(); i++) {
+            QVariant tableValue =
+                    data(otherTrackId, sortColumns[i].m_column - columnOffset);
 
-        if (sDebug) {
-            qDebug() << this << "Comparing" << trackValue
-                     << "to" << tableValue << ":" << compare;
+            compare = compareColumnValues(
+                    sortColumns[i].m_column - columnOffset,
+                    sortColumns[i].m_order,
+                    trackValues[i],
+                    tableValue);
+
+            if (compare != 0) {
+                break;
+            }
         }
 
         if (compare == 0) {
@@ -587,13 +598,18 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                                         QVariant val1, QVariant val2) const {
     int result = 0;
 
-    if (sortColumn == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION) ||
+    if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) ||
-            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) ||
-            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
+            sortColumn == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION)
+    ) {
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 
@@ -604,8 +620,7 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
         else
             result = -1;
     } else {
-        // Default to case-insensitive string comparison
-        result = val1.toString().compare(val2.toString(), Qt::CaseInsensitive);
+        result = val1.toString().localeAwareCompare(val2.toString());
     }
 
     // If we're in descending order, flip the comparison.

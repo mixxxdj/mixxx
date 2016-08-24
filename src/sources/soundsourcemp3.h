@@ -15,7 +15,7 @@
 
 #include <vector>
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourceMp3: public SoundSource {
 public:
@@ -88,10 +88,10 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceMp3(url));
+        return newSoundSourceFromUrl<SoundSourceMp3>(url);
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEMP3_H

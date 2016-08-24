@@ -2,7 +2,7 @@
 
 #include <QFile>
 
-namespace Mixxx {
+namespace mixxx {
 
 //static
 WavpackStreamReader SoundSourceWV::s_streamReader = {
@@ -126,7 +126,7 @@ QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
 }
 
 SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
-    return exportSoundSourcePlugin(new SoundSourceWV(url));
+    return newSoundSourcePluginFromUrl<SoundSourceWV>(url);
 }
 
 //static
@@ -221,17 +221,17 @@ int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount)
     return (int32_t)pFile->write((char*)data, bcount);
 }
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderWV is stateless and a single instance
     // can safely be shared
-    static Mixxx::SoundSourceProviderWV singleton;
+    static mixxx::SoundSourceProviderWV singleton;
     return &singleton;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
     // The statically allocated instance must not be deleted!
 }

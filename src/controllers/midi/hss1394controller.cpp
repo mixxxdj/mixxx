@@ -21,7 +21,7 @@ DeviceChannelListener::~DeviceChannelListener() {
 void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize) {
     unsigned int i = 0;
 
-    mixxx::Duration timestamp = Time::elapsed();
+    mixxx::Duration timestamp = mixxx::Time::elapsed();
 
     // If multiple three-byte messages arrive right next to each other, handle them all
     while (i < uBufferSize) {

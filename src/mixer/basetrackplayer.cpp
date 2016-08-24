@@ -156,12 +156,14 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
         // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
         // relies on signals and slots to get tons of things done. Don't
         // randomly disconnect things.
-        // m_pLoadedTrack->disconnect();
         disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
         disconnect(m_pLoadedTrack.data(), 0, this, 0);
         disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
 
-        setReplayGain(0);
+        // Do not reset m_pReplayGain here, because the track might be still
+        // playing and the last buffer will be processed.
+
+        m_pPlay->set(0.0);
     }
 
     m_pLoadedTrack = pNewTrack;
@@ -174,8 +176,8 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
                 m_pKey, SLOT(set(double)));
 
         // Listen for updates to the file's Replay Gain
-        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(Mixxx::ReplayGain)),
-                this, SLOT(slotSetReplayGain(Mixxx::ReplayGain)));
+        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
+                this, SLOT(slotSetReplayGain(mixxx::ReplayGain)));
     }
 
     // Request a new track from EngineBuffer and wait for slotTrackLoaded()
@@ -241,6 +243,13 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pBPM->set(m_pLoadedTrack->getBpm());
         m_pKey->set(m_pLoadedTrack->getKey());
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+
+        // Clear loop
+        // It seems that the trick is to first clear the loop out point, and then
+        // the loop in point. If we first clear the loop in point, the loop out point
+        // does not get cleared.
+        m_pLoopOutPoint->set(-1);
+        m_pLoopInPoint->set(-1);
 
         const QList<CuePointer> trackCues(pNewTrack->getCuePoints());
         QListIterator<CuePointer> it(trackCues);
@@ -316,7 +325,7 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
 
-void BaseTrackPlayerImpl::slotSetReplayGain(Mixxx::ReplayGain replayGain) {
+void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change
     if (m_pPlay->get() == 0.0) {

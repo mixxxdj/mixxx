@@ -9,7 +9,7 @@
 
 #include <QFile>
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourceFLAC: public SoundSource {
 public:
@@ -68,10 +68,10 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceFLAC(url));
+        return newSoundSourceFromUrl<SoundSourceFLAC>(url);
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEFLAC_H
