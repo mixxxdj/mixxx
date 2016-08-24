@@ -114,5 +114,7 @@
         <file>skins/downArrow.png</file>
         <file>skins/cross_2.png</file>
         <file>skins/save_disabled.png</file>
+        <file>images/library/ic_library_preselect.png</file>
+        <file>images/library/ic_library_notpreselect.png</file>
     </qresource>
 </RCC>
