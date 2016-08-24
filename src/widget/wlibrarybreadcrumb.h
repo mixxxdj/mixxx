@@ -12,7 +12,6 @@ class WLibraryBreadCrumb : public QWidget {
     Q_OBJECT
 
   public:
-
     WLibraryBreadCrumb(QWidget* parent = nullptr);
 
     virtual QSize minimumSizeHint() const;
@@ -23,20 +22,14 @@ class WLibraryBreadCrumb : public QWidget {
     void preselected(bool);
     
   public slots:
-
     void showBreadCrumb(TreeItem* pTree);
     void showBreadCrumb(const QString& text, const QIcon& icon);
     void setBreadIcon(const QIcon& icon);
 
   protected:
-    
     virtual void resizeEvent(QResizeEvent* pEvent);
     
-  private slots:
-    void slotPreselectClicked();
-    
   private:
-    
     void setText(const QString& text);
     void refreshWidth();
     

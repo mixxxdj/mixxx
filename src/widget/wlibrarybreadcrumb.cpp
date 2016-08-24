@@ -28,8 +28,8 @@ WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent)
     m_pPreselectButton->setCheckable(true);
     m_pPreselectButton->setChecked(m_preselected);
     
-    connect(m_pPreselectButton, SIGNAL(clicked()), 
-            this, SLOT(slotPreselectClicked()));
+    connect(m_pPreselectButton, SIGNAL(clicked(bool)), 
+            this, SIGNAL(preselected(bool)));
     
     layout->addItem(new QSpacerItem(0,0, QSizePolicy::MinimumExpanding));
     layout->addWidget(m_pPreselectButton);
@@ -84,10 +84,6 @@ void WLibraryBreadCrumb::setBreadIcon(const QIcon& icon) {
 void WLibraryBreadCrumb::resizeEvent(QResizeEvent* pEvent) {
     QWidget::resizeEvent(pEvent);
     refreshWidth();
-}
-
-void WLibraryBreadCrumb::slotPreselectClicked() {
-    qDebug() << "Button clicked value:" << m_pPreselectButton->isChecked();
 }
 
 void WLibraryBreadCrumb::setText(const QString &text) {
