@@ -181,6 +181,16 @@ WLibraryBreadCrumb QLabel {
   color: #B3B3B3;
 }
 
+WLibraryBreadCrumb QToolButton {
+  margin-right: 3px;
+  background: none;
+  border: none;
+}
+
+WLibraryBreadCrumb QToolButton:hover {
+  background: none;
+}
+
 WBaseLibrary QLabel {
   margin: 4px 4px 0px 4px;
   font-size: 12px;

@@ -1220,7 +1220,7 @@
 #LibrarySidebarButtons QToolButton {
   margin: 0px 0px 0px 0px;
   padding: 0px 0px 0px 0px;
-  border: none;
+  border: 1px solid #191919;
   color: #cfb32c;
   background-color: #191919;
 }
@@ -1278,6 +1278,12 @@
 
 WLibraryBreadCrumb QLabel {
   margin: 4px 0px 6px 3px;
+}
+
+WLibraryBreadCrumb QToolButton {
+  margin-right: 3px;
+  background: none;
+  border: none;
 }
 
 WBaseLibrary QLabel {

@@ -92,7 +92,8 @@ class WPixmapStore {
     static void setLoader(QSharedPointer<ImgSource> ld);
     
     static void setLibraryIconLoader(QSharedPointer<ImgSource> pIconLoader);
-    static QIcon getLibraryIcon(const QString& filename);
+    static QIcon getLibraryIcon(const QString& fileName);
+    static QPixmap getLibraryPixmap(const QString& fileName);
 
   private:
     static QHash<QString, WeakPaintablePointer> m_paintableCache;

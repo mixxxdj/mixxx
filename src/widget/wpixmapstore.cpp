@@ -370,12 +370,16 @@ void WPixmapStore::setLibraryIconLoader(QSharedPointer<ImgSource> pIconLoader) {
     m_pIconLoader = pIconLoader;
 }
 
-QIcon WPixmapStore::getLibraryIcon(const QString& filename) {
+QIcon WPixmapStore::getLibraryIcon(const QString& fileName) {
+    return QIcon(getLibraryPixmap(fileName));
+}
+
+QPixmap WPixmapStore::getLibraryPixmap(const QString& fileName) {
     if (m_pIconLoader.isNull()) {
-        return QIcon(filename);
+        return QPixmap(fileName);
     }
 
-    QImage* image = m_pIconLoader->getImage(filename);
+    QImage* image = m_pIconLoader->getImage(fileName);
 
     if (!m_pLoader.isNull()) {
         m_pLoader->correctImageColors(image);
@@ -383,7 +387,6 @@ QIcon WPixmapStore::getLibraryIcon(const QString& filename) {
     }
 
     QPixmap pixmap(QPixmap::fromImage(*image));
-    QIcon icon(pixmap);
     delete image;
-    return icon;
+    return pixmap;
 }

@@ -550,16 +550,15 @@
                         background-color: #aab2b7;
                     }
 
-                    QScrollArea WButtonBar, 
-                    QScrollArea WButtonBar QWidget {
+                    WButtonBar {
                         border: none;
                     }
 
                     WButtonBar QToolButton {
                         padding: 2px 2px 2px 2px;
                         color: black;
-                        border: none;
                         background-color: #aab2b7;
+                        border: 2px solid #aab2b7;
                     }
 
                     WButtonBar QToolButton:hover {
@@ -578,6 +577,12 @@
 
                     WLibraryBreadCrumb QLabel {
                         margin: 2px 0px 2px 3px;
+                    }
+
+                    WLibraryBreadCrumb QToolButton {
+                        margin-right: 3px;
+                        background: none;
+                        border: none;
                     }
 
                     WBaseLibrary QLabel {

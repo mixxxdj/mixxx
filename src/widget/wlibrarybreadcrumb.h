@@ -1,7 +1,9 @@
 #ifndef SRC_WIDGET_WBREADCRUMB_H_
 #define SRC_WIDGET_WBREADCRUMB_H_
 
+#include <QIcon>
 #include <QLabel>
+#include <QToolButton>
 #include <QWidget>
 
 class TreeItem;
@@ -14,7 +16,12 @@ class WLibraryBreadCrumb : public QWidget {
     WLibraryBreadCrumb(QWidget* parent = nullptr);
 
     virtual QSize minimumSizeHint() const;
+    void setPreselected(bool value);
+    bool isPreselected();
 
+  signals:
+    void preselected(bool);
+    
   public slots:
 
     void showBreadCrumb(TreeItem* pTree);
@@ -25,6 +32,9 @@ class WLibraryBreadCrumb : public QWidget {
     
     virtual void resizeEvent(QResizeEvent* pEvent);
     
+  private slots:
+    void slotPreselectClicked();
+    
   private:
     
     void setText(const QString& text);
@@ -32,6 +42,9 @@ class WLibraryBreadCrumb : public QWidget {
     
     QLabel* m_pIcon;
     QLabel* m_pText;
+    QToolButton* m_pPreselectButton;
+    QIcon m_preselectIcon;
+    bool m_preselected;
     
     QString m_longText;
 };
