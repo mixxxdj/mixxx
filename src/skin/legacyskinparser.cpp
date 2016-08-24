@@ -1168,6 +1168,10 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
         SKIN_WARNING(node, *m_pContext) << "SearchBox Id not found";
         return nullptr;
     }
+    if (id < 0) {
+        SKIN_WARNING(node, *m_pContext) << "The SearchBox Id cannot be negative";
+        return nullptr;
+    }
     //qDebug() << "SearchBox ID:" << id;
 
     WSearchLineEdit* pSearchLineEdit = new WSearchLineEdit(m_pParent);
@@ -1267,13 +1271,17 @@ QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
     int id = -1;
-    if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
-        //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
-        m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, id);
+    if (!m_pContext->hasNodeSelectInt(node, "Id", &id)) {
+        SKIN_WARNING(node, *m_pContext) << "Pane Id not found";
+        return nullptr;
     }
-    else {
-        SKIN_WARNING(node, *m_pContext) << "No Id found";
+    if (id < 0) {
+        SKIN_WARNING(node, *m_pContext) << "The pane Id cannot be negative";
+        return nullptr;
     }
+    
+    //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
+    m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, id);
     
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
@@ -1369,13 +1377,17 @@ QWidget* LegacySkinParser::parseLibraryBreadCrumb(const QDomElement& node) {
     WLibraryBreadCrumb* pLibraryBreacrumb = new WLibraryBreadCrumb(m_pParent);
     
     int id = -1;
-    if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
-        //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
-        m_pLibrary->bindBreadCrumb(pLibraryBreacrumb, id);
+    if (!m_pContext->hasNodeSelectInt(node, "Id", &id)) {
+        SKIN_WARNING(node, *m_pContext) << "BreadCrumb Id not found";
+        return nullptr;
     }
-    else {
-        SKIN_WARNING(node, *m_pContext) << "No Id found";
+    if (id < 0) {
+        SKIN_WARNING(node, *m_pContext) << "The BreadCrumb Id cannot be negative";
+        return nullptr;
     }
+    
+    //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
+    m_pLibrary->bindBreadCrumb(pLibraryBreacrumb, id);
     setupWidget(node, pLibraryBreacrumb);
     
     return pLibraryBreacrumb;
