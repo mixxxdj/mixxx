@@ -61,7 +61,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
 
 void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
-    m_lastChildClicked = m_lastRightClickedIndex = index;
+    m_lastChildClicked[m_featurePane] = m_lastRightClickedIndex = index;
     int playlistId = playlistIdFromIndex(index);
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
@@ -214,7 +214,8 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        m_lastChildClicked = m_lastRightClickedIndex = constructChildModel(playlistId);
+        m_lastRightClickedIndex = constructChildModel(playlistId);
+        m_lastChildClicked[m_featurePane] = m_lastRightClickedIndex;
     }
 }
 
@@ -243,7 +244,8 @@ void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        m_lastChildClicked = m_lastRightClickedIndex = constructChildModel(playlistId);
+        m_lastRightClickedIndex = constructChildModel(playlistId);
+        m_lastChildClicked[m_featurePane] = m_lastRightClickedIndex;
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
             activatePlaylist(playlistId);
         }

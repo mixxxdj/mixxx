@@ -109,6 +109,8 @@ class LibraryFeature : public QObject {
     void featureLoadingFinished(LibraryFeature*);
     // emit this signal to select pFeature
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
+    // emit this signal to select an index
+    void selectIndex(const QModelIndex& index);
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer);

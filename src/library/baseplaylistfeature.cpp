@@ -128,8 +128,8 @@ QPointer<PlaylistTableModel> BasePlaylistFeature::getPlaylistTableModel(int pane
 }
 
 void BasePlaylistFeature::activate() {
-    if (m_lastChildClicked.isValid()) {
-        activateChild(m_lastChildClicked);
+    if (m_lastChildClicked[m_featurePane].isValid()) {
+        activateChild(m_lastChildClicked[m_featurePane]);
         return;
     }
     
@@ -142,17 +142,19 @@ void BasePlaylistFeature::activate() {
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
-    if (index == m_lastChildClicked && m_lastClickedFocus == m_featurePane) {
+    if (getPreselectedPane() >= 0) {
+        m_featurePane = getPreselectedPane();
+    }
+    
+    if (index == m_lastChildClicked[m_featurePane]) {
         restoreSearch("");
-        
-        showTable(m_lastClickedFocus);
-        showBreadCrumb(index);
+        showTable(m_featurePane);
         switchToFeature();
         return;
     }
     
-    m_lastChildClicked = index;
-    m_lastClickedFocus = m_featurePane;
+    m_lastChildClicked[m_featurePane] = index;
+    
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     QSet<int> playlistIds = playlistIdsFromIndex(index);
     m_pPlaylistTableModel = getPlaylistTableModel(m_featurePane);
@@ -178,9 +180,6 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         showTrackModel(m_pPlaylistTableModel);
         //m_pPlaylistTableModel->select();
-        emit(enableCoverArtDisplay(true));
-        // Update selection
-        emit(featureSelect(this, m_lastRightClickedIndex));
         activateChild(m_lastRightClickedIndex);
     }
 }
@@ -303,9 +302,11 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     int playlistId = m_playlistDao.createPlaylist(name);
 
     if (playlistId != -1) {
+        m_lastRightClickedIndex = constructChildModel(playlistId);
+        m_lastChildClicked[m_featurePane] = m_lastRightClickedIndex;
         activatePlaylist(playlistId);
     } else {
-        QMessageBox::warning(NULL,
+        QMessageBox::warning(nullptr,
                              tr("Playlist Creation Failed"),
                              tr("An unknown error occurred while creating playlist: ")
                               + name);
@@ -335,13 +336,21 @@ void BasePlaylistFeature::slotDeletePlaylist() {
             return;
         }
         
+        m_playlistDao.deletePlaylist(playlistId);
+
         // This avoids a bug where the m_lastChildClicked index is still a valid
         // index but it's not true since we just deleted it
-        if (m_lastChildClicked == m_lastRightClickedIndex) {
-            m_lastChildClicked = QModelIndex();
-        }
-
-        m_playlistDao.deletePlaylist(playlistId);
+        for (auto it = m_playlistTableModel.begin(); 
+                it != m_playlistTableModel.end(); ++it) {
+            
+            if ((*it)->getPlaylist() == playlistId) {
+                // Show the browse widget, this avoids a problem when the same
+                // playlist is shown twice and gets deleted. One of the panes
+                // gets still showing the unexisting playlist.
+                m_lastChildClicked[it.key()] = QModelIndex();
+                showBrowse(it.key());
+            }
+        }        
         activate();
     }
 }
@@ -450,7 +459,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
 
         slotImportPlaylistFile(playlistFile);
     }
-    activatePlaylist(lastPlaylistId);
+    m_lastChildClicked[m_featurePane] = constructChildModel(lastPlaylistId);
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {
@@ -720,7 +729,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
     buildPlaylistList();
     
     m_childModel->setRootItem(new TreeItem("$root", "$root", this, nullptr));
-    QList<TreeItem*> data_list;
+    QList<TreeItem*> dataList;
     int selectedRow = -1;
     // Access the invisible root item
     TreeItem* root = m_childModel->getItem(QModelIndex());
@@ -737,12 +746,12 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
         item->setBold(m_playlistsSelectedTrackIsIn.contains(p.id));
 
         decorateChild(item, p.id);
-        data_list.append(item);
+        dataList.append(item);
         ++row;
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel->insertRows(data_list, 0, m_playlistList.size());
+    m_childModel->insertRows(dataList, 0, m_playlistList.size());
     return m_childModel->index(selectedRow, 0);
 }
 

@@ -231,6 +231,9 @@ WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*
             this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
     connect(pSidebar, SIGNAL(expanded(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
+    connect(this, SIGNAL(selectIndex(const QModelIndex&)),
+            pSidebar, SLOT(selectIndex(const QModelIndex&)));
+    
     return pSidebar;
 }
 
