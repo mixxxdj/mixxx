@@ -162,13 +162,6 @@ void MixxxLibraryFeature::refreshLibraryModels() {
     }
 }
 
-void MixxxLibraryFeature::selectAll() {
-    QPointer<WTrackTableView> pTable = getFocusedTable();
-    if (!pTable.isNull()) {
-        pTable->selectAll();
-    }
-}
-
 void MixxxLibraryFeature::onSearch(const QString&) {
     showBreadCrumb();
     if (!m_pSidebar.isNull()) {

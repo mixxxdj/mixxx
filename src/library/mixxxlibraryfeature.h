@@ -56,7 +56,6 @@ class MixxxLibraryFeature : public LibraryFeature {
     void onRightClickChild(const QPoint& pos, const QModelIndex&) override;
     void refreshLibraryModels();
 
-    void selectAll();
     void onSearch(const QString&) override;
 
   signals:
