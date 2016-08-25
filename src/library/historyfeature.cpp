@@ -207,7 +207,7 @@ QWidget* HistoryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard
 
 void HistoryFeature::slotJoinWithNext() {
     //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
-    m_pPlaylistTableModel = getPlaylistTableModel(m_focusedPane);
+    m_pPlaylistTableModel = getPlaylistTableModel(m_featurePane);
     if (m_lastRightClickedIndex.isValid()) {
         bool ok;
         int currentPlaylistId =

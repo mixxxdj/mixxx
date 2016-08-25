@@ -98,6 +98,9 @@ public:
     void restoreSaveButton(int paneId);
     void paneFocused(LibraryPaneManager *pPane);
     void panePreselected(LibraryPaneManager* pPane, bool value);
+    
+    int getFocusedPaneId();
+    int getPreselectedPaneId();
 
   public slots:
     
@@ -117,9 +120,6 @@ public:
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
-    
-    // Updates with the focus feature
-    void slotUpdateFocus(LibraryFeature* pFeature);
 
     void scan() {
         m_scanner.scan();
@@ -148,7 +148,6 @@ public:
     LibraryPaneManager* getPreselectedPane();
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
-    void setFocusedPane();
     
     void handleFocus();
     void handlePreselection();

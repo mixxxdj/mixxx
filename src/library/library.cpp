@@ -209,6 +209,8 @@ void Library::switchToFeature(LibraryFeature* pFeature) {
     }
     
     pPane->switchToFeature(pFeature);
+    m_preselectedPane = -1;
+    handlePreselection();
 }
 
 void Library::showBreadCrumb(int paneId, TreeItem *pTree) {
@@ -273,7 +275,6 @@ void Library::paneFocused(LibraryPaneManager* pPane) {
         DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
             return;
         }
-        setFocusedPane();
         handleFocus();
     }
     
@@ -289,6 +290,14 @@ void Library::panePreselected(LibraryPaneManager* pPane, bool value) {
         m_preselectedPane = -1;
     }
     handlePreselection();
+}
+
+int Library::getFocusedPaneId() {
+    return m_focusedPane;
+}
+
+int Library::getPreselectedPaneId() {
+    return m_preselectedPane;
 }
 
 void Library::slotRefreshLibraryModels() {
@@ -337,7 +346,8 @@ void Library::onSkinLoadFinished() {
         }
         
         // The first pane always shows the Mixxx Library feature on start
-        m_preselectedPane = m_panes.begin().key();
+        m_preselectedPane = m_focusedPane = m_panes.begin().key();
+        handleFocus();
         (*m_features.begin())->setFeaturePane(m_preselectedPane);
         slotActivateFeature(*m_features.begin());
     }
@@ -431,7 +441,6 @@ void Library::paneCollapsed(int paneId) {
         int auxId = pPane->getPaneId();
         if (!m_collapsedPanes.contains(auxId) && !focused) {
             m_focusedPane = pPane->getPaneId();
-            setFocusedPane();
             pPane->setFocus();
             focused = true;
         }
@@ -470,66 +479,17 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
         m_preselectedPane = pFeature->getSavedPane();
     }
     
-    m_pSidebarExpanded->switchToFeature(pFeature);
     pFeature->setSavedPane(m_preselectedPane);
+    pFeature->setFeaturePane(m_preselectedPane);
     
     if (m_panes[m_preselectedPane]->getCurrentFeature() != pFeature) {
         m_panes[m_preselectedPane]->setCurrentFeature(pFeature);
         pFeature->activate();
+    } else {
+        m_pSidebarExpanded->switchToFeature(pFeature);
     }
     m_preselectedPane = -1;
     handlePreselection();
-    
-    
-    
-    
-    /*
-    // The feature is being shown currently in the focused pane
-    if (m_panes[m_focusedPane]->getCurrentFeature() == pFeature) {
-        pFeature->setSavedPane(m_focusedPane);
-        m_pSidebarExpanded->switchToFeature(pFeature);
-        handleFocus();
-        return;
-    } 
-
-    if (m_pSidebarExpanded->getCurrentFeature() != pFeature) {
-        // If the feature is not already shown, follow restore in old pane
-        int savedPane = pFeature->getSavedPane();
-        if (savedPane >= 0 && !m_collapsedPanes.contains(savedPane)) {
-            // The feature is shown in some not collapsed pane
-            m_focusedPane = savedPane;
-            setFocusedPane();
-        }
-    } else if (pFeature->isSinglePane()) {
-        // Swap panes in case of a single Pane feature
-        LibraryFeature* pOldFeature = m_panes[m_focusedPane]->getCurrentFeature();
-        int newFocusPane = m_focusedPane;
-        m_focusedPane = pFeature->getSavedPane();
-        m_panes[m_focusedPane]->setCurrentFeature(pOldFeature);
-        pOldFeature->setSavedPane(m_focusedPane);
-        pOldFeature->activate();
-        m_focusedPane = newFocusPane;
-    }
-    
-    LibraryFeature* pCurrentFeature = m_panes[m_focusedPane]->getCurrentFeature();
-    if (pCurrentFeature != pFeature && 
-            pCurrentFeature->getSavedPane() == m_focusedPane) {
-        // If this feature it's still shown in another pane change the feature 
-        // focus to the other pane
-        for (LibraryPaneManager* p : m_panes) {
-            if (!m_collapsedPanes.contains(p->getPaneId()) && 
-                    p->getCurrentFeature() == pCurrentFeature) {
-                pCurrentFeature->setSavedPane(p->getPaneId());
-                break;
-            }
-        }
-    }
-    
-    m_panes[m_focusedPane]->setCurrentFeature(pFeature);
-    pFeature->setSavedPane(m_focusedPane);    
-    pFeature->activate();
-    handleFocus();
-    */
 }
 
 void Library::slotHoverFeature(LibraryFeature *pFeature) {
@@ -547,14 +507,6 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
     emit(setTrackTableRowHeight(rowHeight));
 }
-
-void Library::slotUpdateFocus(LibraryFeature* pFeature) {
-    if (pFeature->getFeaturePane() >= 0) {
-        m_focusedPane = pFeature->getFeaturePane();
-        setFocusedPane();
-    }
-}
-
 
 LibraryPaneManager* Library::getOrCreatePane(int paneId) {
     //qDebug() << "Library::createPane" << id;
@@ -580,7 +532,6 @@ LibraryPaneManager* Library::getOrCreatePane(int paneId) {
     m_panes.insert(paneId, pPane);
     
     m_focusedPane = paneId;
-    setFocusedPane();
     return pPane;
 }
 
@@ -660,12 +611,6 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
     }
     
     addFeature(new MaintenanceFeature(pConfig, this, this, m_pTrackCollection));
-}
-
-void Library::setFocusedPane() {
-    for (LibraryFeature* pFeature : m_features) {
-        pFeature->setFocusedPane(m_focusedPane);
-    }
 }
 
 void Library::handleFocus() {

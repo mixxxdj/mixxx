@@ -118,7 +118,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
 
 QPointer<PlaylistTableModel> BasePlaylistFeature::getPlaylistTableModel(int paneId) {
     if (paneId < 0) {
-        paneId = m_focusedPane;
+        paneId = m_featurePane;
     }
     auto it = m_playlistTableModel.find(paneId);
     if (it == m_playlistTableModel.end() || it->isNull()) {
@@ -155,11 +155,11 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     m_lastClickedFocus = m_featurePane;
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     QSet<int> playlistIds = playlistIdsFromIndex(index);
-    m_pPlaylistTableModel = getPlaylistTableModel(m_focusedPane);
+    m_pPlaylistTableModel = getPlaylistTableModel(m_featurePane);
     
     if (!playlistIds.isEmpty() && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistIds);
-        showTable(m_focusedPane);
+        showTable(m_featurePane);
         
         // Set the feature Focus for a moment to allow the LibraryFeature class
         // to find the focused WTrackTable

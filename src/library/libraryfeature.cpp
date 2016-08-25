@@ -37,7 +37,6 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_pTrackCollection(pTrackCollection),
           m_savedDAO(m_pTrackCollection->getSavedQueriesDAO()),
           m_featurePane(-1),
-          m_focusedPane(-1),
           m_savedPane(-1) {
 }
 
@@ -112,21 +111,20 @@ int LibraryFeature::getFeaturePane() {
     return m_featurePane;
 }
 
-void LibraryFeature::setFocusedPane(int paneId) {
-    m_focusedPane = paneId;
-}
-
-int LibraryFeature::getFocusedPane() {
-    return m_focusedPane;
-}
-
 void LibraryFeature::setSavedPane(int paneId) {
     m_savedPane = paneId;
-    setFeaturePane(m_savedPane);
 }
 
 int LibraryFeature::getSavedPane() {
     return m_savedPane;
+}
+
+int LibraryFeature::getFocusedPane() {
+    return m_pLibrary->getFocusedPaneId();
+}
+
+int LibraryFeature::getPreselectedPane() {
+    return m_pLibrary->getPreselectedPaneId();
 }
 
 SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery sQuery) {

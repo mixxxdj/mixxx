@@ -249,7 +249,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
 
 void CrateFeature::activateCrate(int crateId) {
     //qDebug() << "CrateFeature::activateCrate()" << crateId;
-    m_pCrateTableModel = getTableModel(m_focusedPane);
+    m_pCrateTableModel = getTableModel(m_featurePane);
     
     QModelIndex index = indexFromCrateId(crateId);
     if (crateId != -1 && index.isValid()) {

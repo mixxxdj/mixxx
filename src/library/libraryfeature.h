@@ -72,11 +72,11 @@ class LibraryFeature : public QObject {
     virtual void setFeaturePane(int paneId);
     int getFeaturePane();
     
-    void setFocusedPane(int paneId);
-    int getFocusedPane();
-    
     void setSavedPane(int paneId);
     int getSavedPane();
+    
+    int getFocusedPane();
+    int getPreselectedPane();
     
     virtual SavedSearchQuery saveQuery(SavedSearchQuery sQuery);
     virtual void restoreQuery(int id);
@@ -156,7 +156,6 @@ class LibraryFeature : public QObject {
     SavedQueriesDAO& m_savedDAO;
     
     int m_featurePane;
-    int m_focusedPane;
     int m_savedPane;
     
   private: 
