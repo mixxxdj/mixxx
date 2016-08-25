@@ -143,7 +143,7 @@ public:
   private:
     
     // If the pane exists returns it, otherwise it creates the pane
-    LibraryPaneManager* getPane(int paneId);
+    LibraryPaneManager* getOrCreatePane(int paneId);
     LibraryPaneManager* getFocusedPane();
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);

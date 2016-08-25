@@ -108,7 +108,7 @@ Library::~Library() {
 
 void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
     // Get the value once to avoid searching again in the hash
-    LibraryPaneManager* pPane = getPane(id);
+    LibraryPaneManager* pPane = getOrCreatePane(id);
     pPane->bindSearchBar(searchLine);
 }
 
@@ -129,7 +129,7 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
                              KeyboardEventFilter* pKeyboard, int paneId) {
     
     // Get the value once to avoid searching again in the hash
-    LibraryPaneManager* pPane = getPane(paneId);
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     if (pPane == nullptr) {
         return;
     }
@@ -151,7 +151,7 @@ void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
 
 void Library::bindBreadCrumb(WLibraryBreadCrumb* pBreadCrumb, int paneId) {
     // Get the value once to avoid searching again in the hash
-    LibraryPaneManager* pPane = getPane(paneId);
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     pPane->setBreadCrumb(pBreadCrumb);
 }
 
@@ -537,7 +537,7 @@ void Library::slotUpdateFocus(LibraryFeature* pFeature) {
 }
 
 
-LibraryPaneManager* Library::getPane(int paneId) {
+LibraryPaneManager* Library::getOrCreatePane(int paneId) {
     //qDebug() << "Library::createPane" << id;
     // Get the value once to avoid searching again in the hash
     auto it = m_panes.find(paneId);
