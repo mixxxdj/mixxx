@@ -164,7 +164,7 @@ void TraktorFeature::activate() {
     }
     
     showTrackModel(m_pTraktorTableModel);
-    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    showBreadCrumb();
     enableCoverArtDisplay(true);
 }
 
@@ -180,7 +180,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
         m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
         
         showTrackModel(m_pTraktorPlaylistModel);
-        m_pLibrary->showBreadCrumb(item);
+        showBreadCrumb(item);
         enableCoverArtDisplay(true);
     }
 }
@@ -619,7 +619,7 @@ void TraktorFeature::onTrackCollectionLoaded() {
 
         //m_pTraktorTableModel->select();
         showTrackModel(m_pTraktorTableModel);
-        m_pLibrary->showBreadCrumb(root);
+        showBreadCrumb(root);
         qDebug() << "Traktor library loaded successfully";
     } else {
         QMessageBox::warning(

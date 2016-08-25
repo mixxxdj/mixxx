@@ -92,10 +92,10 @@ public:
     }
     
     void switchToFeature(LibraryFeature* pFeature);
-    void showBreadCrumb(TreeItem* pTree);
-    void showBreadCrumb(const QString& text, const QIcon& icon);
-    void restoreSearch(const QString& text);
-    void restoreSaveButton();
+    void showBreadCrumb(int paneId, TreeItem* pTree);
+    void showBreadCrumb(int paneId, const QString& text, const QIcon& icon);
+    void restoreSearch(int paneId, const QString& text);
+    void restoreSaveButton(int paneId);
     void paneFocused(LibraryPaneManager *pPane);
     void panePreselected(LibraryPaneManager* pPane, bool value);
 

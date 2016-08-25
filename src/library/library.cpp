@@ -214,8 +214,8 @@ void Library::switchToFeature(LibraryFeature* pFeature) {
     handleFocus();
 }
 
-void Library::showBreadCrumb(TreeItem *pTree) {
-    LibraryPaneManager* pPane = getFocusedPane();
+void Library::showBreadCrumb(int paneId, TreeItem *pTree) {
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     DEBUG_ASSERT_AND_HANDLE(pPane) {
         return;
     }
@@ -223,8 +223,8 @@ void Library::showBreadCrumb(TreeItem *pTree) {
     pPane->showBreadCrumb(pTree);
 }
 
-void Library::showBreadCrumb(const QString &text, const QIcon &icon) {
-    LibraryPaneManager* pPane = getFocusedPane();
+void Library::showBreadCrumb(int paneId, const QString &text, const QIcon &icon) {
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     DEBUG_ASSERT_AND_HANDLE(pPane) {
         return;
     }
@@ -248,8 +248,8 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
     emit(loadTrackToPlayer(pTrack, group, play));
 }
 
-void Library::restoreSearch(const QString& text) {
-    LibraryPaneManager* pPane = getFocusedPane();
+void Library::restoreSearch(int paneId, const QString& text) {
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     DEBUG_ASSERT_AND_HANDLE(pPane) {
         return;
     }
@@ -257,8 +257,8 @@ void Library::restoreSearch(const QString& text) {
 }
 
 
-void Library::restoreSaveButton() {
-    LibraryPaneManager* pPane = getFocusedPane();
+void Library::restoreSaveButton(int paneId) {
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     DEBUG_ASSERT_AND_HANDLE(pPane) {
         return;
     }

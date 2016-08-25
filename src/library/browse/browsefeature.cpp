@@ -236,8 +236,8 @@ void BrowseFeature::activate() {
     
     showBrowse(m_featurePane);
     switchToFeature();
-    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
-    m_pLibrary->restoreSearch(QString());
+    showBreadCrumb();
+    restoreSearch(QString());
     
     enableCoverArtDisplay(true);
 }

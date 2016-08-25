@@ -250,15 +250,15 @@ void LibraryFeature::switchToFeature() {
 }
 
 void LibraryFeature::restoreSearch(const QString& search) {
-    m_pLibrary->restoreSearch(search);
+    m_pLibrary->restoreSearch(m_featurePane, search);
 }
 
 void LibraryFeature::restoreSaveButton() {
-    m_pLibrary->restoreSaveButton();
+    m_pLibrary->restoreSaveButton(m_featurePane);
 }
 
 void LibraryFeature::showBreadCrumb(TreeItem *pTree) {
-    m_pLibrary->showBreadCrumb(pTree);
+    m_pLibrary->showBreadCrumb(m_featurePane, pTree);
 }
 
 void LibraryFeature::showBreadCrumb(const QModelIndex& index) {
@@ -267,11 +267,11 @@ void LibraryFeature::showBreadCrumb(const QModelIndex& index) {
 }
 
 void LibraryFeature::showBreadCrumb(const QString &text, const QIcon& icon) {
-    m_pLibrary->showBreadCrumb(text, icon);
+    m_pLibrary->showBreadCrumb(m_featurePane, text, icon);
 }
 
 void LibraryFeature::showBreadCrumb() {
-    m_pLibrary->showBreadCrumb(title().toString(), getIcon());
+    showBreadCrumb(title().toString(), getIcon());
 }
 
 WTrackTableView *LibraryFeature::getFocusedTable() {

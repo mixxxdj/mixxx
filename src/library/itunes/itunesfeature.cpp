@@ -151,7 +151,7 @@ void ITunesFeature::activate(bool forceReload) {
                 NULL, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
             QFileInfo dbFile(m_dbfile);
             if (m_dbfile.isEmpty() || !dbFile.exists()) {
-                m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
+                showBreadCrumb();
                 showTrackModel(m_pITunesTrackModel);
                 return;
             }
@@ -183,7 +183,7 @@ void ITunesFeature::activate(bool forceReload) {
     }
 
     showTrackModel(m_pITunesTrackModel);
-    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    showBreadCrumb();
     enableCoverArtDisplay(true);
 }
 
@@ -194,7 +194,7 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     m_pITunesPlaylistModel->setPlaylist(playlist);
     
     showTrackModel(m_pITunesPlaylistModel);
-    m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+    showBreadCrumb(index);
     enableCoverArtDisplay(true);
 }
 
