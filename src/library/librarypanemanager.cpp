@@ -14,7 +14,6 @@ LibraryPaneManager::LibraryPaneManager(int paneId, Library *pLibrary, QObject* p
           m_pBreadCrumb(nullptr),
           m_paneId(paneId),
           m_pLibrary(pLibrary) {
-    qApp->installEventFilter(this);
 }
 
 LibraryPaneManager::~LibraryPaneManager() {
@@ -65,7 +64,6 @@ void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchBar) {
 
 void LibraryPaneManager::setBreadCrumb(WLibraryBreadCrumb* pBreadCrumb) {
     m_pBreadCrumb = pBreadCrumb;
-    pBreadCrumb->installEventFilter(this);
     connect(m_pBreadCrumb, SIGNAL(preselected(bool)),
             this, SLOT(slotPanePreselected(bool)));
 }
@@ -199,20 +197,15 @@ void LibraryPaneManager::slotSearchCleared() {
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
-    if (m_pPaneWidget.isNull() || m_pSearchBar.isNull() || 
-        m_pBreadCrumb.isNull()) {
+    if (m_pPaneWidget.isNull() || m_pSearchBar.isNull()) {
         return false;
     }
 
     if (event->type() == QEvent::MouseButtonPress &&
-        (m_pPaneWidget->underMouse() || 
-         m_pSearchBar->underMouse() || 
-         m_pBreadCrumb->underMouse())) {
+            (m_pPaneWidget->underMouse() || m_pSearchBar->underMouse())) {
+        m_pLibrary->paneFocused(this);
+    } else if (event->type() == QEvent::FocusIn) {
         m_pLibrary->paneFocused(this);
     }
-
-    // Since this event filter is for the entire application (to handle the
-    // mouse event), NEVER return true. If true is returned I will block all
-    // application events and will block the entire application.
     return false;
 }
