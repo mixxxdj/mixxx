@@ -118,7 +118,7 @@ class CrateFeature : public LibraryFeature {
     QHash<int, QPointer<QStackedWidget> > m_panes;
     QHash<int,int> m_idBrowse;
     QHash<int,int> m_idTable;
-    QModelIndex m_lastClickedIndex;
+    QHash<int, QModelIndex> m_lastClickedIndex;
 };
 
 #endif /* CRATEFEATURE_H */

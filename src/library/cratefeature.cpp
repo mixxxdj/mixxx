@@ -219,8 +219,8 @@ TreeItemModel* CrateFeature::getChildModel() {
 }
 
 void CrateFeature::activate() {
-    if (m_lastClickedIndex.isValid()) {
-        activateChild(m_lastClickedIndex);
+    if (m_lastClickedIndex[m_featurePane].isValid()) {
+        activateChild(m_lastClickedIndex[m_featurePane]);
         return;
     }
     
@@ -232,7 +232,11 @@ void CrateFeature::activate() {
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
-    m_lastClickedIndex = index;
+    if (getPreselectedPane() >= 0) {
+        m_featurePane = getPreselectedPane();
+    }
+    
+    m_lastClickedIndex[m_featurePane] = index;
     int crateId = crateIdFromIndex(index);
     if (crateId == -1) {
         return;
@@ -343,6 +347,19 @@ void CrateFeature::slotDeleteCrate() {
     bool deleted = m_crateDao.deleteCrate(crateId);
 
     if (deleted) {
+        // This avoids a bug where the m_lastChildClicked index is still a valid
+        // index but it's not true since we just deleted it
+        for (auto it = m_crateTableModel.begin();
+                it != m_crateTableModel.end(); ++it) {
+            if ((*it)->getCrate() == crateId) {
+                // Show the browse widget, this avoids a problem when the same
+                // playlist is shown twice and gets deleted. One of the panes
+                // gets still showing the unexisting crate.
+                m_lastClickedIndex[it.key()] = QModelIndex();
+                showBrowse(it.key());
+            }
+        }
+        
         activate();
     } else {
         qDebug() << "Failed to delete crateId" << crateId;
