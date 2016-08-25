@@ -92,18 +92,12 @@ LibraryFeature *LibraryPaneManager::getCurrentFeature() const {
     return m_pCurrentFeature;
 }
 
-void LibraryPaneManager::setFocus() {
-    //qDebug() << "LibraryPaneManager::setFocus";
+void LibraryPaneManager::setFocused(bool value) {
     DEBUG_ASSERT_AND_HANDLE(m_pPaneWidget) {
         return;
     }
     
-    m_pPaneWidget->setProperty("showFocus", 1);
-}
-
-void LibraryPaneManager::clearFocus() {
-    //qDebug() << "LibraryPaneManager::clearFocus";
-    m_pPaneWidget->setProperty("showFocus", 0);
+    m_pPaneWidget->setProperty("showFocus", (int) value);
 }
 
 void LibraryPaneManager::switchToFeature(LibraryFeature* pFeature) {
@@ -142,7 +136,7 @@ void LibraryPaneManager::showBreadCrumb(const QString &text, const QIcon& icon) 
     m_pBreadCrumb->showBreadCrumb(text, icon);
 }
 
-int LibraryPaneManager::getPaneId() {
+int LibraryPaneManager::getPaneId() const {
     return m_paneId;
 }
 
@@ -152,11 +146,17 @@ void LibraryPaneManager::setPreselected(bool value) {
     }
 }
 
-bool LibraryPaneManager::isPreselected() {
+bool LibraryPaneManager::isPreselected() const {
     if (!m_pBreadCrumb.isNull()) {
         return m_pBreadCrumb->isPreselected();
     }
     return false;
+}
+
+void LibraryPaneManager::setPreviewed(bool value) {
+    if (!m_pBreadCrumb.isNull()) {
+        m_pBreadCrumb->setPreviewed(value);
+    }
 }
 
 void LibraryPaneManager::slotPanePreselected(bool value) {

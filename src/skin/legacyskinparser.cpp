@@ -1337,7 +1337,7 @@ QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
 	
     WButtonBar* pLibrarySidebar = new WButtonBar(scroll);
 	pLibrarySidebar->installEventFilter(m_pKeyboard);
-	m_pLibrary->bindSidebarWidget(pLibrarySidebar);
+	m_pLibrary->bindSidebarButtons(pLibrarySidebar);
 	scroll->setWidget(pLibrarySidebar);
 
 	WBaseLibrary* pLibrarySidebarExpanded = new WBaseLibrary(pContainer);
@@ -1357,7 +1357,7 @@ QWidget* LegacySkinParser::parseLibrarySidebarButtons(const QDomElement& node) {
     WButtonBar* pLibrarySidebar = new WButtonBar(scroll);
     pLibrarySidebar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
-    m_pLibrary->bindSidebarWidget(pLibrarySidebar);
+    m_pLibrary->bindSidebarButtons(pLibrarySidebar);
     scroll->setWidget(pLibrarySidebar);
     
     setupWidget(node, scroll);

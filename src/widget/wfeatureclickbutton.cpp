@@ -26,6 +26,14 @@ WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* pare
     }
 }
 
+void WFeatureClickButton::enterEvent(QEvent*) {
+    emit(hovered(m_pFeature));
+}
+
+void WFeatureClickButton::leaveEvent(QEvent*) {
+    emit(leaved(m_pFeature));
+}
+
 void WFeatureClickButton::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::RightButton) {
         emit(rightClicked(event->globalPos()));

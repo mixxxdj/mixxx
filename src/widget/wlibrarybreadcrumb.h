@@ -7,6 +7,7 @@
 #include <QWidget>
 
 class TreeItem;
+class WTriStateButton;
 
 class WLibraryBreadCrumb : public QWidget {
     Q_OBJECT
@@ -16,7 +17,9 @@ class WLibraryBreadCrumb : public QWidget {
 
     virtual QSize minimumSizeHint() const;
     void setPreselected(bool value);
-    bool isPreselected();
+    bool isPreselected() const;
+    
+    void setPreviewed(bool value);
 
   signals:
     void preselected(bool);
@@ -35,8 +38,9 @@ class WLibraryBreadCrumb : public QWidget {
     
     QLabel* m_pIcon;
     QLabel* m_pText;
-    QToolButton* m_pPreselectButton;
+    WTriStateButton* m_pPreselectButton;
     QIcon m_preselectIcon;
+    QIcon m_previewIcon;
     bool m_preselected;
     
     QString m_longText;

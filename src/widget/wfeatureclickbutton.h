@@ -21,9 +21,14 @@ class WFeatureClickButton : public QToolButton
     void clicked(LibraryFeature*);
     void rightClicked(const QPoint&);
     void hoverShow(LibraryFeature*);
+    
+    void hovered(LibraryFeature*);
+    void leaved(LibraryFeature*);
 
   protected:
 
+    void enterEvent(QEvent*);
+    void leaveEvent(QEvent*);
     void mousePressEvent(QMouseEvent* event);
 
     void dragEnterEvent(QDragEnterEvent* event);
@@ -44,6 +49,7 @@ class WFeatureClickButton : public QToolButton
     ControlProxy m_textControl;
     LibraryFeature* m_pFeature;
     QBasicTimer m_hoverTimer;
+    bool m_mousEntered;
 };
 
 #endif // WRIGHTCLICKBUTTON_H

@@ -54,7 +54,10 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_pRecordingManager(pRecordingManager),
         m_scanner(m_pTrackCollection, pConfig),
         m_pSidebarExpanded(nullptr),
-        m_preselectedPane(-1) {
+        m_hoveredFeature(nullptr),
+        m_focusedPane(-1),
+        m_preselectedPane(-1),
+        m_previewPreselectedPane(-1) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     connect(&m_scanner, SIGNAL(scanStarted()),
@@ -112,7 +115,7 @@ void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
     pPane->bindSearchBar(searchLine);
 }
 
-void Library::bindSidebarWidget(WButtonBar* sidebar) {    
+void Library::bindSidebarButtons(WButtonBar* sidebar) {    
     for (LibraryFeature* f : m_features) {
         WFeatureClickButton* button = sidebar->addButton(f);
         
@@ -122,6 +125,10 @@ void Library::bindSidebarWidget(WButtonBar* sidebar) {
                 this, SLOT(slotHoverFeature(LibraryFeature*)));
         connect(button, SIGNAL(rightClicked(const QPoint&)),
                 f, SLOT(onRightClick(const QPoint&)));
+        connect(button, SIGNAL(hovered(LibraryFeature*)),
+                this, SLOT(slotPreviewPreselection(LibraryFeature*)));
+        connect(button, SIGNAL(leaved(LibraryFeature*)),
+                this, SLOT(slotDisablePreviewPreselection(LibraryFeature*)));
     }
 }
 
@@ -434,14 +441,14 @@ void Library::paneCollapsed(int paneId) {
     m_collapsedPanes.insert(paneId);
     
     // Automatically switch the focus to a non collapsed pane
-    m_panes[paneId]->clearFocus();
+    m_panes[paneId]->setFocused(false);
     
     bool focused = false;
     for (LibraryPaneManager* pPane : m_panes) {
         int auxId = pPane->getPaneId();
         if (!m_collapsedPanes.contains(auxId) && !focused) {
             m_focusedPane = pPane->getPaneId();
-            pPane->setFocus();
+            pPane->setFocused(true);
             focused = true;
         }
         
@@ -506,6 +513,20 @@ void Library::slotSetTrackTableFont(const QFont& font) {
 void Library::slotSetTrackTableRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
     emit(setTrackTableRowHeight(rowHeight));
+}
+
+void Library::slotPreviewPreselection(LibraryFeature* pFeature) {
+    m_hoveredFeature = pFeature;
+    m_previewPreselectedPane = pFeature->getSavedPane();
+    handlePreselection();
+}
+
+void Library::slotDisablePreviewPreselection(LibraryFeature* pFeature) {
+    if (pFeature == m_hoveredFeature) {
+        m_previewPreselectedPane = -1;
+        m_hoveredFeature = nullptr;
+    }
+    handlePreselection();
 }
 
 LibraryPaneManager* Library::getOrCreatePane(int paneId) {
@@ -617,16 +638,19 @@ void Library::handleFocus() {
     // Changes the visual focus effect, removes the existing one and adds the
     // new focus
     for (LibraryPaneManager* pPane : m_panes) {
-        pPane->clearFocus();
+        pPane->setFocused(false);
     }
-    m_panes[m_focusedPane]->setFocus();
+    m_panes[m_focusedPane]->setFocused(true);
 }
 
 void Library::handlePreselection() {
     for (LibraryPaneManager* pPane : m_panes) {
         pPane->setPreselected(false);
+        pPane->setPreviewed(false);
     }
     if (m_preselectedPane >= 0) {
         m_panes[m_preselectedPane]->setPreselected(true);
+    } else if (m_previewPreselectedPane >= 0) {
+        m_panes[m_previewPreselectedPane]->setPreviewed(true);
     }
 }

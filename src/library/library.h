@@ -59,7 +59,7 @@ public:
     virtual ~Library();
     
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
-    void bindSidebarWidget(WButtonBar* sidebar);
+    void bindSidebarButtons(WButtonBar* sidebar);
     void bindPaneWidget(WLibrary* libraryWidget,
                         KeyboardEventFilter* pKeyboard, int paneId);
     void bindSidebarExpanded(WBaseLibrary* expandedPane, 
@@ -120,6 +120,9 @@ public:
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
+    
+    void slotPreviewPreselection(LibraryFeature* pFeature);
+    void slotDisablePreviewPreselection(LibraryFeature* pFeature);
 
     void scan() {
         m_scanner.scan();
@@ -170,10 +173,13 @@ public:
     QList<LibraryFeature*> m_features;
     QSet<int> m_collapsedPanes;
     QHash<int, LibraryFeature*> m_savedFeatures;
+    // Used to show the preselected pane when the mouse is over the button
+    LibraryFeature* m_hoveredFeature;
     
     // Can be any integer as it's used with a HashMap
     int m_focusedPane;
     int m_preselectedPane;
+    int m_previewPreselectedPane;
 };
 
 #endif /* LIBRARY_H */

@@ -4,12 +4,13 @@
 
 #include "library/treeitemmodel.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wtristatebutton.h"
 
 WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent) 
 		: QWidget(parent),
           m_pIcon(new QLabel(this)),
           m_pText(new QLabel(this)),
-          m_pPreselectButton(new QToolButton(this)),
+          m_pPreselectButton(new WTriStateButton(this)),
           m_preselected(false) {
     QLayout* layout = new QHBoxLayout(this);
     
@@ -24,8 +25,8 @@ WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent)
     
     m_preselectIcon.addPixmap(preOn, QIcon::Normal, QIcon::On);
     m_preselectIcon.addPixmap(preOff, QIcon::Normal, QIcon::Off);
+    m_preselectIcon.addPixmap(preOn, QIcon::Active, QIcon::Off);
     m_pPreselectButton->setIcon(m_preselectIcon);
-    m_pPreselectButton->setCheckable(true);
     m_pPreselectButton->setChecked(m_preselected);
     
     connect(m_pPreselectButton, SIGNAL(clicked(bool)), 
@@ -55,8 +56,12 @@ void WLibraryBreadCrumb::setPreselected(bool value) {
     refreshWidth();
 }
 
-bool WLibraryBreadCrumb::isPreselected() {
+bool WLibraryBreadCrumb::isPreselected() const {
     return m_preselected;
+}
+
+void WLibraryBreadCrumb::setPreviewed(bool value) {
+    m_pPreselectButton->setHovered(value);
 }
 
 void WLibraryBreadCrumb::showBreadCrumb(TreeItem* pTree) {

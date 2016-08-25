@@ -39,8 +39,7 @@ class LibraryPaneManager : public QObject {
     void setCurrentFeature(LibraryFeature* pFeature);
     LibraryFeature* getCurrentFeature() const;
 
-    void setFocus();
-    void clearFocus();
+    void setFocused(bool value);
     
     void restoreSearch(const QString& text);
     void restoreSaveButton();
@@ -48,10 +47,12 @@ class LibraryPaneManager : public QObject {
     void showBreadCrumb(TreeItem* pTree);
     void showBreadCrumb(const QString& text, const QIcon &icon);
     
-    int getPaneId();
+    int getPaneId() const;
     
     void setPreselected(bool value);
-    bool isPreselected();
+    bool isPreselected() const;
+    
+    void setPreviewed(bool value);
 
   signals:
     
