@@ -48,6 +48,7 @@ void WBaseLibrary::setShowFocus(int sFocus) {
 
 void WBaseLibrary::switchToFeature(LibraryFeature *pFeature) {
     auto it = m_featureMap.find(pFeature);
+    // Only change the current feature if it's not shown already
     if (it != m_featureMap.end() && currentWidget() != (*it)) {
         m_pCurrentFeature = pFeature;
         setCurrentWidget(*it);

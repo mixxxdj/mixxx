@@ -198,20 +198,17 @@ void Library::addFeature(LibraryFeature* feature) {
 
 void Library::switchToFeature(LibraryFeature* pFeature) {
     m_pSidebarExpanded->switchToFeature(pFeature);
-    slotUpdateFocus(pFeature);
     
-    LibraryPaneManager* pPane = getFocusedPane();
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    LibraryPaneManager* pPane = getPreselectedPane();
+    if (pPane == nullptr) {
+        // No pane is preselected so we are handling an activateChild() method
+        // or similar. We only change the input focus to the feature one.
+        m_focusedPane = pFeature->getFeaturePane();
+        handleFocus();
         return;
     }
     
-    WBaseLibrary* pWLibrary = pPane->getPaneWidget();
-    // Only change the current pane if it's not shown already
-    if (pWLibrary->getCurrentFeature() != pFeature) {
-        pPane->switchToFeature(pFeature);
-    }
-    
-    handleFocus();
+    pPane->switchToFeature(pFeature);
 }
 
 void Library::showBreadCrumb(int paneId, TreeItem *pTree) {
@@ -287,14 +284,11 @@ void Library::panePreselected(LibraryPaneManager* pPane, bool value) {
     // Since only one pane can be preselected, set the other panes as not
     // preselected
     if (value) {
-        if (m_preselectedPane >= 0) {
-            m_panes[m_preselectedPane]->setPreselected(false);
-        }
-        pPane->setPreselected(true);
         m_preselectedPane = pPane->getPaneId();
     } else if (m_preselectedPane == pPane->getPaneId()) {
         m_preselectedPane = -1;
     }
+    handlePreselection();
 }
 
 void Library::slotRefreshLibraryModels() {
@@ -322,27 +316,29 @@ void Library::onSkinLoadFinished() {
         // Assign a feature to show on each pane unless there are more panes
         // than features
         while (itP != m_panes.end() && itF != m_features.end()) {
-            m_focusedPane = itP.key();
+            m_preselectedPane = itP.key();
             if (first) {
                 first = false;
                 // Set the first pane as saved pane to all features
                 for (LibraryFeature* pFeature : m_features) {
-                    pFeature->setSavedPane(m_focusedPane);
+                    pFeature->setSavedPane(m_preselectedPane);
                 }
             }
             
-            (*itF)->setFeaturePane(m_focusedPane);
-            (*itF)->setSavedPane(m_focusedPane);
+            m_savedFeatures[m_preselectedPane] = *itF;
+            (*itP)->setCurrentFeature(*itF);
+            
+            (*itF)->setFeaturePane(m_preselectedPane);
+            (*itF)->setSavedPane(m_preselectedPane);
             (*itF)->activate();
-            m_savedFeatures[m_focusedPane] = *itF;
             
             ++itP;
             ++itF;
         }
         
         // The first pane always shows the Mixxx Library feature on start
-        m_focusedPane = m_panes.begin().key();
-        (*m_features.begin())->setFeaturePane(m_focusedPane);
+        m_preselectedPane = m_panes.begin().key();
+        (*m_features.begin())->setFeaturePane(m_preselectedPane);
         slotActivateFeature(*m_features.begin());
     }
     else {
@@ -451,12 +447,15 @@ void Library::paneUncollapsed(int paneId) {
     // If the current shown feature in some pane is the same as the uncollapsed
     // pane feature, switch the feature from one pane to the other and set
     // instead the saved feature
-    LibraryFeature* pPaneFeature = m_panes[paneId]->getCurrentFeature();
-    pPaneFeature->setFeaturePane(m_panes[paneId]->getPaneId());
+    LibraryFeature* pFeature = m_panes[paneId]->getCurrentFeature();
+    if (pFeature == nullptr) {
+        return;
+    }
+    pFeature->setFeaturePane(m_panes[paneId]->getPaneId());
     
     for (LibraryPaneManager* pPane : m_panes) {
         int auxId = pPane->getPaneId();
-        if (auxId != paneId && pPaneFeature == pPane->getCurrentFeature()) {
+        if (auxId != paneId && pFeature == pPane->getCurrentFeature()) {
             LibraryFeature* pSaved = m_savedFeatures[auxId];
             pPane->switchToFeature(pSaved);
             pSaved->setFeaturePane(auxId);
@@ -466,6 +465,25 @@ void Library::paneUncollapsed(int paneId) {
 }
 
 void Library::slotActivateFeature(LibraryFeature* pFeature) {
+    if (m_preselectedPane < 0) {
+        // No pane is preselcted, use the saved pane instead
+        m_preselectedPane = pFeature->getSavedPane();
+    }
+    
+    m_pSidebarExpanded->switchToFeature(pFeature);
+    pFeature->setSavedPane(m_preselectedPane);
+    
+    if (m_panes[m_preselectedPane]->getCurrentFeature() != pFeature) {
+        m_panes[m_preselectedPane]->setCurrentFeature(pFeature);
+        pFeature->activate();
+    }
+    m_preselectedPane = -1;
+    handlePreselection();
+    
+    
+    
+    
+    /*
     // The feature is being shown currently in the focused pane
     if (m_panes[m_focusedPane]->getCurrentFeature() == pFeature) {
         pFeature->setSavedPane(m_focusedPane);
@@ -511,6 +529,7 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
     pFeature->setSavedPane(m_focusedPane);    
     pFeature->activate();
     handleFocus();
+    */
 }
 
 void Library::slotHoverFeature(LibraryFeature *pFeature) {
@@ -545,6 +564,11 @@ LibraryPaneManager* Library::getOrCreatePane(int paneId) {
         return *it;
     }
     
+    // The paneId must be non negative
+    DEBUG_ASSERT_AND_HANDLE(paneId >= 0) {
+        return nullptr;
+    }
+    
     // Create a new pane only if there are more features than panes
     if (m_panes.size() >= m_features.size()) {
         qWarning() << "Library: there are more panes declared than features";
@@ -566,7 +590,14 @@ LibraryPaneManager* Library::getFocusedPane() {
     if (it == m_panes.end()) {
         return nullptr;
     }
-    
+    return *it;
+}
+
+LibraryPaneManager* Library::getPreselectedPane() {
+    auto it = m_panes.find(m_preselectedPane);
+    if (it == m_panes.end()) {
+        return nullptr;
+    }
     return *it;
 }
 
@@ -644,4 +675,13 @@ void Library::handleFocus() {
         pPane->clearFocus();
     }
     m_panes[m_focusedPane]->setFocus();
+}
+
+void Library::handlePreselection() {
+    for (LibraryPaneManager* pPane : m_panes) {
+        pPane->setPreselected(false);
+    }
+    if (m_preselectedPane >= 0) {
+        m_panes[m_preselectedPane]->setPreselected(true);
+    }
 }

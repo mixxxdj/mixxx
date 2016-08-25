@@ -145,11 +145,13 @@ public:
     // If the pane exists returns it, otherwise it creates the pane
     LibraryPaneManager* getOrCreatePane(int paneId);
     LibraryPaneManager* getFocusedPane();
+    LibraryPaneManager* getPreselectedPane();
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
     void setFocusedPane();
     
     void handleFocus();
+    void handlePreselection();
     
     UserSettingsPointer m_pConfig;
     SidebarModel* m_pSidebarModel;
