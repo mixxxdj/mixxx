@@ -24,6 +24,8 @@ WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* pare
     } else {
         slotTextDisplayChanged(1.0);
     }
+
+    setFocusPolicy(Qt::ClickFocus);
 }
 
 void WFeatureClickButton::enterEvent(QEvent*) {
@@ -92,3 +94,14 @@ void WFeatureClickButton::slotTextDisplayChanged(double value) {
     }
 }
 
+void WFeatureClickButton::keyPressEvent(QKeyEvent* event) {
+    qDebug() << event;
+    switch(event->key()) {
+    case Qt::Key_Return:
+        emit(clicked(m_pFeature));
+        break;
+    default:
+        QWidget::keyPressEvent(event);
+        break;
+    }
+}

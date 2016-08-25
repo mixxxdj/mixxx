@@ -17,9 +17,16 @@ class WButtonBar : public QFrame
 
     WFeatureClickButton* addButton(LibraryFeature *pFeature);
 
-  private:
+  signals:
+    void ensureVisible(QWidget* widget);
 
+  protected:
+    void keyPressEvent(QKeyEvent* event) override;
+    void focusInEvent(QFocusEvent* event) override;
+
+  private:
     QLayout* m_pLayout;
+    int m_focusItem;
 };
 
 #endif // WBUTTONBAR_H

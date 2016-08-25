@@ -174,6 +174,11 @@ WBaseLibrary[showFocus="1"] {
   background-color: #4B4B4B;
 }
 
+QToolButton:focus, 
+QToolButton:focus::hover {
+    background-color: #006596;
+}
+
 WLibraryBreadCrumb QLabel {
   margin: 4px 4px;
   font-size: 12px;

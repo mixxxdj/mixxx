@@ -38,3 +38,8 @@ void WVerticalScrollArea::calcSize() {
     }
     setFixedWidth(width + vScrollWidth);
 }
+
+void WVerticalScrollArea::slotEnsureVisible(QWidget* widget) {
+    qDebug() << "WVerticalScrollArea::slotEnsureVisible";
+    ensureWidgetVisible(widget, 0, 0);
+}

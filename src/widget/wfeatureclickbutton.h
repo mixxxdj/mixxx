@@ -27,15 +27,17 @@ class WFeatureClickButton : public QToolButton
 
   protected:
 
-    void enterEvent(QEvent*);
-    void leaveEvent(QEvent*);
-    void mousePressEvent(QMouseEvent* event);
+    void enterEvent(QEvent*) override;
+    void leaveEvent(QEvent*) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void keyPressEvent(QKeyEvent * event) override;
 
-    void dragEnterEvent(QDragEnterEvent* event);
-    void dragLeaveEvent(QDragLeaveEvent*);
-    void dropEvent(QDropEvent* event);
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dragLeaveEvent(QDragLeaveEvent*) override;
+    void dropEvent(QDropEvent* event) override;
 
-    void timerEvent(QTimerEvent* event);
+    void timerEvent(QTimerEvent* event) override;
+
 
   private slots:
 
