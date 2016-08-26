@@ -63,7 +63,7 @@ class FakeController : public Controller {
         m_kbdPreset = KeyboardControllerPreset();
     }
 
-    virtual void visit(const KeyboardControllerPreset *preset) override {
+    virtual void visitKeyboard(const KeyboardControllerPreset *preset) override {
         m_bMidiPreset = false;
         m_bHidPreset = false;
         m_bKbdPreset = true;

@@ -36,7 +36,7 @@ class MidiControllerTest : public MixxxTest {
     }
 
     void loadPreset(const MidiControllerPreset& preset) {
-        m_pController->visit(&preset);
+        m_pController->visitMidi(&preset);
     }
 
     void receive(unsigned char status, unsigned char control,
