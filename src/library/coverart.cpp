@@ -48,8 +48,8 @@ QString coverInfoToString(const CoverInfo& info) {
 bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b) {
     return a.source == b.source &&
             a.type == b.type &&
-            a.coverLocation == b.coverLocation &&
-            a.hash == b.hash;
+            a.hash == b.hash &&
+            a.coverLocation == b.coverLocation;
 }
 
 bool operator!=(const CoverInfoRelative& a, const CoverInfoRelative& b) {
@@ -74,18 +74,6 @@ bool operator!=(const CoverInfo& a, const CoverInfo& b) {
 QDebug operator<<(QDebug dbg, const CoverInfo& info) {
     return dbg.maybeSpace() << QString("CoverInfo(%1)")
             .arg(coverInfoToString(info));
-}
-
-bool operator==(const CoverArt& a, const CoverArt& b) {
-    // Only count image in the equality if both are non-null.
-    return static_cast<const CoverInfo&>(a) ==
-                    static_cast<const CoverInfo&>(b) &&
-            (a.image.isNull() || b.image.isNull() ||
-             a.image == b.image);
-}
-
-bool operator!=(const CoverArt& a, const CoverArt& b) {
-    return !(a == b);
 }
 
 QDebug operator<<(QDebug dbg, const CoverArt& art) {

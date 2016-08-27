@@ -88,8 +88,6 @@ class CoverArt : public CoverInfo {
     int resizedToWidth;
 };
 
-bool operator==(const CoverArt& a, const CoverArt& b);
-bool operator!=(const CoverArt& a, const CoverArt& b);
 QDebug operator<<(QDebug dbg, const CoverArt& art);
 
 #endif /* COVERART_H */
