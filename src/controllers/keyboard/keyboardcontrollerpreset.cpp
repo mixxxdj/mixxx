@@ -178,7 +178,8 @@ void KeyboardControllerPreset::translate(QString layoutName) {
 
             // Retrieve scancodes (usually just one, sometimes two,
             // due to multiple keys sharing the same character)
-            QList<int> scancodes = layoutUtils::findScancodesForCharacter(originalKeyseqLayout, key.at(0), modifier);
+            QList<Scancode> scancodes = layoutUtils::findScancodesForCharacter(
+                    originalKeyseqLayout, key.at(0), modifier);
 
             // Warn user if any scancodes where found for this character
             if (scancodes.isEmpty()) {
@@ -193,10 +194,10 @@ void KeyboardControllerPreset::translate(QString layoutName) {
             keyseqs.clear();
 
             // Iterate through all found scancodes
-            for (const int scancode : scancodes) {
+            for (const Scancode scancode : scancodes) {
 
                 // Get KbdKeyChar
-                const KbdKeyChar *keyChar = layoutUtils::getKbdKeyChar(layout, (unsigned char) scancode, modifier);
+                const KbdKeyChar* keyChar = layoutUtils::getKbdKeyChar(layout, scancode, modifier);
                 QChar character(keyChar->character);
 
                 // If key is not dead, reconstruct key sequence with translated character. Otherwise,
