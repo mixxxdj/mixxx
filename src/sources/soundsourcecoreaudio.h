@@ -49,7 +49,7 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceCoreAudio(url));
+        return newSoundSourceFromUrl<SoundSourceCoreAudio>(url);
     }
 };
 

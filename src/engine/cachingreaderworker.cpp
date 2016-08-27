@@ -100,7 +100,7 @@ namespace
     mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const mixxx::AudioSourceConfig& audioSrcCfg) {
         SoundSourceProxy soundSourceProxy(pTrack);
         mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
-        if (pAudioSource.isNull()) {
+        if (!pAudioSource) {
             qWarning() << "Failed to open file:" << pTrack->getLocation();
             return mixxx::AudioSourcePointer();
         }
@@ -132,7 +132,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     mixxx::AudioSourceConfig audioSrcCfg;
     audioSrcCfg.setChannelCount(CachingReaderChunk::kChannels);
     m_pAudioSource = openAudioSourceForReading(pTrack, audioSrcCfg);
-    if (m_pAudioSource.isNull()) {
+    if (!m_pAudioSource) {
         m_maxReadableFrameIndex = mixxx::AudioSource::getMinFrameIndex();
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""
