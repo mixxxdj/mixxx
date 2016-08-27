@@ -25,7 +25,7 @@ class MidiController : public Controller {
     Q_OBJECT
   public:
     MidiController();
-    virtual ~MidiController();
+    ~MidiController() override;
 
     virtual QString presetExtension() override;
 

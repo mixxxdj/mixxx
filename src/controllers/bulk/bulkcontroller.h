@@ -44,7 +44,7 @@ class BulkController : public Controller {
   public:
     BulkController(libusb_context* context, libusb_device_handle *handle,
                    struct libusb_device_descriptor *desc);
-    virtual ~BulkController();
+    ~BulkController() override;
 
     virtual QString presetExtension() override;
 

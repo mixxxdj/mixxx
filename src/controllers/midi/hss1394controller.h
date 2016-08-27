@@ -44,7 +44,7 @@ class Hss1394Controller : public MidiController {
     Q_OBJECT
   public:
     Hss1394Controller(const hss1394::TNodeInfo deviceInfo, int deviceIndex);
-    virtual ~Hss1394Controller();
+    ~Hss1394Controller() override;
 
   private slots:
     virtual int open() override;

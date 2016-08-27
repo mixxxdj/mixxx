@@ -63,7 +63,7 @@ class PortMidiController : public MidiController {
                        const PmDeviceInfo* outputDeviceInfo,
                        int inputDeviceIndex,
                        int outputDeviceIndex);
-    virtual ~PortMidiController();
+    ~PortMidiController() override;
 
   private slots:
     virtual int open() override;

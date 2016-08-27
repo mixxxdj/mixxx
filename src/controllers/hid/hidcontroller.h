@@ -42,7 +42,7 @@ class HidController : public Controller {
     Q_OBJECT
   public:
     HidController(const hid_device_info deviceInfo);
-    virtual ~HidController();
+    ~HidController() override;
 
     virtual QString presetExtension() override;
 

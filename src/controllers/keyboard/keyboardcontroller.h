@@ -11,7 +11,7 @@ class KeyboardController : public Controller {
     Q_OBJECT
   public:
     explicit KeyboardController(KeyboardEventFilter* pKbdEventFilter);
-    virtual ~KeyboardController();
+    ~KeyboardController() override;
 
     virtual QString presetExtension() override;
 

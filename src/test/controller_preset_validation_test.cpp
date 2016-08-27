@@ -17,7 +17,7 @@
 class FakeController : public Controller {
   public:
     FakeController();
-    virtual ~FakeController();
+    ~FakeController() override;
 
     virtual QString presetExtension() override {
         // Doesn't affect anything at the moment.

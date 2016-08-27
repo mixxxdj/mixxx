@@ -13,7 +13,7 @@
 class MockMidiController : public MidiController {
   public:
     MockMidiController() { }
-    virtual ~MockMidiController() { }
+    ~MockMidiController() override { }
 
     MOCK_METHOD0(open, int());
     MOCK_METHOD0(close, int());
