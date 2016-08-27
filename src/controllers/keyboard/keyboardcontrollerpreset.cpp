@@ -149,7 +149,7 @@ void KeyboardControllerPreset::translate(QString layoutName) {
             // Can't happen. Otherwise keyseqNeedsTranslate would be false.
             DEBUG_ASSERT(!keyseqsRawI->byPositionOf.isEmpty());
 
-            QString key = layoutUtils::getCharFromKeysequence(keyseqs[0]);
+            QString key = layoutUtils::keyseqGetKey(keyseqs[0]);
             if (key.size() > 1) {
                 qWarning() << "Can't translate keyseq" << keyseqs[0]
                            << "because key" << key << "is not a character.";
@@ -166,7 +166,7 @@ void KeyboardControllerPreset::translate(QString layoutName) {
             }
 
             // Check whether we need no modifier or shift modifier for the scancode lookup
-            QStringList modifiers = layoutUtils::getModifiersFromKeysequence(keyseqs[0]);
+            QStringList modifiers = layoutUtils::keyseqGetModifiers(keyseqs[0]);
             bool onlyShift = modifiers.size() == 1 && modifiers[0] == "Shift";
             Qt::KeyboardModifier modifier = onlyShift ? Qt::ShiftModifier : Qt::NoModifier;
 
@@ -213,8 +213,8 @@ void KeyboardControllerPreset::translate(QString layoutName) {
         }
 
         for (QString& keyseq : keyseqs) {
-            QString key = layoutUtils::getCharFromKeysequence(keyseq);
-            QStringList mods = layoutUtils::getModifiersFromKeysequence(keyseq);
+            QString key = layoutUtils::keyseqGetKey(keyseq);
+            QStringList mods = layoutUtils::keyseqGetModifiers(keyseq);
 
             // Clear keyseq
             keyseq = "";

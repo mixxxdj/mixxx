@@ -50,10 +50,8 @@ namespace layoutUtils {
     QList<int> findScancodesForCharacter(KeyboardLayoutPointer pLayout,
                                          const QChar &character,
                                          Qt::KeyboardModifier modifier);
-    // TODO(Tomasito) Change function name to keyseqGetKey
-    QString getCharFromKeysequence(const QString& keysequence);
-    // TODO(Tomasito) Change function name to keyseqGetModifiers
-    QStringList getModifiersFromKeysequence(const QString& keyseq);
+    QString keyseqGetKey(const QString &keysequence);
+    QStringList keyseqGetModifiers(const QString &keyseq);
 }
 
 

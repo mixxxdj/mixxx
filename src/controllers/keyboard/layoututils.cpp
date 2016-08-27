@@ -78,11 +78,11 @@ namespace layoutUtils {
         return scancodes;
     }
 
-    QString getCharFromKeysequence(const QString& keyseq) {
+    QString keyseqGetKey(const QString &keyseq) {
         return keyseq.split(keysequenceSeparator).last();
     }
 
-    QStringList getModifiersFromKeysequence(const QString& keyseq) {
+    QStringList keyseqGetModifiers(const QString &keyseq) {
         QStringList splitKeyseq = keyseq.split(keysequenceSeparator);
         splitKeyseq.pop_back();
         return splitKeyseq;

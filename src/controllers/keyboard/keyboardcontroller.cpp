@@ -75,7 +75,9 @@ int KeyboardController::close() {
 }
 
 void KeyboardController::onKeySeqPressed(ConfigKey configKey) {
-    if (!isOpen()) return;
+    if (!isOpen()) {
+        return;
+    }
 
     ControlObject* control = ControlObject::getControl(configKey);
 
