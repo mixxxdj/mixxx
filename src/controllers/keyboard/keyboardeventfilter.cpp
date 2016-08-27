@@ -64,7 +64,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 // NOTE: We are not breaking here because there could
                 // potentially be another action mapped to the same
                 // key sequence further down the hash table
-                if (iterator.key() != ks) continue;
+                if (iterator.key() != ks) {
+                    continue;
+                }
 
                 const ConfigKey& configKey = iterator.value();
                 if (configKey.group == "[KeyboardShortcuts]") continue;

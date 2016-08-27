@@ -204,11 +204,9 @@ void KeyboardControllerPreset::translate(QString layoutName) {
                 // If key is not dead, reconstruct key sequence with translated character. Otherwise,
                 // warn user about key that won't work.
                 if (!keyChar->isDead) {
-                    QString modifiersString = modifiers.join("+");
-                    if (!modifiersString.isEmpty()) {
-                        modifiersString += "+";
-                    }
-                    keyseqs.append(modifiersString + character);
+                    QStringList keyseq(modifiers);
+                    keyseq.append(character);
+                    keyseqs.append(keyseq.join("+"));
                 } else {
                     qWarning() << "Can't use key with scancode " << scancode
                                << " because it's a dead key on layout '" << layoutName
