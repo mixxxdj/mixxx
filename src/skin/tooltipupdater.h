@@ -24,8 +24,6 @@ class TooltipShortcutUpdater : public QObject {
   private:
     QList<WidgetTooltipWatcher*> m_pWatchers;
     KeyboardControllerPresetPointer m_pKbdPreset;
-    WSliderComposed* toSliderComposed(WBaseWidget* pWidget);
-    WPushButton* toPushButton(WBaseWidget* pWidget);
 };
 
 

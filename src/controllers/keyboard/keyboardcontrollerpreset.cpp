@@ -2,7 +2,7 @@
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "controllers/keyboard/layouts.h"
 
-QString KeyboardControllerPreset::getKeySequencesToString(ConfigKey configKey, QString separator) {
+QString KeyboardControllerPreset::getKeySequencesToString(ConfigKey configKey, QString separator) const {
     QStringList keyseqs = getKeySequences(configKey);
     QString keySeqsString = "";
 
@@ -13,9 +13,9 @@ QString KeyboardControllerPreset::getKeySequencesToString(ConfigKey configKey, Q
     return keySeqsString;
 }
 
-QStringList KeyboardControllerPreset::getKeySequences(ConfigKey configKey) {
+QStringList KeyboardControllerPreset::getKeySequences(ConfigKey configKey) const {
     QStringList keyseqs;
-    QMultiHash<QString, ConfigKey>::iterator it;
+    QMultiHash<QString, ConfigKey>::const_iterator it;
 
     for (it = m_mapping.begin(); it != m_mapping.end(); ++it) {
         const ConfigKey& currentConfigKey = it.value();
@@ -27,11 +27,12 @@ QStringList KeyboardControllerPreset::getKeySequences(ConfigKey configKey) {
     return keyseqs;
 }
 
-QMultiHash<QString, ConfigKey> KeyboardControllerPreset::getMappingByGroup(const QString& targetGroup) {
-    QMultiHash<QString, ConfigKey> filteredKeySequenceHash;
-    QMultiHash<QString, ConfigKey>::iterator it;
+QMultiHash<QString, ConfigKey> KeyboardControllerPreset::getMappingByGroup(
+        const QString& targetGroup) const {
 
-    for (it = m_mapping.begin(); it != m_mapping.end(); ++it) {
+    QMultiHash<QString, ConfigKey> filteredKeySequenceHash;
+
+    for (auto it = m_mapping.begin(); it != m_mapping.end(); ++it) {
         QString currentGroup = it.value().group;
         if (currentGroup == targetGroup) {
             filteredKeySequenceHash.insert(it.key(), it.value());

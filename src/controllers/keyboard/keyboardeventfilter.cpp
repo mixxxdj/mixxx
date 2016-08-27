@@ -144,7 +144,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     return false;
 }
 
-QString KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
+QString KeyboardEventFilter::getKeySeq(QKeyEvent* e) const {
     QString mods;
     QString keyText = e->text();
 

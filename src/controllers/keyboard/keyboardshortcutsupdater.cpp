@@ -14,7 +14,7 @@ void KeyboardShortcutsUpdater::addWatcher(ShortcutChangeWatcher* watcher) {
 
 // NOTE(Tomasito): There shouldn't be more than one watchers with the same ConfigKey, but if
 // ...             there are, this will return the first one that is found.
-ShortcutChangeWatcher* KeyboardShortcutsUpdater::getWatcher(ConfigKey configKey) {
+ShortcutChangeWatcher* KeyboardShortcutsUpdater::getWatcher(ConfigKey configKey) const {
     for (ShortcutChangeWatcher* watcher: m_shortcutChangeWatchers) {
         if (watcher->m_configKey == configKey) {
             return watcher;

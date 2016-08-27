@@ -30,13 +30,13 @@ class KeyboardControllerPreset : public ControllerPreset {
     void translate(QString layout);
 
     // Get all QKeySequences bound to a given ConfigKey, separated by a given separator
-    QString getKeySequencesToString(ConfigKey configKey, QString separator);
+    QString getKeySequencesToString(ConfigKey configKey, QString separator) const;
 
     // Get all QKeySequences bound to a given ConfigKey
-    QStringList getKeySequences(ConfigKey configKey);
+    QStringList getKeySequences(ConfigKey configKey) const;
 
     // Get mapping info filtered by a given group name
-    QMultiHash<QString, ConfigKey> getMappingByGroup(const QString& targetGroup);
+    QMultiHash<QString, ConfigKey> getMappingByGroup(const QString& targetGroup) const;
 
     // Multi-hash of config keys, bound to a specific key sequence
     QMultiHash<QString, ConfigKey> m_mapping;
