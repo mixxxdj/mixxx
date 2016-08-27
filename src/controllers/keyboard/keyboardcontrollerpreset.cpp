@@ -193,7 +193,7 @@ void KeyboardControllerPreset::translate(QString layoutName) {
             keyseqs.clear();
 
             // Iterate through all found scancodes
-            for (const int& scancode : scancodes) {
+            for (const int scancode : scancodes) {
 
                 // Get KbdKeyChar
                 const KbdKeyChar *keyChar = layoutUtils::getKbdKeyChar(layout, (unsigned char) scancode, modifier);
@@ -227,10 +227,18 @@ void KeyboardControllerPreset::translate(QString layoutName) {
 
             // NOTE: This order must be the same as in
             // ...   KeyboardEventFilter::getKeySeq()
-            if (mods.contains("Shift")) keyseq += "Shift+";
-            if (mods.contains("Ctrl")) keyseq += "Ctrl+";
-            if (mods.contains("Alt")) keyseq += "Alt+";
-            if (mods.contains("Meta")) keyseq += "Meta+";
+            if (mods.contains("Shift")) {
+                keyseq += "Shift+";
+            }
+            if (mods.contains("Ctrl")) {
+                keyseq += "Ctrl+";
+            }
+            if (mods.contains("Alt")) {
+                keyseq += "Alt+";
+            }
+            if (mods.contains("Meta")) {
+                keyseq += "Meta+";
+            }
 
             // If the key is modified, the comparisons in KeyboardEventFilter
             // are based on QKeySequence::toString()
