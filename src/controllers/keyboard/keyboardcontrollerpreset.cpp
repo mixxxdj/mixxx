@@ -142,7 +142,13 @@ void KeyboardControllerPreset::translate(QString layoutName) {
         // Key sequences for control. If key sequence does not need any translation,
         // this array will always contain just one key sequence. However, after
         // translation it could potentially contain multiple key sequences.
-        QStringList keyseqs = QStringList() += (!keyseqsRaw.isEmpty() ? keyseqsRawI->keysequence : "");
+        QStringList keyseqs;
+
+        if (!keyseqsRaw.isEmpty()) {
+            keyseqs += keyseqsRawI->keysequence;
+        } else {
+            keyseqs += "";
+        }
 
         if (keyseqNeedsTranslate) {
 
