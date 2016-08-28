@@ -452,7 +452,7 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     // If parsing of the cover art image should be omitted the
     // 2nd output parameter must be set to nullptr. Cover art
     // is not reloaded from file once the metadata has been parsed!
-    CoverArt coverArt;
+    CoverInfoRelative coverInfoRelative;
     QImage coverImg;
     DEBUG_ASSERT(coverImg.isNull());
     QImage* pCoverImg = (withCoverArt && !parsedFromFile) ? &coverImg : nullptr;
@@ -464,12 +464,11 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
         parsedFromFile = true;
         if (!coverImg.isNull()) {
             // Cover image has been parsed from the file
-            coverArt.image = coverImg;
             // TODO() here we may introduce a duplicate hash code
-            coverArt.info.hash = CoverArtUtils::calculateHash(coverArt.image);
-            coverArt.info.coverLocation = QString();
-            coverArt.info.type = CoverInfo::METADATA;
-            coverArt.info.source = CoverInfo::GUESSED;
+            coverInfoRelative.hash = CoverArtUtils::calculateHash(coverImg);
+            coverInfoRelative.coverLocation = QString();
+            coverInfoRelative.type = CoverInfo::METADATA;
+            coverInfoRelative.source = CoverInfo::GUESSED;
             parsedCoverArt = true;
         }
     } else {
@@ -492,7 +491,7 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     // Dump the trackMetadata extracted from the file back into the track.
     m_pTrack->setTrackMetadata(trackMetadata, parsedFromFile);
     if (parsedCoverArt) {
-        m_pTrack->setCoverInfo(coverArt.info);
+        m_pTrack->setCoverInfo(coverInfoRelative);
     }
 }
 

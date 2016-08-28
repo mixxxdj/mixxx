@@ -27,8 +27,8 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
 
         CoverArtCache::FutureResult res;
         res = CoverArtCache::loadCover(info, NULL, 0, false);
-        EXPECT_QSTRING_EQ(QString(), res.cover.info.coverLocation);
-        EXPECT_EQ(info.hash, res.cover.info.hash);
+        EXPECT_QSTRING_EQ(QString(), res.cover.coverLocation);
+        EXPECT_EQ(info.hash, res.cover.hash);
 
         SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
             QDir(trackLocation), true);
@@ -51,8 +51,8 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
 
         CoverArtCache::FutureResult res;
         res = CoverArtCache::loadCover(info, NULL, 0, false);
-        EXPECT_QSTRING_EQ(info.coverLocation, res.cover.info.coverLocation);
-        EXPECT_EQ(info.hash, res.cover.info.hash);
+        EXPECT_QSTRING_EQ(info.coverLocation, res.cover.coverLocation);
+        EXPECT_EQ(info.hash, res.cover.hash);
         EXPECT_FALSE(img.isNull());
         EXPECT_EQ(img, res.cover.image);
     }
