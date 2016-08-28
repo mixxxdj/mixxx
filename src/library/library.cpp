@@ -55,6 +55,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_scanner(m_pTrackCollection, pConfig),
         m_pSidebarExpanded(nullptr),
         m_hoveredFeature(nullptr),
+        m_focusedFeature(nullptr),
         m_focusedPane(-1),
         m_preselectedPane(-1),
         m_previewPreselectedPane(-1) {
@@ -126,9 +127,13 @@ void Library::bindSidebarButtons(WButtonBar* sidebar) {
         connect(button, SIGNAL(rightClicked(const QPoint&)),
                 f, SLOT(onRightClick(const QPoint&)));
         connect(button, SIGNAL(hovered(LibraryFeature*)),
-                this, SLOT(slotPreviewPreselection(LibraryFeature*)));
+                this, SLOT(slotSetHoveredFeature(LibraryFeature*)));
         connect(button, SIGNAL(leaved(LibraryFeature*)),
-                this, SLOT(slotDisablePreviewPreselection(LibraryFeature*)));
+                this, SLOT(slotResetHoveredFeature(LibraryFeature*)));
+        connect(button, SIGNAL(focusIn(LibraryFeature*)),
+                this, SLOT(slotSetFocusedFeature(LibraryFeature*)));
+        connect(button, SIGNAL(focusOut(LibraryFeature*)),
+                this, SLOT(slotResetFocusedFeature(LibraryFeature*)));
     }
 }
 
@@ -515,15 +520,37 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::slotPreviewPreselection(LibraryFeature* pFeature) {
+void Library::slotSetHoveredFeature(LibraryFeature* pFeature) {
     m_hoveredFeature = pFeature;
     m_previewPreselectedPane = pFeature->getSavedPane();
     handlePreselection();
 }
 
-void Library::slotDisablePreviewPreselection(LibraryFeature* pFeature) {
+void Library::slotResetHoveredFeature(LibraryFeature* pFeature) {
     if (pFeature == m_hoveredFeature) {
-        m_previewPreselectedPane = -1;
+        if (m_focusedFeature) {
+            m_previewPreselectedPane = m_focusedFeature->getSavedPane();
+        } else {
+            m_previewPreselectedPane = -1;
+        }
+        m_hoveredFeature = nullptr;
+    }
+    handlePreselection();
+}
+
+void Library::slotSetFocusedFeature(LibraryFeature* pFeature) {
+    m_focusedFeature = pFeature;
+    m_previewPreselectedPane = pFeature->getSavedPane();
+    handlePreselection();
+}
+
+void Library::slotResetFocusedFeature(LibraryFeature* pFeature) {
+    if (pFeature == m_focusedFeature) {
+        if (m_hoveredFeature) {
+            m_previewPreselectedPane = m_hoveredFeature->getSavedPane();
+        } else {
+            m_previewPreselectedPane = -1;
+        }
         m_hoveredFeature = nullptr;
     }
     handlePreselection();

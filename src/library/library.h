@@ -121,8 +121,10 @@ public:
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
     
-    void slotPreviewPreselection(LibraryFeature* pFeature);
-    void slotDisablePreviewPreselection(LibraryFeature* pFeature);
+    void slotSetHoveredFeature(LibraryFeature* pFeature);
+    void slotResetHoveredFeature(LibraryFeature* pFeature);
+    void slotSetFocusedFeature(LibraryFeature* pFeature);
+    void slotResetFocusedFeature(LibraryFeature* pFeature);
 
     void scan() {
         m_scanner.scan();
@@ -175,6 +177,7 @@ public:
     QHash<int, LibraryFeature*> m_savedFeatures;
     // Used to show the preselected pane when the mouse is over the button
     LibraryFeature* m_hoveredFeature;
+    LibraryFeature* m_focusedFeature;
     
     // Can be any integer as it's used with a HashMap
     int m_focusedPane;

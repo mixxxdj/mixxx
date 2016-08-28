@@ -275,7 +275,7 @@ void LibraryFeature::showBreadCrumb() {
     showBreadCrumb(title().toString(), getIcon());
 }
 
-WTrackTableView *LibraryFeature::getFocusedTable() {
+WTrackTableView* LibraryFeature::getFocusedTable() {
     auto it = m_trackTables.find(m_featurePane);
     if (it == m_trackTables.end() || it->isNull()) {
         return nullptr;

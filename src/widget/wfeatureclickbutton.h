@@ -13,8 +13,7 @@ class WFeatureClickButton : public QToolButton
     Q_OBJECT
 
   public:
-    WFeatureClickButton(LibraryFeature* pFeature = nullptr,
-                        QWidget* parent = nullptr);
+    WFeatureClickButton(LibraryFeature* pFeature, QWidget* parent);
 
   signals:
 
@@ -24,11 +23,15 @@ class WFeatureClickButton : public QToolButton
     
     void hovered(LibraryFeature*);
     void leaved(LibraryFeature*);
+    void focusIn(LibraryFeature*);
+    void focusOut(LibraryFeature*);
 
   protected:
 
     void enterEvent(QEvent*) override;
     void leaveEvent(QEvent*) override;
+    void focusInEvent(QFocusEvent*) override;
+    void focusOutEvent(QFocusEvent*) override;
     void mousePressEvent(QMouseEvent* event) override;
     void keyPressEvent(QKeyEvent * event) override;
 

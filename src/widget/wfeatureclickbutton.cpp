@@ -28,13 +28,26 @@ WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* pare
     setFocusPolicy(Qt::ClickFocus);
 }
 
-void WFeatureClickButton::enterEvent(QEvent*) {
+void WFeatureClickButton::enterEvent(QEvent* pEvent) {
+    QToolButton::enterEvent(pEvent);
     emit(hovered(m_pFeature));
 }
 
-void WFeatureClickButton::leaveEvent(QEvent*) {
+void WFeatureClickButton::leaveEvent(QEvent* pEvent) {
+    QToolButton::leaveEvent(pEvent);
     emit(leaved(m_pFeature));
 }
+
+void WFeatureClickButton::focusInEvent(QFocusEvent* pEvent) {
+    QToolButton::focusInEvent(pEvent);
+    emit(focusIn(m_pFeature));
+}
+
+void WFeatureClickButton::focusOutEvent(QFocusEvent* pEvent) {
+    QToolButton::focusOutEvent(pEvent);
+    emit(focusOut(m_pFeature));
+}
+
 
 void WFeatureClickButton::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::RightButton) {
@@ -95,7 +108,6 @@ void WFeatureClickButton::slotTextDisplayChanged(double value) {
 }
 
 void WFeatureClickButton::keyPressEvent(QKeyEvent* event) {
-    qDebug() << event;
     switch(event->key()) {
     case Qt::Key_Return:
         emit(clicked(m_pFeature));
