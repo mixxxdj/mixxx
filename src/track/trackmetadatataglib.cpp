@@ -1762,7 +1762,7 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         if (tagsWritten != TagLib::MPEG::File::NoTags) {
             anyTagsModified = true;
             if (pMPEGFile->hasID3v1Tag()) {
-                // Save the file using the using the generic function (see below)
+                // Save the file using the generic function (see below)
                 pFile = std::move(pMPEGFile); // transfer ownership
             } else {
                 // NOTE(uklotzde, 2016-07-27): Special case handling for
