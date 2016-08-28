@@ -5,6 +5,7 @@
 #include <taglib/id3v2tag.h>
 #include <taglib/xiphcomment.h>
 #include <taglib/mp4tag.h>
+#include <taglib/mpegfile.h>
 
 #include <QImage>
 
@@ -48,6 +49,19 @@ bool writeTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& t
 bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
         const TrackMetadata& trackMetadata);
 bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata);
+
+#ifdef _WIN32
+static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
+#define TAGLIB_FILENAME_FROM_QSTRING(fileName) (const wchar_t*)fileName.utf16()
+// Note: we cannot use QString::toStdWString since QT 4 is compiled with
+// '/Zc:wchar_t-' flag and QT 5 not
+#else
+#define TAGLIB_FILENAME_FROM_QSTRING(fileName) (fileName).toLocal8Bit().constData()
+#endif // _WIN32
+
+bool hasID3v1Tag(TagLib::MPEG::File& file);
+bool hasID3v2Tag(TagLib::MPEG::File& file);
+bool hasAPETag(TagLib::MPEG::File& file);
 
 } // namespace taglib
 

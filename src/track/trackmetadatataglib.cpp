@@ -32,20 +32,10 @@
 #define TAGLIB_HAS_VORBIS_COMMENT_PICTURES \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 11))
 
-#ifdef _WIN32
-static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
-#define TAGLIB_FILENAME_FROM_QSTRING(fileName) (const wchar_t*)fileName.utf16()
-// Note: we cannot use QString::toStdWString since QT 4 is compiled with
-// '/Zc:wchar_t-' flag and QT 5 not
-#else
-#define TAGLIB_FILENAME_FROM_QSTRING(fileName) (fileName).toLocal8Bit().constData()
-#endif // _WIN32
-
 #include <taglib/tfile.h>
 #include <taglib/tmap.h>
 #include <taglib/tstringlist.h>
 
-#include <taglib/mpegfile.h>
 #include <taglib/mp4file.h>
 #include <taglib/flacfile.h>
 #include <taglib/vorbisfile.h>
@@ -69,6 +59,30 @@ QDebug operator<<(QDebug debug, FileType fileType) {
     return debug << static_cast<std::underlying_type<FileType>::type>(fileType);
 }
 
+bool hasID3v1Tag(TagLib::MPEG::File& file) {
+#if (TAGLIB_HAS_TAG_CHECK)
+    return file.hasID3v1Tag();
+#else
+    return nullptr != file.ID3v1Tag();
+#endif
+}
+
+bool hasID3v2Tag(TagLib::MPEG::File& file) {
+#if (TAGLIB_HAS_TAG_CHECK)
+    return file.hasID3v2Tag();
+#else
+    return nullptr != file.ID3v2Tag();
+#endif
+}
+
+bool hasAPETag(TagLib::MPEG::File& file) {
+#if (TAGLIB_HAS_TAG_CHECK)
+    return file.hasAPETag();
+#else
+    return nullptr != file.APETag();
+#endif
+}
+
 namespace {
 
 // Preferred picture types for cover art sorted by priority
@@ -84,22 +98,6 @@ const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredVorbisCommentPictureT
         TagLib::FLAC::Picture::Illustration, // Illustration related to the track
         TagLib::FLAC::Picture::Other
 };
-
-inline bool hasID3v2Tag(TagLib::MPEG::File& file) {
-#if (TAGLIB_HAS_TAG_CHECK)
-    return file.hasID3v2Tag();
-#else
-    return nullptr != file.ID3v2Tag();
-#endif
-}
-
-inline bool hasAPETag(TagLib::MPEG::File& file) {
-#if (TAGLIB_HAS_TAG_CHECK)
-    return file.hasAPETag();
-#else
-    return nullptr != file.APETag();
-#endif
-}
 
 inline bool hasID3v2Tag(TagLib::FLAC::File& file) {
 #if (TAGLIB_HAS_TAG_CHECK)
