@@ -37,12 +37,10 @@
 #include <taglib/tstringlist.h>
 
 #include <taglib/mp4file.h>
-#include <taglib/flacfile.h>
 #include <taglib/vorbisfile.h>
 #if (TAGLIB_HAS_OPUSFILE)
 #include <taglib/opusfile.h>
 #endif
-#include <taglib/wavpackfile.h>
 #include <taglib/wavfile.h>
 #include <taglib/aifffile.h>
 
@@ -83,6 +81,30 @@ bool hasAPETag(TagLib::MPEG::File& file) {
 #endif
 }
 
+bool hasID3v2Tag(TagLib::FLAC::File& file) {
+#if (TAGLIB_HAS_TAG_CHECK)
+    return file.hasID3v2Tag();
+#else
+    return nullptr != file.ID3v2Tag();
+#endif
+}
+
+bool hasXiphComment(TagLib::FLAC::File& file) {
+#if (TAGLIB_HAS_TAG_CHECK)
+    return file.hasXiphComment();
+#else
+    return nullptr != file.xiphComment();
+#endif
+}
+
+bool hasAPETag(TagLib::WavPack::File& file) {
+#if (TAGLIB_HAS_TAG_CHECK)
+    return file.hasAPETag();
+#else
+    return nullptr != file.APETag();
+#endif
+}
+
 namespace {
 
 // Preferred picture types for cover art sorted by priority
@@ -98,30 +120,6 @@ const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredVorbisCommentPictureT
         TagLib::FLAC::Picture::Illustration, // Illustration related to the track
         TagLib::FLAC::Picture::Other
 };
-
-inline bool hasID3v2Tag(TagLib::FLAC::File& file) {
-#if (TAGLIB_HAS_TAG_CHECK)
-    return file.hasID3v2Tag();
-#else
-    return nullptr != file.ID3v2Tag();
-#endif
-}
-
-inline bool hasXiphComment(TagLib::FLAC::File& file) {
-#if (TAGLIB_HAS_TAG_CHECK)
-    return file.hasXiphComment();
-#else
-    return nullptr != file.xiphComment();
-#endif
-}
-
-inline bool hasAPETag(TagLib::WavPack::File& file) {
-#if (TAGLIB_HAS_TAG_CHECK)
-    return file.hasAPETag();
-#else
-    return nullptr != file.APETag();
-#endif
-}
 
 // Deduce the file type from the file name
 FileType getFileTypeFromFileName(QString fileName) {

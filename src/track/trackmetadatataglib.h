@@ -5,7 +5,10 @@
 #include <taglib/id3v2tag.h>
 #include <taglib/xiphcomment.h>
 #include <taglib/mp4tag.h>
+
+#include <taglib/flacfile.h>
 #include <taglib/mpegfile.h>
+#include <taglib/wavpackfile.h>
 
 #include <QImage>
 
@@ -59,9 +62,15 @@ static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size th
 #define TAGLIB_FILENAME_FROM_QSTRING(fileName) (fileName).toLocal8Bit().constData()
 #endif // _WIN32
 
+// Some helper functions for backwards compatibility with older
+// TagLib version that don't provide the corresponding member
+// functions for files.
 bool hasID3v1Tag(TagLib::MPEG::File& file);
 bool hasID3v2Tag(TagLib::MPEG::File& file);
 bool hasAPETag(TagLib::MPEG::File& file);
+bool hasID3v2Tag(TagLib::FLAC::File& file);
+bool hasXiphComment(TagLib::FLAC::File& file);
+bool hasAPETag(TagLib::WavPack::File& file);
 
 } // namespace taglib
 
