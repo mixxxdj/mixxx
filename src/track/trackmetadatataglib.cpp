@@ -63,6 +63,8 @@ static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size th
 
 namespace mixxx {
 
+namespace taglib {
+
 namespace {
 
 const QString kFileTypeAIFF("aiff");
@@ -1781,5 +1783,7 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
 
     return OK;
 }
+
+} // namespace taglib
 
 } //namespace mixxx

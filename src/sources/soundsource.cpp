@@ -43,12 +43,12 @@ SoundSource::OpenResult SoundSource::open(const AudioSourceConfig& audioSrcCfg) 
 Result SoundSource::parseTrackMetadataAndCoverArt(
         TrackMetadata* pTrackMetadata,
         QImage* pCoverArt) const {
-    return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt, getLocalFileName());
+    return taglib::readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt, getLocalFileName());
 }
 
 Result SoundSource::writeTrackMetadata(
         const TrackMetadata& trackMetadata) const {
-    return writeTrackMetadataIntoFile(trackMetadata, getLocalFileName());
+    return taglib::writeTrackMetadataIntoFile(trackMetadata, getLocalFileName());
 }
 
 } //namespace mixxx

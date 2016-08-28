@@ -13,6 +13,8 @@
 
 namespace mixxx {
 
+namespace taglib {
+
 // Read both track metadata and cover art of supported file types.
 // Both parameters are optional and might be NULL.
 Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName);
@@ -33,6 +35,8 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
         const TrackMetadata& trackMetadata);
 bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata);
 
-} //namespace mixxx
+} // namespace taglib
+
+} // namespace mixxx
 
 #endif
