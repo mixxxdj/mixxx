@@ -11,6 +11,9 @@
 #include "track/track.h"
 #include "util/sandbox.h"
 
+class CoverInfo;
+class CoverInfoRelative;
+
 class CoverArtUtils {
   public:
     static QString defaultCoverLocation();

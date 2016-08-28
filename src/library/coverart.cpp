@@ -44,6 +44,13 @@ QString coverInfoToString(const CoverInfo& info) {
 }
 } // anonymous namespace
 
+CoverInfoRelative::CoverInfoRelative()
+        : source(UNKNOWN),
+          type(NONE),
+          hash(0) {
+    // The default hash value should match the calculated hash for a null image
+    DEBUG_ASSERT(CoverArtUtils::calculateHash(QImage()) == hash);
+}
 
 bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b) {
     return a.source == b.source &&
@@ -82,6 +89,3 @@ QDebug operator<<(QDebug dbg, const CoverArt& art) {
                  toDebugString(art.image.size()),
                  QString::number(art.resizedToWidth));
 }
-
-const quint16 CoverInfoRelative::kNullImageHash = CoverArtUtils::calculateHash(QImage());
-
