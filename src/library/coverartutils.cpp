@@ -52,7 +52,7 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
             return QImage();
         }
         const QFileInfo fileInfo(info.trackLocation);
-        return CoverArtUtils::extractEmbeddedCover(fileInfo);
+        return extractEmbeddedCover(fileInfo);
     } else if (info.type == CoverInfo::FILE) {
         if (info.trackLocation.isEmpty()) {
             qDebug() << "CoverArtUtils::loadCover FILE cover with empty trackLocation."
@@ -215,7 +215,7 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
             coverInfoRelative.source = CoverInfo::GUESSED;
             coverInfoRelative.type = CoverInfo::FILE;
             // TODO() here we may introduce a duplicate hash code
-            coverInfoRelative.hash = CoverArtUtils::calculateHash(image);
+            coverInfoRelative.hash = calculateHash(image);
             coverInfoRelative.coverLocation = bestInfo->fileName();
             return coverInfoRelative;
         }

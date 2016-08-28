@@ -140,7 +140,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
 
     // Adjust the cover size according to the request or downsize the image for
     // efficiency.
-    if (desiredWidth > 0 && !image.isNull()) {
+    if (!image.isNull() && desiredWidth > 0) {
         image = resizeImageWidth(image, desiredWidth);
     }
 
