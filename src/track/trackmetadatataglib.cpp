@@ -1728,54 +1728,258 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
 
 // Encapsulates subtle differences between TagLib::File::save()
 // and variants of this function in derived subclasses.
-class TagSaver final {
+class TagSaver {
 public:
-    TagSaver()
-        : m_modifiedMpegTags(TagLib::MPEG::File::NoTags),
-          m_modifiedTags(false) {
+    virtual ~TagSaver() {}
+
+    virtual bool hasModifiedTags() const = 0;
+
+    virtual bool saveModifiedTags() = 0;
+};
+
+class MpegTagSaver: public TagSaver {
+public:
+    MpegTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
+        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+          m_modifiedTagsBitmask(writeTrackMetadata(&m_file, trackMetadata)) {
+    }
+    ~MpegTagSaver() override {}
+
+    bool hasModifiedTags() const override {
+        return m_modifiedTagsBitmask != TagLib::MPEG::File::NoTags;
     }
 
-    void initOnce(std::unique_ptr<TagLib::File> pFile, bool modifiedTags) {
-        DEBUG_ASSERT(!m_pFile);
-        DEBUG_ASSERT(!m_pMpegFile);
-        m_pFile = std::move(pFile);
-        m_modifiedTags = modifiedTags;
-    }
-    void initOnce(std::unique_ptr<TagLib::MPEG::File> pMpegFile, int modifiedMpegTags) {
-        DEBUG_ASSERT(!m_pFile);
-        DEBUG_ASSERT(!m_pMpegFile);
-        m_pMpegFile = std::move(pMpegFile);
-        m_modifiedMpegTags = modifiedMpegTags;
-        m_modifiedTags = m_modifiedMpegTags != TagLib::MPEG::File::NoTags;
-    }
-
-    bool hasModifiedTags() const {
-        return m_modifiedTags;
-    }
-
-    bool saveModifiedTags() const {
-        DEBUG_ASSERT(hasModifiedTags());
-        if (m_pMpegFile) {
-            // NOTE(uklotzde, 2016-07-27): Special case handling for
-            // MP3 files without ID3v1 tags. TagLib 1.11 creates unwanted
-            // legacy ID3v1 tags when using the generic function
-            // TagLib::File::save() instead one of the parameterized
-            // variants from TagLib::MPEG::File!
-            if (m_pMpegFile->save(m_modifiedMpegTags)) {
-                return true;
-            }
-        } else if (m_pFile) {
-            if (m_pFile->save()) {
-                return true;
-            }
-        }
-        return false;
+    bool saveModifiedTags() override {
+        // NOTE(uklotzde, 2016-08-28): Only save the tags that have
+        // actually been modified! Otherwise TagLib 1.11 adds unwanted
+        // ID3v1 tags, even if the file does not already contain those
+        // legacy tags.
+        return m_file.save(m_modifiedTagsBitmask);
     }
 
 private:
-    std::unique_ptr<TagLib::File> m_pFile;
-    std::unique_ptr<TagLib::MPEG::File> m_pMpegFile;
-    int m_modifiedMpegTags;
+    static int writeTrackMetadata(TagLib::MPEG::File* pFile, const TrackMetadata& trackMetadata) {
+        int modifiedTagsBitmask = TagLib::MPEG::File::NoTags;
+        if (pFile->isOpen()) {
+            TagLib::ID3v2::Tag* pID3v2Tag = nullptr;
+            if (hasAPETag(*pFile)) {
+                if (writeTrackMetadataIntoAPETag(pFile->APETag(), trackMetadata)) {
+                    modifiedTagsBitmask |= TagLib::MPEG::File::APE;
+                }
+                // Only write ID3v2 tag if it already exists
+                pID3v2Tag = pFile->ID3v2Tag(false);
+            } else {
+                // Get or create  ID3v2 tag
+                pID3v2Tag = pFile->ID3v2Tag(true);
+            }
+            if (writeTrackMetadataIntoID3v2Tag(pID3v2Tag, trackMetadata)) {
+                modifiedTagsBitmask |= TagLib::MPEG::File::ID3v2;
+            }
+        }
+        return modifiedTagsBitmask;
+    }
+
+    TagLib::MPEG::File m_file;
+    int m_modifiedTagsBitmask;
+};
+
+class Mp4TagSaver: public TagSaver {
+public:
+    Mp4TagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
+        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+          m_modifiedTags(writeTrackMetadata(&m_file, trackMetadata)) {
+    }
+    ~Mp4TagSaver() override {}
+
+    bool hasModifiedTags() const override {
+        return m_modifiedTags;
+    }
+
+    bool saveModifiedTags() override {
+        return m_file.save();
+    }
+
+private:
+    static bool writeTrackMetadata(TagLib::MP4::File* pFile, const TrackMetadata& trackMetadata) {
+        return pFile->isOpen()
+                && writeTrackMetadataIntoMP4Tag(pFile->tag(), trackMetadata);
+    }
+
+    TagLib::MP4::File m_file;
+    bool m_modifiedTags;
+};
+
+class FlacTagSaver: public TagSaver {
+public:
+    FlacTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
+        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+          m_modifiedTags(writeTrackMetadata(&m_file, trackMetadata)) {
+    }
+    ~FlacTagSaver() override {}
+
+    bool hasModifiedTags() const override {
+        return m_modifiedTags;
+    }
+
+    bool saveModifiedTags() override {
+        return m_file.save();
+    }
+
+private:
+    static bool writeTrackMetadata(TagLib::FLAC::File* pFile, const TrackMetadata& trackMetadata) {
+        bool modifiedTags = false;
+        if (pFile->isOpen()) {
+            TagLib::Ogg::XiphComment* pXiphComment = nullptr;
+            if (hasID3v2Tag(*pFile)) {
+                modifiedTags |= writeTrackMetadataIntoID3v2Tag(pFile->ID3v2Tag(), trackMetadata);
+                // Only write VorbisComment tag if it already exists
+                pXiphComment = pFile->xiphComment(false);
+            } else {
+                // Get or create VorbisComment tag
+                pXiphComment = pFile->xiphComment(true);
+            }
+            modifiedTags |= writeTrackMetadataIntoXiphComment(pXiphComment, trackMetadata);
+        }
+        return modifiedTags;
+    }
+
+    TagLib::FLAC::File m_file;
+    bool m_modifiedTags;
+};
+
+class OggTagSaver: public TagSaver {
+public:
+    OggTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
+        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+          m_modifiedTags(writeTrackMetadata(&m_file, trackMetadata)) {
+    }
+    ~OggTagSaver() override {}
+
+    bool hasModifiedTags() const override {
+        return m_modifiedTags;
+    }
+
+    bool saveModifiedTags() override {
+        return m_file.save();
+    }
+
+private:
+    static bool writeTrackMetadata(TagLib::Ogg::Vorbis::File* pFile, const TrackMetadata& trackMetadata) {
+        return pFile->isOpen()
+                && writeTrackMetadataIntoXiphComment(pFile->tag(), trackMetadata);
+    }
+
+    TagLib::Ogg::Vorbis::File m_file;
+    bool m_modifiedTags;
+};
+
+#if (TAGLIB_HAS_OPUSFILE)
+class OpusTagSaver: public TagSaver {
+public:
+    OpusTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
+        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+          m_modifiedTags(writeTrackMetadata(&m_file, trackMetadata)) {
+    }
+    ~OpusTagSaver() override {}
+
+    bool hasModifiedTags() const override {
+        return m_modifiedTags;
+    }
+
+    bool saveModifiedTags() override {
+        return m_file.save();
+    }
+
+private:
+    static bool writeTrackMetadata(TagLib::Ogg::Opus::File* pFile, const TrackMetadata& trackMetadata) {
+        return pFile->isOpen()
+                && writeTrackMetadataIntoXiphComment(pFile->tag(), trackMetadata);
+    }
+
+    TagLib::Ogg::Opus::File m_file;
+    bool m_modifiedTags;
+};
+#endif // TAGLIB_HAS_OPUSFILE
+
+class WavPackTagSaver: public TagSaver {
+public:
+    WavPackTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
+        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+          m_modifiedTags(writeTrackMetadata(&m_file, trackMetadata)) {
+    }
+    ~WavPackTagSaver() override {}
+
+    bool hasModifiedTags() const override {
+        return m_modifiedTags;
+    }
+
+    bool saveModifiedTags() override {
+        return m_file.save();
+    }
+
+private:
+    static bool writeTrackMetadata(TagLib::WavPack::File* pFile, const TrackMetadata& trackMetadata) {
+        return pFile->isOpen()
+                && writeTrackMetadataIntoAPETag(pFile->APETag(true), trackMetadata);
+    }
+
+    TagLib::WavPack::File m_file;
+    bool m_modifiedTags;
+};
+
+class WavTagSaver: public TagSaver {
+public:
+    WavTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
+        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+          m_modifiedTags(writeTrackMetadata(&m_file, trackMetadata)) {
+    }
+    ~WavTagSaver() override {}
+
+    bool hasModifiedTags() const override {
+        return m_modifiedTags;
+    }
+
+    bool saveModifiedTags() override {
+        return m_file.save();
+    }
+
+private:
+    static bool writeTrackMetadata(TagLib::RIFF::WAV::File* pFile, const TrackMetadata& trackMetadata) {
+        return pFile->isOpen()
+#if (TAGLIB_HAS_WAV_ID3V2TAG)
+                && writeTrackMetadataIntoID3v2Tag(pFile->ID3v2Tag(), trackMetadata);
+#else
+                && writeTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
+#endif
+    }
+
+    TagLib::RIFF::WAV::File m_file;
+    bool m_modifiedTags;
+};
+
+class AiffTagSaver: public TagSaver {
+public:
+    AiffTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
+        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+          m_modifiedTags(writeTrackMetadata(&m_file, trackMetadata)) {
+    }
+    ~AiffTagSaver() override {}
+
+    bool hasModifiedTags() const override {
+        return m_modifiedTags;
+    }
+
+    bool saveModifiedTags() override {
+        return m_file.save();
+    }
+
+private:
+    static bool writeTrackMetadata(TagLib::RIFF::AIFF::File* pFile, const TrackMetadata& trackMetadata) {
+        return pFile->isOpen()
+                && writeTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
+    }
+
+    TagLib::RIFF::AIFF::File m_file;
     bool m_modifiedTags;
 };
 
@@ -1784,111 +1988,53 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         fileType = getFileTypeFromFileName(fileName);
     }
 
-    qDebug() << "Writing track metadata into file" << fileName << "of type" << fileType;
+    qDebug() << "Writing track metadata into file"
+            << fileName
+            << "of type"
+            << fileType;
 
-    TagSaver tagSaver;
-
+    std::unique_ptr<TagSaver> pTagSaver;
     switch (fileType) {
     case FileType::MP3:
     {
-        auto pMPEGFile =
-                std::make_unique<TagLib::MPEG::File>(
-                        TAGLIB_FILENAME_FROM_QSTRING(fileName));
-        int modifiedTags = TagLib::MPEG::File::NoTags;
-        TagLib::ID3v2::Tag* pID3v2Tag = nullptr;
-        if (hasAPETag(*pMPEGFile)) {
-            if (writeTrackMetadataIntoAPETag(pMPEGFile->APETag(), trackMetadata)) {
-                modifiedTags |= TagLib::MPEG::File::APE;
-            }
-            // Only write ID3v2 tag if it already exists
-            pID3v2Tag = pMPEGFile->ID3v2Tag(false);
-        } else {
-            // Get or create  ID3v2 tag
-            pID3v2Tag = pMPEGFile->ID3v2Tag(true);
-        }
-        if (writeTrackMetadataIntoID3v2Tag(pID3v2Tag, trackMetadata)) {
-            modifiedTags |= TagLib::MPEG::File::ID3v2;
-        }
-        tagSaver.initOnce(std::move(pMPEGFile), modifiedTags);
+        pTagSaver = std::make_unique<MpegTagSaver>(fileName, trackMetadata);
         break;
     }
     case FileType::MP4:
     {
-        auto pMP4File =
-                std::make_unique<TagLib::MP4::File>(
-                        TAGLIB_FILENAME_FROM_QSTRING(fileName));
-        bool modifiedTags = writeTrackMetadataIntoMP4Tag(pMP4File->tag(), trackMetadata);
-        tagSaver.initOnce(std::move(pMP4File), modifiedTags);
+        pTagSaver = std::make_unique<Mp4TagSaver>(fileName, trackMetadata);
         break;
     }
     case FileType::FLAC:
     {
-        auto pFLACFile =
-                std::make_unique<TagLib::FLAC::File>(
-                        TAGLIB_FILENAME_FROM_QSTRING(fileName));
-        TagLib::Ogg::XiphComment* pXiphComment = nullptr;
-        bool modifiedTags = false;
-        if (hasID3v2Tag(*pFLACFile)) {
-            modifiedTags |= writeTrackMetadataIntoID3v2Tag(pFLACFile->ID3v2Tag(), trackMetadata);
-            // Only write VorbisComment tag if it already exists
-            pXiphComment = pFLACFile->xiphComment(false);
-        } else {
-            // Get or create VorbisComment tag
-            pXiphComment = pFLACFile->xiphComment(true);
-        }
-        modifiedTags |= writeTrackMetadataIntoXiphComment(pXiphComment, trackMetadata);
-        tagSaver.initOnce(std::move(pFLACFile), modifiedTags);
+        pTagSaver = std::make_unique<FlacTagSaver>(fileName, trackMetadata);
         break;
     }
     case FileType::OGG:
     {
-        auto pOggVorbisFile =
-                std::make_unique<TagLib::Ogg::Vorbis::File>(
-                        TAGLIB_FILENAME_FROM_QSTRING(fileName));
-        bool modifiedTags = writeTrackMetadataIntoXiphComment(pOggVorbisFile->tag(), trackMetadata);
-        tagSaver.initOnce(std::move(pOggVorbisFile), modifiedTags);
+        pTagSaver = std::make_unique<OggTagSaver>(fileName, trackMetadata);
         break;
     }
 #if (TAGLIB_HAS_OPUSFILE)
     case FileType::OPUS:
     {
-        auto pOggOpusFile =
-                std::make_unique<TagLib::Ogg::Opus::File>(
-                        TAGLIB_FILENAME_FROM_QSTRING(fileName));
-        bool modifiedTags = writeTrackMetadataIntoXiphComment(pOggOpusFile->tag(), trackMetadata);
-        tagSaver.initOnce(std::move(pOggOpusFile), modifiedTags);
+        pTagSaver = std::make_unique<OpusTagSaver>(fileName, trackMetadata);
         break;
     }
 #endif // TAGLIB_HAS_OPUSFILE
     case FileType::WV:
     {
-        auto pWavPackFile =
-                std::make_unique<TagLib::WavPack::File>(
-                        TAGLIB_FILENAME_FROM_QSTRING(fileName));
-        bool modifiedTags = writeTrackMetadataIntoAPETag(pWavPackFile->APETag(true), trackMetadata);
-        tagSaver.initOnce(std::move(pWavPackFile), modifiedTags);
+        pTagSaver = std::make_unique<WavPackTagSaver>(fileName, trackMetadata);
         break;
     }
     case FileType::WAV:
     {
-        auto pWAVFile =
-                std::make_unique<TagLib::RIFF::WAV::File>(
-                        TAGLIB_FILENAME_FROM_QSTRING(fileName));
-#if (TAGLIB_HAS_WAV_ID3V2TAG)
-        bool modifiedTags = writeTrackMetadataIntoID3v2Tag(pWAVFile->ID3v2Tag(), trackMetadata);
-#else
-        bool modifiedTags = writeTrackMetadataIntoID3v2Tag(pWAVFile->tag(), trackMetadata);
-#endif
-        tagSaver.initOnce(std::move(pWAVFile), modifiedTags);
+        pTagSaver = std::make_unique<WavTagSaver>(fileName, trackMetadata);
         break;
     }
     case FileType::AIFF:
     {
-        auto pAIFFFile =
-                std::make_unique<TagLib::RIFF::AIFF::File>(
-                        TAGLIB_FILENAME_FROM_QSTRING(fileName));
-        bool modifiedTags = writeTrackMetadataIntoID3v2Tag(pAIFFFile->tag(), trackMetadata);
-        tagSaver.initOnce(std::move(pAIFFFile), modifiedTags);
+        pTagSaver = std::make_unique<AiffTagSaver>(fileName, trackMetadata);
         break;
     }
     default:
@@ -1900,8 +2046,8 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         return ERR;
     }
 
-    if (tagSaver.hasModifiedTags()) {
-        if (tagSaver.saveModifiedTags()) {
+    if (pTagSaver->hasModifiedTags()) {
+        if (pTagSaver->saveModifiedTags()) {
             return OK;
         } else {
             qWarning() << "Failed to save tags of file" << fileName;
