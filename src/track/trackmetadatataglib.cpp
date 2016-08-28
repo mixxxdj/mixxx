@@ -65,16 +65,11 @@ namespace mixxx {
 
 namespace taglib {
 
-namespace {
+QDebug operator<<(QDebug debug, FileType fileType) {
+    return debug << static_cast<std::underlying_type<FileType>::type>(fileType);
+}
 
-const QString kFileTypeAIFF("aiff");
-const QString kFileTypeFLAC("flac");
-const QString kFileTypeMP3("mp3");
-const QString kFileTypeMP4("mp4");
-const QString kFileTypeOggVorbis("ogg");
-const QString kFileTypeOggOpus("opus");
-const QString kFileTypeWAV("wav");
-const QString kFileTypeWavPack("wv");
+namespace {
 
 // Preferred picture types for cover art sorted by priority
 const std::array<TagLib::ID3v2::AttachedPictureFrame::Type, 4> kPreferredID3v2PictureTypes = {
@@ -131,16 +126,34 @@ inline bool hasAPETag(TagLib::WavPack::File& file) {
 }
 
 // Deduce the file type from the file name
-QString getFileTypeFromFileName(QString fileName) {
+FileType getFileTypeFromFileName(QString fileName) {
     DEBUG_ASSERT(!fileName.isEmpty());
-    const QString fileType(fileName.section(".", -1).toLower().trimmed());
-    if ("m4a" == fileType) {
-        return kFileTypeMP4;
+    const QString fileExt(fileName.section(".", -1).toLower().trimmed());
+    if ("mp3" == fileExt) {
+        return FileType::MP3;
     }
-    if ("aif" == fileType) {
-        return kFileTypeAIFF;
+    if ("m4a" == fileExt) {
+        return FileType::MP4;
     }
-    return fileType;
+    if ("flac" == fileExt) {
+        return FileType::FLAC;
+    }
+    if ("ogg" == fileExt) {
+        return FileType::OGG;
+    }
+    if ("opus" == fileExt) {
+        return FileType::OPUS;
+    }
+    if ("wav" == fileExt) {
+        return FileType::WAV;
+    }
+    if ("wv" == fileExt) {
+        return FileType::WV;
+    }
+    if (fileExt.startsWith("aif")) {
+        return FileType::AIFF;
+    }
+    return FileType::UNKNOWN;
 }
 
 // http://id3.org/id3v2.3.0
@@ -1496,8 +1509,10 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
     return true;
 }
 
-Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName) {
-    const QString fileType(getFileTypeFromFileName(fileName));
+Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName, FileType fileType) {
+    if (fileType == FileType::UNKNOWN) {
+        fileType = getFileTypeFromFileName(fileName);
+    }
 
     qDebug() << "Reading tags from file" << fileName << "of type" << fileType
             << ":" << (pTrackMetadata ? "parsing" : "ignoring") << "track metadata"
@@ -1509,7 +1524,9 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     // from the same tag types. Only the first available tag type
     // is read and data in subsequent tags is ignored.
 
-    if (kFileTypeMP3 == fileType) {
+    switch (fileType) {
+    case FileType::MP3:
+    {
         TagLib::MPEG::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::ID3v2::Tag* pID3v2Tag =
@@ -1535,7 +1552,10 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 }
             }
         }
-    } else if (kFileTypeMP4 == fileType) {
+        break;
+    }
+    case FileType::MP4:
+    {
         TagLib::MP4::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::MP4::Tag* pMP4Tag = file.tag();
@@ -1552,7 +1572,10 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 }
             }
         }
-    } else if (kFileTypeFLAC == fileType) {
+        break;
+    }
+    case FileType::FLAC:
+    {
         TagLib::FLAC::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         // Read cover art directly from the file first. Will be
         // overwritten with cover art contained in on of the tags.
@@ -1584,7 +1607,10 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 }
             }
         }
-    } else if (kFileTypeOggVorbis == fileType) {
+        break;
+    }
+    case FileType::OGG:
+    {
         TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
             TagLib::Ogg::XiphComment* pXiphComment = file.tag();
@@ -1601,8 +1627,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 }
             }
         }
+        break;
+    }
 #if (TAGLIB_HAS_OPUSFILE)
-    } else if (kFileTypeOggOpus == fileType) {
+    case FileType::OPUS:
+    {
         TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
             TagLib::Ogg::XiphComment* pXiphComment = file.tag();
@@ -1619,8 +1648,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 }
             }
         }
+        break;
+    }
 #endif // TAGLIB_HAS_OPUSFILE
-    } else if (kFileTypeWavPack == fileType) {
+    case FileType::WV:
+    {
         TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::APE::Tag* pAPETag =
@@ -1638,8 +1670,10 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 }
             }
         }
-    } else if (kFileTypeWAV == fileType) {
-
+        break;
+    }
+    case FileType::WAV:
+    {
         TagLib::RIFF::WAV::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
 #if (TAGLIB_HAS_WAV_ID3V2TAG)
@@ -1661,7 +1695,10 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 }
             }
         }
-    } else if (kFileTypeAIFF == fileType) {
+        break;
+    }
+    case FileType::AIFF:
+    {
         TagLib::RIFF::AIFF::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::ID3v2::Tag* pID3v2Tag = file.tag();
@@ -1678,23 +1715,34 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 }
             }
         }
-    } else {
-        qWarning() << "Unsupported file type" << fileType;
+        break;
+    }
+    default:
+        qWarning()
+            << "Cannot read metadata from file"
+            << fileName
+            << "with unknown or unsupported file type"
+            << fileType;
+        return ERR;
     }
 
     qWarning() << "Failed to read track metadata from file" << fileName;
     return ERR;
 }
 
-Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fileName) {
-    const QString fileType(getFileTypeFromFileName(fileName));
+Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fileName, FileType fileType) {
+    if (fileType == FileType::UNKNOWN) {
+        fileType = getFileTypeFromFileName(fileName);
+    }
 
     qDebug() << "Writing track metadata into file" << fileName << "of type" << fileType;
 
     std::unique_ptr<TagLib::File> pFile;
     bool anyTagsWritten = false;
 
-    if (kFileTypeMP3 == fileType) {
+    switch (fileType) {
+    case FileType::MP3:
+    {
         auto pMPEGFile =
                 std::make_unique<TagLib::MPEG::File>(
                         TAGLIB_FILENAME_FROM_QSTRING(fileName));
@@ -1708,13 +1756,19 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
             anyTagsWritten |= writeTrackMetadataIntoID3v2Tag(pMPEGFile->ID3v2Tag(defaultID3V2), trackMetadata);
         }
         pFile = std::move(pMPEGFile); // transfer ownership
-    } else if (kFileTypeMP4 == fileType) {
+        break;
+    }
+    case FileType::MP4:
+    {
         auto pMP4File =
                 std::make_unique<TagLib::MP4::File>(
                         TAGLIB_FILENAME_FROM_QSTRING(fileName));
         anyTagsWritten |= writeTrackMetadataIntoMP4Tag(pMP4File->tag(), trackMetadata);
         pFile = std::move(pMP4File); // transfer ownership
-    } else if (kFileTypeFLAC == fileType) {
+        break;
+    }
+    case FileType::FLAC:
+    {
         auto pFLACFile =
                 std::make_unique<TagLib::FLAC::File>(
                         TAGLIB_FILENAME_FROM_QSTRING(fileName));
@@ -1728,27 +1782,39 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
             anyTagsWritten |= writeTrackMetadataIntoXiphComment(pFLACFile->xiphComment(defaultXiphComment), trackMetadata);
         }
         pFile = std::move(pFLACFile); // transfer ownership
-    } else if (kFileTypeOggVorbis == fileType) {
+        break;
+    }
+    case FileType::OGG:
+    {
         auto pOggVorbisFile =
                 std::make_unique<TagLib::Ogg::Vorbis::File>(
                         TAGLIB_FILENAME_FROM_QSTRING(fileName));
         anyTagsWritten |= writeTrackMetadataIntoXiphComment(pOggVorbisFile->tag(), trackMetadata);
         pFile = std::move(pOggVorbisFile); // transfer ownership
+        break;
+    }
 #if (TAGLIB_HAS_OPUSFILE)
-    } else if (kFileTypeOggOpus == fileType) {
+    case FileType::OPUS:
+    {
         auto pOggOpusFile =
                 std::make_unique<TagLib::Ogg::Opus::File>(
                         TAGLIB_FILENAME_FROM_QSTRING(fileName));
         anyTagsWritten |= writeTrackMetadataIntoXiphComment(pOggOpusFile->tag(), trackMetadata);
         pFile = std::move(pOggOpusFile); // transfer ownership
+        break;
+    }
 #endif // TAGLIB_HAS_OPUSFILE
-    } else if (kFileTypeWavPack == fileType) {
+    case FileType::WV:
+    {
         auto pWavPackFile =
                 std::make_unique<TagLib::WavPack::File>(
                         TAGLIB_FILENAME_FROM_QSTRING(fileName));
         anyTagsWritten |= writeTrackMetadataIntoAPETag(pWavPackFile->APETag(true), trackMetadata);
         pFile = std::move(pWavPackFile); // transfer ownership
-    } else if (kFileTypeWAV == fileType) {
+        break;
+    }
+    case FileType::WAV:
+    {
         auto pWAVFile =
                 std::make_unique<TagLib::RIFF::WAV::File>(
                         TAGLIB_FILENAME_FROM_QSTRING(fileName));
@@ -1758,24 +1824,32 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         anyTagsWritten |= writeTrackMetadataIntoID3v2Tag(pWAVFile->tag(), trackMetadata);
 #endif
         pFile = std::move(pWAVFile); // transfer ownership
-    } else if (kFileTypeAIFF == fileType) {
+        break;
+    }
+    case FileType::AIFF:
+    {
         auto pAIFFFile =
                 std::make_unique<TagLib::RIFF::AIFF::File>(
                         TAGLIB_FILENAME_FROM_QSTRING(fileName));
         anyTagsWritten |= writeTrackMetadataIntoID3v2Tag(pAIFFFile->tag(), trackMetadata);
         pFile = std::move(pAIFFFile); // transfer ownership
+        break;
     }
-
-    if (!pFile) {
-        qWarning() << "Failed to write track metadata into file" << fileName
-                << ": Unsupported file type" << fileType;
+    default:
+        qWarning()
+            << "Cannot write metadata into file"
+            << fileName
+            << "with unknown or unsupported file type"
+            << fileType;
         return ERR;
     }
+
     if (!anyTagsWritten) {
         qWarning() << "Failed to write track metadata into file" << fileName
                 << ": Inaccessible tags";
         return ERR;
     }
+    DEBUG_ASSERT(pFile);
     if (!pFile->save()) {
         qWarning() << "Failed to save file" << fileName;
         return ERR;
