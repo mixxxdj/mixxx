@@ -578,8 +578,8 @@ void BasePlaylistFeature::slotExportTrackFiles() {
         tracks.push_back(pPlaylistTableModel->getTrack(index));
     }
 
-    TrackExportWizard track_export(nullptr, m_pConfig, tracks);
-    track_export.exportTracks();
+    TrackExportWizard trackExport(nullptr, m_pConfig, tracks);
+    trackExport.exportTracks();
 }
 
 void BasePlaylistFeature::slotAddToAutoDJ() {

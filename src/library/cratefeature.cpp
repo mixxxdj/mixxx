@@ -804,8 +804,8 @@ void CrateFeature::slotExportTrackFiles() {
         trackpointers.push_back(m_pCrateTableModel->getTrack(index));
     }
 
-    TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
-    track_export.exportTracks();
+    TrackExportWizard trackExport(nullptr, m_pConfig, trackpointers);
+    trackExport.exportTracks();
 }
 
 void CrateFeature::slotCrateTableChanged(int crateId) {
