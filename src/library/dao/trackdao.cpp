@@ -1215,7 +1215,7 @@ bool setTrackKey(const QSqlRecord& record, const int column,
 
 bool setTrackCoverInfo(const QSqlRecord& record, const int column,
                        TrackPointer pTrack) {
-    CoverInfo coverInfo;
+    CoverInfoRelative coverInfo;
     bool ok = false;
     coverInfo.source = static_cast<CoverInfo::Source>(
             record.value(column).toInt(&ok));
@@ -2050,15 +2050,15 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                 currentDirectoryPath);
         }
 
-        CoverArt art = CoverArtUtils::selectCoverArtForTrack(
+        CoverInfoRelative coverInfo = CoverArtUtils::selectCoverArtForTrack(
             trackInfo.baseName(), track.trackAlbum, possibleCovers);
 
         updateQuery.bindValue(":coverart_type",
-                              static_cast<int>(art.info.type));
+                              static_cast<int>(coverInfo.type));
         updateQuery.bindValue(":coverart_source",
-                              static_cast<int>(art.info.source));
-        updateQuery.bindValue(":coverart_hash", art.info.hash);
-        updateQuery.bindValue(":coverart_location", art.info.coverLocation);
+                              static_cast<int>(coverInfo.source));
+        updateQuery.bindValue(":coverart_hash", coverInfo.hash);
+        updateQuery.bindValue(":coverart_location", coverInfo.coverLocation);
         updateQuery.bindValue(":track_id", track.trackId.toVariant());
         if (!updateQuery.exec()) {
             LOG_FAILED_QUERY(updateQuery) << "failed to write file or none cover";

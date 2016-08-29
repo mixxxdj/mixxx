@@ -543,7 +543,7 @@ QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
 }
 
 SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
-    return exportSoundSourcePlugin(new SoundSourceM4A(url));
+    return newSoundSourcePluginFromUrl<SoundSourceM4A>(url);
 }
 
 } // namespace mixxx

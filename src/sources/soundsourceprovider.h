@@ -22,6 +22,9 @@ enum class SoundSourceProviderPriority {
 };
 
 // Factory interface for SoundSources
+//
+// The implementation of a SoundSourceProvider must be thread-safe, because
+// a single instance might be accessed concurrently from different threads.
 class SoundSourceProvider {
 public:
     virtual ~SoundSourceProvider() {}
@@ -51,6 +54,13 @@ public:
     // has one of the supported file extensions.
     virtual SoundSourcePointer newSoundSource(const QUrl& url) = 0;
 };
+
+typedef QSharedPointer<SoundSourceProvider> SoundSourceProviderPointer;
+
+template<typename T>
+static SoundSourceProviderPointer newSoundSourceProvider() {
+    return SoundSourceProviderPointer(new T);
+}
 
 } // namespace mixxx
 

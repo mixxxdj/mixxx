@@ -118,10 +118,6 @@ void CoverArtCache::requestCover(const Track* pTrack,
     if (pCache == nullptr || pTrack == nullptr) return;
 
     CoverInfo info = pTrack->getCoverInfo();
-    // trackLocation can be still empty here
-    // TODO(DSC) it is an design issue that we have
-    // redundant trackLocation info here
-    info.trackLocation = pTrack->getLocation();
     pCache->requestCover(info, pRequestor, 0, false, true);
 }
 
@@ -135,16 +131,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
                  << info << desiredWidth << signalWhenDone;
     }
 
-    FutureResult res;
-    res.pRequestor = pRequestor;
-    res.cover.info = info;
-    res.desiredWidth = desiredWidth;
-    res.signalWhenDone = signalWhenDone;
-    res.cover.image = CoverArtUtils::loadCover(res.cover.info);
-
-    if (res.cover.image.isNull()) {
-        return res;
-    }
+    QImage image = CoverArtUtils::loadCover(info);
 
     // TODO(XXX) Should we re-hash here? If the cover file (or track metadata)
     // has changed then info.hash may be incorrect. The fix
@@ -153,9 +140,14 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
 
     // Adjust the cover size according to the request or downsize the image for
     // efficiency.
-    if (res.desiredWidth > 0) {
-        res.cover.image = resizeImageWidth(res.cover.image, res.desiredWidth);
+    if (!image.isNull() && desiredWidth > 0) {
+        image = resizeImageWidth(image, desiredWidth);
     }
+
+    FutureResult res;
+    res.pRequestor = pRequestor;
+    res.cover = CoverArt(info, image, desiredWidth);
+    res.signalWhenDone = signalWhenDone;
 
     return res;
 }
@@ -170,12 +162,28 @@ void CoverArtCache::coverLoaded() {
         qDebug() << "CoverArtCache::coverLoaded" << res.cover;
     }
 
-    QPixmap pixmap = cacheCover(res.cover, res.desiredWidth);
+    // Don't cache full size covers (resizedToWidth = 0)
+    // Large cover art wastes space in our cache and will likely
+    // uncache a lot of the small covers we need in the library
+    // table.
+    // Full size covers are used in the Skin Widgets, which are
+    // loaded with an artificial delay anyway and an additional
+    // re-load delay can be accepted.
 
-    m_runningRequests.remove(qMakePair(res.pRequestor, res.cover.info.hash));
+    // Create pixmap, GUI thread only 
+    QPixmap pixmap = QPixmap::fromImage(res.cover.image);
+    if (!pixmap.isNull() && res.cover.resizedToWidth != 0) {
+        // we have to be sure that res.cover.hash is unique
+        // because insert replaces the images with the same key
+        QString cacheKey = pixmapCacheKey(
+                res.cover.hash, res.cover.resizedToWidth);
+        QPixmapCache::insert(cacheKey, pixmap);
+    }
+
+    m_runningRequests.remove(qMakePair(res.pRequestor, res.cover.hash));
 
     if (res.signalWhenDone) {
-        emit(coverFound(res.pRequestor, res.cover.info, pixmap, false));
+        emit(coverFound(res.pRequestor, res.cover, pixmap, false));
     }
 }
 
@@ -189,8 +197,8 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 
 void CoverArtCache::guessCover(TrackPointer pTrack) {
     if (pTrack) {
-        CoverArt cover = CoverArtUtils::guessCoverArt(pTrack);
-        pTrack->setCoverInfo(cover.info);
+        CoverInfo cover = CoverArtUtils::guessCoverInfo(*pTrack);
+        pTrack->setCoverInfo(cover);
     }
 }
 
@@ -202,23 +210,3 @@ void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
     }
 }
 
-QPixmap CoverArtCache::cacheCover(CoverArt cover, int width) {
-    QPixmap pixmap;
-    if (!cover.image.isNull()) {
-        QString cacheKey = pixmapCacheKey(cover.info.hash, width);
-        if (!QPixmapCache::find(cacheKey, &pixmap)) {
-            pixmap.convertFromImage(cover.image);
-            // Don't cache full size covers (Width = 0)
-            // Large cover art wastes space in our cache and will likely
-            // uncache a lot of the small covers we need in the library
-            // table.
-            // Full size covers are used in the Skin Widgets, which are
-            // loaded with an artificial delay anyway and an additional
-            // re-load delay can be accepted.
-            if (width > 0) {
-                QPixmapCache::insert(cacheKey, pixmap);
-            }
-        }
-    }
-    return pixmap;
-}
