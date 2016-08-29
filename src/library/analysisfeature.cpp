@@ -110,8 +110,8 @@ void AnalysisFeature::selectAll() {
 }
 
 void AnalysisFeature::activate() {
-    //qDebug() << "AnalysisFeature::activate()";
-    showTrackModel(getAnalysisTableModel());
+    //qDebug() << "AnalysisFeature::activate()";    
+    switchToFeature();
     showBreadCrumb();
     
     if (!m_pAnalysisView.isNull()) {
@@ -189,7 +189,7 @@ void AnalysisFeature::tableSelectionChanged(const QItemSelection&,
         return;
     }
     
-    const QModelIndexList &indexes = pTable->selectionModel()->selectedIndexes();
+    QModelIndexList indexes = pTable->selectionModel()->selectedIndexes();
     m_pAnalysisView->setSelectedIndexes(indexes);
 }
 
