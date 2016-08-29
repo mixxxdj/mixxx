@@ -165,7 +165,6 @@ void TraktorFeature::activate() {
     
     showTrackModel(m_pTraktorTableModel);
     showBreadCrumb();
-    enableCoverArtDisplay(true);
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {
@@ -181,7 +180,6 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
         
         showTrackModel(m_pTraktorPlaylistModel);
         showBreadCrumb(item);
-        enableCoverArtDisplay(true);
     }
 }
 

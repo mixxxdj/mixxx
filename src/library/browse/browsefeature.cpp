@@ -239,7 +239,6 @@ void BrowseFeature::activate() {
     showBreadCrumb();
     restoreSearch(QString());
     
-    enableCoverArtDisplay(true);
 }
 
 // Note: This is executed whenever you single click on an child item
@@ -273,7 +272,6 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     QString bread = index.data(TreeItemModel::RoleBreadCrumb).toString();
     showBreadCrumb(bread, getIcon());
     
-    emit(enableCoverArtDisplay(true));
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {

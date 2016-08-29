@@ -47,7 +47,6 @@ void MaintenanceFeature::activate() {
     slotTabIndexChanged(m_pTab->currentIndex());
 
     switchToFeature();
-    emit(enableCoverArtDisplay(true));
 }
 
 void MaintenanceFeature::selectionChanged(const QItemSelection&,
@@ -154,7 +153,6 @@ void MaintenanceFeature::slotTabIndexChanged(int index) {
     switchToFeature();
     restoreSearch("");
     showBreadCrumb(kMaintenanceTitle % " > " % (*title), getIcon());
-    emit(enableCoverArtDisplay(true));
 }
 
 void MaintenanceFeature::slotUnhideHidden() {

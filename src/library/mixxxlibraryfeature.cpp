@@ -194,7 +194,6 @@ void MixxxLibraryFeature::activate() {
     restoreSearch("");
     showBreadCrumb();
     
-    emit(enableCoverArtDisplay(true));
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {

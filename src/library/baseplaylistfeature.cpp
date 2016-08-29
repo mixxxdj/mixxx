@@ -138,7 +138,6 @@ void BasePlaylistFeature::activate() {
     showBreadCrumb();
     
     restoreSearch(QString()); // Null String disables search box
-    emit(enableCoverArtDisplay(true));
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
@@ -170,7 +169,6 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
         restoreSearch("");
         showBreadCrumb(index);
                 
-        emit(enableCoverArtDisplay(true));
     }
 }
 

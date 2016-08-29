@@ -228,7 +228,6 @@ void CrateFeature::activate() {
     switchToFeature();
     showBreadCrumb();
     restoreSearch(QString()); //disable search on crate home
-    emit(enableCoverArtDisplay(true));
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
@@ -248,7 +247,6 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     restoreSearch("");
     showBreadCrumb(index);
     showTrackModel(m_pCrateTableModel);
-    emit(enableCoverArtDisplay(true));
 }
 
 void CrateFeature::activateCrate(int crateId) {
@@ -259,7 +257,6 @@ void CrateFeature::activateCrate(int crateId) {
     if (crateId != -1 && index.isValid()) {
         m_pCrateTableModel->setTableModel(crateId);
         showTrackModel(m_pCrateTableModel);
-        emit(enableCoverArtDisplay(true));
         // Update selection
         emit(featureSelect(this, m_lastRightClickedIndex));
         activateChild(m_lastRightClickedIndex);
