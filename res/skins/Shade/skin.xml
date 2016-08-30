@@ -566,12 +566,10 @@
                     }
 
                     WBaseLibrary[showFocus="0"] {
-                        padding: 2px 0 0 0;
-                        border: none;
+                        border-top: 2px solid transparent;
                     }
 
                     WBaseLibrary[showFocus="1"] {
-                        padding: 2px 1px 1px 1px;
                         border-top: 2px solid aqua;
                     }
 
