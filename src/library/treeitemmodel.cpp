@@ -67,13 +67,13 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         }
         case Qt::DecorationRole:
             return item->getIcon();
-        case Role::RoleDataPath:
+        case AbstractRole::RoleDataPath:
             return item->dataPath();
-        case Role::RoleBold:
+        case AbstractRole::RoleBold:
             return item->isBold();
-        case Role::RoleDivider:
+        case AbstractRole::RoleDivider:
             return item->isDivider();
-        case Role::RoleBreadCrumb:
+        case AbstractRole::RoleBreadCrumb:
             return getBreadCrumbString(item);
     }
 
@@ -93,13 +93,13 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
         case Qt::DisplayRole:
             pItem->setData(a_rValue, pItem->dataPath());
             break;
-        case Role::RoleDataPath:
+        case AbstractRole::RoleDataPath:
             pItem->setData(pItem->data(), a_rValue);
             break;
-        case Role::RoleBold:
+        case AbstractRole::RoleBold:
             pItem->setBold(a_rValue.toBool());
             break;
-        case Role::RoleDivider:
+        case AbstractRole::RoleDivider:
             pItem->setDivider(a_rValue.toBool());
             break;
         default:
@@ -115,7 +115,7 @@ Qt::ItemFlags TreeItemModel::flags(const QModelIndex &index) const {
         return 0;
     Qt::ItemFlags flags = Qt::ItemIsEnabled;
     
-    bool divider = index.data(Role::RoleDivider).toBool();
+    bool divider = index.data(AbstractRole::RoleDivider).toBool();
     if (!divider) {
         flags |= Qt::ItemIsSelectable;
     }

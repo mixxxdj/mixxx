@@ -53,7 +53,7 @@ LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
 
 
 QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
-    if (role == TreeItemModel::RoleSettings) {
+    if (role == AbstractRole::RoleSettings) {
         return m_sortOrder;
     }
     
@@ -62,7 +62,7 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
         return TreeItemModel::data(index, role);
     }
     
-    if (role == TreeItemModel::RoleBreadCrumb) {
+    if (role == AbstractRole::RoleBreadCrumb) {
         if (pTree == m_pLibraryItem) {
             return m_pFeature->title();
         } else {
@@ -70,7 +70,7 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
         }
     }
     
-    if (role == TreeItemModel::RoleQuery) {
+    if (role == AbstractRole::RoleQuery) {
         return getQuery(pTree);
     }
     
@@ -107,7 +107,7 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
 }
 
 bool LibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-    if (role == TreeItemModel::RoleSettings) {
+    if (role == AbstractRole::RoleSettings) {
         m_sortOrder = value.toStringList();
         m_pConfig->set(ConfigKey("[Library]", LIBRARYTREEMODEL_SORT),
                        ConfigValue(m_sortOrder.join(",")));

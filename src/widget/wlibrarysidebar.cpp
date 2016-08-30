@@ -22,7 +22,7 @@ WSidebarItemDelegate::WSidebarItemDelegate(QObject* parent)
 void WSidebarItemDelegate::paint(QPainter* painter,
                                  const QStyleOptionViewItem& option,
                                  const QModelIndex& index) const {
-    bool divider = index.data(TreeItemModel::RoleDivider).toBool();
+    bool divider = index.data(AbstractRole::RoleDivider).toBool();
     if (!divider) {
         QStyledItemDelegate::paint(painter, option, index);
         return;

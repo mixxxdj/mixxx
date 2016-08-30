@@ -74,7 +74,7 @@ void HistoryFeature::onRightClickChild(const QPoint& globalPos, const QModelInde
     //Save the model index so we can get it in the action slots...
     m_lastChildClicked[m_featurePane] = m_lastRightClickedIndex = index;
     bool ok;
-    int playlistId = index.data(TreeItemModel::RoleDataPath).toInt(&ok);
+    int playlistId = index.data(AbstractRole::RoleDataPath).toInt(&ok);
     if (!ok || playlistId < 0) {
         return;
     }
@@ -154,7 +154,7 @@ PlaylistTableModel* HistoryFeature::constructTableModel() {
 }
 
 QSet<int> HistoryFeature::playlistIdsFromIndex(const QModelIndex& index) const {
-    QList<QVariant> auxList = index.data(TreeItemModel::RoleQuery).toList();
+    QList<QVariant> auxList = index.data(AbstractRole::RoleQuery).toList();
     QSet<int> playlistIds;
     for (QVariant& var : auxList) {
         bool ok;
@@ -211,7 +211,7 @@ void HistoryFeature::slotJoinWithNext() {
     if (m_lastRightClickedIndex.isValid()) {
         bool ok;
         int currentPlaylistId =
-                m_lastRightClickedIndex.data(TreeItemModel::RoleDataPath).toInt(&ok);
+                m_lastRightClickedIndex.data(AbstractRole::RoleDataPath).toInt(&ok);
         
         if (!ok) {
             return;

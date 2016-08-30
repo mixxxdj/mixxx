@@ -112,7 +112,7 @@ QModelIndex HistoryTreeModel::indexFromPlaylistId(int playlistId) {
 }
 
 QVariant HistoryTreeModel::data(const QModelIndex& index, int role) const {
-    if (role != TreeItemModel::RoleQuery) {
+    if (role != AbstractRole::RoleQuery) {
         return TreeItemModel::data(index, role);
     }
     

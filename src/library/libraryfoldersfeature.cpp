@@ -37,7 +37,7 @@ void LibraryFoldersFeature::onRightClickChild(const QPoint&pos,
                                               const QModelIndex&) {
     
     bool recursive = m_pChildModel->data(QModelIndex(), 
-                                         TreeItemModel::RoleSettings).toBool();
+                                         AbstractRole::RoleSettings).toBool();
     
     QMenu menu;
     QAction* showRecursive = menu.addAction(tr("Show recursive view in folders"));
@@ -48,7 +48,7 @@ void LibraryFoldersFeature::onRightClickChild(const QPoint&pos,
     
     if (selected == showRecursive) {
         m_pChildModel->setData(QModelIndex(), selected->isChecked(), 
-                               TreeItemModel::RoleSettings);
+                               AbstractRole::RoleSettings);
     } else {
         // Menu rejected
         return;

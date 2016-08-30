@@ -33,7 +33,7 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
 }
 
 bool LibraryFolderModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-    if (role == TreeItemModel::RoleSettings) {
+    if (role == AbstractRole::RoleSettings) {
         m_folderRecursive = value.toBool();
         m_pConfig->set(ConfigKey("[Library]", "FolderRecursive"), 
                        ConfigValue((int)m_folderRecursive));
@@ -44,7 +44,7 @@ bool LibraryFolderModel::setData(const QModelIndex& index, const QVariant& value
 }
 
 QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
-    if (role == TreeItemModel::RoleSettings) {
+    if (role == AbstractRole::RoleSettings) {
         return m_folderRecursive;
     }
     
@@ -53,7 +53,7 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
         return TreeItemModel::data(index, role);
     }
     
-    if (role == TreeItemModel::RoleBreadCrumb) {
+    if (role == AbstractRole::RoleBreadCrumb) {
         if (pTree == m_pShowAllItem) {
             return m_pFeature->title();
         } else {
@@ -61,7 +61,7 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
         }
     }
     
-    if (role == TreeItemModel::RoleQuery) {
+    if (role == AbstractRole::RoleQuery) {
         // User has clicked the show all item
         if (pTree == m_pShowAllItem) {
             return "";
