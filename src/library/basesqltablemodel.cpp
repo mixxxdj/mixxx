@@ -585,13 +585,13 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                              role != Qt::EditRole &&
                              role != Qt::CheckStateRole &&
                              role != Qt::ToolTipRole &&
-                             role != AbstractRole::RoleFirstLetter)) {
+                             role != AbstractRole::RoleGroupingLetter)) {
         return QVariant();
     }
 
     int row = index.row();
     int column = index.column();
-    if (role == AbstractRole::RoleFirstLetter && !m_sortColumns.isEmpty()) {
+    if (role == AbstractRole::RoleGroupingLetter && !m_sortColumns.isEmpty()) {
         column = m_sortColumns.first().m_column;
     }
 
@@ -687,7 +687,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = locked ? Qt::Checked : Qt::Unchecked;
             }
             break;
-        case AbstractRole::RoleFirstLetter:
+        case AbstractRole::RoleGroupingLetter:
             if (isValidColumn(column)) {
                 if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) && 
                         value.toString().size() == 4) {
@@ -941,13 +941,13 @@ QVariant BaseSqlTableModel::getBaseValue(
     if (role != Qt::DisplayRole &&
         role != Qt::ToolTipRole &&
         role != Qt::EditRole &&
-        role != AbstractRole::RoleFirstLetter) {
+        role != AbstractRole::RoleGroupingLetter) {
         return QVariant();
     }
 
     int row = index.row();
     int column = index.column();
-    if (role == AbstractRole::RoleFirstLetter && !m_sortColumns.isEmpty()) {
+    if (role == AbstractRole::RoleGroupingLetter && !m_sortColumns.isEmpty()) {
         column = m_sortColumns.first().m_column;
     }
 

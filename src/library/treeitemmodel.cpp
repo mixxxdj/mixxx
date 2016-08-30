@@ -77,7 +77,7 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
             return item->isDivider();
         case AbstractRole::RoleBreadCrumb:
             return getBreadCrumbString(item);
-        case AbstractRole::RoleFirstLetter:
+        case AbstractRole::RoleGroupingLetter:
             return StringHelper::getFirstCharForGrouping(item->data().toString());
     }
 

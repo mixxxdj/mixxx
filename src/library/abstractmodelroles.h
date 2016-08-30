@@ -10,7 +10,7 @@ enum AbstractRole {
     RoleQuery,
     RoleBreadCrumb,
     RoleSettings,
-    RoleFirstLetter
+    RoleGroupingLetter
 };
 
 #endif // ABSTRACTMODELROLES_H

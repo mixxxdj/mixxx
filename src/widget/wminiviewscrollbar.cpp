@@ -165,7 +165,7 @@ void WMiniViewScrollBar::refreshCharMap() {
     for (int i = 0; i < size; ++i) {
         const QModelIndex& index = rootIndex.sibling(i, 0);
         
-        QChar c = index.data(AbstractRole::RoleFirstLetter).toChar();
+        QChar c = index.data(AbstractRole::RoleGroupingLetter).toChar();
         int count = getVisibleChildCount(index);
         
         addToLastCharCount(c, count);
