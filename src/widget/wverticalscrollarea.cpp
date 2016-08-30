@@ -36,5 +36,10 @@ void WVerticalScrollArea::calcSize() {
     if (height() <= widget()->minimumSizeHint().height()) {
         vScrollWidth = verticalScrollBar()->width();
     }
-    setFixedWidth(width + vScrollWidth);
+    setFixedWidth(width + frameWidth() * 2 + vScrollWidth);
+}
+
+void WVerticalScrollArea::slotEnsureVisible(QWidget* widget) {
+    qDebug() << "WVerticalScrollArea::slotEnsureVisible";
+    ensureWidgetVisible(widget, 0, 0);
 }

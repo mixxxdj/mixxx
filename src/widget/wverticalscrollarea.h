@@ -5,10 +5,14 @@
 
 class WVerticalScrollArea : public QScrollArea
 {
+    Q_OBJECT
   public:
     WVerticalScrollArea(QWidget* parent = nullptr);
 
     void setWidget(QWidget* widget);
+
+  public slots:
+    void slotEnsureVisible(QWidget* widget);
 
   protected:
     bool eventFilter(QObject* o, QEvent* e) override;

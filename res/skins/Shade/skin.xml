@@ -437,7 +437,7 @@
                     }
                     WSearchLineEdit:focus {
                         padding: 2px;
-                        border: 2px solid #FF6600;
+                        border: 2px solid #e74421;
                         font: 12px/14px sans-serif;
                         font-family: "Open Sans";
                         background: rgba(255, 102, 0,50);
@@ -561,8 +561,14 @@
                         border: 2px solid #aab2b7;
                     }
 
+
+
                     WButtonBar QToolButton:hover {
                         border: 2px solid #626f87;
+                    }
+
+                    WButtonBar QToolButton:focus {
+                        border: 2px solid #e74421;
                     }
 
                     WBaseLibrary[showFocus="0"] {
@@ -570,7 +576,7 @@
                     }
 
                     WBaseLibrary[showFocus="1"] {
-                        border-top: 2px solid aqua;
+                        border-top: 2px solid #e74421;
                     }
 
                     WLibraryBreadCrumb QLabel {
