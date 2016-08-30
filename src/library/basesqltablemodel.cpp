@@ -20,6 +20,7 @@
 #include "util/dnd.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "util/stringhelper.h"
 
 static const bool sDebug = false;
 
@@ -583,12 +584,16 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid() || (role != Qt::DisplayRole &&
                              role != Qt::EditRole &&
                              role != Qt::CheckStateRole &&
-                             role != Qt::ToolTipRole)) {
+                             role != Qt::ToolTipRole &&
+                             role != AbstractRole::RoleFirstLetter)) {
         return QVariant();
     }
 
     int row = index.row();
     int column = index.column();
+    if (role == AbstractRole::RoleFirstLetter && !m_sortColumns.isEmpty()) {
+        column = m_sortColumns.first().m_column;
+    }
 
     // This value is the value in its most raw form. It was looked up either
     // from the SQL table or from the cached track layer.
@@ -680,6 +685,17 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 bool locked = index.sibling(
                         row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)).data().toBool();
                 value = locked ? Qt::Checked : Qt::Unchecked;
+            }
+            break;
+        case AbstractRole::RoleFirstLetter:
+            if (isValidColumn(column)) {
+                if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) && 
+                        value.toString().size() == 4) {
+                    // Show the decade
+                    value = value.toString().at(2);
+                } else {
+                    value = StringHelper::getFirstCharForGrouping(value.toString());
+                }
             }
             break;
         default:
@@ -922,12 +938,16 @@ QVariant BaseSqlTableModel::getBaseValue(
     const QModelIndex& index, int role) const {
     if (role != Qt::DisplayRole &&
         role != Qt::ToolTipRole &&
-        role != Qt::EditRole) {
+        role != Qt::EditRole &&
+        role != AbstractRole::RoleFirstLetter) {
         return QVariant();
     }
 
     int row = index.row();
     int column = index.column();
+    if (role == AbstractRole::RoleFirstLetter && !m_sortColumns.isEmpty()) {
+        column = m_sortColumns.first().m_column;
+    }
 
     if (row < 0 || row >= m_rowInfo.size()) {
         return QVariant();
@@ -1116,4 +1136,17 @@ void BaseSqlTableModel::deserialzeSortColumns(QString serialized) {
         
         m_sortColumns << SortColumn(col, ord);
     }
+}
+
+bool BaseSqlTableModel::isValidColumn(int column) const {
+    return 
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) ||
+        column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_ARTIST) ||
+        column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TITLE);
 }

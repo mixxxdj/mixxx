@@ -3,6 +3,8 @@
 
 #include "library/treeitemmodel.h"
 
+#include "util/stringhelper.h"
+
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:
  * TreeItems are used by the TreeItemModel class to display tree
@@ -75,6 +77,8 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
             return item->isDivider();
         case AbstractRole::RoleBreadCrumb:
             return getBreadCrumbString(item);
+        case AbstractRole::RoleFirstLetter:
+            return StringHelper::getFirstCharForGrouping(item->data().toString());
     }
 
     return QVariant();

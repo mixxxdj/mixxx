@@ -218,8 +218,6 @@ WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*
     // Set sidebar mini view
     WMiniViewScrollBar* pMiniView = new WMiniViewScrollBar(pSidebar);
     pMiniView->setTreeView(pSidebar);
-    pMiniView->setSortColumn(0);
-    pMiniView->setRole(Qt::DisplayRole);
     pMiniView->setModel(pModel);
     pSidebar->setVerticalScrollBar(pMiniView);
     
@@ -263,7 +261,7 @@ void LibraryFeature::showBreadCrumb(TreeItem *pTree) {
 }
 
 void LibraryFeature::showBreadCrumb(const QModelIndex& index) {
-    showBreadCrumb(index.data(TreeItemModel::RoleBreadCrumb).toString(),
+    showBreadCrumb(index.data(AbstractRole::RoleBreadCrumb).toString(),
                    getIcon());
 }
 

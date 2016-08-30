@@ -3,9 +3,7 @@
 #include <QPaintEvent>
 #include <QStyleOptionSlider>
 
-#include "library/basesqltablemodel.h"
-#include "library/columncache.h"
-#include "util/stringhelper.h"
+#include "library/abstractmodelroles.h"
 
 #include "wminiviewscrollbar.h"
 
@@ -18,8 +16,6 @@ float interpolSize(float current, float max1, float max2) {
 
 WMiniViewScrollBar::WMiniViewScrollBar(QWidget* parent)
         : QScrollBar(parent),
-          m_sortColumn(-1),
-          m_dataRole(Qt::DisplayRole),
           m_showLetters(true) {
     setMouseTracking(true);
     
@@ -35,30 +31,12 @@ bool WMiniViewScrollBar::showLetters() const {
     return m_showLetters;
 }
 
-void WMiniViewScrollBar::setSortColumn(int column) {
-    m_sortColumn = column;
-    triggerUpdate();
-}
-
-int WMiniViewScrollBar::sortColumn() const {
-    return m_sortColumn;
-}
-
 void WMiniViewScrollBar::setTreeView(QPointer<QTreeView> pTreeView) {
     m_pTreeView = pTreeView;
 }
 
 QPointer<QTreeView> WMiniViewScrollBar::getTreeView() {
     return m_pTreeView;
-}
-
-void WMiniViewScrollBar::setRole(int role) {
-    m_dataRole = role;
-    triggerUpdate();
-}
-
-int WMiniViewScrollBar::role() const {
-    return m_dataRole;
 }
 
 void WMiniViewScrollBar::setModel(QAbstractItemModel* model) {
@@ -181,23 +159,13 @@ void WMiniViewScrollBar::refreshCharMap() {
     int size = m_pModel->rowCount();
     const QModelIndex& rootIndex = m_pModel->index(0, 0);
     
-    m_letters.clear();
-    if (!isValidColumn()) {
-        return;
-    }
-    
+    m_letters.clear();    
     for (int i = 0; i < size; ++i) {
-        const QModelIndex& index = rootIndex.sibling(i, m_sortColumn);
-        QString text = index.data(m_dataRole).toString();
-        int count = getVisibleChildCount(index);
-        QChar c;
+        const QModelIndex& index = rootIndex.sibling(i, 0);
         
-        if (m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) && 
-            text.size() >= 3) {
-            c = text.at(2);
-        } else {
-            c = StringHelper::getFirstCharForGrouping(text);
-        }
+        QChar c = index.data(AbstractRole::RoleFirstLetter).toChar();
+        int count = getVisibleChildCount(index);
+        
         addToLastCharCount(c, count);
     }
 }
@@ -272,28 +240,6 @@ QStyleOptionSlider WMiniViewScrollBar::getStyleOptions() {
     return opt;
 }
 
-int WMiniViewScrollBar::getFieldIndex(ColumnCache::Column col) {
-    QPointer<BaseSqlTableModel> pModel = qobject_cast<BaseSqlTableModel*>(m_pModel);
-    if (pModel.isNull()) {
-        return -1;
-    }
-    
-    return pModel->fieldIndex(col);
-}
-
-bool WMiniViewScrollBar::isValidColumn() {
-    return m_sortColumn == 0 || 
-        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM) ||
-        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) ||
-        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST) ||
-        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) ||
-        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) ||
-        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE) ||
-        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) ||
-        m_sortColumn == getFieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_ARTIST) ||
-            m_sortColumn == getFieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TITLE);
-}
-
 void WMiniViewScrollBar::addToLastCharCount(const QChar& c, int sum) {
     if (m_letters.size() <= 0) {
         m_letters.append({c, sum});
@@ -323,7 +269,7 @@ int WMiniViewScrollBar::getVisibleChildCount(const QModelIndex& index) {
     int total = 1;
     int rowCount = m_pModel->rowCount(index);
     for (int i = 0; i < rowCount; ++i) {
-        total += getVisibleChildCount(index.child(i, m_sortColumn));
+        total += getVisibleChildCount(index.child(i, 0));
     }
     return total;
 }

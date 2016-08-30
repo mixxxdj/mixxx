@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QtSql>
 
+#include "library/abstractmodelroles.h"
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
@@ -127,6 +128,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QSqlDatabase database() const;
     QString serializedSortColumns() const;
     void deserialzeSortColumns(QString serialized);
+    bool isValidColumn(int column) const;
 
     struct RowInfo {
         TrackId trackId;
