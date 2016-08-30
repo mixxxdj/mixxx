@@ -10,7 +10,12 @@
 #include "library/mixxxlibrarytreemodel.h"
 
 namespace  {
-QHash<quint16, QModelIndex> m_hashToIndex;
+// This is used since MixxxLibraryTreeModel inherits QAbstractItemModel
+// and since the data() method is a const method a class atribute can't be 
+// changed so this is a hack to allow using coverarts in the model
+// since there's another pointer to the class there's no problem in two classes
+// coexisting.
+QHash<const MixxxLibraryTreeModel*, QHash<quint16, QModelIndex> > m_hashToIndex;
 }
 
 MixxxLibraryTreeModel::MixxxLibraryTreeModel(LibraryFeature* pFeature,
@@ -57,8 +62,16 @@ QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
         return m_sortOrder;
     }
     
+    
     TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
     DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
+        return TreeItemModel::data(index, role);
+    }
+    
+    if (role == AbstractRole::RoleGroupingLetter) {
+        if (pTree == m_pLibraryItem || pTree == m_pSettings) {
+            return QChar();
+        }
         return TreeItemModel::data(index, role);
     }
     
@@ -93,7 +106,7 @@ QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
             // coverFound slot is called. Since the data function is const
             // and we cannot change that we use m_hashToIndex in an anonymous
             // namespace to store the future value that we will get
-            m_hashToIndex.insert(info.type, index);
+            m_hashToIndex[this].insert(info.type, index);
             
             // Return a temporary icon
             return QIcon(":/images/library/cover_default.png");
@@ -152,7 +165,7 @@ void MixxxLibraryTreeModel::coverFound(const QObject* requestor, int requestRefe
     }
 }
 
-QVariant LibraryTreeModel::getQuery(TreeItem* pTree) const {
+QVariant MixxxLibraryTreeModel::getQuery(TreeItem* pTree) const {
     DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
         return "";
     }
@@ -191,7 +204,7 @@ QVariant LibraryTreeModel::getQuery(TreeItem* pTree) const {
     return result.join(" ");
 }
 
-void LibraryTreeModel::createTracksTree() {
+void MixxxLibraryTreeModel::createTracksTree() {
 
     QStringList columns;
     for (const QString& col : m_sortOrder) {
@@ -314,7 +327,7 @@ void LibraryTreeModel::createTracksTree() {
     }
 }
 
-void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,
+void MixxxLibraryTreeModel::addCoverArt(const MixxxLibraryTreeModel::CoverIndex& index,
                                    const QSqlQuery& query, TreeItem* pTree) {
     CoverInfo c;
     c.hash = query.value(index.iCoverHash).toInt();
