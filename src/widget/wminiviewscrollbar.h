@@ -21,6 +21,9 @@ class WMiniViewScrollBar : public QScrollBar
     QPointer<QTreeView> getTreeView();
 
     void setModel(QAbstractItemModel* model);
+    
+  public slots:
+    void triggerUpdate();
 
   protected:
     virtual void paintEvent(QPaintEvent* event);
@@ -41,9 +44,6 @@ class WMiniViewScrollBar : public QScrollBar
         bool bold;
     };
     
-  private slots:
-    void triggerUpdate();
-
   private:
     // The purpose of this function is to avoid computing all the sizes in the
     // paintEvent function which can block the GUI thread

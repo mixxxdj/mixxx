@@ -1577,6 +1577,10 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         scrollTo(first, QAbstractItemView::EnsureVisible);
     }
 
+    if (!m_pScrollBar.isNull()) {
+        m_pScrollBar->triggerUpdate();
+    }
+    
     emit(tableChanged());
 }
 

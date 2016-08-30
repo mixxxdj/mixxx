@@ -44,6 +44,8 @@ void WMiniViewScrollBar::setModel(QAbstractItemModel* model) {
     if (!m_pModel.isNull()) {
         connect(m_pModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
                 this, SLOT(triggerUpdate()));
+        connect(m_pModel, SIGNAL(headerDataChanged(Qt::Orientation,int,int)),
+                this, SLOT(triggerUpdate()));
         
         triggerUpdate();
     }
