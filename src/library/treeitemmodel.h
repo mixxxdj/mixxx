@@ -1,29 +1,20 @@
 #ifndef TREE_ITEM_MODEL_H
 #define TREE_ITEM_MODEL_H
 
-#include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
 #include <QList>
 #include <QUrl>
 
+#include "library/abstractmodelroles.h"
 #include "library/treeitem.h"
 
 class LibraryFeature;
 
 class TreeItemModel : public QAbstractItemModel {
     Q_OBJECT
-  public:
     
-    enum Role {
-        RoleDataPath = Qt::UserRole,
-        RoleBold,
-        RoleDivider,
-        RoleQuery,
-        RoleBreadCrumb,
-        RoleSettings
-    };
-
+  public:
     TreeItemModel(QObject* parent = nullptr);
     virtual ~TreeItemModel();
 

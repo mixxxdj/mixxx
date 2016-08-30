@@ -637,7 +637,7 @@ QString BasePlaylistFeature::getValidPlaylistName() const {
 
 QSet<int> BasePlaylistFeature::playlistIdsFromIndex(const QModelIndex &index) const {
     bool ok = false;
-    int playlistId = index.data(TreeItemModel::RoleDataPath).toInt(&ok);
+    int playlistId = index.data(AbstractRole::RoleDataPath).toInt(&ok);
     if (!ok) {
         return QSet<int>();
     }

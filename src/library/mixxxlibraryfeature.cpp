@@ -117,7 +117,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
     connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
             pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
 
-    setChildModel(new LibraryTreeModel(this, m_pTrackCollection, m_pConfig));
+    setChildModel(new MixxxLibraryTreeModel(this, m_pTrackCollection, m_pConfig));
     
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     
@@ -198,7 +198,7 @@ void MixxxLibraryFeature::activate() {
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
-    QString query = index.data(TreeItemModel::RoleQuery).toString();
+    QString query = index.data(AbstractRole::RoleQuery).toString();
     //qDebug() << "MixxxLibraryFeature::activateChild" << query;
     
     if (query == "$groupingSettings$") {
@@ -209,7 +209,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     
     m_pLibraryTableModel->search(query);
     switchToFeature();
-    showBreadCrumb(index.data(TreeItemModel::RoleBreadCrumb).toString(), getIcon());
+    showBreadCrumb(index.data(AbstractRole::RoleBreadCrumb).toString(), getIcon());
     restoreSearch(query);
 }
 
@@ -219,7 +219,7 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& pos,
     // Create the sort menu
     QMenu menu;    
     QVariant varSort = m_pChildModel->data(QModelIndex(), 
-                                           TreeItemModel::RoleSettings);
+                                           AbstractRole::RoleSettings);
     QStringList currentSort = varSort.toStringList();
     
     QActionGroup* orderGroup = new QActionGroup(&menu);
@@ -265,6 +265,6 @@ void MixxxLibraryFeature::setTreeSettings(const QVariant& settings) {
     if (m_pChildModel.isNull()) {
         return;
     }
-    m_pChildModel->setData(QModelIndex(), settings, TreeItemModel::RoleSettings);
+    m_pChildModel->setData(QModelIndex(), settings, AbstractRole::RoleSettings);
     m_pChildModel->reloadTree();
 }

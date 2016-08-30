@@ -7,16 +7,21 @@
 #include "util/stringhelper.h"
 #include "widget/wpixmapstore.h"
 
-#include "library/librarytreemodel.h"
+#include "library/mixxxlibrarytreemodel.h"
 
 namespace  {
-QHash<quint16, QModelIndex> m_hashToIndex;
+// This is used since MixxxLibraryTreeModel inherits QAbstractItemModel
+// and since the data() method is a const method a class atribute can't be 
+// changed so this is a hack to allow using coverarts in the model
+// since there's another pointer to the class there's no problem in two classes
+// coexisting.
+QHash<const MixxxLibraryTreeModel*, QHash<quint16, QModelIndex> > m_hashToIndex;
 }
 
-LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
-                                   TrackCollection* pTrackCollection, 
-                                   UserSettingsPointer pConfig,
-                                   QObject* parent)
+MixxxLibraryTreeModel::MixxxLibraryTreeModel(LibraryFeature* pFeature,
+                                             TrackCollection* pTrackCollection, 
+                                             UserSettingsPointer pConfig,
+                                             QObject* parent)
         : TreeItemModel(parent),
           m_pFeature(pFeature),
           m_pTrackCollection(pTrackCollection),
@@ -52,17 +57,25 @@ LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
 }
 
 
-QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
-    if (role == TreeItemModel::RoleSettings) {
+QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
+    if (role == AbstractRole::RoleSettings) {
         return m_sortOrder;
     }
+    
     
     TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
     DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
         return TreeItemModel::data(index, role);
     }
     
-    if (role == TreeItemModel::RoleBreadCrumb) {
+    if (role == AbstractRole::RoleGroupingLetter) {
+        if (pTree == m_pLibraryItem || pTree == m_pSettings) {
+            return QChar();
+        }
+        return TreeItemModel::data(index, role);
+    }
+    
+    if (role == AbstractRole::RoleBreadCrumb) {
         if (pTree == m_pLibraryItem) {
             return m_pFeature->title();
         } else {
@@ -70,7 +83,7 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
         }
     }
     
-    if (role == TreeItemModel::RoleQuery) {
+    if (role == AbstractRole::RoleQuery) {
         return getQuery(pTree);
     }
     
@@ -93,7 +106,7 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
             // coverFound slot is called. Since the data function is const
             // and we cannot change that we use m_hashToIndex in an anonymous
             // namespace to store the future value that we will get
-            m_hashToIndex.insert(info.type, index);
+            m_hashToIndex[this].insert(info.type, index);
             
             // Return a temporary icon
             return QIcon(":/images/library/cover_default.png");
@@ -106,8 +119,9 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
     return TreeItemModel::data(index, role);
 }
 
-bool LibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-    if (role == TreeItemModel::RoleSettings) {
+bool MixxxLibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, 
+                                    int role) {
+    if (role == AbstractRole::RoleSettings) {
         m_sortOrder = value.toStringList();
         m_pConfig->set(ConfigKey("[Library]", LIBRARYTREEMODEL_SORT),
                        ConfigValue(m_sortOrder.join(",")));
@@ -117,7 +131,7 @@ bool LibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, 
     }
 }
 
-void LibraryTreeModel::reloadTree() {    
+void MixxxLibraryTreeModel::reloadTree() {    
     //qDebug() << "LibraryTreeModel::reloadTracksTree";
     
     // Create root item
@@ -137,12 +151,12 @@ void LibraryTreeModel::reloadTree() {
     triggerRepaint();
 }
 
-void LibraryTreeModel::coverFound(const QObject* requestor, int requestReference,
-                                  const CoverInfo&, QPixmap pixmap, bool fromCache) {
+void MixxxLibraryTreeModel::coverFound(const QObject* requestor, int requestReference,
+                                       const CoverInfo&, QPixmap pixmap, bool fromCache) {
     
     if (requestor == this && !pixmap.isNull() && !fromCache) {
-        auto it = m_hashToIndex.find(requestReference);
-        if (it == m_hashToIndex.end()) {
+        auto it = m_hashToIndex[this].find(requestReference);
+        if (it == m_hashToIndex[this].end()) {
             return;
         }
         
@@ -151,7 +165,7 @@ void LibraryTreeModel::coverFound(const QObject* requestor, int requestReference
     }
 }
 
-QVariant LibraryTreeModel::getQuery(TreeItem* pTree) const {
+QVariant MixxxLibraryTreeModel::getQuery(TreeItem* pTree) const {
     DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
         return "";
     }
@@ -190,7 +204,7 @@ QVariant LibraryTreeModel::getQuery(TreeItem* pTree) const {
     return result.join(" ");
 }
 
-void LibraryTreeModel::createTracksTree() {
+void MixxxLibraryTreeModel::createTracksTree() {
 
     QStringList columns;
     for (const QString& col : m_sortOrder) {
@@ -313,7 +327,7 @@ void LibraryTreeModel::createTracksTree() {
     }
 }
 
-void LibraryTreeModel::addCoverArt(const LibraryTreeModel::CoverIndex& index,
+void MixxxLibraryTreeModel::addCoverArt(const MixxxLibraryTreeModel::CoverIndex& index,
                                    const QSqlQuery& query, TreeItem* pTree) {
     CoverInfo c;
     c.hash = query.value(index.iCoverHash).toInt();

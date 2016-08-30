@@ -1576,9 +1576,9 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     if (first.isValid()) {
         scrollTo(first, QAbstractItemView::EnsureVisible);
     }
-    
+
     if (!m_pScrollBar.isNull()) {
-        m_pScrollBar->setSortColumn(headerSection);
+        m_pScrollBar->triggerUpdate();
     }
     
     emit(tableChanged());

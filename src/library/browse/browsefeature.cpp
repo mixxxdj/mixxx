@@ -246,7 +246,7 @@ void BrowseFeature::activate() {
 void BrowseFeature::activateChild(const QModelIndex& index) {
     m_lastClickedChild = index;
     QString data = index.data().toString();
-    QString dataPath = index.data(TreeItemModel::RoleDataPath).toString();
+    QString dataPath = index.data(AbstractRole::RoleDataPath).toString();
     qDebug() << "BrowseFeature::activateChild " << data << dataPath;
     
     if (dataPath == QUICK_LINK_NODE || dataPath == DEVICE_NODE) {
@@ -269,7 +269,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     
     showTable(m_featurePane);
     showTrackModel(&m_proxyModel);
-    QString bread = index.data(TreeItemModel::RoleBreadCrumb).toString();
+    QString bread = index.data(AbstractRole::RoleBreadCrumb).toString();
     showBreadCrumb(bread, getIcon());
     
 }
