@@ -71,7 +71,7 @@ void WMiniViewScrollBar::paintEvent(QPaintEvent* event) {
     
     // Draw each letter in its position
     for (const CharPosition& p : m_computedPosition) {
-        if (p.position < 0 || p.character.isNull()) {
+        if (p.position < 0 || p.character.isNull() || !p.character.isPrint()) {
             continue;
         }
         QFont f(font());

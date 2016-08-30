@@ -696,6 +696,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 } else {
                     value = StringHelper::getFirstCharForGrouping(value.toString());
                 }
+            } else {
+                value = QVariant();
             }
             break;
         default:
