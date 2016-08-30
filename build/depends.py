@@ -874,6 +874,7 @@ class MixxxCore(Feature):
                    "library/autodj/autodjprocessor.cpp",
                    "library/dao/directorydao.cpp",
                    "library/mixxxlibraryfeature.cpp",
+                   "library/mixxxlibrarytreemodel.cpp",
                    "library/libraryfoldersfeature.cpp",
                    "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
@@ -952,7 +953,6 @@ class MixxxCore(Feature):
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
-                   "library/librarytreemodel.cpp",
 
                    "library/parser.cpp",
                    "library/parserpls.cpp",

@@ -7,16 +7,16 @@
 #include "util/stringhelper.h"
 #include "widget/wpixmapstore.h"
 
-#include "library/librarytreemodel.h"
+#include "library/mixxxlibrarytreemodel.h"
 
 namespace  {
 QHash<quint16, QModelIndex> m_hashToIndex;
 }
 
-LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
-                                   TrackCollection* pTrackCollection, 
-                                   UserSettingsPointer pConfig,
-                                   QObject* parent)
+MixxxLibraryTreeModel::MixxxLibraryTreeModel(LibraryFeature* pFeature,
+                                             TrackCollection* pTrackCollection, 
+                                             UserSettingsPointer pConfig,
+                                             QObject* parent)
         : TreeItemModel(parent),
           m_pFeature(pFeature),
           m_pTrackCollection(pTrackCollection),
@@ -52,7 +52,7 @@ LibraryTreeModel::LibraryTreeModel(LibraryFeature* pFeature,
 }
 
 
-QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
+QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
     if (role == AbstractRole::RoleSettings) {
         return m_sortOrder;
     }
@@ -106,7 +106,8 @@ QVariant LibraryTreeModel::data(const QModelIndex& index, int role) const {
     return TreeItemModel::data(index, role);
 }
 
-bool LibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+bool MixxxLibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, 
+                                    int role) {
     if (role == AbstractRole::RoleSettings) {
         m_sortOrder = value.toStringList();
         m_pConfig->set(ConfigKey("[Library]", LIBRARYTREEMODEL_SORT),
@@ -117,7 +118,7 @@ bool LibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, 
     }
 }
 
-void LibraryTreeModel::reloadTree() {    
+void MixxxLibraryTreeModel::reloadTree() {    
     //qDebug() << "LibraryTreeModel::reloadTracksTree";
     
     // Create root item
@@ -137,12 +138,12 @@ void LibraryTreeModel::reloadTree() {
     triggerRepaint();
 }
 
-void LibraryTreeModel::coverFound(const QObject* requestor, int requestReference,
-                                  const CoverInfo&, QPixmap pixmap, bool fromCache) {
+void MixxxLibraryTreeModel::coverFound(const QObject* requestor, int requestReference,
+                                       const CoverInfo&, QPixmap pixmap, bool fromCache) {
     
     if (requestor == this && !pixmap.isNull() && !fromCache) {
-        auto it = m_hashToIndex.find(requestReference);
-        if (it == m_hashToIndex.end()) {
+        auto it = m_hashToIndex[this].find(requestReference);
+        if (it == m_hashToIndex[this].end()) {
             return;
         }
         

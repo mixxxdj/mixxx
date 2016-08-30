@@ -117,7 +117,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
     connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
             pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
 
-    setChildModel(new LibraryTreeModel(this, m_pTrackCollection, m_pConfig));
+    setChildModel(new MixxxLibraryTreeModel(this, m_pTrackCollection, m_pConfig));
     
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     
