@@ -24,9 +24,10 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void setup(const QDomNode& node, const SkinContext& context);
 
   protected:
-    void resizeEvent(QResizeEvent* /*unused*/) override;
-    void focusInEvent(QFocusEvent* /*unused*/) override;
-    void focusOutEvent(QFocusEvent* /*unused*/) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void focusInEvent(QFocusEvent* event) override;
+    void focusOutEvent(QFocusEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
     bool event(QEvent* pEvent) override;
 
   signals:
@@ -34,6 +35,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void searchCleared();
     void searchStarting();
     void focused();
+    void cancel();
 
   public slots:
     void restoreSearch(const QString& text, QPointer<LibraryFeature> pFeature = nullptr);

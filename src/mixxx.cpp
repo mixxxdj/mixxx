@@ -23,6 +23,7 @@
 #include <QGLWidget>
 #include <QUrl>
 #include <QtDebug>
+#include <QShortcut>
 
 #include "analyzer/analyzerqueue.h"
 #include "dialog/dlgabout.h"
@@ -268,6 +269,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
     
+    new QShortcut(
+            QKeySequence(tr("Ctrl+F", "Search|Focus")),
+            this, SLOT(slotFocusSearch()));
+
     launchProgress(35);
 
     // Get Music dir
@@ -1228,4 +1233,8 @@ bool MixxxMainWindow::confirmExit() {
 void MixxxMainWindow::launchProgress(int progress) {
     m_pLaunchImage->progress(progress);
     qApp->processEvents();
+}
+
+void MixxxMainWindow::slotFocusSearch() {
+    m_pLibrary->focusSearch();
 }

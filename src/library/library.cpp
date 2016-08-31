@@ -682,3 +682,16 @@ void Library::handlePreselection() {
         m_panes[m_previewPreselectedPane]->setPreviewed(true);
     }
 }
+
+void Library::focusSearch() {
+    LibraryPaneManager* pFocusPane = m_panes[m_focusedPane];
+    if (pFocusPane == nullptr) return;
+    bool ok = pFocusPane->focusSearch();
+    if (ok) return;
+    for (LibraryPaneManager* pPane : m_panes) {
+        if (pPane == nullptr) continue;
+        ok = pPane->focusSearch();
+        if (ok) break;
+    }
+}
+

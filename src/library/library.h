@@ -102,6 +102,8 @@ public:
     int getFocusedPaneId();
     int getPreselectedPaneId();
 
+    void focusSearch();
+
   public slots:
     
     void slotActivateFeature(LibraryFeature* pFeature);

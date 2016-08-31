@@ -54,6 +54,8 @@ class LibraryPaneManager : public QObject {
     
     void setPreviewed(bool value);
 
+    bool focusSearch();
+
   signals:
     
     void searchCleared();
@@ -68,6 +70,7 @@ class LibraryPaneManager : public QObject {
     void slotSearch(const QString& text);
     void slotSearchStarting();
     void slotSearchCleared();
+    void slotSearchCancel();
 
   protected:
 

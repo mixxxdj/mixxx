@@ -30,7 +30,7 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
   
     void focused();
     void collapsed();
-    void uncollapsed();    
+    void uncollapsed();
     
   public slots:
 
@@ -42,9 +42,9 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
 
   protected:
       
-    bool eventFilter(QObject*, QEvent* pEvent);
+    bool eventFilter(QObject*, QEvent* pEvent) override;
     bool event(QEvent* pEvent) override;
-    void resizeEvent(QResizeEvent* pEvent);
+    void resizeEvent(QResizeEvent* pEvent) override;
 
     QHash<LibraryFeature*, QWidget*> m_featureMap;
 
