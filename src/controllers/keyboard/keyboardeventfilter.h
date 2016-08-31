@@ -49,6 +49,8 @@ class KeyboardEventFilter : public QObject {
 
     // Clone of keyboard controller preset, containing keyboard mapping info
     QSharedPointer<KeyboardControllerPreset> m_kbdPreset;
+
+    QString m_previousLayoutName;
 };
 
 #endif  // CONTROLLERS_KEYBOARD_KEYBOARDEVENTFILTER_H
