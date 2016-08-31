@@ -5,8 +5,12 @@
 #include <QDir>
 #include "layout.h"
 
-typedef QList<QStringList> LayoutNamesData;
 typedef KeyboardLayoutPointer (*GetLayout_t)(std::string layoutName);
+
+struct LayoutNamePair {
+    QString varName;
+    QString name;
+};
 
 class LayoutsFileHandler {
   public:
@@ -29,7 +33,7 @@ class LayoutsFileHandler {
     //
     // NOTE: If no comment is found, layout name will be the same as the
     //       variable name
-    LayoutNamesData getLayoutNames(QFile& cppFile);
+    QList<LayoutNamePair> getLayoutNames(QFile& cppFile);
 
     // Prepends definitions to layouts.h in order for this tool to be able to compile
     // the layouts without errors
@@ -38,7 +42,7 @@ class LayoutsFileHandler {
     // Appends function to layouts.h to access its layouts. When forInternUse is
     // true it prepends the function with "extern 'C'".
     void appendGetLayoutsFunction(QFile& cppFile,
-                                  const LayoutNamesData& layoutNames,
+                                  const QList<LayoutNamePair>& layoutNames,
                                   bool forInternUse);
 
     // Remove sections surrounded by kSkipCommentHead and kSkipCommentTail comments
