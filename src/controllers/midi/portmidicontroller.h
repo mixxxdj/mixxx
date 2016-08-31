@@ -66,9 +66,9 @@ class PortMidiController : public MidiController {
     ~PortMidiController() override;
 
   private slots:
-    virtual int open() override;
-    virtual int close() override;
-    virtual bool poll() override;
+    int open() override;
+    int close() override;
+    bool poll() override;
 
   private:
     void sendWord(unsigned int word) override;
@@ -76,7 +76,7 @@ class PortMidiController : public MidiController {
     // 0xf7.
     void send(QByteArray data) override;
 
-    virtual bool isPolling() const override {
+    bool isPolling() const override {
         return true;
     }
 

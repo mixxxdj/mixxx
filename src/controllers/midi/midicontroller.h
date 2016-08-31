@@ -27,31 +27,31 @@ class MidiController : public Controller {
     MidiController();
     ~MidiController() override;
 
-    virtual QString presetExtension() override;
+    QString presetExtension() override;
 
-    virtual ControllerPresetPointer getPreset() const override {
+    ControllerPresetPointer getPreset() const override {
         MidiControllerPreset* pClone = new MidiControllerPreset();
         *pClone = m_preset;
         return ControllerPresetPointer(pClone);
     }
 
-    virtual bool savePreset(const QString fileName) const override;
+    bool savePreset(const QString fileName) const override;
 
-    virtual void visitKeyboard(const KeyboardControllerPreset* preset) override;
-    virtual void visitMidi(const MidiControllerPreset* preset) override;
-    virtual void visitHid(const HidControllerPreset* preset) override;
+    void visitKeyboard(const KeyboardControllerPreset* preset) override;
+    void visitMidi(const MidiControllerPreset* preset) override;
+    void visitHid(const HidControllerPreset* preset) override;
 
-    virtual void accept(ControllerVisitor* visitor) override {
+    void accept(ControllerVisitor* visitor) override {
         if (visitor) {
             visitor->visit(this);
         }
     }
 
-    virtual bool isMappable() const override {
+    bool isMappable() const override {
         return m_preset.isMappable();
     }
 
-    virtual bool matchPreset(const PresetInfo& preset) override;
+    bool matchPreset(const PresetInfo& preset) override;
 
   signals:
     void messageReceived(unsigned char status, unsigned char control,
@@ -68,8 +68,8 @@ class MidiController : public Controller {
     virtual void receive(unsigned char status, unsigned char control,
                          unsigned char value, mixxx::Duration timestamp);
     // For receiving System Exclusive messages
-    virtual void receive(const QByteArray data, mixxx::Duration timestamp) override;
-    virtual int close() override;
+    void receive(const QByteArray data, mixxx::Duration timestamp) override;
+    int close() override;
 
   private slots:
     // Initializes the engine and static output mappings.
@@ -97,7 +97,7 @@ class MidiController : public Controller {
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
-    virtual ControllerPreset* preset() override {
+    ControllerPreset* preset() override {
         return &m_preset;
     }
 

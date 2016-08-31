@@ -47,8 +47,8 @@ class Hss1394Controller : public MidiController {
     ~Hss1394Controller() override;
 
   private slots:
-    virtual int open() override;
-    virtual int close() override;
+    int open() override;
+    int close() override;
 
   private:
     void sendWord(unsigned int word) override;
@@ -57,7 +57,7 @@ class Hss1394Controller : public MidiController {
     // 0xf7.
     void send(QByteArray data) override;
 
-    virtual bool isPolling() const override {
+    bool isPolling() const override {
         return false;
     }
 

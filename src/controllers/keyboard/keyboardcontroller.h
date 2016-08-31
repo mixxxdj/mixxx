@@ -13,9 +13,9 @@ class KeyboardController : public Controller {
     explicit KeyboardController(KeyboardEventFilter* pKbdEventFilter);
     ~KeyboardController() override;
 
-    virtual QString presetExtension() override;
+    QString presetExtension() override;
 
-    virtual ControllerPresetPointer getPreset() const override {
+    ControllerPresetPointer getPreset() const override {
         KeyboardControllerPreset* pClone = new KeyboardControllerPreset();
         *pClone = m_preset;
         return ControllerPresetPointer(pClone);
@@ -27,17 +27,17 @@ class KeyboardController : public Controller {
         return KeyboardControllerPresetPointer(pClone);
     }
 
-    virtual bool savePreset(const QString fileName) const override;
-    virtual bool matchPreset(const PresetInfo& preset) override;
-    virtual void visitKeyboard(const KeyboardControllerPreset* preset) override;
-    virtual void visitMidi(const MidiControllerPreset* preset) override;
-    virtual void visitHid(const HidControllerPreset* preset) override;
-    virtual void accept(ControllerVisitor* visitor) override {
+    bool savePreset(const QString fileName) const override;
+    bool matchPreset(const PresetInfo& preset) override;
+    void visitKeyboard(const KeyboardControllerPreset* preset) override;
+    void visitMidi(const MidiControllerPreset* preset) override;
+    void visitHid(const HidControllerPreset* preset) override;
+    void accept(ControllerVisitor* visitor) override {
         if (visitor) {
             visitor->visit(this);
         }
     }
-    inline virtual bool isMappable() const override { return m_preset.isMappable(); }
+    inline bool isMappable() const override { return m_preset.isMappable(); }
 
   public slots:
     // Sets a control, only if the keyboard is enabled
@@ -49,14 +49,14 @@ class KeyboardController : public Controller {
     void enabled(bool);
 
   private:
-    virtual void send(QByteArray data) override {
+    void send(QByteArray data) override {
         // Keyboard is an input-only controller, so this
         // method doesn't need any implementation
         Q_UNUSED(data);
     }
 
-    inline virtual bool isPolling() const override { return false; }
-    inline virtual ControllerPreset* preset() override { return &m_preset; }
+    inline bool isPolling() const override { return false; }
+    inline ControllerPreset* preset() override { return &m_preset; }
 
     // Keyboard controller preset, holding mapping info
     KeyboardControllerPreset m_preset;
@@ -65,8 +65,8 @@ class KeyboardController : public Controller {
     KeyboardEventFilter* m_pKbdEventFilter;
 
   private slots:
-    virtual int open() override;
-    virtual int close() override;
+    int open() override;
+    int close() override;
 };
 
 typedef QSharedPointer<KeyboardController> KeyboardControllerPointer;

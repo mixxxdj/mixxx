@@ -19,12 +19,12 @@ class FakeController : public Controller {
     FakeController();
     ~FakeController() override;
 
-    virtual QString presetExtension() override {
+    QString presetExtension() override {
         // Doesn't affect anything at the moment.
         return ".test.xml";
     }
 
-    virtual ControllerPresetPointer getPreset() const override {
+    ControllerPresetPointer getPreset() const override {
         if (m_bHidPreset) {
             HidControllerPreset* pClone = new HidControllerPreset();
             *pClone = m_hidPreset;
@@ -41,12 +41,12 @@ class FakeController : public Controller {
         }
     }
 
-    virtual bool savePreset(const QString fileName) const override {
+    bool savePreset(const QString fileName) const override {
         Q_UNUSED(fileName);
         return true;
     }
 
-    virtual void visitMidi(const MidiControllerPreset* preset) override {
+    void visitMidi(const MidiControllerPreset* preset) override {
         m_bMidiPreset = true;
         m_bHidPreset = false;
         m_bKbdPreset = false;
@@ -54,7 +54,8 @@ class FakeController : public Controller {
         m_hidPreset = HidControllerPreset();
         m_kbdPreset = KeyboardControllerPreset();
     }
-    virtual void visitHid(const HidControllerPreset* preset) override {
+
+    void visitHid(const HidControllerPreset* preset) override {
         m_bMidiPreset = false;
         m_bHidPreset = true;
         m_bKbdPreset = false;
@@ -63,7 +64,7 @@ class FakeController : public Controller {
         m_kbdPreset = KeyboardControllerPreset();
     }
 
-    virtual void visitKeyboard(const KeyboardControllerPreset *preset) override {
+    void visitKeyboard(const KeyboardControllerPreset *preset) override {
         m_bMidiPreset = false;
         m_bHidPreset = false;
         m_bKbdPreset = true;
@@ -72,12 +73,12 @@ class FakeController : public Controller {
         m_kbdPreset = *preset;
     }
 
-    virtual void accept(ControllerVisitor* visitor) override {
+    void accept(ControllerVisitor* visitor) override {
         // Do nothing since we aren't a normal controller.
         Q_UNUSED(visitor);
     }
 
-    virtual bool isMappable() const override {
+    bool isMappable() const override {
         if (m_bMidiPreset) {
             return m_midiPreset.isMappable();
         } else if (m_bHidPreset) {
@@ -88,7 +89,7 @@ class FakeController : public Controller {
         return false;
     }
 
-    virtual bool matchPreset(const PresetInfo& preset) override {
+    bool matchPreset(const PresetInfo& preset) override {
         // We're not testing product info matching in this test.
         Q_UNUSED(preset);
         return false;
@@ -110,17 +111,17 @@ class FakeController : public Controller {
     }
 
   private:
-    virtual void send(QByteArray data) override {
+    void send(QByteArray data) override {
         Q_UNUSED(data);
     }
-    virtual void send(QByteArray data, unsigned int reportID) {
+    void send(QByteArray data, unsigned int reportID) {
         Q_UNUSED(data);
         Q_UNUSED(reportID);
     }
-    virtual bool isPolling() const override {
+    bool isPolling() const override {
         return false;
     }
-    virtual ControllerPreset* preset() override {
+    ControllerPreset* preset() override {
         if (m_bHidPreset) {
             return &m_hidPreset;
         } else if (m_bKbdPreset) {
