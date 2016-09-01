@@ -1,7 +1,7 @@
 #include <QDesktopServices>
 
 #include "control/controlobject.h"
-#include "library/recording/dlgrecording.h"
+#include "library/features/recording/dlgrecording.h"
 #include "library/trackcollection.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
@@ -44,7 +44,7 @@ void DlgRecording::onShow() {
 
 void DlgRecording::setProxyTrackModel(ProxyTrackModel* pProxyModel) {
     m_pProxyModel = pProxyModel;
-    
+
     m_pProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_pProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 }

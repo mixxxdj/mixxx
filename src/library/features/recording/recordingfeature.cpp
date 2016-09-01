@@ -2,11 +2,11 @@
 // Created 03/26/2010 by Tobias Rafreider
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/recording/dlgrecording.h"
-#include "track/track.h"
-#include "library/recording/recordingfeature.h"
+#include "library/features/recording/dlgrecording.h"
+#include "library/features/recording/recordingfeature.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
+#include "track/track.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 

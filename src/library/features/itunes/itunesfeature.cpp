@@ -8,7 +8,7 @@
 #include <QUrl>
 #include <QFileInfo>
 
-#include "library/itunes/itunesfeature.h"
+#include "library/features/itunes/itunesfeature.h"
 
 #include "library/basetrackcache.h"
 #include "library/dao/settingsdao.h"
@@ -190,7 +190,7 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
-    
+
     showTrackModel(m_pITunesPlaylistModel);
     showBreadCrumb(index);
 }

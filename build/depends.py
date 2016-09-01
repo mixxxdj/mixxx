@@ -900,8 +900,6 @@ class MixxxCore(Feature):
                    "library/export/trackexportwizard.cpp",
                    "library/export/trackexportworker.cpp",
 
-                   "library/recording/recordingfeature.cpp",
-                   "library/recording/dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
                    "engine/sidechain/enginerecord.cpp",
 
@@ -915,11 +913,13 @@ class MixxxCore(Feature):
                    "library/banshee/bansheeplaylistmodel.cpp",
                    "library/banshee/bansheedbconnection.cpp",
 
-                   "library/itunes/itunesfeature.cpp",
                    "library/traktor/traktorfeature.cpp",
 
                    "library/features/crates/cratefeature.cpp",
                    "library/features/crates/cratetablemodel.cpp",
+                   "library/features/itunes/itunesfeature.cpp",
+                   "library/features/recording/recordingfeature.cpp",
+                   "library/features/recording/dlgrecording.cpp",
                    
                    "library/sidebarmodel.cpp",
                    "library/library.cpp",
@@ -1125,7 +1125,7 @@ class MixxxCore(Feature):
             'library/dlgtagfetcher.ui',
             'library/dlgtrackinfo.ui',
             'library/export/dlgtrackexport.ui',
-            'library/recording/dlgrecording.ui',
+            'library/features/recording/dlgrecording.ui',
             'preferences/dialog/dlgprefautodjdlg.ui',
             'preferences/dialog/dlgprefbeatsdlg.ui',
             'preferences/dialog/dlgprefcontrolsdlg.ui',

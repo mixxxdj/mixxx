@@ -10,7 +10,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "recording/recordingmanager.h"
 #include "track/track.h"
-#include "library/recording/ui_dlgrecording.h"
+#include "library/features/recording/ui_dlgrecording.h"
 
 class PlaylistTableModel;
 class QSqlTableModel;
@@ -33,10 +33,10 @@ class DlgRecording : public QFrame, public Ui::DlgRecording {
     void slotBytesRecorded(long);
     void refreshBrowseModel();
     void slotDurationRecorded(QString durationRecorded);
-    
+
   private:
     void refreshLabel();
-    
+
     TrackCollection* m_pTrackCollection;
     BrowseTableModel* m_pBrowseModel;
     ProxyTrackModel* m_pProxyModel;
