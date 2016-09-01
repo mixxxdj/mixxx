@@ -2,13 +2,12 @@
 #include <QtDebug>
 #include <QList>
 
-#include "library/banshee/bansheefeature.h"
+#include "library/features/banshee/bansheefeature.h"
 
-#include "library/banshee/bansheedbconnection.h"
 #include "library/dao/settingsdao.h"
+#include "library/features/banshee/bansheedbconnection.h"
+#include "library/features/banshee/bansheeplaylistmodel.h"
 #include "library/features/baseexternalfeature/baseexternalplaylistmodel.h"
-#include "library/banshee/bansheeplaylistmodel.h"
-#include "library/library.h"
 
 
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";

@@ -895,15 +895,14 @@ class MixxxCore(Feature):
                    "recording/recordingmanager.cpp",
                    "engine/sidechain/enginerecord.cpp",
 
-
-                   "library/banshee/bansheefeature.cpp",
-                   "library/banshee/bansheeplaylistmodel.cpp",
-                   "library/banshee/bansheedbconnection.cpp",
-
                    # Library Features
                    "library/features/analysis/analysisfeature.cpp",
                    "library/features/analysis/analysislibrarytablemodel.cpp",
                    "library/features/analysis/dlganalysis.cpp",
+
+                   "library/features/banshee/bansheefeature.cpp",
+                   "library/features/banshee/bansheeplaylistmodel.cpp",
+                   "library/features/banshee/bansheedbconnection.cpp",
 
                    "library/features/browse/browsetablemodel.cpp",
                    "library/features/browse/browsethread.cpp",

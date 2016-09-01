@@ -8,11 +8,10 @@
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
 
+#include "library/features/banshee/bansheedbconnection.h"
 #include "library/features/baseexternalfeature/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
-#include "library/banshee/bansheedbconnection.h"
-
 
 class BansheePlaylistModel;
 

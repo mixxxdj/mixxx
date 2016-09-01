@@ -1,11 +1,12 @@
 #include <QtAlgorithms>
 #include <QtDebug>
 
-#include "library/banshee/bansheeplaylistmodel.h"
-#include "library/banshee/bansheedbconnection.h"
+#include "library/features/banshee/bansheeplaylistmodel.h"
+
+#include "library/features/banshee/bansheedbconnection.h"
+#include "library/previewbuttondelegate.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"
-#include "library/previewbuttondelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "mixer/playermanager.h"

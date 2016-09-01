@@ -8,8 +8,8 @@
 #include <QDebug>
 
 #include "library/autodj/autodjfeature.h"
-#include "library/banshee/bansheefeature.h"
 #include "library/features/analysis/analysisfeature.h"
+#include "library/features/banshee/bansheefeature.h"
 #include "library/features/browse/browsefeature.h"
 #include "library/features/crates/cratefeature.h"
 #include "library/features/itunes/itunesfeature.h"

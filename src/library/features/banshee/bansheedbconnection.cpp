@@ -6,7 +6,7 @@
 #include <QSqlError>
 
 #include "library/queryutil.h"
-#include "library/banshee/bansheedbconnection.h"
+#include "library/features/banshee/bansheedbconnection.h"
 #include "util/performancetimer.h"
 
 BansheeDbConnection::BansheeDbConnection() {

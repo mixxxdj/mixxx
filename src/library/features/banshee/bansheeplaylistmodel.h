@@ -4,12 +4,12 @@
 #include <QHash>
 #include <QtSql>
 
+#include "library/basesqltablemodel.h"
+#include "library/dao/trackdao.h"
+#include "library/features/banshee/bansheedbconnection.h"
+#include "library/stardelegate.h"
 #include "library/trackmodel.h"
 #include "library/trackcollection.h"
-#include "library/dao/trackdao.h"
-#include "library/banshee/bansheedbconnection.h"
-#include "library/stardelegate.h"
-#include "library/basesqltablemodel.h"
 
 class BansheePlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
