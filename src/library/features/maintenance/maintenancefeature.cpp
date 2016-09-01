@@ -67,7 +67,6 @@ void MaintenanceFeature::selectionChanged(const QItemSelection&,
     } else if (*it == Pane::Missing) {
         m_pMissingView->setSelectedIndexes(selection);
     }
-    const QModelIndexList& selection2 = pTable->selectionModel()->selectedRows();
 }
 
 void MaintenanceFeature::selectAll() {
