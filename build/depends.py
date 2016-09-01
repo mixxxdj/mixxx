@@ -918,7 +918,9 @@ class MixxxCore(Feature):
                    "library/itunes/itunesfeature.cpp",
                    "library/traktor/traktorfeature.cpp",
 
-                   "library/cratefeature.cpp",
+                   "library/features/crates/cratefeature.cpp",
+                   "library/features/crates/cratetablemodel.cpp",
+                   
                    "library/sidebarmodel.cpp",
                    "library/library.cpp",
                    "library/librarypanemanager.cpp",
@@ -931,7 +933,6 @@ class MixxxCore(Feature):
                    "library/scanner/recursivescandirectorytask.cpp",
 
                    "library/dao/cratedao.cpp",
-                   "library/cratetablemodel.cpp",
                    "library/dao/cuedao.cpp",
                    "library/dao/cue.cpp",
                    "library/dao/trackdao.cpp",

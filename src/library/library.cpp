@@ -11,7 +11,7 @@
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
-#include "library/cratefeature.h"
+#include "library/features/crates/cratefeature.h"
 #include "library/libraryfoldersfeature.h"
 #include "library/historyfeature.h"
 #include "library/itunes/itunesfeature.h"
