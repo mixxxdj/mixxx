@@ -79,8 +79,8 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
 #ifdef __LINUX__
     libnames << "mp3lame";
 #elif __WINDOWS__
-    libnames << "lame_enc.dll";
     libnames << "libmp3lame.dll";
+    libnames << "lame_enc.dll";
 #elif __APPLE__
     libnames << "/usr/local/lib/libmp3lame.dylib";
     //Using MacPorts (former DarwinPorts) results in ...
