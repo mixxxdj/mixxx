@@ -14,6 +14,7 @@
 #include "library/dao/settingsdao.h"
 #include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
+#include "library/library.h"
 #include "library/queryutil.h"
 #include "util/lcs.h"
 #include "util/sandbox.h"
@@ -28,8 +29,11 @@ QString localhost_token() {
 #endif
 }
 
-ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
+ITunesFeature::ITunesFeature(UserSettingsPointer pConfig,
+                             Library* pLibrary,
+                             QObject* parent,
+                             TrackCollection* pTrackCollection)
+        : BaseExternalLibraryFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false) {
     QString tableName = "itunes_library";
@@ -143,7 +147,8 @@ void ITunesFeature::activate(bool forceReload) {
                 NULL, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
             QFileInfo dbFile(m_dbfile);
             if (m_dbfile.isEmpty() || !dbFile.exists()) {
-                emit(showTrackModel(m_pITunesTrackModel));
+                m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
+                showTrackModel(m_pITunesTrackModel);
                 return;
             }
 
@@ -173,7 +178,8 @@ void ITunesFeature::activate(bool forceReload) {
         emit (featureIsLoading(this, true));
     }
 
-    emit(showTrackModel(m_pITunesTrackModel));
+    showTrackModel(m_pITunesTrackModel);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     emit(enableCoverArtDisplay(false));
 }
 
@@ -182,7 +188,9 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
-    emit(showTrackModel(m_pITunesPlaylistModel));
+    
+    showTrackModel(m_pITunesPlaylistModel);
+    m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
     emit(enableCoverArtDisplay(false));
 }
 
@@ -735,6 +743,7 @@ void ITunesFeature::clearTable(QString table_name) {
 
 void ITunesFeature::onTrackCollectionLoaded() {
     TreeItem* root = m_future.result();
+    root->setLibraryFeature(this);
     if (root) {
         m_childModel.setRootItem(root);
 
@@ -742,7 +751,7 @@ void ITunesFeature::onTrackCollectionLoaded() {
         m_trackSource->buildIndex();
 
         //m_pITunesTrackModel->select();
-        emit(showTrackModel(m_pITunesTrackModel));
+        showTrackModel(m_pITunesTrackModel);
         qDebug() << "Itunes library loaded: success";
     } else {
         QMessageBox::warning(

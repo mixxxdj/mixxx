@@ -20,7 +20,10 @@ class BansheePlaylistModel;
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, UserSettingsPointer pConfig);
+    BansheeFeature(UserSettingsPointer pConfig,
+                   Library* pLibrary,
+                   QObject* parent,
+                   TrackCollection* pTrackCollection);
     virtual ~BansheeFeature();
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);
@@ -55,7 +58,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     bool m_cancelImport;
 
     static QString m_databaseFile;
-
+    
     static const QString BANSHEE_MOUNT_KEY;
 };
 

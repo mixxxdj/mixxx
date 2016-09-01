@@ -16,25 +16,25 @@
 #include "library/dao/trackdao.h"
 #include "track/track.h"
 
-class WLibrary;
 class KeyboardEventFilter;
 class PlaylistTableModel;
 class TrackCollection;
 class TreeItem;
+class WLibrary;
+class WLibraryStack;
 
 class BasePlaylistFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BasePlaylistFeature(QObject* parent,
-                        UserSettingsPointer pConfig,
-                        TrackCollection* pTrackCollection,
-                        QString rootViewName);
+    BasePlaylistFeature(UserSettingsPointer pConfig,
+                        Library* pLibrary,
+                        QObject* parent,
+                        TrackCollection* pTrackCollection);
     virtual ~BasePlaylistFeature();
 
     TreeItemModel* getChildModel();
 
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
 
   signals:
     void showPage(const QUrl& page);
@@ -50,6 +50,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void slotPlaylistContentChanged(int playlistId) = 0;
     virtual void slotPlaylistTableRenamed(int playlistId, QString a_strName) = 0;
     void slotCreatePlaylist();
+    void setFeatureFocus(int focus);
 
   protected slots:
     void slotDeletePlaylist();
@@ -75,14 +76,17 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void addToAutoDJ(bool bTop);
 
     int playlistIdFromIndex(QModelIndex index);
+    QPointer<PlaylistTableModel> getPlaylistTableModel(int paneId);
+    virtual PlaylistTableModel* constructTableModel() = 0;
+    
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
 
-    TrackCollection* m_pTrackCollection;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
-    PlaylistTableModel* m_pPlaylistTableModel;
+    QPointer<PlaylistTableModel> m_pPlaylistTableModel;
+    QHash<int, QPointer<PlaylistTableModel> > m_playlistTableModel;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
     QAction *m_pAddToAutoDJAction;
@@ -108,7 +112,10 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual QString getRootViewHtml() const = 0;
 
     QSet<int> m_playlistsSelectedTrackIsIn;
-    QString m_rootViewName;
+    
+    QHash<int, QPointer<WLibraryStack> > m_panes;
+    QHash<int, int> m_idBrowse;
+    QHash<int, int> m_idTable;
 };
 
 #endif /* BASEPLAYLISTFEATURE_H */

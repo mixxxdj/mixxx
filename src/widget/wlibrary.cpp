@@ -9,44 +9,35 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 
 WLibrary::WLibrary(QWidget* parent)
-        : QStackedWidget(parent),
-          WBaseWidget(this),
+        : WBaseLibrary(parent),
           m_mutex(QMutex::Recursive) {
+    
 }
 
-bool WLibrary::registerView(QString name, QWidget* view) {
+bool WLibrary::registerView(LibraryFeature *pFeature, QWidget* pView) {
     QMutexLocker lock(&m_mutex);
-    if (m_viewMap.contains(name)) {
-        return false;
-    }
-    if (dynamic_cast<LibraryView*>(view) == nullptr) {
+    if (pFeature == nullptr || dynamic_cast<LibraryView*>(pView) == nullptr) {
         qDebug() << "WARNING: Attempted to register a view with WLibrary "
                  << "that does not implement the LibraryView interface. "
                  << "Ignoring.";
         return false;
     }
-    addWidget(view);
-    m_viewMap[name] = view;
-    return true;
+    return WBaseLibrary::registerView(pFeature, pView);
 }
 
-void WLibrary::switchToView(const QString& name) {
+void WLibrary::switchToFeature(LibraryFeature *pFeature) {
     QMutexLocker lock(&m_mutex);
-    //qDebug() << "WLibrary::switchToView" << name;
-    QWidget* widget = m_viewMap.value(name, nullptr);
-    if (widget != nullptr) {
-        LibraryView * lview = dynamic_cast<LibraryView*>(widget);
-        if (lview == nullptr) {
+    auto it = m_featureMap.find(pFeature);
+    if (it != m_featureMap.end()) {
+        LibraryView* pView = dynamic_cast<LibraryView*>(*it);
+        if (pView == nullptr) {
             qDebug() << "WARNING: Attempted to register a view with WLibrary "
                      << "that does not implement the LibraryView interface. "
                      << "Ignoring.";
             return;
         }
-        if (currentWidget() != widget) {
-            //qDebug() << "WLibrary::setCurrentWidget" << name;
-            setCurrentWidget(widget);
-            lview->onShow();
-        }
+        WBaseLibrary::switchToFeature(pFeature);
+        pView->onShow();
     }
 }
 
@@ -65,11 +56,4 @@ void WLibrary::search(const QString& name) {
 
 LibraryView* WLibrary::getActiveView() const {
     return dynamic_cast<LibraryView*>(currentWidget());
-}
-
-bool WLibrary::event(QEvent* pEvent) {
-    if (pEvent->type() == QEvent::ToolTip) {
-        updateTooltip();
-    }
-    return QStackedWidget::event(pEvent);
 }

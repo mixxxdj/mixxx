@@ -1,3 +1,4 @@
+
 	<!--
 	Shade, Skin for Mixxx 1.12.x
 	www.mixxx.org
@@ -451,7 +452,7 @@
 					QSplitter::handle:horizontal { width: 6px; }
 					QSplitter::handle:vertical { height: 6px;}
 
-					QPushButton { font: 12px/14px sans-serif;
+					QAbstractButton { font: 12px/14px sans-serif;
 						      font-family: "Open Sans";}
 					<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
 					QLabel, QRadioButton {
@@ -460,32 +461,65 @@
 						background: transparent;
 						color: #C1C1C1;}
 
-					<!--Additional space for QRadionButtons and QLabels-->
-					WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
-
-					<!--Additional space for the first QRadionButton in the row-->
-					WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
-
 					<!--Additional space for the QPushButtons-->
-					#DlgMissing > QPushButton,
-					#DlgHidden > QPushButton,
-					#DlgAutoDJ > QPushButton,
-					#DlgRecording > QPushButton,
-					#DlgAnalysis > QPushButton {
-					    margin: 9px 3px 6px 3px;
-					    padding: 3px 8px;
-					    min-width: 65px;
+					WBaseLibrary QPushButton {
+					    margin: 2px 3px;
+					    padding: 3px 3px;
+					}
+					
+					WBaseLibrary QScrollArea,
+					QScrollArea QWidget {
+						background-color: transparent;
 					}
 
-					<!--Additional space for the first QPushButton in the row-->
-					#DlgMissing > QPushButton#btnPurge,
-					#DlgHidden > QPushButton#btnUnhide,
-					#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
-					#DlgRecording > QPushButton#pushButtonRecording,
-					#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
+					WBaseLibrary QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
+						background-color: #191919;
+						border: none;
+					}
 
-					<!--Additional space for the last QPushButton in the row-->
-					#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
+					WBaseLibrary QTabWidget::pane {
+						background-color: #191919;
+						border: 1px solid #646464;
+					}
+
+					WBaseLibrary QPushButton {
+						border: 1px solid black;
+						background-color: #aab2b7;
+					}
+
+					#LibrarySidebarButtons, #LibrarySidebarButtons WButtonBar {
+						background-color: #8d98a3;
+						margin-right: 13px;
+					}
+
+					#LibrarySidebarButtons QScrollArea {
+						background-color: #8d98a3;
+					}
+
+					WButtonBar QToolButton {
+						padding: 2px 2px 2px 2px;
+						color: black;
+						border: none;
+						background-color: #aab2b7;
+					}
+
+					WButtonBar QToolButton:hover {
+						border: 2px solid #626f87;
+					}
+
+					WBaseLibrary[showFocus="0"] {
+						padding: 2px 0 0 0;
+						border: none;
+					}
+
+					WBaseLibrary[showFocus="1"] {
+						padding: 2px 1px 1px 1px;
+						border-top: 2px solid aqua;
+					}
+
+					WLibraryBreadCrumb {
+						margin: 2px 4px;
+					}
 
 					<!--Spacing between treeview and searchbar-->
 					QTreeView { margin: 0px 0px 0px 5px; }
@@ -506,11 +540,10 @@
 					<Children>
 						<Splitter>
 							<Size>me,me</Size>
-							<Style></Style>
+							<SplitSizesConfigKey>[Shade],LibrarySidebarSplitSize</SplitSizesConfigKey>
 							<SplitSizes>1,e</SplitSizes>
 							<Children>
 								<WidgetGroup>
-									<Style>QGroupBox {}</Style>
 									<Layout>vertical</Layout>
 									<Children>
 										<!-- Preview Deck-->
@@ -527,137 +560,137 @@
 											<Children>
 												<!-- Preview Deck Column 1 Row 1-->
 												<WidgetGroup>
-												<Layout>vertical</Layout>
-												<Children>
-												<WidgetGroup>
-													<Style> QGroupBox {
-														margin: 0px;
-														padding: 0px 0px 0px 0px;
-														border-left: 0px solid #656565;
-														border-right: 0px solid #2B2B2B;
-														border-top: 0px solid #656565;
-														border-bottom: 1px solid #2B2B2B;
-														background: transparent;
-													}
-													</Style>
-													<Layout>horizontal</Layout>
+													<Layout>vertical</Layout>
 													<Children>
-														<!--
-														**********************************************
-														Text- Track Title
-														**********************************************
-														-->
-														<Text>
-															<TooltipId>text</TooltipId>
-															<Style> QLabel {
-																font: 11px/13px sans-serif;
-																font-family: "Open Sans";
-																background-color: transparent;
-																color: #ACACAC;
-																text-align: left;
-																padding-left: 1px;
-															}
-															</Style>
-															<Group>[PreviewDeck1]</Group>
-															<Pos></Pos>
-															<Size>50me,15f</Size>
-															<Elide>right</Elide>
-														</Text>
-														<!--
-														**********************************************
-														Button- Eject
-														**********************************************
-														-->
-														<PushButton>
-															<TooltipId>eject</TooltipId>
-															<Style></Style>
-															<NumberStates>1</NumberStates>
-															<State>
-																<Number>0</Number>
-																<Pressed>btn_eject1_over.png</Pressed>
-																<Unpressed>btn_eject1.png</Unpressed>
-															</State>
-															<Pos></Pos>
-															<Connection>
-																<ConfigKey>[PreviewDeck1],eject</ConfigKey>
-																<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-																<ButtonState>LeftButton</ButtonState>
-																<ConnectValueToWidget>false</ConnectValueToWidget>
-															</Connection>
-														</PushButton>
-													</Children>
-												</WidgetGroup>
-												<!-- Preview Deck Column 1 Row 2-->
-												<WidgetGroup>
-													<Style>
-														QGroupBox {
-															padding: 0px;
+													<WidgetGroup>
+														<Style> QGroupBox {
 															margin: 0px;
-															border: 0px;
+															padding: 0px 0px 0px 0px;
+															border-left: 0px solid #656565;
+															border-right: 0px solid #2B2B2B;
+															border-top: 0px solid #656565;
+															border-bottom: 1px solid #2B2B2B;
+															background: transparent;
 														}
-													</Style>
-													<Layout>horizontal</Layout>
-													<Children>
-														<PushButton>
-															<TooltipId>play_start</TooltipId>
-															<Style></Style>
-															<NumberStates>2</NumberStates>
-															<RightClickIsPushButton>true</RightClickIsPushButton>
-															<State>
-																<Number>0</Number>
-																<Pressed>btn_play_sampler_down.png</Pressed>
-																<Unpressed>btn_play_sampler.png</Unpressed>
-															</State>
-															<State>
-																<Number>1</Number>
-																<Pressed>btn_play_sampler_overdown.png</Pressed>
-																<Unpressed>btn_play_sampler_over.png</Unpressed>
-															</State>
-															<Pos>2,2</Pos>
-															<Connection>
-																<ConfigKey>[PreviewDeck1],play</ConfigKey>
-																<EmitOnDownPress>true</EmitOnDownPress>
-																<ButtonState>LeftButton</ButtonState>
-															</Connection>
-															<Connection>
-																<ConfigKey>[PreviewDeck1],start</ConfigKey>
-																<EmitOnDownPress>true</EmitOnDownPress>
-																<ButtonState>RightButton</ButtonState>
-																<ConnectValueToWidget>false</ConnectValueToWidget>
-															</Connection>
-														</PushButton>
-														<Overview>
-															<TooltipId>waveform_overview</TooltipId>
-															<Style></Style>
-															<Group>[PreviewDeck1]</Group>
-															<Size>me,30f</Size>
-															<BgColor>#8D98A3</BgColor>
-															<SignalHighColor>#FFE300</SignalHighColor>
-															<SignalMidColor>#0099FF</SignalMidColor>
-															<SignalLowColor>#FF0035</SignalLowColor>
-															<SignalColor>#FF8000</SignalColor>
-															<PlayPosColor>#00FF00</PlayPosColor>
-															<DefaultMark>
-																<Align>bottom</Align>
-																<Color>#FFFFFF</Color>
-																<TextColor>#00FF00</TextColor>
-																<Text> %1 </Text>
-															</DefaultMark>
-															<Mark>
-																<Control>cue_point</Control>
-																<Text> C </Text>
-																<Align>top</Align>
-																<Color>#FF001C</Color>
-																<TextColor>#00FF00</TextColor>
-															</Mark>
-															<Connection>
-																<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
-																<EmitOnDownPress>false</EmitOnDownPress>
-															</Connection>
-														</Overview>
+														</Style>
+														<Layout>horizontal</Layout>
+														<Children>
+															<!--
+															**********************************************
+															Text- Track Title
+															**********************************************
+															-->
+															<Text>
+																<TooltipId>text</TooltipId>
+																<Style> QLabel {
+																	font: 11px/13px sans-serif;
+																	font-family: "Open Sans";
+																	background-color: transparent;
+																	color: #ACACAC;
+																	text-align: left;
+																	padding-left: 1px;
+																}
+																</Style>
+																<Group>[PreviewDeck1]</Group>
+																<Pos></Pos>
+																<Size>50me,15f</Size>
+																<Elide>right</Elide>
+															</Text>
+															<!--
+															**********************************************
+															Button- Eject
+															**********************************************
+															-->
+															<PushButton>
+																<TooltipId>eject</TooltipId>
+																<Style></Style>
+																<NumberStates>1</NumberStates>
+																<State>
+																	<Number>0</Number>
+																	<Pressed>btn_eject1_over.png</Pressed>
+																	<Unpressed>btn_eject1.png</Unpressed>
+																</State>
+																<Pos></Pos>
+																<Connection>
+																	<ConfigKey>[PreviewDeck1],eject</ConfigKey>
+																	<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+																	<ButtonState>LeftButton</ButtonState>
+																	<ConnectValueToWidget>false</ConnectValueToWidget>
+																</Connection>
+															</PushButton>
+														</Children>
+													</WidgetGroup>
+													<!-- Preview Deck Column 1 Row 2-->
+													<WidgetGroup>
+														<Style>
+															QGroupBox {
+																padding: 0px;
+																margin: 0px;
+																border: 0px;
+															}
+														</Style>
+														<Layout>horizontal</Layout>
+														<Children>
+															<PushButton>
+																<TooltipId>play_start</TooltipId>
+																<Style></Style>
+																<NumberStates>2</NumberStates>
+																<RightClickIsPushButton>true</RightClickIsPushButton>
+																<State>
+																	<Number>0</Number>
+																	<Pressed>btn_play_sampler_down.png</Pressed>
+																	<Unpressed>btn_play_sampler.png</Unpressed>
+																</State>
+																<State>
+																	<Number>1</Number>
+																	<Pressed>btn_play_sampler_overdown.png</Pressed>
+																	<Unpressed>btn_play_sampler_over.png</Unpressed>
+																</State>
+																<Pos>2,2</Pos>
+																<Connection>
+																	<ConfigKey>[PreviewDeck1],play</ConfigKey>
+																	<EmitOnDownPress>true</EmitOnDownPress>
+																	<ButtonState>LeftButton</ButtonState>
+																</Connection>
+																<Connection>
+																	<ConfigKey>[PreviewDeck1],start</ConfigKey>
+																	<EmitOnDownPress>true</EmitOnDownPress>
+																	<ButtonState>RightButton</ButtonState>
+																	<ConnectValueToWidget>false</ConnectValueToWidget>
+																</Connection>
+															</PushButton>
+															<Overview>
+																<TooltipId>waveform_overview</TooltipId>
+																<Style></Style>
+																<Group>[PreviewDeck1]</Group>
+																<Size>me,30f</Size>
+																<BgColor>#8D98A3</BgColor>
+																<SignalHighColor>#FFE300</SignalHighColor>
+																<SignalMidColor>#0099FF</SignalMidColor>
+																<SignalLowColor>#FF0035</SignalLowColor>
+																<SignalColor>#FF8000</SignalColor>
+																<PlayPosColor>#00FF00</PlayPosColor>
+																<DefaultMark>
+																	<Align>bottom</Align>
+																	<Color>#FFFFFF</Color>
+																	<TextColor>#00FF00</TextColor>
+																	<Text> %1 </Text>
+																</DefaultMark>
+																<Mark>
+																	<Control>cue_point</Control>
+																	<Text> C </Text>
+																	<Align>top</Align>
+																	<Color>#FF001C</Color>
+																	<TextColor>#00FF00</TextColor>
+																</Mark>
+																<Connection>
+																	<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+																	<EmitOnDownPress>false</EmitOnDownPress>
+																</Connection>
+															</Overview>
+														</Children>
+													</WidgetGroup>
 													</Children>
-												</WidgetGroup>
-												</Children>
 												</WidgetGroup>
 
 											<!-- Preview Deck Column 2-->
@@ -708,7 +741,7 @@
 													**********************************************
 													-->
 													<SliderComposed>
-														<TooltipId>pregain</TooltipId>
+														<TooltipId><SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>pregain</TooltipId>
 														<Style></Style>
 														<Handle>knob_volume_previewdeck.png</Handle>
 														<Slider>slider_volume_previewdeck.png</Slider>
@@ -727,35 +760,62 @@
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
-										<!--Search Input Field-->
-										<SearchBox></SearchBox>
 										<!--Library Tree View-->
-						 				<Splitter>
-											<Size>e,me</Size>
-											<Style></Style>
-											<SplitSizes>1,e</SplitSizes>
-                                            <Collapsible>0,0</Collapsible>
+										<WidgetGroup>
+											<Layout>horizontal</Layout>
 											<Children>
-												<LibrarySidebar></LibrarySidebar>
-												<!--Cover Art-->
-												<CoverArt>
-													<MinimumSize>16,16</MinimumSize>
+												<LibrarySidebarButtons>
+													<ObjectName>LibrarySidebarButtons</ObjectName>
+												</LibrarySidebarButtons>
+												<Splitter>
+													<Orientation>vertical</Orientation>
+													<SplitSizes>8,2</SplitSizes>
 													<SizePolicy>me,me</SizePolicy>
-													<Connection>
-														<ConfigKey>[Library],show_coverart</ConfigKey>
-														<BindProperty>visible</BindProperty>
-													</Connection>
-												</CoverArt>
+													<Children>
+														<LibrarySidebarExpanded>
+			                                            	<ObjectName>LibrarySidebarExpanded</ObjectName>
+			                                            </LibrarySidebarExpanded>
+														<!--Cover Art-->
+														<CoverArt>
+															<MinimumSize>30,30</MinimumSize>
+															<SizePolicy>me,me</SizePolicy>
+															<Connection>
+																<ConfigKey>[Library],show_coverart</ConfigKey>
+																<BindProperty>visible</BindProperty>
+															</Connection>
+														</CoverArt>
+													</Children>
+												</Splitter>
 											</Children>
-										</Splitter>
+										</WidgetGroup>
 									</Children>
 								</WidgetGroup>
 								<WidgetGroup>
-									<!-- Library Table-->
-									<Style>QGroupBox {}</Style>
 									<Layout>vertical</Layout>
 									<Children>
-										<Library></Library>
+										<SearchBox>
+											<Id>1</Id>
+										</SearchBox>
+										<LibraryBreadCrumb>
+											<Id>1</Id>
+										</LibraryBreadCrumb>
+										<LibraryPane>
+											<Id>1</Id>
+										</LibraryPane>
+									</Children>
+								</WidgetGroup>
+								<WidgetGroup>
+									<Layout>vertical</Layout>
+									<Children>
+										<SearchBox>
+											<Id>2</Id>
+										</SearchBox>
+										<LibraryBreadCrumb>
+											<Id>2</Id>
+										</LibraryBreadCrumb>
+										<LibraryPane>
+											<Id>2</Id>
+										</LibraryPane>
 									</Children>
 								</WidgetGroup>
 							</Children>

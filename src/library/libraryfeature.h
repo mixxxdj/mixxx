@@ -4,113 +4,141 @@
 #ifndef LIBRARYFEATURE_H
 #define LIBRARYFEATURE_H
 
-#include <QtDebug>
-#include <QIcon>
-#include <QModelIndex>
-#include <QObject>
-#include <QString>
-#include <QVariant>
-#include <QAbstractItemModel>
-#include <QUrl>
-#include <QDesktopServices>
 #include <QFileDialog>
+#include <QHash>
+#include <QPointer>
+#include <QString>
+#include <QUrl>
 
-#include "track/track.h"
-#include "treeitemmodel.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
+#include "preferences/usersettings.h"
+#include "track/track.h"
+#include "treeitemmodel.h"
 
+class Library;
+class TrackCollection;
 class TrackModel;
-class WLibrarySidebar;
+class WBaseLibrary;
 class WLibrary;
-class KeyboardEventFilter;
+class WLibrarySidebar;
+class WTrackTableView;
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {
-  Q_OBJECT
+    Q_OBJECT
   public:
-    LibraryFeature(QObject* parent = NULL);
 
+    // The parent does not necessary be the Library
     LibraryFeature(UserSettingsPointer pConfig,
-                   QObject* parent = NULL);
+                   Library* pLibrary, TrackCollection *pTrackCollection, 
+                   QObject* parent = nullptr);
+    
     virtual ~LibraryFeature();
 
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
 
-    virtual bool dropAccept(QList<QUrl> urls, QObject* pSource) {
-        Q_UNUSED(urls);
-        Q_UNUSED(pSource);
+    virtual bool dropAccept(QList<QUrl> /* urls */, 
+                            QObject* /* pSource */) {
         return false;
     }
-    virtual bool dropAcceptChild(const QModelIndex& index,
-                                 QList<QUrl> urls, QObject* pSource) {
-        Q_UNUSED(index);
-        Q_UNUSED(urls);
-        Q_UNUSED(pSource);
+    virtual bool dropAcceptChild(const QModelIndex& /* index */,
+                                 QList<QUrl> /* urls */, 
+                                 QObject* /* pSource */) {
         return false;
     }
-    virtual bool dragMoveAccept(QUrl url) {
-        Q_UNUSED(url);
+    virtual bool dragMoveAccept(QUrl /* url */) {
         return false;
     }
-    virtual bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-        Q_UNUSED(index);
-        Q_UNUSED(url);
+    virtual bool dragMoveAcceptChild(const QModelIndex& /* index */, 
+                                     QUrl /* url */) {
         return false;
     }
-
-    // Reimplement this to register custom views with the library widget.
-    virtual void bindWidget(WLibrary* /* libraryWidget */,
-                            KeyboardEventFilter* /* keyboard */) {}
+    
+    // Reimplement this to register custom views with the library widget
+    // at the right pane.
+    virtual QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                      int paneId);
+    
+    // Reimplement this to register custom views with the library widget,
+    // at the sidebar expanded pane
+    virtual QWidget* createSidebarWidget(KeyboardEventFilter* pKeyboard);
+    
     virtual TreeItemModel* getChildModel() = 0;
-
-  protected:
-    inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
-    inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
-    UserSettingsPointer m_pConfig;
+    
+    virtual void setFeatureFocus(int focus);
+    virtual int getFeatureFocus();
+    
+    virtual void setFocusedPane(int paneId);
 
   public slots:
     // called when you single click on the root item
     virtual void activate() = 0;
     // called when you single click on a child item, e.g., a concrete playlist or crate
-    virtual void activateChild(const QModelIndex& index) {
-        Q_UNUSED(index);
+    virtual void activateChild(const QModelIndex&) {
     }
     // called when you right click on the root item
-    virtual void onRightClick(const QPoint& globalPos) {
-        Q_UNUSED(globalPos);
+    virtual void onRightClick(const QPoint&) {
     }
     // called when you right click on a child item, e.g., a concrete playlist or crate
-    virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-        Q_UNUSED(globalPos);
-        Q_UNUSED(index);
+    virtual void onRightClickChild(const QPoint& /* globalPos */, 
+                                   QModelIndex /* index */) {
     }
     // Only implement this, if using incremental or lazy childmodels, see BrowseFeature.
     // This method is executed whenever you **double** click child items
-    virtual void onLazyChildExpandation(const QModelIndex& index) {
-        Q_UNUSED(index);
+    virtual void onLazyChildExpandation(const QModelIndex&) {
     }
+    
   signals:
-    void showTrackModel(QAbstractItemModel* model);
-    void switchToView(const QString& view);
-    void loadTrack(TrackPointer pTrack);
+    
+    void loadTrack(TrackPointer);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    void restoreSearch(const QString&);
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
     // The second arg indicates if the feature should be "selected" when loading starts
     void featureIsLoading(LibraryFeature*, bool selectFeature);
     // emit this signal if the foreign music collection has been imported/parsed.
-    void featureLoadingFinished(LibraryFeature*s);
+    void featureLoadingFinished(LibraryFeature*);
     // emit this signal to select pFeature
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
-    void trackSelected(TrackPointer pTrack);
+    void trackSelected(TrackPointer);
+    
+  protected:
+    inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
+    inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
+    
+    // Creates a table widget with no model
+    WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
+                                     int paneId);
+    
+    // Creates a WLibrarySidebar widget with the getChildModel() function as
+    // model
+    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter* pKeyboard);
+    
+    // Override this function to create a custom inner widget for the sidebar,
+    // the default widget is a WLibrarySidebar widget
+    virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
+    
+    void showTrackModel(QAbstractItemModel *model);
+    void switchToFeature();
+    void restoreSearch(const QString& search);
+    void showBreadCrumb(TreeItem *pTree);
+    
+    WTrackTableView* getFocusedTable();
+    
+    UserSettingsPointer m_pConfig;
+    Library* m_pLibrary;
+    TrackCollection* m_pTrackCollection;
+    
+    int m_featureFocus;
+    int m_focusedPane;
 
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);
-
+    QHash<int, QPointer<WTrackTableView> > m_trackTables;
 };
 
 #endif /* LIBRARYFEATURE_H */

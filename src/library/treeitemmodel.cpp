@@ -45,8 +45,10 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole && role != kDataPathRole && role != kBoldRole)
+    if (role != Qt::DisplayRole && role != kDataPathRole && 
+            role != kBoldRole && role != Qt::DecorationRole) {
         return QVariant();
+    }
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
@@ -55,6 +57,8 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         return item->dataPath();
     } else if (role == kBoldRole) {
         return item->isBold();
+    } else if (role == Qt::DecorationRole) {
+        return item->getIcon();
     }
     return item->data();
 }
@@ -203,4 +207,44 @@ void TreeItemModel::triggerRepaint() {
     QModelIndex left = index(0, 0);
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
     emit(dataChanged(left, right));
+}
+
+bool TreeItemModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
+                               QObject* pSource) {
+    //qDebug() << "TreeItemModel::dropAccept() index=" << index << urls;
+    bool result = false;
+    if (index.isValid()) {
+        LibraryFeature* pFeature;
+        if (index.internalPointer() == this) {
+            pFeature = m_pRootItem->getFeature();
+        } else {
+            TreeItem* treeItem = (TreeItem*) index.internalPointer();
+            if (!treeItem) {
+                return false;
+            }
+            pFeature = treeItem->getFeature();
+        }
+        
+        result = pFeature->dropAcceptChild(index, urls, pSource);
+    }
+    return result;
+}
+
+bool TreeItemModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
+    //qDebug() << "TreeItemModel::dragMoveAccept() index=" << index << url;
+    bool result = false;
+    if (index.isValid()) {
+        LibraryFeature* pFeature;
+        if (index.internalPointer() == this) {
+            pFeature = m_pRootItem->getFeature();
+        } else {
+            TreeItem* treeItem = (TreeItem*) index.internalPointer();
+            if (treeItem) {
+                pFeature = treeItem->getFeature();
+            }
+        }
+        
+        result = pFeature->dragMoveAcceptChild(index, url);
+    }
+    return result;
 }

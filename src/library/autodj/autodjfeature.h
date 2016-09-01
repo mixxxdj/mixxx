@@ -21,6 +21,7 @@
 #include "library/treeitemmodel.h"
 
 #include "library/dao/autodjcratesdao.h"
+#include "widget/wtracktableview.h"
 
 class DlgAutoDJ;
 class Library;
@@ -31,8 +32,9 @@ class AutoDJProcessor;
 class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AutoDJFeature(Library* pLibrary,
-                  UserSettingsPointer pConfig,
+    AutoDJFeature(UserSettingsPointer pConfig,
+                  Library* pLibrary,
+                  QObject* parent,
                   PlayerManagerInterface* pPlayerManager,
                   TrackCollection* pTrackCollection);
     virtual ~AutoDJFeature();
@@ -43,8 +45,8 @@ class AutoDJFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
 
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+    QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) override;
+    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
 
     TreeItemModel* getChildModel();
 
@@ -55,17 +57,15 @@ class AutoDJFeature : public LibraryFeature {
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
   private:
-    UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
     PlaylistDAO& m_playlistDao;
     // The id of the AutoDJ playlist.
     int m_iAutoDJPlaylistId;
     AutoDJProcessor* m_pAutoDJProcessor;
-    const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
-    DlgAutoDJ* m_pAutoDJView;
+    QPointer<DlgAutoDJ> m_pAutoDJView;
+    QHash<int, QPointer<WTrackTableView> > m_trackTables;
 
     // Initialize the list of crates loaded into the auto-DJ queue.
     void constructCrateChildModel();
@@ -118,6 +118,7 @@ class AutoDJFeature : public LibraryFeature {
     // of tracks in the playlist
     void slotRandomQueue(int);
 
+    void selectionChanged(const QItemSelection&, const QItemSelection&);
 };
 
 

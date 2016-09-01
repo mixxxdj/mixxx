@@ -7,11 +7,15 @@
 
 #include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
-#include "library/treeitem.h"
+#include "library/library.h"
 #include "library/queryutil.h"
+#include "library/treeitem.h"
 
-RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
+RhythmboxFeature::RhythmboxFeature(UserSettingsPointer pConfig,
+                                   Library* pLibrary, 
+                                   QObject* parent, 
+                                   TrackCollection* pTrackCollection)
+        : BaseExternalLibraryFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false) {
     QString tableName = "rhythmbox_library";
@@ -108,7 +112,7 @@ TreeItemModel* RhythmboxFeature::getChildModel() {
 }
 
 void RhythmboxFeature::activate() {
-    qDebug() << "RhythmboxFeature::activate()";
+    //qDebug() << "RhythmboxFeature::activate()";
 
     if (!m_isActivated) {
         m_isActivated =  true;
@@ -127,8 +131,9 @@ void RhythmboxFeature::activate() {
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
         emit (featureIsLoading(this, true));
     }
-
-    emit(showTrackModel(m_pRhythmboxTrackModel));
+    
+    showTrackModel(m_pRhythmboxTrackModel);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
     emit(enableCoverArtDisplay(false));
 }
 
@@ -137,7 +142,9 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
-    emit(showTrackModel(m_pRhythmboxPlaylistModel));
+    
+    showTrackModel(m_pRhythmboxPlaylistModel);
+    m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
     emit(enableCoverArtDisplay(false));
 }
 
@@ -149,12 +156,12 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
     if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
         if (!db.exists()) {
-            return NULL;
+            return nullptr;
         }
     }
 
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
-        return NULL;
+        return nullptr;
 
     //Delete all table entries of Traktor feature
     ScopedTransaction transaction(m_database);
@@ -436,6 +443,7 @@ void RhythmboxFeature::clearTable(QString table_name) {
 
 void RhythmboxFeature::onTrackCollectionLoaded() {
     TreeItem* root = m_track_future.result();
+    root->setLibraryFeature(this);
     if (root) {
         m_childModel.setRootItem(root);
 

@@ -1,33 +1,36 @@
 // browsefeature.cpp
 // Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QStringList>
-#include <QTreeView>
-#include <QDirModel>
-#include <QStringList>
-#include <QFileInfo>
-#include <QDesktopServices>
 #include <QAction>
+#include <QDesktopServices>
+#include <QDirModel>
+#include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
+#include <QStringList>
+#include <QStringList>
+#include <QTreeView>
 
-#include "track/track.h"
-#include "library/treeitem.h"
-#include "library/browse/browsefeature.h"
-#include "library/trackcollection.h"
-#include "widget/wlibrarytextbrowser.h"
-#include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/browse/browsefeature.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/treeitem.h"
+#include "track/track.h"
 #include "util/sandbox.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarystack.h"
+#include "widget/wlibrarytextbrowser.h"
+
 
 const QString kQuickLinksSeparator = "-+-";
 
-BrowseFeature::BrowseFeature(QObject* parent,
-                             UserSettingsPointer pConfig,
+BrowseFeature::BrowseFeature(UserSettingsPointer pConfig,
+                             Library* pLibrary,
+                             QObject* parent,
                              TrackCollection* pTrackCollection,
                              RecordingManager* pRecordingManager)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
+        : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_browseModel(this, pTrackCollection, pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection),
@@ -55,6 +58,7 @@ BrowseFeature::BrowseFeature(QObject* parent,
 
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
+    rootItem->setLibraryFeature(this);
 
     m_pQuickLinkItem = new TreeItem(tr("Quick Links"), QUICK_LINK_NODE, this, rootItem);
     rootItem->appendChild(m_pQuickLinkItem);
@@ -207,17 +211,35 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BrowseFeature::bindWidget(WLibrary* libraryWidget,
-                               KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(getRootViewHtml());
-    libraryWidget->registerView("BROWSEHOME", edit);
+QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                         int paneId) {
+    WLibraryStack* pStack = new WLibraryStack(nullptr);
+    m_panes[paneId] = pStack;
+    
+    WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(nullptr);
+    pEdit->setHtml(getRootViewHtml());
+    pEdit->installEventFilter(pKeyboard);
+    m_idBrowse[paneId] = pStack->addWidget(pEdit);
+    
+    QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId);
+    pTable->setParent(pStack);
+    m_idTable[paneId] = pStack->addWidget(pTable);
+    
+    return pStack;
 }
 
 void BrowseFeature::activate() {
-    emit(switchToView("BROWSEHOME"));
-    emit(restoreSearch(QString()));
+    auto it = m_panes.find(m_featureFocus);
+    auto itId = m_idBrowse.find(m_featureFocus);
+    if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
+        return;
+    }
+    
+    (*it)->setCurrentIndex(*itId);
+    switchToFeature();
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->restoreSearch(QString());
+    
     emit(enableCoverArtDisplay(false));
 }
 
@@ -246,8 +268,20 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         }
         m_browseModel.setPath(dir);
     }
-    emit(showTrackModel(&m_proxyModel));
-    emit(enableCoverArtDisplay(false));
+    
+    auto itId = m_idTable.find(m_featureFocus);
+    auto it = m_panes.find(m_featureFocus);
+    
+    if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
+        qDebug() << "BrowseFeature::activateChild item not found";
+        return;
+    }
+    
+    (*it)->setCurrentIndex(*itId);
+    showTrackModel(&m_proxyModel);
+    m_pLibrary->showBreadCrumb(item);
+    
+    emit(enableCoverArtDisplay(true));
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {

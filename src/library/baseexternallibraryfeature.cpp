@@ -4,10 +4,11 @@
 
 #include "library/basesqltablemodel.h"
 
-BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
+BaseExternalLibraryFeature::BaseExternalLibraryFeature(UserSettingsPointer pConfig,
+                                                       Library* pLibrary,
+                                                       QObject* pParent,
                                                        TrackCollection* pCollection)
-        : LibraryFeature(pParent),
-          m_pTrackCollection(pCollection) {
+        : LibraryFeature(pConfig, pLibrary, pCollection, pParent) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));

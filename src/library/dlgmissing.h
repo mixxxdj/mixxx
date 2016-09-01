@@ -11,30 +11,27 @@
 class WTrackTableView;
 class MissingTableModel;
 
-class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
+class DlgMissing : public QFrame, public Ui::DlgMissing {
     Q_OBJECT
   public:
-    DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
-               Library* pLibrary, TrackCollection* pTrackCollection,
-               KeyboardEventFilter* pKeyboard);
+    DlgMissing(QWidget* parent);
     virtual ~DlgMissing();
 
-    void onShow();
-    void onSearch(const QString& text);
+    // The indexes are always from the Focused pane
+    void setSelectedIndexes(const QModelIndexList& selectedIndexes);
+    void setTableModel(MissingTableModel* pTableModel);
 
   public slots:
-    void clicked();
-    void selectAll();
-    void selectionChanged(const QItemSelection&, const QItemSelection&);
-    void setTrackTableFont(const QFont& font);
-    void setTrackTableRowHeight(int rowHeight);
+    void onShow();
 
   signals:
+    void purge();
+    void selectAll();
     void trackSelected(TrackPointer pTrack);
 
   private:
     void activateButtons(bool enable);
-    WTrackTableView* m_pTrackTableView;
+    
     MissingTableModel* m_pMissingTableModel;
 };
 

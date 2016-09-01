@@ -13,21 +13,20 @@
 class TrackCollection;
 class TreeItem;
 
-class SetlogFeature : public BasePlaylistFeature {
+class HistoryFeature : public BasePlaylistFeature {
     Q_OBJECT
 public:
-    SetlogFeature(QObject* parent, UserSettingsPointer pConfig,
+    HistoryFeature(UserSettingsPointer pConfig,
+                  Library* pLibrary,
+                  QObject* parent, 
                   TrackCollection* pTrackCollection);
-    virtual ~SetlogFeature();
+    virtual ~HistoryFeature();
 
     QVariant title();
     QIcon getIcon();
 
-    virtual void bindWidget(WLibrary* libraryWidget,
-                            KeyboardEventFilter* keyboard);
-
   public slots:
-    void onRightClick(const QPoint& globalPos);
+    void onRightClick(const QPoint&);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void slotJoinWithPrevious();
     void slotGetNewPlaylist();
@@ -35,6 +34,7 @@ public:
   protected:
     void buildPlaylistList();
     void decorateChild(TreeItem *pChild, int playlist_id);
+    PlaylistTableModel* constructTableModel();
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);

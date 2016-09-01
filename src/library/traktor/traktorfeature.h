@@ -38,7 +38,10 @@ class TraktorPlaylistModel : public BaseExternalPlaylistModel {
 class TraktorFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    TraktorFeature(QObject* parent, TrackCollection*);
+    TraktorFeature(UserSettingsPointer pConfig,
+                   Library* pLibrary,
+                   QObject* parent, 
+                   TrackCollection* pTrackCollection);
     virtual ~TraktorFeature();
 
     QVariant title();

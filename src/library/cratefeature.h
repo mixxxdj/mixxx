@@ -24,21 +24,24 @@ class TrackCollection;
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(Library* pLibrary,
-                 TrackCollection* pTrackCollection,
-                 UserSettingsPointer pConfig);
+    CrateFeature(UserSettingsPointer pConfig,
+                 Library* pLibrary,
+                 QObject* parent,
+                 TrackCollection* pTrackCollection);
     virtual ~CrateFeature();
 
     QVariant title();
     QIcon getIcon();
+    
+    void onSearch(QString&) {}
 
+    bool dragMoveAccept(QUrl url);
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                          QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
-
+    QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) override;
+    
     TreeItemModel* getChildModel();
 
   signals:
@@ -83,6 +86,8 @@ class CrateFeature : public LibraryFeature {
     // Get the QModelIndex of a crate based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromCrateId(int crateId);
+    
+    QPointer<CrateTableModel> getTableModel(int paneId);
 
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
@@ -98,11 +103,15 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pExportTrackFilesAction;
     QAction *m_pAnalyzeCrateAction;
     QList<QPair<int, QString> > m_crateList;
-    CrateTableModel m_crateTableModel;
+    QHash<int, QPointer<CrateTableModel> > m_crateTableModel;
+    CrateTableModel* m_pCrateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;
     QSet<int> m_cratesSelectedTrackIsIn;
+    QHash<int, QPointer<QStackedWidget> > m_panes;
+    QHash<int,int> m_idBrowse;
+    QHash<int,int> m_idTable;
 };
 
 #endif /* CRATEFEATURE_H */

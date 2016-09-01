@@ -11,6 +11,7 @@ class KeyboardEventFilter;
 class PlayerManager;
 class ControllerManager;
 class Library;
+class LibraryPaneManager;
 class VinylControlManager;
 class EffectsManager;
 class LaunchImage;

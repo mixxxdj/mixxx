@@ -21,7 +21,10 @@ class BaseExternalPlaylistModel;
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
-    RhythmboxFeature(QObject* parent, TrackCollection*);
+    RhythmboxFeature(UserSettingsPointer pConfig,
+                     Library* pLibrary,
+                     QObject* parent, 
+                     TrackCollection* pTrackCollection);
     virtual ~RhythmboxFeature();
     static bool isSupported();
 

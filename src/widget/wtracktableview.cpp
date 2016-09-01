@@ -211,8 +211,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
      * this will cause a small GUI freeze
      */
     if (getTrackModel() == trackModel) {
-        // Re-sort the table even if the track model is the same. This triggers
-        // a select() if the table is dirty.
+        // Re-sort the table even if the track model is the same. 
+        trackModel->select();
         doSortByColumn(horizontalHeader()->sortIndicatorSection());
         return;
     }
@@ -355,6 +355,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
+    trackModel->select();
 }
 
 void WTrackTableView::createActions() {
@@ -1029,7 +1030,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
                 return;
             }
         } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
-                                                      "library", true, true)) {
+                                                      "", true, true)) {
             event->acceptProposedAction();
             return;
         }

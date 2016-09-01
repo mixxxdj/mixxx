@@ -37,6 +37,7 @@ class EngineMaster;
 class GuiTick;
 class LaunchImage;
 class Library;
+class LibraryPaneManager;
 class KeyboardEventFilter;
 class PlayerManager;
 class RecordingManager;

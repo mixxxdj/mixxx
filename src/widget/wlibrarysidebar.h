@@ -13,6 +13,7 @@
 #include <QEvent>
 
 #include "widget/wbasewidget.h"
+#include "library/libraryview.h"
 
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT

@@ -5,12 +5,15 @@
 #include <QMessageBox>
 #include <QTranslator>
 #include <QDir>
+#include <QDebug>
 
 #include "mixer/playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
+#include "library/librarypanemanager.h"
+#include "library/librarysidebarexpandedmanager.h"
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
@@ -25,19 +28,14 @@
 #include "library/playlistfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
-#include "library/setlogfeature.h"
+#include "library/historyfeature.h"
 #include "util/sandbox.h"
 #include "util/assert.h"
 
-#include "widget/wtracktableview.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wbuttonbar.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-
-// This is is the name which we use to register the WTrackTableView with the
-// WLibrary
-const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
@@ -50,7 +48,8 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
-        m_scanner(m_pTrackCollection, pConfig) {
+        m_scanner(m_pTrackCollection, pConfig),
+        m_pSidebarExpanded(nullptr) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     connect(&m_scanner, SIGNAL(scanStarted()),
@@ -60,56 +59,8 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     // Refresh the library models when the library (re)scan is finished.
     connect(&m_scanner, SIGNAL(scanFinished()),
             this, SLOT(slotRefreshLibraryModels()));
-
-    // TODO(rryan) -- turn this construction / adding of features into a static
-    // method or something -- CreateDefaultLibrary
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
-    addFeature(m_pMixxxLibraryFeature);
-
-    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));
-    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
-    addFeature(m_pPlaylistFeature);
-    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
-    addFeature(m_pCrateFeature);
-    BrowseFeature* browseFeature = new BrowseFeature(
-        this, pConfig, m_pTrackCollection, m_pRecordingManager);
-    connect(browseFeature, SIGNAL(scanLibrary()),
-            &m_scanner, SLOT(scan()));
-    connect(&m_scanner, SIGNAL(scanStarted()),
-            browseFeature, SLOT(slotLibraryScanStarted()));
-    connect(&m_scanner, SIGNAL(scanFinished()),
-            browseFeature, SLOT(slotLibraryScanFinished()));
-
-    addFeature(browseFeature);
-    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
-    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
-    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
-    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
-    addFeature(m_pAnalysisFeature);
-    //iTunes and Rhythmbox should be last until we no longer have an obnoxious
-    //messagebox popup when you select them. (This forces you to reach for your
-    //mouse or keyboard if you're using MIDI control and you scroll through them...)
-    if (RhythmboxFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
-        addFeature(new RhythmboxFeature(this, m_pTrackCollection));
-    }
-    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
-        BansheeFeature::prepareDbPath(pConfig);
-        if (BansheeFeature::isSupported()) {
-            addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
-        }
-    }
-    if (ITunesFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
-        addFeature(new ITunesFeature(this, m_pTrackCollection));
-    }
-    if (TraktorFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
-        addFeature(new TraktorFeature(this, m_pTrackCollection));
-    }
+    
+    createFeatures(pConfig, pPlayerManager);
 
     // On startup we need to check if all of the user's library folders are
     // accessible to us. If the user is using a database from <1.12.0 with
@@ -137,13 +88,9 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 Library::~Library() {
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
-
-    QMutableListIterator<LibraryFeature*> features_it(m_features);
-    while(features_it.hasNext()) {
-        LibraryFeature* feature = features_it.next();
-        features_it.remove();
-        delete feature;
-    }
+        
+    qDeleteAll(m_features);
+    m_features.clear();
 
     delete m_pLibraryControl;
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
@@ -154,106 +101,113 @@ Library::~Library() {
     delete m_pTrackCollection;
 }
 
-void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
-
-    // Setup the sources view
-    pSidebarWidget->setModel(m_pSidebarModel);
-    connect(m_pSidebarModel, SIGNAL(selectIndex(const QModelIndex&)),
-            pSidebarWidget, SLOT(selectIndex(const QModelIndex&)));
-    connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
-            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
-    // Lazy model: Let triangle symbol increment the model
-    connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
-            m_pSidebarModel, SLOT(doubleClicked(const QModelIndex&)));
-
-    connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
-            m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
-
-    pSidebarWidget->slotSetFont(m_trackTableFont);
-    connect(this, SIGNAL(setTrackTableFont(QFont)),
-            pSidebarWidget, SLOT(slotSetFont(QFont)));
+void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
+    // Get the value once to avoid searching again in the hash
+    LibraryPaneManager* pPane = getPane(id);
+    pPane->bindSearchBar(searchLine);
 }
 
-void Library::bindWidget(WLibrary* pLibraryWidget,
-                         KeyboardEventFilter* pKeyboard) {
-    WTrackTableView* pTrackTableView =
-            new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
-    pTrackTableView->installEventFilter(pKeyboard);
-    connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
-    pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
-
-    connect(this, SIGNAL(switchToView(const QString&)),
-            pLibraryWidget, SLOT(switchToView(const QString&)));
-
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-
-    connect(this, SIGNAL(setTrackTableFont(QFont)),
-            pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(this, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-
-    connect(this, SIGNAL(searchStarting()),
-            pTrackTableView, SLOT(onSearchStarting()));
-    connect(this, SIGNAL(searchCleared()),
-            pTrackTableView, SLOT(onSearchCleared()));
-
-    m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
-
-    QListIterator<LibraryFeature*> feature_it(m_features);
-    while(feature_it.hasNext()) {
-        LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pLibraryWidget, pKeyboard);
+void Library::bindSidebarWidget(WButtonBar* sidebar) {    
+    for (LibraryFeature* f : m_features) {
+        WFeatureClickButton* button = sidebar->addButton(f);
+        
+        connect(button, SIGNAL(clicked(LibraryFeature*)),
+                this, SLOT(slotActivateFeature(LibraryFeature*)));
+        connect(button, SIGNAL(hoverShow(LibraryFeature*)),
+                this, SLOT(slotHoverFeature(LibraryFeature*)));
+        connect(button, SIGNAL(rightClicked(const QPoint&)),
+                f, SLOT(onRightClick(const QPoint&)));
     }
+}
 
+void Library::bindPaneWidget(WLibrary* pLibraryWidget,
+                             KeyboardEventFilter* pKeyboard, int paneId) {
+    
+    // Get the value once to avoid searching again in the hash
+    LibraryPaneManager* pPane = getPane(paneId);
+    pPane->bindPaneWidget(pLibraryWidget, pKeyboard);
+    
+    connect(pPane, SIGNAL(search(const QString&)),
+            pLibraryWidget, SLOT(search(const QString&)));    
+    
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
     emit(setTrackTableFont(m_trackTableFont));
     emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
 }
 
+void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
+                                  KeyboardEventFilter* pKeyboard) {
+    //qDebug() << "Library::bindSidebarExpanded";
+    m_pSidebarExpanded = new LibrarySidebarExpandedManager(this);
+    m_pSidebarExpanded->addFeatures(m_features);    
+    m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard);
+}
+
+void Library::bindBreadCrumb(WLibraryBreadCrumb* pBreadCrumb, int paneId) {
+    // Get the value once to avoid searching again in the hash
+    LibraryPaneManager* pPane = getPane(paneId);
+    pPane->setBreadCrumb(pBreadCrumb);
+}
+
+void Library::destroyInterface() {
+    m_pSidebarExpanded->deleteLater();
+    
+    for (LibraryPaneManager* p : m_panes) {
+        p->deleteLater();
+    }
+    
+    for (LibraryFeature* f : m_features) {
+        f->setFeatureFocus(-1);
+    }
+    m_panes.clear();
+}
+
+LibraryView *Library::getActiveView() {
+    WBaseLibrary* pPane = m_panes[m_focusedPane]->getPaneWidget();
+    WLibrary* pLibrary = qobject_cast<WLibrary*>(pPane);
+    DEBUG_ASSERT_AND_HANDLE(pLibrary) {
+        return nullptr;
+    }
+    return pLibrary->getActiveView();
+}
+
+
 void Library::addFeature(LibraryFeature* feature) {
     DEBUG_ASSERT_AND_HANDLE(feature) {
         return;
     }
-    m_features.push_back(feature);
+    m_features.append(feature);
+    
     m_pSidebarModel->addLibraryFeature(feature);
-    connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
-    connect(feature, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotSwitchToView(const QString&)));
+    
+    // TODO(jmigual): this should be removed and add a direct interaction
+    // between the LibraryFeature and the Library
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(feature, SIGNAL(restoreSearch(const QString&)),
-            this, SLOT(slotRestoreSearch(const QString&)));
     connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
             this, SIGNAL(enableCoverArtDisplay(bool)));
     connect(feature, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
 }
 
-void Library::slotShowTrackModel(QAbstractItemModel* model) {
-    //qDebug() << "Library::slotShowTrackModel" << model;
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
-        return;
+void Library::switchToFeature(LibraryFeature* pFeature) {
+    m_pSidebarExpanded->switchToFeature(pFeature);
+    slotUpdateFocus(pFeature);
+    
+    WBaseLibrary* pWLibrary = m_panes[m_focusedPane]->getPaneWidget();
+    // Only change the current pane if it's not shown already
+    if (pWLibrary->getCurrentFeature() != pFeature) {
+        m_panes[m_focusedPane]->switchToFeature(pFeature);
     }
-    emit(showTrackModel(model));
-    emit(switchToView(m_sTrackViewName));
-    emit(restoreSearch(trackModel->currentSearch()));
+    
+    handleFocus();
 }
 
-void Library::slotSwitchToView(const QString& view) {
-    //qDebug() << "Library::slotSwitchToView" << view;
-    emit(switchToView(view));
+void Library::showBreadCrumb(TreeItem *pTree) {
+    m_panes[m_focusedPane]->showBreadCrumb(pTree);
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
@@ -272,8 +226,12 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
     emit(loadTrackToPlayer(pTrack, group, play));
 }
 
-void Library::slotRestoreSearch(const QString& text) {
-    emit(restoreSearch(text));
+void Library::restoreSearch(const QString& text) {
+    LibraryPaneManager* pane = getFocusedPane();
+    DEBUG_ASSERT_AND_HANDLE(pane) {
+        return;
+    }
+    pane->restoreSearch(text);
 }
 
 void Library::slotRefreshLibraryModels() {
@@ -291,7 +249,32 @@ void Library::slotCreateCrate() {
 
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.
-    m_pSidebarModel->activateDefaultSelection();
+    //m_pSidebarModel->activateDefaultSelection();
+    if (m_panes.size() > 0) {
+        
+        auto itF = m_features.begin();
+        auto itP = m_panes.begin();
+        
+        // Assign a feature to show on each pane unless there are more panes
+        // than features
+        while (itP != m_panes.end() && itF != m_features.end()) {
+            m_focusedPane = itP.key();
+            
+            (*itF)->setFeatureFocus(itP.key());
+            (*itF)->activate();
+            
+            ++itP;
+            ++itF;
+        }
+        
+        // The first pane always shows the Mixxx Library feature on start
+        m_focusedPane = m_panes.begin().key();
+        (*m_features.begin())->setFeatureFocus(m_focusedPane);
+        slotActivateFeature(*m_features.begin());
+    }
+    else {
+        qDebug() << "Library::onSkinLoadFinished No Panes loaded!";
+    }
 }
 
 void Library::slotRequestAddDir(QString dir) {
@@ -368,6 +351,64 @@ QStringList Library::getDirs() {
     return m_pTrackCollection->getDirectoryDAO().getDirs();
 }
 
+void Library::paneCollapsed(int paneId) {
+    m_collapsedPanes.insert(paneId);
+    
+    // Automatically switch the focus to a non collapsed pane
+    m_panes[paneId]->clearFocus();
+    
+    for (LibraryPaneManager* pPane : m_panes) {
+        if (!m_collapsedPanes.contains(pPane->getPaneId())) {
+            m_focusedPane = pPane->getPaneId();
+            setFocusedPane();
+            pPane->setFocus();
+            break;
+        }
+    }
+}
+
+void Library::paneUncollapsed(int paneId) {
+    m_collapsedPanes.remove(paneId);
+}
+
+void Library::slotActivateFeature(LibraryFeature *pFeature) {
+    // The feature is being shown currently in the focused pane
+    if (m_panes[m_focusedPane]->getCurrentFeature() == pFeature) {
+        m_pSidebarExpanded->switchToFeature(pFeature);
+        handleFocus();
+        return;
+    }
+    int featureFocus = pFeature->getFeatureFocus();
+
+    // The feature is not focused anywhere
+    if (featureFocus < 0 || m_collapsedPanes.contains(featureFocus)) {
+        // Remove the previous focused feature in this pane
+        for (LibraryFeature* f : m_features) {
+            if (f->getFeatureFocus() == m_focusedPane) {
+                f->setFeatureFocus(-1);
+            }
+        }
+    } else {
+    	// The feature is shown in some not collapsed pane
+        m_focusedPane = featureFocus;
+        setFocusedPane();
+        m_pSidebarExpanded->switchToFeature(pFeature);
+		handleFocus();
+		return;
+    }
+    
+    m_panes[m_focusedPane]->setCurrentFeature(pFeature);
+    pFeature->setFeatureFocus(m_focusedPane);    
+    pFeature->activate();
+    handleFocus();
+}
+
+void Library::slotHoverFeature(LibraryFeature *pFeature) {
+    // This function only changes the sidebar expanded to allow dropping items
+    // directly in some features sidebar panes
+    m_pSidebarExpanded->switchToFeature(pFeature);
+}
+
 void Library::slotSetTrackTableFont(const QFont& font) {
     m_trackTableFont = font;
     emit(setTrackTableFont(font));
@@ -376,4 +417,127 @@ void Library::slotSetTrackTableFont(const QFont& font) {
 void Library::slotSetTrackTableRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
     emit(setTrackTableRowHeight(rowHeight));
+}
+
+void Library::slotPaneFocused(LibraryPaneManager* pPane) {
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
+        return;
+    }
+    
+    if (pPane != m_pSidebarExpanded) {
+        m_focusedPane = pPane->getPaneId();
+        pPane->getCurrentFeature()->setFeatureFocus(m_focusedPane);
+        DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
+            return;
+        }
+        setFocusedPane();
+        handleFocus();
+    }
+    
+    //qDebug() << "Library::slotPaneFocused" << m_focusedPane;
+}
+
+void Library::slotUpdateFocus(LibraryFeature *pFeature) {
+    if (pFeature->getFeatureFocus() >= 0) {
+        m_focusedPane = pFeature->getFeatureFocus();
+        setFocusedPane();
+    }
+}
+
+
+LibraryPaneManager* Library::getPane(int paneId) {
+    //qDebug() << "Library::createPane" << id;
+    // Get the value once to avoid searching again in the hash
+    auto it = m_panes.find(paneId);
+    if (it != m_panes.end()) {
+        return *it;
+    }
+    
+    LibraryPaneManager* pPane = new LibraryPaneManager(paneId, this);
+    pPane->addFeatures(m_features);
+    m_panes.insert(paneId, pPane);
+    
+    m_focusedPane = paneId;
+    setFocusedPane();
+    return pPane;
+}
+
+LibraryPaneManager *Library::getFocusedPane() {
+    //qDebug() << "Focused" << m_focusedPane;
+    if (m_focusedPane == -1) {
+        return m_pSidebarExpanded;
+    }
+    else if (m_panes.contains(m_focusedPane)) {
+        return m_panes[m_focusedPane];
+    }
+    return nullptr;
+}
+
+void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface* pPlayerManager) {
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(pConfig, this, this, m_pTrackCollection);
+    addFeature(m_pMixxxLibraryFeature);
+
+    addFeature(new AutoDJFeature(pConfig, this, this, pPlayerManager, m_pTrackCollection));
+    m_pPlaylistFeature = new PlaylistFeature(pConfig, this, this, m_pTrackCollection);
+    addFeature(m_pPlaylistFeature);
+    m_pCrateFeature = new CrateFeature(pConfig, this, this, m_pTrackCollection);
+    addFeature(m_pCrateFeature);
+    BrowseFeature* browseFeature = new BrowseFeature(
+        pConfig, this, this, m_pTrackCollection, m_pRecordingManager);
+    connect(browseFeature, SIGNAL(scanLibrary()),
+            &m_scanner, SLOT(scan()));
+    connect(&m_scanner, SIGNAL(scanStarted()),
+            browseFeature, SLOT(slotLibraryScanStarted()));
+    connect(&m_scanner, SIGNAL(scanFinished()),
+            browseFeature, SLOT(slotLibraryScanFinished()));
+
+    addFeature(browseFeature);
+    addFeature(new RecordingFeature(pConfig, this, this, m_pTrackCollection, m_pRecordingManager));
+    addFeature(new HistoryFeature(pConfig, this, this, m_pTrackCollection));
+    m_pAnalysisFeature = new AnalysisFeature(pConfig, this, m_pTrackCollection, this);
+    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
+    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
+    addFeature(m_pAnalysisFeature);
+    //iTunes and Rhythmbox should be last until we no longer have an obnoxious
+    //messagebox popup when you select them. (This forces you to reach for your
+    //mouse or keyboard if you're using MIDI control and you scroll through them...)
+    if (RhythmboxFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
+        addFeature(new RhythmboxFeature(pConfig, this, this, m_pTrackCollection));
+    }
+
+    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
+        BansheeFeature::prepareDbPath(pConfig);
+        if (BansheeFeature::isSupported()) {
+            addFeature(new BansheeFeature(pConfig, this, this, m_pTrackCollection));
+        }
+    }
+    if (ITunesFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
+        addFeature(new ITunesFeature(pConfig, this, this, m_pTrackCollection));
+    }
+    if (TraktorFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
+        addFeature(new TraktorFeature(pConfig, this, this, m_pTrackCollection));
+    }
+}
+
+void Library::setFocusedPane() {
+    for (LibraryFeature* pFeature : m_features) {
+        pFeature->setFocusedPane(m_focusedPane);
+    }
+}
+
+void Library::handleFocus() {
+    // Changes the visual focus effect, removes the existing one and adds the
+    // new focus
+    m_panes[m_focusedPane]->setFocus();
+    for (auto it = m_panes.begin(); it != m_panes.end(); ++it) {
+        // Remove the focus from not focused panes
+        if (it.key() != m_focusedPane) {
+            it.value()->clearFocus();
+        }
+    }
 }

@@ -8,6 +8,7 @@
 #include <QSortFilterProxyModel>
 #include <QObject>
 #include <QVariant>
+#include <QHash>
 #include <QIcon>
 #include <QModelIndex>
 #include <QPoint>
@@ -23,12 +24,14 @@
 #define DEVICE_NODE "::mixxx_device_node::"
 
 class TrackCollection;
+class WLibraryStack;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BrowseFeature(QObject* parent,
-                  UserSettingsPointer pConfig,
+    BrowseFeature(UserSettingsPointer pConfig,
+                  Library* pLibrary,
+                  QObject* parent,
                   TrackCollection* pTrackCollection,
                   RecordingManager* pRec);
     virtual ~BrowseFeature();
@@ -36,8 +39,7 @@ class BrowseFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
 
     TreeItemModel* getChildModel();
 
@@ -64,7 +66,6 @@ class BrowseFeature : public LibraryFeature {
     void saveQuickLinks();
     void loadQuickLinks();
 
-    UserSettingsPointer m_pConfig;
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
     TrackCollection* m_pTrackCollection;
@@ -75,6 +76,10 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
+    
+    QHash<int, QPointer<WLibraryStack> > m_panes;
+    QHash<int, int> m_idBrowse;
+    QHash<int, int> m_idTable;
 };
 
 #endif // BROWSEFEATURE_H

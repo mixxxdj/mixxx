@@ -5,37 +5,38 @@
 #include <QtDebug>
 #include <QMetaObject>
 #include <QMenu>
+#include <QScrollArea>
+#include <QSplitter>
 
 #include "library/autodj/autodjfeature.h"
 
 #include "library/library.h"
 #include "library/parser.h"
-#include "mixer/playermanager.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"
 #include "library/autodj/dlgautodj.h"
 #include "library/treeitem.h"
+#include "mixer/playermanager.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 
-const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 static const int kMaxRetrieveAttempts = 3;
 
-AutoDJFeature::AutoDJFeature(Library* pLibrary,
-                             UserSettingsPointer pConfig,
+AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
+                             Library* pLibrary,
+                             QObject* parent,
                              PlayerManagerInterface* pPlayerManager,
                              TrackCollection* pTrackCollection)
-        : LibraryFeature(pLibrary),
-          m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
+        : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(-1),
-          m_pAutoDJProcessor(NULL),
-          m_pAutoDJView(NULL),
+          m_pAutoDJProcessor(nullptr),
+          m_pAutoDJView(nullptr),
           m_autoDjCratesDao(pTrackCollection->getDatabase(),
                             pTrackCollection->getTrackDAO(),
                             pTrackCollection->getCrateDAO(),
@@ -57,6 +58,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
 
     // Create the "Crates" tree-item under the root item.
     TreeItem* root = m_childModel.getItem(QModelIndex());
+    root->setLibraryFeature(this);
+    
     m_pCratesTreeItem = new TreeItem(tr("Crates"), "", this, root);
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
     root->appendChild(m_pCratesTreeItem);
@@ -96,28 +99,60 @@ QIcon AutoDJFeature::getIcon() {
     return QIcon(":/images/library/ic_library_autodj.png");
 }
 
-void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
-                               KeyboardEventFilter* keyboard) {
-    m_pAutoDJView = new DlgAutoDJ(libraryWidget,
-                                  m_pConfig,
-                                  m_pLibrary,
-                                  m_pAutoDJProcessor,
-                                  m_pTrackCollection,
-                                  keyboard);
-    libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
-    connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
+    WTrackTableView* pTrackTableView = 
+            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, false);
+        
+    pTrackTableView->installEventFilter(pKeyboard);
 
-    connect(m_pAutoDJView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pLibrary, SIGNAL(setTrackTableFont(const QFont&)),
+            pTrackTableView, SLOT(setTrackTableFont(const QFont&)));
+    connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    
+    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            m_pLibrary, SIGNAL(trackSelected(TrackPointer)));
+    
+    m_trackTables[paneId] = pTrackTableView;
+
+    pTrackTableView->loadTrackModel(m_pAutoDJProcessor->getTableModel());
+    
+    connect(pTrackTableView->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+            this, 
+            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+    
+    return pTrackTableView;
+}
+
+QWidget* AutoDJFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
+    QTabWidget* pContainer = new QTabWidget(nullptr);
+    
+    // Add controls
+    m_pAutoDJView = new DlgAutoDJ(pContainer, m_pLibrary, m_pAutoDJProcessor);
+    m_pAutoDJView->installEventFilter(pKeyboard);
+    QScrollArea* pScroll = new QScrollArea(pContainer);
+    pScroll->setWidget(m_pAutoDJView);
+    pScroll->setWidgetResizable(true);
+    pContainer->addTab(pScroll, tr("Controls"));
+    
+    // Add drop target
+    WLibrarySidebar* pSidebar = new WLibrarySidebar(pContainer);
+    pSidebar->setModel(&m_childModel);
+    pSidebar->installEventFilter(pKeyboard);
+    
+    connect(pSidebar, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
+            this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
+    
+    pContainer->addTab(pSidebar, tr("Track source"));
 
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested(int)),
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
+    
+    return pContainer;
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
@@ -126,8 +161,16 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    emit(switchToView(m_sAutoDJViewName));
-    emit(restoreSearch(QString())); //Null String disables search box
+    DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+        return;
+    }
+    
+    m_pAutoDJView->onShow();
+    
+    m_pLibrary->switchToFeature(this);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->restoreSearch(QString()); //Null String disables search box
+    
     emit(enableCoverArtDisplay(true));
 }
 
@@ -264,6 +307,10 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                 TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(trackId);
                 if(addedTrack->exists()) {
                     playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
+                    DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+                        return;
+                    }
+                    
                     m_pAutoDJView->onShow();
                     return;
                 } else {
@@ -284,6 +331,10 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                 if(addedTrack->exists()) {
                     if(!addedTrack->getPlayCounter().isPlayed()) {
                         playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
+                        DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+                            return;
+                        }
+                        
                         m_pAutoDJView->onShow();
                         return;
                     }
@@ -334,21 +385,31 @@ void AutoDJFeature::constructCrateChildModel() {
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     //Save the model index so we can get it in the action slots...
-    m_lastRightClickedIndex = index;
-
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    QString crateName = item->dataPath().toString();
-    if (crateName.length() > 0) {
+    QString crateName;
+    if (index.isValid()) {
+        m_lastRightClickedIndex = index;
+    
+        TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+        DEBUG_ASSERT_AND_HANDLE(item) {
+            return;
+        }
+    
+        crateName = item->dataPath().toString();
+    }
+    
+    if (!crateName.isEmpty()) {
         // A crate was right-clicked.
         // Bring up the context menu.
-        QMenu menu(NULL);
+        QMenu menu(nullptr);
         menu.addAction(m_pRemoveCrateFromAutoDj);
         menu.exec(globalPos);
-    } else {
+        return;
+    } 
+    else {
         // The "Crates" tree-item was right-clicked.
         // Bring up the context menu.
-        QMenu menu(NULL);
-        QMenu crateMenu(NULL);
+        QMenu menu(nullptr);
+        QMenu crateMenu(nullptr);
         crateMenu.setTitle(tr("Add Crate as Track Source"));
         QMap<QString,int> crateMap;
         m_crateDao.getAutoDjCrates(false, &crateMap);
@@ -374,4 +435,18 @@ void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
         slotAddRandomTrack(true);
         tracksToAdd -= 1;
     }
+}
+
+void AutoDJFeature::selectionChanged(const QItemSelection&, const QItemSelection&) {
+    DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+        return;
+    }
+    
+    auto it = m_trackTables.find(m_featureFocus);
+    if (it == m_trackTables.end() || it->isNull()) {
+        return;
+    }
+    
+    const QModelIndexList& selectedRows = (*it)->selectionModel()->selectedRows();
+    m_pAutoDJView->setSelectedRows(selectedRows);
 }

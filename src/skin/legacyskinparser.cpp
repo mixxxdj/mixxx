@@ -9,6 +9,7 @@
 #include <QMutexLocker>
 #include <QSplitter>
 #include <QStackedWidget>
+#include <QScrollArea>
 #include <QVBoxLayout>
 #include <QtDebug>
 #include <QtGlobal>
@@ -65,6 +66,8 @@
 #include "widget/wsearchlineedit.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarybreadcrumb.h"
+#include "widget/wbuttonbar.h"
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidgetstack.h"
@@ -143,7 +146,8 @@ LegacySkinParser::LegacySkinParser()
           m_pVCManager(NULL),
           m_pEffectsManager(NULL),
           m_pParent(NULL),
-          m_pContext(NULL) {
+          m_pContext(NULL),
+		  m_paneId(0) {
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
@@ -161,7 +165,8 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
           m_pParent(NULL),
-          m_pContext(NULL) {
+          m_pContext(NULL),
+		  m_paneId(0) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -551,10 +556,18 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseLabelWidget<WTime>(node));
     } else if (nodeName == "Splitter") {
         result = wrapWidget(parseSplitter(node));
+    } else if (nodeName == "LibrarySidebarButtons") {
+        result = wrapWidget(parseLibrarySidebarButtons(node));
     } else if (nodeName == "LibrarySidebar") {
         result = wrapWidget(parseLibrarySidebar(node));
+    } else if (nodeName == "LibrarySidebarExpanded") {
+        result = wrapWidget(parseLibrarySidebarExpanded(node));
+    } else if (nodeName == "LibraryPane") {
+        result = wrapWidget(parseLibraryPane(node));
+    } else if (nodeName == "LibraryBreadCrumb") {
+        result = wrapWidget(parseLibraryBreadCrumb(node));
     } else if (nodeName == "Library") {
-        result = wrapWidget(parseLibrary(node));
+    	result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
         result = wrapWidget(parseEngineKey(node));
     } else if (nodeName == "Battery") {
@@ -1135,21 +1148,20 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
-    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
-    commonWidgetSetup(node, pLineEditSearch, false);
-    pLineEditSearch->setup(node, *m_pContext);
+    WSearchLineEdit* pSearchLineEdit = new WSearchLineEdit(m_pParent);
+    
+    int id = -1;
+    if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
+        //qDebug() << "SearchBox ID:" << id;
+        m_pLibrary->bindSearchBar(pSearchLineEdit, id);
+    }
+    else {
+        SKIN_WARNING(node, *m_pContext) << "SearchBox Id not found";
+    }
+    pSearchLineEdit->setup(node, *m_pContext);
+    commonWidgetSetup(node, pSearchLineEdit, false);
 
-    // Connect search box signals to the library
-    connect(pLineEditSearch, SIGNAL(search(const QString&)),
-            m_pLibrary, SIGNAL(search(const QString&)));
-    connect(pLineEditSearch, SIGNAL(searchCleared()),
-            m_pLibrary, SIGNAL(searchCleared()));
-    connect(pLineEditSearch, SIGNAL(searchStarting()),
-            m_pLibrary, SIGNAL(searchStarting()));
-    connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
-            pLineEditSearch, SLOT(restoreSearch(const QString&)));
-
-    return pLineEditSearch;
+    return pSearchLineEdit;
 }
 
 QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
@@ -1163,8 +1175,6 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     // If no group was provided, hook the widget up to the Library.
     if (channel.isEmpty()) {
         // Connect cover art signals to the library
-        connect(m_pLibrary, SIGNAL(switchToView(const QString&)),
-                pCoverArt, SLOT(slotReset()));
         connect(m_pLibrary, SIGNAL(enableCoverArtDisplay(bool)),
                 pCoverArt, SLOT(slotEnable(bool)));
         connect(m_pLibrary, SIGNAL(trackSelected(TrackPointer)),
@@ -1237,31 +1247,122 @@ void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
     pChild->hide();
 }
 
-QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
+QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
     WLibrary* pLibraryWidget = new WLibrary(m_pParent);
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
-    // Connect Library search signals to the WLibrary
-    connect(m_pLibrary, SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&)));
-
-    m_pLibrary->bindWidget(pLibraryWidget, m_pKeyboard);
-
+    int id = -1;
+    if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
+        //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
+        m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, id);
+    }
+    else {
+        SKIN_WARNING(node, *m_pContext) << "No Id found";
+    }
+    
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
     commonWidgetSetup(node, pLibraryWidget, false);
-
     return pLibraryWidget;
 }
 
-QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
-    WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(m_pParent);
+QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
+	// Must add both a SearchBox and a LibraryPane
+	QFrame* pContainer = new QFrame(m_pParent);
+	QVBoxLayout* pLayout = new QVBoxLayout(pContainer);
+	pContainer->setLayout(pLayout);    
+	
+	WSearchLineEdit* pSearchBox = new WSearchLineEdit(pContainer);
+	pSearchBox->setup(node, *m_pContext);
+	m_pLibrary->bindSearchBar(pSearchBox, m_paneId);
+	commonWidgetSetup(node, pSearchBox);
+	pLayout->addWidget(pSearchBox);
+    
+    WLibraryBreadCrumb* pBreadCrumb = new WLibraryBreadCrumb(pContainer);
+    m_pLibrary->bindBreadCrumb(pBreadCrumb, m_paneId);
+    setupWidget(node, pBreadCrumb);
+    pLayout->addWidget(pBreadCrumb);
+	
+	WLibrary* pLibraryWidget = new WLibrary(pContainer);
+	pLibraryWidget->installEventFilter(m_pKeyboard);
+	pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+	pLayout->addWidget(pLibraryWidget);
+	
+	m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, m_paneId);
+	commonWidgetSetup(node, pLibraryWidget, false);
+	qDebug() << "LegacySkinParser::parseLibrary";
+	
+	++m_paneId;
+	return pContainer;
+}
+
+
+QWidget *LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
+    // We must create both LibrarySidebarButtons and LibrarySidebarExpanded
+	// to allow support for old skins
+	QFrame* pContainer = new QFrame(m_pParent);
+	QHBoxLayout* pLayout = new QHBoxLayout(pContainer);
+	pContainer->setLayout(pLayout);
+	
+	QScrollArea* scroll = new QScrollArea(pContainer);
+	scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	scroll->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	
+	WButtonBar* pLibrarySidebar = new WButtonBar(pContainer);
+	pLibrarySidebar->installEventFilter(m_pKeyboard);
+	m_pLibrary->bindSidebarWidget(pLibrarySidebar);
+	scroll->setWidget(pLibrarySidebar);
+	pLayout->addWidget(scroll);
+
+	WBaseLibrary* pLibrarySidebarExpanded = new WBaseLibrary(pContainer);
+	pLibrarySidebarExpanded->installEventFilter(m_pKeyboard);
+	pLibrarySidebarExpanded->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+	m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded, m_pKeyboard);
+	pLayout->addWidget(pLibrarySidebarExpanded);
+	
+    setupWidget(node, pLibrarySidebar);
+	commonWidgetSetup(node, pLibrarySidebarExpanded, false);
+	return pContainer;
+}
+
+QWidget* LegacySkinParser::parseLibrarySidebarButtons(const QDomElement& node) {
+    QScrollArea* scroll = new QScrollArea(m_pParent);
+    scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scroll->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    
+    WButtonBar* pLibrarySidebar = new WButtonBar(scroll);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
-    pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     m_pLibrary->bindSidebarWidget(pLibrarySidebar);
-    commonWidgetSetup(node, pLibrarySidebar, false);
-    return pLibrarySidebar;
+    scroll->setWidget(pLibrarySidebar);
+    
+    setupWidget(node, scroll);
+    return scroll;
+}
+
+QWidget *LegacySkinParser::parseLibrarySidebarExpanded(const QDomElement &node) {
+    WBaseLibrary* pLibrarySidebarExpanded = new WBaseLibrary(m_pParent);
+    pLibrarySidebarExpanded->installEventFilter(m_pKeyboard);
+    pLibrarySidebarExpanded->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded, m_pKeyboard);
+    commonWidgetSetup(node, pLibrarySidebarExpanded, false);    
+    return pLibrarySidebarExpanded;
+}
+
+QWidget* LegacySkinParser::parseLibraryBreadCrumb(const QDomElement& node) {
+    WLibraryBreadCrumb* pLibraryBreacrumb = new WLibraryBreadCrumb(m_pParent);
+    
+    int id = -1;
+    if (m_pContext->hasNodeSelectInt(node, "Id", &id)) {
+        //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
+        m_pLibrary->bindBreadCrumb(pLibraryBreacrumb, id);
+    }
+    else {
+        SKIN_WARNING(node, *m_pContext) << "No Id found";
+    }
+    setupWidget(node, pLibraryBreacrumb);
+    
+    return pLibraryBreacrumb;
 }
 
 QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
@@ -1289,11 +1390,11 @@ QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
     QWidget* oldParent = m_pParent;
 
     m_pParent = pSplitter;
-    QWidget* pLibraryWidget = parseLibrary(node);
+    QWidget* pLibraryWidget = parseLibraryPane(node);
 
     QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
     m_pParent = pLibrarySidebarPage;
-    QWidget* pLibrarySidebar = parseLibrarySidebar(node);
+    QWidget* pLibrarySidebar = parseLibrarySidebarButtons(node);
     QWidget* pLineEditSearch = parseSearchBox(node);
     m_pParent = oldParent;
 

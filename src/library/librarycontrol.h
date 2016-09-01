@@ -36,12 +36,10 @@ class LibraryControl : public QObject {
   public:
     LibraryControl(Library* pLibrary);
     virtual ~LibraryControl();
-
-    void bindWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
+    
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
 
   private slots:
-    void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
     void slotLoadSelectedTrackToGroup(QString group, bool play);
     void slotSelectNextTrack(double v);
@@ -84,7 +82,6 @@ class LibraryControl : public QObject {
     ControlPushButton* m_pFontSizeIncrement;
     ControlPushButton* m_pFontSizeDecrement;
 
-    WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
     ControlProxy m_numDecks;
     ControlProxy m_numSamplers;

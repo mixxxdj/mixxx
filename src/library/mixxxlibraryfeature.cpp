@@ -13,24 +13,34 @@
 #include "library/hiddentablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "library/dlghidden.h"
+#include "library/dlgmissing.h"
 #include "treeitem.h"
 #include "sources/soundsourceproxy.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarystack.h"
+#include "widget/wlibrarysidebar.h"
 #include "util/dnd.h"
-#include "library/dlghidden.h"
-#include "library/dlgmissing.h"
 
-MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-                                         TrackCollection* pTrackCollection,
-                                         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary),
-          kMissingTitle(tr("Missing Tracks")),
+MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
+                                         Library* pLibrary,
+                                         QObject* parent,
+                                         TrackCollection* pTrackCollection)
+        : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
+          kLibraryTitle(tr("Library")),
           kHiddenTitle(tr("Hidden Tracks")),
-          m_pLibrary(pLibrary),
-          m_pMissingView(NULL),
-          m_pHiddenView(NULL),
+          kMissingTitle(tr("Missing Tracks")),
+          m_pHiddenView(nullptr),
+          m_pMissingView(nullptr),
+          m_idExpandedHidden(-1),
+          m_idExpandedMissing(-1),
+          m_idExpandedControls(-1),
+          m_idExpandedTree(-1),
+          m_pHiddenTableModel(nullptr),
+          m_pMissingTableModel(nullptr),
+          m_pExpandedStack(nullptr),
+          m_pSidebarTab(nullptr),
           m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
@@ -109,10 +119,16 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
 
     TreeItem* pRootItem = new TreeItem();
+    pRootItem->setLibraryFeature(this);
+    
+    TreeItem* pLibraryChildItem = new TreeItem(kLibraryTitle, kLibraryTitle,
+                                               this, pRootItem);
+    pLibraryChildItem->setIcon(getIcon());
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
                                                this, pRootItem);
     TreeItem* phiddenChildItem = new TreeItem(kHiddenTitle, kHiddenTitle,
                                               this, pRootItem);
+    pRootItem->appendChild(pLibraryChildItem);
     pRootItem->appendChild(pmissingChildItem);
     pRootItem->appendChild(phiddenChildItem);
 
@@ -123,23 +139,53 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
     delete m_pLibraryTableModel;
 }
 
-void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
-                                     KeyboardEventFilter* pKeyboard) {
-    m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
-                                  m_pTrackCollection, pKeyboard);
-    pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);
-    connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+QWidget *MixxxLibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                               int paneId) {
+    WTrackTableView* pTable = LibraryFeature::createTableWidget(pKeyboard, paneId);
+    
+    connect(this, SIGNAL(unhideHidden()), pTable, SLOT(slotUnhide()));
+    connect(this, SIGNAL(purgeHidden()), pTable, SLOT(slotPurge()));
+    connect(this, SIGNAL(purgeMissing()), pTable, SLOT(slotPurge()));
+    
+    return pTable;
+}
 
-    m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
-                                    m_pTrackCollection, pKeyboard);
-    pLibraryWidget->registerView(kMissingTitle, m_pMissingView);
-    connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {    
+    m_pSidebarTab = new QTabWidget(nullptr);
+    
+    // Create tree
+    WLibrarySidebar* pSidebar = createLibrarySidebarWidget(pKeyboard);
+    m_idExpandedTree = m_pSidebarTab->addTab(pSidebar, tr("Tree"));
+    
+    // Create tabs
+    m_pExpandedStack = new QStackedWidget(m_pSidebarTab);
+     
+    // Create Hidden View controls
+    m_pHiddenView = new DlgHidden(pSidebar);    
+    m_pHiddenView->setTableModel(getHiddenTableModel());
+    m_pHiddenView->installEventFilter(pKeyboard);
+    
+    connect(m_pHiddenView, SIGNAL(unhide()), this, SIGNAL(unhideHidden()));
+    connect(m_pHiddenView, SIGNAL(purge()), this, SIGNAL(purgeHidden()));
+    connect(m_pHiddenView, SIGNAL(selectAll()), this, SLOT(selectAll()));
+    m_idExpandedHidden = m_pExpandedStack->addWidget(m_pHiddenView);
+
+    // Create Missing View controls
+    m_pMissingView = new DlgMissing(pSidebar);
+    m_pMissingView->setTableModel(getMissingTableModel());
+    m_pMissingView->installEventFilter(pKeyboard);
+    
+    connect(m_pMissingView, SIGNAL(purge()), this, SIGNAL(purgeMissing()));
+    connect(m_pMissingView, SIGNAL(selectAll()), this, SLOT(selectAll()));
+    m_idExpandedMissing = m_pExpandedStack->addWidget(m_pMissingView);
+    
+    m_idExpandedControls = m_pSidebarTab->addTab(m_pExpandedStack, tr("Controls"));
+    
+    return m_pSidebarTab;
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Library");
+    return kLibraryTitle;
 }
 
 QIcon MixxxLibraryFeature::getIcon() {
@@ -154,23 +200,117 @@ void MixxxLibraryFeature::refreshLibraryModels() {
     if (m_pLibraryTableModel) {
         m_pLibraryTableModel->select();
     }
-    if (m_pMissingView) {
+    if (!m_pMissingView.isNull()) {
         m_pMissingView->onShow();
     }
-    if (m_pHiddenView) {
+    if (!m_pHiddenView.isNull()) {
         m_pHiddenView->onShow();
     }
 }
 
+void MixxxLibraryFeature::selectionChanged(const QItemSelection&,
+                                           const QItemSelection&) {
+    WTrackTableView* pTable = getFocusedTable();
+    if (pTable == nullptr) {
+        return;
+    }
+    
+    auto it = m_idPaneCurrent.find(m_featureFocus);
+    if (it == m_idPaneCurrent.end()) {
+        return;
+    }
+    
+    const QModelIndexList& selection = pTable->selectionModel()->selectedIndexes();
+    switch (*it) {
+        case Panes::Hidden:
+            m_pHiddenView->setSelectedIndexes(selection);
+            break;
+        case Panes::Missing:
+            m_pMissingView->setSelectedIndexes(selection);
+            break;
+        default:
+            break;
+    }
+}
+
+void MixxxLibraryFeature::selectAll() {
+    QPointer<WTrackTableView> pTable = getFocusedTable();
+    if (!pTable.isNull()) {
+        pTable->selectAll();
+    }
+}
+
+
 void MixxxLibraryFeature::activate() {
-    qDebug() << "MixxxLibraryFeature::activate()";
-    emit(showTrackModel(m_pLibraryTableModel));
+    //qDebug() << "MixxxLibraryFeature::activate()";
+    
+    m_idPaneCurrent[m_featureFocus] = Panes::MixxxLibrary;
+    QPointer<WTrackTableView> pTable = getFocusedTable();
+    if (pTable.isNull()) {
+        return;
+    }
+    
+    m_pSidebarTab->setTabEnabled(m_idExpandedControls, false);
+    pTable->setSortingEnabled(true);
+    showTrackModel(m_pLibraryTableModel);
+    m_pLibrary->restoreSearch("");
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    
     emit(enableCoverArtDisplay(true));
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
-    QString itemName = index.data().toString();
-    emit(switchToView(itemName));
+    QString itemName = index.data(TreeItemModel::kDataPathRole).toString();
+    TreeItem* pTree = static_cast<TreeItem*> (index.internalPointer());
+    QPointer<WTrackTableView> pTable = getFocusedTable();    
+    
+    if (itemName == kLibraryTitle) {
+        activate();
+        return;
+    } 
+    
+    DEBUG_ASSERT_AND_HANDLE(!m_pExpandedStack.isNull() && !pTable.isNull()) {
+        return;
+    }
+    pTable->setSortingEnabled(false);
+    
+    if (itemName == kHiddenTitle) {        
+        DEBUG_ASSERT_AND_HANDLE(!m_pHiddenView.isNull()) {
+            return;
+        }
+        
+        m_idPaneCurrent[m_featureFocus] = Panes::Hidden;
+        pTable->loadTrackModel(getHiddenTableModel());
+        
+        m_pHiddenView->onShow();
+        m_pExpandedStack->setCurrentIndex(m_idExpandedHidden);
+        
+    } else if (itemName == kMissingTitle) {
+        DEBUG_ASSERT_AND_HANDLE(!m_pMissingView.isNull()) {
+            return;
+        }
+        
+        m_idPaneCurrent[m_featureFocus] = Panes::Missing;
+        pTable->loadTrackModel(getMissingTableModel());
+        
+        m_pMissingView->onShow();
+        m_pExpandedStack->setCurrentIndex(m_idExpandedMissing);
+    } else {
+        return;
+    }
+    
+    // This is the only way to get the selection signal changing the track
+    // models, every time the model changes the selection model changes too
+    // so we need to reconnect
+    connect(pTable->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+            this,
+            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+    
+    m_pSidebarTab->setTabEnabled(m_idExpandedControls, true);
+    switchToFeature();
+    m_pLibrary->restoreSearch("");
+    m_pLibrary->showBreadCrumb(pTree);
     emit(enableCoverArtDisplay(true));
 }
 
@@ -189,4 +329,18 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
+}
+
+HiddenTableModel* MixxxLibraryFeature::getHiddenTableModel() {
+    if (m_pHiddenTableModel.isNull()) {
+        m_pHiddenTableModel = new HiddenTableModel(this, m_pTrackCollection);
+    }
+    return m_pHiddenTableModel;
+}
+
+MissingTableModel* MixxxLibraryFeature::getMissingTableModel() {
+    if (m_pMissingTableModel.isNull()) {
+        m_pMissingTableModel = new MissingTableModel(this, m_pTrackCollection);
+    }
+    return m_pMissingTableModel;
 }

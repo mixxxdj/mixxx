@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QString>
+#include <QList>
 
 #include "library/autodj/ui_dlgautodj.h"
 #include "preferences/usersettings.h"
@@ -16,20 +17,16 @@
 class PlaylistTableModel;
 class WTrackTableView;
 
-class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
+class DlgAutoDJ : public QFrame, public Ui::DlgAutoDJ {
     Q_OBJECT
   public:
-    DlgAutoDJ(QWidget* parent, UserSettingsPointer pConfig,
-              Library* pLibrary,
-              AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
-              KeyboardEventFilter* pKeyboard);
+    DlgAutoDJ(QWidget* parent, Library *pLibrary, AutoDJProcessor* pProcessor);
     virtual ~DlgAutoDJ();
-
+    
     void onShow();
-    void onSearch(const QString& text);
-    void loadSelectedTrack();
-    void loadSelectedTrackToGroup(QString group, bool play);
-    void moveSelection(int delta);
+    
+    // These seleced rows are always from the focused pane
+    void setSelectedRows(const QModelIndexList& selectedRows);
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);
@@ -39,20 +36,17 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void transitionTimeChanged(int time);
     void transitionSliderChanged(int value);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
-    void setTrackTableFont(const QFont& font);
-    void setTrackTableRowHeight(int rowHeight);
     void updateSelectionInfo();
 
   signals:
     void addRandomButton(bool buttonChecked);
-    void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group, bool);
-    void trackSelected(TrackPointer pTrack);
-
+    
   private:
     AutoDJProcessor* m_pAutoDJProcessor;
-    WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
+    Library* m_pLibrary;
+    
+    QModelIndexList m_selectedRows;
 };
 
 #endif //DLGAUTODJ_H

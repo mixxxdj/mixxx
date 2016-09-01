@@ -49,19 +49,6 @@
   background-color: #0f0f0f;
 }
 
-#LibrarySingleton {
-  padding-top: 5px;
-  padding-bottom: 2px;
-}
-
-#Library {
-  border-left: 0px solid #585858;
-  background-color: #0e0e0e;
-  padding-top: 5px;
-  padding-bottom: 2px;
-  /*border-top: 1px solid #585858;*/
-}
-
 #DeckRowOne {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-bottom: 1px solid #585858;
@@ -1156,15 +1143,140 @@
 
 /* Library styling is hard */
 
-QTableView, QTextBrowser, QTreeView {
+#LibrarySingleton {
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+#Library {
+  border-left: 0px solid #585858;
+  background-color: #0e0e0e;
+  padding-top: 5px;
+  padding-bottom: 2px;
+  /*border-top: 1px solid #585858;*/
+}
+
+#LibrarySidebarExpanded QWidget {
+  background-color: #0f0f0f;
+}
+
+#LibrarySidebarExpanded QScrollArea {
+  border: 1px solid #585858;
+}
+
+#LibrarySidebarExpanded QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
+  margin: 0;
+  border: none;
+}
+
+#LibrarySidebarExpanded QTabWidget {
+  border: none
+}
+
+#LibrarySidebarExpanded QTabWidget::pane,
+#LibrarySidebarExpanded #DlgRecording,
+#LibrarySidebarExpanded #DlgAnalysis {
+  border: 1px solid #585858;
+}
+
+#LibrarySidebarExpanded QTabBar::tab {
+  padding: 5px;
+  border: none;
+  color: #cfb32c;
+  background-color: #191919;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+#LibrarySidebarExpanded QTabBar::tab:hover {
+  border-top: 2px solid #585858;
+  border-right: 2px solid #585858;
+  border-left: 2px solid #585858; 
+  background-color: #232323;
+}
+
+#LibrarySidebarExpanded QTabBar::tab:!enabled {
+  color: #7A6919;
+  background-color: #191919;
+}
+
+
+#LibrarySidebarExpanded QTabBar::tab:focus {
+  border-top: 2px solid #8E5C00;
+  border-right: 2px solid #8E5C00;
+  border-left: 2px solid #8E5C00; 
+  background-color: #232323;
+}
+
+#LibrarySidebarExpanded QTabBar::tab:selected {
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+}
+
+#LibrarySidebarExpanded QWidget:!enabled {
+  color: #666666;
+}
+
+#LibrarySidebarButtons QToolButton {
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  border: none;
+  color: #cfb32c;
+  background-color: #191919;
+}
+
+#LibrarySidebarExpanded QPushButton {
+  margin: 2px 3px 2px 3px; 
+  padding: 4px 6px; 
+  min-width: 65px; 
+  border: none;
+  color: #cfb32c;
+  background-color: #191919;
+}
+
+#LibrarySidebarButtons QToolButton:hover,
+#LibrarySidebarExpanded QPushButton:hover {
+  border: 1px solid #585858;
+  background-color: #232323;
+  color: #cfb32c;
+}
+
+#LibrarySidebarButtons QToolButton:hover {
+  border-radius: 10px;
+}
+
+#LibrarySidebarButtons QToolButton:focus {
+  border-radius: 10px;
+}
+
+#LibrarySidebarButtons:focus,
+#LibrarySidebarButtons QToolButton:focus,
+#LibrarySidebarExpanded > QWidget:focus,
+#LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus {
+  border: 1px solid #8E5C00;
+}
+
+#LibrarySidebarButtons WButtonBar {
+  background-color: #191919;
+  margin-right: 11px;
+}
+
+#LibrarySidebarButtons {
+  margin-right: 5px;
+}
+
+#LibrarySidebarButtons, QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
   /*font: 15px/18px;*/
   color: #cfb32c;
-  background-color: #0f0f0f;
+  background-color: #191919;
   alternate-background-color: #1a1a1a;
 
   selection-color: #cfb32c;
   selection-background-color: #725309;
+}
+
+WLibraryBreadCrumb {
+  margin: 4px 2px;
 }
 
 /* checkbox in library "Played" column */
@@ -1286,30 +1398,13 @@ WCoverArt { background: transparent; color: #ACACAC; }
 QLabel, QRadioButton { background: transparent; color: #cfb32c; }
 
 /* Additional space for QRadionButtons and QLabels */
-WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
+WBaseLibrary QRadioButton, WBaseLibrary QLabel { margin: 9px 3px 6px 3px; }
 
-/* Additional space for the first QRadionButton in the row */
-WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
-
-/* Additional space for the QPushButtons */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton { margin: 9px 3px 6px 3px; padding: 3px 8px; min-width: 65px; }
-
-/* Additional space for the first QPushButton in the row */
-#DlgMissing > QPushButton#btnPurge,
-#DlgHidden > QPushButton#btnUnhide,
-#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
-#DlgRecording > QPushButton#pushButtonRecording,
-#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
-
-/* Additional space for the last QPushButton in the row */
-#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
+/* Additional space for the first QRadionButton in the row 
+WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; } */
 
 /* Spacing between treeview and searchbar */
-QTreeView { margin: 10px 0px 0px 0px; }
+QTreeView { margin: 0px 0px 0px 0px; }
 
 /* triangle for closed/opened branches in treeview */
 QTreeView { show-decoration-selected: 0; background-color: #151515; } /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
@@ -1332,4 +1427,14 @@ QTreeView::branch:open:has-children:has-siblings:selected { border-image: none; 
 QTreeView::item:selected {
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
   color: #cfb32c;
+}
+
+WLibrary[showFocus="0"] {
+  padding: 1px 0 0 0;
+  border: none;
+}
+
+WLibrary[showFocus="1"] {
+  padding: 1px 0 0 0;
+  border-top: 1px solid #FF7100 !important;
 }

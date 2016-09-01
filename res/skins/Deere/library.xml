@@ -14,35 +14,34 @@
       <!-- Main Library -->
       <WidgetGroup trigger="[Library],show_library">
         <ObjectName>LibraryExpanded</ObjectName>
-        <Layout>vertical</Layout>
-        <!-- Fixed is interesting here. Ignore is the only thing that lets it
-             shrink to nothing. -->
-        <SizePolicy>me,f</SizePolicy>
-        <MinimumSize>0,0</MinimumSize>
+        <Layout>horizontal</Layout>
         <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skin:hide_show_button.xml">
+                <SetVariable name="TooltipId">show_library</SetVariable>
+                <SetVariable name="object_name">LibraryToggle</SetVariable>
+                <SetVariable name="control">[Library],show_library</SetVariable>
+              </Template>
+              <LibrarySidebarButtons>
+                <SizePolicy>min,me</SizePolicy>
+                <ObjectName>LibrarySidebarButtons</ObjectName>
+              </LibrarySidebarButtons>
+            </Children>
+          </WidgetGroup>
           <!-- QSplitter between LibrarySidebar and Library -->
           <Splitter>
             <ObjectName>LibrarySplitter</ObjectName>
             <Orientation>horizontal</Orientation>
             <SizePolicy>me,me</SizePolicy>
             <SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>
-            <SplitSizes>2,8</SplitSizes>
+            <SplitSizes>2,4,4</SplitSizes>
             <Children>
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <Children>
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Template src="skin:hide_show_button.xml">
-                        <SetVariable name="TooltipId">show_library</SetVariable>
-                        <SetVariable name="object_name">LibraryToggle</SetVariable>
-                        <SetVariable name="control">[Library],show_library</SetVariable>
-                      </Template>
-                      <SearchBox>
-                      </SearchBox>
-                    </Children>
-                  </WidgetGroup>
                   <WidgetGroup>
                     <ObjectName>PreviewDeckContainer</ObjectName>
                     <Layout>vertical</Layout>
@@ -153,8 +152,9 @@
                     <SplitSizes>2,8</SplitSizes>
                     <Collapsible>0,0</Collapsible>
                     <Children>
-                      <LibrarySidebar>
-                      </LibrarySidebar>
+                      <LibrarySidebarExpanded>
+                        <ObjectName>LibrarySidebarExpanded</ObjectName>
+                      </LibrarySidebarExpanded>
 
                       <CoverArt>
                         <ObjectName>LibraryCoverArt</ObjectName>
@@ -170,8 +170,40 @@
                   </Splitter>
                 </Children>
               </WidgetGroup>
-              <Library>
-              </Library>
+
+              <!-- For Track table 1 -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <SearchBox>
+                    <Id>1</Id>
+                  </SearchBox>
+                  <LibraryBreadCrumb>
+                    <ObjectName>LibraryBreadCrumb</ObjectName>
+                    <Id>1</Id>
+                  </LibraryBreadCrumb>
+                  <LibraryPane>
+                    <Id>1</Id>
+                  </LibraryPane>
+                </Children>
+              </WidgetGroup>
+
+              <!-- For Track table 2 -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <SearchBox>
+                    <Id>2</Id>
+                  </SearchBox>
+                  <LibraryBreadCrumb>
+                    <ObjectName>LibraryBreadCrumb</ObjectName>
+                    <Id>2</Id>
+                  </LibraryBreadCrumb>
+                  <LibraryPane>
+                    <Id>2</Id>
+                  </LibraryPane>
+                </Children>
+              </WidgetGroup>
             </Children>
           </Splitter>
         </Children>

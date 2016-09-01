@@ -7,6 +7,7 @@
 #include <QList>
 #include <QString>
 #include <QVariant>
+#include <QIcon>
 
 #include "library/libraryfeature.h"
 
@@ -22,7 +23,7 @@ class TreeItem {
     void appendChild(TreeItem *child);
     /** remove a child item at the given index **/
     void removeChild(int index);
-    /** returns the tree item at position 'row' in the childlist **/
+    /** returns the tree item at position 'row' in the child list **/
     TreeItem *child(int row);
     /** returns the number of childs of this tree item **/
     int childCount() const;
@@ -48,6 +49,8 @@ class TreeItem {
     bool isFolder() const;
     /* Returns the Library feature object to which an item belongs to */
     LibraryFeature* getFeature();
+    
+    void setLibraryFeature(LibraryFeature* pFeature);
 
     void setBold(bool bold) {
         m_bold = bold;
@@ -64,7 +67,7 @@ class TreeItem {
     QList<TreeItem*> m_childItems;
     QString m_dataPath;
     QString m_data;
-    LibraryFeature* m_feature;
+    LibraryFeature* m_pFeature;
     bool m_bold;
 
     TreeItem *m_parentItem;

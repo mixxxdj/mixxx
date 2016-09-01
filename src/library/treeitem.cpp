@@ -34,15 +34,15 @@ TreeItem::TreeItem(const QString &data, const QString &data_path,
     m_data = data;
     m_dataPath = data_path;
     m_parentItem = parent;
-    m_feature = feature;
+    m_pFeature = feature;
     m_bold = false;
 }
 
 TreeItem::TreeItem() {
     m_data = "$root";
     m_dataPath = "$root";
-    m_parentItem = NULL;
-    m_feature = NULL;
+    m_parentItem = nullptr;
+    m_pFeature = nullptr;
     m_bold = false;
 }
 
@@ -95,7 +95,11 @@ int TreeItem::row() const {
 }
 
 LibraryFeature* TreeItem::getFeature() {
-    return m_feature;
+    return m_pFeature;
+}
+
+void TreeItem::setLibraryFeature(LibraryFeature *pFeature) {
+    m_pFeature = pFeature;
 }
 
 bool TreeItem::insertChildren(QList<TreeItem*> &data, int position, int count) {

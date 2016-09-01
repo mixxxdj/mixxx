@@ -7,31 +7,34 @@
 #include <QMenu>
 #include <QDesktopServices>
 
+
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/cratefeature.h"
+#include "library/cratetablemodel.h"
 #include "library/export/trackexportwizard.h"
+#include "library/parsercsv.h"
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
-#include "library/parsercsv.h"
-
-#include "library/cratetablemodel.h"
-#include "library/trackcollection.h"
 #include "library/queryutil.h"
-#include "widget/wlibrarytextbrowser.h"
-#include "widget/wlibrary.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "treeitem.h"
+#include "library/trackcollection.h"
 #include "sources/soundsourceproxy.h"
+#include "treeitem.h"
 #include "util/dnd.h"
 #include "util/duration.h"
+#include "util/time.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarytextbrowser.h"
+#include "widget/wlibrarystack.h"
 
-CrateFeature::CrateFeature(Library* pLibrary,
-                           TrackCollection* pTrackCollection,
-                           UserSettingsPointer pConfig)
-        : LibraryFeature(pConfig),
+CrateFeature::CrateFeature(UserSettingsPointer pConfig,
+                           Library* pLibrary,
+                           QObject* parent,
+                           TrackCollection* pTrackCollection)
+        : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
-          m_crateTableModel(this, pTrackCollection) {
+          m_pCrateTableModel(nullptr) {
 
     m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
@@ -94,14 +97,13 @@ CrateFeature::CrateFeature(Library* pLibrary,
             this, SLOT(slotCrateTableChanged(int)));
 
     // construct child model
-    TreeItem *rootItem = new TreeItem();
-    m_childModel.setRootItem(rootItem);
+    TreeItem *pRootItem = new TreeItem();
+    pRootItem->setLibraryFeature(this);
+    m_childModel.setRootItem(pRootItem);
     constructChildModel(-1);
 
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
             this, SLOT(slotTrackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotResetSelectedTrack()));
 }
 
 CrateFeature::~CrateFeature() {
@@ -127,7 +129,7 @@ QIcon CrateFeature::getIcon() {
 
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-    if (item == NULL) {
+    if (item == nullptr) {
         return -1;
     }
 
@@ -139,6 +141,12 @@ int CrateFeature::crateIdFromIndex(QModelIndex index) {
     }
     return playlistId;
 }
+
+bool CrateFeature::dragMoveAccept(QUrl url) {
+    return SoundSourceProxy::isUrlSupported(url) ||
+                Parser::isPlaylistFilenameSupported(url.toLocalFile());
+}
+
 
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
@@ -178,15 +186,24 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return !locked && formatSupported;
 }
 
-void CrateFeature::bindWidget(WLibrary* libraryWidget,
-                              KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(getRootViewHtml());
-    edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)),
+QWidget* CrateFeature::createPaneWidget(KeyboardEventFilter *pKeyboard, 
+                                        int paneId) {
+    WLibraryStack* pContainer = new WLibraryStack(nullptr);
+    m_panes[paneId] = pContainer;
+    
+    WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(pContainer);
+    pEdit->setHtml(getRootViewHtml());
+    pEdit->setOpenLinks(false);
+    pEdit->installEventFilter(pKeyboard);
+    connect(pEdit, SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
-    libraryWidget->registerView("CRATEHOME", edit);
+    
+    m_idBrowse[paneId] = pContainer->addWidget(pEdit);
+    
+    QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId);
+    m_idTable[paneId] = pContainer->addWidget(pTable);
+    
+    return pContainer;
 }
 
 TreeItemModel* CrateFeature::getChildModel() {
@@ -194,29 +211,59 @@ TreeItemModel* CrateFeature::getChildModel() {
 }
 
 void CrateFeature::activate() {
-    emit(switchToView("CRATEHOME"));
-    emit(restoreSearch(QString())); //disable search on crate home
+    auto it = m_panes.find(m_featureFocus);
+    auto itId = m_idBrowse.find(m_featureFocus);
+    if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
+        return;
+    }
+    
+    (*it)->setCurrentIndex(*itId);
+    
+    m_pLibrary->switchToFeature(this);
+    m_pLibrary->showBreadCrumb(m_childModel.getItem(QModelIndex()));
+    m_pLibrary->restoreSearch(QString()); //disable search on crate home
+    m_featureFocus = -1;
     emit(enableCoverArtDisplay(true));
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return;
+    }
     int crateId = crateIdFromIndex(index);
     if (crateId == -1) {
         return;
     }
-    m_crateTableModel.setTableModel(crateId);
-    emit(showTrackModel(&m_crateTableModel));
+    
+    m_pCrateTableModel = getTableModel(m_focusedPane);
+    auto it = m_panes.find(m_focusedPane);
+    auto itId = m_idTable.find(m_focusedPane);
+    if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
+        return;
+    }
+    
+    (*it)->setCurrentIndex(*itId);
+    m_pCrateTableModel->setTableModel(crateId);
+    
+    // Set the feature Focus for a moment to allow the LibraryFeature class
+    // to find the focused WTrackTable
+    m_featureFocus = m_focusedPane;
+    showTrackModel(m_pCrateTableModel);
+    m_featureFocus = -1;
+    
+    m_pLibrary->restoreSearch("");
+    m_pLibrary->showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
     emit(enableCoverArtDisplay(true));
 }
 
 void CrateFeature::activateCrate(int crateId) {
     //qDebug() << "CrateFeature::activateCrate()" << crateId;
+    m_pCrateTableModel = getTableModel(m_focusedPane);
+    
     QModelIndex index = indexFromCrateId(crateId);
     if (crateId != -1 && index.isValid()) {
-        m_crateTableModel.setTableModel(crateId);
-        emit(showTrackModel(&m_crateTableModel));
+        m_pCrateTableModel->setTableModel(crateId);
+        showTrackModel(m_pCrateTableModel);
         emit(enableCoverArtDisplay(true));
         // Update selection
         emit(featureSelect(this, m_lastRightClickedIndex));
@@ -227,7 +274,7 @@ void CrateFeature::activateCrate(int crateId) {
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
-    QMenu menu(NULL);
+    QMenu menu(nullptr);
     menu.addAction(m_pCreateCrateAction);
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
@@ -238,9 +285,6 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int crateId = crateIdFromIndex(index);
-    if (crateId == -1) {
-        return;
-    }
 
     bool locked = m_crateDao.isCrateLocked(crateId);
 
@@ -610,7 +654,7 @@ void CrateFeature::slotImportPlaylistFile(const QString &playlist_file) {
       //qDebug() << "Size of Imported Playlist: " << entries.size();
 
       //Iterate over the List that holds URLs of playlist entires
-      m_crateTableModel.addTracks(QModelIndex(), entries);
+      m_pCrateTableModel->addTracks(QModelIndex(), entries);
 
       //delete the parser object
       delete playlist_parser;
@@ -658,7 +702,7 @@ void CrateFeature::slotCreateImportCrate() {
         lastCrateId = m_crateDao.createCrate(name);
 
         if (lastCrateId != -1) {
-            m_crateTableModel.setTableModel(lastCrateId);
+            m_pCrateTableModel->setTableModel(lastCrateId);
         }
         else {
                 QMessageBox::warning(NULL,
@@ -684,7 +728,7 @@ void CrateFeature::slotAnalyzeCrate() {
 }
 
 void CrateFeature::slotExportPlaylist() {
-    int crateId = m_crateTableModel.getCrate();
+    int crateId = m_pCrateTableModel->getCrate();
     QString crateName = m_crateDao.crateName(crateId);
     qDebug() << "Export crate" << crateId << crateName;
 
@@ -722,7 +766,7 @@ void CrateFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
+    pCrateTableModel->setTableModel(m_pCrateTableModel->getCrate());
     pCrateTableModel->select();
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
@@ -734,8 +778,8 @@ void CrateFeature::slotExportPlaylist() {
         QList<QString> playlist_items;
         int rows = pCrateTableModel->rowCount();
         for (int i = 0; i < rows; ++i) {
-            QModelIndex index = m_crateTableModel.index(i, 0);
-            playlist_items << m_crateTableModel.getTrackLocation(index);
+            QModelIndex index = m_pCrateTableModel->index(i, 0);
+            playlist_items << m_pCrateTableModel->getTrackLocation(index);
         }
 
         if (file_location.endsWith(".pls", Qt::CaseInsensitive)) {
@@ -759,14 +803,14 @@ void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
+    pCrateTableModel->setTableModel(m_pCrateTableModel->getCrate());
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();
     QList<TrackPointer> trackpointers;
     for (int i = 0; i < rows; ++i) {
-        QModelIndex index = m_crateTableModel.index(i, 0);
-        trackpointers.push_back(m_crateTableModel.getTrack(index));
+        QModelIndex index = m_pCrateTableModel->index(i, 0);
+        trackpointers.push_back(m_pCrateTableModel->getTrack(index));
     }
 
     TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
@@ -862,4 +906,13 @@ QModelIndex CrateFeature::indexFromCrateId(int crateId) {
         }
     }
     return QModelIndex();
+}
+
+QPointer<CrateTableModel> CrateFeature::getTableModel(int paneId) {
+    auto it = m_crateTableModel.find(paneId);
+    if (it == m_crateTableModel.end() || it->isNull()) {
+        it = m_crateTableModel.insert(paneId,
+                                      new CrateTableModel(this, m_pTrackCollection));
+    }
+    return *it;
 }

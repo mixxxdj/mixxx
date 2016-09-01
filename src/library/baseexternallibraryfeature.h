@@ -12,7 +12,10 @@ class TrackCollection;
 class BaseExternalLibraryFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BaseExternalLibraryFeature(QObject* pParent, TrackCollection* pCollection);
+    BaseExternalLibraryFeature(UserSettingsPointer pConfig, 
+                               Library* pLibrary, 
+                               QObject* pParent,
+                               TrackCollection* pCollection);
     virtual ~BaseExternalLibraryFeature();
 
   public slots:
@@ -38,7 +41,6 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   private:
     void addToAutoDJ(bool bTop);
 
-    TrackCollection* m_pTrackCollection;
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;
     QAction* m_pImportAsMixxxPlaylistAction;

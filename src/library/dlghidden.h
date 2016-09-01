@@ -12,30 +12,27 @@ class WTrackTableView;
 class HiddenTableModel;
 class QItemSelection;
 
-class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
+class DlgHidden : public QFrame, public Ui::DlgHidden {
     Q_OBJECT
   public:
-    DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
-              Library* pLibrary, TrackCollection* pTrackCollection,
-              KeyboardEventFilter* pKeyboard);
+    DlgHidden(QWidget* parent);
     virtual ~DlgHidden();
 
-    void onShow();
-    void onSearch(const QString& text);
+    // The indexes are always from the focused pane
+    void setSelectedIndexes(const QModelIndexList& selectedIndexes);
+    void setTableModel(HiddenTableModel* pTableModel);
 
   public slots:
-    void clicked();
-    void selectAll();
-    void selectionChanged(const QItemSelection&, const QItemSelection&);
-    void setTrackTableFont(const QFont& font);
-    void setTrackTableRowHeight(int rowHeight);
+    void onShow();
 
   signals:
+    void selectAll();  
+    void unhide();
+    void purge();
     void trackSelected(TrackPointer pTrack);
 
   private:
     void activateButtons(bool enable);
-    WTrackTableView* m_pTrackTableView;
     HiddenTableModel* m_pHiddenTableModel;
 };
 

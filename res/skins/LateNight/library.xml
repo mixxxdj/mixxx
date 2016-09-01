@@ -13,32 +13,36 @@
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
 				<Children>
+					<LibrarySidebarButtons>
+						<ObjectName>LibrarySidebarButtons</ObjectName>
+					</LibrarySidebarButtons>
 					<Splitter>
                         <ObjectName>LibrarySplitter</ObjectName>
 						<Size>me,me</Size>
-						<SplitSizes>1,12</SplitSizes>
+						<SplitSizes>1,6,6</SplitSizes>
                         <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<Children>
 							<WidgetGroup>
 								<Style>QGroupBox {}</Style>
 								<Layout>vertical</Layout>
 								<Children>
-									<!--Search Input Field-->
-									<SearchBox></SearchBox>
                                     <Splitter>
                                         <ObjectName>CoverArtSplitter</ObjectName>
                                         <Size>me,me</Size>
-                                        <SplitSizes>1,1</SplitSizes>
+                                        <MinimumSize>30,30</MinimumSize>
+                                        <SplitSizes>2,8</SplitSizes>
                                         <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
                                         <Orientation>vertical</Orientation>
                                         <Collapsible>0,0</Collapsible>
                                         <Children>
                                             <!--Library Tree View-->
-                                            <LibrarySidebar></LibrarySidebar>
+                                            <LibrarySidebarExpanded>
+                                            	<ObjectName>LibrarySidebarExpanded</ObjectName>
+                                            </LibrarySidebarExpanded>
                                             <!--Cover Art-->
                                             <CoverArt>
                                                 <SizePolicy>me,me</SizePolicy>
-                                                <MinimumSize>40,40</MinimumSize>
+                                                <MinimumSize>30,30,</MinimumSize>
                                                 <Connection>
                                                     <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
                                                     <BindProperty>visible</BindProperty>
@@ -49,14 +53,31 @@
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>
-								<!-- Library Table-->
-								<Style>QGroupBox {}</Style>
 								<Layout>vertical</Layout>
 								<Children>
-									<Library>
-										<BgColor>#585858</BgColor>
-										<FgColor>#eece33</FgColor>
-									</Library>
+									<SearchBox>
+										<Id>1</Id>
+									</SearchBox>
+									<LibraryBreadCrumb>
+										<Id>1</Id>
+									</LibraryBreadCrumb>
+									<LibraryPane>
+										<Id>1</Id>
+									</LibraryPane>
+								</Children>
+							</WidgetGroup>
+							<WidgetGroup>
+								<Layout>vertical</Layout>
+								<Children>
+									<SearchBox>
+										<Id>2</Id>
+									</SearchBox>
+									<LibraryBreadCrumb>
+										<Id>2</Id>
+									</LibraryBreadCrumb>
+									<LibraryPane>
+										<Id>2</Id>
+									</LibraryPane>
 								</Children>
 							</WidgetGroup>
 						</Children>

@@ -8,67 +8,31 @@
 #include "util/duration.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
-                     UserSettingsPointer pConfig,
                      Library* pLibrary,
-                     AutoDJProcessor* pProcessor,
-                     TrackCollection* pTrackCollection,
-                     KeyboardEventFilter* pKeyboard)
-        : QWidget(parent),
+                     AutoDJProcessor* pProcessor)
+        : QFrame(parent),
           Ui::DlgAutoDJ(),
           m_pAutoDJProcessor(pProcessor),
           // no sorting
-          m_pTrackTableView(new WTrackTableView(this, pConfig,
-                                                pTrackCollection, false)),
-          m_pAutoDJTableModel(NULL) {
+          m_pAutoDJTableModel(nullptr),
+          m_pLibrary(pLibrary) {
     setupUi(this);
-
-    m_pTrackTableView->installEventFilter(pKeyboard);
-    connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(updateSelectionInfo()));
-
-
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
-    } else {
-        box->removeWidget(m_pTrackTablePlaceholder);
-        m_pTrackTablePlaceholder->hide();
-        box->insertWidget(1, m_pTrackTableView);
-    }
 
     // We do _NOT_ take ownership of this from AutoDJProcessor.
     m_pAutoDJTableModel = m_pAutoDJProcessor->getTableModel();
-    m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
     // Override some playlist-view properties:
 
-    // Do not set this because it disables auto-scrolling
-    //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
-
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
             this, SLOT(shufflePlaylistButton(bool)));
-
     connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
             this, SLOT(skipNextButton(bool)));
-
     connect(pushButtonAddRandom, SIGNAL(clicked(bool)),
             this, SIGNAL(addRandomButton(bool)));
-
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
             this, SLOT(fadeNowButton(bool)));
-
     connect(spinBoxTransition, SIGNAL(valueChanged(int)),
             this, SLOT(transitionSliderChanged(int)));
-
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this, SLOT(toggleAutoDJButton(bool)));
 
@@ -81,45 +45,30 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(m_pAutoDJProcessor, SIGNAL(autoDJStateChanged(AutoDJProcessor::AutoDJState)),
             this, SLOT(autoDJStateChanged(AutoDJProcessor::AutoDJState)));
     autoDJStateChanged(m_pAutoDJProcessor->getState());
-
-    updateSelectionInfo();
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
-    qDebug() << "~DlgAutoDJ()";
-
-    // Delete m_pTrackTableView before the table model. This is because the
-    // table view saves the header state using the model.
-    delete m_pTrackTableView;
+    //qDebug() << "~DlgAutoDJ()";
 }
 
 void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
 }
 
-void DlgAutoDJ::onSearch(const QString& text) {
-    // Do not allow filtering the Auto DJ playlist, because
-    // Auto DJ will work from the filtered table
-    Q_UNUSED(text);
+void DlgAutoDJ::setSelectedRows(const QModelIndexList& selectedRows) {
+    m_selectedRows = selectedRows;
+    updateSelectionInfo();
 }
 
-void DlgAutoDJ::loadSelectedTrack() {
-    m_pTrackTableView->loadSelectedTrack();
-}
-
-void DlgAutoDJ::loadSelectedTrackToGroup(QString group, bool play) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
-}
-
-void DlgAutoDJ::moveSelection(int delta) {
-    m_pTrackTableView->moveSelection(delta);
-}
-
-void DlgAutoDJ::shufflePlaylistButton(bool) {
-    QModelIndexList indexList = m_pTrackTableView->selectionModel()->selectedRows();
-
-    // Activate regardless of button being checked
-    m_pAutoDJProcessor->shufflePlaylist(indexList);
+void DlgAutoDJ::shufflePlaylistButton(bool) {    
+    LibraryView* pView = m_pLibrary->getActiveView();
+    WTrackTableView* pTrackTable = dynamic_cast<WTrackTableView*>(pView);
+    
+    if (pView) {
+        QModelIndexList indexList = pTrackTable->selectionModel()->selectedRows();
+        // Activate regardless of button being checked
+        m_pAutoDJProcessor->shufflePlaylist(indexList);
+    }
 }
 
 void DlgAutoDJ::skipNextButton(bool) {
@@ -191,35 +140,24 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
     }
 }
 
-void DlgAutoDJ::setTrackTableFont(const QFont& font) {
-    m_pTrackTableView->setTrackTableFont(font);
-}
-
-void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
-    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
-}
-
 void DlgAutoDJ::updateSelectionInfo() {
+    if (m_selectedRows.isEmpty()) {
+        labelSelectionInfo->setText("");
+        labelSelectionInfo->setEnabled(false);
+        return;
+    }
+    
     double duration = 0.0;
-
-    QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
-
-    for (int i = 0; i < indices.size(); ++i) {
-        TrackPointer pTrack = m_pAutoDJTableModel->getTrack(indices.at(i));
+    for (const QModelIndex& mIndex : m_selectedRows) {
+        TrackPointer pTrack = m_pAutoDJTableModel->getTrack(mIndex);
         if (pTrack) {
             duration += pTrack->getDuration();
         }
     }
 
     QString label;
-
-    if (!indices.isEmpty()) {
-        label.append(mixxx::Duration::formatSeconds(duration));
-        label.append(QString(" (%1)").arg(indices.size()));
-        labelSelectionInfo->setText(label);
-        labelSelectionInfo->setEnabled(true);
-    } else {
-        labelSelectionInfo->setText("");
-        labelSelectionInfo->setEnabled(false);
-    }
+    label.append(mixxx::Duration::formatSeconds(duration));
+    label.append(QString(" (%1)").arg(m_selectedRows.size()));
+    labelSelectionInfo->setText(label);
+    labelSelectionInfo->setEnabled(true);
 }

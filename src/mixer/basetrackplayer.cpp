@@ -244,13 +244,6 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pKey->set(m_pLoadedTrack->getKey());
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
 
-        // Clear loop
-        // It seems that the trick is to first clear the loop out point, and then
-        // the loop in point. If we first clear the loop in point, the loop out point
-        // does not get cleared.
-        m_pLoopOutPoint->set(-1);
-        m_pLoopInPoint->set(-1);
-
         const QList<CuePointer> trackCues(pNewTrack->getCuePoints());
         QListIterator<CuePointer> it(trackCues);
         while (it.hasNext()) {

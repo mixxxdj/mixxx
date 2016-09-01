@@ -7,6 +7,7 @@
 #include <QMimeData>
 
 #include "library/sidebarmodel.h"
+#include "library/treeitemmodel.h"
 #include "util/dnd.h"
 
 const int expand_time = 250;
@@ -38,7 +39,7 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
 
 // Drag enter event, happens when a dragged item enters the track sources view
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
-    qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
+    //qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
         // We don't have a way to ask the LibraryFeatures whether to accept a
         // drag so for now we accept all drags. Since almost every
@@ -94,6 +95,20 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
                         break;
                     }
                 }
+            } else {
+                TreeItemModel* treeModel = dynamic_cast<TreeItemModel*>(model());
+                if (treeModel) {
+                    accepted = false;
+                    
+                    for (const QUrl& url : urls) {
+                        QModelIndex destIndex = this->indexAt(event->pos());
+                        if (treeModel->dragMoveAccept(destIndex, url)) {
+                            accepted = true;
+                            break;
+                        }
+                    }
+                    
+                }
             }
             if (accepted) {
                 event->acceptProposedAction();
@@ -135,6 +150,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             //Drag-and-drop from an external application or the track table widget
             //eg. dragging a track from Windows Explorer onto the sidebar
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
+            
             if (sidebarModel) {
                 QModelIndex destIndex = indexAt(event->pos());
                 // event->source() will return NULL if something is droped from
@@ -144,6 +160,17 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
                     event->acceptProposedAction();
                 } else {
                     event->ignore();
+                }
+            } else {
+                TreeItemModel* pTreeModel = dynamic_cast<TreeItemModel*>(model());
+                if (pTreeModel) {
+                    QModelIndex destIndex = indexAt(event->pos());
+                    QList<QUrl> urls(event->mimeData()->urls());
+                    if (pTreeModel->dropAccept(destIndex, urls, event->source())) {
+                        event->acceptProposedAction();
+                    } else {
+                        event->ignore();
+                    }
                 }
             }
         }

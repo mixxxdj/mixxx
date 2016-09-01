@@ -18,14 +18,11 @@
 #include "util/dnd.h"
 #include "util/duration.h"
 
-PlaylistFeature::PlaylistFeature(QObject* parent,
-                                 TrackCollection* pTrackCollection,
-                                 UserSettingsPointer pConfig)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection,
-                              "PLAYLISTHOME") {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.playlist");
-
+PlaylistFeature::PlaylistFeature(UserSettingsPointer pConfig,
+                                 Library* pLibrary,
+                                 QObject* parent,
+                                 TrackCollection* pTrackCollection)
+        : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection) {
     //construct child model
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
@@ -47,7 +44,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 
     //Create the right-click menu
-    QMenu menu(NULL);
+    QMenu menu(nullptr);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
@@ -84,6 +81,13 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addAction(m_pExportTrackFilesAction);
     menu.exec(globalPos);
 }
+
+
+bool PlaylistFeature::dragMoveAccept(QUrl url) {
+    return SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+}
+
 
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                       QObject* pSource) {
@@ -180,6 +184,10 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
     } else {
         item->setIcon(QIcon());
     }
+}
+
+PlaylistTableModel* PlaylistFeature::constructTableModel() {
+    return new PlaylistTableModel(this, m_pTrackCollection, "mixxx.db.model.playlist");
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {

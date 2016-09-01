@@ -20,13 +20,16 @@ class TreeItem;
 class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
   public:
-    PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection,
-                    UserSettingsPointer pConfig);
+    PlaylistFeature(UserSettingsPointer pConfig, 
+                    Library* pLibrary,
+                    QObject* parent, 
+                    TrackCollection* pTrackCollection);
     virtual ~PlaylistFeature();
 
     QVariant title();
     QIcon getIcon();
 
+    bool dragMoveAccept(QUrl url);
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
@@ -42,6 +45,7 @@ class PlaylistFeature : public BasePlaylistFeature {
  protected:
     void buildPlaylistList();
     void decorateChild(TreeItem *pChild, int playlist_id);
+    PlaylistTableModel* constructTableModel();
 
   private:
     QString getRootViewHtml() const;

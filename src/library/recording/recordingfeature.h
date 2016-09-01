@@ -14,14 +14,16 @@
 #include "library/proxytrackmodel.h"
 #include "recording/recordingmanager.h"
 
-class Library;
 class TrackCollection;
+class WTrackTableView;
+class DlgRecording;
 
 class RecordingFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    RecordingFeature(Library* parent,
-                     UserSettingsPointer pConfig,
+    RecordingFeature(UserSettingsPointer pConfig,
+                     Library* pLibrary,
+                     QObject* parent,
                      TrackCollection* pTrackCollection,
                      RecordingManager* pRecordingManager);
     virtual ~RecordingFeature();
@@ -29,8 +31,8 @@ class RecordingFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+    QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int) override;
+    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
 
     TreeItemModel* getChildModel();
 
@@ -39,16 +41,19 @@ class RecordingFeature : public LibraryFeature {
 
   signals:
     void setRootIndex(const QModelIndex&);
-    void requestRestoreSearch();
-    void refreshBrowseModel();
 
   private:
-    UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
+    
+    BrowseTableModel* getBrowseTableModel();
+    ProxyTrackModel* getProxyTrackModel();
+    
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
-    const static QString m_sRecordingViewName;
     RecordingManager* m_pRecordingManager;
+    
+    QPointer<DlgRecording> m_pRecordingView;
+    QPointer<BrowseTableModel> m_pBrowseModel;
+    QPointer<ProxyTrackModel> m_pProxyModel;
 };
 
 #endif
