@@ -1,4 +1,4 @@
-#include "library/baseexternalplaylistmodel.h"
+#include "library/features/baseexternalfeature/baseexternalplaylistmodel.h"
 
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"

@@ -1,7 +1,7 @@
 #include <QSqlTableModel>
 
-#include "library/analysisfeature.h"
-#include "library/dlganalysis.h"
+#include "library/features/analysis/analysisfeature.h"
+#include "library/features/analysis/dlganalysis.h"
 #include "library/trackcollection.h"
 #include "util/assert.h"
 #include "widget/wanalysislibrarytableview.h"

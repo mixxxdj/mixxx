@@ -13,7 +13,7 @@
 #include <QList>
 
 #include "library/libraryfeature.h"
-#include "library/dlganalysis.h"
+#include "library/features/analysis/dlganalysis.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 

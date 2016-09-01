@@ -2,7 +2,7 @@
 #define ANALYSISLIBRARYTABLEMODEL_H_
 
 #include <QModelIndexList>
-#include "librarytablemodel.h"
+#include "library/librarytablemodel.h"
 
 class AnalysisLibraryTableModel : public LibraryTableModel
 {

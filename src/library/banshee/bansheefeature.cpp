@@ -6,7 +6,7 @@
 
 #include "library/banshee/bansheedbconnection.h"
 #include "library/dao/settingsdao.h"
-#include "library/baseexternalplaylistmodel.h"
+#include "library/features/baseexternalfeature/baseexternalplaylistmodel.h"
 #include "library/banshee/bansheeplaylistmodel.h"
 #include "library/library.h"
 

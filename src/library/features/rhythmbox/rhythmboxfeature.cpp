@@ -5,8 +5,8 @@
 
 #include "library/features/rhythmbox/rhythmboxfeature.h"
 
-#include "library/baseexternaltrackmodel.h"
-#include "library/baseexternalplaylistmodel.h"
+#include "library/features/baseexternalfeature/baseexternaltrackmodel.h"
+#include "library/features/baseexternalfeature/baseexternalplaylistmodel.h"
 #include "library/queryutil.h"
 
 RhythmboxFeature::RhythmboxFeature(UserSettingsPointer pConfig,

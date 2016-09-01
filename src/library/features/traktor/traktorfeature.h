@@ -11,9 +11,9 @@
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
 
-#include "library/baseexternallibraryfeature.h"
-#include "library/baseexternaltrackmodel.h"
-#include "library/baseexternalplaylistmodel.h"
+#include "library/features/baseexternalfeature/baseexternallibraryfeature.h"
+#include "library/features/baseexternalfeature/baseexternaltrackmodel.h"
+#include "library/features/baseexternalfeature/baseexternalplaylistmodel.h"
 #include "library/treeitemmodel.h"
 
 class TrackCollection;

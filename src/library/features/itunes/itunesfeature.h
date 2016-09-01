@@ -10,7 +10,7 @@
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
 
-#include "library/baseexternallibraryfeature.h"
+#include "library/features/baseexternalfeature/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
 

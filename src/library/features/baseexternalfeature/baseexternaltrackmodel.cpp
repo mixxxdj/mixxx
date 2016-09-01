@@ -1,4 +1,4 @@
-#include "library/baseexternaltrackmodel.h"
+#include "library/features/baseexternalfeature/baseexternaltrackmodel.h"
 #include "library/trackcollection.h"
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"

@@ -7,10 +7,10 @@
 #include <QDir>
 #include <QDebug>
 
-#include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
+#include "library/features/analysis/analysisfeature.h"
 #include "library/features/crates/cratefeature.h"
 #include "library/features/itunes/itunesfeature.h"
 #include "library/features/recording/recordingfeature.h"

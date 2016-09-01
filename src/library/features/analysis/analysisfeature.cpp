@@ -6,9 +6,8 @@
 
 #include "analyzer/analyzerqueue.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/analysisfeature.h"
-#include "library/dlganalysis.h"
-#include "library/library.h"
+#include "library/features/analysis/analysisfeature.h"
+#include "library/features/analysis/dlganalysis.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "sources/soundsourceproxy.h"

@@ -4,11 +4,11 @@
 #include <QItemSelection>
 #include <QButtonGroup>
 
-#include "preferences/usersettings.h"
-#include "library/analysislibrarytablemodel.h"
+#include "library/features/analysis/analysislibrarytablemodel.h"
+#include "library/features/analysis/ui_dlganalysis.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
-#include "library/ui_dlganalysis.h"
+#include "preferences/usersettings.h"
 
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;

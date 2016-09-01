@@ -1,6 +1,6 @@
-#include "library/baseexternallibraryfeature.h"
-
 #include <QMenu>
+
+#include "library/features/baseexternalfeature/baseexternallibraryfeature.h"
 
 #include "library/basesqltablemodel.h"
 
