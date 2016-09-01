@@ -1,7 +1,7 @@
 #include "QItemSelection"
 
-#include "library/dlghidden.h"
-#include "library/hiddentablemodel.h"
+#include "library/features/maintenance/dlghidden.h"
+#include "library/features/maintenance/hiddentablemodel.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 

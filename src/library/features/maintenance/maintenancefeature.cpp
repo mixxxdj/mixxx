@@ -1,11 +1,11 @@
 #include <QIcon>
 #include <QTabWidget>
 
-#include "library/dlghidden.h"
-#include "library/dlgmissing.h"
-#include "library/hiddentablemodel.h"
-#include "library/maintenancefeature.h"
-#include "library/missingtablemodel.h"
+#include "library/features/maintenance/dlghidden.h"
+#include "library/features/maintenance/dlgmissing.h"
+#include "library/features/maintenance/hiddentablemodel.h"
+#include "library/features/maintenance/maintenancefeature.h"
+#include "library/features/maintenance/missingtablemodel.h"
 
 #include "widget/wtracktableview.h"
 

@@ -1,6 +1,6 @@
-#include "library/dlgmissing.h"
+#include "library/features/maintenance/dlgmissing.h"
 
-#include "library/missingtablemodel.h"
+#include "library/features/maintenance/missingtablemodel.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 

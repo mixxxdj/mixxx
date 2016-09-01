@@ -1,12 +1,10 @@
 #ifndef DLGMISSING_H
 #define DLGMISSING_H
 
-#include "library/ui_dlgmissing.h"
-#include "preferences/usersettings.h"
-#include "library/library.h"
-#include "library/libraryview.h"
-#include "library/trackcollection.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/features/maintenance/ui_dlgmissing.h"
+#include "library/trackcollection.h"
+#include "preferences/usersettings.h"
 
 class WTrackTableView;
 class MissingTableModel;

@@ -6,8 +6,8 @@
 #include <QModelIndex>
 #include <QObject>
 
-#include "trackmodel.h"
 #include "library/basesqltablemodel.h"
+#include "library/trackmodel.h"
 
 class TrackCollection;
 
