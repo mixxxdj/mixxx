@@ -8,19 +8,17 @@
 #include <QScrollArea>
 #include <QSplitter>
 
-#include "library/autodj/autodjfeature.h"
+#include "library/features/autodj/autodjfeature.h"
 
-#include "library/library.h"
-#include "library/parser.h"
-#include "library/autodj/autodjprocessor.h"
-#include "library/trackcollection.h"
-#include "library/autodj/dlgautodj.h"
-#include "mixer/playermanager.h"
-#include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/features/autodj/autodjprocessor.h"
+#include "library/features/autodj/dlgautodj.h"
+#include "library/parser.h"
+#include "library/trackcollection.h"
+#include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
+#include "widget/wlibrarysidebar.h"
 
 static const int kMaxRetrieveAttempts = 3;
 
@@ -118,7 +116,7 @@ QWidget* AutoDJFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard)
     QTabWidget* pContainer = new QTabWidget(nullptr);
     
     // Add controls
-    m_pAutoDJView = new DlgAutoDJ(pContainer, m_pLibrary, m_pAutoDJProcessor);
+    m_pAutoDJView = new DlgAutoDJ(pContainer, m_pAutoDJProcessor);
     m_pAutoDJView->installEventFilter(pKeyboard);
     QScrollArea* pScroll = new QScrollArea(pContainer);
     pScroll->setWidget(m_pAutoDJView);

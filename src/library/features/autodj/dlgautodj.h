@@ -5,14 +5,10 @@
 #include <QString>
 #include <QList>
 
-#include "library/autodj/ui_dlgautodj.h"
-#include "preferences/usersettings.h"
-#include "track/track.h"
-#include "library/libraryview.h"
-#include "library/library.h"
+#include "library/features/autodj/autodjprocessor.h"
+#include "library/features/autodj/ui_dlgautodj.h"
 #include "library/trackcollection.h"
-#include "library/autodj/autodjprocessor.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "track/track.h"
 
 class PlaylistTableModel;
 class WTrackTableView;
@@ -20,7 +16,7 @@ class WTrackTableView;
 class DlgAutoDJ : public QFrame, public Ui::DlgAutoDJ {
     Q_OBJECT
   public:
-    DlgAutoDJ(QWidget* parent, Library *pLibrary, AutoDJProcessor* pProcessor);
+    DlgAutoDJ(QWidget* parent, AutoDJProcessor* pProcessor);
     virtual ~DlgAutoDJ();
     
     void onShow();
@@ -44,7 +40,6 @@ class DlgAutoDJ : public QFrame, public Ui::DlgAutoDJ {
   private:
     AutoDJProcessor* m_pAutoDJProcessor;
     PlaylistTableModel* m_pAutoDJTableModel;
-    Library* m_pLibrary;
     
     QModelIndexList m_selectedRows;
 };

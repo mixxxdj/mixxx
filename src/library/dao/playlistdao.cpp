@@ -1,11 +1,11 @@
 #include <QtDebug>
 #include <QtSql>
 
-#include "track/track.h"
 #include "library/dao/playlistdao.h"
+#include "library/features/autodj/autodjprocessor.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "library/autodj/autodjprocessor.h"
+#include "track/track.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO(QSqlDatabase& database)

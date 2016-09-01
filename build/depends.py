@@ -868,8 +868,6 @@ class MixxxCore(Feature):
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
-                   "library/autodj/autodjfeature.cpp",
-                   "library/autodj/autodjprocessor.cpp",
                    "library/dao/directorydao.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/mixxxlibrarytreemodel.cpp",
@@ -877,7 +875,6 @@ class MixxxCore(Feature):
                    "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
                    "library/historyfeature.cpp",
-                   "library/autodj/dlgautodj.cpp",
                    "library/dlgcoverartfullsize.cpp",
                    "library/dlghidden.cpp",
                    "library/dlgmissing.cpp",
@@ -899,6 +896,10 @@ class MixxxCore(Feature):
                    "library/features/analysis/analysisfeature.cpp",
                    "library/features/analysis/analysislibrarytablemodel.cpp",
                    "library/features/analysis/dlganalysis.cpp",
+                   
+                   "library/features/autodj/autodjfeature.cpp",
+                   "library/features/autodj/autodjprocessor.cpp",
+                   "library/features/autodj/dlgautodj.cpp",
 
                    "library/features/banshee/bansheefeature.cpp",
                    "library/features/banshee/bansheeplaylistmodel.cpp",
@@ -1118,7 +1119,6 @@ class MixxxCore(Feature):
             'controllers/dlgprefcontrollersdlg.ui',
             'dialog/dlgaboutdlg.ui',
             'dialog/dlgdevelopertoolsdlg.ui',
-            'library/autodj/dlgautodj.ui',
             'library/dlgcoverartfullsize.ui',
             'library/dlghidden.ui',
             'library/dlgmissing.ui',
@@ -1126,6 +1126,7 @@ class MixxxCore(Feature):
             'library/dlgtrackinfo.ui',
             'library/export/dlgtrackexport.ui',
             'library/features/analysis/dlganalysis.ui',
+            'library/features/autodj/dlgautodj.ui',
             'library/features/recording/dlgrecording.ui',
             'preferences/dialog/dlgprefautodjdlg.ui',
             'preferences/dialog/dlgprefbeatsdlg.ui',

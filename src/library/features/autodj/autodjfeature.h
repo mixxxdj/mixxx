@@ -16,11 +16,10 @@
 #include <QAction>
 #include <QSignalMapper>
 
-#include "library/libraryfeature.h"
-#include "preferences/usersettings.h"
-#include "library/treeitemmodel.h"
-
 #include "library/dao/autodjcratesdao.h"
+#include "library/libraryfeature.h"
+#include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
 #include "widget/wtracktableview.h"
 
 class DlgAutoDJ;

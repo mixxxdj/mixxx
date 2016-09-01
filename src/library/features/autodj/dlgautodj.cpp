@@ -1,21 +1,19 @@
 #include <QMessageBox>
 
-#include "library/autodj/dlgautodj.h"
+#include "library/features/autodj/dlgautodj.h"
 
 #include "library/playlisttablemodel.h"
-#include "widget/wtracktableview.h"
 #include "util/assert.h"
 #include "util/duration.h"
+#include "widget/wtracktableview.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
-                     Library* pLibrary,
                      AutoDJProcessor* pProcessor)
         : QFrame(parent),
           Ui::DlgAutoDJ(),
           m_pAutoDJProcessor(pProcessor),
           // no sorting
-          m_pAutoDJTableModel(nullptr),
-          m_pLibrary(pLibrary) {
+          m_pAutoDJTableModel(nullptr) {
     setupUi(this);
 
     // We do _NOT_ take ownership of this from AutoDJProcessor.

@@ -7,8 +7,8 @@
 #include <QDir>
 #include <QDebug>
 
-#include "library/autodj/autodjfeature.h"
 #include "library/features/analysis/analysisfeature.h"
+#include "library/features/autodj/autodjfeature.h"
 #include "library/features/banshee/bansheefeature.h"
 #include "library/features/browse/browsefeature.h"
 #include "library/features/crates/cratefeature.h"

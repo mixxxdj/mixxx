@@ -5,10 +5,10 @@
 #include <QString>
 #include <QModelIndexList>
 
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
 #include "engine/enginechannel.h"
 #include "library/playlisttablemodel.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/class.h"
 
