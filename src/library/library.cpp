@@ -25,7 +25,6 @@
 #include "library/features/traktor/traktorfeature.h"
 
 #include "library/library_preferences.h"
-#include "library/library.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
 #include "library/librarypanemanager.h"
@@ -40,6 +39,8 @@
 
 #include "widget/wbuttonbar.h"
 #include "widget/wfeatureclickbutton.h"
+
+#include "library/library.h"
 
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
