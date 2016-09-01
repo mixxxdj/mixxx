@@ -7,7 +7,7 @@
 #include <QSqlTableModel>
 #include <QAction>
 
-#include "library/baseplaylistfeature.h"
+#include "library/features/baseplaylist/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
 class TrackCollection;

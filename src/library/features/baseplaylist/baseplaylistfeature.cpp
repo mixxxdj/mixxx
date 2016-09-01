@@ -1,10 +1,11 @@
-#include "library/baseplaylistfeature.h"
-
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QDesktopServices>
 
+#include "library/features/baseplaylist/baseplaylistfeature.h"
+
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/parser.h"
@@ -14,8 +15,6 @@
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarystack.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "util/assert.h"

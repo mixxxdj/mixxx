@@ -872,7 +872,6 @@ class MixxxCore(Feature):
                    "library/mixxxlibraryfeature.cpp",
                    "library/mixxxlibrarytreemodel.cpp",
                    "library/libraryfoldersfeature.cpp",
-                   "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
                    "library/historyfeature.cpp",
                    "library/dlgcoverartfullsize.cpp",
@@ -904,6 +903,8 @@ class MixxxCore(Feature):
                    "library/features/banshee/bansheefeature.cpp",
                    "library/features/banshee/bansheeplaylistmodel.cpp",
                    "library/features/banshee/bansheedbconnection.cpp",
+                   
+                   "library/features/baseplaylist/baseplaylistfeature.cpp",
 
                    "library/features/browse/browsetablemodel.cpp",
                    "library/features/browse/browsethread.cpp",
