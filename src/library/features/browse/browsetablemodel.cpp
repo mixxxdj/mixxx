@@ -5,8 +5,8 @@
 #include <QMessageBox>
 #include <QUrl>
 
-#include "library/browse/browsetablemodel.h"
-#include "library/browse/browsethread.h"
+#include "library/features/browse/browsetablemodel.h"
+#include "library/features/browse/browsethread.h"
 #include "library/previewbuttondelegate.h"
 #include "mixer/playerinfo.h"
 #include "control/controlobject.h"

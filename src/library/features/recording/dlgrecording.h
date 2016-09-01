@@ -2,7 +2,7 @@
 #define DLGRECORDING_H
 
 #include "preferences/usersettings.h"
-#include "library/browse/browsetablemodel.h"
+#include "library/features/browse/browsetablemodel.h"
 #include "library/libraryview.h"
 #include "library/proxytrackmodel.h"
 #include "library/library.h"

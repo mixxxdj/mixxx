@@ -12,8 +12,8 @@
 
 #include <QFileInfo>
 
-#include "library/browse/foldertreemodel.h"
-#include "library/browse/browsefeature.h"
+#include "library/features/browse/foldertreemodel.h"
+#include "library/features/browse/browsefeature.h"
 #include "util/file.h"
 
 FolderTreeModel::FolderTreeModel(QObject *parent)

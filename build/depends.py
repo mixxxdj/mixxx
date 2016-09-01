@@ -888,11 +888,6 @@ class MixxxCore(Feature):
                    "library/libraryfoldermodel.cpp",
                    "library/dao/savedqueriesdao.cpp",
 
-                   "library/browse/browsetablemodel.cpp",
-                   "library/browse/browsethread.cpp",
-                   "library/browse/browsefeature.cpp",
-                   "library/browse/foldertreemodel.cpp",
-
                    "library/export/trackexportdlg.cpp",
                    "library/export/trackexportwizard.cpp",
                    "library/export/trackexportworker.cpp",
@@ -905,9 +900,16 @@ class MixxxCore(Feature):
                    "library/banshee/bansheeplaylistmodel.cpp",
                    "library/banshee/bansheedbconnection.cpp",
 
+                   # Library Features
                    "library/features/analysis/analysisfeature.cpp",
                    "library/features/analysis/analysislibrarytablemodel.cpp",
                    "library/features/analysis/dlganalysis.cpp",
+
+                   "library/features/browse/browsetablemodel.cpp",
+                   "library/features/browse/browsethread.cpp",
+                   "library/features/browse/browsefeature.cpp",
+                   "library/features/browse/foldertreemodel.cpp",
+
                    "library/features/crates/cratefeature.cpp",
                    "library/features/crates/cratetablemodel.cpp",
                    

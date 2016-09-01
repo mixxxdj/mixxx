@@ -10,8 +10,7 @@
 #include <QStringList>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/browse/browsefeature.h"
-#include "library/library.h"
+#include "library/features/browse/browsefeature.h"
 #include "library/trackcollection.h"
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"

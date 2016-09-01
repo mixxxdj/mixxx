@@ -7,7 +7,7 @@
 #include <QDateTime>
 #include <QDirIterator>
 
-#include "library/browse/browsetablemodel.h"
+#include "library/features/browse/browsetablemodel.h"
 #include "sources/soundsourceproxy.h"
 #include "track/trackmetadata.h"
 #include "util/trace.h"

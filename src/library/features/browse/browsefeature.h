@@ -15,8 +15,8 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
-#include "library/browse/browsetablemodel.h"
-#include "library/browse/foldertreemodel.h"
+#include "library/features/browse/browsetablemodel.h"
+#include "library/features/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
 

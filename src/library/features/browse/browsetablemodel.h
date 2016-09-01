@@ -8,7 +8,7 @@
 #include "library/trackcollection.h"
 #include "recording/recordingmanager.h"
 #include "util/file.h"
-#include "library/browse/browsethread.h"
+#include "library/features/browse/browsethread.h"
 
 //constants
 const int COLUMN_PREVIEW = 0;

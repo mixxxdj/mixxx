@@ -5,7 +5,7 @@
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
 #include "library/treeitem.h"
-#include "library/browse/browsefeature.h"
+#include "library/features/browse/browsefeature.h"
 #include "util/assert.h"
 
 SidebarModel::SidebarModel(QObject* parent)
