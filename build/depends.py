@@ -630,6 +630,8 @@ class MixxxCore(Feature):
                    "controllers/dlgprefcontrollers.cpp",
                    "dialog/dlgabout.cpp",
                    "dialog/dlgdevelopertools.cpp",
+                   "dialog/savedqueries/dlgsavedquerieseditor.cpp",
+                   "dialog/savedqueries/savedqueriestablemodel.cpp",
 
                    "preferences/configobject.cpp",
                    "preferences/dialog/dlgprefautodj.cpp",
@@ -1126,6 +1128,7 @@ class MixxxCore(Feature):
             'controllers/dlgprefcontrollersdlg.ui',
             'dialog/dlgaboutdlg.ui',
             'dialog/dlgdevelopertoolsdlg.ui',
+            'dialog/savedqueries/dlgsavedquerieseditor.ui',
             'library/dlgcoverartfullsize.ui',
             'library/dlgtagfetcher.ui',
             'library/dlgtrackinfo.ui',

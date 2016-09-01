@@ -114,6 +114,7 @@ Library::~Library() {
 void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
     // Get the value once to avoid searching again in the hash
     LibraryPaneManager* pPane = getOrCreatePane(id);
+    searchLine->setTrackCollection(m_pTrackCollection);
     pPane->bindSearchBar(searchLine);
 }
 

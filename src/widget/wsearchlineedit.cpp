@@ -1,7 +1,3 @@
-#include "wwidget.h"
-#include "wskincolor.h"
-#include "wsearchlineedit.h"
-
 #include <QAction>
 #include <QDebug>
 #include <QFont>
@@ -11,6 +7,11 @@
 #include <QString>
 #include <QStyle>
 #include <QStyleOption>
+
+#include "dialog/savedqueries/dlgsavedquerieseditor.h"
+#include "widget/wsearchlineedit.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QLineEdit(pParent),
@@ -111,6 +112,10 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
     pal.setBrush(foregroundRole(), m_fgc);
     setPalette(pal);
+}
+
+void WSearchLineEdit::setTrackCollection(TrackCollection* pTrackCollection) {
+    m_pTrackCollection = pTrackCollection;
 }
 
 void WSearchLineEdit::slotRestoreSaveButton() {
@@ -327,21 +332,29 @@ void WSearchLineEdit::restoreQuery() {
         QAction* action = menu.addAction(query.title);
         action->setData(query.id);
     }
+    {
+        menu.addSeparator();
+        QAction* action = menu.addAction(tr("Queries editor"));
+        action->setData(-2);
+    }
     
     QPoint position = m_pDropButton->pos();
     position += QPoint(0, m_pDropButton->height());
     
     QAction* selected = menu.exec(mapToGlobal(position));
-    if (selected == nullptr) {
-        return;
-    }
+    if (selected == nullptr) return;
     
-    int index = selected->data().toInt();
-    if (index < 0) {
-        return;
-    }
+    bool ok;
+    int index = selected->data().toInt(&ok);
+    if (!ok) return;
     
-    m_pCurrentFeature->restoreQuery(index);
+    if (index >= 0) {
+        m_pCurrentFeature->restoreQuery(index);
+    } else if (index == -2 && !m_pTrackCollection.isNull()) {
+        DlgSavedQueriesEditor editor(m_pCurrentFeature, 
+                                     m_pTrackCollection, this);
+        editor.exec();
+    }
 }
 
 void WSearchLineEdit::slotTextChanged(const QString& text) {

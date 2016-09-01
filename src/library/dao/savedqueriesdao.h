@@ -10,6 +10,33 @@
 
 #define SAVEDQUERYTABLE "savedQueries"
 
+enum SavedQueryColums {
+    ID,
+    LIBRARYFEATURE,
+    QUERY,
+    TITLE,
+    SELECTEDITEMS,
+    SORTORDER,
+    VSCROLLBARPOS,
+    SORTCOLUMN,
+    SORTASCENDINGORDER,
+    PINNED,
+    
+    // NUM_COLUMNS should be always the last item
+    NUM_COLUMNS
+};
+
+const QString SAVEDQUERYTABLE_ID = "id";
+const QString SAVEDQUERYTABLE_LIBRARYFEATURE = "libraryFeature";
+const QString SAVEDQUERYTABLE_QUERY = "query";
+const QString SAVEDQUERYTABLE_TITLE = "title";
+const QString SAVEDQUERYTABLE_SELECTEDITEMS = "selectedItems";
+const QString SAVEDQUERYTABLE_SORTORDER = "sortOrder";
+const QString SAVEDQUERYTABLE_VSCROLLBARPOS = "vScrollbarPos";
+const QString SAVEDQUERYTABLE_SORTCOLUMN = "sortColumn";
+const QString SAVEDQUERYTABLE_SORTASCENDINGORDER = "sortAscendingOrder";
+const QString SAVEDQUERYTABLE_PINNED = "pinned";
+
 // This struct allows to save some data to allow interaction between
 // the search bar and the library features
 struct SavedSearchQuery {
