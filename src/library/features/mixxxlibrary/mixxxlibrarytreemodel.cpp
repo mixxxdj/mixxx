@@ -7,7 +7,7 @@
 #include "util/stringhelper.h"
 #include "widget/wpixmapstore.h"
 
-#include "library/mixxxlibrarytreemodel.h"
+#include "library/features/mixxxlibrary/mixxxlibrarytreemodel.h"
 
 namespace  {
 // This is used since MixxxLibraryTreeModel inherits QAbstractItemModel

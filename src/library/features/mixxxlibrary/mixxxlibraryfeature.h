@@ -17,7 +17,7 @@
 #include <QVariant>
 
 #include "library/libraryfeature.h"
-#include "library/mixxxlibrarytreemodel.h"
+#include "library/features/mixxxlibrary/mixxxlibrarytreemodel.h"
 #include "library/dao/trackdao.h"
 #include "preferences/usersettings.h"
 

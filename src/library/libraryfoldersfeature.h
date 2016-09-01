@@ -1,7 +1,7 @@
 #ifndef LIBRARYFOLDERSFEATURE_H
 #define LIBRARYFOLDERSFEATURE_H
 
-#include "library/mixxxlibraryfeature.h"
+#include "library/features/mixxxlibrary/mixxxlibraryfeature.h"
 
 class LibraryFoldersModel;
 

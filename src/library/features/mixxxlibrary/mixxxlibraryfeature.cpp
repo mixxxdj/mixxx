@@ -6,7 +6,7 @@
 #include <QStringList>
 #include <QVBoxLayout>
 
-#include "library/mixxxlibraryfeature.h"
+#include "library/features/mixxxlibrary/mixxxlibraryfeature.h"
 
 #include "library/basetrackcache.h"
 #include "library/librarytablemodel.h"

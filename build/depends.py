@@ -867,8 +867,6 @@ class MixxxCore(Feature):
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
                    "library/dao/directorydao.cpp",
-                   "library/mixxxlibraryfeature.cpp",
-                   "library/mixxxlibrarytreemodel.cpp",
                    "library/libraryfoldersfeature.cpp",
                    "library/playlistfeature.cpp",
                    "library/historyfeature.cpp",
@@ -914,6 +912,9 @@ class MixxxCore(Feature):
                    "library/features/maintenance/hiddentablemodel.cpp",
                    "library/features/maintenance/maintenancefeature.cpp",
                    "library/features/maintenance/missingtablemodel.cpp",
+                   
+                   "library/features/mixxxlibrary/mixxxlibraryfeature.cpp",
+                   "library/features/mixxxlibrary/mixxxlibrarytreemodel.cpp",
                    
                    # External Library Features
                    "library/features/baseexternalfeature/baseexternallibraryfeature.cpp",
