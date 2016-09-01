@@ -3,11 +3,10 @@
 #include <QStringList>
 #include <QUrl>
 
-#include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/features/rhythmbox/rhythmboxfeature.h"
 
 #include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
-#include "library/library.h"
 #include "library/queryutil.h"
 
 RhythmboxFeature::RhythmboxFeature(UserSettingsPointer pConfig,

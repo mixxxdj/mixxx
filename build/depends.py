@@ -907,19 +907,18 @@ class MixxxCore(Feature):
                    "library/baseexternallibraryfeature.cpp",
                    "library/baseexternaltrackmodel.cpp",
                    "library/baseexternalplaylistmodel.cpp",
-                   "library/rhythmbox/rhythmboxfeature.cpp",
 
                    "library/banshee/bansheefeature.cpp",
                    "library/banshee/bansheeplaylistmodel.cpp",
                    "library/banshee/bansheedbconnection.cpp",
-
-                   "library/traktor/traktorfeature.cpp",
 
                    "library/features/crates/cratefeature.cpp",
                    "library/features/crates/cratetablemodel.cpp",
                    "library/features/itunes/itunesfeature.cpp",
                    "library/features/recording/recordingfeature.cpp",
                    "library/features/recording/dlgrecording.cpp",
+                   "library/features/rhythmbox/rhythmboxfeature.cpp",
+                   "library/features/traktor/traktorfeature.cpp",
                    
                    "library/sidebarmodel.cpp",
                    "library/library.cpp",

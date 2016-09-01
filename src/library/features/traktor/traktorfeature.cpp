@@ -8,11 +8,9 @@
 #include <QSettings>
 #include <QDesktopServices>
 
-#include "library/traktor/traktorfeature.h"
+#include "library/features/traktor/traktorfeature.h"
 
-#include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "util/sandbox.h"
