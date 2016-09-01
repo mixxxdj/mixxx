@@ -867,14 +867,12 @@ class MixxxCore(Feature):
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
                    "library/dao/directorydao.cpp",
-                   "library/libraryfoldersfeature.cpp",
                    "library/playlistfeature.cpp",
                    "library/historyfeature.cpp",
                    "library/dlgcoverartfullsize.cpp",
                    "library/dlgtagfetcher.cpp",
                    "library/dlgtrackinfo.cpp",
                    "library/historytreemodel.cpp",
-                   "library/libraryfoldermodel.cpp",
                    "library/dao/savedqueriesdao.cpp",
 
                    "library/export/trackexportdlg.cpp",
@@ -906,6 +904,9 @@ class MixxxCore(Feature):
 
                    "library/features/crates/cratefeature.cpp",
                    "library/features/crates/cratetablemodel.cpp",
+                   
+                   "library/features/libraryfolder/libraryfoldermodel.cpp",
+                   "library/features/libraryfolder/libraryfoldersfeature.cpp",
                    
                    "library/features/maintenance/dlghidden.cpp",
                    "library/features/maintenance/dlgmissing.cpp",

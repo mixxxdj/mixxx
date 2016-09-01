@@ -1,6 +1,6 @@
 #include <QStringList>
 
-#include "library/libraryfoldermodel.h"
+#include "library/features/libraryfolder/libraryfoldermodel.h"
 
 #include "library/libraryfeature.h"
 #include "library/queryutil.h"

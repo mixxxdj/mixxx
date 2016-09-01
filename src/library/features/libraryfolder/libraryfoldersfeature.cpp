@@ -2,9 +2,9 @@
 #include <QAction>
 #include <QMenu>
 
-#include "library/libraryfoldersfeature.h"
+#include "library/features/libraryfolder/libraryfoldersfeature.h"
 
-#include "library/libraryfoldermodel.h"
+#include "library/features/libraryfolder/libraryfoldermodel.h"
 #include "widget/wlibrarysidebar.h"
 
 LibraryFoldersFeature::LibraryFoldersFeature(UserSettingsPointer pConfig,
