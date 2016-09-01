@@ -1,13 +1,13 @@
 #ifndef AUTODJPROCESSOR_H
 #define AUTODJPROCESSOR_H
 
+#include <QModelIndexList>
 #include <QObject>
 #include <QString>
-#include <QModelIndexList>
 
 #include "control/controlproxy.h"
 #include "engine/enginechannel.h"
-#include "library/playlisttablemodel.h"
+#include "library/features/playlist/playlisttablemodel.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/class.h"

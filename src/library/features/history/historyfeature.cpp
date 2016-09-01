@@ -2,16 +2,16 @@
 #include <QMenu>
 #include <QDateTime>
 
-#include "library/features/history/historyfeature.h"
-
 #include "control/controlobject.h"
 #include "library/features/history/historytreemodel.h"
-#include "library/playlisttablemodel.h"
+#include "library/features/playlist/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "widget/wlibrarysidebar.h"
+
+#include "library/features/history/historyfeature.h"
 
 HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
                              Library* pLibrary,

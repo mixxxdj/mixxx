@@ -1,6 +1,6 @@
 #include <QString>
 
-#include "library/playlisttablemodel.h"
+#include "library/features/playlist/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
 

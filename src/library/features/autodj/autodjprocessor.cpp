@@ -1,11 +1,11 @@
-#include "library/features/autodj/autodjprocessor.h"
-
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "library/trackcollection.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "util/math.h"
+
+#include "library/features/autodj/autodjprocessor.h"
 
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";

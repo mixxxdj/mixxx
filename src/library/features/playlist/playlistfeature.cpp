@@ -1,22 +1,20 @@
-#include <QtDebug>
-#include <QMenu>
+#include <QDebug>
 #include <QFile>
 #include <QFileInfo>
+#include <QMenu>
 
-#include "library/playlistfeature.h"
+#include "library/features/playlist/playlistfeature.h"
 
-#include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
-#include "widget/wlibrarytextbrowser.h"
-#include "library/trackcollection.h"
-#include "library/playlisttablemodel.h"
-#include "library/treeitemmodel.h"
-#include "library/queryutil.h"
-#include "library/parser.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/features/playlist/playlisttablemodel.h"
+#include "library/parser.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
+#include "library/treeitemmodel.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/duration.h"
+#include "widget/wlibrarytextbrowser.h"
 
 PlaylistFeature::PlaylistFeature(UserSettingsPointer pConfig,
                                  Library* pLibrary,

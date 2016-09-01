@@ -11,9 +11,9 @@
 #include <QSet>
 #include <QString>
 
-#include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "library/libraryfeature.h"
 #include "track/track.h"
 
 class KeyboardEventFilter;

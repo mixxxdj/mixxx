@@ -7,17 +7,17 @@
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/export/trackexportwizard.h"
+#include "library/features/playlist/playlisttablemodel.h"
 #include "library/library.h"
 #include "library/parser.h"
+#include "library/parsercsv.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
-#include "library/parsercsv.h"
-#include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
+#include "util/assert.h"
 #include "widget/wlibrarystack.h"
 #include "widget/wlibrarytextbrowser.h"
-#include "util/assert.h"
 
 BasePlaylistFeature::BasePlaylistFeature(UserSettingsPointer pConfig,
                                          Library* pLibrary,

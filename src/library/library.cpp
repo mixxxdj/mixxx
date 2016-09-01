@@ -1,11 +1,11 @@
 // library.cpp
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QDebug>
+#include <QDir>
 #include <QItemSelectionModel>
 #include <QMessageBox>
 #include <QTranslator>
-#include <QDir>
-#include <QDebug>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 
@@ -19,18 +19,18 @@
 #include "library/features/libraryfolder/libraryfoldersfeature.h"
 #include "library/features/maintenance/maintenancefeature.h"
 #include "library/features/mixxxlibrary/mixxxlibraryfeature.h"
+#include "library/features/playlist/playlistfeature.h"
 #include "library/features/recording/recordingfeature.h"
 #include "library/features/rhythmbox/rhythmboxfeature.h"
 #include "library/features/traktor/traktorfeature.h"
 
+#include "library/library_preferences.h"
+#include "library/library.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
-#include "library/library.h"
 #include "library/librarypanemanager.h"
-#include "library/library_preferences.h"
 #include "library/librarysidebarexpandedmanager.h"
 #include "library/librarytablemodel.h"
-#include "library/playlistfeature.h"
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"

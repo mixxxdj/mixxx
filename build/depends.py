@@ -864,10 +864,8 @@ class MixxxCore(Feature):
                    "library/coverartcache.cpp",
                    "library/coverartutils.cpp",
 
-                   "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
                    "library/dao/directorydao.cpp",
-                   "library/playlistfeature.cpp",
                    "library/dlgcoverartfullsize.cpp",
                    "library/dlgtagfetcher.cpp",
                    "library/dlgtrackinfo.cpp",
@@ -889,20 +887,20 @@ class MixxxCore(Feature):
                    "library/features/autodj/autodjprocessor.cpp",
                    "library/features/autodj/dlgautodj.cpp",
 
+                   "library/features/banshee/bansheedbconnection.cpp",
                    "library/features/banshee/bansheefeature.cpp",
                    "library/features/banshee/bansheeplaylistmodel.cpp",
-                   "library/features/banshee/bansheedbconnection.cpp",
                    
                    "library/features/baseplaylist/baseplaylistfeature.cpp",
 
+                   "library/features/browse/browsefeature.cpp",
                    "library/features/browse/browsetablemodel.cpp",
                    "library/features/browse/browsethread.cpp",
-                   "library/features/browse/browsefeature.cpp",
                    "library/features/browse/foldertreemodel.cpp",
 
                    "library/features/crates/cratefeature.cpp",
                    "library/features/crates/cratetablemodel.cpp",
-                   
+
                    "library/features/history/historyfeature.cpp",
                    "library/features/history/historytreemodel.cpp",
                    
@@ -918,21 +916,24 @@ class MixxxCore(Feature):
                    "library/features/mixxxlibrary/mixxxlibraryfeature.cpp",
                    "library/features/mixxxlibrary/mixxxlibrarytreemodel.cpp",
                    
+                   "library/features/playlist/playlistfeature.cpp",
+                   "library/features/playlist/playlisttablemodel.cpp",
+                   
                    # External Library Features
                    "library/features/baseexternalfeature/baseexternallibraryfeature.cpp",
-                   "library/features/baseexternalfeature/baseexternaltrackmodel.cpp",
                    "library/features/baseexternalfeature/baseexternalplaylistmodel.cpp",
+                   "library/features/baseexternalfeature/baseexternaltrackmodel.cpp",
 
                    "library/features/itunes/itunesfeature.cpp",
-                   "library/features/recording/recordingfeature.cpp",
                    "library/features/recording/dlgrecording.cpp",
+                   "library/features/recording/recordingfeature.cpp",
                    "library/features/rhythmbox/rhythmboxfeature.cpp",
                    "library/features/traktor/traktorfeature.cpp",
                    
-                   "library/sidebarmodel.cpp",
                    "library/library.cpp",
                    "library/librarypanemanager.cpp",
                    "library/librarysidebarexpandedmanager.cpp",
+                   "library/sidebarmodel.cpp",
 
                    "library/scanner/libraryscanner.cpp",
                    "library/scanner/libraryscannerdlg.cpp",

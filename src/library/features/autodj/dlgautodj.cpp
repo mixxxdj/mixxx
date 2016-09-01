@@ -1,11 +1,11 @@
 #include <QMessageBox>
 
-#include "library/features/autodj/dlgautodj.h"
-
-#include "library/playlisttablemodel.h"
+#include "library/features/playlist/playlisttablemodel.h"
 #include "util/assert.h"
 #include "util/duration.h"
 #include "widget/wtracktableview.h"
+
+#include "library/features/autodj/dlgautodj.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      AutoDJProcessor* pProcessor)
