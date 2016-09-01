@@ -2,10 +2,10 @@
 #include <QMenu>
 #include <QDateTime>
 
-#include "library/historyfeature.h"
+#include "library/features/history/historyfeature.h"
 
 #include "control/controlobject.h"
-#include "library/historytreemodel.h"
+#include "library/features/history/historytreemodel.h"
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"

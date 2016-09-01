@@ -1,10 +1,10 @@
 #include <QDateTime>
 
-#include "library/historyfeature.h"
+#include "library/features/history/historyfeature.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 
-#include "library/historytreemodel.h"
+#include "library/features/history/historytreemodel.h"
 
 HistoryTreeModel::HistoryTreeModel(HistoryFeature* pFeature,
                                    TrackCollection* pTrackCollection,

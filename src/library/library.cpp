@@ -7,11 +7,14 @@
 #include <QDir>
 #include <QDebug>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
+
 #include "library/features/analysis/analysisfeature.h"
 #include "library/features/autodj/autodjfeature.h"
 #include "library/features/banshee/bansheefeature.h"
 #include "library/features/browse/browsefeature.h"
 #include "library/features/crates/cratefeature.h"
+#include "library/features/history/historyfeature.h"
 #include "library/features/itunes/itunesfeature.h"
 #include "library/features/libraryfolder/libraryfoldersfeature.h"
 #include "library/features/maintenance/maintenancefeature.h"
@@ -20,7 +23,6 @@
 #include "library/features/rhythmbox/rhythmboxfeature.h"
 #include "library/features/traktor/traktorfeature.h"
 
-#include "library/historyfeature.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
 #include "library/library.h"
@@ -36,11 +38,8 @@
 #include "util/assert.h"
 #include "util/sandbox.h"
 
-
 #include "widget/wbuttonbar.h"
 #include "widget/wfeatureclickbutton.h"
-
-#include "controllers/keyboard/keyboardeventfilter.h"
 
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;

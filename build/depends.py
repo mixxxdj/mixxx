@@ -868,11 +868,9 @@ class MixxxCore(Feature):
                    "library/libraryfeature.cpp",
                    "library/dao/directorydao.cpp",
                    "library/playlistfeature.cpp",
-                   "library/historyfeature.cpp",
                    "library/dlgcoverartfullsize.cpp",
                    "library/dlgtagfetcher.cpp",
                    "library/dlgtrackinfo.cpp",
-                   "library/historytreemodel.cpp",
                    "library/dao/savedqueriesdao.cpp",
 
                    "library/export/trackexportdlg.cpp",
@@ -905,6 +903,9 @@ class MixxxCore(Feature):
                    "library/features/crates/cratefeature.cpp",
                    "library/features/crates/cratetablemodel.cpp",
                    
+                   "library/features/history/historyfeature.cpp",
+                   "library/features/history/historytreemodel.cpp",
+                   
                    "library/features/libraryfolder/libraryfoldermodel.cpp",
                    "library/features/libraryfolder/libraryfoldersfeature.cpp",
                    
@@ -921,6 +922,7 @@ class MixxxCore(Feature):
                    "library/features/baseexternalfeature/baseexternallibraryfeature.cpp",
                    "library/features/baseexternalfeature/baseexternaltrackmodel.cpp",
                    "library/features/baseexternalfeature/baseexternalplaylistmodel.cpp",
+
                    "library/features/itunes/itunesfeature.cpp",
                    "library/features/recording/recordingfeature.cpp",
                    "library/features/recording/dlgrecording.cpp",
