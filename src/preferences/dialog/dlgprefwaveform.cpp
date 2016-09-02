@@ -112,12 +112,14 @@ void DlgPrefWaveform::slotUpdate() {
 
     WaveformSettings waveformSettings(m_pConfig);
     enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
+    generateWaveformsWithAnalysis->setChecked(waveformSettings.waveformGenerateWithAnalysisEnabled());
     calculateCachedWaveformDiskUsage();
 }
 
 void DlgPrefWaveform::slotApply() {
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
+    waveformSettings.setWaveformGenerateWithAnalysisEnabled(generateWaveformsWithAnalysis->isChecked());
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {
