@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QScopedPointer>
 
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "util/stat.h"
 #include "util/performancetimer.h"
 #include "util/cmdlineargs.h"
@@ -128,7 +128,7 @@ class GuiTickTimer : public QObject {
     void slotGuiTick50ms(double v);
 
   private:
-    QScopedPointer<ControlObjectSlave> m_pGuiTick50ms;
+    QScopedPointer<ControlProxy> m_pGuiTick50ms;
     mixxx::Duration m_interval;
     mixxx::Duration m_elapsed;
     bool m_bActive;

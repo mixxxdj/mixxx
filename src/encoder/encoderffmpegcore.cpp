@@ -91,7 +91,7 @@ EncoderFfmpegCore::~EncoderFfmpegCore() {
     delete m_pResample;
 }
 
-//call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
+//call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
 void EncoderFfmpegCore::flush() {
 }
 
@@ -189,7 +189,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
     free(l_fNormalizedSamples);
 }
 
-// Originally called from engineshoutcast.cpp to update metadata information
+// Originally called from enginebroadcast.cpp to update metadata information
 // when streaming, however, this causes pops
 //
 // Currently this method is used before init() once to save artist, title and album

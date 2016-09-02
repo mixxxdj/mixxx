@@ -1,6 +1,6 @@
 #include "track/trackmetadata.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 /*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
 
@@ -67,14 +67,19 @@ QString TrackMetadata::reformatYear(QString year) {
 }
 
 TrackMetadata::TrackMetadata()
-    : m_bitrate(0),
+    : m_duration(0.0),
+      m_bitrate(0),
       m_channels(0),
-      m_duration(0),
       m_sampleRate(0) {
 }
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
-    return (lhs.getArtist() == rhs.getArtist()) &&
+    // Compare the integer and double fields 1st for maximum efficiency
+    return (lhs.getBitrate() == rhs.getBitrate()) &&
+            (lhs.getChannels() == rhs.getChannels()) &&
+            (lhs.getSampleRate() == rhs.getSampleRate()) &&
+            (lhs.getDuration() == rhs.getDuration()) &&
+            (lhs.getArtist() == rhs.getArtist()) &&
             (lhs.getTitle() == rhs.getTitle()) &&
             (lhs.getAlbum() == rhs.getAlbum()) &&
             (lhs.getAlbumArtist() == rhs.getAlbumArtist()) &&
@@ -86,12 +91,8 @@ bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
             (lhs.getComposer() == rhs.getComposer()) &&
             (lhs.getGrouping() == rhs.getGrouping()) &&
             (lhs.getKey() == rhs.getKey()) &&
-            (lhs.getChannels() == rhs.getChannels()) &&
-            (lhs.getSampleRate() == rhs.getSampleRate()) &&
-            (lhs.getBitrate() == rhs.getBitrate()) &&
-            (lhs.getDuration() == rhs.getDuration()) &&
             (lhs.getBpm() == rhs.getBpm()) &&
             (lhs.getReplayGain() == rhs.getReplayGain());
 }
 
-} //namespace Mixxx
+} //namespace mixxx

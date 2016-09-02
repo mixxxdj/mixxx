@@ -3,7 +3,7 @@
 
 #include <QtDebug>
 
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "test/mixxxtest.h"
@@ -41,7 +41,7 @@ class EngineMasterTest : public MixxxTest {
   protected:
     virtual void SetUp() {
         m_pMaster = new EngineMaster(config(), "[Master]", NULL, false, false);
-        m_pMasterEnabled = new ControlObjectSlave(ConfigKey("[Master]", "enabled"));
+        m_pMasterEnabled = new ControlProxy(ConfigKey("[Master]", "enabled"));
         m_pMasterEnabled->set(1);
     }
 
@@ -71,7 +71,7 @@ class EngineMasterTest : public MixxxTest {
     }
 
     EngineMaster* m_pMaster;
-    ControlObjectSlave* m_pMasterEnabled;
+    ControlProxy* m_pMasterEnabled;
 };
 
 TEST_F(EngineMasterTest, SingleChannelOutputWorks) {

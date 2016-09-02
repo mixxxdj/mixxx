@@ -15,12 +15,12 @@
 
 #include <vector>
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourceMp3: public SoundSource {
 public:
-    explicit SoundSourceMp3(QUrl url);
-    ~SoundSourceMp3();
+    explicit SoundSourceMp3(const QUrl& url);
+    ~SoundSourceMp3() override;
 
     void close() override;
 
@@ -36,7 +36,7 @@ public:
             bool readStereoSamples);
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     QFile m_file;
     quint64 m_fileSize;
@@ -88,10 +88,10 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceMp3(url));
+        return newSoundSourceFromUrl<SoundSourceMp3>(url);
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEMP3_H

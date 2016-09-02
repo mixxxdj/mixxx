@@ -12,14 +12,7 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent)
 DlgCoverArtFullSize::~DlgCoverArtFullSize() {
 }
 
-void DlgCoverArtFullSize::init(CoverInfo info) {
-    // TODO(rryan): don't do this in the main thread
-    QImage cover = CoverArtUtils::loadCover(info);
-    QPixmap pixmap;
-    if (!cover.isNull()) {
-        pixmap.convertFromImage(cover);
-    }
-
+void DlgCoverArtFullSize::init(QPixmap pixmap) {
     if (pixmap.isNull()) {
         return;
     }

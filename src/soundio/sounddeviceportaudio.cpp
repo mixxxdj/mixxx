@@ -27,8 +27,8 @@
 #include <QLibrary>
 #endif
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -36,6 +36,7 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
+#include "util/math.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
 
@@ -45,9 +46,14 @@ volatile int SoundDevicePortAudio::m_underflowHappened = 0;
 namespace {
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
-static const int kDriftReserve = 1;
+const int kDriftReserve = 1;
+
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
-static const int kFifoSize = 2 * kDriftReserve + 1;
+const int kFifoSize = 2 * kDriftReserve + 1;
+
+// We warn only at invalid timing 3, since the first two
+// callbacks can be always wrong due to a setup/open jitter
+const int m_invalidTimeInfoWarningCount = 3;
 
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
@@ -99,7 +105,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_underflowUpdateCount(0),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2),
-          m_invalidTimeInfoWarned(false) {
+          m_invalidTimeInfoCount(0),
+          m_lastCallbackEntrytoDacSecs(0) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
@@ -109,11 +116,11 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 
-    m_pMasterAudioLatencyOverloadCount = new ControlObjectSlave("[Master]",
+    m_pMasterAudioLatencyOverloadCount = new ControlProxy("[Master]",
             "audio_latency_overload_count");
-    m_pMasterAudioLatencyUsage = new ControlObjectSlave("[Master]",
+    m_pMasterAudioLatencyUsage = new ControlProxy("[Master]",
             "audio_latency_usage");
-    m_pMasterAudioLatencyOverload = new ControlObjectSlave("[Master]",
+    m_pMasterAudioLatencyOverload = new ControlProxy("[Master]",
             "audio_latency_overload");
 
     m_inputParams.device = 0;
@@ -241,6 +248,8 @@ Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
 
     qDebug() << "Opening stream with id" << m_devId;
 
+    m_lastCallbackEntrytoDacSecs = bufferMSec / 1000.0;
+
     m_syncBuffers = syncBuffers;
 
     // Create the callback function pointer.
@@ -364,6 +373,8 @@ Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
         if (m_pMasterAudioLatencyOverloadCount) {
             m_pMasterAudioLatencyOverloadCount->set(0);
         }
+
+        m_invalidTimeInfoCount = 0;
     }
     m_pStream = pStream;
     return OK;
@@ -837,7 +848,6 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
     // This must be the very first call, else timeInfo becomes invalid
-    m_clkRefTimer.start();
     updateCallbackEntryToDacTime(timeInfo);
 
     Trace trace("SoundDevicePortAudio::callbackProcessClkRef %1",
@@ -916,18 +926,6 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         --m_underflowUpdateCount;
     }
 
-    m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate
-            > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
-        double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
-        m_pMasterAudioLatencyUsage->set(secInAudioCb /
-                (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
-        m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
-        m_framesSinceAudioLatencyUsageUpdate = 0;
-        //qDebug() << m_pMasterAudioLatencyUsage
-        //         << m_pMasterAudioLatencyUsage->get();
-    }
-
     //Note: Input is processed first so that any ControlObject changes made in
     //      response to input are processed as soon as possible (that is, when
     //      m_pSoundManager->requestBuffer() is called below.)
@@ -967,38 +965,92 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     m_pSoundManager->writeProcess();
 
-    m_timeInAudioCallback += m_clkRefTimer.elapsed();
+    updateAudioLatencyUsage(framesPerBuffer);
+
     return paContinue;
 }
 
 void SoundDevicePortAudio::updateCallbackEntryToDacTime(
         const PaStreamCallbackTimeInfo* timeInfo) {
-    PaTime callbackEntrytoDacSecs = -1;
-    if (timeInfo->outputBufferDacTime > 0) {
-        callbackEntrytoDacSecs = timeInfo->outputBufferDacTime
-                - timeInfo->currentTime;
-    }
+    double timeSinceLastCbSecs = m_clkRefTimer.restart().toDoubleSeconds();
+
+    // Plausibility check:
+    // We have the DAC timing as reference with almost no jitter
+    // (else the sound would be distorted)
+    // The Callback is called with the same rate, but with a portion
+    // of jitter.
+    // We may get callbackEntrytoDacSecs (CED) from Portaudio or unreliable
+    // rubish, depending on the underlying driver.
+    // timeSinceLastCb (SLC), is the time between the callback measured by the
+    // CPU Which has almost but not the same speed than the DAC timing
+    //
+    // DAC ---|---------|---------|---------|---------| 10 units
+    // CED1           |-----------|                     12 units
+    // CED2                   |-------------|           14 units
+    // CED3                           |---------------| 16 units
+    // SLC1|----------|                                 11 units
+    // SLC2           |-------|                          8 units
+    // SLC3                   |-------|                  8 units
+    //
+    // To check if we can trust the callbackEntrytoDacSecs (CED) value
+    // this must be almost true (almost because of the DAC clock CPU clock
+    // difference)
+    //
+    // SLC2 + CED2 = CED1 + DAC  -> 8 + 14 = 12 + 10
+
+    PaTime callbackEntrytoDacSecs = timeInfo->outputBufferDacTime
+            - timeInfo->currentTime;
     double bufferSizeSec = m_framesPerBuffer / m_dSampleRate;
 
-    if (callbackEntrytoDacSecs < 0 ||
-            callbackEntrytoDacSecs  > bufferSizeSec * 2) {
-        // m_timeInfo Invalid, Audio API broken
-        if (!m_invalidTimeInfoWarned) {
+
+    double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -
+            (m_lastCallbackEntrytoDacSecs + bufferSizeSec);
+
+    if (timeSinceLastCbSecs < bufferSizeSec * 2 &&
+            fabs(diff) / bufferSizeSec > 0.1) {
+        // Fall back to CPU timing:
+        // If timeSinceLastCbSecs from a CPU timer is reasonable (no underflow)
+        // and we have more than 10 % difference to the timing provided by Portaudio
+        // we do not trust the Portaudio timing.
+        // (A difference up to ~ 5 % is normal)
+
+        m_invalidTimeInfoCount++;
+
+        if (m_invalidTimeInfoCount == m_invalidTimeInfoWarningCount) {
             qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
-                       << "waveform syncing disabled."
+                       << "syncing waveforms with a CPU Timer"
                        << "DacTime:" << timeInfo->outputBufferDacTime
-                       << "EntrytoDac:" << callbackEntrytoDacSecs;
-            m_invalidTimeInfoWarned = true;
+                       << "EntrytoDac:" << callbackEntrytoDacSecs
+                       << "TimeSinceLastCb:" << timeSinceLastCbSecs
+                       << "diff:" << diff;
         }
-        // Assume we are in Time
-        VisualPlayPosition::setCallbackEntryToDacSecs(bufferSizeSec, m_clkRefTimer);
-    } else {
-        VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
+
+        callbackEntrytoDacSecs = (m_lastCallbackEntrytoDacSecs + bufferSizeSec)
+                - timeSinceLastCbSecs;
+        // clamp values to avoid a big offset due to clock drift.
+        callbackEntrytoDacSecs = math_clamp(callbackEntrytoDacSecs, 0.0, bufferSizeSec * 2);
     }
 
-    //qDebug() << "TimeInfo"
-    //         << (timeInfo->currentTime - floor(timeInfo->currentTime))
-    //         << (timeInfo->outputBufferDacTime - floor(timeInfo->outputBufferDacTime));
-    //qDebug() << "TimeInfo" << bufferSizeSec
-    //        << timeInfo->outputBufferDacTime - timeInfo->currentTime;
+    VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
+    m_lastCallbackEntrytoDacSecs = callbackEntrytoDacSecs;
+
+    //qDebug() << callbackEntrytoDacSecs << timeSinceLastCbSecs;
+}
+
+void SoundDevicePortAudio::updateAudioLatencyUsage(
+        const unsigned int framesPerBuffer) {
+    m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
+    if (m_framesSinceAudioLatencyUsageUpdate
+            > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
+        double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
+        m_pMasterAudioLatencyUsage->set(
+                secInAudioCb
+                        / (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
+        m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
+        m_framesSinceAudioLatencyUsageUpdate = 0;
+        //qDebug() << m_pMasterAudioLatencyUsage
+        //         << m_pMasterAudioLatencyUsage->get();
+    }
+    // measure time in Audio callback at the very last
+    m_timeInAudioCallback += m_clkRefTimer.elapsed();
 }

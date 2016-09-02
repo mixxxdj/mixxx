@@ -3,8 +3,8 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "widget/wwidget.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "waveform/visualplayposition.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
@@ -79,15 +79,15 @@ bool WaveformWidgetRenderer::init() {
     //qDebug() << "WaveformWidgetRenderer::init";
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
-    m_pRateControlObject = new ControlObjectSlave(
+    m_pRateControlObject = new ControlProxy(
             m_group, "rate");
-    m_pRateRangeControlObject = new ControlObjectSlave(
+    m_pRateRangeControlObject = new ControlProxy(
             m_group, "rateRange");
-    m_pRateDirControlObject = new ControlObjectSlave(
+    m_pRateDirControlObject = new ControlProxy(
             m_group, "rate_dir");
-    m_pGainControlObject = new ControlObjectSlave(
+    m_pGainControlObject = new ControlProxy(
             m_group, "total_gain");
-    m_pTrackSamplesControlObject = new ControlObjectSlave(
+    m_pTrackSamplesControlObject = new ControlProxy(
             m_group, "track_samples");
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -52,9 +52,9 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
     ModPlug::ModPlug_SetSettings(&settings);
 }
 
-SoundSourceModPlug::SoundSourceModPlug(QUrl url)
+SoundSourceModPlug::SoundSourceModPlug(const QUrl& url)
         : SoundSource(url, getModPlugTypeFromUrl(url)),
-          m_pModFile(NULL),
+          m_pModFile(nullptr),
           m_seekPos(0) {
 }
 
@@ -74,10 +74,10 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
 
     ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
             fileBuf.length());
-    if (NULL != pModFile) {
+    if (nullptr != pModFile) {
         pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
-        pTrackMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000);
+        pTrackMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000.0);
         pTrackMetadata->setBitrate(8); // not really, but fill in something...
         ModPlug::ModPlug_Unload(pModFile);
     }
@@ -85,7 +85,7 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
     return pModFile ? OK : ERR;
 }
 
-Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     ScopedTimer t("SoundSourceModPlug::open()");
 
     // read module file to byte array
@@ -99,11 +99,11 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     // get ModPlugFile descriptor for later access
     m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(),
             m_fileBuf.length());
-    if (m_pModFile == NULL) {
+    if (m_pModFile == nullptr) {
         // an error occurred
         t.cancel();
         qDebug() << "[ModPlug] Could not load module file: " << fileName;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     DEBUG_ASSERT(0 == (kChunkSizeInBytes % sizeof(m_sampleBuf[0])));
@@ -155,13 +155,13 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     setFrameCount(samples2frames(m_sampleBuf.size()));
     m_seekPos = 0;
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceModPlug::close() {
     if (m_pModFile) {
         ModPlug::ModPlug_Unload(m_pModFile);
-        m_pModFile = NULL;
+        m_pModFile = nullptr;
     }
 }
 
@@ -204,4 +204,4 @@ QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

@@ -7,12 +7,12 @@
 
 class QFile;
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourceWV: public SoundSourcePlugin {
   public:
     explicit SoundSourceWV(const QUrl& url);
-    ~SoundSourceWV();
+    ~SoundSourceWV() override;
 
     void close() override;
 
@@ -22,7 +22,7 @@ class SoundSourceWV: public SoundSourcePlugin {
             CSAMPLE* sampleBuffer) override;
 
   private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     static int32_t ReadBytesCallback(void* id, void* data, int bcount);
     static uint32_t GetPosCallback(void* id);
@@ -49,12 +49,12 @@ public:
     SoundSourcePointer newSoundSource(const QUrl& url) override;
 };
 
-}  // namespace Mixxx
+}  // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*);
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*);
 
 #endif // MIXXX_SOUNDSOURCEWV_H

@@ -33,16 +33,13 @@ void WCoverArtMenu::createActions() {
     addAction(m_pReload);
 }
 
-void WCoverArtMenu::setCoverArt(const QString& trackLocation, const CoverInfo& coverInfo) {
-    m_trackLocation = trackLocation;
+void WCoverArtMenu::setCoverArt(const CoverInfo& coverInfo) {
     m_coverInfo = coverInfo;
 }
 
 void WCoverArtMenu::slotChange() {
     QFileInfo fileInfo;
-    if (!m_trackLocation.isEmpty()) {
-        fileInfo = QFileInfo(m_trackLocation);
-    } else if (!m_coverInfo.trackLocation.isEmpty()) {
+    if (!m_coverInfo.trackLocation.isEmpty()) {
         fileInfo = QFileInfo(m_coverInfo.trackLocation);
     }
 
@@ -57,8 +54,8 @@ void WCoverArtMenu::slotChange() {
     }
 
     QStringList extensions = CoverArtUtils::supportedCoverArtExtensions();
-    for (QStringList::iterator it = extensions.begin(); it != extensions.end(); ++it) {
-        it->prepend("*.");
+    for (auto&& extension : extensions) {
+        extension.prepend("*.");
     }
     QString supportedText = QString("%1 (%2)").arg(tr("Image Files"))
             .arg(extensions.join(" "));
@@ -72,28 +69,30 @@ void WCoverArtMenu::slotChange() {
 
     // TODO(rryan): Ask if user wants to copy the file.
 
-    CoverArt art;
+    CoverInfo coverInfo;
     // Create a security token for the file.
     QFileInfo selectedCover(selectedCoverPath);
     SecurityTokenPointer pToken = Sandbox::openSecurityToken(
         selectedCover, true);
-    art.image = QImage(selectedCoverPath);
-    if (art.image.isNull()) {
+    QImage image(selectedCoverPath);
+    if (image.isNull()) {
         // TODO(rryan): feedback
         return;
     }
-    art.info.type = CoverInfo::FILE;
-    art.info.source = CoverInfo::USER_SELECTED;
-    art.info.coverLocation = selectedCoverPath;
-    art.info.hash = CoverArtUtils::calculateHash(art.image);
-    qDebug() << "WCoverArtMenu::slotChange emit" << art;
-    emit(coverArtSelected(art));
+    coverInfo.type = CoverInfo::FILE;
+    coverInfo.source = CoverInfo::USER_SELECTED;
+    coverInfo.coverLocation = selectedCoverPath;
+    // TODO() here we may introduce a duplicate hash code
+    coverInfo.hash = CoverArtUtils::calculateHash(image);
+    coverInfo.trackLocation = m_coverInfo.trackLocation;
+    qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
+    emit(coverInfoSelected(coverInfo));
 }
 
 void WCoverArtMenu::slotUnset() {
-    CoverArt art;
-    art.info.type = CoverInfo::NONE;
-    art.info.source = CoverInfo::USER_SELECTED;
-    qDebug() << "WCoverArtMenu::slotUnset emit" << art;
-    emit(coverArtSelected(art));
+    CoverInfo coverInfo;
+    coverInfo.type = CoverInfo::NONE;
+    coverInfo.source = CoverInfo::USER_SELECTED;
+    qDebug() << "WCoverArtMenu::slotUnset emit" << coverInfo;
+    emit(coverInfoSelected(coverInfo));
 }

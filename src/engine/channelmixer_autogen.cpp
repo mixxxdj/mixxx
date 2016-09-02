@@ -1,6 +1,6 @@
 #include "engine/channelmixer.h"
-#include "util/timer.h"
 #include "util/sample.h"
+#include "util/timer.h"
 ////////////////////////////////////////////////////////
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //
 // SEE scripts/generate_sample_functions.py           //

@@ -5,14 +5,14 @@
 #include "library/playlisttablemodel.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
-#include "util/time.h"
+#include "util/duration.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      UserSettingsPointer pConfig,
                      Library* pLibrary,
                      AutoDJProcessor* pProcessor,
                      TrackCollection* pTrackCollection,
-                     MixxxKeyboard* pKeyboard)
+                     KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
           m_pAutoDJProcessor(pProcessor),
@@ -60,13 +60,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
             this, SLOT(skipNextButton(bool)));
 
-#ifdef __AUTODJCRATES__
     connect(pushButtonAddRandom, SIGNAL(clicked(bool)),
             this, SIGNAL(addRandomButton(bool)));
-#else // __AUTODJCRATES__
-    pushButtonAddRandom->setVisible(false);
-    horizontalLayout->removeWidget(pushButtonAddRandom);
-#endif // __AUTODJCRATES__
 
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
             this, SLOT(fadeNowButton(bool)));
@@ -142,16 +137,16 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
     switch (error) {
         case AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING:
             QMessageBox::warning(
-                    NULL, tr("Auto-DJ"),
-                    tr("One deck must be stopped to enable Auto-DJ mode."),
+                    NULL, tr("Auto DJ"),
+                    tr("One deck must be stopped to enable Auto DJ mode."),
                     QMessageBox::Ok);
             // Make sure the button becomes unpushed.
             pushButtonAutoDJ->setChecked(false);
             break;
         case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
             QMessageBox::warning(
-                    NULL, tr("Auto-DJ"),
-                    tr("Decks 3 and 4 must be stopped to enable Auto-DJ mode."),
+                    NULL, tr("Auto DJ"),
+                    tr("Decks 3 and 4 must be stopped to enable Auto DJ mode."),
                     QMessageBox::Ok);
             pushButtonAutoDJ->setChecked(false);
             break;
@@ -205,7 +200,7 @@ void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
 }
 
 void DlgAutoDJ::updateSelectionInfo() {
-    int duration = 0;
+    double duration = 0.0;
 
     QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
 
@@ -219,7 +214,7 @@ void DlgAutoDJ::updateSelectionInfo() {
     QString label;
 
     if (!indices.isEmpty()) {
-        label.append(Time::formatSeconds(duration));
+        label.append(mixxx::Duration::formatSeconds(duration));
         label.append(QString(" (%1)").arg(indices.size()));
         labelSelectionInfo->setText(label);
         labelSelectionInfo->setEnabled(true);

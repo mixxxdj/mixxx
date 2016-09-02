@@ -70,7 +70,7 @@ class BulkController : public Controller {
     }
 
     virtual bool matchPreset(const PresetInfo& preset);
-    virtual bool matchProductInfo(QHash <QString,QString >);
+    virtual bool matchProductInfo(const ProductInfo& product);
 
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length);

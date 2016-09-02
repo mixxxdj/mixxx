@@ -5,7 +5,7 @@
 
 #include <id3tag.h>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -154,11 +154,11 @@ bool decodeFrameHeader(
 
 } // anonymous namespace
 
-SoundSourceMp3::SoundSourceMp3(QUrl url)
+SoundSourceMp3::SoundSourceMp3(const QUrl& url)
         : SoundSource(url, "mp3"),
           m_file(getLocalFileName()),
           m_fileSize(0),
-          m_pFileData(NULL),
+          m_pFileData(nullptr),
           m_avgSeekFrameCount(0),
           m_curFrameIndex(getMinFrameIndex()),
           m_madSynthCount(0) {
@@ -184,14 +184,14 @@ void SoundSourceMp3::finishDecoding() {
     mad_stream_finish(&m_madStream);
 }
 
-Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    DEBUG_ASSERT(!hasChannelCount());
-    DEBUG_ASSERT(!hasSamplingRate());
+SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+    DEBUG_ASSERT(!hasValidChannelCount());
+    DEBUG_ASSERT(!hasValidSamplingRate());
 
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file:" << m_file.fileName();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     // Get a pointer to the file using memory mapped IO
@@ -268,7 +268,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
                     << madSampleRate;
             // Abort
             mad_header_finish(&madHeader);
-            return ERR;
+            return OpenResult::FAILED;
         }
         // Count valid frames separated by its sampling rate
         headerPerSamplingRate[samplingRateIndex]++;
@@ -294,7 +294,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
             qWarning() << "Unrecoverable MP3 header error:"
                     << mad_stream_errorstr(&m_madStream);
             // Abort
-            return ERR;
+            return OpenResult::FAILED;
         }
     }
 
@@ -303,7 +303,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         qWarning() << "SSMP3: This is not a working MP3 file:"
                 << m_file.fileName();
         // Abort
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     int mostCommonSamplingRateIndex = kSamplingRateCount; // invalid
@@ -337,7 +337,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     } else {
         qWarning() << "No single valid sampling rate in header";
         // Abort
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     // Initialize the AudioSource
@@ -360,10 +360,10 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (m_curFrameIndex != m_seekFrameList.front().frameIndex) {
         qWarning() << "Failed to start decoding:" << m_file.fileName();
         // Abort
-        return ERR;
+        return OpenResult::FAILED;
     }
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceMp3::close() {
@@ -371,7 +371,7 @@ void SoundSourceMp3::close() {
 
     if (m_pFileData) {
         m_file.unmap(m_pFileData);
-        m_pFileData = NULL;
+        m_pFileData = nullptr;
     }
 
     m_file.close();
@@ -431,7 +431,7 @@ void SoundSourceMp3::addSeekFrame(
     DEBUG_ASSERT(m_seekFrameList.empty() ||
             (m_seekFrameList.back().frameIndex < frameIndex));
     DEBUG_ASSERT(m_seekFrameList.empty() ||
-            (NULL == pInputData) ||
+            (nullptr == pInputData) ||
             (0 < (pInputData - m_seekFrameList.back().pInputData)));
     SeekFrameType seekFrame;
     seekFrame.pInputData = pInputData;
@@ -718,4 +718,4 @@ QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

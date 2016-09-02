@@ -2,6 +2,7 @@
 #define CONTROLBEHAVIOR_H
 
 #include <QTimer>
+#include <QScopedPointer>
 
 #include "controllers/midi/midimessage.h"
 
@@ -116,9 +117,17 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
                                            ControlDoublePrivate* pControl);
 
   private:
+    // We create many hundreds of push buttons at Mixxx startup and most of them
+    // never use their timer. Delay creation of the timer until it's needed.
+    QTimer* getTimer() {
+        if (m_pushTimer.isNull()) {
+            m_pushTimer.reset(new QTimer());
+        }
+        return m_pushTimer.data();
+    }
     ButtonMode m_buttonMode;
     int m_iNumStates;
-    QTimer m_pushTimer;
+    QScopedPointer<QTimer> m_pushTimer;
 };
 
 #endif /* CONTROLBEHAVIOR_H */

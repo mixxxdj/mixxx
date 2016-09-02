@@ -7,12 +7,12 @@
 #include "util/debug.h"
 
 WBaseWidget::WBaseWidget(QWidget* pWidget)
-        : m_pDisplayConnection(NULL),
+        : m_pDisplayConnection(nullptr),
           m_pWidget(pWidget) {
 }
 
 WBaseWidget::~WBaseWidget() {
-    m_pDisplayConnection = NULL;
+    m_pDisplayConnection = nullptr;
     while (!m_leftConnections.isEmpty()) {
         delete m_leftConnections.takeLast();
     }
@@ -79,43 +79,43 @@ double WBaseWidget::getControlParameterRight() const {
 }
 
 double WBaseWidget::getControlParameterDisplay() const {
-    if (m_pDisplayConnection != NULL) {
+    if (m_pDisplayConnection != nullptr) {
         return m_pDisplayConnection->getControlParameter();
     }
     return 0.0;
 }
 
 void WBaseWidget::resetControlParameter() {
-    foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
+    for (ControlParameterWidgetConnection* pControlConnection : m_connections) {
         pControlConnection->resetControl();
     }
 }
 
 void WBaseWidget::setControlParameter(double v) {
-    foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
+    for (ControlParameterWidgetConnection* pControlConnection : m_connections) {
         pControlConnection->setControlParameter(v);
     }
 }
 
 void WBaseWidget::setControlParameterUp(double v) {
-    foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
+    for (ControlParameterWidgetConnection* pControlConnection : m_connections) {
         pControlConnection->setControlParameterUp(v);
     }
 }
 
 void WBaseWidget::setControlParameterDown(double v) {
-    foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
+    for (ControlParameterWidgetConnection* pControlConnection : m_connections) {
         pControlConnection->setControlParameterDown(v);
     }
 }
 
 void WBaseWidget::setControlParameterLeftDown(double v) {
     if (!m_leftConnections.isEmpty()) {
-        foreach (ControlParameterWidgetConnection* pControlConnection, m_leftConnections) {
+        for (ControlParameterWidgetConnection* pControlConnection : m_leftConnections) {
             pControlConnection->setControlParameterDown(v);
         }
     } else {
-        foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
+        for (ControlParameterWidgetConnection* pControlConnection : m_connections) {
             pControlConnection->setControlParameterDown(v);
         }
     }
@@ -123,24 +123,24 @@ void WBaseWidget::setControlParameterLeftDown(double v) {
 
 void WBaseWidget::setControlParameterLeftUp(double v) {
     if (!m_leftConnections.isEmpty()) {
-        foreach (ControlParameterWidgetConnection* pControlConnection, m_leftConnections) {
+        for (ControlParameterWidgetConnection* pControlConnection : m_leftConnections) {
             pControlConnection->setControlParameterUp(v);
         }
     } else {
-        foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
+        for (ControlParameterWidgetConnection* pControlConnection : m_connections) {
             pControlConnection->setControlParameterUp(v);
         }
     }
 }
 
 void WBaseWidget::setControlParameterRightDown(double v) {
-    foreach (ControlParameterWidgetConnection* pControlConnection, m_rightConnections) {
+    for (ControlParameterWidgetConnection* pControlConnection : m_rightConnections) {
         pControlConnection->setControlParameterDown(v);
     }
 }
 
 void WBaseWidget::setControlParameterRightUp(double v) {
-    foreach (ControlParameterWidgetConnection* pControlConnection, m_rightConnections) {
+    for (ControlParameterWidgetConnection* pControlConnection : m_rightConnections) {
         pControlConnection->setControlParameterUp(v);
     }
 }
@@ -193,13 +193,13 @@ void WBaseWidget::fillDebugTooltip(QStringList* debug) {
            << QString("SizeHint: %1").arg(toDebugString(m_pWidget->sizeHint()))
            << QString("MinimumSizeHint: %1").arg(toDebugString(m_pWidget->minimumSizeHint()));
 
-    foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
+    for (ControlParameterWidgetConnection* pControlConnection : m_leftConnections) {
         *debug << QString("LeftConnection: %1").arg(pControlConnection->toDebugString());
     }
-    foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
+    for (ControlParameterWidgetConnection* pControlConnection : m_rightConnections) {
         *debug << QString("RightConnection: %1").arg(pControlConnection->toDebugString());
     }
-    foreach (ControlWidgetConnection* pControlConnection, m_connections) {
+    for (ControlParameterWidgetConnection* pControlConnection : m_connections) {
         *debug << QString("Connection: %1").arg(pControlConnection->toDebugString());
     }
     if (m_pDisplayConnection) {

@@ -8,9 +8,8 @@
 #include <QDirIterator>
 
 #include "library/browse/browsetablemodel.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "track/trackmetadata.h"
-#include "util/time.h"
 #include "util/trace.h"
 
 
@@ -103,7 +102,7 @@ public:
         case Qt::DisplayRole:
         {
             const QString year(QStandardItem::data(role).toString());
-            return Mixxx::TrackMetadata::formatCalendarYear(year);
+            return mixxx::TrackMetadata::formatCalendarYear(year);
         }
         default:
             return QStandardItem::data(role);
@@ -147,7 +146,7 @@ void BrowseThread::populateModel() {
         }
 
         QString filepath = fileIt.next();
-        TrackPointer pTrack(TrackInfoObject::newTemporary(filepath, thisPath.token()));
+        TrackPointer pTrack(Track::newTemporary(filepath, thisPath.token()));
         SoundSourceProxy(pTrack).loadTrackMetadata();
 
         QList<QStandardItem*> row_data;
@@ -190,7 +189,7 @@ void BrowseThread::populateModel() {
         item = new YearItem(year);
         item->setToolTip(year);
         // The year column is sorted according to the numeric calendar year
-        item->setData(Mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
+        item->setData(mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
         row_data.insert(COLUMN_YEAR, item);
 
         item = new QStandardItem(pTrack->getGenre());
@@ -213,7 +212,7 @@ void BrowseThread::populateModel() {
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_COMMENT, item);
 
-        QString duration = Time::formatSeconds(pTrack->getDuration());
+        QString duration = pTrack->getDurationText(mixxx::Duration::Precision::SECONDS);
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
@@ -256,9 +255,9 @@ void BrowseThread::populateModel() {
         item->setData(creationTime, Qt::UserRole);
         row_data.insert(COLUMN_FILE_CREATION_TIME, item);
 
-        const Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+        const mixxx::ReplayGain replayGain(pTrack->getReplayGain());
         item = new QStandardItem(
-                Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
+                mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_REPLAYGAIN, item);

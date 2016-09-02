@@ -47,7 +47,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabSummary">
       <attribute name="title">
@@ -526,7 +526,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Replay Gain:</string>
+            <string>ReplayGain:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

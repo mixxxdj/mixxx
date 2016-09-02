@@ -36,8 +36,7 @@ KeyDetector::KeyDetector(float inputSampleRate) :
     m_length(10),
     m_getKeyMode(0),
     m_inputFrame(0),
-    m_prevKey(-1),
-    m_first(false)
+    m_prevKey(-1)
 {
 }
 
@@ -58,7 +57,7 @@ KeyDetector::getIdentifier() const
 string
 KeyDetector::getName() const
 {
-    return "Queen Mary Key Detector";
+    return "Key Detector";
 }
 
 string

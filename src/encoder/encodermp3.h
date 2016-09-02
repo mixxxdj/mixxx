@@ -3,7 +3,7 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 2009 by Phillip Whelan (rewritten for mp3)
-                           (C) 2010 by Tobias Rafreider (fixes for shoutcast, dynamic loading of lame_enc.dll, etc)
+                           (C) 2010 by Tobias Rafreider (fixes for broadcast, dynamic loading of lame_enc.dll, etc)
  ***************************************************************************/
 
 /***************************************************************************
@@ -22,7 +22,7 @@
 
 #include "util/types.h"
 #include "encoder/encoder.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class EncoderCallback;
 

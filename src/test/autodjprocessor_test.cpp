@@ -6,13 +6,13 @@
 
 #include "test/librarytest.h"
 #include "library/autodj/autodjprocessor.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
-#include "controllinpotmeter.h"
+#include "control/controlpushbutton.h"
+#include "control/controlpotmeter.h"
+#include "control/controllinpotmeter.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
-#include "trackinfoobject.h"
-#include "soundsourceproxy.h"
+#include "track/track.h"
+#include "sources/soundsourceproxy.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -142,7 +142,7 @@ class AutoDJProcessorTest : public LibraryTest {
     }
     static TrackPointer newTestTrack(TrackId trackId) {
         TrackPointer pTrack(
-                TrackInfoObject::newDummy(kTrackLocationTest, trackId));
+                Track::newDummy(kTrackLocationTest, trackId));
         SoundSourceProxy(pTrack).loadTrackMetadata();
         return pTrack;
     }
@@ -457,8 +457,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
-    // No change to the crossfader or play states.
-    EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(-1, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
@@ -468,7 +467,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
 
     // No change to the mode, crossfader or play states.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
-    EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(-1, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 }
@@ -500,7 +499,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // No change to the crossfader or play states.
-    EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(-1, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
@@ -514,7 +513,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
 
     // No change to the mode, crossfader, or play states.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
-    EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(-1, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
@@ -524,7 +523,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
 
     // No change to the mode, crossfader, or play states.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
-    EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(-1, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 }
@@ -554,7 +553,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // No change to the crossfader or play states.
-    EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -564,7 +563,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
 
     // No change to the mode, crossfader or play states.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
-    EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 }
@@ -596,7 +595,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // No change to the crossfader or play states.
-    EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(1, master.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -610,7 +609,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
 
     // No change to the mode, crossfader, or play states.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
-    EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(1, master.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -620,7 +619,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
 
     // No change to the mode, crossfader, or play states.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
-    EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 }

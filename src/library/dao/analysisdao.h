@@ -6,7 +6,7 @@
 
 #include "preferences/usersettings.h"
 #include "library/dao/dao.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class AnalysisDao : public DAO {
   public:
@@ -37,9 +37,9 @@ class AnalysisDao : public DAO {
     virtual void initialize();
     void setDatabase(QSqlDatabase& database);
 
-    bool getWaveform(TrackInfoObject& tio);
-    bool saveWaveform(const TrackInfoObject& tio);
-    bool removeWaveform(const TrackInfoObject& tio);
+    bool getWaveform(Track& tio);
+    bool saveWaveform(const Track& tio);
+    bool removeWaveform(const Track& tio);
 
     QList<AnalysisInfo> getAnalysesForTrackByType(TrackId trackId, AnalysisType type);
     QList<AnalysisInfo> getAnalysesForTrack(TrackId trackId);
@@ -47,14 +47,17 @@ class AnalysisDao : public DAO {
     bool deleteAnalysis(const int analysisId);
     void deleteAnalyses(const QList<TrackId>& trackIds);
     bool deleteAnalysesForTrack(TrackId trackId);
+    bool deleteAnalysesByType(AnalysisType type);
 
-    void saveTrackAnalyses(TrackInfoObject* pTrack);
+    void saveTrackAnalyses(Track* pTrack);
+
+    size_t getDiskUsageInBytes(AnalysisType type);
 
   private:
-    bool saveWaveform(const TrackInfoObject& tio,
+    bool saveWaveform(const Track& tio,
                       const Waveform& waveform,
                       AnalysisType type);
-    bool loadWaveform(const TrackInfoObject& tio,
+    bool loadWaveform(const Track& tio,
                       Waveform* waveform, AnalysisType type);
     QDir getAnalysisStoragePath() const;
     QByteArray loadDataFromFile(const QString& fileName) const;

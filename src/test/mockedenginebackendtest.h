@@ -7,7 +7,7 @@
 #include <QtDebug>
 
 #include "preferences/usersettings.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "mixer/deck.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginebuffer.h"
@@ -35,12 +35,14 @@ class MockScaler : public EngineBufferScale {
               m_processedPitch(-1) {
     }
     void clear() { }
-    double getScaled(CSAMPLE* pOutput, const int buf_size) {
+    double scaleBuffer(CSAMPLE* pOutput, SINT buf_size) override {
         Q_UNUSED(pOutput);
         m_processedTempo = m_dTempoRatio;
         m_processedPitch = m_dPitchRatio;
-        double samplesRead = round(buf_size * m_dTempoRatio);
-        return samplesRead;
+        DEBUG_ASSERT((buf_size % 2) == 0); // 2 channels
+        SINT numFrames = buf_size / 2;
+        double framesRead = round(numFrames * m_dTempoRatio);
+        return framesRead;
     }
 
     double getProcessedTempo() {

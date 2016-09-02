@@ -14,7 +14,7 @@
 
 #include "preferences/usersettings.h"
 #include "library/dao/dao.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/class.h"
 #include "util/memory.h"
 
@@ -165,7 +165,8 @@ class TrackDAO : public QObject, public virtual DAO {
     bool verifyRemainingTracks(
             const QStringList& libraryRootDirs,
             volatile const bool* pCancel);
-    void detectCoverArtForUnknownTracks(volatile const bool* pCancel,
+
+    void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                                         QSet<TrackId>* pTracksChanged);
 
   signals:
@@ -186,7 +187,7 @@ class TrackDAO : public QObject, public virtual DAO {
     // call.
     void saveTrack(TrackPointer pTrack);
 
-    // Clears the cached TrackInfoObjects, which can be useful when the
+    // Clears the cached Tracks, which can be useful when the
     // underlying database tables change (eg. during a library rescan,
     // we might detect that a track has been moved and modify the update
     // the tables directly.)
@@ -197,16 +198,16 @@ class TrackDAO : public QObject, public virtual DAO {
     void databaseTracksChanged(QSet<TrackId> tracksChanged);
 
   private slots:
-    void slotTrackDirty(TrackInfoObject* pTrack);
-    void slotTrackChanged(TrackInfoObject* pTrack);
-    void slotTrackClean(TrackInfoObject* pTrack);
-    void slotTrackReferenceExpired(TrackInfoObject* pTrack);
+    void slotTrackDirty(Track* pTrack);
+    void slotTrackChanged(Track* pTrack);
+    void slotTrackClean(Track* pTrack);
+    void slotTrackReferenceExpired(Track* pTrack);
 
   private:
     TrackPointer getTrackFromDB(TrackId trackId) const;
 
-    void saveTrack(TrackInfoObject* pTrack);
-    bool updateTrack(TrackInfoObject* pTrack);
+    void saveTrack(Track* pTrack);
+    bool updateTrack(Track* pTrack);
 
     QSqlDatabase& m_database;
     CueDAO& m_cueDao;

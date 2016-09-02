@@ -1,8 +1,11 @@
 #include "sources/soundsourceopus.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
+
+// Decoded output of opusfile has a fixed sample rate of 48 kHz
+const SINT kSamplingRate = 48000;
 
 // Parameter for op_channel_count()
 // See also: https://mf4.xiph.org/jenkins/view/opus/job/opusfile-unix/ws/doc/html/group__stream__info.html
@@ -30,12 +33,9 @@ private:
 
 } // anonymous namespace
 
-// Decoded output of opusfile has a fixed sample rate of 48 kHz
-const SINT SoundSourceOpus::kSamplingRate = 48000;
-
-SoundSourceOpus::SoundSourceOpus(QUrl url)
+SoundSourceOpus::SoundSourceOpus(const QUrl& url)
         : SoundSource(url, "opus"),
-          m_pOggOpusFile(NULL),
+          m_pOggOpusFile(nullptr),
           m_curFrameIndex(getMinFrameIndex()) {
 }
 
@@ -81,10 +81,11 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
 
     pTrackMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
-    pTrackMetadata->setSampleRate(Mixxx::SoundSourceOpus::kSamplingRate);
+    pTrackMetadata->setSampleRate(kSamplingRate);
     pTrackMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
-    pTrackMetadata->setDuration(
-            op_pcm_total(l_ptrOpusFile, -1) / pTrackMetadata->getSampleRate());
+    // Cast to double is required for duration with sub-second precision
+    const double dTotalFrames = op_pcm_total(l_ptrOpusFile, -1);
+    pTrackMetadata->setDuration(dTotalFrames / pTrackMetadata->getSampleRate());
 
     bool hasDate = false;
     for (i = 0; i < l_ptrOpusTags->comments; ++i) {
@@ -133,7 +134,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     return OK;
 }
 
-Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     // From opus/opusfile.h
     // On Windows, this string must be UTF-8 (to allow access to
     // files whose names cannot be represented in the current
@@ -152,12 +153,15 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (!m_pOggOpusFile) {
         qWarning() << "Failed to open OggOpus file:" << getUrlString()
                 << "errorCode" << errorCode;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     if (!op_seekable(m_pOggOpusFile)) {
-        qWarning() << "OggOpus file is not seekable:" << getUrlString();
-        return ERR;
+        qWarning() << "SoundSourceOpus:"
+                << "Stream in"
+                << getUrlString()
+                << "is not seekable";
+        return OpenResult::UNSUPPORTED_FORMAT;
     }
 
     const int channelCount = op_channel_count(m_pOggOpusFile, kCurrentStreamLink);
@@ -165,7 +169,7 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         setChannelCount(channelCount);
     } else {
         qWarning() << "Failed to read channel configuration of OggOpus file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kEntireStreamLink);
@@ -173,7 +177,7 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         setFrameCount(pcmTotal);
     } else {
         qWarning() << "Failed to read total length of OggOpus file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     const opus_int32 bitrate = op_bitrate(m_pOggOpusFile, kEntireStreamLink);
@@ -181,20 +185,20 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         setBitrate(bitrate / 1000);
     } else {
         qWarning() << "Failed to determine bitrate of OggOpus file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     setSamplingRate(kSamplingRate);
 
     m_curFrameIndex = getMinFrameIndex();
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceOpus::close() {
     if (m_pOggOpusFile) {
         op_free(m_pOggOpusFile);
-        m_pOggOpusFile = NULL;
+        m_pOggOpusFile = nullptr;
     }
 }
 
@@ -232,7 +236,7 @@ SINT SoundSourceOpus::readSampleFrames(
     while (0 < numberOfFramesRemaining) {
         int readResult = op_read_float(m_pOggOpusFile,
                 pSampleBuffer,
-                frames2samples(numberOfFramesRemaining), NULL);
+                frames2samples(numberOfFramesRemaining), nullptr);
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             pSampleBuffer += frames2samples(readResult);
@@ -290,4 +294,4 @@ QStringList SoundSourceProviderOpus::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

@@ -4,9 +4,7 @@
 
 #include <QtDebug>
 #include <QMetaObject>
-#ifdef __AUTODJCRATES__
 #include <QMenu>
-#endif // __AUTODJCRATES__
 
 #include "library/autodj/autodjfeature.h"
 
@@ -18,8 +16,8 @@
 #include "library/autodj/dlgautodj.h"
 #include "library/treeitem.h"
 #include "widget/wlibrary.h"
-#include "mixxxkeyboard.h"
-#include "soundsourceproxy.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
@@ -37,15 +35,12 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(-1),
           m_pAutoDJProcessor(NULL),
-          m_pAutoDJView(NULL)
-#ifdef __AUTODJCRATES__
-          , m_autoDjCratesDao(pTrackCollection->getDatabase(),
-                              pTrackCollection->getTrackDAO(),
-                              pTrackCollection->getCrateDAO(),
-                              pTrackCollection->getPlaylistDAO(),
-                              pConfig)
-#endif // __AUTODJCRATES__
-{
+          m_pAutoDJView(NULL),
+          m_autoDjCratesDao(pTrackCollection->getDatabase(),
+                            pTrackCollection->getTrackDAO(),
+                            pTrackCollection->getCrateDAO(),
+                            pTrackCollection->getPlaylistDAO(),
+                            pConfig) {
     m_iAutoDJPlaylistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     // If the AutoDJ playlist does not exist yet then create it.
     if (m_iAutoDJPlaylistId < 0) {
@@ -57,8 +52,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
     connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
-#ifdef __AUTODJCRATES__
 
     // Create the "Crates" tree-item under the root item.
     TreeItem* root = m_childModel.getItem(QModelIndex());
@@ -86,14 +81,10 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
     connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
             this, SLOT(slotRemoveCrateFromAutoDj()));
-
-#endif // __AUTODJCRATES__
 }
 
 AutoDJFeature::~AutoDJFeature() {
-#ifdef __AUTODJCRATES__
     delete m_pRemoveCrateFromAutoDj;
-#endif // __AUTODJCRATES__
     delete m_pAutoDJProcessor;
 }
 
@@ -106,7 +97,7 @@ QIcon AutoDJFeature::getIcon() {
 }
 
 void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
-                               MixxxKeyboard* keyboard) {
+                               KeyboardEventFilter* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                   m_pConfig,
                                   m_pLibrary,
@@ -122,14 +113,11 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
     connect(m_pAutoDJView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
 
-#ifdef __AUTODJCRATES__
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested(int)),
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
-
-#endif // __AUTODJCRATES__
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
@@ -176,13 +164,10 @@ bool AutoDJFeature::dragMoveAccept(QUrl url) {
 
 // Add a crate to the auto-DJ queue.
 void AutoDJFeature::slotAddCrateToAutoDj(int crateId) {
-#ifdef __AUTODJCRATES__
     m_crateDao.setCrateInAutoDj(crateId, true);
-#endif // __AUTODJCRATES__
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj() {
-#ifdef __AUTODJCRATES__
     // Get the crate that was right-clicked on.
     QString crateName = m_lastRightClickedIndex.data().toString();
 
@@ -191,21 +176,17 @@ void AutoDJFeature::slotRemoveCrateFromAutoDj() {
 
     // Clear its auto-DJ status.
     m_crateDao.setCrateInAutoDj(crateId, false);
-#endif // __AUTODJCRATES__
 }
 
 void AutoDJFeature::slotCrateAdded(int crateId) {
-#ifdef __AUTODJCRATES__
     // If this newly-added crate is in the auto-DJ queue, add it to the list.
     if (m_crateDao.isCrateInAutoDj(crateId)) {
         slotCrateAutoDjChanged(crateId, true);
     }
-#endif // __AUTODJCRATES__
 }
 
 // Signaled by the crate DAO when a crate is renamed.
 void AutoDJFeature::slotCrateRenamed(int crateId, QString newName) {
-#ifdef __AUTODJCRATES__
     // Look for this crate ID in our list.  It's OK if it's not found.
     for (int i = 0; i < m_crateList.length(); ++i) {
         if (m_crateList[i].first == crateId) {
@@ -220,20 +201,16 @@ void AutoDJFeature::slotCrateRenamed(int crateId, QString newName) {
             break;
         }
     }
-#endif // __AUTODJCRATES__
 }
 
 void AutoDJFeature::slotCrateDeleted(int crateId) {
-#ifdef __AUTODJCRATES__
     // The crate can't be queried for its auto-DJ status, because it's been
     // deleted by the time this code is reached.  But we can handle that.
     // Another solution would be to add a "crateDeleting" signal to CrateDAO.
     slotCrateAutoDjChanged(crateId, false);
-#endif // __AUTODJCRATES__
 }
 
 void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
-#ifdef __AUTODJCRATES__
     if (added) {
         // Get the name of the crate being added to the auto-DJ list.
         QString strName = m_crateDao.crateName(crateId);
@@ -270,13 +247,11 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
             }
         }
     }
-#endif // __AUTODJCRATES__
 }
 // Adds a random track : this will be faster when there are sufficiently large
 // tracks in the crates
 
 void AutoDJFeature::slotAddRandomTrack(bool) {
-#ifdef __AUTODJCRATES__
     int failedRetrieveAttempts = 0;
     // Get access to the auto-DJ playlist
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
@@ -323,10 +298,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
     }
     // If control reaches here it implies that we couldn't load track
     qDebug() << "Could not load random track.";
-#endif // __AUTODJCRATES__
 }
-
-#ifdef __AUTODJCRATES__
 
 void AutoDJFeature::constructCrateChildModel() {
     // Create a crate table-model with a list of crates that have been added
@@ -403,5 +375,3 @@ void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
         tracksToAdd -= 1;
     }
 }
-
-#endif // __AUTODJCRATES__

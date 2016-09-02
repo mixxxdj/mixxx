@@ -5,7 +5,7 @@
 
 #include "preferences/usersettings.h"
 #include "library/dao/dao.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/class.h"
 
 class QSqlDatabase;

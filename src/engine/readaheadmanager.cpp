@@ -3,7 +3,7 @@
 
 #include "engine/readaheadmanager.h"
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "engine/loopingcontrol.h"
 #include "engine/ratecontrol.h"
 #include "util/defs.h"
@@ -35,16 +35,17 @@ ReadAheadManager::~ReadAheadManager() {
     SampleUtil::free(m_pCrossFadeBuffer);
 }
 
-int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
-                                     int requested_samples) {
+SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
+        SINT requested_samples) {
+    // TODO(XXX): Remove implicit assumption of 2 channels
     if (!even(requested_samples)) {
         qDebug() << "ERROR: Non-even requested_samples to ReadAheadManager::getNextSamples";
         requested_samples--;
     }
     bool in_reverse = dRate < 0;
-    int start_sample = m_iCurrentPosition;
+    SINT start_sample = m_iCurrentPosition;
     //qDebug() << "start" << start_sample << requested_samples;
-    int samples_needed = requested_samples;
+    SINT samples_needed = requested_samples;
     CSAMPLE* base_buffer = buffer;
 
     // A loop will only limit the amount we can read in one shot.
@@ -52,17 +53,17 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     const double loop_trigger = m_pLoopingControl->nextTrigger(
             dRate, m_iCurrentPosition, 0, 0);
     bool loop_active = loop_trigger != kNoTrigger;
-    int preloop_samples = 0;
+    SINT preloop_samples = 0;
 
     if (loop_active) {
-        int samples_available = in_reverse ?
+        SINT samples_available = in_reverse ?
                 m_iCurrentPosition - loop_trigger :
                 loop_trigger - m_iCurrentPosition;
         if (samples_available < 0) {
             samples_needed = 0;
         } else {
             preloop_samples = samples_available;
-            samples_needed = math_clamp(samples_needed, 0, samples_available);
+            samples_needed = math_clamp<SINT>(samples_needed, 0, samples_available);
         }
     }
 
@@ -76,7 +77,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         return 0;
     }
 
-    int samples_read = m_pReader->read(start_sample, in_reverse, samples_needed,
+    SINT samples_read = m_pReader->read(start_sample, in_reverse, samples_needed,
                                        base_buffer);
 
     if (samples_read != samples_needed) {
@@ -128,7 +129,7 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
 }
 
 // Not thread-save, call from engine thread only
-void ReadAheadManager::notifySeek(int iSeekPosition) {
+void ReadAheadManager::notifySeek(SINT iSeekPosition) {
     m_iCurrentPosition = iSeekPosition;
     m_readAheadLog.clear();
 
@@ -147,7 +148,7 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
 
     // SoundTouch can read up to 2 chunks ahead. Always keep 2 chunks ahead in
     // cache.
-    int length_to_cache = 2 * CachingReaderChunk::kSamples;
+    SINT length_to_cache = 2 * CachingReaderChunk::kSamples;
 
     current_position.length = length_to_cache;
     current_position.sample = in_reverse ?
@@ -180,7 +181,7 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
 }
 
 // Not thread-save, call from engine thread only
-int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
+SINT ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
                                                              double numConsumedSamples) {
     if (numConsumedSamples == 0) {
         return currentVirtualPlayposition;
@@ -221,14 +222,16 @@ int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtu
         }
         shouldNotifySeek = true;
     }
-    int result = 0;
+    SINT result = 0;
     if (direction) {
-        result = static_cast<int>(floor(virtualPlayposition));
+        result = static_cast<SINT>(floor(virtualPlayposition));
+        // TODO(XXX): Remove implicit assumption of 2 channels
         if (!even(result)) {
             result--;
         }
     } else {
-        result = static_cast<int>(ceil(virtualPlayposition));
+        result = static_cast<SINT>(ceil(virtualPlayposition));
+        // TODO(XXX): Remove implicit assumption of 2 channels
         if (!even(result)) {
             result++;
         }

@@ -16,7 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
-#include "util/time.h"
+#include "util/duration.h"
 #include "util/dnd.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
@@ -29,6 +29,9 @@ static const bool sDebug = false;
 static const int kIdColumn = 0;
 static const int kMaxSortColumns = 3;
 
+// Constant for getModelSetting(name) 
+static const char* COLUMNS_SORTING = "ColumnsSorting";
+
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
                                      const char* settingsNamespace)
@@ -39,9 +42,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
           m_database(pTrackCollection->getDatabase()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_bInitialized(false),
-          m_currentSearch(""),
-          m_trackSourceSortColumn(kIdColumn),
-          m_trackSourceSortOrder(Qt::AscendingOrder) {
+          m_currentSearch("") {
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
     connect(&m_trackDAO, SIGNAL(forceModelUpdate()),
@@ -106,7 +107,7 @@ void BaseSqlTableModel::initHeaderData() {
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_COVERART,
                         tr("Cover Art"), 90);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
-                        tr("Replay Gain"), 50);
+                        tr("ReplayGain"), 50);
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -267,8 +268,8 @@ void BaseSqlTableModel::select() {
         m_trackSource->filterAndSort(trackIds, m_currentSearch,
                                      m_currentSearchFilter,
                                      m_trackSourceOrderBy,
-                                     m_trackSourceSortColumn,
-                                     m_trackSourceSortOrder,
+                                     m_sortColumns,
+                                     m_tableColumns.size() - 1,
                                      &m_trackSortOrder);
 
         // Re-sort the track IDs since filterAndSort can change their order or mark
@@ -386,7 +387,7 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
 
 void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     if (sDebug) {
-        qDebug() << this << "setSort()" << column << order;
+        qDebug() << this << "setSort()" << column << order << m_tableColumns;
     }
 
     int trackSourceColumnCount = m_trackSource ? m_trackSource->columnCount() : 0;
@@ -397,11 +398,30 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;
     }
-
-    if (m_sortColumns.size() > 0 &&
-            m_sortColumns.at(0).m_column == column) {
-        // Only the order has changed
-        m_sortColumns.replace(0, SortColumn(column, order));
+        
+    // There's no item to sort already, load from Settings last sort
+    if (m_sortColumns.isEmpty()) {
+        QString val = getModelSetting(COLUMNS_SORTING);
+        QTextStream in(&val);
+        
+        while (!in.atEnd()) {
+            int ordI = -1;
+            QString name;
+            
+            in >> name >> ordI;
+            
+            int col = fieldIndex(name);
+            if (col < 0) continue;
+            
+            Qt::SortOrder ord;
+            ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
+            
+            m_sortColumns << SortColumn(col, ord);
+        }
+    }
+    if (m_sortColumns.size() > 0 && m_sortColumns.at(0).m_column == column) {
+         // Only the order has changed
+         m_sortColumns.replace(0, SortColumn(column, order));
     } else {
         // Remove column if already in history
         // As reverse loop to not skip an entry when removing the previous
@@ -419,6 +439,31 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_sortColumns.removeLast();
         }
     }
+    
+    // Write new sortColumns order to user settings
+    QString val;
+    QTextStream out(&val);
+    for (SortColumn& sc : m_sortColumns) {
+
+        QString name;        
+        if (sc.m_column > 0 && sc.m_column < m_tableColumns.size()) {
+            name = m_tableColumns[sc.m_column];
+        } else {
+            // ccColumn between 1..x to skip the id column
+            int ccColumn = sc.m_column - m_tableColumns.size() + 1;
+            name = m_trackSource->columnNameForFieldIndex(ccColumn);
+        }
+
+        out << name << " ";
+        out << (sc.m_order == Qt::AscendingOrder ? 1 : -1) << " ";
+    }
+    out.flush();
+    setModelSetting(COLUMNS_SORTING, val);
+
+    if (sDebug) {
+        qDebug() << "setSort() sortColumns:" << val;
+    }
+    
 
     // we have two selects for sorting, since keeping the select history
     // across the two selects is hard, we do this only for the trackSource
@@ -429,45 +474,49 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     // reset the old order by clauses
     m_trackSourceOrderBy.clear();
     m_tableOrderBy.clear();
-    m_trackSourceSortColumn = 0;
-    m_trackSourceSortOrder = Qt::AscendingOrder;
 
     if (column > 0 && column < m_tableColumns.size()) {
         // Table sorting, no history
-        m_tableOrderBy.append("ORDER BY ");
-        QString field = m_tableColumns[column];
-        QString sort_field = QString("%1.%2").arg(m_tableName, field);
-        m_tableOrderBy.append(sort_field);
-    #ifdef __SQLITE3__
-        m_tableOrderBy.append(" COLLATE localeAwareCompare");
-    #endif
-        m_tableOrderBy.append((order == Qt::AscendingOrder) ?
-                " ASC" : " DESC");
+        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+            // Random sort easter egg
+            m_tableOrderBy = "ORDER BY RANDOM()";
+        } else {
+            m_tableOrderBy = "ORDER BY ";
+            QString field = m_tableColumns[column];
+            QString sort_field = QString("%1.%2").arg(m_tableName, field);
+            m_tableOrderBy.append(sort_field);
+        #ifdef __SQLITE3__
+            m_tableOrderBy.append(" COLLATE localeAwareCompare");
+        #endif
+            m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
+        }
         m_sortColumns.clear();
+        m_sortColumns.prepend(SortColumn(column, order));
     } else if (m_trackSource) {
-        for (int i = 0; i < m_sortColumns.size(); ++i) {
-            SortColumn sc = m_sortColumns.at(i);
-            // TrackSource Sorting, current sort + two from history
-            if (i == 0) {
-                m_trackSourceOrderBy.append("ORDER BY ");
-            } else {
-                // second cycle
-                m_trackSourceOrderBy.append(", ");
-            }
+        bool first = true;
+        for (const SortColumn &sc : m_sortColumns) {
             QString sort_field;
-            if (sc.m_column == kIdColumn) {
-                sort_field = m_trackSource->columnSortForFieldIndex(kIdColumn);
+            if (sc.m_column < m_tableColumns.size()) {
+                if (sc.m_column == kIdColumn) {
+                    sort_field = m_trackSource->columnSortForFieldIndex(kIdColumn);
+                } else if (sc.m_column ==
+                        fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+                    sort_field = "RANDOM()";
+                } else {
+                    // we can't sort by other table columns here since primary sort is a track
+                    // column: skip   
+                    continue;
+                }
             } else {
                 // + 1 to skip id column
                 int ccColumn = sc.m_column - m_tableColumns.size() + 1;
                 sort_field = m_trackSource->columnSortForFieldIndex(ccColumn);
-                if (i == 0) {
-                    // first cycle: main sort criteria
-                    m_trackSourceSortColumn = ccColumn;
-                    m_trackSourceSortOrder = sc.m_order;
-                }
+            }
+            DEBUG_ASSERT_AND_HANDLE(!sort_field.isEmpty()) {
+                continue;
             }
 
+            m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
             m_trackSourceOrderBy.append(sort_field);
 
     #ifdef __SQLITE3__
@@ -476,6 +525,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
                     " ASC" : " DESC");
             //qDebug() << m_trackSourceOrderBy;
+            first = false;
         }
     }
 }
@@ -565,7 +615,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = Time::formatSeconds(duration);
+                    value = mixxx::Duration::formatSeconds(duration);
                 } else {
                     value = QString();
                 }
@@ -588,7 +638,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
-                value = Mixxx::TrackMetadata::formatCalendarYear(value.toString());
+                value = mixxx::TrackMetadata::formatCalendarYear(value.toString());
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
                 int track_number = value.toInt();
                 if (track_number <= 0) {
@@ -618,7 +668,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                     }
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
-                value = Mixxx::ReplayGain::ratioToString(value.toDouble());
+                value = mixxx::ReplayGain::ratioToString(value.toDouble());
             } // Otherwise, just use the column value.
 
             break;

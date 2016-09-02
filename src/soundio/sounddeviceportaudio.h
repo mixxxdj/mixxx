@@ -31,7 +31,7 @@
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
 class SoundManager;
-class ControlObjectSlave;
+class ControlProxy;
 
 /** Dynamically resolved function which allows us to enable a realtime-priority callback
     thread from ALSA/PortAudio. This must be dynamically resolved because PortAudio can't
@@ -76,6 +76,7 @@ class SoundDevicePortAudio : public SoundDevice {
 
   private:
     void updateCallbackEntryToDacTime(const PaStreamCallbackTimeInfo* timeInfo);
+    void updateAudioLatencyUsage(const unsigned int framesPerBuffer);
 
     // PortAudio stream for this device.
     PaStream* volatile m_pStream;
@@ -97,16 +98,18 @@ class SoundDevicePortAudio : public SoundDevice {
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
-    ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
-    ControlObjectSlave* m_pMasterAudioLatencyUsage;
-    ControlObjectSlave* m_pMasterAudioLatencyOverload;
+    ControlProxy* m_pMasterAudioLatencyOverloadCount;
+    ControlProxy* m_pMasterAudioLatencyUsage;
+    ControlProxy* m_pMasterAudioLatencyOverload;
     int m_underflowUpdateCount;
     static volatile int m_underflowHappened;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
-    bool m_invalidTimeInfoWarned;
+    int m_invalidTimeInfoCount;
     PerformanceTimer m_clkRefTimer;
+    PaTime m_lastCallbackEntrytoDacSecs;
+
 };
 
 #endif

@@ -25,7 +25,7 @@
 
 #include "mixxx.h"
 #include "mixxxapplication.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "errordialoghandler.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"

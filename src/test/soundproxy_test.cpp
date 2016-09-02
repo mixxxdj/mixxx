@@ -3,9 +3,15 @@
 #include <QtDebug>
 
 #include "track/trackmetadata.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "util/samplebuffer.h"
+
+namespace {
+
+const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
+
+} // anonymous namespace
 
 #ifdef __FFMPEGFILE__
 #include "sources/soundsourceffmpeg.h"
@@ -42,17 +48,15 @@ class SoundSourceProxyTest: public MixxxTest {
     }
 
     static QStringList getFilePaths() {
-        const QString basePath(QDir::current().absoluteFilePath("src/test/id3-test-data"));
-        const QDir baseDir(basePath);
         QStringList filePaths;
         for (const auto& fileNameSuffix: getFileNameSuffixes()) {
-            filePaths.append(baseDir.absoluteFilePath("cover-test" + fileNameSuffix));
+            filePaths.append(kTestDir.absoluteFilePath("cover-test" + fileNameSuffix));
         }
         return filePaths;
     }
 
-    static Mixxx::AudioSourcePointer openAudioSource(const QString& filePath) {
-        TrackPointer pTrack(TrackInfoObject::newTemporary(filePath));
+    static mixxx::AudioSourcePointer openAudioSource(const QString& filePath) {
+        TrackPointer pTrack(Track::newTemporary(filePath));
         return SoundSourceProxy(pTrack).openAudioSource();
     }
 };
@@ -62,8 +66,14 @@ TEST_F(SoundSourceProxyTest, open) {
     for (const auto& filePath: getFilePaths()) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
-        Mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
-        ASSERT_TRUE(!pAudioSource.isNull());
+        mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
+        // Obtaining an AudioSource may fail for unsupported file formats,
+        // even if the corresponding file extension is supported, e.g.
+        // AAC vs. ALAC in .m4a files
+        if (!pAudioSource) {
+            // skip test file
+            continue;
+        }
         EXPECT_LT(0, pAudioSource->getChannelCount());
         EXPECT_LT(0, pAudioSource->getSamplingRate());
         EXPECT_LT(0, pAudioSource->getFrameCount());
@@ -71,19 +81,19 @@ TEST_F(SoundSourceProxyTest, open) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    TrackPointer pTrack(TrackInfoObject::newTemporary(
-            QDir::currentPath().append("/src/test/id3-test-data/artist.mp3")));
+    TrackPointer pTrack(Track::newTemporary(
+            kTestDir.absoluteFilePath("artist.mp3")));
     SoundSourceProxy proxy(pTrack);
-    Mixxx::TrackMetadata trackMetadata;
+    mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
     EXPECT_EQ("Test Artist", trackMetadata.getArtist());
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    TrackPointer pTrack(TrackInfoObject::newTemporary(
-            QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3")));
+    TrackPointer pTrack(Track::newTemporary(
+            kTestDir.absoluteFilePath("TOAL_TPE2.mp3")));
     SoundSourceProxy proxy(pTrack);
-    Mixxx::TrackMetadata trackMetadata;
+    mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
     EXPECT_EQ("TITLE2", trackMetadata.getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbum());
@@ -109,14 +119,20 @@ TEST_F(SoundSourceProxyTest, seekForward) {
 
         qDebug() << "Seek forward test:" << filePath;
 
-        Mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
-        ASSERT_FALSE(pContReadSource.isNull());
+        mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
+        // Obtaining an AudioSource may fail for unsupported file formats,
+        // even if the corresponding file extension is supported, e.g.
+        // AAC vs. ALAC in .m4a files
+        if (!pContReadSource) {
+            // skip test file
+            continue;
+        }
         const SINT readSampleCount = pContReadSource->frames2samples(kReadFrameCount);
         SampleBuffer contReadData(readSampleCount);
         SampleBuffer seekReadData(readSampleCount);
 
 #ifdef __FFMPEGFILE__
-        if (dynamic_cast<Mixxx::SoundSourceFFmpeg*>(pContReadSource.data())) {
+        if (dynamic_cast<mixxx::SoundSourceFFmpeg*>(&*pContReadSource)) {
             if (filePath.endsWith(".mp3")) {
                 qDebug() << "Skip test since it will fail using SoundSourceFFmpeg";
                 continue;
@@ -132,8 +148,8 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             const SINT contReadFrameCount =
                     pContReadSource->readSampleFrames(kReadFrameCount, &contReadData[0]);
 
-            Mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath));
-            ASSERT_FALSE(pSeekReadSource.isNull());
+            mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath));
+            ASSERT_FALSE(!pSeekReadSource);
             ASSERT_EQ(pContReadSource->getChannelCount(), pSeekReadSource->getChannelCount());
             ASSERT_EQ(pContReadSource->getFrameCount(), pSeekReadSource->getFrameCount());
 

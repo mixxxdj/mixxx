@@ -13,13 +13,12 @@
 #include "library/libraryview.h"
 #include "widget/wbasewidget.h"
 
-class MixxxKeyboard;
+class KeyboardEventFilter;
 
 class WLibrary : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    WLibrary(QWidget* parent);
-    virtual ~WLibrary();
+    explicit WLibrary(QWidget* parent);
 
     // registerView is used to add a view to the LibraryWidget which the widget
     // can disply on request via showView(). To switch to a given view, call
@@ -40,7 +39,7 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     void search(const QString&);
 
   protected:
-    bool event(QEvent* pEvent);
+    bool event(QEvent* pEvent) override;
 
   private:
     QMutex m_mutex;

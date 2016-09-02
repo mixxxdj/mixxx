@@ -19,7 +19,7 @@ typedef uint32_t SAMPLERATE_TYPE;
 typedef unsigned long SAMPLERATE_TYPE;
 #endif
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -39,6 +39,16 @@ const SINT kNumberOfPrefetchFrames = 2112;
 
 // The TrackId is a 1-based index of the tracks in an MP4 file
 const u_int32_t kMinTrackId = 1;
+
+// According to various references DecoderConfigDescriptor.bufferSizeDB
+// is a 24-bit unsigned integer value.
+// MP4 atom:
+//   trak.mdia.minf.stbl.stsd.*.esds.decConfigDescr.bufferSizeDB
+// References:
+//   https://github.com/sannies/mp4parser/blob/master/isoparser/src/main/java/org/mp4parser/boxes/iso14496/part1/objectdescriptors/DecoderConfigDescriptor.java
+//   http://mutagen-specs.readthedocs.io/en/latest/mp4/
+//   http://perso.telecom-paristech.fr/~dufourd/mpeg-4/tools.html
+const u_int32_t kMaxSampleBlockInputSizeLimit = (u_int32_t(1) << 24) - 1;
 
 inline
 u_int32_t getMaxTrackId(MP4FileHandle hFile) {
@@ -155,7 +165,7 @@ SoundSourceM4A::~SoundSourceM4A() {
     close();
 }
 
-Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(MP4_INVALID_FILE_HANDLE == m_hFile);
     // open MP4 file, check for >= ver 1.9.1
     // From mp4v2/file.h:
@@ -170,13 +180,13 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
 #endif
     if (MP4_INVALID_FILE_HANDLE == m_hFile) {
         qWarning() << "Failed to open file for reading:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     m_trackId = findFirstAudioTrackId(m_hFile, getLocalFileName());
     if (MP4_INVALID_TRACK_ID == m_trackId) {
         qWarning() << "No AAC track found:" << getUrlString();
-        return ERR;
+        return OpenResult::UNSUPPORTED_FORMAT;
     }
 
     // Read fixed sample duration.  If the sample duration is not
@@ -186,14 +196,14 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     m_framesPerSampleBlock = MP4GetTrackFixedSampleDuration(m_hFile, m_trackId);
     if (MP4_INVALID_DURATION == m_framesPerSampleBlock) {
       qWarning() << "Unable to decode tracks with non-fixed sample durations: " << getUrlString();
-      return ERR;
+      return OpenResult::UNSUPPORTED_FORMAT;
     }
 
     const MP4SampleId numberOfSamples =
             MP4GetTrackNumberOfSamples(m_hFile, m_trackId);
     if (0 >= numberOfSamples) {
         qWarning() << "Failed to read number of samples from file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
     m_maxSampleBlockId = kSampleBlockIdMin + (numberOfSamples - 1);
 
@@ -201,13 +211,30 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     // sample block for the selected track.
     const u_int32_t maxSampleBlockInputSize = MP4GetTrackMaxSampleSize(m_hFile,
             m_trackId);
+    if (maxSampleBlockInputSize == 0) {
+        qWarning() << "Failed to read MP4 DecoderConfigDescriptor.bufferSizeDB:"
+                << getUrlString();
+        return OpenResult::FAILED;
+    }
+    if (maxSampleBlockInputSize > kMaxSampleBlockInputSizeLimit) {
+        // Workaround for a possible bug in libmp4v2 2.0.0 (Ubuntu 16.04)
+        // that returns 4278190742 when opening a corrupt file.
+        // https://bugs.launchpad.net/mixxx/+bug/1594169
+        qWarning() << "MP4 DecoderConfigDescriptor.bufferSizeDB ="
+                << maxSampleBlockInputSize
+                << ">"
+                << kMaxSampleBlockInputSizeLimit
+                << "exceeds limit:"
+                << getUrlString();
+        return OpenResult::FAILED;    
+    }
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
 
     DEBUG_ASSERT(nullptr == m_hDecoder); // not already opened
     m_hDecoder = NeAACDecOpen();
     if (!m_hDecoder) {
         qWarning() << "Failed to open the AAC decoder!";
-        return ERR;
+        return OpenResult::FAILED;
     }
     NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
             m_hDecoder);
@@ -222,7 +249,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     pDecoderConfig->defObjectType = LC;
     if (!NeAACDecSetConfiguration(m_hDecoder, pDecoderConfig)) {
         qWarning() << "Failed to configure AAC decoder!";
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     u_int8_t* configBuffer = nullptr;
@@ -242,7 +269,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
                     &samplingRate, &channelCount)) {
         free(configBuffer);
         qWarning() << "Failed to initialize the AAC decoder!";
-        return ERR;
+        return OpenResult::FAILED;
     } else {
         free(configBuffer);
     }
@@ -269,7 +296,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     // (Re-)Start decoding at the beginning of the file
     seekSampleFrame(getMinFrameIndex());
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceM4A::close() {
@@ -516,20 +543,20 @@ QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
 }
 
 SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
-    return exportSoundSourcePlugin(new SoundSourceM4A(url));
+    return newSoundSourcePluginFromUrl<SoundSourceM4A>(url);
 }
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderM4A is stateless and a single instance
     // can safely be shared
-    static Mixxx::SoundSourceProviderM4A singleton;
+    static mixxx::SoundSourceProviderM4A singleton;
     return &singleton;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
     // The statically allocated instance must not be deleted!
 }

@@ -42,7 +42,7 @@ void HidReader::run() {
             Trace process("HidReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData(reinterpret_cast<char*>(data), result);
-            emit(incomingData(outData, Time::elapsed()));
+            emit(incomingData(outData, mixxx::Time::elapsed()));
         }
     }
     delete [] data;
@@ -124,7 +124,7 @@ QString HidController::presetExtension() {
 void HidController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
-    qDebug() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
 }
 
 void HidController::visit(const HidControllerPreset* preset) {
@@ -139,33 +139,32 @@ bool HidController::savePreset(const QString fileName) const {
 }
 
 bool HidController::matchPreset(const PresetInfo& preset) {
-    const QList< QHash<QString,QString> > products = preset.getProducts();
-    QHash <QString, QString> product;
-    foreach (product, products) {
+    const QList<ProductInfo>& products = preset.getProducts();
+    for (const auto& product : products) {
         if (matchProductInfo(product))
             return true;
     }
     return false;
 }
 
-bool HidController::matchProductInfo(QHash <QString,QString > info) {
+bool HidController::matchProductInfo(const ProductInfo& product) {
     int value;
     bool ok;
     // Product and vendor match is always required
-    value = info["vendor_id"].toInt(&ok,16);
+    value = product.vendor_id.toInt(&ok,16);
     if (!ok || hid_vendor_id!=value) return false;
-    value = info["product_id"].toInt(&ok,16);
+    value = product.product_id.toInt(&ok,16);
     if (!ok || hid_product_id!=value) return false;
 
     // Optionally check against interface_number / usage_page && usage
     if (hid_interface_number!=-1) {
-        value = info["interface_number"].toInt(&ok,16);
+        value = product.interface_number.toInt(&ok,16);
         if (!ok || hid_interface_number!=value) return false;
     } else {
-        value = info["usage_page"].toInt(&ok,16);
+        value = product.usage_page.toInt(&ok,16);
         if (!ok || hid_usage_page!=value) return false;
 
-        value = info["usage"].toInt(&ok,16);
+        value = product.usage.toInt(&ok,16);
         if (!ok || hid_usage!=value) return false;
     }
     // Match found

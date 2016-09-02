@@ -6,9 +6,9 @@
 #include <QScopedPointer>
 
 #include "mixxxtest.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlproxy.h"
 
 class WWidgetStackTest : public MixxxTest {
   public:
@@ -33,20 +33,20 @@ class WWidgetStackTest : public MixxxTest {
         // 0-based index
         m_pCurPageControl->set(1);
 
-        m_pPage0Widget.reset(new QWidget());
+        m_pPage0Widget = new QWidget();
         m_pPage0Control.reset(new ControlObject(ConfigKey(m_pGroup, "page0")));
-        m_pPage1Widget.reset(new QWidget());
+        m_pPage1Widget = new QWidget();
         m_pPage1Control.reset(new ControlObject(ConfigKey(m_pGroup, "page1")));
-        m_pPage2Widget.reset(new QWidget());
+        m_pPage2Widget = new QWidget();
         m_pPage2Control.reset(new ControlObject(ConfigKey(m_pGroup, "page2")));
 
-        m_pStack->addWidgetWithControl(m_pPage0Widget.data(),
+        m_pStack->addWidgetWithControl(m_pPage0Widget,
                                        m_pPage0Control.data(),
                                        2);
-        m_pStack->addWidgetWithControl(m_pPage1Widget.data(),
+        m_pStack->addWidgetWithControl(m_pPage1Widget,
                                        m_pPage1Control.data(),
                                        -1);
-        m_pStack->addWidgetWithControl(m_pPage2Widget.data(),
+        m_pStack->addWidgetWithControl(m_pPage2Widget,
                                        m_pPage2Control.data(),
                                        -1);
         m_pStack->Init();
@@ -81,9 +81,10 @@ class WWidgetStackTest : public MixxxTest {
     QScopedPointer<ControlObject> m_pPrevControl;
     QScopedPointer<ControlObject> m_pNextControl;
     QScopedPointer<ControlObject> m_pCurPageControl;
-    QScopedPointer<QWidget> m_pPage0Widget;
-    QScopedPointer<QWidget> m_pPage1Widget;
-    QScopedPointer<QWidget> m_pPage2Widget;
+    // WWidgetStack takes ownership of the actual page widgets.
+    QWidget* m_pPage0Widget;
+    QWidget* m_pPage1Widget;
+    QWidget* m_pPage2Widget;
     QScopedPointer<ControlObject> m_pPage0Control;
     QScopedPointer<ControlObject> m_pPage1Control;
     QScopedPointer<ControlObject> m_pPage2Control;
@@ -209,4 +210,3 @@ TEST_F(WWidgetStackTest, HiddenStackNoChanges) {
     m_pStack->show();
     ExpectPageSelected(2);
 }
-

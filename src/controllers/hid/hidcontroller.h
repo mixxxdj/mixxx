@@ -68,7 +68,7 @@ class HidController : public Controller {
     }
 
     virtual bool matchPreset(const PresetInfo& preset);
-    virtual bool matchProductInfo(QHash <QString,QString >);
+    virtual bool matchProductInfo(const ProductInfo& product);
     virtual void guessDeviceCategory();
 
     static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);

@@ -74,6 +74,12 @@ elif build.platform_is_osx:
 else:
         mixxx_bin = env.Program('mixxx', sources)
 
+# Make sure soundsource and mixxxminimal plugins are built before
+# mixxx_bin. This fixes a race where when building with multiple threads the
+# packaging step starts before the plugins are built.
+Depends(mixxx_bin, mixxxminimal_plugins)
+Depends(mixxx_bin, soundsource_plugins)
+
 # For convenience, copy the Mixxx binary out of the build directory to the
 # root. Don't do it on windows because the binary can't run on its own and needs
 # the DLLs present with it.
@@ -151,22 +157,73 @@ def construct_version(build, mixxx_version, branch_name, vcs_revision):
                                   vcs_revision, build_type)
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
-                             ubuntu_version):
-        # Underscores are not ok in version names, dashes are fine though.
-        if branch_name:
-                branch_name = branch_name.replace('_', '-')
-        # In release mode, we only use the version and ubuntu_version
-        if build.build_is_release:
-                return "%s-%s" % (mixxx_version, ubuntu_version)
-        elif branch_name.startswith('release-'):
-                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, we must include the Mixxx version since it is the
-        # base "upstream" version in the Debian version number. Also include the
-        # branch name and VCS version so we know where the build came from.
-        # See: https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
-        # e.g. 1.12.0-alpha~master-gitXXXX~ppa1~trusty1
-        return "%s~%s-%s%s-%s" % (mixxx_version, branch_name, vcs_name,
-                                  vcs_revision, ubuntu_version)
+                             ubuntu_version, distro_version):
+        # The format of a Debian/Ubuntu version is:
+        #
+        #   [epoch:]upstream_version[-debian_revision]
+        #
+        # A detailed description of the valid characters and sorting order of
+        # versions can be found here:
+        # https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
+        #
+        # For package upgrades to work correctly, we want the following
+        # orderings on package versions:
+        #
+        # nightly build < pre-alpha < alpha < beta < rc1 < rc2 < final release
+        #
+        # The sorting rules are complicated but the key detail is: "The lexical
+        # comparison is a comparison of ASCII values modified so that all the
+        # letters sort earlier than all the non-letters and so that a tilde
+        # sorts before anything, even the end of a part."
+        #
+        # The Mixxx version stored in src/defs_version.h (the "mixxx_version"
+        # parameter to this function) is formatted like:
+        #
+        # Pre Alpha: 2.0.0-alpha-pre
+        # Alpha: 2.0.0-alpha
+        # Beta: 2.0.0-beta
+        # RC: 2.0.0-rc1
+        # Final: 2.0.0
+        #
+        # Since hyphens are a separator character between the upstream version
+        # and Debian version, we replace these with tildes.
+        #
+        # Other goals:
+        # - We would like to know the branch and commit of a package.
+        # - We would like the PPA to trump the official Debian package.
+        #
+        # The following versions are sorted from low to high order:
+        # 1.9.9
+        # 2.0.0~alpha~pre
+        # 2.0.0~alpha
+        # 2.0.0~beta~pre
+        # 2.0.0~beta
+        # 2.0.0~dfsg4 <- official Debian package version
+        # 2.0.0~rc1
+        # 2.0.0
+        # 2.0.1~alpha~pre
+        #
+        # Our official Debian packages have a ~dfsg section, so in this case an
+        # rc1 package in our PPA would trump an official Debian package
+        # (probably not what we want but not too bad since we would probably
+        # publish a "2.0.0" final to our PPA before the official Debian package
+        # is even released.
+        #
+        # Note in the above sorted list that if the branch name were included
+        # after the mixxx_version, 2.0.0~master would sort earlier than
+        # 2.0.0~rc1~master!  To prevent branch and revision tags from
+        # interfering with package ordering we include them in the
+        # debian_revision portion of the version. This ensures they are only
+        # used for sorting if the upstream version of two packages is identical.
+        upstream_version = mixxx_version.replace('-', '~')
+        assert '_' not in upstream_version
+
+        # Strip underscores and dashes in the branch name.
+        branch_name = branch_name.strip('_-')
+        assert branch_name and branch_name != '(no branch)'
+
+        return "%s-%s~%s~%s%s~%s" % (upstream_version, ubuntu_version, branch_name,
+                                     vcs_name, vcs_revision, distro_version)
 
 #Set up the install target
 #=========================
@@ -208,7 +265,7 @@ skin_files = Glob('#res/skins/*')
 controllermappings_files = Glob('#res/controllers/*')
 
 # Translation files
-translation_files = Glob('#res/translations/*.qm')
+translation_files = Glob('#res/translations/*.qm') + Glob(os.path.join(build.env['QTDIR'], 'translations/qt_*.qm'))
 
 # Font files
 font_files = Glob('#res/fonts/*')
@@ -261,12 +318,13 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
 qt_modules = depends.Qt.enabled_modules(build)
 qt5 = depends.Qt.qt5_enabled(build)
 
-if qt5:
+if build.platform_is_windows and not build.static_dependencies:
+    if qt5:
         suffix = 'd.dll' if build.build_is_debug else '.dll'
         qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
                       for module in qt_modules]
         dll_files.extend(qt_modules)
-else:
+    else:
         suffix = 'd4.dll' if build.build_is_debug else '4.dll'
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
         dll_files.extend(qt_modules)
@@ -284,7 +342,8 @@ if qt5:
                  imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 else:
         suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-        imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+        if not build.static_dependencies:
+                imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
         # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
         pdbSuffix = 'd4.pdb' if (bundle_pdbs and build.build_is_debug) else ''
         if pdbSuffix:
@@ -408,7 +467,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 plugins.append(x.get_abspath())
 
         resource_map = {}
-        translation_files = Glob('#res/translations/*.qm')
         for tfile in translation_files:
                 resource_map[str(tfile)] = 'translations'
 
@@ -464,11 +522,11 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 COPYRIGHT="Copyright © 2001-%s Mixxx Development Team" % datetime.datetime.now().year,
                 # WARNING(rjryan): If you change this, you must also change it
                 # in the build/osx/product_definition.plist.
-                MINIMUM_OSX_VERSION="10.6.0",
+                MINIMUM_OSX_VERSION="10.7.0",
                 CATEGORY="public.app-category.music",
                 OTOOL_LOCAL_PATHS=otool_local_paths,
                 OTOOL_SYSTEM_PATHS=otool_system_paths,
-                FOR_APP_STORE=True,
+                FOR_APP_STORE=int(build.flags['macappstore']) > 0,
                 )
         #env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
         env.Alias('bundle', bundle)
@@ -631,13 +689,15 @@ def BuildRelease(target, source, env):
         else:
             # Call the NSIS build
             buildwin64 = "/Dx64=1" if build.machine_is_64bit else ''
-            command = '%(path)s /DPACKAGE_NAME=%(package_name)s /DPRODUCT_VERSION=%(version)s /DQTDIR=%(qtpath)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
+            staticdeps = "/DSTATICDEPS=1" if build.static_dependencies else ''
+            command = '%(path)s /DPACKAGE_NAME=%(package_name)s /DPRODUCT_VERSION=%(version)s /DQTDIR=%(qtpath)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s %(staticdeps)s build\\nsis\\Mixxx.nsi' % \
                 {'path': nsis_path,
                  'package_name': exe_name,
                  'version': mixxx_version,
                  'qtpath': build.env['QTDIR'],
                  'winlibpath': mixxx_winlib_path,
-                 '64bit': buildwin64}
+                 '64bit': buildwin64,
+                 'staticdeps': staticdeps}
             print "Using command: " + command
             subprocess.check_call(command)
     else:
@@ -775,13 +835,23 @@ def BuildUbuntuPackage(target, source, env):
         os.system('cp -r build/debian .')
         os.system('cp res/linux/mixxx.usb.rules ./debian/mixxx.mixxx-usb.udev')
 
+        scons_flags = ' '.join([
+                'optimize=portable',
+                'virtualize=0',
+                'mad=1',
+                'localecompare=1',
+                'qt_sqlite_plugin=0',
+                'build=' + build.build,
+                'qt5=%d' % qt5])
+
         # Replace environment variables in the rules file.
         # TODO(rryan) something more elegant? I don't know a better way. When
         # Ubuntu build servers build us we don't get the chance to pass
         # environment variables in.
         with open('debian/rules', 'r') as fr:
                 rules = fr.read()
-                rules = rules.replace('$(MIXXX_BUILD)', build.build)
+                rules = rules.replace('MIXXX_SCONS_FLAGS = ""',
+                                      'MIXXX_SCONS_FLAGS = %s' % scons_flags)
 
                 with open('debian/rules', 'w') as fw:
                         fw.write(rules)
@@ -790,11 +860,9 @@ def BuildUbuntuPackage(target, source, env):
                 # if a control.$distro file exists, use it
                 if os.path.exists('debian/control.%s' % ubuntu_distro):
                         os.system('cp debian/control.%s debian/control' % ubuntu_distro)
-                # TODO(rryan) currently can only have version 1 within a distro
-                ubuntu_distro_version = '%s~%s1' % (ubuntu_version, ubuntu_distro)
                 package_version = ubuntu_construct_version(build, mixxx_version,
                                                            branch_name, vcs_revision,
-                                                           ubuntu_distro_version)
+                                                           ubuntu_version, ubuntu_distro)
 
                 # Add a changelog record for this package
                 if build.build_is_debug:
@@ -812,15 +880,15 @@ def BuildUbuntuPackage(target, source, env):
                 print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
                 print
 
-                command = ["MIXXX_BUILD=%s" % build.build,
-                           "ARCH=%s" % arch,
-                           "DIST=%s" % ubuntu_distro]
+                command = ['MIXXX_SCONS_FLAGS="%s"' % scons_flags,
+                           'ARCH=%s' % arch,
+                           'DIST=%s' % ubuntu_distro]
 
                 if package_target == 'source':
                         # TODO(rryan) we have to figure out the key-signing situation
                         # here.
-                        # Preserve the MIXXX_BUILD environment variable.
-                        command.extend(['debuild', '-eMIXXX_BUILD', '-S', '-sa',])
+                        # Preserve the MIXXX_SCONS_FLAGS environment variable.
+                        command.extend(['debuild', '-eMIXXX_SCONS_FLAGS', '-S', '-sa',])
                 else:
                         command.extend(['pdebuild'])
                 result = os.system(' '.join(command))

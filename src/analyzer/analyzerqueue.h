@@ -12,7 +12,7 @@
 #include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/samplebuffer.h"
 
 class TrackCollection;
@@ -61,7 +61,7 @@ class AnalyzerQueue : public QThread {
 
     bool isLoadedTrackWaiting(TrackPointer analysingTrack);
     TrackPointer dequeueNextBlocking();
-    bool doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudioSource);
+    bool doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudioSource);
     void emitUpdateProgress(TrackPointer tio, int progress);
     void emptyCheck();
 

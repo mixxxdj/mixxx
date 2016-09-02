@@ -12,26 +12,23 @@
 
 #include "widget/wnumberrate.h"
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "util/math.h"
 
 WNumberRate::WNumberRate(const char * group, QWidget * parent)
         : WNumber(parent) {
-    m_pRateRangeControl = new ControlObjectSlave(group, "rateRange", this);
+    m_pRateRangeControl = new ControlProxy(group, "rateRange", this);
     m_pRateRangeControl->connectValueChanged(SLOT(setValue(double)));
-    m_pRateDirControl = new ControlObjectSlave(group, "rate_dir", this);
+    m_pRateDirControl = new ControlProxy(group, "rate_dir", this);
     m_pRateDirControl->connectValueChanged(SLOT(setValue(double)));
-    m_pRateControl = new ControlObjectSlave(group, "rate", this);
+    m_pRateControl = new ControlProxy(group, "rate", this);
     m_pRateControl->connectValueChanged(SLOT(setValue(double)));
     // Initialize the widget.
     setValue(0);
 }
 
-WNumberRate::~WNumberRate() {
-}
-
-void WNumberRate::setValue(double) {
+void WNumberRate::setValue(double /*dValue*/) {
     double vsign = m_pRateControl->get() *
             m_pRateRangeControl->get() *
             m_pRateDirControl->get();

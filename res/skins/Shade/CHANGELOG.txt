@@ -143,8 +143,8 @@ v1.10.0.08	(24/05/2011)
 
 v1.10.0.07	(12/05/2011)
 * Feature: Added mix orientation for microphone
-* Update: Vinylcontrol & microphone widget positioning & graphics
-* Update: Vinylcontrol indicator positioning & graphics
+* Update: VinylControl & microphone widget positioning & graphics
+* Update: VinylControl indicator positioning & graphics
 * Update: Tabs to show/hide widgets positioning & graphics
 
 v1.10.0.06	(03/05/2011)

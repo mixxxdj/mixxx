@@ -9,8 +9,8 @@
 
 #include "engine/enginecontrol.h"
 #include "preferences/usersettings.h"
-#include "controlobjectslave.h"
-#include "trackinfoobject.h"
+#include "control/controlproxy.h"
+#include "track/track.h"
 
 #define NUM_HOT_CUES 37
 
@@ -58,7 +58,7 @@ class HotcueControl : public QObject {
     void hotcuePlay(double v);
 
   private:
-    ConfigKey keyForControl(int hotcue, QString name);
+    ConfigKey keyForControl(int hotcue, const char* name);
 
     QString m_group;
     int m_iHotcueNumber;
@@ -84,7 +84,7 @@ class CueControl : public EngineControl {
     Q_OBJECT
   public:
     CueControl(QString group,
-               UserSettingsPointer _config);
+               UserSettingsPointer pConfig);
     virtual ~CueControl();
 
     virtual void hintReader(HintVector* pHintList);
@@ -151,8 +151,8 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
-    ControlObjectSlave* m_pVinylControlEnabled;
-    ControlObjectSlave* m_pVinylControlMode;
+    ControlProxy* m_pVinylControlEnabled;
+    ControlProxy* m_pVinylControlMode;
 
     TrackPointer m_pLoadedTrack;
 

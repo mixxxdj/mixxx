@@ -48,6 +48,8 @@ class MixxxBuild(object):
         if machine.lower() not in ['x86_64', 'x86', 'i686', 'i586',
                                    'alpha', 'hppa', 'mips', 'mipsel', 's390',
                                    'sparc', 'ia64', 'armel', 'armhf', 'hurd-i386',
+                                   'armv5tel', 'armv5tejl', 'armv6l', 'armv6hl',
+                                   'armv7l', 'armv7hl', 'armv7hnl',
                                    'sh3', 'sh4',
                                    'kfreebsd-amd64', 'kfreebsd-i386',
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
@@ -111,6 +113,7 @@ class MixxxBuild(object):
 
         # Currently this only works for Windows
         self.static_dependencies = int(Script.ARGUMENTS.get('staticlibs', 0))
+        self.static_qt = int(Script.ARGUMENTS.get('staticqt', 0))
 
         logging.info("Target Platform: %s" % self.platform)
         logging.info("Target Machine: %s" % self.machine)
@@ -121,6 +124,8 @@ class MixxxBuild(object):
         if self.platform_is_windows:
             logging.info("Static dependencies: %s" % (
                 "YES" if self.static_dependencies else "NO"))
+            logging.info("Static Qt: %s" % (
+                "YES" if self.static_qt else "NO"))
 
         if self.crosscompile:
             logging.info("Host Platform: %s" % self.host_platform)
@@ -320,30 +325,20 @@ class MixxxBuild(object):
 
             print 'Automatically detecting Mac OS X SDK.'
 
-            # SDK versions in order of precedence.
-            sdk_versions = ( '10.11', '10.10', '10.9', '10.8', '10.7', '10.6', '10.5', )
-            clang_sdk_versions = ( '10.11', '10.10', '10.9', '10.8', '10.7', )
-            valid_cpp_lib_versions = ( 'libstdc++', 'libc++', )
-
-            # By default use old gcc C++ library version
-            osx_stdlib = Script.ARGUMENTS.get('stdlib', 'libstdc++')
-            if osx_stdlib not in valid_cpp_lib_versions:
-                raise Exception('Unsupported C++ stdlib version')
-
-            if osx_stdlib == 'libc++':
-                sdk_version_default = '10.9'
-            else:
-                sdk_version_default = '10.5'
+            # SDK versions in order of precedence. Mixxx >2.0 requires C++11
+            # which is only available with libc++ and OS X 10.7 onwards.
+            supported_sdk_versions = ( '10.11', '10.10', '10.9', '10.8', '10.7' )
+            osx_stdlib = 'libc++'
+            # Default to the minimum supported version.
+            sdk_version_default = '10.7'
 
             min_sdk_version = Script.ARGUMENTS.get('osx_sdk_version_min', sdk_version_default)
-            if min_sdk_version not in sdk_versions:
+
+            if min_sdk_version not in supported_sdk_versions:
                 raise Exception('Unsupported osx_sdk_version_min value')
 
-            if osx_stdlib == 'libc++' and min_sdk_version not in clang_sdk_versions:
-                raise Exception('stdlib=libc++ requires osx_sdk_version_min >= 10.7')
-
             print "XCode developer directory:", os.popen('xcode-select -p').readline().strip()
-            for sdk in sdk_versions:
+            for sdk in supported_sdk_versions:
                 sdk_path = os.popen(
                     'xcodebuild -version -sdk macosx%s Path' % sdk).readline().strip()
                 if sdk_path:

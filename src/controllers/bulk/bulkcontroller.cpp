@@ -53,7 +53,7 @@ void BulkReader::run() {
             Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData((char*)data, transferred);
-            emit(incomingData(outData, Time::elapsed()));
+            emit(incomingData(outData, mixxx::Time::elapsed()));
         }
     }
     qDebug() << "Stopped Reader";
@@ -107,7 +107,7 @@ QString BulkController::presetExtension() {
 void BulkController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
-    qDebug() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
 }
 
 void BulkController::visit(const HidControllerPreset* preset) {
@@ -122,9 +122,8 @@ bool BulkController::savePreset(const QString fileName) const {
 }
 
 bool BulkController::matchPreset(const PresetInfo& preset) {
-    const QList<QHash<QString, QString> > products = preset.getProducts();
-    QHash <QString, QString> product;
-    foreach (product, products) {
+    const QList<ProductInfo>& products = preset.getProducts();
+    for (const auto& product : products) {
         if (matchProductInfo(product)) {
             return true;
         }
@@ -132,13 +131,13 @@ bool BulkController::matchPreset(const PresetInfo& preset) {
     return false;
 }
 
-bool BulkController::matchProductInfo(QHash <QString, QString> info) {
+bool BulkController::matchProductInfo(const ProductInfo& product) {
     int value;
     bool ok;
     // Product and vendor match is always required
-    value = info["vendor_id"].toInt(&ok,16);
+    value = product.vendor_id.toInt(&ok, 16);
     if (!ok || vendor_id!=value) return false;
-    value = info["product_id"].toInt(&ok,16);
+    value = product.product_id.toInt(&ok, 16);
     if (!ok || product_id!=value) return false;
 
     // Match found

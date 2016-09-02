@@ -3,16 +3,17 @@
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
 
-#include "controlobject.h"
-#include "controlpotmeter.h"
-#include "trackinfoobject.h"
-#include "soundsourceproxy.h"
+#include "control/controlobject.h"
+#include "control/controlpotmeter.h"
+#include "track/track.h"
+#include "sources/soundsourceproxy.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "analyzer/analyzerqueue.h"
+#include "util/platform.h"
 #include "util/sandbox.h"
 #include "effects/effectsmanager.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -46,13 +47,13 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
 
-    m_pInputConfigured.reset(new ControlObjectSlave(group, "input_configured", this));
-    m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
+    m_pInputConfigured.reset(new ControlProxy(group, "input_configured", this));
+    m_pPassthroughEnabled.reset(new ControlProxy(group, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughEnabled(double)));
 #ifdef __VINYLCONTROL__
-    m_pVinylControlEnabled.reset(new ControlObjectSlave(group, "vinylcontrol_enabled", this));
+    m_pVinylControlEnabled.reset(new ControlProxy(group, "vinylcontrol_enabled", this));
     m_pVinylControlEnabled->connectValueChanged(SLOT(slotVinylControlEnabled(double)));
-    m_pVinylControlStatus.reset(new ControlObjectSlave(group, "vinylcontrol_status", this));
+    m_pVinylControlStatus.reset(new ControlProxy(group, "vinylcontrol_status", this));
 #endif
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
@@ -71,9 +72,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             this, SLOT(slotLoadFailed(TrackPointer, QString)));
 
     // Get loop point control objects
-    m_pLoopInPoint = new ControlObjectSlave(
+    m_pLoopInPoint = new ControlProxy(
             getGroup(),"loop_start_position", this);
-    m_pLoopOutPoint = new ControlObjectSlave(
+    m_pLoopOutPoint = new ControlProxy(
             getGroup(),"loop_end_position", this);
 
     // Duration of the current song, we create this one because nothing else does.
@@ -92,13 +93,13 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);
 
-    m_pPreGain = new ControlObjectSlave(group, "pregain", this);
+    m_pPreGain = new ControlProxy(group, "pregain", this);
     //BPM of the current song
-    m_pBPM = new ControlObjectSlave(group, "file_bpm", this);
-    m_pKey = new ControlObjectSlave(group, "file_key", this);
+    m_pBPM = new ControlProxy(group, "file_bpm", this);
+    m_pKey = new ControlProxy(group, "file_key", this);
 
-    m_pReplayGain = new ControlObjectSlave(group, "replaygain", this);
-    m_pPlay = new ControlObjectSlave(group, "play", this);
+    m_pReplayGain = new ControlProxy(group, "replaygain", this);
+    m_pPlay = new ControlProxy(group, "play", this);
     m_pPlay->connectValueChanged(SLOT(slotPlayToggled(double)));
 }
 
@@ -155,12 +156,14 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
         // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
         // relies on signals and slots to get tons of things done. Don't
         // randomly disconnect things.
-        // m_pLoadedTrack->disconnect();
         disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
         disconnect(m_pLoadedTrack.data(), 0, this, 0);
         disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
 
-        setReplayGain(0);
+        // Do not reset m_pReplayGain here, because the track might be still
+        // playing and the last buffer will be processed.
+
+        m_pPlay->set(0.0);
     }
 
     m_pLoadedTrack = pNewTrack;
@@ -173,8 +176,8 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
                 m_pKey, SLOT(set(double)));
 
         // Listen for updates to the file's Replay Gain
-        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(Mixxx::ReplayGain)),
-                this, SLOT(slotSetReplayGain(Mixxx::ReplayGain)));
+        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
+                this, SLOT(slotSetReplayGain(mixxx::ReplayGain)));
     }
 
     // Request a new track from EngineBuffer and wait for slotTrackLoaded()
@@ -207,7 +210,7 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer track, QString reason) {
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                                           TrackPointer pOldTrack) {
     qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded";
-    if (pNewTrack.isNull() && 
+    if (pNewTrack.isNull() &&
             !pOldTrack.isNull() &&
             pOldTrack == m_pLoadedTrack) {
         // eject Track
@@ -240,6 +243,13 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pBPM->set(m_pLoadedTrack->getBpm());
         m_pKey->set(m_pLoadedTrack->getKey());
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+
+        // Clear loop
+        // It seems that the trick is to first clear the loop out point, and then
+        // the loop in point. If we first clear the loop in point, the loop out point
+        // does not get cleared.
+        m_pLoopOutPoint->set(-1);
+        m_pLoopInPoint->set(-1);
 
         const QList<CuePointer> trackCues(pNewTrack->getCuePoints());
         QListIterator<CuePointer> it(trackCues);
@@ -285,7 +295,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             if (m_pRateSlider != NULL) {
                 m_pRateSlider->set(0.0);
             }
-            // Fallthrough intended
+            M_FALLTHROUGH_INTENDED;
           case RESET_PITCH:
             if (m_pPitchAdjust != NULL) {
                 m_pPitchAdjust->set(0.0);
@@ -306,7 +316,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         qDebug() << "stray BaseTrackPlayerImpl::slotTrackLoaded()";
     }
 
-    // Update the PlayerInfo class that is used in EngineShoutcast to replace
+    // Update the PlayerInfo class that is used in EngineBroadcast to replace
     // the metadata of a stream
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 }
@@ -315,7 +325,7 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
 
-void BaseTrackPlayerImpl::slotSetReplayGain(Mixxx::ReplayGain replayGain) {
+void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change
     if (m_pPlay->get() == 0.0) {
@@ -337,14 +347,14 @@ EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
 
 void BaseTrackPlayerImpl::setupEqControls() {
     const QString group = getGroup();
-    m_pLowFilter = new ControlObjectSlave(group, "filterLow", this);
-    m_pMidFilter = new ControlObjectSlave(group, "filterMid", this);
-    m_pHighFilter = new ControlObjectSlave(group, "filterHigh", this);
-    m_pLowFilterKill = new ControlObjectSlave(group, "filterLowKill", this);
-    m_pMidFilterKill = new ControlObjectSlave(group, "filterMidKill", this);
-    m_pHighFilterKill = new ControlObjectSlave(group, "filterHighKill", this);
-    m_pRateSlider = new ControlObjectSlave(group, "rate", this);
-    m_pPitchAdjust = new ControlObjectSlave(group, "pitch_adjust", this);
+    m_pLowFilter = new ControlProxy(group, "filterLow", this);
+    m_pMidFilter = new ControlProxy(group, "filterMid", this);
+    m_pHighFilter = new ControlProxy(group, "filterHigh", this);
+    m_pLowFilterKill = new ControlProxy(group, "filterLowKill", this);
+    m_pMidFilterKill = new ControlProxy(group, "filterMidKill", this);
+    m_pHighFilterKill = new ControlProxy(group, "filterHighKill", this);
+    m_pRateSlider = new ControlProxy(group, "rate", this);
+    m_pPitchAdjust = new ControlProxy(group, "pitch_adjust", this);
 }
 
 void BaseTrackPlayerImpl::slotPassthroughEnabled(double v) {

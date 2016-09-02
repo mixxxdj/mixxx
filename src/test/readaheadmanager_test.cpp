@@ -3,8 +3,8 @@
 #include <QtDebug>
 #include <QScopedPointer>
 
-#include "cachingreader.h"
-#include "controlobject.h"
+#include "engine/cachingreader.h"
+#include "control/controlobject.h"
 #include "engine/loopingcontrol.h"
 #include "engine/readaheadmanager.h"
 #include "test/mixxxtest.h"
@@ -17,7 +17,7 @@ class StubReader : public CachingReader {
     StubReader()
             : CachingReader("[test]", UserSettingsPointer()) { }
 
-    int read(int sample, bool reverse, int num_samples,
+    SINT read(SINT sample, bool reverse, SINT num_samples,
              CSAMPLE* buffer) override {
         Q_UNUSED(sample);
         Q_UNUSED(reverse);

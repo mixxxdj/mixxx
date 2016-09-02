@@ -11,11 +11,12 @@
 #include "analyzer/vamp/vampanalyzer.h"
 #endif
 #include "analyzer/analyzergain.h"
+#include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzerwaveform.h"
 #include "library/trackcollection.h"
 #include "mixer/playerinfo.h"
-#include "soundsourceproxy.h"
-#include "trackinfoobject.h"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/event.h"
 #include "util/timer.h"
@@ -32,7 +33,7 @@ namespace {
     // We need to use a smaller block size, because on Linux the AnalyzerQueue
     // can starve the CPU of its resources, resulting in xruns. A block size
     // of 4096 frames per block seems to do fine.
-    const SINT kAnalysisChannels = Mixxx::AudioSource::kChannelCountStereo;
+    const SINT kAnalysisChannels = mixxx::AudioSource::kChannelCountStereo;
     const SINT kAnalysisFramesPerBlock = 4096;
     const SINT kAnalysisSamplesPerBlock =
             kAnalysisFramesPerBlock * kAnalysisChannels;
@@ -98,7 +99,7 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
             QListIterator<Analyzer*> ita(m_aq);
             bool processTrack = false;
             while (ita.hasNext()) {
-                if (!ita.next()->loadStored(pTrack)) {
+                if (!ita.next()->isDisabledOrLoadStoredSuccess(pTrack)) {
                     processTrack = true;
                 }
             }
@@ -176,7 +177,7 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyzerQueue thread
-bool AnalyzerQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudioSource) {
+bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudioSource) {
 
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
@@ -319,9 +320,9 @@ void AnalyzerQueue::run() {
 
         // Get the audio
         SoundSourceProxy soundSourceProxy(nextTrack);
-        Mixxx::AudioSourceConfig audioSrcCfg;
+        mixxx::AudioSourceConfig audioSrcCfg;
         audioSrcCfg.setChannelCount(kAnalysisChannels);
-        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+        mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
         if (!pAudioSource) {
             qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
             emptyCheck();
@@ -440,6 +441,7 @@ AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
 
     ret->addAnalyzer(new AnalyzerWaveform(pConfig));
     ret->addAnalyzer(new AnalyzerGain(pConfig));
+    ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));
@@ -456,6 +458,7 @@ AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
     ret->addAnalyzer(new AnalyzerGain(pConfig));
+    ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));

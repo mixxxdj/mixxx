@@ -15,13 +15,23 @@
 
 #include "library/dao/trackdao.h"
 #include "library/columncache.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/class.h"
 #include "util/memory.h"
 
 class SearchQueryParser;
 class QueryNode;
 class TrackCollection;
+
+class SortColumn {
+  public:
+    SortColumn(int column, Qt::SortOrder order)
+        : m_column(column),
+          m_order(order) {
+    }
+    int m_column;
+    Qt::SortOrder m_order;
+};
 
 // BaseTrackCache is a cache of all of the values in certain table. It supports
 // searching and sorting of tracks by values within the table. The reasoning for
@@ -54,10 +64,11 @@ class BaseTrackCache : public QObject {
     QString columnSortForFieldIndex(int index) const;
     int fieldIndex(ColumnCache::Column column) const;
     virtual void filterAndSort(const QSet<TrackId>& trackIds,
-                               QString query, QString extraFilter,
-                               QString orderByClause,
-                               const int sortColumn,
-                               Qt::SortOrder sortOrder,
+                               const QString& query,
+                               const QString& extraFilter,
+                               const QString& orderByClause,
+                               const QList<SortColumn>& sortColumns,
+                               const int columnOffset,
                                QHash<TrackId, int>* trackToIndex);
     virtual bool isCached(TrackId trackId) const;
     virtual void ensureCached(TrackId trackId);
@@ -87,9 +98,9 @@ class BaseTrackCache : public QObject {
     std::unique_ptr<QueryNode> parseQuery(QString query, QString extraFilter,
                           QStringList idStrings) const;
     int findSortInsertionPoint(TrackPointer pTrack,
-                               const int sortColumn,
-                               const Qt::SortOrder sortOrder,
-                               const QVector<TrackId> trackIds) const;
+                               const QList<SortColumn>& sortColumns,
+                               const int columnOffset,
+                               const QVector<TrackId>& trackIds) const;
     int compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                             QVariant val1, QVariant val2) const;
     bool trackMatches(const TrackPointer& pTrack,

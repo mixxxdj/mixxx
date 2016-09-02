@@ -25,10 +25,10 @@
 #include <QtDebug>
 
 #include "analyzer/analyzerqueue.h"
-#include "dlgabout.h"
+#include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"
-#include "dlgdevelopertools.h"
+#include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"
@@ -36,15 +36,15 @@
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "controllers/controllermanager.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
-#include "shoutcast/shoutcastmanager.h"
+#include "broadcast/broadcastmanager.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
-#include "soundsourceproxy.h"
-#include "trackinfoobject.h"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/sharedglcontext.h"
 #include "util/debug.h"
@@ -52,7 +52,7 @@
 #include "util/timer.h"
 #include "util/time.h"
 #include "util/version.h"
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "util/compatibility.h"
 #include "util/sandbox.h"
 #include "mixer/playerinfo.h"
@@ -88,8 +88,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pSoundManager(nullptr),
           m_pPlayerManager(nullptr),
           m_pRecordingManager(nullptr),
-#ifdef __SHOUTCAST__
-          m_pShoutcastManager(nullptr),
+#ifdef __BROADCAST__
+          m_pBroadcastManager(nullptr),
 #endif
           m_pControllerManager(nullptr),
           m_pGuiTick(nullptr),
@@ -108,7 +108,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_cmdLineArgs(args),
           m_pTouchShift(nullptr) {
     m_runtime_timer.start();
-    Time::start();
+    mixxx::Time::start();
 
     Version::logBuildDetails();
 
@@ -134,8 +134,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
     m_pWidgetParent = (QWidget*)m_pLaunchImage;
     setCentralWidget(m_pWidgetParent);
-    // move the app in the center of the primary screen
-    slotToCenterOfPrimaryScreen();
 
     show();
 #if defined(Q_WS_X11)
@@ -161,8 +159,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     qRegisterMetaType<TrackId>("TrackId");
     qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
     qRegisterMetaType<TrackPointer>("TrackPointer");
-    qRegisterMetaType<Mixxx::ReplayGain>("Mixxx::ReplayGain");
-    qRegisterMetaType<Mixxx::Bpm>("Mixxx::Bpm");
+    qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
+    qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
@@ -208,8 +206,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
 
-#ifdef __SHOUTCAST__
-    m_pShoutcastManager = new ShoutcastManager(pConfig, m_pSoundManager);
+#ifdef __BROADCAST__
+    m_pBroadcastManager = new BroadcastManager(pConfig, m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -446,9 +444,15 @@ void MixxxMainWindow::finalize() {
     Timer t("MixxxMainWindow::~finalize");
     t.start();
 
+    // Save the current window state (position, maximized, etc)
+    m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
+        QString(saveGeometry().toBase64()));
+    m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "state"),
+        QString(saveState().toBase64()));
+
     setCentralWidget(NULL);
 
-    // TODO(rryan): WMainMenuBar holds references to COs so we need to delete it
+    // TODO(rryan): WMainMenuBar holds references to controls so we need to delete it
     // before MixxxMainWindow is destroyed. QMainWindow calls deleteLater() in
     // setMenuBar() but we need to delete it now so we can ask for
     // DeferredDelete events to be processed for it. Once Mixxx shutdown lives
@@ -471,7 +475,7 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
 
-    // GUI depends on MixxxKeyboard, PlayerManager, Library
+    // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Skin";
     delete m_pWidgetParent;
 
@@ -503,10 +507,10 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
 
-#ifdef __SHOUTCAST__
-    // ShoutcastManager depends on config, engine
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ShoutcastManager";
-    delete m_pShoutcastManager;
+#ifdef __BROADCAST__
+    // BroadcastManager depends on config, engine
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting BroadcastManager";
+    delete m_pBroadcastManager;
 #endif
 
     // EngineMaster depends on Config and m_pEffectsManager.
@@ -598,6 +602,12 @@ void MixxxMainWindow::initializeWindow() {
     Pal.setColor(QPalette::Background, MenuBarBackground);
     m_pMenuBar->setPalette(Pal);
 
+    // Restore the current window state (position, maximized, etc)
+    restoreGeometry(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
+        ConfigKey("[MainWindow]", "geometry")).toUtf8()));
+    restoreState(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
+        ConfigKey("[MainWindow]", "state")).toUtf8()));
+
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     slotUpdateWindowTitle(TrackPointer());
 }
@@ -640,12 +650,12 @@ void MixxxMainWindow::initializeKeyboard() {
         m_pKbdConfig = new ConfigObject<ConfigValueKbd>(defaultKeyboard);
     }
 
-    // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
-    // initialization into MixxxKeyboard
-    // Workaround for today: MixxxKeyboard calls delete
+    // TODO(XXX) leak pKbdConfig, KeyboardEventFilter owns it? Maybe roll all keyboard
+    // initialization into KeyboardEventFilter
+    // Workaround for today: KeyboardEventFilter calls delete
     bool keyboardShortcutsEnabled = pConfig->getValueString(
         ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new MixxxKeyboard(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
+    m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
 int MixxxMainWindow::noSoundDlg(void) {
@@ -792,8 +802,7 @@ void MixxxMainWindow::connectMenuBar() {
             m_pMenuBar, SLOT(onNewSkinLoaded()));
 
     // Misc
-    connect(m_pMenuBar, SIGNAL(quit()),
-            this, SLOT(slotFileQuit()));
+    connect(m_pMenuBar, SIGNAL(quit()), this, SLOT(close()));
     connect(m_pMenuBar, SIGNAL(showPreferences()),
             this, SLOT(slotOptionsPreferences()));
     connect(m_pMenuBar, SIGNAL(loadTrackToDeck(int)),
@@ -827,13 +836,13 @@ void MixxxMainWindow::connectMenuBar() {
         m_pMenuBar->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
     }
 
-#ifdef __SHOUTCAST__
-    if (m_pShoutcastManager) {
-        connect(m_pShoutcastManager, SIGNAL(shoutcastEnabled(bool)),
+#ifdef __BROADCAST__
+    if (m_pBroadcastManager) {
+        connect(m_pBroadcastManager, SIGNAL(broadcastEnabled(bool)),
                 m_pMenuBar, SLOT(onBroadcastingStateChange(bool)));
         connect(m_pMenuBar, SIGNAL(toggleBroadcasting(bool)),
-                m_pShoutcastManager, SLOT(setEnabled(bool)));
-        m_pMenuBar->onBroadcastingStateChange(m_pShoutcastManager->isEnabled());
+                m_pBroadcastManager, SLOT(setEnabled(bool)));
+        m_pMenuBar->onBroadcastingStateChange(m_pBroadcastManager->isEnabled());
     }
 #endif
 
@@ -908,13 +917,6 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
     }
 }
 
-void MixxxMainWindow::slotFileQuit() {
-    if (!confirmExit()) {
-        return;
-    }
-    hide();
-    qApp->quit();
-}
 
 void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
@@ -1129,20 +1131,12 @@ bool MixxxMainWindow::event(QEvent* e) {
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     if (!confirmExit()) {
         event->ignore();
-    }
-}
-
-void MixxxMainWindow::slotToCenterOfPrimaryScreen() {
-    if (!m_pWidgetParent)
         return;
-
-    QDesktopWidget* desktop = QApplication::desktop();
-    int primaryScreen = desktop->primaryScreen();
-    QRect primaryScreenRect = desktop->availableGeometry(primaryScreen);
-
-    move(primaryScreenRect.left() + (primaryScreenRect.width() - m_pWidgetParent->width()) / 2,
-         primaryScreenRect.top() + (primaryScreenRect.height() - m_pWidgetParent->height()) / 2);
+    }
+    finalize();
+    QMainWindow::closeEvent(event);
 }
+
 
 void MixxxMainWindow::checkDirectRendering() {
     // IF
@@ -1226,8 +1220,6 @@ bool MixxxMainWindow::confirmExit() {
             m_pPrefDlg->close();
         }
     }
-
-    finalize();
 
     return true;
 }

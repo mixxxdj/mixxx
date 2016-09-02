@@ -23,8 +23,8 @@
 #include <QtDebug>
 #include <QPixmap>
 
-#include "widget/wpixmapstore.h"
 #include "util/timer.h"
+#include "widget/wpixmapstore.h"
 #include "util/math.h"
 
 #define DEFAULT_FALLTIME 20
@@ -48,17 +48,14 @@ WVuMeter::WVuMeter(QWidget* parent)
     m_timer.start();
 }
 
-WVuMeter::~WVuMeter() {
-}
-
-void WVuMeter::setup(QDomNode node, const SkinContext& context) {
+void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
     // Set pixmaps
-    bool bHorizontal = context.hasNode(node, "Horizontal") &&
-    context.selectString(node, "Horizontal") == "true";
+    bool bHorizontal = false;
+    context.hasNodeSelectBool(node, "Horizontal", &bHorizontal);
 
     // Set background pixmap if available
-    if (context.hasNode(node, "PathBack")) {
-        QDomElement backPathNode = context.selectElement(node, "PathBack");
+    QDomElement backPathNode = context.selectElement(node, "PathBack");
+    if (!backPathNode.isNull()) {
         // The implicit default in <1.12.0 was FIXED so we keep it for backwards
         // compatibility.
         setPixmapBackground(context.getPixmapSource(backPathNode),
@@ -72,20 +69,24 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
                context.selectScaleMode(vuNode, Paintable::FIXED));
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
-    if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100)
+    if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100) {
         m_iPeakHoldSize = DEFAULT_HOLDSIZE;
+    }
 
     m_iPeakFallStep = context.selectInt(node, "PeakFallStep");
-    if (m_iPeakFallStep < 1 || m_iPeakFallStep > 1000)
+    if (m_iPeakFallStep < 1 || m_iPeakFallStep > 1000) {
         m_iPeakFallStep = DEFAULT_FALLSTEP;
+    }
 
     m_iPeakHoldTime = context.selectInt(node, "PeakHoldTime");
-    if (m_iPeakHoldTime < 1 || m_iPeakHoldTime > 3000)
+    if (m_iPeakHoldTime < 1 || m_iPeakHoldTime > 3000) {
         m_iPeakHoldTime = DEFAULT_HOLDTIME;
+    }
 
     m_iPeakFallTime = context.selectInt(node, "PeakFallTime");
-    if (m_iPeakFallTime < 1 || m_iPeakFallTime > 1000)
+    if (m_iPeakFallTime < 1 || m_iPeakFallTime > 1000) {
         m_iPeakFallTime = DEFAULT_FALLTIME;
+    }
 }
 
 void WVuMeter::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
@@ -159,7 +160,7 @@ void WVuMeter::maybeUpdate() {
     }
 }
 
-void WVuMeter::paintEvent(QPaintEvent *) {
+void WVuMeter::paintEvent(QPaintEvent * /*unused*/) {
     ScopedTimer t("WVuMeter::paintEvent");
 
     QStyleOption option;

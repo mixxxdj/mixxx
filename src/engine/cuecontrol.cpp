@@ -2,13 +2,13 @@
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QMutexLocker>
+#include <QStringBuilder>
 
 #include "engine/cuecontrol.h"
 
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlindicator.h"
-#include "cachingreader.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlindicator.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 // TODO: Convert these doubles to a standard enum
@@ -20,8 +20,8 @@ static const double CUE_MODE_NUMARK = 3.0;
 static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 
 CueControl::CueControl(QString group,
-                       UserSettingsPointer _config) :
-        EngineControl(group, _config),
+                       UserSettingsPointer pConfig) :
+        EngineControl(group, pConfig),
         m_bPreviewing(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(group, "play"))),
         m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
@@ -92,8 +92,8 @@ CueControl::CueControl(QString group,
     m_pCueIndicator = new ControlIndicator(ConfigKey(group, "cue_indicator"));
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
 
-    m_pVinylControlEnabled = new ControlObjectSlave(group, "vinylcontrol_enabled");
-    m_pVinylControlMode = new ControlObjectSlave(group, "vinylcontrol_mode");
+    m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
+    m_pVinylControlMode = new ControlProxy(group, "vinylcontrol_mode");
 }
 
 CueControl::~CueControl() {
@@ -971,11 +971,11 @@ bool CueControl::isTrackAtCue() {
     return (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f);
 }
 
-ConfigKey HotcueControl::keyForControl(int hotcue, QString name) {
+ConfigKey HotcueControl::keyForControl(int hotcue, const char* name) {
     ConfigKey key;
     key.group = m_group;
     // Add one to hotcue so that we dont have a hotcue_0
-    key.item = QString("hotcue_%1_%2").arg(QString::number(hotcue+1), name);
+    key.item = QLatin1String("hotcue_") % QString::number(hotcue+1) % "_" % name;
     return key;
 }
 

@@ -6,14 +6,12 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <opus/opusfile.h>
 
-namespace Mixxx {
+namespace mixxx {
 
-class SoundSourceOpus: public Mixxx::SoundSource {
+class SoundSourceOpus: public mixxx::SoundSource {
 public:
-    static const SINT kSamplingRate;
-
-    explicit SoundSourceOpus(QUrl url);
-    ~SoundSourceOpus();
+    explicit SoundSourceOpus(const QUrl& url);
+    ~SoundSourceOpus() override;
 
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,
@@ -29,7 +27,7 @@ public:
             CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     OggOpusFile *m_pOggOpusFile;
 
@@ -43,10 +41,10 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceOpus(url));
+        return newSoundSourceFromUrl<SoundSourceOpus>(url);
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEOPUS_H

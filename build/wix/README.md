@@ -13,3 +13,10 @@ For example, to build 64 bits package:
 
 or to build 32 bits package:
 .\build.bat 32
+
+To test your multilingual package
+=================================
+
+`msiexec /i mixxx-full-name.msi ProductLanguage=xxxx`
+
+where xxxx is a LCID in decimal notation taken from http://www.science.co.il/Language/Locale-codes.asp and available as a translation in build/wix/Localization

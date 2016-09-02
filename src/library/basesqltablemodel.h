@@ -51,7 +51,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void search(const QString& searchText, const QString& extraFilter = QString());
     void setSearch(const QString& searchText, const QString& extraFilter = QString());
     const QString currentSearch() const;
-    virtual void setSort(int column, Qt::SortOrder order);
+    void setSort(int column, Qt::SortOrder order);
     void hideTracks(const QModelIndexList& indices);
 
     int fieldIndex(ColumnCache::Column column) const;
@@ -131,16 +131,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
         }
     };
 
-    class SortColumn {
-      public:
-        SortColumn(int column, Qt::SortOrder order)
-            : m_column(column),
-              m_order(order) {
-        }
-        int m_column;
-        Qt::SortOrder m_order;
-    };
-
     QVector<RowInfo> m_rowInfo;
 
     QString m_tableName;
@@ -158,8 +148,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant> > m_headerInfo;
     QString m_trackSourceOrderBy;
-    int m_trackSourceSortColumn;
-    Qt::SortOrder m_trackSourceSortOrder;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };

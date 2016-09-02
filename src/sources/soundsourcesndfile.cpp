@@ -2,18 +2,18 @@
 
 #include "sources/soundsourcesndfile.h"
 
-namespace Mixxx {
+namespace mixxx {
 
-SoundSourceSndFile::SoundSourceSndFile(QUrl url)
+SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
         : SoundSource(url),
-          m_pSndFile(NULL) {
+          m_pSndFile(nullptr) {
 }
 
 SoundSourceSndFile::~SoundSourceSndFile() {
     close();
 }
 
-Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_pSndFile);
     SF_INFO sfInfo;
     memset(&sfInfo, 0, sizeof(sfInfo));
@@ -31,30 +31,39 @@ Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     m_pSndFile = sf_open(getLocalFileName().toLocal8Bit(), SFM_READ, &sfInfo);
 #endif
 
-    if (!m_pSndFile) {   // sf_format_check is only for writes
-        qWarning() << "Error opening libsndfile file:" << getUrlString()
-                << sf_strerror(m_pSndFile);
-        return ERR;
-    }
-
-    if (sf_error(m_pSndFile) > 0) {
-        qWarning() << "Error opening libsndfile file:" << getUrlString()
-                << sf_strerror(m_pSndFile);
-        return ERR;
+    switch (sf_error(m_pSndFile)) {
+    case SF_ERR_NO_ERROR:
+        DEBUG_ASSERT(m_pSndFile != nullptr);
+        break; // continue
+    case SF_ERR_UNRECOGNISED_FORMAT:
+        return OpenResult::UNSUPPORTED_FORMAT;
+    default:
+        const QString errorMsg(sf_strerror(m_pSndFile));
+        if (errorMsg.toLower().indexOf("unknown format") != -1) {
+            // NOTE(uklotzde 2016-05-11): This actually happens when
+            // trying to open a file with a supported file extension
+            // that contains data in an unsupported format!
+            return OpenResult::UNSUPPORTED_FORMAT;
+        } else {
+            qWarning() << "Error opening libsndfile file:"
+                    << getUrlString()
+                    << errorMsg;
+            return OpenResult::FAILED;
+        }
     }
 
     setChannelCount(sfInfo.channels);
     setSamplingRate(sfInfo.samplerate);
     setFrameCount(sfInfo.frames);
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceSndFile::close() {
     if (m_pSndFile) {
         const int closeResult = sf_close(m_pSndFile);
         if (0 == closeResult) {
-            m_pSndFile = NULL;
+            m_pSndFile = nullptr;
         } else {
             qWarning() << "Failed to close file:" << closeResult
                     << sf_strerror(m_pSndFile)
@@ -100,7 +109,12 @@ QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
     supportedFileExtensions.append("aif");
     supportedFileExtensions.append("wav");
     supportedFileExtensions.append("flac");
+    supportedFileExtensions.append("ogg");
+    // ALAC/CAF has been added in version 1.0.26
+    // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
+    // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
+    supportedFileExtensions.append("caf");
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx
