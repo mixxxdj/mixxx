@@ -4,6 +4,9 @@
 #include <QMap>
 #include <QStringList>
 
+#include "track/keyutils.h"
+#include "preferences/usersettings.h"
+
 // Caches the index of frequently used columns and provides a lookup-table of
 // column name to index.
 class ColumnCache {
@@ -67,11 +70,12 @@ class ColumnCache {
     };
 
     ColumnCache() { }
-    ColumnCache(const QStringList& columns) {
-        setColumns(columns);
+    ColumnCache(const QStringList& columns, UserSettingsPointer pConfig) {
+        setColumns(columns, pConfig);
     }
 
-    void setColumns(const QStringList& columns);
+    void setColumns(const QStringList& columns, UserSettingsPointer pConfig);
+    void setKeySortOrder(QString const& notation);
 
     inline int fieldIndex(Column column) const {
         if (column < 0 || column >= NUM_COLUMNS) {

@@ -4,9 +4,9 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/cratedao.h"
 #include "track/keyutils.h"
+#include "track/key_preferences.h"
 
-
-void ColumnCache::setColumns(const QStringList& columns) {
+void ColumnCache::setColumns(const QStringList& columns, UserSettingsPointer pConfig) {
     m_columnsByIndex.clear();
     m_columnsByIndex.append(columns);
 
@@ -73,52 +73,6 @@ void ColumnCache::setColumns(const QStringList& columns) {
 
     const QString sortInt("cast(%1 as integer)");
     const QString sortNoCase("lower(%1)");
-    const mixxx::track::io::key::ChromaticKey keysByCircleOfFifths[] = {
-        mixxx::track::io::key::INVALID,
-        
-        mixxx::track::io::key::C_MAJOR,
-        mixxx::track::io::key::A_MINOR,
-        
-        mixxx::track::io::key::G_MAJOR,
-        mixxx::track::io::key::E_MINOR,
-        
-        mixxx::track::io::key::D_MAJOR,
-        mixxx::track::io::key::B_MINOR,
-
-        mixxx::track::io::key::A_MAJOR,
-        mixxx::track::io::key::F_SHARP_MINOR,
-        
-        mixxx::track::io::key::E_MAJOR,
-        mixxx::track::io::key::C_SHARP_MINOR,
-
-        mixxx::track::io::key::B_MAJOR,
-        mixxx::track::io::key::G_SHARP_MINOR,
-
-        mixxx::track::io::key::F_SHARP_MAJOR,
-        mixxx::track::io::key::E_FLAT_MINOR,
-
-        mixxx::track::io::key::D_FLAT_MAJOR,
-        mixxx::track::io::key::B_FLAT_MINOR,
-
-        mixxx::track::io::key::A_FLAT_MAJOR,
-        mixxx::track::io::key::F_MINOR,
-
-        mixxx::track::io::key::E_FLAT_MAJOR,
-        mixxx::track::io::key::C_MINOR,
-
-        mixxx::track::io::key::B_FLAT_MAJOR,
-        mixxx::track::io::key::G_MINOR,
-
-        mixxx::track::io::key::F_MAJOR,
-        mixxx::track::io::key::D_MINOR
-    };
-
-    QString sortCircleOfFifths("CASE key_id ");
-    for (int i = 0; i <= 24; ++i) {
-            sortCircleOfFifths.append(QString("WHEN %1 THEN %2 ")
-                .arg(keysByCircleOfFifths[i]).arg(i));
-    }
-    sortCircleOfFifths.append("END");
 
     m_columnSortByIndex.clear();
     // Add the columns that requires a special sort
@@ -134,9 +88,103 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_FILETYPE], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COMMENT], sortNoCase);
-    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY], sortCircleOfFifths);
+    setKeySortOrder(pConfig->getValueString(ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION)));
 
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_ARTIST], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE], sortNoCase);
+}
+
+void ColumnCache::setKeySortOrder(QString const& notation) {
+    std::vector<mixxx::track::io::key::ChromaticKey> sortOrder;
+    if (notation != KEY_NOTATION_LANCELOT) {
+        sortOrder = {
+            mixxx::track::io::key::INVALID,
+
+            mixxx::track::io::key::C_MAJOR,
+            mixxx::track::io::key::A_MINOR,
+
+            mixxx::track::io::key::G_MAJOR,
+            mixxx::track::io::key::E_MINOR,
+
+            mixxx::track::io::key::D_MAJOR,
+            mixxx::track::io::key::B_MINOR,
+
+            mixxx::track::io::key::A_MAJOR,
+            mixxx::track::io::key::F_SHARP_MINOR,
+
+            mixxx::track::io::key::E_MAJOR,
+            mixxx::track::io::key::C_SHARP_MINOR,
+
+            mixxx::track::io::key::B_MAJOR,
+            mixxx::track::io::key::G_SHARP_MINOR,
+
+            mixxx::track::io::key::F_SHARP_MAJOR,
+            mixxx::track::io::key::E_FLAT_MINOR,
+
+            mixxx::track::io::key::D_FLAT_MAJOR,
+            mixxx::track::io::key::B_FLAT_MINOR,
+
+            mixxx::track::io::key::A_FLAT_MAJOR,
+            mixxx::track::io::key::F_MINOR,
+
+            mixxx::track::io::key::E_FLAT_MAJOR,
+            mixxx::track::io::key::C_MINOR,
+
+            mixxx::track::io::key::B_FLAT_MAJOR,
+            mixxx::track::io::key::G_MINOR,
+
+            mixxx::track::io::key::F_MAJOR,
+            mixxx::track::io::key::D_MINOR
+        };
+    } else {
+        sortOrder = {
+            mixxx::track::io::key::INVALID,
+
+            mixxx::track::io::key::G_SHARP_MINOR,
+            mixxx::track::io::key::B_MAJOR,
+
+            mixxx::track::io::key::E_FLAT_MINOR,
+            mixxx::track::io::key::F_SHARP_MAJOR,
+
+            mixxx::track::io::key::B_FLAT_MINOR,
+            mixxx::track::io::key::D_FLAT_MAJOR,
+
+            mixxx::track::io::key::F_MINOR,
+            mixxx::track::io::key::A_FLAT_MAJOR,
+
+            mixxx::track::io::key::C_MINOR,
+            mixxx::track::io::key::E_FLAT_MAJOR,
+
+            mixxx::track::io::key::G_MINOR,
+            mixxx::track::io::key::B_FLAT_MAJOR,
+
+            mixxx::track::io::key::D_MINOR,
+            mixxx::track::io::key::F_MAJOR,
+
+            mixxx::track::io::key::A_MINOR,
+            mixxx::track::io::key::C_MAJOR,
+
+            mixxx::track::io::key::E_MINOR,
+            mixxx::track::io::key::G_MAJOR,
+
+            mixxx::track::io::key::B_MINOR,
+            mixxx::track::io::key::D_MAJOR,
+
+            mixxx::track::io::key::F_SHARP_MINOR,
+            mixxx::track::io::key::A_MAJOR,
+
+            mixxx::track::io::key::C_SHARP_MINOR,
+            mixxx::track::io::key::E_MAJOR,
+        };
+    }
+
+    QString keySortSQL("CASE key_id ");
+    for (int i = 0; i <= 24; ++i) {
+            keySortSQL.append(QString("WHEN %1 THEN %2 ")
+                .arg(sortOrder[i]).arg(i));
+    }
+    keySortSQL.append("END");
+
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY], keySortSQL);
 }
