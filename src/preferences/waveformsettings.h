@@ -15,14 +15,14 @@ class WaveformSettings {
                 ConfigKey("[Library]", "EnableWaveformCaching"), enabled);
     }
 
-    bool waveformGenerateWithAnalysisEnabled() const {
+    bool waveformGenerationWithAnalysisEnabled() const {
         return m_pConfig->getValue<bool>(
-                ConfigKey("[Library]", "GenerateWaveformsWithAnalysis"), true);
+                ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true);
     }
 
-    void setWaveformGenerateWithAnalysisEnabled(bool enabled) {
+    void setWaveformGenerationWithAnalysisEnabled(bool enabled) {
         m_pConfig->setValue<bool>(
-                ConfigKey("[Library]", "GenerateWaveformsWithAnalysis"), enabled);
+                ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), enabled);
     }
 
   private:

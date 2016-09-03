@@ -457,7 +457,7 @@
         </widget>
        </item>
        <item row="1" column="0" colspan="2">
-        <widget class="QCheckBox" name="generateWaveformsWithAnalysis">
+        <widget class="QCheckBox" name="enableWaveformGenerationWithAnalysis">
          <property name="text">
           <string>Generate waveforms when analyzing library</string>
          </property>
