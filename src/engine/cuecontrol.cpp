@@ -16,6 +16,7 @@ static const double CUE_MODE_MIXXX = 0.0;
 static const double CUE_MODE_PIONEER = 1.0;
 static const double CUE_MODE_DENON = 2.0;
 static const double CUE_MODE_NUMARK = 3.0;
+static const double CUE_MODE_CUP = 4.0;
 
 CueControl::CueControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
@@ -64,6 +65,12 @@ CueControl::CueControl(const char* _group,
             this, SLOT(cueGotoAndPlay(double)),
             Qt::DirectConnection);
 
+    m_pCuePlay =
+            new ControlPushButton(ConfigKey(_group, "cue_play"));
+    connect(m_pCuePlay, SIGNAL(valueChanged(double)),
+            this, SLOT(cuePlay(double)),
+            Qt::DirectConnection);
+
     m_pCueGotoAndStop =
             new ControlPushButton(ConfigKey(_group, "cue_gotoandstop"));
     connect(m_pCueGotoAndStop, SIGNAL(valueChanged(double)),
@@ -100,6 +107,7 @@ CueControl::~CueControl() {
     delete m_pCueSet;
     delete m_pCueGoto;
     delete m_pCueGotoAndPlay;
+    delete m_pCuePlay;
     delete m_pCueGotoAndStop;
     delete m_pCuePreview;
     delete m_pCueCDJ;
@@ -754,12 +762,56 @@ void CueControl::cueDenon(double v) {
     }
 }
 
+void CueControl::cuePlay(double v) {
+    // This is how CUP button works:
+    // If playing, press to go to cue and stop.
+	// If stopped, press to set as cue point.
+	// On release, start playing from cue point.
+
+
+    QMutexLocker lock(&m_mutex);
+    bool playing = (m_pPlayButton->get() == 1.0);
+
+    // pressed
+    if(v){
+		if (playing) {
+			m_bPreviewing = false;
+			m_pPlayButton->set(0.0);
+
+			// Need to unlock before emitting any signals to prevent deadlock.
+			lock.unlock();
+
+			seekAbs(m_pCuePoint->get());
+		} else if (!isTrackAtCue() && getCurrentSample() <= getTotalSamples()) {
+			// Pause not at cue point and not at end position
+			cueSet(v);
+			// Just in case.
+			m_bPreviewing = false;
+
+			// If quantize is enabled, jump to the cue point since it's not
+			// necessarily where we currently are
+			if (m_pQuantizeEnabled->get() > 0.0) {
+				lock.unlock();  // prevent deadlock.
+				// Enginebuffer will quantize more exactly than we can.
+				seekAbs(m_pCuePoint->get());
+			}
+		}
+    } else if (isTrackAtCue()){
+        m_bPreviewing = false;
+        m_pPlayButton->set(1.0);
+        lock.unlock();
+
+    }
+}
+
 void CueControl::cueDefault(double v) {
     double cueMode = m_pCueMode->get();
     // Decide which cue implementation to call based on the user preference
     if (cueMode == CUE_MODE_DENON || cueMode == CUE_MODE_NUMARK) {
         cueDenon(v);
-    } else {
+    }else if(cueMode == CUE_MODE_CUP){
+        cuePlay(v);
+	}else {
         // The modes CUE_MODE_PIONEER and CUE_MODE_MIXXX are similar
         // are handled inside cueCDJ(v)
         // default to Pioneer mode
