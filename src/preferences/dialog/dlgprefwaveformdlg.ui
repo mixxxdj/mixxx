@@ -452,7 +452,7 @@
        <item row="0" column="0" colspan="2">
         <widget class="QCheckBox" name="enableWaveformCaching">
          <property name="text">
-          <string>Enable Waveform Caching</string>
+          <string>Enable waveform caching</string>
          </property>
         </widget>
        </item>
