@@ -50,6 +50,8 @@ class EngineSync : public BaseSyncableListener {
     // Used to pick a sync target for non-master-sync mode.
     EngineChannel* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;
 
+    bool otherSyncedPlaying(const QString& group);
+
   private:
     // Activate a specific syncable as master.
     void activateMaster(Syncable* pSyncable);
