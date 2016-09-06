@@ -399,8 +399,8 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
 }
 
 bool EngineSync::otherSyncedPlaying(const QString& group) {
-    int othersInSync = 0;
-    foreach (Syncable* theSyncable, m_syncables) {
+    bool othersInSync = false;
+    for (Syncable* theSyncable : m_syncables) {
         if (theSyncable->getGroup() == group) {
             if (theSyncable->getSyncMode() == SYNC_NONE) {
                 return false;
@@ -408,8 +408,8 @@ bool EngineSync::otherSyncedPlaying(const QString& group) {
             continue;
         }
         if (theSyncable->isPlaying() && (theSyncable->getSyncMode() != SYNC_NONE)) {
-            othersInSync++;
+            othersInSync = true;
         }
     }
-    return static_cast<bool> (othersInSync);
+    return othersInSync;
 }
