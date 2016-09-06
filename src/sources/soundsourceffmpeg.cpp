@@ -22,6 +22,38 @@ void initFFmpegLib() {
     avcodec_register_all();
 }
 
+// More than 2 channels are currently not supported
+const SINT kMaxChannelCount = 2;
+
+AVStream* findNextAudioStream(AVFormatContext* pFormatCtx, AVStream* pStream = nullptr) {
+    DEBUG_ASSERT(pFormatCtx != nullptr);
+    DEBUG_ASSERT((pStream == nullptr) || (static_cast<unsigned int>(pStream->index) < pFormatCtx->nb_streams));
+    DEBUG_ASSERT((pStream == nullptr) || (pStream == pFormatCtx->streams[pStream->index]));
+    unsigned int iNextStream;
+    if (pStream == nullptr) {
+        // Start search at the first stream
+        iNextStream = 0;
+    } else {
+        // Restart search at the following stream
+        iNextStream = pStream->index + 1;
+    }
+    while (iNextStream < pFormatCtx->nb_streams) {
+        AVStream* pNextStream = pFormatCtx->streams[iNextStream];
+        if (pNextStream->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+            return pNextStream;
+        } else {
+            // Continue search at the next stream
+            ++iNextStream;
+        }
+    }
+    return nullptr;
+}
+
+inline
+AVStream* findFirstAudioStream(AVFormatContext* pFormatCtx) {
+    return findNextAudioStream(pFormatCtx);
+}
+
 } // anonymous namespace
 
 SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
@@ -79,12 +111,45 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     return list;
 }
 
+//static
+SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(AVStream* pAudioStream) {
+    DEBUG_ASSERT(pAudioStream != nullptr);
+    AVCodec* pDecoder = avcodec_find_decoder(pAudioStream->codec->codec_id);
+    if (pDecoder == nullptr) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "Failed to find a decoder for the first audio stream";
+        return SoundSource::OpenResult::UNSUPPORTED_FORMAT;
+    }
+    const int avcodec_open2_result = avcodec_open2(pAudioStream->codec, pDecoder, nullptr);
+    if (avcodec_open2_result < 0) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "avcodec_open2() failed and returned"
+                << avcodec_open2_result;
+        return SoundSource::OpenResult::FAILED;
+    }
+    return SoundSource::OpenResult::SUCCEEDED;
+}
+
+//static
+void SoundSourceFFmpeg::closeAudioStream(AVStream** ppAudioStream) {
+    DEBUG_ASSERT(ppAudioStream != nullptr);
+    AVStream* pAudioStream = *ppAudioStream;
+    if (pAudioStream != nullptr) {
+        const int avcodec_close_result = avcodec_close(pAudioStream->codec);
+        if (avcodec_close_result != 0) {
+            qWarning() << "[SoundSourceFFmpeg]"
+                    << "avcodec_close() failed and returned"
+                    << avcodec_close_result;
+            // ignore error and continue
+        }
+        *ppAudioStream = nullptr;
+    }
+}
+
 SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
     : SoundSource(url),
       m_pFormatCtx(nullptr),
-      m_iAudioStream(-1),
-      m_pCodecCtx(nullptr),
-      m_pCodec(nullptr),
+      m_pAudioStream(nullptr),
       m_pResample(nullptr),
       m_currentMixxxFrameIndex(0),
       m_bIsSeeked(false),
@@ -103,19 +168,13 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
 }
 
 SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    AVDictionary *l_iFormatOpts = nullptr;
-
-    const QString localFileName(getLocalFileName());
-    qDebug() << "New SoundSourceFFmpeg :" << localFileName;
-
-    DEBUG_ASSERT(!m_pFormatCtx);
+    DEBUG_ASSERT(m_pFormatCtx == nullptr);
     m_pFormatCtx = avformat_alloc_context();
-
     if (m_pFormatCtx == nullptr) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: Can't allocate memory";
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "avformat_alloc_context() failed";
         return OpenResult::FAILED;
     }
-
     // TODO() why is this required, should't it be a runtime check
 #if LIBAVCODEC_VERSION_INT < 3622144 // 55.69.0
     m_pFormatCtx->max_analyze_duration = 999999999;
@@ -134,87 +193,69 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     const QByteArray qBAFilename(getLocalFileName().toLocal8Bit());
 #endif
 
-    // Open file and make m_pFormatCtx
-    if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), nullptr,
-                            &l_iFormatOpts) != 0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
+    // Open file and initialize m_pFormatCtx
+    const int avformat_open_input_result =
+            avformat_open_input(
+                    &m_pFormatCtx, qBAFilename.constData(), nullptr, nullptr);
+    if (avformat_open_input_result != 0) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "avformat_open_input() failed and returned"
+                << avformat_open_input_result;
         return OpenResult::FAILED;
     }
 
-    // TODO() why is this required, should't it be a runtime check
-#if LIBAVCODEC_VERSION_INT > 3544932 // 54.23.100
-    av_dict_free(&l_iFormatOpts);
-#endif
-
     // Retrieve stream information
-    if (avformat_find_stream_info(m_pFormatCtx, nullptr) < 0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
+    const int avformat_find_stream_info_result =
+            avformat_find_stream_info(m_pFormatCtx, nullptr);
+    if (avformat_find_stream_info_result < 0) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "avformat_find_stream_info() failed and returned"
+                << avformat_find_stream_info_result;
         return OpenResult::FAILED;
     }
 
     //debug only (Enable if needed)
     //av_dump_format(m_pFormatCtx, 0, qBAFilename.constData(), false);
 
-    // Find the first audio stream
-    m_iAudioStream = -1;
-
-    for (unsigned int i = 0; i < m_pFormatCtx->nb_streams; i++)
-        if (m_pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
-            m_iAudioStream = i;
-            break;
-        }
-
-    if (m_iAudioStream == -1) {
-        qDebug() <<
-                 "SoundSourceFFmpeg::tryOpen: cannot find an audio stream: cannot open"
-                 << localFileName;
-        return OpenResult::FAILED;
-    }
-
-    // Get a pointer to the codec context for the audio stream
-    m_pCodecCtx = m_pFormatCtx->streams[m_iAudioStream]->codec;
-
-    // Find the decoder for the audio stream
-    if (!(m_pCodec = avcodec_find_decoder(m_pCodecCtx->codec_id))) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find a decoder for" <<
-                localFileName;
+    // Find and open audio stream for decoding
+    AVStream* pAudioStream = findFirstAudioStream(m_pFormatCtx);
+    if (pAudioStream == nullptr) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "No audio stream found";
         return OpenResult::UNSUPPORTED_FORMAT;
     }
-
-    if (avcodec_open2(m_pCodecCtx, m_pCodec, nullptr)<0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
-        return OpenResult::FAILED;
+    const OpenResult openAudioStreamResult = openAudioStream(pAudioStream);
+    if (openAudioStreamResult != OpenResult::SUCCEEDED) {
+        return openAudioStreamResult; // early exit on any error
     }
+    m_pAudioStream = pAudioStream;
 
-    m_pResample = std::make_unique<EncoderFfmpegResample>(m_pCodecCtx);
-    m_pResample->openMixxx(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_FLT);
-
-    setChannelCount(m_pCodecCtx->channels);
-    setSamplingRate(m_pCodecCtx->sample_rate);
-    setFrameCount((qint64)round((double)((double)m_pFormatCtx->duration *
-                                         (double)m_pCodecCtx->sample_rate) / (double)AV_TIME_BASE));
-
-    qDebug() << "SoundSourceFFmpeg::tryOpen: Sampling rate: " << getSamplingRate() <<
-             ", Channels: " <<
-             getChannelCount() << "\n";
-    if (getChannelCount() > 2) {
-        qDebug() << "ffmpeg: No support for more than 2 channels!";
-        return OpenResult::FAILED;
+    const SINT channelCount = m_pAudioStream->codec->channels;
+    if (channelCount > kMaxChannelCount) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "Unsupported number of channels:"
+                << channelCount << ">" << kMaxChannelCount;
+        return OpenResult::UNSUPPORTED_FORMAT;
     }
+    setChannelCount(channelCount);
+    setSamplingRate(m_pAudioStream->codec->sample_rate);
+    qDebug() << "[SoundSourceFFmpeg]"
+            << "Number of channels:" << getChannelCount()
+            << ", Sampling rate:" << getSamplingRate();
+    // TODO(XXX): Inaccurate calculation of frame count due to
+    // possible rounding errors from floating point to integer.
+    setFrameCount(static_cast<SINT>(round(
+                    (static_cast<double>(m_pFormatCtx->duration) * static_cast<double>(m_pAudioStream->codec->sample_rate)) /
+                    static_cast<double>(AV_TIME_BASE))));
+
+    m_pResample = std::make_unique<EncoderFfmpegResample>(m_pAudioStream->codec);
+    m_pResample->openMixxx(m_pAudioStream->codec->sample_fmt, AV_SAMPLE_FMT_FLT);
 
     return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceFFmpeg::close() {
     clearCache();
-
-    if (m_pCodecCtx != nullptr) {
-        qDebug() << "~SoundSourceFFmpeg(): Clear FFMPEG stuff";
-        avcodec_close(m_pCodecCtx);
-        m_pCodecCtx = nullptr;
-        avformat_close_input(&m_pFormatCtx);
-        DEBUG_ASSERT(m_pFormatCtx == nullptr);
-    }
 
     if (m_pResample != nullptr) {
         qDebug() << "~SoundSourceFFmpeg(): Delete FFMPEG Resampler";
@@ -226,6 +267,11 @@ void SoundSourceFFmpeg::close() {
         m_SJumpPoints.remove(0);
         free(l_SRmJmp);
     }
+
+    closeAudioStream(&m_pAudioStream);
+    DEBUG_ASSERT(m_pAudioStream == nullptr);
+    avformat_close_input(&m_pFormatCtx);
+    DEBUG_ASSERT(m_pFormatCtx == nullptr);
 }
 
 void SoundSourceFFmpeg::clearCache() {
@@ -291,7 +337,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
             // Are we on correct audio stream. Currently we are always
             // Using first audio stream but in future there should be
             // possibility to choose which to use
-            if (l_SPacket.stream_index == m_iAudioStream &&
+            if (l_SPacket.stream_index == m_pAudioStream->index &&
                     l_SPacket.pos >= 0) {
                 if (m_lStoredSeekPoint > 0) {
                     struct ffmpegLocationObject *l_STestObj = nullptr;
@@ -315,7 +361,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                 }
 
                 // Decode audio bytes (These can be S16P or FloatP [P is Planar])
-                l_iRet = avcodec_decode_audio4(m_pCodecCtx,l_pFrame,&l_iFrameFinished,
+                l_iRet = avcodec_decode_audio4(m_pAudioStream->codec,l_pFrame,&l_iFrameFinished,
                                                &l_SPacket);
 
                 if (l_iRet <= 0) {
@@ -637,7 +683,7 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         // that is chosen because in WMA frames can be that big and if it's
         // smaller than the frame we are seeking we can get into error
         ret = avformat_seek_file(m_pFormatCtx,
-                                 m_iAudioStream,
+                                 m_pAudioStream->index,
                                  0,
                                  0,
                                  0xffff,

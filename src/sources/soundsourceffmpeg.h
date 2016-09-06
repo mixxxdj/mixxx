@@ -3,7 +3,6 @@
 
 extern "C" {
 
-#include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 
 #ifndef __FFMPEGOLDAPI__
@@ -61,10 +60,12 @@ class SoundSourceFFmpeg : public SoundSource {
 
     unsigned int read(unsigned long size, SAMPLE*);
 
-    AVFormatContext *m_pFormatCtx;
-    int m_iAudioStream;
-    AVCodecContext *m_pCodecCtx;
-    AVCodec *m_pCodec;
+    AVFormatContext* m_pFormatCtx;
+
+    AVStream* m_pAudioStream;
+
+    static OpenResult openAudioStream(AVStream* pAudioStream);
+    static void closeAudioStream(AVStream** ppAudioStream);
 
     std::unique_ptr<EncoderFfmpegResample> m_pResample;
 
