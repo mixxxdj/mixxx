@@ -6,7 +6,7 @@
 #include "track/keyutils.h"
 #include "track/key_preferences.h"
 
-void ColumnCache::setColumns(const QStringList& columns, UserSettingsPointer pConfig) {
+void ColumnCache::setColumns(const QStringList& columns) {
     m_columnsByIndex.clear();
     m_columnsByIndex.append(columns);
 
@@ -88,16 +88,15 @@ void ColumnCache::setColumns(const QStringList& columns, UserSettingsPointer pCo
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_FILETYPE], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COMMENT], sortNoCase);
-    setKeySortOrder(pConfig->getValueString(ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION)));
 
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_ARTIST], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE], sortNoCase);
 }
 
-void ColumnCache::setKeySortOrder(QString const& notation) {
+void ColumnCache::slotSetKeySortOrder(double notation) {
     std::vector<mixxx::track::io::key::ChromaticKey> sortOrder;
-    if (notation != KEY_NOTATION_LANCELOT) {
+    if (static_cast<KeyUtils::KeyNotation>(notation) != KeyUtils::LANCELOT) {
         sortOrder = {
             mixxx::track::io::key::INVALID,
 

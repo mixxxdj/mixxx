@@ -22,7 +22,7 @@
 
 #include "analyzer/vamp/vampanalyzer.h"
 #include "analyzer/vamp/vamppluginloader.h"
-#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "track/key_preferences.h"
 #include "util/xml.h"
 
@@ -119,6 +119,7 @@ void DlgPrefKey::loadSettings() {
 
     QString notation = m_pConfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION));
+    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"));
     if (notation == KEY_NOTATION_OPEN_KEY) {
         radioNotationOpenKey->setChecked(true);
         setNotationOpenKey(true);
@@ -325,6 +326,7 @@ void DlgPrefKey::setNotationCustom(bool active) {
          it != m_keyLineEdits.end(); ++it) {
         it.value()->setEnabled(true);
     }
+    m_pKeyNotation->set(KeyUtils::CUSTOM);
     slotUpdate();
 }
 
@@ -334,6 +336,7 @@ void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
         it.value()->setText(KeyUtils::keyToString(it.key(), notation));
         it.value()->setEnabled(false);
     }
+    m_pKeyNotation->set(notation);
     slotUpdate();
 }
 

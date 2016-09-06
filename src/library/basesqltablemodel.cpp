@@ -348,7 +348,7 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     }
 
     // Build a map from the column names to their indices, used by fieldIndex()
-    m_tableColumnCache.setColumns(m_tableColumns, m_pTrackCollection->getConfig());
+    m_tableColumnCache.setColumns(m_tableColumns);
 
     initHeaderData();
 
