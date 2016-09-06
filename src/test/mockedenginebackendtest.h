@@ -17,6 +17,7 @@
 #include "engine/enginemaster.h"
 #include "engine/ratecontrol.h"
 #include "engine/sync/enginesync.h"
+#include "mixer/deck.h"
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
 #include "test/mixxxtest.h"
@@ -67,18 +68,16 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pEngineMaster = new EngineMaster(m_pConfig, "[Master]",
                                            m_pEffectsManager, false, false);
 
-        m_pChannel1 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup1),
-                m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
-        m_pChannel2 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup2),
-                m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
-        m_pChannel3 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup3),
-                m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
+        m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
+                EngineChannel::CENTER, m_sGroup1);
+        m_pMixerDeck2 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
+                EngineChannel::CENTER, m_sGroup2);
+        m_pMixerDeck3 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
+                EngineChannel::CENTER, m_sGroup3);
+        m_pChannel1 = m_pMixerDeck1->getEngineDeck();
+        m_pChannel2 = m_pMixerDeck2->getEngineDeck();
+        m_pChannel3 = m_pMixerDeck3->getEngineDeck();
+
         m_pPreview1 = new PreviewDeck(NULL, m_pConfig,
                                      m_pEngineMaster, m_pEffectsManager,
                                      EngineChannel::CENTER, m_sPreviewGroup);
@@ -114,7 +113,6 @@ class MockedEngineBackendTest : public MixxxTest {
     }
 
     void addDeck(EngineDeck* pDeck) {
-        m_pEngineMaster->addChannel(pDeck);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "master"))
                 ->set(1.0);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "rate_dir"))
@@ -125,6 +123,9 @@ class MockedEngineBackendTest : public MixxxTest {
     }
 
     virtual void TearDown() {
+        delete m_pMixerDeck1;
+        delete m_pMixerDeck2;
+        delete m_pMixerDeck3;
         m_pChannel1 = NULL;
         m_pChannel2 = NULL;
         m_pChannel3 = NULL;
@@ -155,6 +156,7 @@ class MockedEngineBackendTest : public MixxxTest {
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     EngineMaster* m_pEngineMaster;
+    Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     MockScaler *m_pMockScaleVinyl1, *m_pMockScaleVinyl2, *m_pMockScaleVinyl3;
     MockScaler *m_pMockScaleKeylock1, *m_pMockScaleKeylock2, *m_pMockScaleKeylock3;
