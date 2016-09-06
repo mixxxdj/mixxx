@@ -178,6 +178,9 @@ void ColumnCache::slotSetKeySortOrder(double notation) {
         };
     }
 
+    // A custom COLLATE function was tested, but using CASE ... WHEN was found to be faster
+    // see GitHub PR#649
+    // https://github.com/mixxxdj/mixxx/pull/649#discussion_r34863809
     QString keySortSQL("CASE key_id ");
     for (int i = 0; i <= 24; ++i) {
             keySortSQL.append(QString("WHEN %1 THEN %2 ")
