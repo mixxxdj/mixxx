@@ -65,6 +65,8 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setAttribute(Qt::WA_MacShowFocusRect, false);
     header()->setStretchLastSection(false);
     header()->setResizeMode(QHeaderView::Stretch);
+
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
