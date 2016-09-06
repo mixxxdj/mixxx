@@ -203,6 +203,13 @@
         <keyseq byPositionOf="en_US">.</keyseq>
       </control>
       <control action="hotcue_3_clear">
+
+        <!-- Basing position on "de_DE" instead of "en_US" because the key that we want to map this action on
+        has a keysym shared by another key in the "us_US" layout. Both keys <AB09> and <LSGT>, respectively
+        scancode 43 and 94, hold the "<" character when pressing shift and thus Mixxx can't tell the scancode
+        for this key for the American-English layout.
+
+        NOTE: When translating "Shift+:" from "de_DE" to "en_US", the action will be triggered by both keys. -->
         <keyseq byPositionOf="de_DE">Shift+:</keyseq>
 
         <!-- TODO(Tomasito) The Spanish keyboard does have this '?' character on scancode 12 with the shift modifier.
@@ -355,6 +362,10 @@
     </group>
     <group name="[Microphone]">
       <control action="talkover">
+
+        <!-- We map on "de_DE" instead of "en_US" because in this case, the key for "en_US" is the exception. For
+        most of the other layouts, this action is mapped to key <LSGT> (scancode 94), a key that is not native to
+        US keyboards. -->
         <keyseq byPositionOf="de_DE">&lt;</keyseq>
         <keyseq lang="en_US">`</keyseq>
         <keyseq lang="el_GR">`</keyseq>
