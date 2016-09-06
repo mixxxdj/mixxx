@@ -39,7 +39,14 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
 
         qDebug() << "FFmpeg input format:" << l_SInputFmt->name;
 
-        if (!strcmp(l_SInputFmt->name, "flac")) {
+        if (!strcmp(l_SInputFmt->name, "ac3")) {
+            list.append("ac3");
+        } else if (!strcmp(l_SInputFmt->name, "aiff")) {
+                list.append("aif");
+                list.append("aiff");
+        } else if (!strcmp(l_SInputFmt->name, "caf")) {
+            list.append("caf");
+        } else if (!strcmp(l_SInputFmt->name, "flac")) {
             list.append("flac");
         } else if (!strcmp(l_SInputFmt->name, "ogg")) {
             list.append("ogg");
@@ -55,9 +62,17 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
         } else if (!strcmp(l_SInputFmt->name, "opus") ||
                    !strcmp(l_SInputFmt->name, "libopus")) {
             list.append("opus");
+        } else if (!strcmp(l_SInputFmt->name, "tak")) {
+            list.append("tak");
+        } else if (!strcmp(l_SInputFmt->name, "tta")) {
+            list.append("tta");
+        } else if (!strcmp(l_SInputFmt->name, "wav")) {
+            list.append("wav");
         } else if (!strcmp(l_SInputFmt->name, "wma") or
                    !strcmp(l_SInputFmt->name, "xwma")) {
             list.append("wma");
+        } else if (!strcmp(l_SInputFmt->name, "wv")) {
+            list.append("wv");
         }
     }
 
