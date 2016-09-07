@@ -103,12 +103,10 @@ void LibraryPaneManager::setFocused(bool value) {
 }
 
 void LibraryPaneManager::switchToFeature(LibraryFeature* pFeature) {
-    DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull() && pFeature) {
-        return;
-    }
-    
     m_pCurrentFeature = pFeature;
-    m_pPaneWidget->switchToFeature(pFeature);
+    if (!m_pPaneWidget.isNull()) {
+        m_pPaneWidget->switchToFeature(pFeature);
+    }
 }
 
 void LibraryPaneManager::restoreSearch(const QString& text) {

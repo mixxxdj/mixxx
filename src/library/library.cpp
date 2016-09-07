@@ -170,6 +170,7 @@ void Library::bindBreadCrumb(WLibraryBreadCrumb* pBreadCrumb, int paneId) {
 
 void Library::destroyInterface() {
     m_pSidebarExpanded->deleteLater();
+    m_pSidebarExpanded = nullptr;
     
     for (LibraryPaneManager* p : m_panes) {
         p->deleteLater();
@@ -210,7 +211,9 @@ void Library::addFeature(LibraryFeature* feature) {
 }
 
 void Library::switchToFeature(LibraryFeature* pFeature) {
-    m_pSidebarExpanded->switchToFeature(pFeature);
+    if (m_pSidebarExpanded) {
+        m_pSidebarExpanded->switchToFeature(pFeature);
+    }
     
     LibraryPaneManager* pPane = getPreselectedPane();
     if (pPane == nullptr) {
@@ -488,7 +491,7 @@ void Library::paneUncollapsed(int paneId) {
 
 void Library::slotActivateFeature(LibraryFeature* pFeature) {
     if (m_preselectedPane < 0) {
-        // No pane is preselcted, use the saved pane instead
+        // No pane is preselected, use the saved pane instead
         m_preselectedPane = pFeature->getSavedPane();
     }
     
@@ -499,7 +502,10 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
         m_panes[m_preselectedPane]->setCurrentFeature(pFeature);
         pFeature->activate();
     } else {
-        m_pSidebarExpanded->switchToFeature(pFeature);
+        // Feature already in a pane, we need only switch the SidebarExpanded
+        if (m_pSidebarExpanded) {
+            m_pSidebarExpanded->switchToFeature(pFeature);
+        }
     }
     m_preselectedPane = -1;
     handlePreselection();
@@ -508,7 +514,9 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
 void Library::slotHoverFeature(LibraryFeature *pFeature) {
     // This function only changes the sidebar expanded to allow dropping items
     // directly in some features sidebar panes
-    m_pSidebarExpanded->switchToFeature(pFeature);
+    if (m_pSidebarExpanded) {
+        m_pSidebarExpanded->switchToFeature(pFeature);
+    }
 }
 
 void Library::slotSetTrackTableFont(const QFont& font) {
