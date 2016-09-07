@@ -116,11 +116,11 @@ class ColumnCache : public QObject {
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
 
-  public slots:
-    void slotSetKeySortOrder(double);
-
   private:
     ControlObject* m_pKeyNotation;
+
+  private slots:
+    void slotSetKeySortOrder(double);
 };
 
 #endif /* COLUMNCACHE_H */
