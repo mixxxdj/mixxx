@@ -5,6 +5,9 @@
 #include <mutex>
 #include <vector>
 
+#define LIBAVCODEC_HAS_AV_PACKET_UNREF \
+    (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 8, 0))
+
 #define AUDIOSOURCEFFMPEG_CACHESIZE 1000
 #define AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET(numFrames) (frames2samples(numFrames) * sizeof(CSAMPLE))
 #define AUDIOSOURCEFFMPEG_BYTEOFFSET_TO_MIXXXFRAME(byteOffset) (samples2frames(byteOffset / sizeof(CSAMPLE)))
@@ -351,7 +354,11 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 
                     // Seek for correct jump point
                     if (m_lStoredSeekPoint > l_SPacket.pos) {
+#if (LIBAVCODEC_HAS_AV_PACKET_UNREF)
+                        av_packet_unref(&l_SPacket);
+#else
                         av_free_packet(&l_SPacket);
+#endif
                         l_SPacket.data = nullptr;
                         l_SPacket.size = 0;
                         continue;
@@ -445,7 +452,11 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                     }
                 }
 
+#if (LIBAVCODEC_HAS_AV_PACKET_UNREF)
+                av_packet_unref(&l_SPacket);
+#else
                 av_free_packet(&l_SPacket);
+#endif
                 l_SPacket.data = nullptr;
                 l_SPacket.size = 0;
 
