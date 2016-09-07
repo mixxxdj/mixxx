@@ -119,7 +119,7 @@ void DlgPrefKey::loadSettings() {
 
     QString notation = m_pConfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION));
-    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"));
+    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
     if (notation == KEY_NOTATION_OPEN_KEY) {
         radioNotationOpenKey->setChecked(true);
         setNotationOpenKey(true);
