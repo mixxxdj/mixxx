@@ -94,6 +94,8 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE], sortNoCase);
 }
 
+// ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
+// for the first time when DlgPrefKey sets the [Library]. key_notation CO as Mixxx is starting.
 void ColumnCache::slotSetKeySortOrder(double notation) {
     std::vector<mixxx::track::io::key::ChromaticKey> sortOrder;
     if (static_cast<KeyUtils::KeyNotation>(notation) != KeyUtils::LANCELOT) {
