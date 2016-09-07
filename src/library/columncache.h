@@ -78,6 +78,10 @@ class ColumnCache : public QObject {
         m_pKeyNotation = new ControlObject(ConfigKey("[Library]", "key_notation"));
         connect(m_pKeyNotation, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSetKeySortOrder(double)));
+        slotSetKeySortOrder(static_cast<double>((KeyUtils::CUSTOM)));
+        // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
+        // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
+        // KeyUtils::CUSTOM as Mixxx is starting.
     }
 
     void setColumns(const QStringList& columns);
