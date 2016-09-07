@@ -28,6 +28,11 @@ void initFFmpegLib() {
 // More than 2 channels are currently not supported
 const SINT kMaxChannelCount = 2;
 
+inline
+AVMediaType getMediaType(AVStream* pStream) {
+    return pStream->codec->codec_type;
+}
+
 AVStream* findNextAudioStream(AVFormatContext* pFormatCtx, AVStream* pStream = nullptr) {
     DEBUG_ASSERT(pFormatCtx != nullptr);
     DEBUG_ASSERT((pStream == nullptr) || (static_cast<unsigned int>(pStream->index) < pFormatCtx->nb_streams));
@@ -42,7 +47,7 @@ AVStream* findNextAudioStream(AVFormatContext* pFormatCtx, AVStream* pStream = n
     }
     while (iNextStream < pFormatCtx->nb_streams) {
         AVStream* pNextStream = pFormatCtx->streams[iNextStream];
-        if (pNextStream->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        if (getMediaType(pNextStream) == AVMEDIA_TYPE_AUDIO) {
             return pNextStream;
         } else {
             // Continue search at the next stream
@@ -55,6 +60,33 @@ AVStream* findNextAudioStream(AVFormatContext* pFormatCtx, AVStream* pStream = n
 inline
 AVStream* findFirstAudioStream(AVFormatContext* pFormatCtx) {
     return findNextAudioStream(pFormatCtx);
+}
+
+inline
+AVCodec* findDecoder(AVStream* pStream) {
+    return avcodec_find_decoder(pStream->codec->codec_id);
+}
+
+inline
+SINT getChannelCount(AVStream* pStream) {
+    return pStream->codec->channels;
+}
+
+inline
+SINT getSamplingRate(AVStream* pStream) {
+    return pStream->codec->sample_rate;
+}
+
+inline
+SINT getFrameCount(AVStream* pStream) {
+    // NOTE(uklotzde): Use 64-bit integer calculation to minimize rounding errors
+    return (static_cast<uint64_t>(pStream->time_base.num) * static_cast<uint64_t>(pStream->duration) * static_cast<uint64_t>(getSamplingRate(pStream))) /
+            static_cast<uint64_t>(pStream->time_base.den);
+}
+
+inline
+AVSampleFormat getSampleFormat(AVStream* pStream) {
+    return pStream->codec->sample_fmt;
 }
 
 } // anonymous namespace
@@ -117,7 +149,7 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
 //static
 SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(AVStream* pAudioStream) {
     DEBUG_ASSERT(pAudioStream != nullptr);
-    AVCodec* pDecoder = avcodec_find_decoder(pAudioStream->codec->codec_id);
+    AVCodec* pDecoder = findDecoder(pAudioStream);
     if (pDecoder == nullptr) {
         qWarning() << "[SoundSourceFFmpeg]"
                 << "Failed to find a decoder for the first audio stream";
@@ -233,26 +265,25 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     }
     m_pAudioStream = pAudioStream;
 
-    const SINT channelCount = m_pAudioStream->codec->channels;
+    const SINT channelCount = mixxx::getChannelCount(m_pAudioStream);
     if (channelCount > kMaxChannelCount) {
         qWarning() << "[SoundSourceFFmpeg]"
                 << "Unsupported number of channels:"
                 << channelCount << ">" << kMaxChannelCount;
         return OpenResult::UNSUPPORTED_FORMAT;
     }
-    setChannelCount(channelCount);
-    setSamplingRate(m_pAudioStream->codec->sample_rate);
+    const SINT samplingRate = mixxx::getSamplingRate(m_pAudioStream);
+    const SINT frameCount = mixxx::getFrameCount(m_pAudioStream);
     qDebug() << "[SoundSourceFFmpeg]"
-            << "Number of channels:" << getChannelCount()
-            << ", Sampling rate:" << getSamplingRate();
-    // TODO(XXX): Inaccurate calculation of frame count due to
-    // possible rounding errors from floating point to integer.
-    setFrameCount(static_cast<SINT>(round(
-                    (static_cast<double>(m_pFormatCtx->duration) * static_cast<double>(m_pAudioStream->codec->sample_rate)) /
-                    static_cast<double>(AV_TIME_BASE))));
+            << "Number of channels:" << channelCount
+            << ", Number of sample frames:" << frameCount
+            << ", Sampling rate:" << samplingRate;
+    setChannelCount(channelCount);
+    setSamplingRate(samplingRate);
+    setFrameCount(frameCount);
 
     m_pResample = std::make_unique<EncoderFfmpegResample>(m_pAudioStream->codec);
-    m_pResample->openMixxx(m_pAudioStream->codec->sample_fmt, AV_SAMPLE_FMT_FLT);
+    m_pResample->openMixxx(getSampleFormat(m_pAudioStream), AV_SAMPLE_FMT_FLT);
 
     return OpenResult::SUCCEEDED;
 }
@@ -260,10 +291,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 void SoundSourceFFmpeg::close() {
     clearCache();
 
-    if (m_pResample != nullptr) {
-        qDebug() << "~SoundSourceFFmpeg(): Delete FFMPEG Resampler";
-        m_pResample.reset();
-    }
+    m_pResample.reset();
 
     while (m_SJumpPoints.size() > 0) {
         ffmpegLocationObject* l_SRmJmp = m_SJumpPoints[0];
