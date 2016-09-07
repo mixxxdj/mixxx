@@ -211,7 +211,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         return OpenResult::FAILED;
     }
     // TODO() why is this required, should't it be a runtime check
-#if LIBAVCODEC_VERSION_INT < 3622144 // 55.69.0
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 69, 0)
     m_pFormatCtx->max_analyze_duration = 999999999;
 #endif
 
@@ -332,11 +332,11 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     while (l_iCount > 0) {
         if (l_pFrame != nullptr) {
             l_iFrameCount--;
-// FFMPEG 2.2 3561060 and beyond
-#if LIBAVCODEC_VERSION_INT >= 3561060
+// FFMPEG 2.2 and beyond
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(54, 86, 100)
             av_frame_free(&l_pFrame);
 // FFMPEG 0.11 and below
-#elif LIBAVCODEC_VERSION_INT <= 3544932
+#elif LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(54, 23, 100)
             av_free(l_pFrame);
 // FFMPEG 1.0 - 2.1
 #else
@@ -351,7 +351,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
         }
         l_iFrameCount++;
         av_init_packet(&l_SPacket);
-#if LIBAVCODEC_VERSION_INT < 3617792
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 52, 0)
         l_pFrame = avcodec_alloc_frame();
 #else
         l_pFrame = av_frame_alloc();
@@ -506,12 +506,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 
     if (l_pFrame != nullptr) {
         l_iFrameCount--;
-// FFMPEG 2.2 3561060 anb beyond
-#if LIBAVCODEC_VERSION_INT >= 3561060
+// FFMPEG 2.2 and beyond
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(54, 86, 100)
         av_frame_unref(l_pFrame);
         av_frame_free(&l_pFrame);
 // FFMPEG 0.11 and below
-#elif LIBAVCODEC_VERSION_INT <= 3544932
+#elif LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(54, 23, 100)
         av_free(l_pFrame);
 // FFMPEG 1.0 - 2.1
 #else
