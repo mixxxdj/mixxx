@@ -22,6 +22,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_pClearButton->setIcon(QIcon(":/skins/cross_2.png"));
     m_pClearButton->setIconSize(iconSize);
     m_pClearButton->setCursor(Qt::ArrowCursor);
+    m_pClearButton->setFocusPolicy(Qt::ClickFocus);
     m_pClearButton->setToolTip(tr("Clear input" , "Clear the search bar input field"));
     m_pClearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     m_pClearButton->hide();
@@ -36,6 +37,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_pSaveButton->setIcon(saveIcon);
     m_pSaveButton->setIconSize(iconSize);
     m_pSaveButton->setCursor(Qt::ArrowCursor);
+    m_pSaveButton->setFocusPolicy(Qt::ClickFocus);
     m_pSaveButton->setToolTip(tr("Save query", "Save the current query for later use"));
     m_pSaveButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     m_pSaveButton->hide();
@@ -44,6 +46,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_pDropButton->setIcon(QIcon(":/skins/downArrow.png"));
     m_pDropButton->setIconSize(iconSize);
     m_pDropButton->setCursor(Qt::ArrowCursor);
+    m_pDropButton->setFocusPolicy(Qt::ClickFocus);
     m_pDropButton->setToolTip(tr("Restore query", 
                                  "Restore the search with one of the selected queries"));
     m_pDropButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
