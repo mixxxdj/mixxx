@@ -490,18 +490,28 @@ void Library::paneUncollapsed(int paneId) {
 }
 
 void Library::slotActivateFeature(LibraryFeature* pFeature) {
-    if (m_preselectedPane < 0) {
+    int selectedPane = m_preselectedPane;
+    if (selectedPane  < 0) {
         // No pane is preselected, use the saved pane instead
-        m_preselectedPane = pFeature->getSavedPane();
+        selectedPane  = pFeature->getSavedPane();
     }
     
-    pFeature->setSavedPane(m_preselectedPane);
-    pFeature->setFeaturePane(m_preselectedPane);
+    bool featureActivated = false;
+    auto it = m_panes.find(selectedPane);
+    if (it != m_panes.end()) {
+        LibraryPaneManager* pSelectedPane = *it;
+
+        pFeature->setSavedPane(m_preselectedPane);
+        pFeature->setFeaturePane(m_preselectedPane);
+
+        if (pSelectedPane->getCurrentFeature() != pFeature) {
+            pSelectedPane->setCurrentFeature(pFeature);
+            pFeature->activate();
+            featureActivated = true;
+        }
+    }
     
-    if (m_panes[m_preselectedPane]->getCurrentFeature() != pFeature) {
-        m_panes[m_preselectedPane]->setCurrentFeature(pFeature);
-        pFeature->activate();
-    } else {
+    if (!featureActivated) {
         // Feature already in a pane, we need only switch the SidebarExpanded
         if (m_pSidebarExpanded) {
             m_pSidebarExpanded->switchToFeature(pFeature);
@@ -684,10 +694,15 @@ void Library::handlePreselection() {
         pPane->setPreselected(false);
         pPane->setPreviewed(false);
     }
-    if (m_preselectedPane >= 0) {
-        m_panes[m_preselectedPane]->setPreselected(true);
-    } else if (m_previewPreselectedPane >= 0) {
-        m_panes[m_previewPreselectedPane]->setPreviewed(true);
+    auto it = m_panes.find(m_preselectedPane);
+    if (it != m_panes.end()) {
+        (*it)->setPreselected(true);
+    }
+    else {
+        auto it = m_panes.find(m_previewPreselectedPane);
+        if (it != m_panes.end()) {
+            (*it)->setPreselected(true);
+        }
     }
 }
 
