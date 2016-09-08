@@ -85,6 +85,7 @@ void Controller::send(QList<int> data, unsigned int length) {
     // If you change this implementation, also change it in HidController (That
     // function is required due to HID devices having report IDs)
 
+    length = data.size();
     QByteArray msg(length, 0);
     for (unsigned int i = 0; i < length; ++i) {
         msg[i] = data.at(i);
