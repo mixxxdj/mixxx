@@ -686,7 +686,10 @@ void Library::handleFocus() {
     for (LibraryPaneManager* pPane : m_panes) {
         pPane->setFocused(false);
     }
-    m_panes[m_focusedPane]->setFocused(true);
+    auto it = m_panes.find(m_focusedPane);
+    if (it != m_panes.end()) {
+        (*it)->setFocused(true);
+    }
 }
 
 void Library::handlePreselection() {
