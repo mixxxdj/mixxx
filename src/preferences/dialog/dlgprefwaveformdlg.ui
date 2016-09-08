@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>536</width>
-    <height>390</height>
+    <height>445</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -422,7 +422,14 @@
      </item>
      <item row="8" column="1" colspan="3">
       <layout class="QGridLayout" name="cachingGridLayout">
-       <item row="1" column="0" colspan="2">
+       <item row="3" column="1">
+        <widget class="QPushButton" name="clearCachedWaveforms">
+         <property name="text">
+          <string>Clear Cached Waveforms</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
         <widget class="QLabel" name="waveformCachingInfo">
          <property name="text">
           <string>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</string>
@@ -432,27 +439,27 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QPushButton" name="clearCachedWaveforms">
-         <property name="text">
-          <string>Clear Cached Waveforms</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QCheckBox" name="enableWaveformCaching">
-         <property name="text">
-          <string>Enable Waveform Caching</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
+       <item row="3" column="0">
         <widget class="QLabel" name="waveformDiskUsage">
          <property name="text">
           <string notr="true">PLACEHOLDER FOR DISK USAGE</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QCheckBox" name="enableWaveformCaching">
+         <property name="text">
+          <string>Enable waveform caching</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QCheckBox" name="enableWaveformGenerationWithAnalysis">
+         <property name="text">
+          <string>Generate waveforms when analyzing library</string>
          </property>
         </widget>
        </item>

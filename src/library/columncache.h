@@ -1,12 +1,18 @@
 #ifndef COLUMNCACHE_H
 #define COLUMNCACHE_H
 
+#include <QObject>
 #include <QMap>
 #include <QStringList>
 
+#include "control/controlobject.h"
+#include "track/keyutils.h"
+#include "preferences/usersettings.h"
+
 // Caches the index of frequently used columns and provides a lookup-table of
 // column name to index.
-class ColumnCache {
+class ColumnCache : public QObject {
+  Q_OBJECT
   public:
 
     enum Column {
@@ -69,6 +75,13 @@ class ColumnCache {
     ColumnCache() { }
     ColumnCache(const QStringList& columns) {
         setColumns(columns);
+        m_pKeyNotation = new ControlObject(ConfigKey("[Library]", "key_notation"));
+        connect(m_pKeyNotation, SIGNAL(valueChanged(double)),
+                this, SLOT(slotSetKeySortOrder(double)));
+        slotSetKeySortOrder(static_cast<double>((KeyUtils::CUSTOM)));
+        // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
+        // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
+        // KeyUtils::CUSTOM as Mixxx is starting.
     }
 
     void setColumns(const QStringList& columns);
@@ -106,6 +119,12 @@ class ColumnCache {
     QMap<QString, int> m_columnIndexByName;
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
+
+  private:
+    ControlObject* m_pKeyNotation;
+
+  private slots:
+    void slotSetKeySortOrder(double);
 };
 
 #endif /* COLUMNCACHE_H */

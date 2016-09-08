@@ -19,22 +19,22 @@
 <context>
     <name>AutoDJFeature</name>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="58"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="60"/>
         <source>Crates</source>
         <translation>Bacs</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="79"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="81"/>
         <source>Remove Crate as Track Source</source>
         <translation>Supprimer le bac comme source de piste</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="90"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="92"/>
         <source>Auto DJ</source>
         <translation>Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="350"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="352"/>
         <source>Add Crate as Track Source</source>
         <translation>Ajouter le bac comme source de piste</translation>
     </message>
@@ -240,127 +240,127 @@
 <context>
     <name>BaseSqlTableModel</name>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="64"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="62"/>
         <source>Played</source>
         <translation>Joué</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="64"/>
         <source>Artist</source>
         <translation>Artiste</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="68"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
         <source>Title</source>
         <translation>Titre</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="70"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="68"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="72"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="70"/>
         <source>Album Artist</source>
         <translation>Artiste de l&apos;album</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="74"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="72"/>
         <source>Genre</source>
         <translation>Genre</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="76"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="74"/>
         <source>Composer</source>
         <translation>Compositeur</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="78"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="76"/>
         <source>Grouping</source>
         <translation>Regroupement</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="80"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="78"/>
         <source>Year</source>
         <translation>Année</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="82"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="80"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="84"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="82"/>
         <source>Location</source>
         <translation>Emplacement</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="86"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="84"/>
         <source>Comment</source>
         <translation>Commentaire</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="88"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="86"/>
         <source>Duration</source>
         <translation>Durée</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="90"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="88"/>
         <source>Rating</source>
         <translation>Appréciation</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="92"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="90"/>
         <source>Bitrate</source>
         <translation>Débit</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="94"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="92"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="96"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="94"/>
         <source>Track #</source>
         <translation>Piste n°</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="98"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="96"/>
         <source>Date Added</source>
         <translation>Date d&apos;ajout</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="100"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="98"/>
         <source>#</source>
         <translation>n°</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="102"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="100"/>
         <source>Timestamp</source>
         <translation>Estampille</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="104"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="102"/>
         <source>Key</source>
         <translation>Tonalité</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="106"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="104"/>
         <source>BPM Lock</source>
         <translation>Verrouillage du tempo</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="108"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="106"/>
         <source>Preview</source>
         <translation>Aperçu</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="110"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="108"/>
         <source>Cover Art</source>
         <translation>Pochette d&apos;album</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="112"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="110"/>
         <source>ReplayGain</source>
         <translation>ReplayGain</translation>
     </message>
@@ -368,7 +368,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="205"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="207"/>
         <source>Couldn&apos;t load track.</source>
         <translation>Impossible de charger la piste.</translation>
     </message>
@@ -3349,28 +3349,28 @@ Vous avez tenté d&apos;assigner : %1,%2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="74"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="181"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="185"/>
         <source>This stream is online for testing purposes!</source>
         <translation>Ce flux est en ligne à des fins de test uniquement !</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="81"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="182"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="82"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="186"/>
         <source>Live Mix</source>
         <translation>Mixage en direct</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="120"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="122"/>
         <source>MP3</source>
         <translation>MP3</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="121"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="123"/>
         <source>Ogg Vorbis</source>
         <translation>Ogg Vorbis</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="131"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="133"/>
         <source>Stereo</source>
         <translation>Stéréo</translation>
     </message>
@@ -5584,12 +5584,12 @@ milliseconds</extracomment>
         <translation>OpenGL non disponible</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="211"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="216"/>
         <source>dropped frames</source>
         <translation>images sautées</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="236"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="241"/>
         <source>Cached waveforms occupy %1 MiB on disk.</source>
         <translation>La forme d&apos;onde en cache occupe %1 MiB sur le disque.</translation>
     </message>
@@ -5730,19 +5730,24 @@ milliseconds</extracomment>
         <translation>Mise en cache</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="428"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="435"/>
         <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
         <translation>Mixxx met en cache les formes d&apos;onde de vos pistes sur le disque la première fois que vous chargez une piste. Cela réduit l&apos;utilisation du CPU lorsque vous jouez en direct, mais requiert plus d&apos;espace disque.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="438"/>
-        <source>Clear Cached Waveforms</source>
-        <translation>Supprimer les formes d&apos;onde en cache.</translation>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="455"/>
+        <source>Enable waveform caching</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="445"/>
-        <source>Enable Waveform Caching</source>
-        <translation>Activer la mise en cache des formes d&apos;onde.</translation>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="462"/>
+        <source>Generate waveforms when analyzing library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="428"/>
+        <source>Clear Cached Waveforms</source>
+        <translation>Supprimer les formes d&apos;onde en cache.</translation>
     </message>
 </context>
 <context>
@@ -6371,142 +6376,142 @@ milliseconds</extracomment>
 <context>
     <name>EngineBroadcast</name>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="69"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="73"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="70"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="74"/>
         <source>Mixxx encountered a problem</source>
         <translation>Mixxx a rencontré un problème</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="69"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="70"/>
         <source>Could not allocate shout_t</source>
         <translation>Ne peux allouer  shout_t</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="73"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="74"/>
         <source>Could not allocate shout_metadata_t</source>
         <translation>Ne peux allouer shout_metadata_t</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="78"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="79"/>
         <source>Error setting non-blocking mode:</source>
         <translation>Erreur de configuration en mode non-bloquant:</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="211"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="250"/>
         <source>Error setting hostname!</source>
         <translation>Erreur lors de la définition du nom d&apos;hôte !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="217"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="328"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="256"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="368"/>
         <source>Error setting protocol!</source>
         <translation>Erreur lors de la définition du protocole !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="222"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="262"/>
         <source>Error setting port!</source>
         <translation>Erreur lors de la définition du port !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="227"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="268"/>
         <source>Error setting password!</source>
         <translation>Erreur lors de la définition du mot de passe !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="232"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="273"/>
         <source>Error setting mount!</source>
         <translation>Erreur lors de la définition du montage !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="238"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="278"/>
         <source>Error setting username!</source>
         <translation>Erreur lors de la définition du nom d&apos;utilisateur !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="243"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="283"/>
         <source>Error setting stream name!</source>
         <translation>Erreur lors de la définition du nom du flux !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="248"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="288"/>
         <source>Error setting stream description!</source>
         <translation>Erreur lors de la définition de la description du flux !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="253"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="293"/>
         <source>Error setting stream genre!</source>
         <translation>Erreur lors de la définition du genre du flux !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="258"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="298"/>
         <source>Error setting stream url!</source>
         <translation>Erreur lors de la définition de l&apos;URL du flux !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="263"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="303"/>
         <source>Error setting stream public!</source>
         <translation>Erreur lors de la publication du flux !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="292"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="332"/>
         <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
         <translation>La diffusion à 96 kHz avec Ogg Vorbis n&apos;est pas supportée pour le moment. Veuillez essayer avec une autre fréquence d’échantillonnage ou sélectionner un encodage différent.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="295"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="335"/>
         <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
         <translation>Voir https://bugs.launchpad.net/mixxx/+bug/686212 pour plus d&apos;informations.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="301"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="341"/>
         <source>Error setting bitrate</source>
         <translation>Erreur lors de la définition du débit</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="317"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="357"/>
         <source>Error: unknown server protocol!</source>
         <translation>Erreur : protocole du serveur inconnu !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="322"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="362"/>
         <source>Error: libshout only supports Shoutcast with MP3 format!</source>
         <translation>Erreur : libshout ne supporte Shoutcast qu&apos;avec le format MP3 !</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="453"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="500"/>
         <source>Mixxx has successfully connected to the streaming server</source>
         <translation>Mixxx s&apos;est connecté avec succès au serveur de flux</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="496"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="545"/>
         <source>Mixxx has successfully disconnected from the streaming server</source>
         <translation>Mixxx d&apos;est déconnecté  avec succès du serveur de flux</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="535"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="557"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="584"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="606"/>
         <source>Lost connection to streaming server and the attempt to reconnect failed</source>
         <translation>Connexion au serveur de streaming perdue, les essais de reconnexion ont échoué</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="537"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="559"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="586"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="608"/>
         <source>Please check your connection to the Internet</source>
         <translation>Veuillez vérifier votre connexion Internet</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="734"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="747"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="783"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="796"/>
         <source>Live broadcasting</source>
         <translation>Diffusion en direct</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="783"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="832"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>Connexion impossible au serveur de streaming</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="785"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="834"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>Veuillez vérifier votre connection Internet et que votre identifiant et mot de passe soit correct.</translation>
     </message>
@@ -6514,17 +6519,17 @@ milliseconds</extracomment>
 <context>
     <name>EngineBuffer</name>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="167"/>
+        <location filename="../../src/engine/enginebuffer.h" line="155"/>
         <source>Soundtouch (faster)</source>
         <translation>Soundtouch (plus rapide)</translation>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="169"/>
+        <location filename="../../src/engine/enginebuffer.h" line="157"/>
         <source>Rubberband (better)</source>
         <translation>Rubberband (mieux)</translation>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="171"/>
+        <location filename="../../src/engine/enginebuffer.h" line="159"/>
         <source>Unknown (bad value)</source>
         <translation>Inconnu (mauvaise valeur)</translation>
     </message>
@@ -10219,12 +10224,12 @@ Cliquez sur OK pour sortir.</translation>
         <translation>Recharger depuis le fichier/le répertoire</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcoverartmenu.cpp" line="63"/>
+        <location filename="../../src/widget/wcoverartmenu.cpp" line="60"/>
         <source>Image Files</source>
         <translation>Fichiers images</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcoverartmenu.cpp" line="68"/>
+        <location filename="../../src/widget/wcoverartmenu.cpp" line="65"/>
         <source>Change Cover Art</source>
         <translation>Changer la pochette d&apos;album</translation>
     </message>
@@ -10864,77 +10869,77 @@ Cliquez sur OK pour sortir.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="795"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1403"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1392"/>
         <source>Create New Playlist</source>
         <translation>Créer une nouvelle liste de lecture</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="825"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1465"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1454"/>
         <source>Create New Crate</source>
         <translation>Créer un nouveau Bac</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1404"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1393"/>
         <source>Enter name for new playlist:</source>
         <translation>Introduisez le nom de la nouvelle liste de lecture :</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1406"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1395"/>
         <source>New Playlist</source>
         <translation>Nouvelle liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1413"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1417"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1426"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1402"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1406"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1415"/>
         <source>Playlist Creation Failed</source>
         <translation>La création de la liste de lecture a échouée</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1414"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1403"/>
         <source>A playlist by that name already exists.</source>
         <translation>Le nom de la liste de lecture existe déjà</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1418"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1407"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Une liste de lecture ne peut pas être sans nom.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1427"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1416"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Une erreur inconnue s&apos;est produite à la création de la liste de lecture : </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1466"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1455"/>
         <source>Enter name for new crate:</source>
         <translation>Donnez un nom à votre nouveau bac :</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1467"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1456"/>
         <source>New Crate</source>
         <translation>Nouveau bac</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1475"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1464"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1469"/>
         <location filename="../../src/widget/wtracktableview.cpp" line="1480"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1491"/>
         <source>Creating Crate Failed</source>
         <translation>La création du bac a échoué</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1476"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1465"/>
         <source>A crate by that name already exists.</source>
         <translation>Un bac avec ce nom existe déjà.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1481"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1470"/>
         <source>A crate cannot have a blank name.</source>
         <translation>Le nom d&apos;un bac ne doit pas être vide.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1492"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1481"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Une erreur inconnue s&apos;est produite lors de la création du bac : </translation>
     </message>

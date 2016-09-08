@@ -274,11 +274,13 @@ class Track : public QObject {
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
 
-    void setCoverInfo(const CoverInfo& cover);
+    void setCoverInfo(const CoverInfoRelative& coverInfoRelative);
+    void setCoverInfo(const CoverInfo& coverInfo);
+    void setCoverInfo(const CoverArt& coverArt);
+
     CoverInfo getCoverInfo() const;
 
-    void setCoverArt(const CoverArt& coverArt);
-    CoverArt getCoverArt() const;
+    quint16 getCoverHash() const;
 
     // Set/get track metadata and cover art (optional) all at once.
     void setTrackMetadata(
@@ -407,7 +409,7 @@ class Track : public QObject {
 
     QAtomicInt m_analyzerProgress; // in 0.1%
 
-    CoverArt m_coverArt;
+    CoverInfoRelative m_coverInfoRelative;
 
     friend class TrackDAO;
 };

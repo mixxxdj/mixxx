@@ -90,11 +90,11 @@ void DlgTrackInfo::init() {
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const int, const CoverInfo&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const int, const CoverInfo&, QPixmap, bool)));
+        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfo&, QPixmap, bool)),
+                this, SLOT(slotCoverFound(const QObject*, const CoverInfo&, QPixmap, bool)));
     }
-    connect(m_pWCoverArtLabel, SIGNAL(coverArtSelected(const CoverArt&)),
-            this, SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pWCoverArtLabel, SIGNAL(coverInfoSelected(const CoverInfo&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
     connect(m_pWCoverArtLabel, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 }
@@ -178,12 +178,10 @@ void DlgTrackInfo::populateFields(const Track& track) {
     reloadTrackBeats(track);
 
     m_loadedCoverInfo = track.getCoverInfo();
-    int reference = track.getId().toInt();
-    m_loadedCoverInfo.trackLocation = track.getLocation();
-    m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo.trackLocation, m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        pCache->requestCover(m_loadedCoverInfo, this, reference);
+        pCache->requestCover(m_loadedCoverInfo, this, 0, false, true);
     }
 }
 
@@ -228,40 +226,31 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 }
 
 void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
-                                  int requestReference, const CoverInfo& info,
+                                  const CoverInfo& info,
                                   QPixmap pixmap, bool fromCache) {
     Q_UNUSED(fromCache);
     if (pRequestor == this && m_pLoadedTrack &&
-            m_pLoadedTrack->getId().toInt() == requestReference) {
+            m_loadedCoverInfo.hash == info.hash) {
         qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
                  << pixmap.size();
-        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack->getLocation(), m_loadedCoverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, pixmap);
     }
 }
 
 void DlgTrackInfo::slotReloadCoverArt() {
     if (m_pLoadedTrack) {
-        // TODO(rryan) move this out of the main thread. The issue is that
-        // CoverArtCache::requestGuessCover mutates the provided track whereas
-        // in DlgTrackInfo we delay changing the track until the user hits apply
-        // (or cancels the edit).
-        CoverArt art = CoverArtUtils::guessCoverArt(m_pLoadedTrack);
-        slotCoverArtSelected(art);
+        CoverInfo coverInfo =
+                CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
+        slotCoverInfoSelected(coverInfo);
     }
 }
 
-void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
-    qDebug() << "DlgTrackInfo::slotCoverArtSelected" << art;
-    m_loadedCoverInfo = art.info;
-    // TODO(rryan) don't use track ID as a reference
-    int reference = 0;
-    if (m_pLoadedTrack) {
-        reference = m_pLoadedTrack->getId().toInt();
-        m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
-    }
+void DlgTrackInfo::slotCoverInfoSelected(const CoverInfo& coverInfo) {
+    qDebug() << "DlgTrackInfo::slotCoverInfoSelected" << coverInfo;
+    m_loadedCoverInfo = coverInfo;
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        pCache->requestCover(m_loadedCoverInfo, this, reference);
+        pCache->requestCover(m_loadedCoverInfo, this, 0, false, true);
     }
 }
 
@@ -483,7 +472,7 @@ void DlgTrackInfo::clear() {
     cueTable->setRowCount(0);
 
     m_loadedCoverInfo = CoverInfo();
-    m_pWCoverArtLabel->setCoverArt(QString(), m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {

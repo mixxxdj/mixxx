@@ -1215,7 +1215,7 @@ bool setTrackKey(const QSqlRecord& record, const int column,
 
 bool setTrackCoverInfo(const QSqlRecord& record, const int column,
                        TrackPointer pTrack) {
-    CoverInfo coverInfo;
+    CoverInfoRelative coverInfo;
     bool ok = false;
     coverInfo.source = static_cast<CoverInfo::Source>(
             record.value(column).toInt(&ok));
@@ -1937,7 +1937,7 @@ struct TrackWithoutCover {
     QString trackAlbum;
 };
 
-void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
+void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                                               QSet<TrackId>* pTracksChanged) {
     // WARNING TO ANYONE TOUCHING THIS IN THE FUTURE
     // The library contains user selected cover art. There is nothing worse than
@@ -1985,8 +1985,8 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
 
         CoverInfo::Source source = static_cast<CoverInfo::Source>(
             query.value(4).toInt());
-        if (source == CoverInfo::USER_SELECTED) {
-            qWarning() << "PROGRAMMING ERROR! detectCoverArtForUnknownTracks"
+        DEBUG_ASSERT_AND_HANDLE(source != CoverInfo::USER_SELECTED) {
+            qWarning() << "PROGRAMMING ERROR! detectCoverArtForTracksWithoutCover()"
                        << "got a USER_SELECTED track. Skipping.";
             continue;
         }
@@ -2029,6 +2029,7 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                                   static_cast<int>(CoverInfo::METADATA));
             updateQuery.bindValue(":coverart_source",
                                   static_cast<int>(CoverInfo::GUESSED));
+            // TODO() here we may introduce a duplicate hash code
             updateQuery.bindValue(":coverart_hash",
                                   CoverArtUtils::calculateHash(image));
             updateQuery.bindValue(":coverart_location", "");
@@ -2049,15 +2050,15 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                 currentDirectoryPath);
         }
 
-        CoverArt art = CoverArtUtils::selectCoverArtForTrack(
+        CoverInfoRelative coverInfo = CoverArtUtils::selectCoverArtForTrack(
             trackInfo.baseName(), track.trackAlbum, possibleCovers);
 
         updateQuery.bindValue(":coverart_type",
-                              static_cast<int>(art.info.type));
+                              static_cast<int>(coverInfo.type));
         updateQuery.bindValue(":coverart_source",
-                              static_cast<int>(art.info.source));
-        updateQuery.bindValue(":coverart_hash", art.info.hash);
-        updateQuery.bindValue(":coverart_location", art.info.coverLocation);
+                              static_cast<int>(coverInfo.source));
+        updateQuery.bindValue(":coverart_hash", coverInfo.hash);
+        updateQuery.bindValue(":coverart_location", coverInfo.coverLocation);
         updateQuery.bindValue(":track_id", track.trackId.toVariant());
         if (!updateQuery.exec()) {
             LOG_FAILED_QUERY(updateQuery) << "failed to write file or none cover";

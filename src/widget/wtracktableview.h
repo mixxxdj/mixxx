@@ -71,7 +71,7 @@ class WTrackTableView : public WLibraryTableView {
     // Signalled 20 times per second (every 50ms) by GuiTick.
     void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
-    void slotCoverArtSelected(const CoverArt& art);
+    void slotCoverInfoSelected(const CoverInfo& coverInfo);
     void slotReloadCoverArt();
 
     void slotTrackInfoClosed();

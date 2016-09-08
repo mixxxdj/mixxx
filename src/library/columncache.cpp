@@ -3,6 +3,8 @@
 #include "library/dao/trackdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/cratedao.h"
+#include "track/keyutils.h"
+#include "track/key_preferences.h"
 
 void ColumnCache::setColumns(const QStringList& columns) {
     m_columnsByIndex.clear();
@@ -71,6 +73,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
 
     const QString sortInt("cast(%1 as integer)");
     const QString sortNoCase("lower(%1)");
+
     m_columnSortByIndex.clear();
     // Add the columns that requires a special sort
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ARTIST], sortNoCase);
@@ -89,4 +92,101 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_ARTIST], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE], sortNoCase);
+}
+
+void ColumnCache::slotSetKeySortOrder(double notation) {
+    std::vector<mixxx::track::io::key::ChromaticKey> sortOrder;
+    if (static_cast<KeyUtils::KeyNotation>(notation) != KeyUtils::LANCELOT) {
+        sortOrder = {
+            mixxx::track::io::key::INVALID,
+
+            mixxx::track::io::key::C_MAJOR,
+            mixxx::track::io::key::A_MINOR,
+
+            mixxx::track::io::key::G_MAJOR,
+            mixxx::track::io::key::E_MINOR,
+
+            mixxx::track::io::key::D_MAJOR,
+            mixxx::track::io::key::B_MINOR,
+
+            mixxx::track::io::key::A_MAJOR,
+            mixxx::track::io::key::F_SHARP_MINOR,
+
+            mixxx::track::io::key::E_MAJOR,
+            mixxx::track::io::key::C_SHARP_MINOR,
+
+            mixxx::track::io::key::B_MAJOR,
+            mixxx::track::io::key::G_SHARP_MINOR,
+
+            mixxx::track::io::key::F_SHARP_MAJOR,
+            mixxx::track::io::key::E_FLAT_MINOR,
+
+            mixxx::track::io::key::D_FLAT_MAJOR,
+            mixxx::track::io::key::B_FLAT_MINOR,
+
+            mixxx::track::io::key::A_FLAT_MAJOR,
+            mixxx::track::io::key::F_MINOR,
+
+            mixxx::track::io::key::E_FLAT_MAJOR,
+            mixxx::track::io::key::C_MINOR,
+
+            mixxx::track::io::key::B_FLAT_MAJOR,
+            mixxx::track::io::key::G_MINOR,
+
+            mixxx::track::io::key::F_MAJOR,
+            mixxx::track::io::key::D_MINOR
+        };
+    } else {
+        sortOrder = {
+            mixxx::track::io::key::INVALID,
+
+            mixxx::track::io::key::G_SHARP_MINOR,
+            mixxx::track::io::key::B_MAJOR,
+
+            mixxx::track::io::key::E_FLAT_MINOR,
+            mixxx::track::io::key::F_SHARP_MAJOR,
+
+            mixxx::track::io::key::B_FLAT_MINOR,
+            mixxx::track::io::key::D_FLAT_MAJOR,
+
+            mixxx::track::io::key::F_MINOR,
+            mixxx::track::io::key::A_FLAT_MAJOR,
+
+            mixxx::track::io::key::C_MINOR,
+            mixxx::track::io::key::E_FLAT_MAJOR,
+
+            mixxx::track::io::key::G_MINOR,
+            mixxx::track::io::key::B_FLAT_MAJOR,
+
+            mixxx::track::io::key::D_MINOR,
+            mixxx::track::io::key::F_MAJOR,
+
+            mixxx::track::io::key::A_MINOR,
+            mixxx::track::io::key::C_MAJOR,
+
+            mixxx::track::io::key::E_MINOR,
+            mixxx::track::io::key::G_MAJOR,
+
+            mixxx::track::io::key::B_MINOR,
+            mixxx::track::io::key::D_MAJOR,
+
+            mixxx::track::io::key::F_SHARP_MINOR,
+            mixxx::track::io::key::A_MAJOR,
+
+            mixxx::track::io::key::C_SHARP_MINOR,
+            mixxx::track::io::key::E_MAJOR,
+        };
+    }
+
+    // A custom COLLATE function was tested, but using CASE ... WHEN was found to be faster
+    // see GitHub PR#649
+    // https://github.com/mixxxdj/mixxx/pull/649#discussion_r34863809
+    QString keySortSQL("CASE key_id ");
+    for (int i = 0; i <= 24; ++i) {
+            keySortSQL.append(QString("WHEN %1 THEN %2 ")
+                .arg(sortOrder[i]).arg(i));
+    }
+    keySortSQL.append("END");
+
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY], keySortSQL);
 }

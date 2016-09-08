@@ -12,8 +12,7 @@
 class KeyUtils {
   public:
     enum KeyNotation {
-        // The default notation (set with setNotation).
-        DEFAULT = 0,
+        CUSTOM = 0,
         OPEN_KEY = 1,
         LANCELOT = 2,
         TRADITIONAL = 3,
@@ -41,11 +40,11 @@ class KeyUtils {
     }
 
     static QString keyToString(mixxx::track::io::key::ChromaticKey key,
-                               KeyNotation notation = DEFAULT);
+                               KeyNotation notation = CUSTOM);
 
     static QString getGlobalKeyText(
             const Keys& keys,
-            KeyNotation notation = DEFAULT);
+            KeyNotation notation = CUSTOM);
 
     static mixxx::track::io::key::ChromaticKey keyFromNumericValue(double value);
 

@@ -879,30 +879,37 @@ bool Track::isBpmLocked() const {
     return m_bBpmLocked;
 }
 
-void Track::setCoverInfo(const CoverInfo& info) {
+void Track::setCoverInfo(const CoverInfoRelative& coverInfoRelative) {
     QMutexLocker lock(&m_qMutex);
-    if (info != m_coverArt.info) {
-        m_coverArt = CoverArt();
-        m_coverArt.info = info;
+    if (coverInfoRelative != m_coverInfoRelative) {
+        m_coverInfoRelative = coverInfoRelative;
         markDirtyAndUnlock(&lock);
         emit(coverArtUpdated());
     }
+}
+
+void Track::setCoverInfo(const CoverInfo& coverInfo) {
+    QMutexLocker lock(&m_qMutex);
+    DEBUG_ASSERT(coverInfo.trackLocation == m_fileInfo.absoluteFilePath());
+    CoverInfoRelative coverInfoRelative =
+            static_cast<CoverInfoRelative>(coverInfo);
+    if (coverInfoRelative != m_coverInfoRelative) {
+        m_coverInfoRelative = coverInfoRelative;
+        markDirtyAndUnlock(&lock);
+        emit(coverArtUpdated());
+    }
+}
+
+void Track::setCoverInfo(const CoverArt& coverArt) {
+    setCoverInfo(static_cast<CoverInfo>(coverArt));
 }
 
 CoverInfo Track::getCoverInfo() const {
     QMutexLocker lock(&m_qMutex);
-    return m_coverArt.info;
+    return CoverInfo(m_coverInfoRelative, m_fileInfo.absoluteFilePath());
 }
 
-void Track::setCoverArt(const CoverArt& coverArt) {
+quint16 Track::getCoverHash() const {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_coverArt, coverArt)) {
-        markDirtyAndUnlock(&lock);
-        emit(coverArtUpdated());
-    }
-}
-
-CoverArt Track::getCoverArt() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_coverArt;
+    return m_coverInfoRelative.hash;
 }

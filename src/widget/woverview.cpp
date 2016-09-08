@@ -93,9 +93,9 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_marks.setup(m_group, node, context, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
-        WaveformMark& mark = m_marks[i];
-        if (mark.m_pPointCos) {
-            mark.m_pPointCos->connectValueChanged(this,
+        const WaveformMarkPointer& mark = m_marks[i];
+        if (mark->m_pPointCos) {
+            mark->m_pPointCos->connectValueChanged(this,
                     SLOT(onMarkChanged(double)));
         }
     }
@@ -422,11 +422,12 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             painter.setOpacity(0.9);
 
             for (int i = 0; i < m_marks.size(); ++i) {
-                WaveformMark& currentMark = m_marks[i];
-                if (currentMark.m_pPointCos && currentMark.m_pPointCos->get() >= 0.0) {
+                const WaveformMarkPointer currentMark = m_marks[i];
+                const WaveformMarkProperties& markProperties = currentMark->getProperties();
+                if (currentMark->m_pPointCos && currentMark->m_pPointCos->get() >= 0.0) {
                     //const float markPosition = 1.0 +
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-                    const float markPosition = offset + currentMark.m_pPointCos->get() * gain;
+                    const float markPosition = offset + currentMark->m_pPointCos->get() * gain;
 
                     QLineF line;
                     if (m_orientation == Qt::Horizontal) {
@@ -437,14 +438,14 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     painter.setPen(shadowPen);
                     painter.drawLine(line);
 
-                    painter.setPen(currentMark.m_color);
+                    painter.setPen(markProperties.m_color);
                     painter.drawLine(line);
 
-                    if (!currentMark.m_text.isEmpty()) {
-                        Qt::Alignment halign = currentMark.m_align & Qt::AlignHorizontal_Mask;
-                        Qt::Alignment valign = currentMark.m_align & Qt::AlignVertical_Mask;
+                    if (!markProperties.m_text.isEmpty()) {
+                        Qt::Alignment halign = markProperties.m_align & Qt::AlignHorizontal_Mask;
+                        Qt::Alignment valign = markProperties.m_align & Qt::AlignVertical_Mask;
                         QFontMetricsF metric(markerFont);
-                        QRectF textRect = metric.tightBoundingRect(currentMark.m_text);
+                        QRectF textRect = metric.tightBoundingRect(markProperties.m_text);
                         QPointF textPoint;
                         if (m_orientation == Qt::Horizontal) {
                             if (halign == Qt::AlignLeft) {
@@ -482,11 +483,11 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
                         painter.setPen(shadowPen);
                         painter.setFont(shadowFont);
-                        painter.drawText(textPoint,currentMark.m_text);
+                        painter.drawText(textPoint,markProperties.m_text);
 
-                        painter.setPen(currentMark.m_textColor);
+                        painter.setPen(markProperties.m_textColor);
                         painter.setFont(markerFont);
-                        painter.drawText(textPoint,currentMark.m_text);
+                        painter.drawText(textPoint,markProperties.m_text);
                     }
                 }
             }
