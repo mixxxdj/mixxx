@@ -5,6 +5,7 @@
   * @brief HSS1394-based MIDI backend
   */
 
+#include "controllers/midi/midiutils.h"
 #include "controllers/midi/hss1394controller.h"
 #include "controllers/controllerdebug.h"
 #include "util/time.h"
@@ -168,18 +169,20 @@ int Hss1394Controller::close() {
     return 0;
 }
 
-void Hss1394Controller::sendWord(unsigned int word) {
+void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
+                                 unsigned char byte2) {
+    unsigned char channel = MidiUtils::channelFromStatus(status);
+    unsigned char opCode = MidiUtils::opCodeFromStatus(status);
+    unsigned int word = (((unsigned int)byte2) << 16) |
+                         (((unsigned int)byte1) << 8) | status;
     unsigned char data[3];
     data[0] = word & 0xFF;
     data[1] = (word >> 8) & 0xFF;
     data[2] = (word >> 16) & 0xFF;
 
-    QString message = QString("%1 %2 %3").arg(
-        QString("%1").arg(data[0], 2, 16, QChar('0')),
-        QString("%1").arg(data[1], 2, 16, QChar('0')),
-        QString("%1").arg(data[2], 2, 16, QChar('0')));
-
     int bytesSent = m_pChannel->SendChannelBytes(data, 3);
+    controllerDebug(formatMidiMessage(getName(), status, byte1, byte2,
+                    channel, opCode));
 
     //if (bytesSent != 3) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of 3 bytes:" << message;
@@ -191,6 +194,7 @@ void Hss1394Controller::send(QByteArray data) {
     int bytesSent = m_pChannel->SendChannelBytes(
         (unsigned char*)data.constData(), data.size());
 
+    controllerDebug(formatSysexMessage(getName(), data));
     //if (bytesSent != length) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of" << length << "bytes (SysEx)";
     //    //m_pChannel->Flush();
