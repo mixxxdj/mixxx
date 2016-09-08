@@ -122,7 +122,9 @@ QString KeyUtils::keyToString(ChromaticKey key,
         return "INVALID";
     }
 
-    if (notation == DEFAULT) {
+    if (notation == CUSTOM) {
+        // The default value for notation is KeyUtils::CUSTOM, so this executes when the function is
+        // called without a notation specified after KeyUtils::setNotation has set up s_notation.
         QMutexLocker locker(&s_notationMutex);
         QMap<ChromaticKey, QString>::const_iterator it = s_notation.find(key);
         if (it != s_notation.end()) {
