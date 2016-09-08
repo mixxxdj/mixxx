@@ -501,8 +501,8 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
     if (it != m_panes.end()) {
         LibraryPaneManager* pSelectedPane = *it;
 
-        pFeature->setSavedPane(m_preselectedPane);
-        pFeature->setFeaturePane(m_preselectedPane);
+        pFeature->setSavedPane(selectedPane);
+        pFeature->setFeaturePane(selectedPane);
 
         if (pSelectedPane->getCurrentFeature() != pFeature) {
             pSelectedPane->setCurrentFeature(pFeature);
@@ -700,8 +700,7 @@ void Library::handlePreselection() {
     auto it = m_panes.find(m_preselectedPane);
     if (it != m_panes.end()) {
         (*it)->setPreselected(true);
-    }
-    else {
+    } else {
         auto it = m_panes.find(m_previewPreselectedPane);
         if (it != m_panes.end()) {
             (*it)->setPreselected(true);
