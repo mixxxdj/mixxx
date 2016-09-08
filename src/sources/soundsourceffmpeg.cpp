@@ -67,7 +67,9 @@ SINT getSamplingRate(AVStream* pStream) {
 inline
 SINT getFrameCount(AVStream* pStream) {
     // NOTE(uklotzde): Use 64-bit integer calculation to minimize rounding errors
-    return (static_cast<uint64_t>(pStream->time_base.num) * static_cast<uint64_t>(pStream->duration) * static_cast<uint64_t>(getSamplingRate(pStream))) /
+    return (static_cast<uint64_t>(pStream->time_base.num) *
+            pStream->duration *
+            static_cast<uint64_t>(getSamplingRate(pStream))) /
             static_cast<uint64_t>(pStream->time_base.den);
 }
 
