@@ -33,18 +33,10 @@ AVMediaType getMediaType(AVStream* pStream) {
     return pStream->codec->codec_type;
 }
 
-AVStream* findNextAudioStream(AVFormatContext* pFormatCtx, AVStream* pStream = nullptr) {
+AVStream* findFirstAudioStream(AVFormatContext* pFormatCtx) {
     DEBUG_ASSERT(pFormatCtx != nullptr);
-    DEBUG_ASSERT((pStream == nullptr) || (static_cast<unsigned int>(pStream->index) < pFormatCtx->nb_streams));
-    DEBUG_ASSERT((pStream == nullptr) || (pStream == pFormatCtx->streams[pStream->index]));
-    unsigned int iNextStream;
-    if (pStream == nullptr) {
-        // Start search at the first stream
-        iNextStream = 0;
-    } else {
-        // Restart search at the following stream
-        iNextStream = pStream->index + 1;
-    }
+    // Start search at the first stream
+    unsigned int iNextStream = 0;
     while (iNextStream < pFormatCtx->nb_streams) {
         AVStream* pNextStream = pFormatCtx->streams[iNextStream];
         if (getMediaType(pNextStream) == AVMEDIA_TYPE_AUDIO) {
@@ -55,11 +47,6 @@ AVStream* findNextAudioStream(AVFormatContext* pFormatCtx, AVStream* pStream = n
         }
     }
     return nullptr;
-}
-
-inline
-AVStream* findFirstAudioStream(AVFormatContext* pFormatCtx) {
-    return findNextAudioStream(pFormatCtx);
 }
 
 inline
