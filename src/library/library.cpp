@@ -183,8 +183,12 @@ void Library::destroyInterface() {
 }
 
 LibraryView* Library::getActiveView() {
-    WBaseLibrary* pPane = m_panes[m_focusedPane]->getPaneWidget();
-    WLibrary* pLibrary = qobject_cast<WLibrary*>(pPane);
+    LibraryPaneManager* pPane = m_panes.value(m_focusedPane);
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
+        return nullptr;
+    }
+    WBaseLibrary* pPaneWidget = pPane->getPaneWidget();
+    WLibrary* pLibrary = qobject_cast<WLibrary*>(pPaneWidget);
     DEBUG_ASSERT_AND_HANDLE(pLibrary) {
         return nullptr;
     }
@@ -450,7 +454,11 @@ void Library::paneCollapsed(int paneId) {
     m_collapsedPanes.insert(paneId);
     
     // Automatically switch the focus to a non collapsed pane
-    m_panes[paneId]->setFocused(false);
+    LibraryPaneManager* pPane = m_panes.value(paneId);
+    if (pPane) {
+        pPane->setFocused(false);
+    }
+
     
     bool focused = false;
     for (LibraryPaneManager* pPane : m_panes) {
@@ -472,11 +480,15 @@ void Library::paneUncollapsed(int paneId) {
     // If the current shown feature in some pane is the same as the uncollapsed
     // pane feature, switch the feature from one pane to the other and set
     // instead the saved feature
-    LibraryFeature* pFeature = m_panes[paneId]->getCurrentFeature();
+    LibraryPaneManager* pPane = m_panes.value(paneId);
+    if (pPane == nullptr) {
+        return;
+    }
+    LibraryFeature* pFeature = pPane->getCurrentFeature();
     if (pFeature == nullptr) {
         return;
     }
-    pFeature->setFeaturePane(m_panes[paneId]->getPaneId());
+    pFeature->setFeaturePane(pPane->getPaneId());
     
     for (LibraryPaneManager* pPane : m_panes) {
         int auxId = pPane->getPaneId();
@@ -497,10 +509,8 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
     }
     
     bool featureActivated = false;
-    auto it = m_panes.find(selectedPane);
-    if (it != m_panes.end()) {
-        LibraryPaneManager* pSelectedPane = *it;
-
+    LibraryPaneManager* pSelectedPane = m_panes.value(selectedPane);
+    if (pSelectedPane) {
         pFeature->setSavedPane(selectedPane);
         pFeature->setFeaturePane(selectedPane);
 
@@ -578,9 +588,9 @@ void Library::slotResetFocusedFeature(LibraryFeature* pFeature) {
 LibraryPaneManager* Library::getOrCreatePane(int paneId) {
     //qDebug() << "Library::createPane" << id;
     // Get the value once to avoid searching again in the hash
-    auto it = m_panes.find(paneId);
-    if (it != m_panes.end()) {
-        return *it;
+    LibraryPaneManager* pPane = m_panes.value(paneId);
+    if (pPane) {
+        return pPane;
     }
     
     // The paneId must be non negative
@@ -594,7 +604,7 @@ LibraryPaneManager* Library::getOrCreatePane(int paneId) {
         return nullptr;
     }
     
-    LibraryPaneManager* pPane = new LibraryPaneManager(paneId, this);
+    pPane = new LibraryPaneManager(paneId, this);
     pPane->addFeatures(m_features);
     m_panes.insert(paneId, pPane);
     
@@ -604,19 +614,11 @@ LibraryPaneManager* Library::getOrCreatePane(int paneId) {
 
 LibraryPaneManager* Library::getFocusedPane() {
     //qDebug() << "Focused" << m_focusedPane;
-    auto it = m_panes.find(m_focusedPane);
-    if (it == m_panes.end()) {
-        return nullptr;
-    }
-    return *it;
+    return m_panes.value(m_focusedPane);
 }
 
 LibraryPaneManager* Library::getPreselectedPane() {
-    auto it = m_panes.find(m_preselectedPane);
-    if (it == m_panes.end()) {
-        return nullptr;
-    }
-    return *it;
+    return m_panes.value(m_preselectedPane);
 }
 
 void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface* pPlayerManager) {
@@ -686,9 +688,9 @@ void Library::handleFocus() {
     for (LibraryPaneManager* pPane : m_panes) {
         pPane->setFocused(false);
     }
-    auto it = m_panes.find(m_focusedPane);
-    if (it != m_panes.end()) {
-        (*it)->setFocused(true);
+    LibraryPaneManager* pFocusPane = m_panes.value(m_focusedPane);
+    if (pFocusPane) {
+        pFocusPane->setFocused(true);
     }
 }
 
@@ -697,19 +699,19 @@ void Library::handlePreselection() {
         pPane->setPreselected(false);
         pPane->setPreviewed(false);
     }
-    auto it = m_panes.find(m_preselectedPane);
-    if (it != m_panes.end()) {
-        (*it)->setPreselected(true);
+    LibraryPaneManager* pSelectedPane = m_panes.value(m_preselectedPane);
+    if (pSelectedPane) {
+        pSelectedPane->setPreselected(true);
     } else {
-        auto it = m_panes.find(m_previewPreselectedPane);
-        if (it != m_panes.end()) {
-            (*it)->setPreselected(true);
+        pSelectedPane = m_panes.value(m_previewPreselectedPane);
+        if (pSelectedPane) {
+            pSelectedPane->setPreselected(true);
         }
     }
 }
 
 void Library::focusSearch() {
-    LibraryPaneManager* pFocusPane = m_panes[m_focusedPane];
+    LibraryPaneManager* pFocusPane = m_panes.value(m_focusedPane);
     if (pFocusPane == nullptr) return;
     bool ok = pFocusPane->focusSearch();
     if (ok) return;
