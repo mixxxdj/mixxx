@@ -21,15 +21,6 @@ void TooltipShortcutUpdater::updateShortcuts(KeyboardControllerPresetPointer pKb
     }
 }
 
-WSliderComposed* TooltipShortcutUpdater::toSliderComposed(WBaseWidget* pWidget) {
-    return qobject_cast<WSliderComposed*>(pWidget->toQWidget());
-}
-
-WPushButton* TooltipShortcutUpdater::toPushButton(WBaseWidget* pWidget) {
-    return qobject_cast<WPushButton*>(pWidget->toQWidget());
-}
-
-
 
 //  -------------------------------------
 //    WidgetTooltipWatcher (base class)

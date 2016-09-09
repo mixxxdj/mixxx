@@ -75,12 +75,17 @@ void LayoutsFileHandler::open(QString& cppPath, QList<Layout>& layouts) {
     }
 
     QFile f(cppPath);
-    LayoutNamesData layoutNames = getLayoutNames(f);
+    QList<LayoutNamePair> layoutNames = getLayoutNames(f);
 
     // Remove old code and add new code in order for the file to compile
     removeSkipParts(f);
     prependDefs(f);
     appendGetLayoutsFunction(f, layoutNames, true);
+
+    qDebug() << "Layout names:";
+    for (LayoutNamePair layoutNameData : layoutNames) {
+        qDebug() << "VarName: " << layoutNameData.varName << ", Name: " << layoutNameData.name;
+    }
 
     // Compile the file and get the function pointer to the getLayout
     // function (and the handle to be able to close it when we are done)
@@ -90,13 +95,14 @@ void LayoutsFileHandler::open(QString& cppPath, QList<Layout>& layouts) {
                        getLayout,
                        handle);
 
-    for (const QStringList& names : layoutNames) {
-        const QString& variableName = names[0];
-        const QString& name = names[1];
-        KeyboardLayoutPointer layoutData = getLayout(variableName.toLatin1().data());
+    for (const LayoutNamePair& layoutNamePair : layoutNames) {
+        const QString& varName = layoutNamePair.varName;
+        const QString& name = layoutNamePair.name;
+
+        KeyboardLayoutPointer layoutData = getLayout(varName.toLatin1().data());
 
         // Construct layout object and append to layouts
-        Layout layout(variableName, name, layoutData);
+        Layout layout(varName, name, layoutData);
         layouts.append(layout);
     }
 
@@ -145,7 +151,7 @@ void LayoutsFileHandler::prependDefs(QFile& cppFile) {
 }
 
 void LayoutsFileHandler::appendGetLayoutsFunction(QFile& cppFile,
-                                                  const LayoutNamesData& layoutNames,
+                                                  const QList<LayoutNamePair>& layoutNames,
                                                   bool forInternUse) {
 
     // Generate new 'getLayout' function definition
@@ -156,8 +162,10 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile& cppFile,
                     .arg(forInternUse ? ("extern \"C\" ") : "");
 
     // Add one if-statement per layout
-    for (const QStringList& names : layoutNames)
-        fnLines << QString(kIndent + "if (layoutName == \"%1\") return layouts::%1;").arg(names[0]);
+    for (const LayoutNamePair& names : layoutNames) {
+        fnLines << QString(kIndent + "if (layoutName == \"%1\") return layouts::%1;")
+                .arg(names.varName);
+    }
 
     // Add 'else' if there is an 'if', if no 'if', return nullptr directly
     if (!layoutNames.isEmpty()) {
@@ -174,8 +182,8 @@ void LayoutsFileHandler::appendGetLayoutsFunction(QFile& cppFile,
     appendToFile(cppFile, fnLines);
 }
 
-LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile& cppFile) {
-    LayoutNamesData names;
+QList<LayoutNamePair> LayoutsFileHandler::getLayoutNames(QFile& cppFile) {
+    QList<LayoutNamePair> names;
 
     if (cppFile.open(QIODevice::ReadOnly)) {
         QRegExp bracketRegex("\\[");
@@ -201,9 +209,7 @@ LayoutNamesData LayoutsFileHandler::getLayoutNames(QFile& cppFile) {
             QString name = prevLine.startsWith("//") ? prevLine.mid(3) : "";
 
             // Create QStringList and append it to names
-            QStringList currentLayoutNames;
-            currentLayoutNames.append(variableName);
-            currentLayoutNames.append(name);
+            LayoutNamePair currentLayoutNames = {variableName, name};
             names.append(currentLayoutNames);
 
             prevLine = line;

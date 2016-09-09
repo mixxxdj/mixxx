@@ -2,7 +2,7 @@
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "controllers/keyboard/layouts.h"
 
-QString KeyboardControllerPreset::getKeySequencesToString(ConfigKey configKey, QString separator) {
+QString KeyboardControllerPreset::getKeySequencesToString(ConfigKey configKey, QString separator) const {
     QStringList keyseqs = getKeySequences(configKey);
     QString keySeqsString = "";
 
@@ -13,9 +13,9 @@ QString KeyboardControllerPreset::getKeySequencesToString(ConfigKey configKey, Q
     return keySeqsString;
 }
 
-QStringList KeyboardControllerPreset::getKeySequences(ConfigKey configKey) {
+QStringList KeyboardControllerPreset::getKeySequences(ConfigKey configKey) const {
     QStringList keyseqs;
-    QMultiHash<QString, ConfigKey>::iterator it;
+    QMultiHash<QString, ConfigKey>::const_iterator it;
 
     for (it = m_mapping.begin(); it != m_mapping.end(); ++it) {
         const ConfigKey& currentConfigKey = it.value();
@@ -27,11 +27,12 @@ QStringList KeyboardControllerPreset::getKeySequences(ConfigKey configKey) {
     return keyseqs;
 }
 
-QMultiHash<QString, ConfigKey> KeyboardControllerPreset::getMappingByGroup(const QString& targetGroup) {
-    QMultiHash<QString, ConfigKey> filteredKeySequenceHash;
-    QMultiHash<QString, ConfigKey>::iterator it;
+QMultiHash<QString, ConfigKey> KeyboardControllerPreset::getMappingByGroup(
+        const QString& targetGroup) const {
 
-    for (it = m_mapping.begin(); it != m_mapping.end(); ++it) {
+    QMultiHash<QString, ConfigKey> filteredKeySequenceHash;
+
+    for (auto it = m_mapping.begin(); it != m_mapping.end(); ++it) {
         QString currentGroup = it.value().group;
         if (currentGroup == targetGroup) {
             filteredKeySequenceHash.insert(it.key(), it.value());
@@ -75,20 +76,20 @@ void KeyboardControllerPreset::translate(QString layoutName) {
 
         // Try to find a key sequence that targets the current
         // keyboard layout, if not found set to constEnd()
-        auto keyseqsRawI = keyseqsRaw.constEnd();
-        while (keyseqsRawI != keyseqsRaw.constBegin()) {
-            --keyseqsRawI;
+        auto keyseqsRawIterator = keyseqsRaw.constEnd();
+        while (keyseqsRawIterator != keyseqsRaw.constBegin()) {
+            --keyseqsRawIterator;
 
             // Check if this key sequence's target layout
             // is the same as the user's language
-            if (keyseqsRawI->lang == layoutName) {
+            if (keyseqsRawIterator->lang == layoutName) {
                 break;
             }
 
-            // If none found, set keyseqsRawI to end(), which is
+            // If none found, set keyseqsRawIterator to end(), which is
             // kind of setting it to null
-            if (keyseqsRawI == keyseqsRaw.constBegin()) {
-                keyseqsRawI = keyseqsRaw.constEnd();
+            if (keyseqsRawIterator == keyseqsRaw.constBegin()) {
+                keyseqsRawIterator = keyseqsRaw.constEnd();
                 break;
             }
         }
@@ -99,20 +100,20 @@ void KeyboardControllerPreset::translate(QString layoutName) {
         //
         // NOTE: If there is more than one keyseq whose 'lang' attribute
         //       is null, the last one will be chosen.
-        if (keyseqsRawI == keyseqsRaw.constEnd()) {
-            while (keyseqsRawI != keyseqsRaw.constBegin()) {
-                --keyseqsRawI;
+        if (keyseqsRawIterator == keyseqsRaw.constEnd()) {
+            while (keyseqsRawIterator != keyseqsRaw.constBegin()) {
+                --keyseqsRawIterator;
 
                 // If lang is not given, that means that it is
                 // targeted at all not explicitly listed layouts
-                if (keyseqsRawI->lang.isEmpty()) {
+                if (keyseqsRawIterator->lang.isEmpty()) {
                     break;
                 }
 
                 // Same as in the first loop, setting to "null"-ish
                 // if none was found
-                if (keyseqsRawI == keyseqsRaw.constBegin()) {
-                    keyseqsRawI = keyseqsRaw.constEnd();
+                if (keyseqsRawIterator == keyseqsRaw.constBegin()) {
+                    keyseqsRawIterator = keyseqsRaw.constEnd();
                     break;
                 }
             }
@@ -120,7 +121,7 @@ void KeyboardControllerPreset::translate(QString layoutName) {
 
         // If no keyseq was found for current layout, nor a global layout targeted at no
         // layout in particular, Mixxx can't load in any mapping for this current action
-        if (keyseqsRawI == keyseqsRaw.constEnd()) {
+        if (keyseqsRawIterator == keyseqsRaw.constEnd()) {
             qWarning() << "No keyseq found for" << layoutName
                        << "nor any translatable keyseq. Skipping"
                        << "mapping for ConfigKey" << configKey;
@@ -128,10 +129,10 @@ void KeyboardControllerPreset::translate(QString layoutName) {
         }
 
         // Check if this keyseq is position based (if 'byPositionOf' attribute was given)
-        bool positionBased = !keyseqsRawI->byPositionOf.isEmpty();
+        bool positionBased = !keyseqsRawIterator->byPositionOf.isEmpty();
 
         // Check if this keyseq is position based, based on the current layout
-        bool byPositionOfCurrentLayout = keyseqsRawI->byPositionOf == layoutName;
+        bool byPositionOfCurrentLayout = keyseqsRawIterator->byPositionOf == layoutName;
 
         // If 'byPositionOf' attribute not given, or given but where the
         // layout is matches the current local, no need to translate
@@ -142,42 +143,49 @@ void KeyboardControllerPreset::translate(QString layoutName) {
         // Key sequences for control. If key sequence does not need any translation,
         // this array will always contain just one key sequence. However, after
         // translation it could potentially contain multiple key sequences.
-        QStringList keyseqs = QStringList() += (!keyseqsRaw.isEmpty() ? keyseqsRawI->keysequence : "");
+        QStringList keyseqs;
+
+        if (!keyseqsRaw.isEmpty()) {
+            keyseqs += keyseqsRawIterator->keysequence;
+        } else {
+            keyseqs += "";
+        }
 
         if (keyseqNeedsTranslate) {
 
             // Can't happen. Otherwise keyseqNeedsTranslate would be false.
-            DEBUG_ASSERT(!keyseqsRawI->byPositionOf.isEmpty());
+            DEBUG_ASSERT(!keyseqsRawIterator->byPositionOf.isEmpty());
 
-            QString key = layoutUtils::getCharFromKeysequence(keyseqs[0]);
+            QString key = layoutUtils::keyseqGetKey(keyseqs[0]);
             if (key.size() > 1) {
                 qWarning() << "Can't translate keyseq" << keyseqs[0]
                            << "because key" << key << "is not a character.";
             }
 
             // Get original layout
-            KeyboardLayoutPointer originalKeyseqLayout = getLayout(keyseqsRawI->byPositionOf.toStdString());
+            KeyboardLayoutPointer originalKeyseqLayout = getLayout(keyseqsRawIterator->byPositionOf.toStdString());
             if (originalKeyseqLayout == nullptr) {
                 qWarning() << "Can't translate keyseq" << keyseqs[0]
                            << "because Mixxx can't retrieve it's scancode."
-                           << "'byPositionOf' layout" << keyseqsRawI->byPositionOf
+                           << "'byPositionOf' layout" << keyseqsRawIterator->byPositionOf
                            << "not found. Skipping mapping for" << configKey;
                 continue;
             }
 
             // Check whether we need no modifier or shift modifier for the scancode lookup
-            QStringList modifiers = layoutUtils::getModifiersFromKeysequence(keyseqs[0]);
+            QStringList modifiers = layoutUtils::keyseqGetModifiers(keyseqs[0]);
             bool onlyShift = modifiers.size() == 1 && modifiers[0] == "Shift";
             Qt::KeyboardModifier modifier = onlyShift ? Qt::ShiftModifier : Qt::NoModifier;
 
             // Retrieve scancodes (usually just one, sometimes two,
             // due to multiple keys sharing the same character)
-            QList<int> scancodes = layoutUtils::findScancodesForCharacter(originalKeyseqLayout, key.at(0), modifier);
+            QList<Scancode> scancodes = layoutUtils::findScancodesForCharacter(
+                    originalKeyseqLayout, key.at(0), modifier);
 
             // Warn user if any scancodes where found for this character
             if (scancodes.isEmpty()) {
                 qWarning() << "Couldn't find any scancodes for character"
-                           << key.at(0) << "on" << keyseqsRawI->byPositionOf
+                           << key.at(0) << "on" << keyseqsRawIterator->byPositionOf
                            << (onlyShift ? "with" : "without") << "shift."
                            << "Skipping mapping for" << configKey;
                 continue;
@@ -187,20 +195,18 @@ void KeyboardControllerPreset::translate(QString layoutName) {
             keyseqs.clear();
 
             // Iterate through all found scancodes
-            for (const int& scancode : scancodes) {
+            for (const Scancode scancode : scancodes) {
 
                 // Get KbdKeyChar
-                const KbdKeyChar *keyChar = layoutUtils::getKbdKeyChar(layout, (unsigned char) scancode, modifier);
+                const KbdKeyChar* keyChar = layoutUtils::getKbdKeyChar(layout, scancode, modifier);
                 QChar character(keyChar->character);
 
                 // If key is not dead, reconstruct key sequence with translated character. Otherwise,
                 // warn user about key that won't work.
                 if (!keyChar->isDead) {
-                    QString modifiersString = modifiers.join("+");
-                    if (!modifiersString.isEmpty()) {
-                        modifiersString += "+";
-                    }
-                    keyseqs.append(modifiersString + character);
+                    QStringList keyseq(modifiers);
+                    keyseq.append(character);
+                    keyseqs.append(keyseq.join("+"));
                 } else {
                     qWarning() << "Can't use key with scancode " << scancode
                                << " because it's a dead key on layout '" << layoutName
@@ -213,18 +219,26 @@ void KeyboardControllerPreset::translate(QString layoutName) {
         }
 
         for (QString& keyseq : keyseqs) {
-            QString key = layoutUtils::getCharFromKeysequence(keyseq);
-            QStringList mods = layoutUtils::getModifiersFromKeysequence(keyseq);
+            QString key = layoutUtils::keyseqGetKey(keyseq);
+            QStringList mods = layoutUtils::keyseqGetModifiers(keyseq);
 
             // Clear keyseq
             keyseq = "";
 
             // NOTE: This order must be the same as in
             // ...   KeyboardEventFilter::getKeySeq()
-            if (mods.contains("Shift")) keyseq += "Shift+";
-            if (mods.contains("Ctrl")) keyseq += "Ctrl+";
-            if (mods.contains("Alt")) keyseq += "Alt+";
-            if (mods.contains("Meta")) keyseq += "Meta+";
+            if (mods.contains("Shift")) {
+                keyseq += "Shift+";
+            }
+            if (mods.contains("Ctrl")) {
+                keyseq += "Ctrl+";
+            }
+            if (mods.contains("Alt")) {
+                keyseq += "Alt+";
+            }
+            if (mods.contains("Meta")) {
+                keyseq += "Meta+";
+            }
 
             // If the key is modified, the comparisons in KeyboardEventFilter
             // are based on QKeySequence::toString()

@@ -42,35 +42,35 @@ class HidController : public Controller {
     Q_OBJECT
   public:
     HidController(const hid_device_info deviceInfo);
-    virtual ~HidController();
+    ~HidController() override;
 
-    virtual QString presetExtension() override;
+    QString presetExtension() override;
 
-    virtual ControllerPresetPointer getPreset() const override {
+    ControllerPresetPointer getPreset() const override {
         HidControllerPreset* pClone = new HidControllerPreset();
         *pClone = m_preset;
         return ControllerPresetPointer(pClone);
     }
 
-    virtual bool savePreset(const QString fileName) const override;
+    bool savePreset(const QString fileName) const override;
 
-    virtual void visit(const KeyboardControllerPreset* preset) override;
-    virtual void visit(const MidiControllerPreset* preset) override;
-    virtual void visit(const HidControllerPreset* preset) override;
+    void visitKeyboard(const KeyboardControllerPreset* preset) override;
+    void visitMidi(const MidiControllerPreset* preset) override;
+    void visitHid(const HidControllerPreset* preset) override;
 
-    virtual void accept(ControllerVisitor* visitor) override {
+    void accept(ControllerVisitor* visitor) override {
         if (visitor) {
             visitor->visit(this);
         }
     }
 
-    virtual bool isMappable() const override {
+    bool isMappable() const override {
         return m_preset.isMappable();
     }
 
-    virtual bool matchPreset(const PresetInfo& preset) override;
-    virtual bool matchProductInfo(const ProductInfo& product);
-    virtual void guessDeviceCategory();
+    bool matchPreset(const PresetInfo& preset) override;
+    bool matchProductInfo(const ProductInfo& product);
+    void guessDeviceCategory();
 
     static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);
 
@@ -84,16 +84,16 @@ class HidController : public Controller {
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    virtual void send(QByteArray data) override;
+    void send(QByteArray data) override;
     virtual void send(QByteArray data, unsigned int reportID);
 
-    virtual bool isPolling() const override {
+    bool isPolling() const override {
         return false;
     }
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
-    virtual ControllerPreset* preset() override {
+    ControllerPreset* preset() override {
         return &m_preset;
     }
 

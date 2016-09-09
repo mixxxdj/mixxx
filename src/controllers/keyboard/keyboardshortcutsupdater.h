@@ -33,7 +33,7 @@ class KeyboardShortcutsUpdater : public QObject {
 
     // Returns ShortcutChangeWatcher matching the given configKey, if found
     // in m_shortcutChangeWatchers. If no watcher is found, returns nullptr
-    ShortcutChangeWatcher* getWatcher(ConfigKey configKey);
+    ShortcutChangeWatcher* getWatcher(ConfigKey configKey) const;
 };
 
 

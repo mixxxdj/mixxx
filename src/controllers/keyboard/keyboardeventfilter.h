@@ -14,7 +14,7 @@ class ControlObject;
 class KeyboardEventFilter : public QObject {
     Q_OBJECT
   public:
-    KeyboardEventFilter(QObject* parent = nullptr, const char* name = nullptr);
+    explicit KeyboardEventFilter(QObject* parent = nullptr, const char* name = nullptr);
     virtual ~KeyboardEventFilter();
     bool eventFilter(QObject* obj, QEvent* e);
 
@@ -42,13 +42,15 @@ class KeyboardEventFilter : public QObject {
     };
 
     // Returns a valid QString with modifier keys from a QKeyEvent
-    QString getKeySeq(QKeyEvent* e);
+    QString getKeySeq(QKeyEvent* e) const;
 
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
 
     // Clone of keyboard controller preset, containing keyboard mapping info
     QSharedPointer<KeyboardControllerPreset> m_kbdPreset;
+
+    QString m_previousLayoutName;
 };
 
 #endif  // CONTROLLERS_KEYBOARD_KEYBOARDEVENTFILTER_H

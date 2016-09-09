@@ -13,7 +13,7 @@
 class MockMidiController : public MidiController {
   public:
     MockMidiController() { }
-    virtual ~MockMidiController() { }
+    ~MockMidiController() override { }
 
     MOCK_METHOD0(open, int());
     MOCK_METHOD0(close, int());
@@ -36,7 +36,7 @@ class MidiControllerTest : public MixxxTest {
     }
 
     void loadPreset(const MidiControllerPreset& preset) {
-        m_pController->visit(&preset);
+        m_pController->visitMidi(&preset);
     }
 
     void receive(unsigned char status, unsigned char control,

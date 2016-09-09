@@ -14,7 +14,7 @@ void KeyboardShortcutsUpdater::addWatcher(ShortcutChangeWatcher* watcher) {
 
 // NOTE(Tomasito): There shouldn't be more than one watchers with the same ConfigKey, but if
 // ...             there are, this will return the first one that is found.
-ShortcutChangeWatcher* KeyboardShortcutsUpdater::getWatcher(ConfigKey configKey) {
+ShortcutChangeWatcher* KeyboardShortcutsUpdater::getWatcher(ConfigKey configKey) const {
     for (ShortcutChangeWatcher* watcher: m_shortcutChangeWatchers) {
         if (watcher->m_configKey == configKey) {
             return watcher;
@@ -46,12 +46,9 @@ ShortcutChangeWatcher::ShortcutChangeWatcher(QAction* action, ConfigKey configKe
 ShortcutChangeWatcher::~ShortcutChangeWatcher() { }
 
 void ShortcutChangeWatcher::updateShortcut(QMultiHash<QString, ConfigKey>* pShortcuts) {
-    // Check if shortcut is found in the given QMultiHash
-    bool shortcutFound = false;
-
-    // Iterate over all keyboard shortcuts. If a shortcut is found
-    // with the same ConfigKey, the bound KeySequence is bound to
-    // the QAction
+    // Iterate over all keyboard shortcuts. If a shortcut is found whose
+    // ConfigKey is the same as the config key this watcher is watching,
+    // update QAction with new shortcut.
     QMultiHash<QString, ConfigKey>::iterator it;
     for (it = pShortcuts->begin(); it != pShortcuts->end(); ++it) {
         Q_ASSERT(it.value().group == "[KeyboardShortcuts]");
@@ -60,18 +57,12 @@ void ShortcutChangeWatcher::updateShortcut(QMultiHash<QString, ConfigKey>* pShor
             m_pAction->setShortcut(
                     QKeySequence(tr(keyseq))
             );
-            shortcutFound = true;
+            return;
         }
     }
 
-    // NOTE: We could get rid of shortcutFound and return
-    //       when it.value() == m_configKey. But if there
-    //       were more than one ConfigValueKbd bound to
-    //       our ConfigKey, we want to make sure that the
-    //       last one is taken
-    if (!shortcutFound) {
-        restoreDefault();
-    }
+    // Restore to default shortcut if none found
+    restoreDefault();
 }
 
 void ShortcutChangeWatcher::restoreDefault() {

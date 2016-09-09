@@ -6,7 +6,8 @@
 #include "util/cmdlineargs.h"
 
 KeyboardEventFilter::KeyboardEventFilter(QObject* parent, const char* name)
-        : QObject(parent) {
+        : QObject(parent),
+          m_previousLayoutName(inputLocale().name()) {
     setObjectName(name);
 }
 
@@ -20,7 +21,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // because we might not get Key Release events.
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
-        QKeyEvent* ke = (QKeyEvent*)e;
+        QKeyEvent* ke = static_cast<QKeyEvent*>(e);
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
@@ -64,9 +65,13 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 // NOTE: We are not breaking here because there could
                 // potentially be another action mapped to the same
                 // key sequence further down the hash table
-                if (iterator.key() != ks) continue;
+                if (iterator.key() != ks) {
+                    continue;
+                }
 
                 const ConfigKey& configKey = iterator.value();
+                // These shortcuts are bound directly to QActions in WMainMenuBar::initialize()
+                // and are updated in KeyboardShortcutsUpdater
                 if (configKey.group == "[KeyboardShortcuts]") continue;
 
                 ControlObject* control = ControlObject::getControl(configKey);
@@ -84,7 +89,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             return result;
         }
     } else if (e->type()==QEvent::KeyRelease) {
-        QKeyEvent* ke = (QKeyEvent*)e;
+        QKeyEvent* ke = static_cast<QKeyEvent*>(e);
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty
@@ -132,19 +137,17 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // ...            changes the keyboard layout and gets back to Mixxx, the keyboard mapping will not
         // ...            be translated to his current locale: Add a check on focusInEvent (on MixxxMainWindow)
 
-        static QString prevLayout;
-        QString layout = inputLocale().name();
-
-        if (layout != prevLayout) {
-            qDebug() << "QEvent::KeyboardLayoutChange" << layout;
-            emit keyboardLayoutChanged(layout);
-            prevLayout = layout;
+        QString layoutName = inputLocale().name();
+        if (layoutName != m_previousLayoutName) {
+            qDebug() << "QEvent::KeyboardLayoutChange" << layoutName;
+            emit keyboardLayoutChanged(layoutName);
+            m_previousLayoutName = layoutName;
         }
     }
     return false;
 }
 
-QString KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
+QString KeyboardEventFilter::getKeySeq(QKeyEvent* e) const {
     QString mods;
     QString keyText = e->text();
 
@@ -153,7 +156,7 @@ QString KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     if (!e->modifiers() && !keyText.isEmpty()) {
 
         // Some keys do have a valid unicode position (keyText not empty), but would
-        // be tricky to map to. Example: "Ctrl+ " for mapping to Ctrl+Space. In this
+        // be tricky to map on. Example: "Ctrl+ " for mapping to Ctrl+Space. In this
         // case we return a string representation of a QKeySequence, which will
         // return the key-name ("Tab", "Backspace" or "Space").
         int key = e->key();

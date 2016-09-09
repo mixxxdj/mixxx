@@ -44,33 +44,33 @@ class BulkController : public Controller {
   public:
     BulkController(libusb_context* context, libusb_device_handle *handle,
                    struct libusb_device_descriptor *desc);
-    virtual ~BulkController();
+    ~BulkController() override;
 
-    virtual QString presetExtension() override;
+    QString presetExtension() override;
 
-    virtual ControllerPresetPointer getPreset() const override {
+    ControllerPresetPointer getPreset() const override {
         HidControllerPreset* pClone = new HidControllerPreset();
         *pClone = m_preset;
         return ControllerPresetPointer(pClone);
     }
 
-    virtual bool savePreset(const QString fileName) const override;
+    bool savePreset(const QString fileName) const override;
 
-    virtual void visit(const KeyboardControllerPreset* preset) override;
-    virtual void visit(const MidiControllerPreset* preset) override;
-    virtual void visit(const HidControllerPreset* preset) override;
+    void visitKeyboard(const KeyboardControllerPreset* preset) override;
+    void visitMidi(const MidiControllerPreset* preset) override;
+    void visitHid(const HidControllerPreset* preset) override;
 
-    virtual void accept(ControllerVisitor* visitor) override {
+    void accept(ControllerVisitor* visitor) override {
         if (visitor) {
             visitor->visit(this);
         }
     }
 
-    virtual bool isMappable() const override {
+    bool isMappable() const override {
         return m_preset.isMappable();
     }
 
-    virtual bool matchPreset(const PresetInfo& preset) override;
+    bool matchPreset(const PresetInfo& preset) override;
     virtual bool matchProductInfo(const ProductInfo& product);
 
   protected:
@@ -83,15 +83,15 @@ class BulkController : public Controller {
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    virtual void send(QByteArray data) override;
+    void send(QByteArray data) override;
 
-    virtual bool isPolling() const override {
+    bool isPolling() const override {
         return false;
     }
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
-    virtual ControllerPreset* preset() override {
+    ControllerPreset* preset() override {
         return &m_preset;
     }
 
