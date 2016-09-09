@@ -52,7 +52,7 @@ class Hss1394Controller : public MidiController {
 
   private:
     void sendShortMsg(unsigned char status, unsigned char byte1,
-                  unsigned char byte2);
+                      unsigned char byte2);
 
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.

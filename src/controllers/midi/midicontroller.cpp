@@ -164,35 +164,35 @@ QString MidiController::formatMidiMessage(const QString& controllerName,
                                           unsigned char status, unsigned char control,
                                           unsigned char value, unsigned char channel,
                                           unsigned char opCode, mixxx::Duration timestamp) {
-    QString t;
+    QString msg2;
     if (timestamp == mixxx::Duration::fromMillis(0)) {
-      t = "outgoing:";
+      msg2 = "outgoing:";
     } else {
-      t = QString("t:%1").arg(timestamp.formatMillisWithUnit());
+      msg2 = QString("t:%1").arg(timestamp.formatMillisWithUnit());
     }
     switch (opCode) {
         case MIDI_PITCH_BEND:
             return QString("%1: %2 status 0x%3: pitch bend ch %4, value 0x%5")
-                    .arg(controllerName, t,
-                         QString::number(status, 16).toUpper(), t,
+                    .arg(controllerName, msg2,
+                         QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
         case MIDI_SONG_POS:
             return QString("%1: t:%5 status 0x%3: song position 0x%4")
-                    .arg(controllerName, t,
+                    .arg(controllerName, msg2,
                          QString::number(status, 16).toUpper(),
                          QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
         case MIDI_PROGRAM_CH:
         case MIDI_CH_AFTERTOUCH:
             return QString("%1: %2 status 0x%3 (ch %4, opcode 0x%5), value 0x%6")
-                    .arg(controllerName, t,
+                    .arg(controllerName, msg2,
                          QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((status & 255)>>4, 16).toUpper(),
                          QString::number(control, 16).toUpper().rightJustified(2,'0'));
         case MIDI_SONG:
             return QString("%1: %2 status 0x%3: select song #%4")
-                    .arg(controllerName, t,
+                    .arg(controllerName, msg2,
                          QString::number(status, 16).toUpper(),
                          QString::number(control+1, 10));
         case MIDI_NOTE_OFF:
@@ -200,7 +200,7 @@ QString MidiController::formatMidiMessage(const QString& controllerName,
         case MIDI_AFTERTOUCH:
         case MIDI_CC:
             return QString("%1: %2 status 0x%3 (ch %4, opcode 0x%5), ctrl 0x%6, val 0x%7")
-                    .arg(controllerName, t,
+                    .arg(controllerName, msg2,
                          QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((status & 255)>>4, 16).toUpper(),
@@ -208,21 +208,21 @@ QString MidiController::formatMidiMessage(const QString& controllerName,
                          QString::number(value, 16).toUpper().rightJustified(2,'0'));
         default:
             return QString("%1: %2 status 0x%3")
-                    .arg(controllerName, t,
+                    .arg(controllerName, msg2,
                          QString::number(status, 16).toUpper());
     }
 }
 
 QString MidiController::formatSysexMessage(const QString& controllerName, const QByteArray& data,
                                            mixxx::Duration timestamp) {
-    QString t;
+    QString msg2;
     if (timestamp == mixxx::Duration::fromMillis(0)) {
-      t = "outgoing:";
+      msg2 = "outgoing:";
     } else {
-      t = QString("t:%1").arg(timestamp.formatMillisWithUnit());
+      msg2 = QString("t:%1").arg(timestamp.formatMillisWithUnit());
     }
     QString message = QString("%1: %2 %3 byte sysex: [")
-            .arg(controllerName).arg(t)
+            .arg(controllerName).arg(msg2)
             .arg(data.size());
     for (int i = 0; i < data.size(); ++i) {
         message += QString("%1%2").arg(
@@ -569,8 +569,3 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     qWarning() << "MidiController: No script function specified for"
                << formatSysexMessage(getName(), data, timestamp);
 }
-
-// void MidiController::sendShortMsg(unsigned char status, unsigned char byte1,
-//                                   unsigned char byte2) {
-//     sendWord(status, byte1, byte2);
-// }
