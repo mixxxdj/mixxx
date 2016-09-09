@@ -212,17 +212,17 @@ void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
 
     unsigned int word = (((unsigned int)byte2) << 16) |
                          (((unsigned int)byte1) << 8) | status;
-    unsigned char channel = MidiUtils::channelFromStatus(status);
-    unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
     PmError err = m_pOutputDevice->writeShort(word);
     if (err == pmNoError) {
-      controllerDebug(formatMidiMessage(getName(), status, byte1, byte2,
-                                      channel, opCode));
+      controllerDebug(formatMidiMessage(getName(),
+                                        status, byte1, byte2,
+                                        MidiUtils::channelFromStatus(status), MidiUtils::opCodeFromStatus(status)));
     } else {
         qWarning() << "Error sending short message"
                       << formatMidiMessage(getName(), status, byte1, byte2,
-                                           channel, opCode)
+                                           MidiUtils::channelFromStatus(status),
+                                           MidiUtils::opCodeFromStatus(status))
                       << "\nPortMidi error:" << Pm_GetErrorText(err);
     }
 }

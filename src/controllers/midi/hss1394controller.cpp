@@ -171,18 +171,13 @@ int Hss1394Controller::close() {
 
 void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
                                  unsigned char byte2) {
-    unsigned char channel = MidiUtils::channelFromStatus(status);
-    unsigned char opCode = MidiUtils::opCodeFromStatus(status);
-    unsigned int word = (((unsigned int)byte2) << 16) |
-                         (((unsigned int)byte1) << 8) | status;
-    unsigned char data[3];
-    data[0] = word & 0xFF;
-    data[1] = (word >> 8) & 0xFF;
-    data[2] = (word >> 16) & 0xFF;
+    unsigned char data[3] = { status, byte1, byte2 };
 
     int bytesSent = m_pChannel->SendChannelBytes(data, 3);
-    controllerDebug(formatMidiMessage(getName(), status, byte1, byte2,
-                    channel, opCode));
+    controllerDebug(formatMidiMessage(getName(),
+                                      status, byte1, byte2,
+                                      MidiUtils::channelFromStatus(status),
+                                      MidiUtils::opCodeFromStatus(status)));
 
     //if (bytesSent != 3) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of 3 bytes:" << message;
