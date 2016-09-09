@@ -28,6 +28,11 @@ namespace {
 
     const QString kIncludeString = "#include <string>";
 
+    const QStringList kIncludeYVals = QStringList()
+            << "#ifdef __WINDOWS__"
+            << "#include <yvals.h>"
+            << "#endif";
+
     // Sections that need to be skipped the next time that
     // the file is loaded by this tool are surrounded by
     // these 'skip' comments.
@@ -229,6 +234,10 @@ void LayoutsFileHandler::save(QFile& f, QList<Layout>& layouts) {
 
             // Include header file
             << QString("#include \"%1\"").arg(headerName)
+            << ""
+
+            // Include yvals for char16_t support on Visual Studio 2013
+            << kIncludeYVals
             << ""
 
             // KbdKeyChar struct implementation

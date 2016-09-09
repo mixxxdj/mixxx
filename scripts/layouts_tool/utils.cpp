@@ -1822,10 +1822,10 @@ namespace utils {
                 plainChar == QChar('\\')
         );
 
-        // Generate unicode literal
+        // Generate unicode position hex integer literal
         std::stringstream b;
-        b << "\\u" << std::hex << std::setw(4) << std::setfill('0') << kbdKeyChar.character;
-        QString unicodeLiteral = QString::fromUtf8(b.str().c_str());
+        b << "0x" << std::hex << kbdKeyChar.character;
+        QString unicodeHexIntLiteral = QString::fromUtf8(b.str().c_str());
 
         // Check whether the character is within ASCII range or not
         bool isAscii = kbdKeyChar.character < 128;
@@ -1840,7 +1840,7 @@ namespace utils {
             }
             charLiteral = "'" + charLiteral + "'";
         } else {
-            charLiteral = "u'" + unicodeLiteral + "\'";
+            charLiteral = unicodeHexIntLiteral;
         }
 
         bool dead = kbdKeyChar.isDead;
