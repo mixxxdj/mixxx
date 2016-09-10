@@ -178,7 +178,7 @@ QString MidiController::formatMidiMessage(const QString& controllerName,
                          QString::number(channel+1, 10),
                          QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
         case MIDI_SONG_POS:
-            return QString("%1: t:%5 status 0x%3: song position 0x%4")
+            return QString("%1: %2 status 0x%3: song position 0x%4")
                     .arg(controllerName, msg2,
                          QString::number(status, 16).toUpper(),
                          QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));

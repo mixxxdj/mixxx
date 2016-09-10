@@ -205,7 +205,7 @@ bool PortMidiController::poll() {
 }
 
 void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
-                                  unsigned char byte2) {
+                                      unsigned char byte2) {
     if (m_pOutputDevice.isNull() || !m_pOutputDevice->isOpen()) {
         return;
     }
