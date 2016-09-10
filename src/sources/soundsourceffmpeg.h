@@ -62,10 +62,42 @@ class SoundSourceFFmpeg : public SoundSource {
 
     AVFormatContext* m_pFormatCtx;
 
-    AVStream* m_pAudioStream;
-
     static OpenResult openAudioStream(AVStream* pAudioStream);
-    static void closeAudioStream(AVStream** ppAudioStream);
+
+    // Takes ownership of an opened (audio) stream and ensures that
+    // the corresponding AVStream is closed, either explicitly or
+    // implicitly by the destructor. The object can only be moved,
+    // copying is disabled.
+    class ClosableAVStreamPtr final {
+    public:
+        explicit ClosableAVStreamPtr(AVStream* pClosableStream = nullptr)
+            : m_pClosableStream(pClosableStream) {
+        }
+        explicit ClosableAVStreamPtr(const ClosableAVStreamPtr&) = delete;
+        explicit ClosableAVStreamPtr(ClosableAVStreamPtr&& that)
+            : m_pClosableStream(that.m_pClosableStream) {
+            that.m_pClosableStream = nullptr;
+        }
+        ~ClosableAVStreamPtr() {
+            close();
+        }
+
+        void close();
+
+        ClosableAVStreamPtr& operator=(const ClosableAVStreamPtr&) = delete;
+        ClosableAVStreamPtr& operator=(ClosableAVStreamPtr&& that) {
+            m_pClosableStream = that.m_pClosableStream;
+            that.m_pClosableStream = nullptr;
+            return *this;
+        }
+
+        AVStream* operator->() { return m_pClosableStream; }
+        operator AVStream*() { return m_pClosableStream; }
+
+    private:
+        AVStream* m_pClosableStream;
+    };
+    ClosableAVStreamPtr m_pAudioStream;
 
     std::unique_ptr<EncoderFfmpegResample> m_pResample;
 

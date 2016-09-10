@@ -156,19 +156,16 @@ SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(AVStream* pAudioStrea
     return SoundSource::OpenResult::SUCCEEDED;
 }
 
-//static
-void SoundSourceFFmpeg::closeAudioStream(AVStream** ppAudioStream) {
-    DEBUG_ASSERT(ppAudioStream != nullptr);
-    AVStream* pAudioStream = *ppAudioStream;
-    if (pAudioStream != nullptr) {
-        const int avcodec_close_result = avcodec_close(pAudioStream->codec);
+void SoundSourceFFmpeg::ClosableAVStreamPtr::close() {
+    if (m_pClosableStream != nullptr) {
+        const int avcodec_close_result = avcodec_close(m_pClosableStream->codec);
         if (avcodec_close_result != 0) {
             qWarning() << "[SoundSourceFFmpeg]"
                     << "avcodec_close() failed and returned"
                     << avcodec_close_result;
             // ignore error and continue
         }
-        *ppAudioStream = nullptr;
+        m_pClosableStream = nullptr;
     }
 }
 
@@ -254,7 +251,9 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     if (openAudioStreamResult != OpenResult::SUCCEEDED) {
         return openAudioStreamResult; // early exit on any error
     }
-    m_pAudioStream = pAudioStream;
+    // Now set the member, because the audio stream has been opened
+    // successfully and needs to be closed eventually.
+    m_pAudioStream = ClosableAVStreamPtr(pAudioStream);
 
     const SINT channelCount = getChannelCountOfStream(m_pAudioStream);
     if (channelCount > kMaxChannelCount) {
@@ -290,8 +289,7 @@ void SoundSourceFFmpeg::close() {
         free(l_SRmJmp);
     }
 
-    closeAudioStream(&m_pAudioStream);
-    DEBUG_ASSERT(m_pAudioStream == nullptr);
+    m_pAudioStream.close();
     avformat_close_input(&m_pFormatCtx);
     DEBUG_ASSERT(m_pFormatCtx == nullptr);
 }
