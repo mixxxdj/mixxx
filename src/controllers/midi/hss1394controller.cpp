@@ -170,7 +170,7 @@ int Hss1394Controller::close() {
 }
 
 void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
-                                 unsigned char byte2) {
+                                     unsigned char byte2) {
     unsigned char data[3] = { status, byte1, byte2 };
 
     int bytesSent = m_pChannel->SendChannelBytes(data, 3);
