@@ -29,7 +29,7 @@ void initFFmpegLib() {
 const SINT kMaxChannelCount = 2;
 
 inline
-AVMediaType getMediaType(AVStream* pStream) {
+AVMediaType getMediaTypeOfStream(AVStream* pStream) {
     return pStream->codec->codec_type;
 }
 
@@ -39,7 +39,7 @@ AVStream* findFirstAudioStream(AVFormatContext* pFormatCtx) {
     unsigned int iNextStream = 0;
     while (iNextStream < pFormatCtx->nb_streams) {
         AVStream* pNextStream = pFormatCtx->streams[iNextStream];
-        if (getMediaType(pNextStream) == AVMEDIA_TYPE_AUDIO) {
+        if (getMediaTypeOfStream(pNextStream) == AVMEDIA_TYPE_AUDIO) {
             return pNextStream;
         } else {
             // Continue search at the next stream
@@ -50,31 +50,32 @@ AVStream* findFirstAudioStream(AVFormatContext* pFormatCtx) {
 }
 
 inline
-AVCodec* findDecoder(AVStream* pStream) {
+AVCodec* findDecoderForStream(AVStream* pStream) {
     return avcodec_find_decoder(pStream->codec->codec_id);
 }
 
 inline
-SINT getChannelCount(AVStream* pStream) {
+SINT getChannelCountOfStream(AVStream* pStream) {
     return pStream->codec->channels;
 }
 
 inline
-SINT getSamplingRate(AVStream* pStream) {
+SINT getSamplingRateOfStream(AVStream* pStream) {
     return pStream->codec->sample_rate;
 }
 
 inline
-SINT getFrameCount(AVStream* pStream) {
-    // NOTE(uklotzde): Use 64-bit integer calculation to minimize rounding errors
+SINT getFrameCountOfStream(AVStream* pStream) {
+    // NOTE(uklotzde): Use 64-bit integer instead of floating point calculation
+    // to minimize rounding errors
     return (static_cast<uint64_t>(pStream->time_base.num) *
             pStream->duration *
-            static_cast<uint64_t>(getSamplingRate(pStream))) /
+            static_cast<uint64_t>(getSamplingRateOfStream(pStream))) /
             static_cast<uint64_t>(pStream->time_base.den);
 }
 
 inline
-AVSampleFormat getSampleFormat(AVStream* pStream) {
+AVSampleFormat getSampleFormatOfStream(AVStream* pStream) {
     return pStream->codec->sample_fmt;
 }
 
@@ -138,10 +139,11 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
 //static
 SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(AVStream* pAudioStream) {
     DEBUG_ASSERT(pAudioStream != nullptr);
-    AVCodec* pDecoder = findDecoder(pAudioStream);
+    AVCodec* pDecoder = findDecoderForStream(pAudioStream);
     if (pDecoder == nullptr) {
         qWarning() << "[SoundSourceFFmpeg]"
-                << "Failed to find a decoder for the first audio stream";
+                << "Failed to find a decoder for stream"
+                << pAudioStream->index;
         return SoundSource::OpenResult::UNSUPPORTED_FORMAT;
     }
     const int avcodec_open2_result = avcodec_open2(pAudioStream->codec, pDecoder, nullptr);
@@ -254,15 +256,15 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     }
     m_pAudioStream = pAudioStream;
 
-    const SINT channelCount = mixxx::getChannelCount(m_pAudioStream);
+    const SINT channelCount = getChannelCountOfStream(m_pAudioStream);
     if (channelCount > kMaxChannelCount) {
         qWarning() << "[SoundSourceFFmpeg]"
                 << "Unsupported number of channels:"
                 << channelCount << ">" << kMaxChannelCount;
         return OpenResult::UNSUPPORTED_FORMAT;
     }
-    const SINT samplingRate = mixxx::getSamplingRate(m_pAudioStream);
-    const SINT frameCount = mixxx::getFrameCount(m_pAudioStream);
+    const SINT samplingRate = getSamplingRateOfStream(m_pAudioStream);
+    const SINT frameCount = getFrameCountOfStream(m_pAudioStream);
     qDebug() << "[SoundSourceFFmpeg]"
             << "Number of channels:" << channelCount
             << ", Number of sample frames:" << frameCount
@@ -272,7 +274,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     setFrameCount(frameCount);
 
     m_pResample = std::make_unique<EncoderFfmpegResample>(m_pAudioStream->codec);
-    m_pResample->openMixxx(getSampleFormat(m_pAudioStream), AV_SAMPLE_FMT_FLT);
+    m_pResample->openMixxx(getSampleFormatOfStream(m_pAudioStream), AV_SAMPLE_FMT_FLT);
 
     return OpenResult::SUCCEEDED;
 }
