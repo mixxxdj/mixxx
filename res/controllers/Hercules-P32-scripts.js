@@ -736,8 +736,6 @@ P32.EffectUnit = function (unitNumber) {
     this.switchEffect2 = function (channel, control, value, status, group) { that.switchEffect(2); };
     this.switchEffect3 = function (channel, control, value, status, group) { that.switchEffect(3); };
     this.switchEffect4 = function (channel, control, value, status, group) { that.switchEffect(4); };
-    
-    
 };
 
 P32.Deck = function (deckNumbers, channel) {
@@ -763,7 +761,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.sync = new ToggleButton([0x90 + channel, 0x08], this.currentDeck, 'sync_enabled');
     this.cue = new CueButton([0x90 + channel, 0x09], this.currentDeck);
     this.play = new PlayButton([0x90 + channel, 0x0A], this.currentDeck);
-    
+
     this.quantize = new ToggleButton(
         [0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'quantize'); // sync shifted
     this.keylock = new ToggleButton(
@@ -782,7 +780,7 @@ P32.Deck = function (deckNumbers, channel) {
             [0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i, 3)], this.currentDeck,
             i, P32.padColors.red, P32.padColors.off);
     }
-    
+
     this.loopIn = new ActionButton(
         [0x90 + channel, 0x50], this.currentDeck,
         'loop_in', P32.padColors.purple);
@@ -898,7 +896,7 @@ P32.Deck = function (deckNumbers, channel) {
         engine.setValue(that.currentDeck, 'rate', engine.getValue(that.currentDeck, 'rate') + (0.01 * direction));
     };
 
-    this.tempoReset = function (channel, control, value, status, group) {
+    this.tempoPress = function (channel, control, value, status, group) {
         if (value) {
             engine.setValue(that.currentDeck, 'rate', 0);
         }
@@ -912,19 +910,23 @@ P32.Deck = function (deckNumbers, channel) {
             } else if (value === 1 && beatJumpSize < 64) { // turn right
                 beatJumpSize *= 2;
             }
-            midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
+            // The firmware will only change the numeric LED readout when sent messages
+            // on the unshifted channel.
+            midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
         } else {
             engine.setValue(that.currentDeck, 'beatjump', direction * beatJumpSize);
         }
     };
 
     this.beatJumpPress = function (channel, control, value, status, group) {
+        // The firmware will only change the numeric LED readout when sent messages
+        // on the unshifted channel.
         if (value === 127) {
             that.beatJumpEncoderPressed = true;
-            midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
+            midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
         } else {
             that.beatJumpEncoderPressed = false;
-            midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(loopSize) / Math.log(2));
+            midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B, 5 + Math.log(loopSize) / Math.log(2));
         }
     };
 
