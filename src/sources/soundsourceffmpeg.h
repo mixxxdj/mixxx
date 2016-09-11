@@ -87,10 +87,7 @@ class SoundSourceFFmpeg : public SoundSource {
         }
 
         ClosableInputAVFormatContextPtr& operator=(const ClosableInputAVFormatContextPtr&) = delete;
-        ClosableInputAVFormatContextPtr& operator=(ClosableInputAVFormatContextPtr&& that) {
-            swap(*this, that);
-            return *this;
-        }
+        ClosableInputAVFormatContextPtr& operator=(ClosableInputAVFormatContextPtr&& that) = delete;
 
         AVFormatContext* operator->() { return m_pClosableInputFormatContext; }
         operator AVFormatContext*() { return m_pClosableInputFormatContext; }
@@ -128,10 +125,7 @@ class SoundSourceFFmpeg : public SoundSource {
         }
 
         ClosableAVStreamPtr& operator=(const ClosableAVStreamPtr&) = delete;
-        ClosableAVStreamPtr& operator=(ClosableAVStreamPtr&& that) {
-            swap(*this, that);
-            return *this;
-        }
+        ClosableAVStreamPtr& operator=(ClosableAVStreamPtr&& that) = delete;
 
         AVStream* operator->() { return m_pClosableStream; }
         operator AVStream*() { return m_pClosableStream; }
