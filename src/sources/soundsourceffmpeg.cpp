@@ -216,16 +216,19 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
 }
 
 SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 69, 0)
+    // TODO(XXX): Why do we need to allocate and partially initialize
+    // the AVFormatContext struct before opening the input file???
     AVFormatContext *pInputFormatContext = avformat_alloc_context();
     if (pInputFormatContext == nullptr) {
         qWarning() << "[SoundSourceFFmpeg]"
                 << "avformat_alloc_context() failed";
         return OpenResult::FAILED;
     }
-
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 69, 0)
-    // TODO() why is this required, should't it be a runtime check
     pInputFormatContext->max_analyze_duration = 999999999;
+#else
+    // Will be allocated implicitly when opening the input file
+    AVFormatContext *pInputFormatContext = nullptr;
 #endif
 
     // libav replaces open() with ff_win32_open() which accepts a
@@ -240,6 +243,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 #else
     const QByteArray qBAFilename(getLocalFileName().toLocal8Bit());
 #endif
+
     // Open input file and allocate/initialize AVFormatContext
     const int avformat_open_input_result =
             avformat_open_input(
