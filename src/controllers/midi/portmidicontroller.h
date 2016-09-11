@@ -70,9 +70,12 @@ class PortMidiController : public MidiController {
     virtual int close();
     virtual bool poll();
 
-  private:
+  protected:
+    // MockPortMidiController needs this to not be private.
     void sendShortMsg(unsigned char status, unsigned char byte1,
                       unsigned char byte2);
+
+  private:
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
     void send(QByteArray data);
