@@ -136,6 +136,13 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     return list;
 }
 
+void SoundSourceFFmpeg::ClosableInputAVFormatContextPtr::close() {
+    if (m_pClosableInputFormatContext != nullptr) {
+        avformat_close_input(&m_pClosableInputFormatContext);
+        DEBUG_ASSERT(m_pClosableInputFormatContext == nullptr);
+    }
+}
+
 //static
 SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(AVStream* pAudioStream) {
     DEBUG_ASSERT(pAudioStream != nullptr);
@@ -171,7 +178,6 @@ void SoundSourceFFmpeg::ClosableAVStreamPtr::close() {
 
 SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
     : SoundSource(url),
-      m_pFormatCtx(nullptr),
       m_pResample(nullptr),
       m_currentMixxxFrameIndex(0),
       m_bIsSeeked(false),
@@ -190,16 +196,16 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
 }
 
 SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    DEBUG_ASSERT(m_pFormatCtx == nullptr);
-    m_pFormatCtx = avformat_alloc_context();
-    if (m_pFormatCtx == nullptr) {
+    AVFormatContext *pInputFormatContext = avformat_alloc_context();
+    if (pInputFormatContext == nullptr) {
         qWarning() << "[SoundSourceFFmpeg]"
                 << "avformat_alloc_context() failed";
         return OpenResult::FAILED;
     }
-    // TODO() why is this required, should't it be a runtime check
+
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 69, 0)
-    m_pFormatCtx->max_analyze_duration = 999999999;
+    // TODO() why is this required, should't it be a runtime check
+    pInputFormatContext->max_analyze_duration = 999999999;
 #endif
 
     // libav replaces open() with ff_win32_open() which accepts a
@@ -214,21 +220,22 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 #else
     const QByteArray qBAFilename(getLocalFileName().toLocal8Bit());
 #endif
-
-    // Open file and initialize m_pFormatCtx
+    // Open input file and allocate/initialize AVFormatContext
     const int avformat_open_input_result =
             avformat_open_input(
-                    &m_pFormatCtx, qBAFilename.constData(), nullptr, nullptr);
+                    &pInputFormatContext, qBAFilename.constData(), nullptr, nullptr);
     if (avformat_open_input_result != 0) {
         qWarning() << "[SoundSourceFFmpeg]"
                 << "avformat_open_input() failed and returned"
                 << avformat_open_input_result;
         return OpenResult::FAILED;
     }
+    DEBUG_ASSERT(pInputFormatContext != nullptr);
+    m_pInputFormatContext = ClosableInputAVFormatContextPtr(pInputFormatContext);
 
     // Retrieve stream information
     const int avformat_find_stream_info_result =
-            avformat_find_stream_info(m_pFormatCtx, nullptr);
+            avformat_find_stream_info(m_pInputFormatContext, nullptr);
     if (avformat_find_stream_info_result < 0) {
         qWarning() << "[SoundSourceFFmpeg]"
                 << "avformat_find_stream_info() failed and returned"
@@ -237,10 +244,10 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     }
 
     //debug only (Enable if needed)
-    //av_dump_format(m_pFormatCtx, 0, qBAFilename.constData(), false);
+    //av_dump_format(m_pInputFormatContext, 0, qBAFilename.constData(), false);
 
     // Find and open audio stream for decoding
-    AVStream* pAudioStream = findFirstAudioStream(m_pFormatCtx);
+    AVStream* pAudioStream = findFirstAudioStream(m_pInputFormatContext);
     if (pAudioStream == nullptr) {
         qWarning() << "[SoundSourceFFmpeg]"
                 << "No audio stream found";
@@ -289,8 +296,7 @@ void SoundSourceFFmpeg::close() {
     }
 
     m_pAudioStream.close();
-    avformat_close_input(&m_pFormatCtx);
-    DEBUG_ASSERT(m_pFormatCtx == nullptr);
+    m_pInputFormatContext.close();
 }
 
 void SoundSourceFFmpeg::clearCache() {
@@ -352,7 +358,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 
         // Read one frame (which has nothing to do with Mixxx Frame)
         // it's some packed audio data from container like MP3, Ogg or MP4
-        if (av_read_frame(m_pFormatCtx, &l_SPacket) >= 0) {
+        if (av_read_frame(m_pInputFormatContext, &l_SPacket) >= 0) {
             // Are we on correct audio stream. Currently we are always
             // Using first audio stream but in future there should be
             // possibility to choose which to use
@@ -709,7 +715,7 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         // should always be there) some number (which is 0xffff 65535)
         // that is chosen because in WMA frames can be that big and if it's
         // smaller than the frame we are seeking we can get into error
-        ret = avformat_seek_file(m_pFormatCtx,
+        ret = avformat_seek_file(m_pInputFormatContext,
                                  m_pAudioStream->index,
                                  0,
                                  0,
