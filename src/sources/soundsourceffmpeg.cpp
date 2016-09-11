@@ -136,6 +136,16 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     return list;
 }
 
+void SoundSourceFFmpeg::ClosableInputAVFormatContextPtr::take(
+        AVFormatContext** ppClosableInputFormatContext) {
+    DEBUG_ASSERT(ppClosableInputFormatContext != nullptr);
+    if (m_pClosableInputFormatContext != *ppClosableInputFormatContext) {
+        close();
+        m_pClosableInputFormatContext = *ppClosableInputFormatContext;
+        *ppClosableInputFormatContext = nullptr;
+    }
+}
+
 void SoundSourceFFmpeg::ClosableInputAVFormatContextPtr::close() {
     if (m_pClosableInputFormatContext != nullptr) {
         avformat_close_input(&m_pClosableInputFormatContext);
@@ -144,7 +154,8 @@ void SoundSourceFFmpeg::ClosableInputAVFormatContextPtr::close() {
 }
 
 //static
-SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(AVStream* pAudioStream) {
+SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(
+        AVStream* pAudioStream) {
     DEBUG_ASSERT(pAudioStream != nullptr);
     AVCodec* pDecoder = findDecoderForStream(pAudioStream);
     if (pDecoder == nullptr) {
@@ -161,6 +172,15 @@ SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(AVStream* pAudioStrea
         return SoundSource::OpenResult::FAILED;
     }
     return SoundSource::OpenResult::SUCCEEDED;
+}
+
+void SoundSourceFFmpeg::ClosableAVStreamPtr::take(AVStream** ppClosableStream) {
+    DEBUG_ASSERT(ppClosableStream != nullptr);
+    if (m_pClosableStream != *ppClosableStream) {
+        close();
+        m_pClosableStream = *ppClosableStream;
+        *ppClosableStream = nullptr;
+    }
 }
 
 void SoundSourceFFmpeg::ClosableAVStreamPtr::close() {
@@ -231,7 +251,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         return OpenResult::FAILED;
     }
     DEBUG_ASSERT(pInputFormatContext != nullptr);
-    m_pInputFormatContext = ClosableInputAVFormatContextPtr(pInputFormatContext);
+    m_pInputFormatContext.take(&pInputFormatContext);
 
     // Retrieve stream information
     const int avformat_find_stream_info_result =
@@ -259,7 +279,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     }
     // Now set the member, because the audio stream has been opened
     // successfully and needs to be closed eventually.
-    m_pAudioStream = ClosableAVStreamPtr(pAudioStream);
+    m_pAudioStream.take(&pAudioStream);
 
     const SINT channelCount = getChannelCountOfStream(m_pAudioStream);
     if (channelCount > kMaxChannelCount) {

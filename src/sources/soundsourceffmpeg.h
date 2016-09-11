@@ -78,6 +78,8 @@ class SoundSourceFFmpeg : public SoundSource {
             close();
         }
 
+        void take(AVFormatContext** ppClosableInputFormatContext);
+
         void close();
 
         friend void swap(ClosableInputAVFormatContextPtr& lhs, ClosableInputAVFormatContextPtr& rhs) {
@@ -118,6 +120,7 @@ class SoundSourceFFmpeg : public SoundSource {
             close();
         }
 
+        void take(AVStream** ppClosableStream);
         void close();
 
         friend void swap(ClosableAVStreamPtr& lhs, ClosableAVStreamPtr& rhs) {
