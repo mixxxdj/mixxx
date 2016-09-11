@@ -60,6 +60,8 @@ class SoundSourceFFmpeg : public SoundSource {
 
     unsigned int read(unsigned long size, SAMPLE*);
 
+    static AVFormatContext* openInputFile(const QString& fileName);
+
     // Takes ownership of an input format context and ensures that
     // the corresponding AVFormatContext is closed, either explicitly
     // or implicitly by the destructor. The wrapper can only be

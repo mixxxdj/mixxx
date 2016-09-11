@@ -136,6 +136,50 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     return list;
 }
 
+//static
+AVFormatContext* SoundSourceFFmpeg::openInputFile(
+        const QString& fileName) {
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 69, 0)
+    // TODO(XXX): Why do we need to allocate and partially initialize
+    // the AVFormatContext struct before opening the input file???
+    AVFormatContext *pInputFormatContext = avformat_alloc_context();
+    if (pInputFormatContext == nullptr) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "avformat_alloc_context() failed";
+        return nullptr;
+    }
+    pInputFormatContext->max_analyze_duration = 999999999;
+#else
+    // Will be allocated implicitly when opening the input file
+    AVFormatContext *pInputFormatContext = nullptr;
+#endif
+
+    // libav replaces open() with ff_win32_open() which accepts a
+    // Utf8 path
+    // see: avformat/os_support.h
+    // The old method defining an URL_PROTOCOL is deprecated
+#if defined(_WIN32) && !defined(__MINGW32CE__)
+    const QByteArray qBAFilename(
+            avformat_version() >= AV_VERSION_INT(52, 0, 0) ?
+                    fileName.toUtf8() :
+                    fileName.toLocal8Bit());
+#else
+    const QByteArray qBAFilename(fileName.toLocal8Bit());
+#endif
+
+    // Open input file and allocate/initialize AVFormatContext
+    const int avformat_open_input_result =
+            avformat_open_input(
+                    &pInputFormatContext, qBAFilename.constData(), nullptr, nullptr);
+    if (avformat_open_input_result != 0) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "avformat_open_input() failed and returned"
+                << avformat_open_input_result;
+        DEBUG_ASSERT(pInputFormatContext == nullptr);
+    }
+    return pInputFormatContext;
+}
+
 void SoundSourceFFmpeg::ClosableInputAVFormatContextPtr::take(
         AVFormatContext** ppClosableInputFormatContext) {
     DEBUG_ASSERT(ppClosableInputFormatContext != nullptr);
@@ -216,45 +260,14 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
 }
 
 SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 69, 0)
-    // TODO(XXX): Why do we need to allocate and partially initialize
-    // the AVFormatContext struct before opening the input file???
-    AVFormatContext *pInputFormatContext = avformat_alloc_context();
+    AVFormatContext *pInputFormatContext =
+            openInputFile(getLocalFileName());
     if (pInputFormatContext == nullptr) {
         qWarning() << "[SoundSourceFFmpeg]"
-                << "avformat_alloc_context() failed";
+                << "Failed to open input file"
+                << getLocalFileName();
         return OpenResult::FAILED;
     }
-    pInputFormatContext->max_analyze_duration = 999999999;
-#else
-    // Will be allocated implicitly when opening the input file
-    AVFormatContext *pInputFormatContext = nullptr;
-#endif
-
-    // libav replaces open() with ff_win32_open() which accepts a
-    // Utf8 path
-    // see: avformat/os_support.h
-    // The old method defining an URL_PROTOCOL is deprecated
-#if defined(_WIN32) && !defined(__MINGW32CE__)
-    const QByteArray qBAFilename(
-            avformat_version() >= ((52<<16)+(0<<8)+0) ?
-            getLocalFileName().toUtf8() :
-            getLocalFileName().toLocal8Bit());
-#else
-    const QByteArray qBAFilename(getLocalFileName().toLocal8Bit());
-#endif
-
-    // Open input file and allocate/initialize AVFormatContext
-    const int avformat_open_input_result =
-            avformat_open_input(
-                    &pInputFormatContext, qBAFilename.constData(), nullptr, nullptr);
-    if (avformat_open_input_result != 0) {
-        qWarning() << "[SoundSourceFFmpeg]"
-                << "avformat_open_input() failed and returned"
-                << avformat_open_input_result;
-        return OpenResult::FAILED;
-    }
-    DEBUG_ASSERT(pInputFormatContext != nullptr);
     m_pInputFormatContext.take(&pInputFormatContext);
 
     // Retrieve stream information
