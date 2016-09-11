@@ -172,7 +172,6 @@ void SoundSourceFFmpeg::ClosableAVStreamPtr::close() {
 SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
     : SoundSource(url),
       m_pFormatCtx(nullptr),
-      m_pAudioStream(nullptr),
       m_pResample(nullptr),
       m_currentMixxxFrameIndex(0),
       m_bIsSeeked(false),

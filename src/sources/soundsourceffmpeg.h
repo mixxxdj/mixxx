@@ -66,7 +66,7 @@ class SoundSourceFFmpeg : public SoundSource {
 
     // Takes ownership of an opened (audio) stream and ensures that
     // the corresponding AVStream is closed, either explicitly or
-    // implicitly by the destructor. The object can only be moved,
+    // implicitly by the destructor. The wrapper can only be moved,
     // copying is disabled.
     class ClosableAVStreamPtr final {
     public:
@@ -84,10 +84,13 @@ class SoundSourceFFmpeg : public SoundSource {
 
         void close();
 
+        friend void swap(ClosableAVStreamPtr& lhs, ClosableAVStreamPtr& rhs) {
+            std::swap(lhs.m_pClosableStream, rhs.m_pClosableStream);
+        }
+
         ClosableAVStreamPtr& operator=(const ClosableAVStreamPtr&) = delete;
         ClosableAVStreamPtr& operator=(ClosableAVStreamPtr&& that) {
-            m_pClosableStream = that.m_pClosableStream;
-            that.m_pClosableStream = nullptr;
+            swap(*this, that);
             return *this;
         }
 
