@@ -159,7 +159,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
 
     if (RLimit::isRtPrioAllowed()) {
-        limitsHint->hide();
+        limitsHint->setText(tr("Realtime scheduling is enabled."));
     }
 #else
     // the limits warning is a Linux only thing
