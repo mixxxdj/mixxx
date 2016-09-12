@@ -351,8 +351,10 @@ void WSearchLineEdit::restoreQuery() {
     if (index >= 0) {
         m_pCurrentFeature->restoreQuery(index);
     } else if (index == -2 && !m_pTrackCollection.isNull()) {
+        // If we don't pass a nullptr as parent it uses the parent's style sheet
+        // and the table shown is weird
         DlgSavedQueriesEditor editor(m_pCurrentFeature, 
-                                     m_pTrackCollection, this);
+                                     m_pTrackCollection, nullptr);
         editor.exec();
     }
 }
