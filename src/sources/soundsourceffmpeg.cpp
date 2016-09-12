@@ -65,13 +65,44 @@ SINT getSamplingRateOfStream(AVStream* pStream) {
 }
 
 inline
-SINT getFrameCountOfStream(AVStream* pStream) {
-    // NOTE(uklotzde): Use 64-bit integer instead of floating point calculation
-    // to minimize rounding errors
-    return (static_cast<uint64_t>(pStream->time_base.num) *
-            pStream->duration *
-            static_cast<uint64_t>(getSamplingRateOfStream(pStream))) /
-            static_cast<uint64_t>(pStream->time_base.den);
+bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
+    // NOTE(uklotzde): Use 64-bit integer instead of floating point
+    // calculations to minimize rounding errors
+    DEBUG_ASSERT(pFrameCount);
+    DEBUG_ASSERT(pStream->duration >= 0);
+    int64_t int64val = pStream->duration;
+    if (int64val <= 0) {
+        // Empty stream
+        *pFrameCount = 0;
+        return true;
+    }
+    DEBUG_ASSERT(getSamplingRateOfStream(pStream) > 0);
+    int64val *= getSamplingRateOfStream(pStream);
+    DEBUG_ASSERT_AND_HANDLE(int64val > 0) {
+        // Integer overflow
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "Integer overflow during calculation of frame count";
+        return false;
+    }
+    DEBUG_ASSERT(pStream->time_base.num > 0);
+    int64val *= pStream->time_base.num;
+    DEBUG_ASSERT_AND_HANDLE(int64val > 0) {
+        // Integer overflow
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "Integer overflow during calculation of frame count";
+        return false;
+    }
+    DEBUG_ASSERT(pStream->time_base.den > 0);
+    int64val /= pStream->time_base.den;
+    SINT frameCount = int64val;
+    DEBUG_ASSERT_AND_HANDLE(static_cast<int64_t>(frameCount) == int64val) {
+        // Integer truncation
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "Integer truncation during calculation of frame count";
+        return false;
+    }
+    *pFrameCount = frameCount;
+    return true;
 }
 
 inline
@@ -299,18 +330,35 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     m_pAudioStream.take(&pAudioStream);
 
     const SINT channelCount = getChannelCountOfStream(m_pAudioStream);
+    if (!isValidChannelCount(channelCount)) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "Stream has invalid number of channels:"
+                << channelCount;
+        return OpenResult::FAILED;
+    }
     if (channelCount > kMaxChannelCount) {
         qWarning() << "[SoundSourceFFmpeg]"
-                << "Unsupported number of channels:"
+                << "Stream has unsupported number of channels:"
                 << channelCount << ">" << kMaxChannelCount;
         return OpenResult::UNSUPPORTED_FORMAT;
     }
+
     const SINT samplingRate = getSamplingRateOfStream(m_pAudioStream);
-    const SINT frameCount = getFrameCountOfStream(m_pAudioStream);
-    qDebug() << "[SoundSourceFFmpeg]"
-            << "Number of channels:" << channelCount
-            << ", Number of sample frames:" << frameCount
-            << ", Sampling rate:" << samplingRate;
+    if (!isValidSamplingRate(samplingRate)) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "Stream has invalid sampling rate:"
+                << samplingRate;
+        return OpenResult::FAILED;
+    }
+
+    SINT frameCount = getFrameCount();
+    if (getFrameCountOfStream(m_pAudioStream, &frameCount) && isValidFrameCount(frameCount)) {
+        qWarning() << "[SoundSourceFFmpeg]"
+                << "Stream has invalid number of frames:"
+                << frameCount;
+        return OpenResult::FAILED;
+    }
+
     setChannelCount(channelCount);
     setSamplingRate(samplingRate);
     setFrameCount(frameCount);
