@@ -31,7 +31,7 @@ const char* kConfigKey = "[Mixer Profile]";
 const char* kEnableEqs = "EnableEQs";
 const char* kEqsOnly = "EQsOnly";
 const char* kSingleEq = "SingleEQEffect";
-const char* kDefaultEqId = "org.mixxx.effects.bessel8lvmixeq";
+const char* kDefaultEqId = "org.mixxx.effects.linkwitzrileyeq";
 const char* kDefaultMasterEqId = "none";
 const char* kDefaultQuickEffectId = "org.mixxx.effects.filter";
 
