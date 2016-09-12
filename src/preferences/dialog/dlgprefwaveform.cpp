@@ -158,7 +158,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Waveform caching enabled.
     enableWaveformCaching->setChecked(true);
-    enableWaveformGenerationWithAnalysis->setChecked(false);
+    enableWaveformGenerationWithAnalysis->setChecked(true);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
