@@ -800,7 +800,8 @@ void CueControl::cueDenon(double v) {
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
 
-        seekAbs(m_pCuePoint->get());
+            seekAbs(m_pCuePoint->get());
+        }
     }
 }
 
