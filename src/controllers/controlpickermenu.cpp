@@ -250,7 +250,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                  hotcueGotoTitle.arg(QString::number(i)),
                                  hotcueGotoDescription.arg(QString::number(i)),
                                  hotcueSubMenu);
-        addDeckAndSamplerC697037010c6455d49cd6458b734e4a32b08a1761ontrol(QString("hotcue_%1_gotoandstop").arg(i),
+        addDeckAndSamplerControl(QString("hotcue_%1_gotoandstop").arg(i),
                                  hotcueGotoAndStopTitle.arg(QString::number(i)),
                                  hotcueGotoAndStopDescription.arg(QString::number(i)),
                                  hotcueSubMenu);
