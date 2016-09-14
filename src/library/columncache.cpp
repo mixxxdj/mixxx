@@ -187,7 +187,7 @@ void ColumnCache::slotSetKeySortOrder(double notationValue) {
     QString keySortSQL("CASE %1_id WHEN NULL THEN 0 ");
     for (int i = 0; i <= 24; ++i) {
             keySortSQL.append(QString("WHEN %1 THEN %2 ")
-                .arg(sortOrder[i]).arg(i));
+                .arg(QString::number(sortOrder[i]), QString::number(i)));
     }
     keySortSQL.append("END");
 
