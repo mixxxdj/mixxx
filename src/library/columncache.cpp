@@ -94,12 +94,9 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE], sortNoCase);
 }
 
-void ColumnCache::slotSetKeySortOrder(double notationValue) {
-    // MSVC++ 2013 requires casting to int before enum
-    KeyUtils::KeyNotation notation = static_cast<KeyUtils::KeyNotation>(
-                                       static_cast<int>(notationValue));
+void ColumnCache::slotSetKeySortOrder(double notation) {
     std::vector<mixxx::track::io::key::ChromaticKey> sortOrder;
-    if (notation != KeyUtils::LANCELOT) {
+    if (notation != static_cast<double>(KeyUtils::LANCELOT)) {
         sortOrder = {
             mixxx::track::io::key::INVALID,
 
