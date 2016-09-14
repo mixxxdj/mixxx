@@ -18,6 +18,21 @@ class WaveformMark {
 
     explicit WaveformMark(int hotCue = kDefaultHotCue);
 
+    // Disable copying
+    WaveformMark(const WaveformMark&) = delete;
+    WaveformMark& operator=(const WaveformMark&) = delete;
+
+    // Enable swapping
+    void swap(WaveformMark& that) {
+        std::swap(m_pPointCos, that.m_pPointCos);
+        std::swap(m_properties, that.m_properties);
+        std::swap(m_iHotCue, that.m_iHotCue);
+        std::swap(m_image, that.m_image);
+    }
+    friend void swap(WaveformMark& lhs, WaveformMark& rhs) {
+        lhs.swap(rhs);
+    }
+
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
                const WaveformSignalColors& signalColors);
