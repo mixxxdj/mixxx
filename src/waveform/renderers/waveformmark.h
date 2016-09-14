@@ -14,8 +14,9 @@ class WaveformSignalColors;
 
 class WaveformMark {
   public:
-    WaveformMark();
-    WaveformMark(int hotCue);
+    static const int kDefaultHotCue = -1;
+
+    explicit WaveformMark(int hotCue = kDefaultHotCue);
 
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
