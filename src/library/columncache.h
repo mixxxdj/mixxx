@@ -5,9 +5,10 @@
 #include <QMap>
 #include <QStringList>
 
-#include "control/controlobject.h"
 #include "track/keyutils.h"
 #include "preferences/usersettings.h"
+
+class ControlProxy;
 
 // Caches the index of frequently used columns and provides a lookup-table of
 // column name to index.
@@ -72,17 +73,7 @@ class ColumnCache : public QObject {
         NUM_COLUMNS
     };
 
-    ColumnCache() { }
-    ColumnCache(const QStringList& columns) {
-        setColumns(columns);
-        m_pKeyNotation = new ControlObject(ConfigKey("[Library]", "key_notation"));
-        connect(m_pKeyNotation, SIGNAL(valueChanged(double)),
-                this, SLOT(slotSetKeySortOrder(double)));
-        slotSetKeySortOrder(static_cast<double>((KeyUtils::CUSTOM)));
-        // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
-        // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
-        // KeyUtils::CUSTOM as Mixxx is starting.
-    }
+    explicit ColumnCache(const QStringList& columns = QStringList());
 
     void setColumns(const QStringList& columns);
 
@@ -121,7 +112,7 @@ class ColumnCache : public QObject {
     int m_columnIndexByEnum[NUM_COLUMNS];
 
   private:
-    ControlObject* m_pKeyNotation;
+    ControlProxy* m_pKeyNotationCP;
 
   private slots:
     void slotSetKeySortOrder(double);

@@ -5,6 +5,18 @@
 #include "library/dao/cratedao.h"
 #include "track/keyutils.h"
 #include "track/key_preferences.h"
+#include "control/controlproxy.h"
+
+ ColumnCache::ColumnCache(const QStringList& columns) {
+    m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
+    m_pKeyNotationCP->connectValueChanged(SLOT(slotSetKeySortOrder(double)));
+
+    // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
+    // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
+    // KeyUtils::CUSTOM as Mixxx is starting.
+
+    setColumns(columns);
+}
 
 void ColumnCache::setColumns(const QStringList& columns) {
     m_columnsByIndex.clear();
@@ -92,9 +104,13 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_ARTIST], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE], sortNoCase);
+
+    slotSetKeySortOrder(m_pKeyNotationCP->get());
 }
 
 void ColumnCache::slotSetKeySortOrder(double notation) {
+    if (m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY] < 0) return;
+
     std::vector<mixxx::track::io::key::ChromaticKey> sortOrder;
     if (notation != static_cast<double>(KeyUtils::LANCELOT)) {
         sortOrder = {
