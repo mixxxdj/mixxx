@@ -96,7 +96,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
 
 void ColumnCache::slotSetKeySortOrder(double notation) {
     std::vector<mixxx::track::io::key::ChromaticKey> sortOrder;
-    if (static_cast<KeyUtils::KeyNotation>(notation) != KeyUtils::LANCELOT) {
+    if (notation != static_cast<double>(KeyUtils::LANCELOT)) {
         sortOrder = {
             mixxx::track::io::key::INVALID,
 
@@ -181,10 +181,10 @@ void ColumnCache::slotSetKeySortOrder(double notation) {
     // A custom COLLATE function was tested, but using CASE ... WHEN was found to be faster
     // see GitHub PR#649
     // https://github.com/mixxxdj/mixxx/pull/649#discussion_r34863809
-    QString keySortSQL("CASE key_id ");
+    QString keySortSQL("CASE %1_id WHEN NULL THEN 0 ");
     for (int i = 0; i <= 24; ++i) {
             keySortSQL.append(QString("WHEN %1 THEN %2 ")
-                .arg(sortOrder[i]).arg(i));
+                .arg(QString::number(sortOrder[i]), QString::number(i)));
     }
     keySortSQL.append("END");
 
