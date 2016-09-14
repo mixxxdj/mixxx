@@ -13,7 +13,8 @@ class SavedQueriesTableModel : public QSqlTableModel
                            QSqlDatabase db = QSqlDatabase());
     
     bool isColumnInternal(int column);
-    
+    QVariant data(const QModelIndex& index, int role) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
   private:
     
     LibraryFeature* m_pFeature;
