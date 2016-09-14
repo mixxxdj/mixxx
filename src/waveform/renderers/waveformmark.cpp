@@ -9,6 +9,10 @@ WaveformMark::WaveformMark(int hotCue)
     : m_iHotCue(hotCue) {
 }
 
+void WaveformMark::reset(int hotCue) {
+    WaveformMark(hotCue).swap(*this);
+}
+
 void WaveformMark::setup(const QString& group, const QDomNode& node,
                          const SkinContext& context,
                          const WaveformSignalColors& signalColors) {

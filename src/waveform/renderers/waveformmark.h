@@ -33,6 +33,8 @@ class WaveformMark {
         lhs.swap(rhs);
     }
 
+    void reset(int hotCue = kDefaultHotCue);
+
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
                const WaveformSignalColors& signalColors);
