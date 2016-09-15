@@ -816,21 +816,21 @@ void CueControl::cuePlay(double v) {
     bool playing = (m_pPlayButton->toBool());
 
     // pressed
-    if(v){
-		if (playing) {
-			m_bPreviewing = false;
-			m_pPlayButton->set(0.0);
+    if (v) {
+        if (playing) {
+            m_bPreviewing = false;
+            m_pPlayButton->set(0.0);
 
-			// Need to unlock before emitting any signals to prevent deadlock.
-			lock.unlock();
+            // Need to unlock before emitting any signals to prevent deadlock.
+            lock.unlock();
 
-			seekAbs(m_pCuePoint->get());
-		} else if (!isTrackAtCue() && getCurrentSample() <= getTotalSamples()) {
-			// Pause not at cue point and not at end position
-			cueSet(v);
-			// Just in case.
-			m_bPreviewing = false;
-		}
+            seekAbs(m_pCuePoint->get());
+        } else if (!isTrackAtCue() && getCurrentSample() <= getTotalSamples()) {
+            // Pause not at cue point and not at end position
+            cueSet(v);
+            // Just in case.
+            m_bPreviewing = false;
+        }
     } else if (isTrackAtCue()){
         m_bPreviewing = false;
         m_pPlayButton->set(1.0);
