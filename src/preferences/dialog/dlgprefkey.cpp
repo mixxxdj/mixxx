@@ -66,6 +66,8 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer _config)
     m_keyLineEdits.insert(mixxx::track::io::key::B_FLAT_MINOR, b_flat_minor_edit);
     m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
 
+    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
+
     populate();
     loadSettings();
 
@@ -119,7 +121,6 @@ void DlgPrefKey::loadSettings() {
 
     QString notation = m_pConfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION));
-    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
     if (notation == KEY_NOTATION_OPEN_KEY) {
         radioNotationOpenKey->setChecked(true);
         setNotationOpenKey(true);
