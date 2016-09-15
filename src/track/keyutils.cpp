@@ -63,7 +63,7 @@ const ChromaticKey s_letterToMajorKey[] = {
     mixxx::track::io::key::G_MAJOR
 };
 
-static const mixxx::track::io::key::ChromaticKey s_sortKeysCircleOfFifths[25] = {
+static const QList<mixxx::track::io::key::ChromaticKey> s_sortKeysCircleOfFifths {
     mixxx::track::io::key::INVALID,
 
     mixxx::track::io::key::C_MAJOR,
@@ -103,7 +103,7 @@ static const mixxx::track::io::key::ChromaticKey s_sortKeysCircleOfFifths[25] = 
     mixxx::track::io::key::D_MINOR
 };
 
-static const mixxx::track::io::key::ChromaticKey s_sortKeysCircleOfFifthsLancelot[25] = {
+static const QList<mixxx::track::io::key::ChromaticKey> s_sortKeysCircleOfFifthsLancelot {
     mixxx::track::io::key::INVALID,
 
     mixxx::track::io::key::G_SHARP_MINOR,
@@ -539,8 +539,8 @@ QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
 int KeyUtils::keyToCircleOfFithsOrder(mixxx::track::io::key::ChromaticKey key,
                                       double notationValue) {
     if (notationValue != static_cast<double>(KeyUtils::LANCELOT)) {
-      return s_sortKeysCircleOfFifths[static_cast<int>(key)];
+      return s_sortKeysCircleOfFifths.indexOf(key);
     } else {
-      return s_sortKeysCircleOfFifthsLancelot[static_cast<int>(key)];
+      return s_sortKeysCircleOfFifthsLancelot.indexOf(key);
     }
 }
