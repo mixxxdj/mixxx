@@ -5,6 +5,7 @@
 #include <QString>
 #include <QList>
 
+#include "control/controlproxy.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
 #include "util/math.h"
@@ -153,6 +154,9 @@ class KeyUtils {
                 return 0;
         }
     }
+
+    static int keyToCircleOfFithsOrder(mixxx::track::io::key::ChromaticKey key,
+                                       double notationValue);
 
   private:
     static QMutex s_notationMutex;
