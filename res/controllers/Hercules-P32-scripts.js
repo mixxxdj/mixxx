@@ -736,6 +736,7 @@ P32.EffectUnit = function (unitNumber) {
     this.switchEffect2 = function (channel, control, value, status, group) { that.switchEffect(2); };
     this.switchEffect3 = function (channel, control, value, status, group) { that.switchEffect(3); };
     this.switchEffect4 = function (channel, control, value, status, group) { that.switchEffect(4); };
+    this.switchEffect(1);
 };
 
 P32.Deck = function (deckNumbers, channel) {
