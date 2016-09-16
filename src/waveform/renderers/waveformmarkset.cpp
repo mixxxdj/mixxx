@@ -80,7 +80,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 }
 
 void WaveformMarkSet::clear() {
-    m_defaultMark = WaveformMark();
+    m_defaultMark.reset();
     m_marks.clear();
 }
 
