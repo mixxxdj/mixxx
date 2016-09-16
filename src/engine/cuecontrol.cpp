@@ -846,7 +846,7 @@ void CueControl::cueDefault(double v) {
         cueDenon(v);
     } else if (cueMode == CUE_MODE_CUP) {
         cuePlay(v);
-	} else {
+    } else {
         // The modes CUE_MODE_PIONEER and CUE_MODE_MIXXX are similar
         // are handled inside cueCDJ(v)
         // default to Pioneer mode
