@@ -89,6 +89,86 @@ const ChromaticKey s_letterToMajorKey[] = {
     mixxx::track::io::key::G_MAJOR
 };
 
+static const QList<mixxx::track::io::key::ChromaticKey> s_sortKeysCircleOfFifths {
+    mixxx::track::io::key::INVALID,
+
+    mixxx::track::io::key::C_MAJOR,
+    mixxx::track::io::key::A_MINOR,
+
+    mixxx::track::io::key::G_MAJOR,
+    mixxx::track::io::key::E_MINOR,
+
+    mixxx::track::io::key::D_MAJOR,
+    mixxx::track::io::key::B_MINOR,
+
+    mixxx::track::io::key::A_MAJOR,
+    mixxx::track::io::key::F_SHARP_MINOR,
+
+    mixxx::track::io::key::E_MAJOR,
+    mixxx::track::io::key::C_SHARP_MINOR,
+
+    mixxx::track::io::key::B_MAJOR,
+    mixxx::track::io::key::G_SHARP_MINOR,
+
+    mixxx::track::io::key::F_SHARP_MAJOR,
+    mixxx::track::io::key::E_FLAT_MINOR,
+
+    mixxx::track::io::key::D_FLAT_MAJOR,
+    mixxx::track::io::key::B_FLAT_MINOR,
+
+    mixxx::track::io::key::A_FLAT_MAJOR,
+    mixxx::track::io::key::F_MINOR,
+
+    mixxx::track::io::key::E_FLAT_MAJOR,
+    mixxx::track::io::key::C_MINOR,
+
+    mixxx::track::io::key::B_FLAT_MAJOR,
+    mixxx::track::io::key::G_MINOR,
+
+    mixxx::track::io::key::F_MAJOR,
+    mixxx::track::io::key::D_MINOR
+};
+
+static const QList<mixxx::track::io::key::ChromaticKey> s_sortKeysCircleOfFifthsLancelot {
+    mixxx::track::io::key::INVALID,
+
+    mixxx::track::io::key::G_SHARP_MINOR,
+    mixxx::track::io::key::B_MAJOR,
+
+    mixxx::track::io::key::E_FLAT_MINOR,
+    mixxx::track::io::key::F_SHARP_MAJOR,
+
+    mixxx::track::io::key::B_FLAT_MINOR,
+    mixxx::track::io::key::D_FLAT_MAJOR,
+
+    mixxx::track::io::key::F_MINOR,
+    mixxx::track::io::key::A_FLAT_MAJOR,
+
+    mixxx::track::io::key::C_MINOR,
+    mixxx::track::io::key::E_FLAT_MAJOR,
+
+    mixxx::track::io::key::G_MINOR,
+    mixxx::track::io::key::B_FLAT_MAJOR,
+
+    mixxx::track::io::key::D_MINOR,
+    mixxx::track::io::key::F_MAJOR,
+
+    mixxx::track::io::key::A_MINOR,
+    mixxx::track::io::key::C_MAJOR,
+
+    mixxx::track::io::key::E_MINOR,
+    mixxx::track::io::key::G_MAJOR,
+
+    mixxx::track::io::key::B_MINOR,
+    mixxx::track::io::key::D_MAJOR,
+
+    mixxx::track::io::key::F_SHARP_MINOR,
+    mixxx::track::io::key::A_MAJOR,
+
+    mixxx::track::io::key::C_SHARP_MINOR,
+    mixxx::track::io::key::E_MAJOR,
+};
+
 QMutex KeyUtils::s_notationMutex;
 QMap<ChromaticKey, QString> KeyUtils::s_notation;
 QMap<QString, ChromaticKey> KeyUtils::s_reverseNotation;
@@ -480,4 +560,13 @@ QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
     compatible << openKeyNumberToKey(
             openKeyNumber == 1 ? 12 : openKeyNumber - 1, major);
     return compatible;
+}
+
+int KeyUtils::keyToCircleOfFithsOrder(mixxx::track::io::key::ChromaticKey key,
+                                      double notationValue) {
+    if (notationValue != static_cast<double>(KeyUtils::LANCELOT)) {
+      return s_sortKeysCircleOfFifths.indexOf(key);
+    } else {
+      return s_sortKeysCircleOfFifthsLancelot.indexOf(key);
+    }
 }

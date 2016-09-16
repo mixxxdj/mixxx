@@ -111,96 +111,16 @@ void ColumnCache::setColumns(const QStringList& columns) {
 void ColumnCache::slotSetKeySortOrder(double notation) {
     if (m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY] < 0) return;
 
-    std::vector<mixxx::track::io::key::ChromaticKey> sortOrder;
-    if (notation != static_cast<double>(KeyUtils::LANCELOT)) {
-        sortOrder = {
-            mixxx::track::io::key::INVALID,
-
-            mixxx::track::io::key::C_MAJOR,
-            mixxx::track::io::key::A_MINOR,
-
-            mixxx::track::io::key::G_MAJOR,
-            mixxx::track::io::key::E_MINOR,
-
-            mixxx::track::io::key::D_MAJOR,
-            mixxx::track::io::key::B_MINOR,
-
-            mixxx::track::io::key::A_MAJOR,
-            mixxx::track::io::key::F_SHARP_MINOR,
-
-            mixxx::track::io::key::E_MAJOR,
-            mixxx::track::io::key::C_SHARP_MINOR,
-
-            mixxx::track::io::key::B_MAJOR,
-            mixxx::track::io::key::G_SHARP_MINOR,
-
-            mixxx::track::io::key::F_SHARP_MAJOR,
-            mixxx::track::io::key::E_FLAT_MINOR,
-
-            mixxx::track::io::key::D_FLAT_MAJOR,
-            mixxx::track::io::key::B_FLAT_MINOR,
-
-            mixxx::track::io::key::A_FLAT_MAJOR,
-            mixxx::track::io::key::F_MINOR,
-
-            mixxx::track::io::key::E_FLAT_MAJOR,
-            mixxx::track::io::key::C_MINOR,
-
-            mixxx::track::io::key::B_FLAT_MAJOR,
-            mixxx::track::io::key::G_MINOR,
-
-            mixxx::track::io::key::F_MAJOR,
-            mixxx::track::io::key::D_MINOR
-        };
-    } else {
-        sortOrder = {
-            mixxx::track::io::key::INVALID,
-
-            mixxx::track::io::key::G_SHARP_MINOR,
-            mixxx::track::io::key::B_MAJOR,
-
-            mixxx::track::io::key::E_FLAT_MINOR,
-            mixxx::track::io::key::F_SHARP_MAJOR,
-
-            mixxx::track::io::key::B_FLAT_MINOR,
-            mixxx::track::io::key::D_FLAT_MAJOR,
-
-            mixxx::track::io::key::F_MINOR,
-            mixxx::track::io::key::A_FLAT_MAJOR,
-
-            mixxx::track::io::key::C_MINOR,
-            mixxx::track::io::key::E_FLAT_MAJOR,
-
-            mixxx::track::io::key::G_MINOR,
-            mixxx::track::io::key::B_FLAT_MAJOR,
-
-            mixxx::track::io::key::D_MINOR,
-            mixxx::track::io::key::F_MAJOR,
-
-            mixxx::track::io::key::A_MINOR,
-            mixxx::track::io::key::C_MAJOR,
-
-            mixxx::track::io::key::E_MINOR,
-            mixxx::track::io::key::G_MAJOR,
-
-            mixxx::track::io::key::B_MINOR,
-            mixxx::track::io::key::D_MAJOR,
-
-            mixxx::track::io::key::F_SHARP_MINOR,
-            mixxx::track::io::key::A_MAJOR,
-
-            mixxx::track::io::key::C_SHARP_MINOR,
-            mixxx::track::io::key::E_MAJOR,
-        };
-    }
-
     // A custom COLLATE function was tested, but using CASE ... WHEN was found to be faster
     // see GitHub PR#649
     // https://github.com/mixxxdj/mixxx/pull/649#discussion_r34863809
     QString keySortSQL("CASE %1_id WHEN NULL THEN 0 ");
     for (int i = 0; i <= 24; ++i) {
-            keySortSQL.append(QString("WHEN %1 THEN %2 ")
-                .arg(QString::number(sortOrder[i]), QString::number(i)));
+        keySortSQL.append(QString("WHEN %1 THEN %2 ")
+            .arg(QString::number(i),
+                 QString::number(KeyUtils::keyToCircleOfFithsOrder(
+                                     static_cast<mixxx::track::io::key::ChromaticKey>(i),
+                                     notation))));
     }
     keySortSQL.append("END");
 
