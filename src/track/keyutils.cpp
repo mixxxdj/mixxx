@@ -7,29 +7,55 @@
 #include "track/keyutils.h"
 #include "util/math.h"
 
+#define MUSIC_FLAT_UTF8  "\xe299ad"
+#define MUSIC_SHARP_UTF8 "\xe299af"
+
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
-static const char* s_openKeyPattern = "^\\s*(1[0-2]|[1-9])([dm])\\s*$";
+static const QString s_openKeyPattern("^\\s*(1[0-2]|[1-9])([dm])\\s*$");
 
 // Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
-static const char* s_lancelotKeyPattern = "^\\s*(1[0-2]|[1-9])([ab])\\s*$";
+static const QString s_lancelotKeyPattern("^\\s*(1[0-2]|[1-9])([ab])\\s*$");
 
 // a-g followed by any number of sharps or flats, optionally followed by
 // a scale spec (m = minor, min, maj)
 // anchor the pattern so we don't get accidental sub-string matches
 // (?:or)? allows unabbreviated major|minor without capturing
-static const char* s_keyPattern = "^\\s*([a-g])([#♯b♭]*)"
-    "(min(?:or)?|maj(?:or)?|m)?\\s*$";
+static const QString s_keyPattern = QString::fromUtf8(
+        "^\\s*([a-g])([#♯b♭]*)"
+        "(min(?:or)?|maj(?:or)?|m)?\\s*$");
 
 static const QString s_sharpSymbol = QString::fromUtf8("♯");
-static const QString s_flatSymbol = QString::fromUtf8("♭");
+//static const QString s_flatSymbol = QString::fromUtf8("♭");
 
-static const char *s_traditionalKeyNames[] = {
-    "INVALID",
-    "C", "D♭", "D", "E♭", "E", "F", "F♯/G♭", "G", "A♭", "A", "B♭", "B",
-    "Cm", "C♯m", "Dm", "D♯m/E♭m", "Em", "Fm", "F♯m", "Gm", "G♯m", "Am", "B♭m", "Bm"
+static const QString s_traditionalKeyNames[] = {
+    QString::fromUtf8("INVALID"),
+    QString::fromUtf8("C"),
+    QString::fromUtf8("D♭"),
+    QString::fromUtf8("D"),
+    QString::fromUtf8("E♭"),
+    QString::fromUtf8("E"),
+    QString::fromUtf8("F"),
+    QString::fromUtf8("F♯/G♭"),
+    QString::fromUtf8("G"),
+    QString::fromUtf8("A♭"),
+    QString::fromUtf8("A"),
+    QString::fromUtf8("B♭"),
+    QString::fromUtf8("B"),
+    QString::fromUtf8("Cm"),
+    QString::fromUtf8("C♯m"),
+    QString::fromUtf8("Dm"),
+    QString::fromUtf8("D♯m/E♭m"),
+    QString::fromUtf8("Em"),
+    QString::fromUtf8("Fm"),
+    QString::fromUtf8("F♯m"),
+    QString::fromUtf8("Gm"),
+    QString::fromUtf8("G♯m"),
+    QString::fromUtf8("Am"),
+    QString::fromUtf8("B♭m"),
+    QString::fromUtf8("Bm")
 };
 
 // Maps an OpenKey number to its major and minor key.
@@ -95,7 +121,7 @@ QString KeyUtils::keyDebugName(ChromaticKey key) {
     if (!ChromaticKey_IsValid(key)) {
         key = mixxx::track::io::key::INVALID;
     }
-    return QString::fromUtf8(s_traditionalKeyNames[static_cast<int>(key)]);
+    return s_traditionalKeyNames[static_cast<int>(key)];
 }
 
 // static
@@ -139,7 +165,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
         int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
         return QString::number(number) + (major ? "B" : "A");
     } else if (notation == TRADITIONAL) {
-        return QString::fromUtf8(s_traditionalKeyNames[static_cast<int>(key)]);
+        return s_traditionalKeyNames[static_cast<int>(key)];
     }
     return keyDebugName(key);
 }
