@@ -18,9 +18,9 @@ WaveformRendererFilteredSignal::~WaveformRendererFilteredSignal() {
 }
 
 void WaveformRendererFilteredSignal::onResize() {
-    m_lowLines.resize(m_waveformRenderer->getWidth());
-    m_midLines.resize(m_waveformRenderer->getWidth());
-    m_highLines.resize(m_waveformRenderer->getWidth());
+    m_lowLines.resize(m_waveformRenderer->getLength());
+    m_midLines.resize(m_waveformRenderer->getLength());
+    m_highLines.resize(m_waveformRenderer->getLength());
 }
 
 void WaveformRendererFilteredSignal::onSetup(const QDomNode& node) {
@@ -56,34 +56,40 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
 
+    // Rotate if drawing vertical waveforms
+    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+        painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
+    }
+
     const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
     const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+            (double)m_waveformRenderer->getLength();
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
-    const float halfHeight = (float)m_waveformRenderer->getHeight()/2.0;
+    const float breadth = m_waveformRenderer->getBreadth();
+    const float halfBreadth = breadth / 2.0;
 
     const float heightFactor = m_alignment == Qt::AlignCenter
-            ? allGain*halfHeight/255.0
-            : allGain*m_waveformRenderer->getHeight()/255.0;
+            ? allGain*halfBreadth/255.0
+            : allGain*m_waveformRenderer->getBreadth()/255.0;
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
         painter->setPen(m_pColors->getAxesColor());
-        painter->drawLine(0,halfHeight,m_waveformRenderer->getWidth(),halfHeight);
+        painter->drawLine(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth);
     }
 
     int actualLowLineNumber = 0;
     int actualMidLineNumber = 0;
     int actualHighLineNumber = 0;
 
-    for (int x = 0; x < m_waveformRenderer->getWidth(); ++x) {
+    for (int x = 0; x < m_waveformRenderer->getLength(); ++x) {
         // Width of the x position in visual indices.
         const double xSampleWidth = gain * x;
 
@@ -120,7 +126,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         int visualIndexStart = visualFrameStart * 2;
         int visualIndexStop = visualFrameStop * 2;
 
-        // if (x == m_waveformRenderer->getWidth() / 2) {
+        // if (x == m_waveformRenderer->getLength() / 2) {
         //     qDebug() << "audioVisualRatio" << waveform->getAudioVisualRatio();
         //     qDebug() << "visualSampleRate" << waveform->getVisualSampleRate();
         //     qDebug() << "audioSamplesPerVisualPixel" << waveform->getAudioSamplesPerVisualSample();
@@ -150,19 +156,21 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         if (maxLow[0] && maxLow[1]) {
             switch (m_alignment) {
                 case Qt::AlignBottom :
+                case Qt::AlignRight :
                     m_lowLines[actualLowLineNumber].setLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*lowGain*(float)math_max(maxLow[0],maxLow[1])));
+                        x, breadth,
+                        x, breadth - (int)(heightFactor*lowGain*(float)math_max(maxLow[0],maxLow[1])));
                     break;
                 case Qt::AlignTop :
+                case Qt::AlignLeft :
                     m_lowLines[actualLowLineNumber].setLine(
                         x, 0,
                         x, (int)(heightFactor*lowGain*(float)math_max(maxLow[0],maxLow[1])));
                     break;
                 default :
                     m_lowLines[actualLowLineNumber].setLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxLow[0]*lowGain),
-                        x, (int)(halfHeight+heightFactor*(float)maxLow[1]*lowGain));
+                        x, (int)(halfBreadth-heightFactor*(float)maxLow[0]*lowGain),
+                        x, (int)(halfBreadth+heightFactor*(float)maxLow[1]*lowGain));
                     break;
             }
             actualLowLineNumber++;
@@ -170,19 +178,21 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         if (maxMid[0] && maxMid[1]) {
             switch (m_alignment) {
                 case Qt::AlignBottom :
+                case Qt::AlignRight :
                     m_midLines[actualMidLineNumber].setLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*midGain*(float)math_max(maxMid[0],maxMid[1])));
+                        x, breadth,
+                        x, breadth - (int)(heightFactor*midGain*(float)math_max(maxMid[0],maxMid[1])));
                     break;
                 case Qt::AlignTop :
+                case Qt::AlignLeft :
                     m_midLines[actualMidLineNumber].setLine(
                         x, 0,
                         x, (int)(heightFactor*midGain*(float)math_max(maxMid[0],maxMid[1])));
                     break;
                 default :
                     m_midLines[actualMidLineNumber].setLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxMid[0]*midGain),
-                        x, (int)(halfHeight+heightFactor*(float)maxMid[1]*midGain));
+                        x, (int)(halfBreadth-heightFactor*(float)maxMid[0]*midGain),
+                        x, (int)(halfBreadth+heightFactor*(float)maxMid[1]*midGain));
                     break;
             }
             actualMidLineNumber++;
@@ -190,19 +200,21 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         if (maxHigh[0] && maxHigh[1]) {
             switch (m_alignment) {
                 case Qt::AlignBottom :
+                case Qt::AlignRight :
                     m_highLines[actualHighLineNumber].setLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*highGain*(float)math_max(maxHigh[0],maxHigh[1])));
+                        x, breadth,
+                        x, breadth - (int)(heightFactor*highGain*(float)math_max(maxHigh[0],maxHigh[1])));
                     break;
                 case Qt::AlignTop :
+                case Qt::AlignLeft :
                     m_highLines[actualHighLineNumber].setLine(
                         x, 0,
                         x, (int)(heightFactor*highGain*(float)math_max(maxHigh[0],maxHigh[1])));
                     break;
                 default :
                     m_highLines[actualHighLineNumber].setLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxHigh[0]*highGain),
-                        x, (int)(halfHeight+heightFactor*(float)maxHigh[1]*highGain));
+                        x, (int)(halfBreadth-heightFactor*(float)maxHigh[0]*highGain),
+                        x, (int)(halfBreadth+heightFactor*(float)maxHigh[1]*highGain));
                     break;
             }
             actualHighLineNumber++;

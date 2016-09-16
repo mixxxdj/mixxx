@@ -73,6 +73,9 @@ class WaveformWidgetRenderer {
     void resize(int width, int height);
     int getHeight() const { return m_height;}
     int getWidth() const { return m_width;}
+    int getLength() const { return m_orientation == Qt::Horizontal ? m_width : m_height;}
+    int getBreadth() const { return m_orientation == Qt::Horizontal ? m_height : m_width;}
+    Qt::Orientation getOrientation() const { return m_orientation;}
     const WaveformSignalColors* getWaveformSignalColors() const { return &m_colors; };
 
     template< class T_Renderer>
@@ -88,6 +91,7 @@ class WaveformWidgetRenderer {
     const char* m_group;
     TrackPointer m_pTrack;
     QList<WaveformRendererAbstract*> m_rendererStack;
+    Qt::Orientation m_orientation;
     int m_height;
     int m_width;
     WaveformSignalColors m_colors;
