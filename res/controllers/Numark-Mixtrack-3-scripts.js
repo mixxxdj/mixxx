@@ -30,17 +30,11 @@ var PADSampleButtonHold = false;
 
 // LED Flash on Beat Active : "true": TAP LED will flash to the beat
 // if Shift Lock is enable TAP LED will remain ON
-var OnBeatActiveFlash = true; 
+var OnBeatActiveFlash = false; 
 
 // If Dark Metal Skin is used, set this to true: 
 // this is required to expand library view with DM skin.
 var DarkMetalSkin = false;
-
-// Use Beat knob to adjust Sampler Volume. 
-// If "true": Deck 1 adjusts Samplers 1-4 ; Deck 2 adjusts Samplers 5-8 
-// Shift + Beat knob moves beat grid 
-// If false; beat knob will adjust beatgrid, shift + knob will adjust grid size
-var BeatKnobAsSamplerVolume = true;
 
 //Disable Play on Sync button Double Press
 var noPlayOnSyncDoublePress = false; 
@@ -62,7 +56,12 @@ var intervalsPerRev = 1200,
     rpm = 33 + 1 / 3,  //Like a real vinyl !!! :)
     alpha = 1.0 / 8,   //Adjust to suit.
     beta = alpha / 32; //Adjust to suit.
-
+/**************************
+ * Loop Size array 
+ * first 4 values used for Autoloop Not shifted
+ * last 4 values used for Autoloop Shifted
+ **************************/    
+var loopsize = [1, 2, 4, 8, 0.125, 0.25, 0.5, 16];
 /************************  GPL v2 licence  *****************************
  * Numark Mixtrack Pro 3 controller script
  * Author: Stéphane Morin, largely based on script from Chloé AVRILLON (DJ Chloé)
@@ -148,9 +147,32 @@ var intervalsPerRev = 1200,
  *            - removed trailing empty lines at end of script
  *            - line 1749, change .75 to 0.75 in var gammaOutputRange 
  *            - added spacing in numerous place for easier reading
- *2016-09-14 (1.3 ) - Stefan Mikolajczyk - https://github.com/mixxxdj/mixxx/pull/1012
+ *2016-09-14 (1.31 ) - Stefan Mikolajczyk - https://github.com/mixxxdj/mixxx/pull/1012
  *            - changed PADLoopButton behaviour to fit native serato behaviour (2, 4, 8, 16 instead of 1/8, 1/4, 1/2, 1)
  *
+ *2016-04-08 (1.4 ) - Stéphane Morin -
+ *            - Adjusted mapping of AutoLoop to be same as Serato and Virtual DJ, 
+ *              (1, 2, 4, 8) instead of 2, 4, 8, 16 if not shifted and 0.125, 0.25, 0.5, 16 if shifted
+ *2016-08-31 (1.5 ) - Stéphane Morin -
+ *            - Bug Touch platter + wheel touch speeds up/slows down song 
+ *              when wheel not enabled (WheelMove - Jog / Pitch bend)
+ *            - Changed mapping of FX sections: 
+ *              -Strip = Parameter 1, TAP + Strip = Super knob
+ *              -Beat knob = parameter 2; TAP + Beat knob = Mix ratio
+ *              -PadModeButton + Beat knob = Sampler volumes
+ *              -Shift + BeatKnob = Beat grid move
+ *              -Correct Tap button led behavior when shift lock is active
+ *              -Remove Tap button BPM Tap mapping 
+ *2016-09-06 (1.6 ) - Stéphane Morin -
+ *              -Corrected Tap button mapping
+ *
+ *2016-09-06 (1.7 ) - Stéphane Morin - FX section rework
+ *              - Connected controls for FX buttons 
+ *              - Removed soft takeover for Super FX knob
+ *              - Removed Callback function for FX Loaded to prevent all 
+ *              - parameters from being automatically linked to Super Knob
+ *              - Added InstantFx 
+ *              - removed configuration option BeatKnobAsSamplerVolume
  * To do - (maybe..)
  * ----------------
  *            - Add script to control "volume","filterHigh","filterMid","filterLow" and"crossfader"
@@ -159,14 +181,6 @@ var intervalsPerRev = 1200,
  *              false
  *            - Add brake effect when pausing track with Play button
  *            - Add 4 deck support for script
- *            - Allow Beat knobs to control FX parameter; this button is Binary.
- *              knob has 20 notches - it sends only 1 or 127 as output.
- *              Note to developer: I considered hard using the beat knob to adjust parameterK 
- *              (Deck 1: 1st parameter of effect 1; Deck 2: 2nd parameter of effect 1) for 
- *              units 1 to 3, by selecting the target effect unit using LONG_PRESS + FX buttons 
- *              but since all but one of the 8 effects have more than 2 parameters, 
- *              I could not convince myself of the added value, since you still 
- *              need to adjust effect on the GUI.
  *
  ***********************************************************************
  *                           GPL v2 licence
@@ -901,7 +915,7 @@ NumarkMixtrack3.deck = function(deckNum) {
     this.loaded = false;
     this.LoadInitiated = false;
     this.jogWheelsInScratchMode = false;
-    this.PADMode = 0; //0=Manual Loop;1=Auto Loop; 2=Sampler ??? // Needed?
+    this.PADMode = 0; //0 = not pressed; 2 = pressed
     this.shiftKey = false;
     this.shiftLock = false;
     this.touch = false;
@@ -912,6 +926,8 @@ NumarkMixtrack3.deck = function(deckNum) {
     this.seekingfast = false;
     this.iCutStatus = false;    
     this.LEDs=[];
+    this.TapDown = false;
+    this.InstantFX = [];
     // NMTP3 is a "Model A" controller for scratching, it centers on 0.
     // See http://www.mixxx.org/wiki/doku.php/midi_scripting#scratching
     // and see "Jogger" object constructor
@@ -923,18 +939,29 @@ NumarkMixtrack3.deck.prototype.TrackIsLoaded = function() {
 };
 
 NumarkMixtrack3.deck.prototype.StripEffect = function(value, decknum) {
-    // var decknum = NumarkMixtrack3.deckFromGroup(group);
-    // var deck = NumarkMixtrack3.decks["D" + decknum];
+  var deck = NumarkMixtrack3.decks["D" + decknum];
+  var ButtonNum; 
+  var arrayLength = deck.InstantFX.length;
+  var i;
     
-    if (decknum === 1) {
-        engine.setValue("[EffectRack1_EffectUnit1]", "super1", value/127);
-        engine.setValue("[EffectRack1_EffectUnit2]", "super1", value/127);
-        engine.setValue("[EffectRack1_EffectUnit3]", "super1", value/127);
-    } else {
-        engine.setValue("[EffectRack1_EffectUnit1]", "mix", value/127);
-        engine.setValue("[EffectRack1_EffectUnit2]", "mix", value/127);
-        engine.setValue("[EffectRack1_EffectUnit3]", "mix", value/127);
-    }
+        for (i = 0; i < arrayLength; i++) { 
+        ButtonNum = deck.InstantFX[i];
+        engine.setValue("[EffectRack1_EffectUnit" + ButtonNum + "]","group_[Channel" + decknum + "]_enable",true);
+        }
+
+    
+        if (deck.TapDown) {     
+
+            engine.setValue("[EffectRack1_EffectUnit1]", "super1", value/127);  
+            engine.setValue("[EffectRack1_EffectUnit2]", "super1", value/127);  
+            engine.setValue("[EffectRack1_EffectUnit3]", "super1", value/127);  
+        }
+        if (!deck.TapDown){
+
+            engine.setParameter("[EffectRack1_EffectUnit1_Effect1]", "parameter1", value/127);
+            engine.setParameter("[EffectRack1_EffectUnit2_Effect1]", "parameter1", value/127);
+            engine.setParameter("[EffectRack1_EffectUnit3_Effect1]", "parameter1", value/127);      
+        }
 };
 
 // =====================================================================
@@ -1114,14 +1141,7 @@ NumarkMixtrack3.init = function(id,debug) {
 
     engine.softTakeover("[Master]", "crossfader", true);
     */
-    for (i = 1; i <= 4; i++) {
-        engine.softTakeover("[EffectRack1_EffectUnit" + i + "]", "super1", true);
-    }
-    
-    for (i = 1; i <= 4; i++) {
-        engine.softTakeover("[EffectRack1_EffectUnit" + i + "]", "mix", true);
-    }
-    
+	
     print("   Init Connect controls");
     // Add event listeners
     engine.connectControl("[Channel1]", "hotcue_1_enabled", function(value, group, control) {
@@ -1189,16 +1209,30 @@ NumarkMixtrack3.init = function(id,debug) {
         engine.connectControl("[Channel2]", "beatloop_" + loopsize[k] + "_enabled", "NumarkMixtrack3.OnPADLoopButtonChange");
         }
     
-    engine.connectControl("[EffectRack1_EffectUnit1_Effect1]", "loaded", function(value, group, control) {
-        NumarkMixtrack3.OnEffectLoaded(value, group, control, 1);
+   //  Connect effect enabled channel buttons
+    engine.connectControl("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", function(value, group, control) {
+        NumarkMixtrack3.OnEffectEnabled(value, group, control, 1, 1);
     });
-    engine.connectControl("[EffectRack1_EffectUnit2_Effect1]", "loaded", function(value, group, control) {
-        NumarkMixtrack3.OnEffectLoaded(value, group, control, 2);
-    });
-    engine.connectControl("[EffectRack1_EffectUnit3_Effect1]", "loaded", function(value, group, control) {
-        NumarkMixtrack3.OnEffectLoaded(value, group, control, 3);
+    
+    engine.connectControl("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", function(value, group, control) {
+        NumarkMixtrack3.OnEffectEnabled(value, group, control, 2, 1);
     });
         
+    engine.connectControl("[EffectRack1_EffectUnit3]", "group_[Channel1]_enable", function(value, group, control) {
+        NumarkMixtrack3.OnEffectEnabled(value, group, control, 3, 1);
+    });
+    engine.connectControl("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", function(value, group, control) {
+        NumarkMixtrack3.OnEffectEnabled(value, group, control, 1, 2);
+    });
+    
+    engine.connectControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", function(value, group, control) {
+        NumarkMixtrack3.OnEffectEnabled(value, group, control, 2, 2);
+    });
+        
+    engine.connectControl("[EffectRack1_EffectUnit3]", "group_[Channel2]_enable", function(value, group, control) {
+        NumarkMixtrack3.OnEffectEnabled(value, group, control, 3, 2);
+    });
+	
     for (i = 1; i <= 8; i++) {
           engine.connectControl("[Sampler" + i + "]", "play", "NumarkMixtrack3.OnSamplePlayStop");    
     }
@@ -1291,7 +1325,11 @@ NumarkMixtrack3.OnShiftButton = function(channel, control, value, status, group,
         
         // deck.shiftKey = false;
         deck.shiftLock = false;
+        if (OnBeatActiveFlash) {
         deck.LEDs.tap.onOff((value) ? ON : OFF); 
+        } else {
+        deck.LEDs.tap.onOff(OFF);  
+        }
     }
 };
 
@@ -1374,12 +1412,12 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
 NumarkMixtrack3.PadModeButton = function(channel, control, value, status, group) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
-    var loopsize = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
-    var i;
 
-NumarkMixtrack3.PadModeButton = !NumarkMixtrack3.PadModeButton;
-    
+    var i;
+    deck.PADMode = 0;
+   
     if (value === DOWN) {
+        deck.PADMode = 2;
         //ensure all LEDs are ON (default)
         if (decknum === 1) {
             NumarkMixtrack3.decks["D1"].LEDs["PADsampler1"].onOff(PADcolors.purple);
@@ -1422,9 +1460,8 @@ NumarkMixtrack3.PadModeButton = !NumarkMixtrack3.PadModeButton;
         //Sampler
         for (i = 1; i <= 8; i++) {
             engine.trigger("[Sampler" + i + "]", "play");
-        }               
-    }   
-    
+        }
+    }
 };
 
 NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
@@ -1732,7 +1769,7 @@ NumarkMixtrack3.WheelTouch = function(channel, control, value, status, group) {
         // scratch is enabled in wheel touch, we just record ticks
     } 
     
-    if (!deck.seekingfast && !deck.iCutStatus && !deck.touch) {
+    if (!deck.seekingfast && !deck.iCutStatus && !deck.touch && deck.jogWheelsInScratchMode) {
         printInfo("   WheelMove - Jog / Pitch bend");
     }
     
@@ -1740,23 +1777,28 @@ NumarkMixtrack3.WheelTouch = function(channel, control, value, status, group) {
         printInfo("   WheelMove - seekingfast = true - adjustedJog =" +adjustedJog+" value="+value);
         engine.setValue(deck.Jog.group, "beatjump", adjustedJog * 2);
     }
-        
-    engine.scratchTick(decknum, adjustedJog);
-    
-    printInfo( "engine.scratchTick("+ decknum +"," +adjustedJog+") value="+value);
-    
-    //Pitch bend when playing - side or platter have same effect        
-    if (engine.getValue(deck.Jog.group, "play")) {
-        var gammaInputRange = 13; // Max jog speed
-        var maxOutFraction = 0.8; // Where on the curve it should peak; 0.5 is half-way
-        var sensitivity = 0.5; // Adjustment gamma
-        var gammaOutputRange = 0.75; // Max rate change
+    // added condition to test to ensure wheel is ON prior to recording ticks.
+    if (deck.jogWheelsInScratchMode) {
 
-        adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(
-                adjustedJog) / (gammaInputRange * maxOutFraction),
-            sensitivity);
-        engine.setValue(deck.Jog.group, "jog", adjustedJog);
-     }
+        engine.scratchTick(decknum, adjustedJog);
+        printInfo( "engine.scratchTick("+ decknum +"," +adjustedJog+") value="+value);
+    
+
+    
+        //Pitch bend when playing - side or platter have same effect        
+        if (engine.getValue(deck.Jog.group, "play")) {
+            var gammaInputRange = 13; // Max jog speed
+            var maxOutFraction = 0.8; // Where on the curve it should peak; 0.5 is half-way
+            var sensitivity = 0.5; // Adjustment gamma
+            var gammaOutputRange = 0.75; // Max rate change
+
+            adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(
+                    adjustedJog) / (gammaInputRange * maxOutFraction),
+                sensitivity);
+            engine.setValue(deck.Jog.group, "jog", adjustedJog);
+         }
+    }
+
 };  
 
 NumarkMixtrack3.HotCueButton = function(channel, control, value, status, group) {
@@ -1814,13 +1856,14 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
     var padindex = control - leds.PADloop1 + 1;
-    var loopsize = 1;
+
     var trueFalse;
+    var loopsizeNew;
     
     if (deck.shiftKey) {
-        loopsize = Math.pow(2, padindex - 4);
+        loopsizeNew = loopsize[padindex + 3];
     } else {
-        loopsize = Math.pow(2, padindex);
+        loopsizeNew = loopsize[padindex -1];
     }
     
     var loopCommand1; //verify if loop is active
@@ -1828,13 +1871,13 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
     var loopCommand3; //stop loop
     
     if (beatlooprollActivate) {
-        loopCommand1 = "beatlooproll_" + loopsize + "_activate";
-        loopCommand2 = "beatlooproll_" + loopsize + "_activate";
-        loopCommand3 = "beatlooproll_" + loopsize + "_activate";
+        loopCommand1 = "beatlooproll_" + loopsizeNew + "_activate";
+        loopCommand2 = "beatlooproll_" + loopsizeNew + "_activate";
+        loopCommand3 = "beatlooproll_" + loopsizeNew + "_activate";
         trueFalse = false;
     } else {
-        loopCommand1 = "beatloop_" + loopsize + "_enabled";
-        loopCommand2 = "beatloop_" + loopsize + "_toggle";
+        loopCommand1 = "beatloop_" + loopsizeNew + "_enabled";
+        loopCommand2 = "beatloop_" + loopsizeNew + "_toggle";
         loopCommand3 = "reloop_exit";
         trueFalse = true;
     }
@@ -1889,12 +1932,71 @@ NumarkMixtrack3.StripTouchSearch = function(channel, control, value, status, gro
     }
 };
 
+
+NumarkMixtrack3.InstantFXOff = function(channel, control, value, status, group) {
+    var decknum = NumarkMixtrack3.deckFromGroup(group);
+    var deck = NumarkMixtrack3.decks["D" + decknum];
+    var i;
+        
+    var ButtonNum; 
+    var arrayLength = deck.InstantFX.length;
+    
+    for (i = 0; i < arrayLength; i++) { 
+    ButtonNum = deck.InstantFX[i];
+    engine.setValue("[EffectRack1_EffectUnit" + ButtonNum + "]","group_[Channel" + decknum + "]_enable",false);
+    }
+
+};
 NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
     if (!value) return;
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
     var ButtonNum = control - leds.fx1+1;
-    if (value === DOWN) {
+    var i;
+    var new_value;
+
+    if (value === DOWN && deck.TapDown) {
+    
+        if(deck.InstantFX.indexOf(ButtonNum)> -1) {
+            // we are removing the instantFX option from the selected FX button
+            // Find and remove item from an array
+            printInfo("Removing from InstantFX Deck " + decknum);
+            i = deck.InstantFX.indexOf(ButtonNum);
+                if(i != -1) {
+                    deck.InstantFX.splice(i, 1);
+                }
+                
+        if (deck.InstantFX.indexOf(ButtonNum)=== -1) {
+            new_value = engine.getValue("[EffectRack1_EffectUnit" + ButtonNum + "]","group_" + group + "_enable");
+            deck.LEDs["fx" + ButtonNum].onOff(new_value?ON:OFF);
+        }
+
+            //  deck.LEDs["fx" + ButtonNum].flashOn(250, OFF, 250);
+
+            printInfo("FX button pressed = " + ButtonNum);
+            printInfo("InstantFX array = " + deck.InstantFX);
+        } else {
+                
+            // we are adding the effect to the InstantFX list, or removing it
+            // tap + FX button enables/disables InstantFX, we check deck.TapDown to know if tap is pressed
+            //in order for FX LEDs to flas in sync, we need to loop thru the array to reset the LEDs
+            printInfo("Adding to InstantFX Deck " + decknum);
+            deck.InstantFX.push(ButtonNum);
+                        
+            // Get all LEDs to flash in sync
+            var arrayLength = deck.InstantFX.length;
+            for (i = 0; i < arrayLength; i++) { 
+            
+            ButtonNum = deck.InstantFX[i];
+            deck.LEDs["fx" + ButtonNum].flashOn(250, ON, 250);
+            printInfo("FX button pressed = " + ButtonNum);
+            //
+            }
+            printInfo("InstantFX array = " + deck.InstantFX);
+        }   
+        
+    } else if (value === DOWN && !deck.TapDown) {
+        
         if (deck.shiftKey) {
             // Select Effect 
             if (decknum===1) {
@@ -1903,12 +2005,17 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
                 engine.setValue("[EffectRack1_EffectUnit" + ButtonNum + "]", "next_chain", true);
             }
         } else {
-            // Toggle effect            
-            var new_value = !engine.getValue("[EffectRack1_EffectUnit" + ButtonNum + "]","group_" + group + "_enable");
-            engine.setValue("[EffectRack1_EffectUnit" + ButtonNum + "]","group_" + group + "_enable",new_value);
-            deck.LEDs["fx" + ButtonNum].onOff(new_value?ON:OFF);
-        }
-    }
+            // Toggle effect if InstantFX is not active
+            if (deck.InstantFX.indexOf(ButtonNum)=== -1) {
+
+                new_value = !engine.getValue("[EffectRack1_EffectUnit" + ButtonNum + "]","group_" + group + "_enable");
+                engine.setValue("[EffectRack1_EffectUnit" + ButtonNum + "]","group_" + group + "_enable",new_value);
+                deck.LEDs["fx" + ButtonNum].onOff(new_value?ON:OFF);    
+                
+            }
+        }           
+    }   
+
 }; 
 
 /******************     Shift Button :
@@ -1991,131 +2098,165 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     var gainValue = [];
     var i,j;
     var knobValue;
-    
-    if (!BeatKnobAsSamplerVolume) {
-        // Default configuration option, use knob for Beatgrid only
+        
+    if (deck.PADMode !== 2) {
+        // Default mode, direct interaction with knob, without any button combination
+        for (i = 1; i <= 3; i++) {
+            
+            if (deck.TapDown) {
+                gainValue[i-1] = engine.getParameter("[EffectRack1_EffectUnit" + [i] + "]", "mix");  
+            } else {
+                gainValue[i-1] = engine.getParameter("[EffectRack1_EffectUnit" + [i] + "_Effect1]", "parameter2");
+            }
+            
+            // increment value between 0 and 1
+            gainIncrement = 1/20;  // 20 increments in one full knob turn   
+
+            // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
+            if (value === 127) {
+                gainIncrement = - gainIncrement;
+            }   
+                            
+            gainValue[i-1] = gainValue[i-1] + gainIncrement;
+
+            if ((gainValue[i-1] + gainIncrement) <0) {
+                gainValue[i-1] = 0;
+            }
+            
+            if ((gainValue[i-1] + gainIncrement) >1) {
+                gainValue[i-1] = 1;
+            }
+                
+        }
+
+    // we adjust pregain with adjusted value
+        for (i = 1; i <= 4; i++) {  
+            if (gainValue[i-1] >=0 && gainValue[i-1] <= 4) { 
+                if (deck.TapDown) {     
+                    engine.setParameter("[EffectRack1_EffectUnit" + [i] + "]", "mix", gainValue[i-1]); 
+                } else {
+                    engine.setParameter("[EffectRack1_EffectUnit" + [i] + "_Effect1]", "parameter2", gainValue[i-1]); 
+                }
+            }
+        }
+    }
+          
+    if (deck.shiftKey) {    
+
         if (value-64 > 0) {
             knobValue = value-128;
         } else {
             knobValue = value;
         }
 
-        if (deck.shiftKey) {  
-            if (knobValue<0) {
-                engine.setValue(group, "beats_adjust_slower", true);
-            } else {
-                engine.setValue(group, "beats_adjust_faster", true);
-            }
+        if (knobValue<0) {
+            engine.setValue(group, "beats_translate_earlier", true);
         } else {
-            if (knobValue<0) {
-                engine.setValue(group, "beats_translate_earlier", true);
-            } else {
-                engine.setValue(group, "beats_translate_later", true);
-            }
+            engine.setValue(group, "beats_translate_later", true);
         }
-    
-    } else {
-        // Option: use BeatKnob to adjust Sampler volumes
-        if (deck.shiftKey) {    
-            if (value-64 > 0) {
-                knobValue = value-128;
-            } else {
-                knobValue = value;
-            }
+    } 
+        
+    if (deck.PADMode === 2) {
+        // PadMode button is used, Shift key is not used, we adjust Sampler volumes
+        // Define new value of sampler pregain
+        // Off = 1, centered = 1, max = 4
+        if (decknum === 1) {
             
-            if (knobValue<0) {
-                engine.setValue(group, "beats_translate_earlier", true);
-            } else {
-                engine.setValue(group, "beats_translate_later", true);
+            for (i = 1; i <= 4; i++) {
+                gainValue[i-1] = engine.getValue("[Sampler" + [i] + "]", "pregain");    
+                
+                if (gainValue[i-1] <= 1) { 
+                    // increment value between 0 and 1
+                    gainIncrement = 1/20;  // 20 increments in one full knob turn   
+                }else{
+                    // increment value between 1 and 4
+                    gainIncrement = 3/20;  // 20 increments in one full knob turn
+                }
+                
+                // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
+                if (value === 127) {
+                    gainIncrement = - gainIncrement;
+                }   
+                                
+                gainValue[i-1] = gainValue[i-1] + gainIncrement;
+
+                if ((gainValue[i-1] + gainIncrement) <0) {
+                    gainValue[i-1] = 0;
+                }
+                
+                if ((gainValue[i-1] + gainIncrement) >4) {
+                    gainValue[i-1] = 4;
+                }
+            }
+
+        } else {
+
+            for (j = 5; j <= 8; j++) {
+                gainValue[j-1] = engine.getValue("[Sampler" + [j] + "]", "pregain");    
+            
+                if (gainValue[j-1] <= 1) { 
+                    // increment value between 0 and 1
+                    gainIncrement = 1/20;  // 20 increments in one full knob turn   
+                }else{
+
+                    // increment value between 1 and 4
+                    gainIncrement = 3/20;  // 20 increments in one full knob turn
+                }
+                
+                // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
+                if (value === 127) {
+                    gainIncrement = - gainIncrement;
+                }   
+                
+                gainValue[j-1] = gainValue[j-1] + gainIncrement;
+
+                if ((gainValue[j-1] + gainIncrement) <0) {
+                    gainValue[j-1] = 0;
+                }
+             
+                if ((gainValue[j-1] + gainIncrement) >4) {
+                    gainValue[j-1] = 4;
+                }           
+            }   
+        }
+
+        // we adjust pregain with adjusted value
+        if (decknum === 1) {
+            for (i = 1; i <= 4; i++) {  
+                if (gainValue[i-1] >=0 && gainValue[i-1] <= 4) {  
+                    engine.setValue("[Sampler" + i + "]", "pregain", gainValue[i-1]);   
+                }
             }
         } else {
-            // Shift key is not used, we adjust Sampler volumes
-            // Define new value of sampler pregain
-            // Off = 1, centered = 1, max = 4
-            if (decknum === 1) {
-                for (i = 1; i <= 4; i++) {
-                    gainValue[i-1] = engine.getValue("[Sampler" + [i] + "]", "pregain");    
-                    
-                    if (gainValue[i-1] <= 1) { 
-                        // increment value between 0 and 1
-                        gainIncrement = 1/20;  // 20 increments in one full knob turn   
-                    }else{
-                        // increment value between 1 and 4
-                        gainIncrement = 3/20;  // 20 increments in one full knob turn
-                    }
-                    
-                    // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
-                    if (value === 127) {
-                        gainIncrement = - gainIncrement;
-                    }   
-                                    
-                    gainValue[i-1] = gainValue[i-1] + gainIncrement;
+            for (i = 5; i <= 8; i++) {
+                if (gainValue[i-1] >= 0 && gainValue[i-1] <= 4) { 
+                    engine.setValue("[Sampler" + i + "]", "pregain", gainValue[i-1]);   
 
-                    if ((gainValue[i-1] + gainIncrement) <0) {
-                        gainValue[i-1] = 0;
-                    }
-                    
-                    if ((gainValue[i-1] + gainIncrement) >4) {
-                        gainValue[i-1] = 4;
-                    }
-                        
                 }
-            } else {
-                for (j = 5; j <= 8; j++) {
-                    gainValue[j-1] = engine.getValue("[Sampler" + [j] + "]", "pregain");    
-                
-                    if (gainValue[j-1] <= 1) { 
-                        // increment value between 0 and 1
-                        gainIncrement = 1/20;  // 20 increments in one full knob turn   
-                    }else{
-                        // increment value between 1 and 4
-                        gainIncrement = 3/20;  // 20 increments in one full knob turn
-                    }
-                    
-                    // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
-                    if (value === 127) {
-                        gainIncrement = - gainIncrement;
-                    }   
-                    
-                    gainValue[j-1] = gainValue[j-1] + gainIncrement;
-
-                    if ((gainValue[j-1] + gainIncrement) <0) {
-                        gainValue[j-1] = 0;
-                    }
-                    
-                    if ((gainValue[j-1] + gainIncrement) >4) {
-                        gainValue[j-1] = 4;
-                    }           
-                }   
-            }
-
-            // we adjust pregain with adjusted value
-            if (decknum === 1) {
-                for (i = 1; i <= 4; i++) {  
-                    if (gainValue[i-1] >=0 && gainValue[i-1] <= 4) {  
-                        engine.setValue("[Sampler" + i + "]", "pregain", gainValue[i-1]);   
-                    }
-                }
-            } else {
-                for (i = 5; i <= 8; i++) {
-                    if (gainValue[i-1] >= 0 && gainValue[i-1] <= 4) { 
-                        engine.setValue("[Sampler" + i + "]", "pregain", gainValue[i-1]);   
-                    }
-                }   
             }
         }
     }
 };
-
 NumarkMixtrack3.bpmTap  = function(channel, control, value, status, group) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
-
+    
     if (value===DOWN) {
+        deck.TapDown = true;
+        bpm.tapButton(decknum);
         engine.setValue(group, "bpm_tap", true);
+        deck.LEDs.tap.onOff(ON);
     } else {
+        deck.TapDown = false;
         engine.setValue(group, "bpm_tap", false);
-    }   
+    
+        if (!deck.shiftKey) {
+            deck.LEDs.tap.onOff(OFF);
+        }
+        if (!deck.shiftKey && OnBeatActiveFlash) {
+            deck.LEDs.tap.onOff((value) ? ON : OFF);
+        }        
+    }
 };
 
 // ************************ Connected controls
@@ -2283,26 +2424,13 @@ NumarkMixtrack3.OnLoopInOutChange = function(value, group, key) {
     }    
 };
 
-NumarkMixtrack3.OnEffectLoaded = function(value, group, control, index) {
-    var i;
-    var parameterlinkedcount = 0;
-    var linktype = 0;
-    if (value) {
-        var numparams = engine.getValue("[EffectRack1_EffectUnit" + index + "_Effect1]", "num_parameters");
-        if (numparams > 0) {
-            for (i = 1; i <= numparams; i++) {
-                linktype = engine.getValue("[EffectRack1_EffectUnit" + index + "_Effect1]", "parameter" + i + "_link_type");
-                if (linktype !== 0) {
-                    parameterlinkedcount += 1;
-                }
-            }
+NumarkMixtrack3.OnEffectEnabled = function(value, group, control, index, decknum) {
+    var deck = NumarkMixtrack3.decks["D" + decknum];
+
+        if (deck.InstantFX.indexOf(index)=== -1) {
+            var new_value = engine.getValue(group,control);
+            deck.LEDs["fx" + index].onOff(new_value?ON:OFF);
         }
-        if (parameterlinkedcount === 0) {
-            for (i = 1; i <= numparams; i++) {
-                engine.setValue("[EffectRack1_EffectUnit" + index + "_Effect1]", "parameter" + i + "_link_type", 1);
-            }
-        }
-    }
 };
 
 NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
@@ -2317,7 +2445,6 @@ NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
 };
 
 NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {   
-    var loopsize = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
     var l;
@@ -2330,10 +2457,8 @@ NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {
                 index = l+1;
                 if (index >4) {
                     index = index - 4;
-                }
-                    
-                deck.LEDs["PADloop" + index].flashOn(300, PADcolors.yellow, 300);
-                
+                }              
+                deck.LEDs["PADloop" + index].flashOn(300, PADcolors.yellow, 300);             
             }
         }
     } else {
@@ -2344,11 +2469,9 @@ NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {
                 index = l+1;
                     if (index >4) {
                         index = index - 4;
-                    }
-                
+                    }  
                 deck.LEDs["PADloop"+ index].onOff(PADcolors.yellow);
             } 
         }
-    }
-        
+    }     
 };
