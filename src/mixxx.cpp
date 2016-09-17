@@ -36,7 +36,7 @@
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "controllers/controllermanager.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "controllers/keyboard/keyboardshortcutsupdater.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
 #include "broadcast/broadcastmanager.h"
@@ -97,6 +97,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pVCManager(nullptr),
 #endif
           m_pKeyboard(nullptr),
+          m_pKbdShortcutsUpdater(nullptr),
           m_pLibrary(nullptr),
           m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
@@ -119,7 +120,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
 
-    initializeKeyboard();
+    // Initialize keyboard event filter
+    m_pKeyboard = new KeyboardEventFilter();
+
+    m_pKbdShortcutsUpdater = new KeyboardShortcutsUpdater();
 
     // Menubar depends on translations.
     mixxx::Translations::initializeTranslations(
@@ -162,6 +166,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<ConfigKey>("ConfigKey");
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
@@ -298,7 +303,16 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // but do not set up controllers until the end of the application startup
     // (long)
     qDebug() << "Creating ControllerManager";
-    m_pControllerManager = new ControllerManager(pConfig);
+    m_pControllerManager = new ControllerManager(pConfig, m_pKeyboard);
+
+    connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(KeyboardControllerPresetPointer)),
+            m_pKbdShortcutsUpdater, SLOT(slotUpdateShortcuts(KeyboardControllerPresetPointer)));
+
+    connect(m_pControllerManager, SIGNAL(keyboardPresetChanged(KeyboardControllerPresetPointer)),
+            m_pSkinLoader->getTooltipUpdater(), SLOT(updateShortcuts(KeyboardControllerPresetPointer)));
+
+    connect(m_pControllerManager, SIGNAL(keyboardEnabled(bool)),
+            this, SLOT(slotToggleKeyboard(bool)));
 
     launchProgress(47);
 
@@ -612,52 +626,6 @@ void MixxxMainWindow::initializeWindow() {
     slotUpdateWindowTitle(TrackPointer());
 }
 
-void MixxxMainWindow::initializeKeyboard() {
-    UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    QString resourcePath = pConfig->getResourcePath();
-
-    // Set the default value in settings file
-    if (pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
-        pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
-
-    // Read keyboard configuration and set kdbConfig object in WWidget
-    // Check first in user's Mixxx directory
-    QString userKeyboard = QDir(m_cmdLineArgs.getSettingsPath()).filePath("Custom.kbd.cfg");
-
-    // Empty keyboard configuration
-    m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>(QString());
-
-    if (QFile::exists(userKeyboard)) {
-        qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
-        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
-    } else {
-        // Default to the locale for the main input method (e.g. keyboard).
-        QLocale locale = inputLocale();
-
-        // check if a default keyboard exists
-        QString defaultKeyboard = QString(resourcePath).append("keyboard/");
-        defaultKeyboard += locale.name();
-        defaultKeyboard += ".kbd.cfg";
-
-        if (!QFile::exists(defaultKeyboard)) {
-            qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
-            defaultKeyboard = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
-            if (!QFile::exists(defaultKeyboard)) {
-                qDebug() << defaultKeyboard << " not found, starting without shortcuts";
-                defaultKeyboard = "";
-            }
-        }
-        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(defaultKeyboard);
-    }
-
-    // TODO(XXX) leak pKbdConfig, KeyboardEventFilter owns it? Maybe roll all keyboard
-    // initialization into KeyboardEventFilter
-    // Workaround for today: KeyboardEventFilter calls delete
-    bool keyboardShortcutsEnabled = pConfig->getValueString(
-        ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
-}
-
 int MixxxMainWindow::noSoundDlg(void) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
@@ -790,9 +758,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
-    DEBUG_ASSERT(m_pKbdConfig != nullptr);
-    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(),
-                                  m_pKbdConfig);
+    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(), m_pKbdShortcutsUpdater);
     setMenuBar(m_pMenuBar);
 }
 
@@ -816,7 +782,7 @@ void MixxxMainWindow::connectMenuBar() {
 
     // Keyboard shortcuts
     connect(m_pMenuBar, SIGNAL(toggleKeyboardShortcuts(bool)),
-            this, SLOT(slotOptionsKeyboard(bool)));
+            this, SLOT(slotToggleKeyboard(bool)));
 
     // Help
     connect(m_pMenuBar, SIGNAL(showAbout()),
@@ -918,17 +884,28 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
 }
 
 
-void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
+void MixxxMainWindow::slotToggleKeyboard(bool enabled) {
+    qDebug() << "MixxxMainWindow::slotToggleKeyboard";
+
+    // Update mixxx.cfg
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    if (toggle) {
-        //qDebug() << "Enable keyboard shortcuts/mappings";
-        m_pKeyboard->setKeyboardConfig(m_pKbdConfig);
-        pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
+    pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(enabled ? 1 : 0));
+
+    KeyboardControllerPointer pKeyboardController = m_pControllerManager->getKeyboardController();
+    bool isOpen = pKeyboardController->isOpen();
+
+    // Update keyboard controller
+    if (enabled) {
+        if (!isOpen) m_pControllerManager->openController(pKeyboardController.data());
     } else {
-        //qDebug() << "Disable keyboard shortcuts/mappings";
-        m_pKeyboard->setKeyboardConfig(m_pKbdConfigEmpty);
-        pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(0));
+        if (isOpen) m_pControllerManager->closeController(pKeyboardController.data());
     }
+
+    // Update menu bar "Enable Keyboard Shortcuts" checkbox
+    m_pMenuBar->onKeyboardEnabled(enabled);
+
+    // Update highlighted label in controller preferences
+    m_pPrefDlg->slotKeyboardEnabled(enabled);
 }
 
 void MixxxMainWindow::slotDeveloperTools(bool visible) {

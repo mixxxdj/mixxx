@@ -54,6 +54,10 @@ void DlgPrefControllers::slotCancel() {
     }
 }
 
+void DlgPrefControllers::slotKeyboardEnabled(bool enabled) {
+    slotHighlightDevice(m_pKbdPrefController, enabled);
+}
+
 void DlgPrefControllers::slotApply() {
     // Update our sub-windows.
     foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
@@ -102,6 +106,8 @@ void DlgPrefControllers::destroyControllerWidgets() {
     }
 }
 
+// TODO(Tomasito) This function is called twice at startup, find out why.
+// ...            Shouldn't it be just called once?
 void DlgPrefControllers::setupControllerWidgets() {
     // For each controller, create a dialog and put a little link to it in the
     // treepane on the left.
@@ -109,7 +115,9 @@ void DlgPrefControllers::setupControllerWidgets() {
             m_pControllerManager->getControllerList(false, true);
     qSort(controllerList.begin(), controllerList.end(), controllerCompare);
 
-    foreach (Controller* pController, controllerList) {
+    Controller* pKbdController = m_pControllerManager->getKeyboardController().data();
+
+    for (Controller* pController : controllerList) {
         DlgPrefController* controllerDlg = new DlgPrefController(
             this, pController, m_pControllerManager, m_pConfig);
         connect(controllerDlg, SIGNAL(mappingStarted()),
@@ -136,6 +144,10 @@ void DlgPrefControllers::setupControllerWidgets() {
         QFont temp = controllerWindowLink->font(0);
         temp.setBold(pController->isOpen());
         controllerWindowLink->setFont(0, temp);
+
+        if (pController == pKbdController) {
+            m_pKbdPrefController = controllerDlg;
+        }
     }
 
     // If no controllers are available, show the "No controllers available"

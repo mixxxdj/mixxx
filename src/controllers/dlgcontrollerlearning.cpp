@@ -370,6 +370,12 @@ void DlgControllerLearning::commitMapping() {
     emit(inputMappingsLearned(m_mappings));
 }
 
+void DlgControllerLearning::visit(KeyboardController* pKeyboardController) {
+    // TODO(Tomasito) Check if we can use the Dlg Controller Learning wizzard for keyboards
+    qWarning() << "ERROR: DlgControllerLearning does not support Keyboards.";
+    Q_UNUSED(pKeyboardController);
+}
+
 void DlgControllerLearning::visit(MidiController* pMidiController) {
     m_pMidiController = pMidiController;
 

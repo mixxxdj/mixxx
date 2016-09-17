@@ -79,6 +79,7 @@ class ConfigValue {
 
     QString value;
     friend bool operator==(const ConfigValue& s1, const ConfigValue& s2);
+    friend bool operator!=(const ConfigValue& s1, const ConfigValue& s2);
 };
 
 inline uint qHash(const ConfigValue& key) {
@@ -95,6 +96,7 @@ class ConfigValueKbd : public ConfigValue {
     }
     void valCopy(const ConfigValueKbd& v);
     friend bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2);
+    friend bool operator!=(const ConfigValueKbd& s1, const ConfigValueKbd& s2);
 
     QKeySequence m_qKey;
 };

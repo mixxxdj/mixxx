@@ -68,6 +68,9 @@ class WPushButton : public WWidget {
     // associated pixmaps.
     void setStates(int iStates);
 
+    virtual WidgetTooltipWatcher* createTooltipWatcher(QList<ConfigKey> configKeys) override;
+
+
   signals:
     void displayValueChanged(int value);
 

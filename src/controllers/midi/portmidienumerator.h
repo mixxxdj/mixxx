@@ -16,7 +16,7 @@ class PortMidiEnumerator : public MidiEnumerator {
     PortMidiEnumerator();
     virtual ~PortMidiEnumerator();
 
-    QList<Controller*> queryDevices();
+    QList<Controller*> queryDevices() override;
 
   private:
     QList<Controller*> m_devices;

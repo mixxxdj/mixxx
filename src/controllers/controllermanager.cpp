@@ -57,7 +57,7 @@ bool controllerCompare(Controller *a,Controller *b) {
     return a->getName() < b->getName();
 }
 
-ControllerManager::ControllerManager(UserSettingsPointer pConfig)
+ControllerManager::ControllerManager(UserSettingsPointer pConfig, KeyboardEventFilter* pKeyboard)
         : QObject(),
           m_pConfig(pConfig),
           // WARNING: Do not parent m_pControllerLearningEventFilter to
@@ -65,8 +65,10 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           // its own event loop.
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
           m_pollTimer(this),
-          m_skipPoll(false) {
+          m_skipPoll(false),
+          m_pKeyboard(pKeyboard) {
     qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
+    qRegisterMetaType<KeyboardControllerPresetPointer>("KeyboardControllerPresetPointer");
 
     // Create controller mapping paths in the user's home directory.
     QString userPresets = userPresetsPath(m_pConfig);
@@ -150,7 +152,7 @@ void ControllerManager::slotShutdown() {
     locker.unlock();
 
     // Delete enumerators and they'll delete their Devices
-    foreach (ControllerEnumerator* pEnumerator, enumerators) {
+    for (ControllerEnumerator* pEnumerator: enumerators) {
         delete pEnumerator;
     }
 
@@ -168,13 +170,23 @@ void ControllerManager::updateControllerList() {
     locker.unlock();
 
     QList<Controller*> newDeviceList;
-    foreach (ControllerEnumerator* pEnumerator, enumerators) {
+    for (ControllerEnumerator* pEnumerator: enumerators) {
         newDeviceList.append(pEnumerator->queryDevices());
     }
+
+    // Since there is only one KeyboardController, it is not
+    // enumerated by an enumerator but added directly here.
+    KeyboardControllerPointer pKbdController(new KeyboardController(m_pKeyboard));
+    newDeviceList.prepend(pKbdController.data());
 
     locker.relock();
     if (newDeviceList != m_controllers) {
         m_controllers = newDeviceList;
+        m_pKeyboardController = pKbdController;
+        connect(m_pKeyboardController.data(), SIGNAL(keyboardControllerPresetLoaded(KeyboardControllerPresetPointer)),
+                this, SIGNAL(keyboardPresetChanged(KeyboardControllerPresetPointer)));
+        connect(m_pKeyboardController.data(), SIGNAL(enabled(bool)),
+                this, SIGNAL(keyboardEnabled(bool)));
         locker.unlock();
         emit(devicesChanged());
     }
@@ -196,13 +208,17 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     // options.
     QList<Controller*> filteredDeviceList;
 
-    foreach (Controller* device, controllers) {
+    for (Controller* device: controllers) {
         if ((bOutputDevices == device->isOutputDevice()) ||
             (bInputDevices == device->isInputDevice())) {
             filteredDeviceList.push_back(device);
         }
     }
     return filteredDeviceList;
+}
+
+KeyboardControllerPointer ControllerManager::getKeyboardController() {
+    return m_pKeyboardController;
 }
 
 void ControllerManager::slotSetUpDevices() {
@@ -213,7 +229,7 @@ void ControllerManager::slotSetUpDevices() {
 
     QSet<QString> filenames;
 
-    foreach (Controller* pController, deviceList) {
+    for (Controller* pController: deviceList) {
         QString name = pController->getName();
 
         if (pController->isOpen()) {
@@ -267,7 +283,7 @@ void ControllerManager::maybeStartOrStopPolling() {
     locker.unlock();
 
     bool shouldPoll = false;
-    foreach (Controller* pController, controllers) {
+    for (Controller* pController: controllers) {
         if (pController->isOpen() && pController->isPolling()) {
             shouldPoll = true;
         }
@@ -321,7 +337,7 @@ void ControllerManager::pollDevices() {
     }
 
     mixxx::Duration start = mixxx::Time::elapsed();
-    foreach (Controller* pDevice, m_controllers) {
+    for (Controller* pDevice: m_controllers) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }
@@ -388,7 +404,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
     // TODO(rryan): This should be split up somehow but the filename selection
     // is dependent on all of the controllers to prevent over-writing each
     // other. We need a better solution.
-    foreach (Controller* pController, deviceList) {
+    for (Controller* pController: deviceList) {
         if (onlyActive && !pController->isOpen()) {
             continue;
         }
@@ -441,7 +457,7 @@ QString ControllerManager::getAbsolutePath(const QString& pathOrFilename,
         return pathOrFilename;
     }
 
-    foreach (const QString& path, paths) {
+    for (const QString& path: paths) {
         QDir pathDir(path);
 
         if (pathDir.exists(pathOrFilename)) {

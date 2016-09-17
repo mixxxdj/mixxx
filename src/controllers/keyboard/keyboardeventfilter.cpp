@@ -1,30 +1,27 @@
 #include <QList>
 #include <QtDebug>
 #include <QKeyEvent>
-#include <QEvent>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "control/controlobject.h"
 #include "util/cmdlineargs.h"
 
-KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
-                                         QObject* parent, const char* name)
+KeyboardEventFilter::KeyboardEventFilter(QObject* parent, const char* name)
         : QObject(parent),
-          m_pKbdConfigObject(NULL) {
+          m_previousLayoutName(inputLocale().name()) {
     setObjectName(name);
-    setKeyboardConfig(pKbdConfigObject);
 }
 
 KeyboardEventFilter::~KeyboardEventFilter() {
 }
 
 bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
+    // TODO(Tomasito) Also clear active key list when keyboard controller disabled
     if (e->type() == QEvent::FocusOut) {
         // If we lose focus, we need to clear out the active key list
         // because we might not get Key Release events.
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
-        QKeyEvent* ke = (QKeyEvent *)e;
+        QKeyEvent* ke = static_cast<QKeyEvent*>(e);
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
@@ -38,45 +35,61 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
         // Run through list of active keys to see if the pressed key is already active
         // Just for returning true if we are consuming this key event
-
-        foreach (const KeyDownInformation& keyDownInfo, m_qActiveKeyList) {
+        for (const KeyDownInformation& keyDownInfo: m_qActiveKeyList) {
             if (keyDownInfo.keyId == keyId) {
                 return true;
             }
         }
 
-        QKeySequence ks = getKeySeq(ke);
+        if (CmdlineArgs::Instance().getDeveloper()) {
+            qDebug() << "keyboard press: " << QKeySequence(ke->key()).toString();
+        }
+
+        QString ks = getKeySeq(ke);
+        emit keyseqPressed(ks);
+
+        // If no key-mapping info is known, there is nothing to check
+        if (m_kbdPreset.isNull()) {
+            return false;
+        }
+
         if (!ks.isEmpty()) {
-            ConfigValueKbd ksv(ks);
             // Check if a shortcut is defined
             bool result = false;
-            // using const_iterator here is faster than QMultiHash::values()
-            for (QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator it =
-                         m_keySequenceToControlHash.find(ksv);
-                 it != m_keySequenceToControlHash.end() && it.key() == ksv; ++it) {
-                const ConfigKey& configKey = it.value();
-                if (configKey.group != "[KeyboardShortcuts]") {
-                    ControlObject* control = ControlObject::getControl(configKey);
-                    if (control) {
-                        //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
-                        // Add key to active key list
-                        m_qActiveKeyList.append(KeyDownInformation(
-                            keyId, ke->modifiers(), control));
-                        // Since setting the value might cause us to go down
-                        // a route that would eventually clear the active
-                        // key list, do that last.
-                        control->setValueFromMidi(MIDI_NOTE_ON, 1);
-                        result = true;
-                    } else {
-                        qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
-                                 << configKey.group << configKey.item;
-                    }
+
+            // NOTE: Using const_iterator here is faster than QMultiHash::values()
+            QMultiHash<QString, ConfigKey> mapping = m_kbdPreset->m_mapping;
+            QMultiHash<QString, ConfigKey>::const_iterator iterator;
+            for (iterator = mapping.find(ks); iterator != mapping.end(); ++iterator) {
+
+                // NOTE: We are not breaking here because there could
+                // potentially be another action mapped to the same
+                // key sequence further down the hash table
+                if (iterator.key() != ks) {
+                    continue;
+                }
+
+                const ConfigKey& configKey = iterator.value();
+                // These shortcuts are bound directly to QActions in WMainMenuBar::initialize()
+                // and are updated in KeyboardShortcutsUpdater
+                if (configKey.group == "[KeyboardShortcuts]") continue;
+
+                ControlObject* control = ControlObject::getControl(configKey);
+                if (control) {
+                    // Add key to active key list
+                    m_qActiveKeyList.append(KeyDownInformation(
+                        keyId, ke->modifiers(), control));
+                    emit controlKeySeqPressed(configKey);
+                    result = true;
+                } else {
+                    qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
+                             << configKey.group << configKey.item;
                 }
             }
             return result;
         }
     } else if (e->type()==QEvent::KeyRelease) {
-        QKeyEvent* ke = (QKeyEvent*)e;
+        QKeyEvent* ke = static_cast<QKeyEvent*>(e);
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty
@@ -119,53 +132,65 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     } else if (e->type() == QEvent::KeyboardLayoutChange) {
         // This event is not fired on ubunty natty, why?
         // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
-        //qDebug() << "QEvent::KeyboardLayoutChange";
+
+        // TODO(Tomasito) Event is not fired when Mixxx has no focus. So, if a user loses focus on Mixxx,
+        // ...            changes the keyboard layout and gets back to Mixxx, the keyboard mapping will not
+        // ...            be translated to his current locale: Add a check on focusInEvent (on MixxxMainWindow)
+
+        QString layoutName = inputLocale().name();
+        if (layoutName != m_previousLayoutName) {
+            qDebug() << "QEvent::KeyboardLayoutChange" << layoutName;
+            emit keyboardLayoutChanged(layoutName);
+            m_previousLayoutName = layoutName;
+        }
     }
     return false;
 }
 
-QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
-    QString modseq;
-    QKeySequence k;
+QString KeyboardEventFilter::getKeySeq(QKeyEvent* e) const {
+    QString mods;
+    QString keyText = e->text();
 
-    // TODO(XXX) check if we may simply return QKeySequence(e->modifiers()+e->key())
+    // Return unicode text that was generated by this key-press if
+    // no modifiers were applied to this key
+    if (!e->modifiers() && !keyText.isEmpty()) {
 
-    if (e->modifiers() & Qt::ShiftModifier)
-        modseq += "Shift+";
+        // Some keys do have a valid unicode position (keyText not empty), but would
+        // be tricky to map on. Example: "Ctrl+ " for mapping to Ctrl+Space. In this
+        // case we return a string representation of a QKeySequence, which will
+        // return the key-name ("Tab", "Backspace" or "Space").
+        int key = e->key();
+        switch (key) {
+            case Qt::Key_Tab:
+            case Qt::Key_Backspace:
+            case Qt::Key_Space:
+                return QKeySequence(key).toString();
+            default:
+                break;
+        }
 
-    if (e->modifiers() & Qt::ControlModifier)
-        modseq += "Ctrl+";
-
-    if (e->modifiers() & Qt::AltModifier)
-        modseq += "Alt+";
-
-    if (e->modifiers() & Qt::MetaModifier)
-        modseq += "Meta+";
+        return keyText;
+    }
 
     if (e->key() >= 0x01000020 && e->key() <= 0x01000023) {
         // Do not act on Modifier only
         // avoid returning "khmer vowel sign ie (U+17C0)"
-        return k;
+        return "";
     }
 
-    QString keyseq = QKeySequence(e->key()).toString();
-    k = QKeySequence(modseq + keyseq);
+    // TODO(XXX) check if we may simply return QKeySequence(e->modifiers()+e->key())
 
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        qDebug() << "keyboard press: " << k.toString();
-    }
-    return k;
-}
+    // NOTE: This order must be the same as in
+    // ...   KeyboardControllerPreset::translate()
+    if (e->modifiers() & Qt::ShiftModifier)
+        mods += "Shift+";
+    if (e->modifiers() & Qt::ControlModifier)
+        mods += "Ctrl+";
+    if (e->modifiers() & Qt::AltModifier)
+        mods += "Alt+";
+    if (e->modifiers() & Qt::MetaModifier)
+        mods += "Meta+";
 
-void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
-    // Keyboard configs are a surjection from ConfigKey to key sequence. We
-    // invert the mapping to create an injection from key sequence to
-    // ConfigKey. This allows a key sequence to trigger multiple controls in
-    // Mixxx.
-    m_keySequenceToControlHash = pKbdConfigObject->transpose();
-    m_pKbdConfigObject = pKbdConfigObject;
-}
-
-ConfigObject<ConfigValueKbd>* KeyboardEventFilter::getKeyboardConfig() {
-    return m_pKbdConfigObject;
+    QString key = QKeySequence(e->key()).toString();
+    return mods + key;
 }

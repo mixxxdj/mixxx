@@ -85,6 +85,10 @@ double WBaseWidget::getControlParameterDisplay() const {
     return 0.0;
 }
 
+WidgetTooltipWatcher* WBaseWidget::createTooltipWatcher(QList<ConfigKey> configKeys) {
+    return new WidgetTooltipWatcher(this, configKeys, nullptr);
+}
+
 void WBaseWidget::resetControlParameter() {
     for (ControlParameterWidgetConnection* pControlConnection : m_connections) {
         pControlConnection->resetControl();

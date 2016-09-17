@@ -22,7 +22,9 @@ QList<PresetInfo> PresetInfoEnumerator::getPresetsByExtension(const QString& ext
         return m_hidPresets;
     } else if (extension == BULK_PRESET_EXTENSION) {
         return m_bulkPresets;
-    }
+    } else if (extension == KEYBOARD_PRESET_EXTENSION) {
+        return m_kbdPresets;
+    } else
 
     qDebug() << "Extension not registered to presetinfo" << extension;
     return QList<PresetInfo>();
@@ -41,6 +43,8 @@ void PresetInfoEnumerator::loadSupportedPresets() {
                 m_hidPresets.append(PresetInfo(path));
             } else if (path.endsWith(BULK_PRESET_EXTENSION, Qt::CaseInsensitive)) {
                 m_bulkPresets.append(PresetInfo(path));
+            } else if (path.endsWith(KEYBOARD_PRESET_EXTENSION, Qt::CaseInsensitive)) {
+                m_kbdPresets.append(PresetInfo(path));
             }
         }
     }
@@ -51,4 +55,6 @@ void PresetInfoEnumerator::loadSupportedPresets() {
              << m_hidPresets.length() << "presets";
     qDebug() << "Extension" << BULK_PRESET_EXTENSION << "total"
              << m_bulkPresets.length() << "presets";
+    qDebug() << "Extension" << KEYBOARD_PRESET_EXTENSION << "total"
+             << m_kbdPresets.length() << "presets";
 }

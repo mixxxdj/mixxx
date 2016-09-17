@@ -10,6 +10,7 @@
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
+#include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpreset.h"
 
@@ -21,8 +22,9 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     virtual ~ControllerMappingTableModel();
 
     void setPreset(ControllerPresetPointer pPreset);
-    void visit(HidControllerPreset* pHidPreset);
-    void visit(MidiControllerPreset* pMidiPreset);
+    void visitKeyboard(KeyboardControllerPreset* pKbdPreset);
+    void visitHid(HidControllerPreset* pHidPreset);
+    void visitMidi(MidiControllerPreset* pMidiPreset);
 
     // Apply the changes to the loaded preset.
     virtual void apply() = 0;
@@ -67,6 +69,7 @@ class ControllerMappingTableModel : public QAbstractTableModel,
 
     QVector<QHash<int, QVariant> > m_headerInfo;
     ControllerPresetPointer m_pPreset;
+    KeyboardControllerPreset* m_pKbdPreset;
     MidiControllerPreset* m_pMidiPreset;
     HidControllerPreset* m_pHidPreset;
 };
