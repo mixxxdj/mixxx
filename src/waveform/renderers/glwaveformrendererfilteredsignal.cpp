@@ -75,6 +75,10 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
+        if (m_orientation == Qt::Vertical) {
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glScalef(-1.0f, 1.0f, 1.0f);
+        }
         glOrtho(firstVisualIndex, lastVisualIndex, -255.0, 255.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);
@@ -136,7 +140,11 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
-        if (m_alignment == Qt::AlignBottom)
+        if (m_orientation == Qt::Vertical) {
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glScalef(-1.0f, 1.0f, 1.0f);
+        }
+        if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignRight)
             glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
         else
             glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
