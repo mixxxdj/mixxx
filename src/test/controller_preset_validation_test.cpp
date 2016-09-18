@@ -96,9 +96,7 @@ class FakeController : public Controller {
         Q_UNUSED(data);
         Q_UNUSED(reportID);
     }
-    bool isPolling() const override {
-        return false;
-    }
+
     ControllerPreset* preset() override {
         if (m_bHidPreset) {
             return &m_hidPreset;

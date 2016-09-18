@@ -84,10 +84,6 @@ class BulkController : public Controller {
     // 0x0.
     void send(QByteArray data) override;
 
-    bool isPolling() const override {
-        return false;
-    }
-
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     ControllerPreset* preset() override {

@@ -86,10 +86,6 @@ class HidController : public Controller {
     void send(QByteArray data) override;
     void virtual send(QByteArray data, unsigned int reportID);
 
-    bool isPolling() const override {
-        return false;
-    }
-
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     ControllerPreset* preset() override {

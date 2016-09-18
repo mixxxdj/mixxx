@@ -57,10 +57,6 @@ class Hss1394Controller : public MidiController {
     // 0xf7.
     void send(QByteArray data) override;
 
-    bool isPolling() const override {
-        return false;
-    }
-
     hss1394::TNodeInfo m_deviceInfo;
     int m_iDeviceIndex;
     static QList<QString> m_deviceList;
