@@ -24,31 +24,8 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     void visit(HidControllerPreset* pHidPreset) override;
     void visit(MidiControllerPreset* pMidiPreset) override;
 
-    // Apply the changes to the loaded preset.
-    virtual void apply() = 0;
-
     // Revert changes made since the last apply.
     virtual void cancel();
-
-    // Clears all input mappings in the preset.
-    virtual void clear() = 0;
-
-    // Adds an empty mapping.
-    virtual void addEmptyMapping() = 0;
-
-    // Removes the provided mappings.
-    virtual void removeMappings(QModelIndexList indices) = 0;
-
-    // Returns a delegate for the provided column or NULL if the column does not
-    // need a delegate.
-    virtual QAbstractItemDelegate* delegateForColumn(int column,
-                                                     QWidget* pParent) = 0;
-
-    // Validates the mappings.
-    // TODO(rryan): do something with this
-    virtual bool validate() {
-        return true;
-    }
 
     ////////////////////////////////////////////////////////////////////////////
     // QAbstractItemModel methods

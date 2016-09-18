@@ -16,16 +16,16 @@ class ControllerInputMappingTableModel : public ControllerMappingTableModel {
     ~ControllerInputMappingTableModel() override;
 
     // Apply the changes to the loaded preset.
-    void apply() override;
+    void apply();
 
     // Clears all input mappings in the preset.
-    void clear() override;
+    void clear();
 
     // Adds an empty input mapping.
-    void addEmptyMapping() override;
+    void addEmptyMapping();
 
     // Removes the provided input mappings.
-    void removeMappings(QModelIndexList indices) override;
+    void removeMappings(QModelIndexList indices);
 
     // Add the specified MIDI mappings to the model. If this is not a MIDI
     // mapping model, ignore.
@@ -38,7 +38,7 @@ class ControllerInputMappingTableModel : public ControllerMappingTableModel {
 
     // Returns a delegate for the provided column or NULL if the column does not
     // need a delegate.
-    QAbstractItemDelegate* delegateForColumn(int column, QWidget* pParent) override;
+    QAbstractItemDelegate* delegateForColumn(int column, QWidget* pParent);
 
     ////////////////////////////////////////////////////////////////////////////
     // QAbstractItemModel methods
