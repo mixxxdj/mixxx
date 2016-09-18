@@ -59,7 +59,7 @@ class BulkController : public Controller {
     void visit(const MidiControllerPreset* preset) override;
     void visit(const HidControllerPreset* preset) override;
 
-    virtual void accept(ControllerVisitor* visitor) {
+    void accept(ControllerVisitor* visitor) override {
         if (visitor) {
             visitor->visit(this);
         }
@@ -70,7 +70,6 @@ class BulkController : public Controller {
     }
 
     bool matchPreset(const PresetInfo& preset) override;
-    virtual bool matchProductInfo(const ProductInfo& product);
 
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length);
@@ -89,6 +88,8 @@ class BulkController : public Controller {
     ControllerPreset* preset() override {
         return &m_preset;
     }
+
+    bool matchProductInfo(const ProductInfo& product);
 
     libusb_context* m_context;
     libusb_device_handle *m_phandle;
