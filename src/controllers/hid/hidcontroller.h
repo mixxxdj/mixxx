@@ -69,8 +69,6 @@ class HidController : public Controller {
 
     bool matchPreset(const PresetInfo& preset) override;
 
-    virtual void guessDeviceCategory();
-
     static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);
 
   protected:
@@ -93,6 +91,7 @@ class HidController : public Controller {
     }
 
     bool matchProductInfo(const ProductInfo& product);
+    void guessDeviceCategory();
 
     // Local copies of things we need from hid_device_info
     int hid_interface_number;
