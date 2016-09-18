@@ -24,7 +24,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
     Controller();
-    virtual ~Controller();  // Subclass should call close() at minimum.
+    ~Controller() override;  // Subclass should call close() at minimum.
 
     // Returns the extension for the controller (type) preset files.  This is
     // used by the ControllerManager to display only relevant preset files for

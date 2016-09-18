@@ -18,11 +18,11 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     Q_OBJECT
   public:
     ControllerMappingTableModel(QObject* pParent);
-    virtual ~ControllerMappingTableModel();
+    ~ControllerMappingTableModel() override;
 
     void setPreset(ControllerPresetPointer pPreset);
-    void visit(HidControllerPreset* pHidPreset);
-    void visit(MidiControllerPreset* pMidiPreset);
+    void visit(HidControllerPreset* pHidPreset) override;
+    void visit(MidiControllerPreset* pMidiPreset) override;
 
     // Apply the changes to the loaded preset.
     virtual void apply() = 0;
@@ -54,10 +54,10 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     // QAbstractItemModel methods
     ////////////////////////////////////////////////////////////////////////////
     bool setHeaderData(int section, Qt::Orientation orientation,
-                       const QVariant& value, int role = Qt::EditRole);
+                       const QVariant& value, int role = Qt::EditRole) override;
     QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const;
-    Qt::ItemFlags flags(const QModelIndex& index) const;
+                        int role = Qt::DisplayRole) const override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   protected:
     // Called after a preset is loaded. If the preset is a MIDI preset,
