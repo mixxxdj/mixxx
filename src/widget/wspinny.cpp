@@ -421,8 +421,7 @@ double WSpinny::calculateAngle(double playpos) {
 
 /** Given a normalized playpos, calculate the integer number of rotations
     that it would take to wind the vinyl to that position. */
-int WSpinny::calculateFullRotations(double playpos)
-{
+int WSpinny::calculateFullRotations(double playpos) {
     if (isnan(playpos)) {
         return 0;
     }
@@ -438,8 +437,7 @@ int WSpinny::calculateFullRotations(double playpos)
 }
 
 //Inverse of calculateAngle()
-double WSpinny::calculatePositionFromAngle(double angle)
-{
+double WSpinny::calculatePositionFromAngle(double angle) {
     if (isnan(angle)) {
         return 0.0;
     }
@@ -498,8 +496,8 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e) {
     int y = e->y();
     int x = e->x();
 
-    //Keeping these around in case we want to switch to control relative
-    //to the original mouse position.
+    // Keeping these around in case we want to switch to control relative
+    // to the original mouse position.
     //int dX = x-m_iStartMouseX;
     //int dY = y-m_iStartMouseY;
 
@@ -511,10 +509,10 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e) {
     //qDebug() << "c_x:" << c_x << "c_y:" << c_y <<
     //            "dX:" << dX << "dY:" << dY;
 
-    //When we finish one full rotation (clockwise or anticlockwise),
-    //we'll need to manually add/sub 360 degrees because atan2()'s range is
-    //only within -180 to 180 degrees. We need a wider range so your position
-    //in the song can be tracked.
+    // When we finish one full rotation (clockwise or anticlockwise),
+    // we'll need to manually add/sub 360 degrees because atan2()'s range is
+    // only within -180 to 180 degrees. We need a wider range so your position
+    // in the song can be tracked.
     if (m_dPrevTheta > 100 && theta < 0) {
         m_iFullRotations++;
     } else if (m_dPrevTheta < -100 && theta > 0) {
@@ -527,7 +525,8 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e) {
     //qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta <<
     //            "icr" << m_iFullRotations;
 
-    if ((e->buttons() & Qt::LeftButton || e->buttons() & Qt::RightButton) && !m_bVinylActive) {
+    if (((e->buttons() & Qt::LeftButton) || (e->buttons() & Qt::RightButton)) &&
+            !m_bVinylActive) {
         //Convert deltaTheta into a percentage of song length.
         double absPos = calculatePositionFromAngle(theta);
         double absPosInSamples = absPos * m_pTrackSamples->get();
@@ -538,8 +537,7 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e) {
     }
 }
 
-void WSpinny::mousePressEvent(QMouseEvent * e)
-{
+void WSpinny::mousePressEvent(QMouseEvent * e) {
     int y = e->y();
     int x = e->x();
 

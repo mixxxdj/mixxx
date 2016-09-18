@@ -9,7 +9,7 @@
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"
 
-static const double kLockOriginalKey = 0;
+//static const double kLockOriginalKey = 0;
 static const double kLockCurrentKey = 1;
 
 KeyControl::KeyControl(QString group,

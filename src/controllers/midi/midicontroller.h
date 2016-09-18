@@ -57,7 +57,8 @@ class MidiController : public Controller {
                          unsigned char value);
 
   protected:
-    Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
+    Q_INVOKABLE void sendShortMsg(
+            unsigned char status, unsigned char byte1, unsigned char byte2);
     // Alias for send()
     Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length) {
         send(data, length);
