@@ -944,11 +944,12 @@ NumarkMixtrack3.deck.prototype.StripEffect = function(value, decknum) {
   var arrayLength = deck.InstantFX.length;
   var i;
     
+	if(!deck.shiftKey)
         for (i = 0; i < arrayLength; i++) { 
         ButtonNum = deck.InstantFX[i];
         engine.setValue("[EffectRack1_EffectUnit" + ButtonNum + "]","group_[Channel" + decknum + "]_enable",true);
         }
-
+	}
     
         if (deck.TapDown) {     
 
