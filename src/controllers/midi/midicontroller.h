@@ -90,7 +90,7 @@ class MidiController : public Controller {
                              mixxx::Duration timestamp);
 
     virtual void sendWord(unsigned int word) = 0;
-    double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
+    double computeValue(MidiOptions options, unsigned char opcode, double _prevmidivalue, double _newmidivalue);
     void createOutputHandlers();
     void updateAllOutputs();
     void destroyOutputHandlers();

@@ -381,7 +381,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         newValue = math_min(newValue, 127.0);
     } else {
         double currControlValue = pCO->getMidiParameter();
-        newValue = computeValue(mapping.options, currControlValue, value);
+        newValue = computeValue(mapping.options, opCode, currControlValue, value);
     }
 
     // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
@@ -400,7 +400,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     pCO->setValueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
 }
 
-double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {
+double MidiController::computeValue(MidiOptions options, unsigned char opcode, double _prevmidivalue, double _newmidivalue) {
     double tempval = 0.;
     double diff = 0.;
 
@@ -456,7 +456,7 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
     }
 
     if (options.button) {
-        _newmidivalue = _newmidivalue != 0;
+        _newmidivalue = opcode != MIDI_NOTE_OFF && _newmidivalue != 0;
     }
 
     if (options.sw) {
