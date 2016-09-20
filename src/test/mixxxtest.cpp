@@ -2,23 +2,11 @@
 
 #include "sources/soundsourceproxy.h"
 
-#ifdef __FFMPEGFILE__
-extern "C" {
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-}
-#endif
-
 // Static initialization
 QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
 
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     DEBUG_ASSERT(!s_pApplication);
-
-#ifdef __FFMPEGFILE__
-    av_register_all();
-    avcodec_register_all();
-#endif
 
     s_pApplication.reset(new MixxxApplication(argc, argv));
 
