@@ -22,7 +22,6 @@ class DlgSavedQueriesEditor : public QDialog, private Ui::DlgSavedQueriesEditor
   private:
     
     TrackCollection* m_pTrackCollection;
-    SavedQueriesDAO& m_savedDAO;
     LibraryFeature* m_pFeature;
 };
 

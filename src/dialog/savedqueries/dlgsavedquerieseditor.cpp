@@ -10,12 +10,12 @@ DlgSavedQueriesEditor::DlgSavedQueriesEditor(LibraryFeature* pFeature,
                                              QWidget* parent)
         : QDialog(parent),
           m_pTrackCollection(pTrackCollection),
-          m_savedDAO(m_pTrackCollection->getSavedQueriesDAO()),
           m_pFeature(pFeature) {
     setupUi(this);
     SavedQueriesTableModel* pTableModel = 
-            new SavedQueriesTableModel(m_pFeature, parent, 
-                                       m_pTrackCollection->getDatabase());
+            new SavedQueriesTableModel(m_pFeature, 
+                                       m_pTrackCollection->getSavedQueriesDAO(),
+                                       parent);
     tableView->setModel(pTableModel);
     for (int i = 0; i < SavedQueryColumns::NUM_COLUMNS; ++i) {
         tableView->setColumnHidden(i, pTableModel->isColumnInternal(i));
@@ -24,4 +24,5 @@ DlgSavedQueriesEditor::DlgSavedQueriesEditor(LibraryFeature* pFeature,
 
 void DlgSavedQueriesEditor::accept() {
     tableView->model()->submit();
+    QDialog::accept();
 }

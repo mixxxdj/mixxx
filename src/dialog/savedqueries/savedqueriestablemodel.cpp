@@ -6,12 +6,12 @@
 
 #include "dialog/savedqueries/savedqueriestablemodel.h"
 
-SavedQueriesTableModel::SavedQueriesTableModel(LibraryFeature* pFeature, 
-                                               QObject* parent,
-                                               QSqlDatabase db) 
+SavedQueriesTableModel::SavedQueriesTableModel(LibraryFeature* pFeature,
+                                               SavedQueriesDAO& savedDao, 
+                                               QObject* parent) 
         : QAbstractTableModel(parent),
           m_pFeature(pFeature),
-          m_savedDao(db) {    
+          m_savedDao(savedDao) {    
     m_cachedData = m_savedDao.getSavedQueries(m_pFeature);
 }
 
@@ -113,4 +113,5 @@ bool SavedQueriesTableModel::submit() {
     for (const SavedSearchQuery& sQuery : m_cachedData) {
         m_savedDao.updateSavedQuery(sQuery);
     }
+    QAbstractTableModel::submit();
 }

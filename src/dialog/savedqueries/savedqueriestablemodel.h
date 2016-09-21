@@ -9,8 +9,8 @@ class SavedQueriesTableModel : public QAbstractTableModel
 {
   public:
     SavedQueriesTableModel(LibraryFeature* pFeature,
-                           QObject* parent = nullptr,
-                           QSqlDatabase db = QSqlDatabase());
+                           SavedQueriesDAO& savedDao,
+                           QObject* parent = nullptr);
     
     bool isColumnInternal(int column);
     QVariant data(const QModelIndex& index, int role) const override;
@@ -29,7 +29,7 @@ public slots:
     QList<SavedSearchQuery> m_cachedData;
     
     LibraryFeature* m_pFeature;
-    SavedQueriesDAO m_savedDao;
+    SavedQueriesDAO& m_savedDao;
 };
 
 #endif // SAVEDQUERIESTABLEMODEL_H
