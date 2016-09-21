@@ -17,7 +17,7 @@ DlgSavedQueriesEditor::DlgSavedQueriesEditor(LibraryFeature* pFeature,
             new SavedQueriesTableModel(m_pFeature, parent, 
                                        m_pTrackCollection->getDatabase());
     tableView->setModel(pTableModel);
-    for (int i = 0; i < SavedQueryColums::NUM_COLUMNS; ++i) {
+    for (int i = 0; i < SavedQueryColumns::NUM_COLUMNS; ++i) {
         tableView->setColumnHidden(i, pTableModel->isColumnInternal(i));
     }
 }
