@@ -21,3 +21,7 @@ DlgSavedQueriesEditor::DlgSavedQueriesEditor(LibraryFeature* pFeature,
         tableView->setColumnHidden(i, pTableModel->isColumnInternal(i));
     }
 }
+
+void DlgSavedQueriesEditor::accept() {
+    tableView->model()->submit();
+}

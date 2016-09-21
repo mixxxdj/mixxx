@@ -14,6 +14,12 @@ class DlgSavedQueriesEditor : public QDialog, private Ui::DlgSavedQueriesEditor
     explicit DlgSavedQueriesEditor(LibraryFeature* pFeature, 
                                    TrackCollection* pTrackCollection, 
                                    QWidget* parent = nullptr);
+  
+  public slots:
+    
+    void accept() override;
+    
+  private:
     
     TrackCollection* m_pTrackCollection;
     SavedQueriesDAO& m_savedDAO;
