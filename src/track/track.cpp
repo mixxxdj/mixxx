@@ -25,8 +25,17 @@ SecurityTokenPointer openSecurityToken(
     }
 }
 
+struct TrackDeleter {
+    void operator()(Track* pTrack) {
+        if (pTrack != nullptr) {
+            pTrack->deleteLater();
+        }
+    }
+};
+
 template<typename T>
-inline bool compareAndSet(T* pField, const T& value) {
+inline
+bool compareAndSet(T* pField, const T& value) {
     if (*pField != value) {
         *pField = value;
         return true;
@@ -59,24 +68,24 @@ Track::Track(
 TrackPointer Track::newTemporary(
         const QFileInfo& fileInfo,
         const SecurityTokenPointer& pSecurityToken) {
-    return TrackPointer(
+    Track* pTrack =
             new Track(
                     fileInfo,
                     pSecurityToken,
-                    TrackId()),
-            &QObject::deleteLater);
+                    TrackId());
+    return TrackPointer(pTrack, TrackDeleter());
 }
 
 //static
 TrackPointer Track::newDummy(
         const QFileInfo& fileInfo,
         TrackId trackId) {
-    return TrackPointer(
+    Track* pTrack =
             new Track(
                     fileInfo,
                     SecurityTokenPointer(),
-                    trackId),
-            &QObject::deleteLater);
+                    trackId);
+    return TrackPointer(pTrack, TrackDeleter());
 }
 
 // static
