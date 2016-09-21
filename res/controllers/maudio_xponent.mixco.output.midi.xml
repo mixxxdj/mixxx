@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="1.11.0+" schemaVersion="1">
    <info>
-       <name>[mixco] M-Audio Xponent</name>
+       <name>M-Audio Xponent</name>
        <author>Juan Pedro Bolivar Puente &lt;raskolnikov@gnu.org&gt;</author>
        <description>Controller mapping for the M-Audio Xponent DJ controller.</description>
        <wiki>https://sinusoid.es/mixco/script/maudio_xponent.mixco.html</wiki>
