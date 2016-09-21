@@ -248,9 +248,9 @@ bool TrackDAO::trackExistsInDatabase(const QString& absoluteFilePath) {
     return getTrackId(absoluteFilePath).isValid();
 }
 
-void TrackDAO::saveTrack(TrackPointer track) {
-    if (track) {
-        saveTrack(track.data());
+void TrackDAO::saveTrack(const TrackPointer& pTrack) {
+    if (pTrack) {
+        saveTrack(&*pTrack);
     }
 }
 
@@ -654,8 +654,8 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             return TrackId();
         }
 
-        m_analysisDao.saveTrackAnalyses(pTrack.data());
-        m_cueDao.saveTrackCues(trackId, pTrack.data());
+        m_analysisDao.saveTrackAnalyses(*pTrack);
+        m_cueDao.saveTrackCues(trackId, pTrack->getCuePoints());
 
         DEBUG_ASSERT(!m_tracksAddedSet.contains(trackId));
         m_tracksAddedSet.insert(trackId);
@@ -1180,7 +1180,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
     bool bpmLocked = record.value(column + 4).toBool();
     BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
-            pTrack, beatsVersion, beatsSubVersion, &beatsBlob);
+            *pTrack, beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
         pTrack->setBeats(pBeats);
     } else {
@@ -1583,8 +1583,8 @@ bool TrackDAO::updateTrack(Track* pTrack) {
 
     //qDebug() << "Update track took : " << time.elapsed().formatMillisWithUnit() << "Now updating cues";
     //time.start();
-    m_analysisDao.saveTrackAnalyses(pTrack);
-    m_cueDao.saveTrackCues(trackId, pTrack);
+    m_analysisDao.saveTrackAnalyses(*pTrack);
+    m_cueDao.saveTrackCues(trackId, pTrack->getCuePoints());
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();

@@ -492,7 +492,7 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
     pTrack->setDuration(10);
     if (filebpm > 0) {
         double bpm = pTrack->setBpm(filebpm);
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0.0);
         pTrack->setBeats(pBeats);
     }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);

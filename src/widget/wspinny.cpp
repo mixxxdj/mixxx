@@ -255,7 +255,9 @@ void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 }
 
 void WSpinny::slotTrackCoverArtUpdated() {
-    CoverArtCache::requestCover(m_loadedTrack.data(), this);
+    if (m_loadedTrack) {
+        CoverArtCache::requestCover(*m_loadedTrack, this);
+    }
 }
 
 void WSpinny::slotCoverFound(const QObject* pRequestor,

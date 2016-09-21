@@ -129,7 +129,9 @@ void WCoverArt::slotReset() {
 }
 
 void WCoverArt::slotTrackCoverArtUpdated() {
-    CoverArtCache::requestCover(m_loadedTrack.data(), this);
+    if (m_loadedTrack) {
+        CoverArtCache::requestCover(*m_loadedTrack, this);
+    }
 }
 
 void WCoverArt::slotCoverFound(const QObject* pRequestor,

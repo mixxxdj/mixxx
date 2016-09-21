@@ -267,7 +267,7 @@ double Track::setBpm(double bpmValue) {
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
         double cue = getCuePoint();
-        BeatsPointer pBeats(BeatFactory::makeBeatGrid(this, bpmValue, cue));
+        BeatsPointer pBeats(BeatFactory::makeBeatGrid(*this, bpmValue, cue));
         setBeatsAndUnlock(&lock, pBeats);
         return bpmValue;
     }
