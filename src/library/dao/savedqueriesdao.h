@@ -80,6 +80,7 @@ class SavedQueriesDAO : public DAO
     SavedSearchQuery getSavedQuery(int id) const;
     SavedSearchQuery moveToFirst(LibraryFeature* pFeature, const SavedSearchQuery& sQuery);
     SavedSearchQuery moveToFirst(LibraryFeature* pFeature, int id);
+    bool updateSavedQuery(const SavedSearchQuery& sQuery);
     bool deleteSavedQuery(int id);
     bool exists(const SavedSearchQuery& sQuery);
     int getQueryId(const SavedSearchQuery& sQuery);

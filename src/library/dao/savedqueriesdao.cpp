@@ -110,6 +110,29 @@ SavedSearchQuery SavedQueriesDAO::moveToFirst(LibraryFeature* pFeature, int id) 
     return moveToFirst(pFeature, getSavedQuery(id));
 }
 
+bool SavedQueriesDAO::updateSavedQuery(const SavedSearchQuery& sQuery) {
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE FROM " SAVEDQUERYTABLE " WHERE id = :id SET "
+            "query = :query, title = :title, selectedItems = :selectedItems, "
+            "sortOrder = :sortOrder, vScrollbarPos = :vScrollbarPos, "
+            "sortColumn = :sortColumn, "
+            "sortAscendingOrder = :sortAscendingOrder, pinned = :pinned");
+    
+    query.bindValue(":id", sQuery.id);
+    query.bindValue(":query", sQuery.query);
+    query.bindValue(":title", sQuery.title);        
+    query.bindValue(":selectedItems", serializeItems(sQuery.selectedItems));
+    query.bindValue(":sortOrder", sQuery.sortOrder);
+    query.bindValue(":vScrollbarPos", sQuery.vScrollBarPos);
+    query.bindValue(":sortColumn", sQuery.sortColumn);
+    query.bindValue(":sortAscendingOrder", (int) sQuery.sortAscendingOrder);
+    query.bindValue(":pinned", (int) sQuery.pinned);
+    
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }       
+}
+
 bool SavedQueriesDAO::deleteSavedQuery(int id) {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " SAVEDQUERYTABLE " WHERE id=:id");
