@@ -157,7 +157,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
         qDebug() << "updateIndexWithTrackpointer:" << pTrack->getLocation();
     }
 
-    if (pTrack.isNull()) {
+    if (!pTrack) {
         return false;
     }
 

@@ -240,7 +240,7 @@ void CueDAO::saveTrackCues(TrackId trackId, const QList<CuePointer>& cueList) {
         }
         // Update or save cue
         if (pCue->isDirty()) {
-            saveCue(pCue.data());
+            saveCue(&*pCue);
 
             // Since this cue didn't have an id until now, add it to the list of
             // cues not to delete.

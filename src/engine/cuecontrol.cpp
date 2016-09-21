@@ -163,7 +163,7 @@ void CueControl::attachCue(CuePointer pCue, int hotCue) {
     if (pControl->getCue() != NULL) {
         detachCue(pControl->getHotcueNumber());
     }
-    connect(pCue.data(), SIGNAL(updated()),
+    connect(&*pCue, SIGNAL(updated()),
             this, SLOT(cueUpdated()),
             Qt::DirectConnection);
 
@@ -183,7 +183,7 @@ void CueControl::detachCue(int hotCue) {
     CuePointer pCue(pControl->getCue());
     if (!pCue)
         return;
-    disconnect(pCue.data(), 0, this, 0);
+    disconnect(&*pCue, 0, this, 0);
     // clear pCue first because we have a null check for valid data else where
     // in the code
     pControl->setCue(CuePointer());
@@ -196,7 +196,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     QMutexLocker lock(&m_mutex);
 
     if (m_pLoadedTrack) {
-        disconnect(m_pLoadedTrack.data(), 0, this, 0);
+        disconnect(&*m_pLoadedTrack, 0, this, 0);
         for (int i = 0; i < m_iNumHotCues; ++i) {
             detachCue(i);
         }
@@ -225,16 +225,16 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
         m_pCuePoint->set(-1.0);
-        m_pLoadedTrack.clear();
+        m_pLoadedTrack = TrackPointer();
     }
 
 
-    if (pNewTrack.isNull()) {
+    if (!pNewTrack) {
         return;
     }
 
     m_pLoadedTrack = pNewTrack;
-    connect(pNewTrack.data(), SIGNAL(cuesUpdated()),
+    connect(&*pNewTrack, SIGNAL(cuesUpdated()),
             this, SLOT(trackCuesUpdated()),
             Qt::DirectConnection);
 

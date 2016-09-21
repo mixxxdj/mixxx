@@ -725,7 +725,7 @@ void Track::slotCueUpdated() {
 CuePointer Track::addCue() {
     QMutexLocker lock(&m_qMutex);
     CuePointer pCue(new Cue(m_id));
-    connect(pCue.data(), SIGNAL(updated()),
+    connect(&*pCue, SIGNAL(updated()),
             this, SLOT(slotCueUpdated()));
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&lock);
@@ -735,7 +735,7 @@ CuePointer Track::addCue() {
 
 void Track::removeCue(const CuePointer& pCue) {
     QMutexLocker lock(&m_qMutex);
-    disconnect(pCue.data(), 0, this, 0);
+    disconnect(&*pCue, 0, this, 0);
     m_cuePoints.removeOne(pCue);
     markDirtyAndUnlock(&lock);
     emit(cuesUpdated());
@@ -751,12 +751,12 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     QMutexLocker lock(&m_qMutex);
     // disconnect existing cue points
     for (const auto& pCue: m_cuePoints) {
-        disconnect(pCue.data(), 0, this, 0);
+        disconnect(&*pCue, 0, this, 0);
     }
     m_cuePoints = cuePoints;
     // connect new cue points
     for (const auto& pCue: m_cuePoints) {
-        connect(pCue.data(), SIGNAL(updated()),
+        connect(&*pCue, SIGNAL(updated()),
                 this, SLOT(slotCueUpdated()));
     }
     markDirtyAndUnlock(&lock);

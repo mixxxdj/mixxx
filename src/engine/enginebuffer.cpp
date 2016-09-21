@@ -553,7 +553,7 @@ void EngineBuffer::ejectTrack() {
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
-    m_pCurrentTrack.clear();
+    m_pCurrentTrack = TrackPointer();
     m_trackSampleRateOld = 0;
     m_trackSamplesOld = 0;
     m_playButton->set(0.0);
@@ -1245,14 +1245,14 @@ void EngineBuffer::hintReader(const double dRate) {
 
 // WARNING: This method runs in the GUI thread
 void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
-    if (pTrack.isNull()) {
-        // Loading a null track means "eject"
-        ejectTrack();
-    } else {
+    if (pTrack) {
         // Signal to the reader to load the track. The reader will respond with
         // trackLoading and then either with trackLoaded or trackLoadFailed signals.
         m_bPlayAfterLoading = play;
         m_pReader->newTrack(pTrack);
+    } else {
+        // Loading a null track means "eject"
+        ejectTrack();
     }
 }
 

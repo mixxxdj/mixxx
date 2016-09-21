@@ -118,7 +118,7 @@ void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
 void WCoverArt::slotReset() {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        disconnect(&*m_loadedTrack, SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
     m_loadedTrack = TrackPointer();
@@ -155,7 +155,7 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor,
 
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        disconnect(&*m_loadedTrack, SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
     m_lastRequestedCover = CoverInfo();
@@ -163,7 +163,7 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     m_loadedCoverScaled = QPixmap();
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
-        connect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        connect(&*m_loadedTrack, SIGNAL(coverArtUpdated()),
                 this, SLOT(slotTrackCoverArtUpdated()));
     }
 
