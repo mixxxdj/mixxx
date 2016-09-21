@@ -36,8 +36,8 @@ SavedSearchQuery SavedQueriesDAO::saveQuery(LibraryFeature* pFeature,
     query.bindValue(":sortOrder", sQuery.sortOrder);
     query.bindValue(":vScrollbarPos", sQuery.vScrollBarPos);
     query.bindValue(":sortColumn", sQuery.sortColumn);
-    query.bindValue(":sortAscendingOrder", sQuery.sortAscendingOrder);
-    query.bindValue(":pinned", sQuery.pinned);
+    query.bindValue(":sortAscendingOrder", (int) sQuery.sortAscendingOrder);
+    query.bindValue(":pinned", (int) sQuery.pinned);
     
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
