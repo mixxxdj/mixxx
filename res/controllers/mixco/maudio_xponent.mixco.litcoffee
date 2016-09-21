@@ -38,7 +38,7 @@ Controls that do not have a per-deck functionality.
             ccId = (cc) -> c.ccIds cc, 2
             g  = "[Master]"
 
-* **27.** Pre-hear mix.
+* **27.** Headphone mix.
 
             c.input(ccId 0x0D).does g, "headMix"
 
@@ -48,9 +48,9 @@ Controls that do not have a per-deck functionality.
 
 ### Effects
 
-Most of knobs and buttons in **24** and **25** are dedicated to effects.
-Some of them are mapped per-deck --see later-- but the *flanger
-parameters are mapped globally:
+Most of knobs and buttons in **24** and **25** are dedicated to
+effects.  Some of them are mapped per-deck --see later-- but some are
+mapped globally:
 
 * The *first and second knobs* of the *left deck* control the *super*
   and *mix* of the first effect unit.  In the *right deck*, they do
@@ -66,8 +66,10 @@ parameters are mapped globally:
             c.input(0x0d, 0x01).does \
                 b.soft "[EffectRack1_EffectUnit2]", "mix"
 
-* **16.** When in *MIDI mode*, the touch pad can be used to control the
-  first two parameters of the first effect.
+* **16.** When in *MIDI mode*, the touch pad can be used to control
+  the first two parameters of the first effect.  *MIDI mode* can be
+  enabled with the button labeled `MIDI` below the touch pad.
+  Otherwise, the touch pad is used to control the computer mouse.
 
             c.control(0x09, 0x02)
                 .does "[EffectRack1_EffectUnit1_Effect1]", "parameter1"
@@ -75,24 +77,12 @@ parameters are mapped globally:
                 .does "[EffectRack1_EffectUnit1_Effect1]", "parameter2"
 
 * **17.** and **18.** When in *MIDI mode*, the touch pad buttons *toggle
-   the first effect unit* for the left and right channel respectively.
+   the first effect unit* for the first and second deck respectively.
 
             c.input(c.noteOnIds 0x00, 0x02)
                 .does "[EffectRack1_EffectUnit1]", "group_[Channel1]_enable"
             c.input(c.noteOnIds 0x01, 0x02)
                 .does "[EffectRack1_EffectUnit1]", "group_[Channel2]_enable"
-
-### Microphone
-
-* The *second knob* the *left deck* controls the microphone *volume*.
-
-            c.input(0x0d, 0x00).does b.soft "[Microphone]", "volume"
-
-* The *second button* of the *left deck* controls the microphone
-  *enable*.
-
-            c.control(c.noteOnIds 0x0d, 0x00).does \
-                "[Microphone]", "talkover"
 
 Per deck controls
 -----------------
@@ -119,7 +109,7 @@ channel.
             shift = b.modifier()
             c.control(noteId 0x2C).does shift
 
-* **12.** Pre-Fade Listen. Select which deck goes to the pre-hear.
+* **12.** Pre-Fade Listen. Select which deck goes to the headphones.
 
             c.control(noteOnId 0x14).does @decks.add g, "pfl"
 
@@ -155,7 +145,7 @@ channel.
             c.input(ccId 0x07).does b.soft g, "volume"
 
 * **38.** Punch-in/transform. While pressed, lets this track be heard
-  overriding the corssfader.
+  overriding the crossfader.
 
             c.control(noteId 0x07).does b.punchIn (0.5-i)
 
@@ -186,15 +176,14 @@ channel.
                           g, "hotcue_#{idx+1}_enabled"
 
 - The little arrow buttons do *beatjump* -- jump forward or back by
-  one beat. When *shift* is pressed, they select the previous or
-  next item of the browser sidebar.
+  4 beats. When *shift* is pressed they jump by one beat.
 
             c.control(noteId 0x1C)
-                .when(shift, "[Playlist]", "SelectPrevPlaylist")
-                .else b.beatJump g, -1
+                .when shift, g, "beatjump_1_backward"
+                .else g, "beatjump_4_backward"
             c.control(noteId 0x1D)
-                .when(shift, "[Playlist]", "SelectNextPlaylist")
-                .else b.beatJump g, 1
+                .when shift, g, "beatjump_1_forward"
+                .else g, "beatjump_4_forward"
 
 - The *lock* button does *key lock* -- i.e. makes tempo changes
   independent of pitch. When *shift* is pressed, it expands/collapses
@@ -215,7 +204,7 @@ channel.
 
 * **35.** Cue button.
 
-            c.control(noteId 0x23).does g, "cue_default"
+            c.control(noteId 0x23).does g, "cue_default", g, "cue_indicator"
 
 * **37.** Play/pause button.
 
@@ -245,7 +234,7 @@ channel.
  
 - The numbers set and trigger a loop of 4, 8, 16 and 32 beats
   respectively. When *shift*, they set loops of 1/8, 1/2, 1 or 2
-  long.
+  beats long.
 
             c.control(noteId 0x25)
                 .when(shift, g, "beatloop_0.125_activate",
@@ -306,11 +295,11 @@ channel.
 
   - When the deck is stopped, it moves the play position.
 
-  - When *scrach* mode is on, it will stop the song when touched on
+  - When *scratch* mode is on, it will stop the song when touched on
   top and control the track play like a vinyl when moved.
 
   - Otherwise, it can be used to *nudge* the playing speed up or down
-  to synch the phase of tracks when the track is playing.
+  to sync the phase of tracks when the track is playing.
 
   - When *shift* is pressed, it will scroll through the current list
   of tracks in the browser.
@@ -334,7 +323,7 @@ channel.
                 .else b.map(g, "jog").transform (ev) -> (ev.value - 64) / 8
 
 * **26.** Temporarily nudges the pitch down or up. When **shift**,
-they do it in a smaller ammount.
+they do it in a smaller amount.
 
             c.control(noteId 0x10)
                 .when(shift, g, "rate_temp_down_small")

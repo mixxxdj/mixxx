@@ -3896,7 +3896,7 @@
            </output>
            <output>
                <group>[Channel1]</group>
-               <key>cue_default</key>
+               <key>cue_indicator</key>
                <status>0x97</status>
                <midino>0x16</midino>
                <on>0xf</on>
@@ -4571,7 +4571,7 @@
            </output>
            <output>
                <group>[Channel2]</group>
-               <key>cue_default</key>
+               <key>cue_indicator</key>
                <status>0x98</status>
                <midino>0x16</midino>
                <on>0xf</on>

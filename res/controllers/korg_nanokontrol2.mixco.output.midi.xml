@@ -488,7 +488,7 @@ usable as primary interface.</description>
            </output>
            <output>
                <group>[Channel1]</group>
-               <key>cue_default</key>
+               <key>cue_indicator</key>
                <status>0xb0</status>
                <midino>0x33</midino>
                <on>0x7f</on>
@@ -542,7 +542,7 @@ usable as primary interface.</description>
            </output>
            <output>
                <group>[Channel2]</group>
-               <key>cue_default</key>
+               <key>cue_indicator</key>
                <status>0xb0</status>
                <midino>0x34</midino>
                <on>0x7f</on>

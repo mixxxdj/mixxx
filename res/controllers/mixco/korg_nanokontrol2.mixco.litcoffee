@@ -117,12 +117,12 @@ defined later.
 And finally, some of the master functionality are mapped to the
 channel sliders.
 
-* The *prehear volume* is mapped to the 7th slider.
+* The *headphone gain* is mapped to the 7th slider.
 
             g = "[Master]"
             c.input(0x06).does g, "headVolume"
 
-* The *prehear mix* is mapped to the 6th slider.
+* The *headphone mix* is mapped to the 6th slider.
 
             c.input(0x05).does g, "headMix"
 
@@ -137,7 +137,7 @@ channel sliders.
 
 #### Deck controls
 
-Then, we create a chooser object over the *pfl* (prehear) parameter,
+Then, we create a chooser object over the *pfl* (headphone) parameter,
 so we will have only one channel with prehear activated at a time.
 Also, this will let us change the behaviour of some *transport*
 controls depending on which deck is *selected* -- i.e, has prehear
@@ -177,12 +177,12 @@ Finally we add the per-deck controls, that are defined in `addDeck`.
   * The fader controls the *volume* of the deck.
 
             c.control(0x20 + offset[0]).does @decks.add g, "pfl"
-            c.control(0x30 + offset[0]).does g, "cue_default"
+            c.control(0x30 + offset[0]).does g, "cue_default", g, "cue_indicator"
             c.control(0x40 + offset[0]).does g, "play"
             c.input(0x00 + offset[0]).does g, "volume"
 
 * The two furthest channel sections (1st and 8th) control the pitch
-related stuff and effects of the two decks.
+related stuff of the two decks.
 
   * S: *Bpm tap*, also shows the speed.
   * M: Toggles *key lock*.
@@ -265,10 +265,10 @@ condition.
             @loadTrack.when @decks.activator(i), g, "LoadSelectedTrack"
 
 * The *play* and *record* buttons synchronize to the other track.  The
-  later only synchronizes tempo, the former both tempo and phase.
+  *play* button can be held to enable master synchronization for the deck.
 
-            @sync.when @decks.activator(i), g, "beatsync"
-            @syncTempo.when @decks.activator(i), g, "beatsync_tempo"
+            @sync.when @decks.activator(i), g, "sync_enabled"
+            @syncTempo.when @decks.activator(i), g, "beatsync"
 
 ### Initialization
 

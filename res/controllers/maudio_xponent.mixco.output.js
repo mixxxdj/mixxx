@@ -1,5 +1,5 @@
 /*
- * File generated with Mixco framework version: 2.0.0
+ * File generated with Mixco framework version: 2.0.2
  * More info at: <http://sinusoid.es/mixco>
  */
 
@@ -1000,28 +1000,6 @@ if (process.env.MIXCO_USE_SOURCE) {
     });
   };
 
-  exports.beatJump = function(group, delta) {
-    return exports.action({
-      press: function() {
-        var bpm, duration, engine, latency, play, position, rate, rateRange, targetpos;
-        engine = this.script.mixxx.engine;
-        bpm = engine.getValue(group, "bpm");
-        duration = engine.getValue(group, "duration");
-        position = engine.getValue(group, "playposition");
-        rate = engine.getValue(group, "rate");
-        rateRange = engine.getValue(group, "rateRange");
-        rate = 1 + rate * rateRange;
-        targetpos = position + 59.9 * rate / delta / bpm / duration;
-        play = engine.getValue(group, "play");
-        if (play) {
-          latency = engine.getValue("[Master]", "latency");
-          targetpos += latency / 1000.0 / duration;
-        }
-        return engine.setValue(group, "playposition", targetpos.clamp(0, 1));
-      }
-    });
-  };
-
   exports.spinback = function() {
     var args, deck;
     deck = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
@@ -2010,6 +1988,10 @@ if (process.env.MIXCO_USE_SOURCE) {
     beatlooproll_8_activate: momentaryT,
     beatloop_double: momentaryT,
     beatloop_halve: momentaryT,
+    beatjump_4_forward: momentaryT,
+    beatjump_4_backward: momentaryT,
+    beatjump_1_forward: momentaryT,
+    beatjump_1_backward: momentaryT,
     beats_translate_curpos: momentaryT,
     beatsync: momentaryT,
     beatsync_tempo: momentaryT,
@@ -2878,14 +2860,103 @@ var substr = 'ab'.substr(-1) === 'b'
 }).call(this,require('_process'))
 },{"_process":12}],12:[function(require,module,exports){
 // shim for using process in browser
-
 var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
 var queue = [];
 var draining = false;
 var currentQueue;
 var queueIndex = -1;
 
 function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
     draining = false;
     if (currentQueue.length) {
         queue = currentQueue.concat(queue);
@@ -2901,7 +2972,7 @@ function drainQueue() {
     if (draining) {
         return;
     }
-    var timeout = setTimeout(cleanUpNextTick);
+    var timeout = runTimeout(cleanUpNextTick);
     draining = true;
 
     var len = queue.length;
@@ -2909,14 +2980,16 @@ function drainQueue() {
         currentQueue = queue;
         queue = [];
         while (++queueIndex < len) {
-            currentQueue[queueIndex].run();
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
         }
         queueIndex = -1;
         len = queue.length;
     }
     currentQueue = null;
     draining = false;
-    clearTimeout(timeout);
+    runClearTimeout(timeout);
 }
 
 process.nextTick = function (fun) {
@@ -2928,7 +3001,7 @@ process.nextTick = function (fun) {
     }
     queue.push(new Item(fun, args));
     if (queue.length === 1 && !draining) {
-        setTimeout(drainQueue, 0);
+        runTimeout(drainQueue);
     }
 };
 
@@ -2961,7 +3034,6 @@ process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
-// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
@@ -5817,8 +5889,6 @@ mixco.script.register(module, {
     c.control(0x08, 0x02).does("[EffectRack1_EffectUnit1_Effect1]", "parameter2");
     c.input(c.noteOnIds(0x00, 0x02)).does("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable");
     c.input(c.noteOnIds(0x01, 0x02)).does("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable");
-    c.input(0x0d, 0x00).does(b.soft("[Microphone]", "volume"));
-    c.control(c.noteOnIds(0x0d, 0x00)).does("[Microphone]", "talkover");
     this.decks = b.chooser();
     this.addDeck(0);
     return this.addDeck(1);
@@ -5857,12 +5927,12 @@ mixco.script.register(module, {
     for (idx = j = 0; j <= 4; idx = ++j) {
       c.control(noteId(0x17 + idx)).when(shift, g, "hotcue_" + (idx + 1) + "_clear", g, "hotcue_" + (idx + 1) + "_enabled")["else"](g, "hotcue_" + (idx + 1) + "_activate", g, "hotcue_" + (idx + 1) + "_enabled");
     }
-    c.control(noteId(0x1C)).when(shift, "[Playlist]", "SelectPrevPlaylist")["else"](b.beatJump(g, -1));
-    c.control(noteId(0x1D)).when(shift, "[Playlist]", "SelectNextPlaylist")["else"](b.beatJump(g, 1));
+    c.control(noteId(0x1C)).when(shift, g, "beatjump_1_backward")["else"](g, "beatjump_4_backward");
+    c.control(noteId(0x1D)).when(shift, g, "beatjump_1_forward")["else"](g, "beatjump_4_forward");
     c.control(noteId(0x1E)).when(shift, "[Playlist]", "ToggleSelectedSidebarItem")["else"](g, "keylock");
     c.control(noteId(0x1F)).does(g, "beats_translate_curpos");
     c.control(noteId(0x20)).does(g, "reverse");
-    c.control(noteId(0x23)).does(g, "cue_default");
+    c.control(noteId(0x23)).does(g, "cue_default", g, "cue_indicator");
     c.control(noteOnId(0x24)).does(g, "play");
     c.control(noteId(0x29)).when(shift, g, "loop_halve")["else"](g, "loop_in");
     c.control(noteId(0x2B)).when(shift, g, "loop_double")["else"](g, "loop_out");
@@ -6887,28 +6957,6 @@ exports.scratchTick = function(deck, transform) {
   });
 };
 
-exports.beatJump = function(group, delta) {
-  return exports.action({
-    press: function() {
-      var bpm, duration, engine, latency, play, position, rate, rateRange, targetpos;
-      engine = this.script.mixxx.engine;
-      bpm = engine.getValue(group, "bpm");
-      duration = engine.getValue(group, "duration");
-      position = engine.getValue(group, "playposition");
-      rate = engine.getValue(group, "rate");
-      rateRange = engine.getValue(group, "rateRange");
-      rate = 1 + rate * rateRange;
-      targetpos = position + 59.9 * rate / delta / bpm / duration;
-      play = engine.getValue(group, "play");
-      if (play) {
-        latency = engine.getValue("[Master]", "latency");
-        targetpos += latency / 1000.0 / duration;
-      }
-      return engine.setValue(group, "playposition", targetpos.clamp(0, 1));
-    }
-  });
-};
-
 exports.spinback = function() {
   var args, deck;
   deck = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
@@ -7885,6 +7933,10 @@ exports.mappings = {
   beatlooproll_8_activate: momentaryT,
   beatloop_double: momentaryT,
   beatloop_halve: momentaryT,
+  beatjump_4_forward: momentaryT,
+  beatjump_4_backward: momentaryT,
+  beatjump_1_forward: momentaryT,
+  beatjump_1_backward: momentaryT,
   beats_translate_curpos: momentaryT,
   beatsync: momentaryT,
   beatsync_tempo: momentaryT,

@@ -104,24 +104,6 @@
                </options>
            </control>
            <control>
-               <group>[Microphone]</group>
-               <key>volume</key>
-               <status>0xb0</status>
-               <midino>0xd</midino>
-               <options>
-                   <soft-takeover/>
-               </options>
-           </control>
-           <control>
-               <group>[Microphone]</group>
-               <key>talkover</key>
-               <status>0x90</status>
-               <midino>0xd</midino>
-               <options>
-                   <normal/>
-               </options>
-           </control>
-           <control>
                <group>[Master]</group>
                <key>maudio_xponent.__handle_x90_x2c</key>
                <status>0x90</status>
@@ -1600,15 +1582,6 @@
                <minimum>1</minimum>
            </output>
            <output>
-               <group>[Microphone]</group>
-               <key>talkover</key>
-               <status>0x90</status>
-               <midino>0xd</midino>
-               <on>0x7f</on>
-               <off>0x0</off>
-               <minimum>1</minimum>
-           </output>
-           <output>
                <group>[Channel1]</group>
                <key>pfl</key>
                <status>0x90</status>
@@ -1700,7 +1673,7 @@
            </output>
            <output>
                <group>[Channel1]</group>
-               <key>cue_default</key>
+               <key>cue_indicator</key>
                <status>0x90</status>
                <midino>0x23</midino>
                <on>0x7f</on>
@@ -1844,7 +1817,7 @@
            </output>
            <output>
                <group>[Channel2]</group>
-               <key>cue_default</key>
+               <key>cue_indicator</key>
                <status>0x91</status>
                <midino>0x23</midino>
                <on>0x7f</on>

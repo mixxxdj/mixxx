@@ -13,8 +13,7 @@
 // language.
 //
 // If you want to modify this script, you may want to read the
-// [Novation Twitch Programmer
-// Guide](www.novationmusic.com/download/799/‎)
+// [Novation Twitch Programmer Guide](https://us.novationmusic.com/support/downloads/twitch-programmers-reference-guide)
 //
 // ### Note for Linux Users
 //
@@ -101,8 +100,9 @@ mixco.script.register(module, {
 	c.input(ccIdFxBanks(0x3)).does(b.soft("[Microphone]", "pregain"))
 	c.control(c.noteIds(0x23, 0xB)).does("[Microphone]", "talkover")
 
-	// * The first two knobs in the *Master FX* section are mapped
-	//   to *mix* and *super* of the first effect unit.
+	// * The the *Depth* and *Mix* knobs in the *Master FX*
+	//   section are mapped to *mix* and *super* of the first
+	//   effect unit.
 
         c.input(ccIdFxBanks(0x0))
             .does("[EffectRack1_EffectUnit1]", "mix")
@@ -110,7 +110,7 @@ mixco.script.register(module, {
             .option(scaledDiff(1/2))
             .does("[EffectRack1_EffectUnit1]", "super1")
 
-        // * The *beats* know can be used to change the selected effect.
+        // * The *beats* knob can be used to change the selected effect.
 
         c.input(ccIdFxBanks(0x2))
             .does("[EffectRack1_EffectUnit1]", "chain_selector")
@@ -130,7 +130,7 @@ mixco.script.register(module, {
 	c.input(c.noteIds(0x56, 0x7)).does(
 	    "[Playlist]", "SelectNextPlaylist")
 
-	// * The *scroll* encoder scrolles the current view.  When
+	// * The *scroll* encoder scrolls the current view.  When
 	//   pressed it moves faster.
 
 	scrollFaster = b.modifier()
@@ -188,6 +188,7 @@ mixco.script.register(module, {
                              g, "bpm_tap", g, "beat_active")
 
 	// * *Volume* fader and *low*, *mid*, *high* and *trim* knobs.
+	//   *Trim* is the deck *gain* knob in Mixxx.
 
 	c.input(ccIdAll(0x07)).does(g, "volume")
 	c.input(ccIdAll(0x46)).does(g, "filterLow")
@@ -243,7 +244,7 @@ mixco.script.register(module, {
 	}
 
 	pad(noteIdAll(0x17), greenLed).does(g, "play")
-	pad(noteId(0x16), redLed).does(g, "cue_default")
+	pad(noteId(0x16), redLed).does(g, "cue_default", g, "cue_indicator")
 	pad(noteIdShift(0x16), amberLed).does(g, "reverse")
 
 	// * The *keylock* button toggles the pitch-independent time
@@ -337,7 +338,7 @@ mixco.script.register(module, {
 	pad(noteIdAll(0x6C), greenLed).does(b.spinback(i+1))
 	pad(noteIdAll(0x6D), greenLed).does(b.brake(i+1))
 
-	// * The buttons *7 and 7* perform a stutter effect at
+	// * The buttons *7 and 8* perform a stutter effect at
 	//   different speeds.
 
 	pad(noteIdAll(0x6E), amberLed).does(b.stutter(g, 1/8))
@@ -346,9 +347,9 @@ mixco.script.register(module, {
 	// ##### Auto loop
 	//
 	// * In *auto-loop* mode, the pads select *loops* of sizes
-	//   0.5, 1, 2, 4, 8, 16, 32 or 64, beats.  On *shift*, it
-	//   creates loops of sizes 1/32, 1/16, 1/8, 1/4, 1/2, 1, 2,
-	//   or 4 beats.
+	//   0.5, 1, 2, 4, 8, 16, 32 or 64, beats (starting at the
+	//   top-left pad).  On *shift*, it creates loops of sizes
+	//   1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, or 4 beats.
 
 	loopSize = [ "0.03125", "0.0625", "0.125", "0.25",
                      "0.5",     "1",      "2",     "4",
@@ -367,8 +368,8 @@ mixco.script.register(module, {
 	// * In *loop-roll* mode, momentarily creates a loop and, on
 	//   release returns the playhead to where it would have been
 	//   without looping.  Loop sizes are 1/32, 1/16, 1/8, 1/4,
-	//   1/2, 1, 2, or 4 beats.  On *shift*, it is 0.5, 1, 2, 4,
-	//   8, 16, 32 or 64 beats.
+	//   1/2, 1, 2, or 4 beats (starting at the top-left pad).  On
+	//   *shift*, it is 0.5, 1, 2, 4, 8, 16, 32 or 64 beats.
 
 	loopSize = [ "0.03125", "0.0625", "0.125", "0.25",
                      "0.5",     "1",      "2",     "4",
