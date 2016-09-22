@@ -138,9 +138,9 @@ channel sliders.
 #### Deck controls
 
 Then, we create a chooser object over the *pfl* (headphone) parameter,
-so we will have only one channel with prehear activated at a time.
+so we will have only one deck with PFL activated at a time.
 Also, this will let us change the behaviour of some *transport*
-controls depending on which deck is *selected* -- i.e, has prehear
+controls depending on which deck is *selected* -- i.e, has PFL
 enabled.
 
             @decks = b.chooser()
@@ -171,7 +171,7 @@ Finally we add the per-deck controls, that are defined in `addDeck`.
 * Then two central channel sections (4th and 5th) control the
   following parameters of the left and right deck:
 
-  * S: Selects the deck for *prehear*.
+  * S: Selects the deck *PFL*.
   * M: *Cue* button for the deck.
   * R: *Play* button for the deck.
   * The fader controls the *volume* of the deck.
@@ -233,8 +233,8 @@ buttons of these sections control *loop double* and *halve.*
 ##### Transport section
 
 These per-deck controls of the transport section have effect on the
-*selected track*.  We consider the current track for *prehear* to be
-the selected track.
+*selected track*.  We consider the current PFL track to be the
+selected track.
 
 The *<<* and *>>* buttons are a bit more complicated. We want them
 to behave as *nudge* buttons for the selected track, but we want the

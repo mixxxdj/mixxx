@@ -70,8 +70,8 @@ mixco.script.register(module, {
 
 	// #### Master section
 	//
-	// Many of the master controls of the that the *pre-hear
-	// volume*, *pre-hear mix*, *booth volume* and *master volume*
+	// Many of the master controls of the that the *headphone
+	// volume*, *headphone mix*, *booth volume* and *master volume*
 	// knobs are handled directly by the integrated soundcard of
 	// the controller.  We map the rest here.
 	//
@@ -81,7 +81,7 @@ mixco.script.register(module, {
 
 	// #### Mic/aux and effects
 	//
-	// Sadly, the buttons *Aux*, *Deck A*, *Deck B* and *Pre-hear*
+	// Sadly, the buttons *Aux*, *Deck A*, *Deck B* and *PFL*
 	// of the effects and microphone sections are controlled by
 	// the hardware in a bit of a useless way, so they do nothing
 	// -- other than light up when they are pressed.
@@ -149,14 +149,14 @@ mixco.script.register(module, {
 	    "[Master]", "maximize_library")
 
         // * The *view* button in the *browser* section lets you tap
-        //   the tempo for the track that is currently on pre-hear.
+        //   the tempo for the track that is currently on PFL.
 
         this.viewButton = c.control(c.noteIds(0x51, 0x7))
 
 	// ### Per deck controls
 	//
 	// We use a `behaviou.chooser` for the PFL selection.  This
-	// will make sure that only one prehear channel is selected at
+	// will make sure that only one deck's PFL is selected at
 	// a time for greater convenience. Then, we define a `addDeck`
 	// function that will add the actual controls for each of the
 	// decks.
@@ -180,7 +180,7 @@ mixco.script.register(module, {
 
 	// #### Mixer section
 	//
-	// * Pre-hear deck selection.
+	// * PFL deck selection.
 
 	c.control(noteIdAll(0x0A)).does(this.decks.add(g, "pfl"))
 
