@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<!-- Numark Mixtrack (Pro) 3 MIDI preset v1.7 -->
+<!-- Numark Mixtrack (Pro) 3 MIDI preset v1.8 -->
 <MixxxControllerPreset mixxxVersion="1.12.0+" schemaVersion="1">
     <info>
 	<name>Numark Mixtrack (Pro) 3</name>
 	<author>Stéphane Morin</author>
 	<description>The Numark Mixtrack 3 and Numark Mixtrack Pro 3 are the same controller except that the Pro version has an integrated sound card.</description>
         <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=7286</forums>
-        <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro_3</wiki>
+	    <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro_3</wiki>
     </info>
     <controller id="Mixtrack3">
         <scriptfiles>
@@ -315,82 +315,82 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterLow</key>
+                <key>NumarkMixtrack3.BassKnob</key>
                 <description>Channel 1 low EQ knob</description>
                 <status>0xB1</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterLow</key>
+                <key>NumarkMixtrack3.BassKnob</key>
                 <description>Channel 2 low EQ knob</description>
                 <status>0xB2</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>			
             <control>
                 <group>[Channel1]</group>
-                <key>filterMid</key>
+                <key>NumarkMixtrack3.MidKnob</key>
                 <description>Channel 1 mid EQ knob</description>
                 <status>0xB1</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterMid</key>
+                <key>NumarkMixtrack3.MidKnob</key>
                 <description>Channel 2 mid EQ knob</description>
                 <status>0xB2</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterHigh</key>
+                <key>NumarkMixtrack3.TrebleKnob</key>
                 <description>Channel 1 high EQ knob</description>
                 <status>0xB1</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterHigh</key>
+                <key>NumarkMixtrack3.TrebleKnob</key>
                 <description>Channel 2 high EQ knob</description>
                 <status>0xB2</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel1]]</group>
-                <key>super1</key>
+                <key>NumarkMixtrack3.FilterKnob</key>
                 <description>Channel 1 filter knob</description>
                 <status>0xB1</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel2]]</group>
-                <key>super1</key>
+                <key>NumarkMixtrack3.FilterKnob</key>
                 <description>Channel 2 filter knob</description>
                 <status>0xB2</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -872,27 +872,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>		
-   			<control>
-                <group>[Channel1]</group>
-                <key>NumarkMixtrack3.InstantFXOff</key>
-				<description>Channel 1 strip Instant FX Off</description>
-                <status>0x91</status>
-                <midino>0x1F</midino>
-                <options>
-                    <script-binding/>
-                </options>
             </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>NumarkMixtrack3.InstantFXOff</key>
-				<description>Channel 2 strip Instant FX Off</description>
-                <status>0x92</status>
-                <midino>0x1F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>			
             <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.StripTouchSearch</key>
@@ -913,6 +893,26 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+                <group>[Channel1]</group>
+                <key>NumarkMixtrack3.InstantFXOff</key>
+				<description>Channel 1 strip Instant FX Off</description>
+                <status>0x91</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkMixtrack3.InstantFXOff</key>
+				<description>Channel 2 strip Instant FX Off</description>
+                <status>0x92</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>			
 			<control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.BeatKnob</key>
