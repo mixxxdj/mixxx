@@ -21,7 +21,7 @@ var smartPFL = true;
 var beatlooprollActivate = false;
 
 // PAD Loop button behavior: "true": Loop stops when finger release. 
-//"false" will force start loop on press and stop on 2nd press vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+//"false" will force start loop on press and stop on 2nd press
 var PADLoopButtonHold = false;
 
 // PAD Sample button behavior:"true": Sampler stops when finger release. 
@@ -1087,11 +1087,8 @@ NumarkMixtrack3.initButtonsObjects = function() {
         NumarkMixtrack3.decks["D"+i].ShiftButtonControl =
             new SingleDoubleBtn(NumarkMixtrack3.OnShiftButton);
         NumarkMixtrack3.decks["D"+i].ShiftedPFLButtonControl =
-            new SingleDoubleBtn(NumarkMixtrack3.OnShiftedPFLButton);  
-        NumarkMixtrack3.decks["D"+i].FXButtonControl =
-            new LongShortDoubleBtn(NumarkMixtrack3.OnFXButtonControl);      
-    }
-    
+            new SingleDoubleBtn(NumarkMixtrack3.OnShiftedPFLButton);       
+    }    
 };
 
 // Called when the MIDI device is opened & set up
