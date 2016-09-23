@@ -11,16 +11,20 @@ class DlgSavedQueriesEditor : public QDialog, private Ui::DlgSavedQueriesEditor
     Q_OBJECT
 
   public:
-    explicit DlgSavedQueriesEditor(LibraryFeature* pFeature, 
-                                   TrackCollection* pTrackCollection, 
+    explicit DlgSavedQueriesEditor(LibraryFeature* pFeature,
+                                   TrackCollection* pTrackCollection,
                                    QWidget* parent = nullptr);
-  
+
   public slots:
-    
+
     void accept() override;
+
+  private slots:
     
+    void removeQuery();
+
   private:
-    
+
     TrackCollection* m_pTrackCollection;
     LibraryFeature* m_pFeature;
 };

@@ -15,7 +15,7 @@ SavedQueriesTableModel::SavedQueriesTableModel(LibraryFeature* pFeature,
     m_cachedData = m_savedDao.getSavedQueries(m_pFeature);
 }
 
-bool SavedQueriesTableModel::isColumnInternal(int column) {
+bool SavedQueriesTableModel::isColumnInternal(int column) const {
     return column != SavedQueryColumns::QUERY &&
             column != SavedQueryColumns::TITLE &&
             column != SavedQueryColumns::PINNED;
@@ -109,9 +109,27 @@ int SavedQueriesTableModel::columnCount(const QModelIndex& parent) const {
     return SavedQueryColumns::NUM_COLUMNS;
 }
 
+bool SavedQueriesTableModel::removeRows(int row, int count, const QModelIndex& parent) {
+    if (parent.isValid()) return false;
+    
+    beginRemoveRows(QModelIndex(), row, row + count - 1);
+    while (count > 0 && row < m_cachedData.size()) {
+        m_removedQueries << m_cachedData.takeAt(row).id;
+        --count;
+    }
+    endRemoveRows();
+    
+    return true;
+}
+
 bool SavedQueriesTableModel::submit() {
     for (const SavedSearchQuery& sQuery : m_cachedData) {
         m_savedDao.updateSavedQuery(sQuery);
     }
-    QAbstractTableModel::submit();
+    
+    for (int id : m_removedQueries) {
+        m_savedDao.deleteSavedQuery(id);
+    }
+    
+    return QAbstractTableModel::submit();
 }
