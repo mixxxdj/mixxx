@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2016-5-1</description>
+    <description>2016-9-2</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -481,62 +481,74 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>pregain</key>
+        <key>VCI102.pitch</key>
         <status>0xB0</status>
         <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>pregain</key>
+        <key>VCI102.pitch</key>
         <status>0xB1</status>
         <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>pregain</key>
+        <key>VCI102.pitch</key>
         <status>0xB2</status>
         <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>pregain</key>
+        <key>VCI102.pitch</key>
         <status>0xB3</status>
         <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VCI102.pitch</key>
+        <key>pregain</key>
         <status>0xB0</status>
         <midino>0x15</midino>
         <options>
-          <script-binding/>
+          <soft-takeover/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VCI102.pitch</key>
+        <key>pregain</key>
         <status>0xB1</status>
         <midino>0x15</midino>
         <options>
-          <script-binding/>
+          <soft-takeover/>
         </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>VCI102.pitch</key>
+        <key>pregain</key>
         <status>0xB2</status>
         <midino>0x15</midino>
         <options>
-          <script-binding/>
+          <soft-takeover/>
         </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>VCI102.pitch</key>
+        <key>pregain</key>
         <status>0xB3</status>
         <midino>0x15</midino>
         <options>
-          <script-binding/>
+          <soft-takeover/>
         </options>
       </control>
       <control>

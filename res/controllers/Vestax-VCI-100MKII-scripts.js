@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2016-5-1
+// description: 2016-9-2
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -166,7 +166,7 @@ VCI102.pitch = function(ch, midino, value, status, group) {
                 engine.setValue(group, key + "_link_inverse", value < 0);
             }
         } else {
-            engine.setParameter(group, key, value / 127);
+            engine.setParameter(group, key, value == 127 ? 1 : value / 128);
         }
     };
 });
@@ -182,7 +182,7 @@ VCI102.super1 = function(ch, midino, value, status, group) {
         engine.setValue(group, key, VCI102.superKnobValue[ch]);
         VCI102.superKnobKey[ch] = key;
     }
-    VCI102.superKnobValue[ch] = value / 127;
+    VCI102.superKnobValue[ch] = value == 127 ? 1 : value / 128;
     engine.setValue(group, key, VCI102.superKnobValue[ch]);
 };
 
@@ -213,7 +213,7 @@ VCI102.loop = function(ch, midino, value, status, group) {
 
 VCI102.reloop = function(ch, midino, value, status, group) {
     if (engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "loop_out", value / 127);
+        engine.setValue(group, "loop_out", value > 0);
     } else {
         engine.setValue(group, "reloop_exit", 1);
     }
@@ -221,7 +221,7 @@ VCI102.reloop = function(ch, midino, value, status, group) {
 
 VCI102.loop_halve = function(ch, midino, value, status, group) {
     if (engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "loop_halve", value / 127);
+        engine.setValue(group, "loop_halve", value > 0);
     } else if (value) {
         VCI102.setLoopLength(ch, status, VCI102.loopLength[ch] / 2);
     }
@@ -229,7 +229,7 @@ VCI102.loop_halve = function(ch, midino, value, status, group) {
 
 VCI102.loop_double = function(ch, midino, value, status, group) {
     if (engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "loop_double", value / 127);
+        engine.setValue(group, "loop_double", value > 0);
     } else if (value) {
         VCI102.setLoopLength(ch, status, VCI102.loopLength[ch] * 2);
     }
@@ -316,7 +316,7 @@ VCI102.init = function(id, debug) {
 
     function makeButton(key) {
         VCI102[key] = function(ch, midino, value, status, group) {
-            engine.setValue(VCI102.Deck[ch % 2], key, value / 127);
+            engine.setValue(VCI102.Deck[ch % 2], key, value > 0);
         };
     }
 
