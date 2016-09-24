@@ -2,15 +2,16 @@
 <!-- Numark Mixtrack (Pro) 3 MIDI preset v1.8 -->
 <MixxxControllerPreset mixxxVersion="1.12.0+" schemaVersion="1">
     <info>
-	<name>Numark Mixtrack (Pro) 3</name>
-	<author>Stéphane Morin</author>
-	<description>The Numark Mixtrack 3 and Numark Mixtrack Pro 3 are the same controller except that the Pro version has an integrated sound card.</description>
+        <name>Numark Mixtrack (Pro) 3</name>
+        <author>Stéphane Morin</author>
+        <description>The Numark Mixtrack 3 and Numark Mixtrack Pro 3 are the same controller except that the Pro version has an integrated
+            sound card.</description>
         <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=7286</forums>
-	    <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro_3</wiki>
+        <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro_3</wiki>
     </info>
     <controller id="Mixtrack3">
         <scriptfiles>
-            <file functionprefix="NumarkMixtrack3" filename="Numark-Mixtrack-3-scripts.js"/>
+            <file functionprefix="NumarkMixtrack3" filename="Numark-Mixtrack-3-scripts.js" />
         </scriptfiles>
         <controls>
             <control>
@@ -20,7 +21,7 @@
                 <status>0xB0</status>
                 <midino>0x07</midino>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <control>
@@ -30,7 +31,7 @@
                 <status>0xB1</status>
                 <midino>0x05</midino>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <control>
@@ -40,7 +41,7 @@
                 <status>0xB2</status>
                 <midino>0x05</midino>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <control>
@@ -113,7 +114,7 @@
                     <script-binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.PadModeButton</key>
                 <description>Channel 1 Pad Mode button</description>
@@ -153,7 +154,7 @@
                     <script-binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.FXButton</key>
                 <description>Channel 1 FX 1 button</description>
@@ -173,7 +174,7 @@
                     <script-binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.FXButton</key>
                 <description>Channel 1 FX 2 button</description>
@@ -193,7 +194,7 @@
                     <script-binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.FXButton</key>
                 <description>Channel 1 FX 3 button</description>
@@ -315,7 +316,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>NumarkMixtrack3.BassKnob</key>
+                <key>NumarkMixtrack3.EQKnob</key>
                 <description>Channel 1 low EQ knob</description>
                 <status>0xB1</status>
                 <midino>0x03</midino>
@@ -325,17 +326,17 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>NumarkMixtrack3.BassKnob</key>
+                <key>NumarkMixtrack3.EQKnob</key>
                 <description>Channel 2 low EQ knob</description>
                 <status>0xB2</status>
                 <midino>0x03</midino>
                 <options>
                     <script-binding/>
                 </options>
-            </control>			
+            </control>
             <control>
                 <group>[Channel1]</group>
-                <key>NumarkMixtrack3.MidKnob</key>
+                <key>NumarkMixtrack3.EQKnob</key>
                 <description>Channel 1 mid EQ knob</description>
                 <status>0xB1</status>
                 <midino>0x02</midino>
@@ -345,7 +346,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>NumarkMixtrack3.MidKnob</key>
+                <key>NumarkMixtrack3.EQKnob</key>
                 <description>Channel 2 mid EQ knob</description>
                 <status>0xB2</status>
                 <midino>0x02</midino>
@@ -355,7 +356,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>NumarkMixtrack3.TrebleKnob</key>
+                <key>NumarkMixtrack3.EQKnob</key>
                 <description>Channel 1 high EQ knob</description>
                 <status>0xB1</status>
                 <midino>0x01</midino>
@@ -365,7 +366,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>NumarkMixtrack3.TrebleKnob</key>
+                <key>NumarkMixtrack3.EQKnob</key>
                 <description>Channel 2 high EQ knob</description>
                 <status>0xB2</status>
                 <midino>0x01</midino>
@@ -473,7 +474,7 @@
                     <script-binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.PADLoopButton</key>
                 <description>Channel 1 PAD loop button 1</description>
@@ -713,7 +714,7 @@
                     <script-binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.PitchFaderLowValue</key>
                 <description>Channel 1 pitch fader precision bits</description>
@@ -732,7 +733,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>            
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.PitchBendPlusButton</key>
@@ -853,10 +854,10 @@
                     <script-binding/>
                 </options>
             </control>
-   			<control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.StripTouchEffect</key>
-				<description>Channel 1 strip</description>
+                <description>Channel 1 strip</description>
                 <status>0xB1</status>
                 <midino>0x1A</midino>
                 <options>
@@ -866,7 +867,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>NumarkMixtrack3.StripTouchEffect</key>
-				<description>Channel 2 strip</description>
+                <description>Channel 2 strip</description>
                 <status>0xB2</status>
                 <midino>0x1A</midino>
                 <options>
@@ -876,7 +877,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.StripTouchSearch</key>
-				<description>Channel 1 SHIFT+strip</description>
+                <description>Channel 1 SHIFT+strip</description>
                 <status>0xB1</status>
                 <midino>0x1B</midino>
                 <options>
@@ -886,17 +887,17 @@
             <control>
                 <group>[Channel2]</group>
                 <key>NumarkMixtrack3.StripTouchSearch</key>
-				<description>Channel 2 SHIFT+strip</description>
+                <description>Channel 2 SHIFT+strip</description>
                 <status>0xB2</status>
                 <midino>0x1B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.InstantFXOff</key>
-				<description>Channel 1 strip Instant FX Off</description>
+                <description>Channel 1 strip Instant FX Off</description>
                 <status>0x91</status>
                 <midino>0x1F</midino>
                 <options>
@@ -906,14 +907,14 @@
             <control>
                 <group>[Channel2]</group>
                 <key>NumarkMixtrack3.InstantFXOff</key>
-				<description>Channel 2 strip Instant FX Off</description>
+                <description>Channel 2 strip Instant FX Off</description>
                 <status>0x92</status>
                 <midino>0x1F</midino>
                 <options>
                     <script-binding/>
                 </options>
-            </control>			
-			<control>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixtrack3.BeatKnob</key>
                 <description>Channel 1 FX 3 Knob</description>
@@ -932,8 +933,8 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control> 
+            </control>
         </controls>
-		<outputs/>
+        <outputs/>
     </controller>
 </MixxxControllerPreset>
