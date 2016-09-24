@@ -18,10 +18,9 @@ void showLibraryWarning() {
 WLibrary::WLibrary(QWidget* parent)
         : WBaseLibrary(parent),
           m_mutex(QMutex::Recursive) {
-    
 }
 
-bool WLibrary::registerView(LibraryFeature *pFeature, QWidget* pView) {
+bool WLibrary::registerView(LibraryFeature* pFeature, QWidget* pView) {
     QMutexLocker lock(&m_mutex);
     if (pFeature == nullptr || dynamic_cast<LibraryView*>(pView) == nullptr) {
         showLibraryWarning();

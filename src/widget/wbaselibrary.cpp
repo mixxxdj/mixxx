@@ -10,12 +10,14 @@
 WBaseLibrary::WBaseLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
+          m_pCurrentFeature(nullptr),
           m_mutex(QMutex::Recursive),
-          m_showFocus(0) {
+          m_showFocus(0),
+          m_isCollapsed(false) {
 
 }
 
-bool WBaseLibrary::registerView(LibraryFeature *pFeature, QWidget *view) {
+bool WBaseLibrary::registerView(LibraryFeature* pFeature, QWidget* view) {
     QMutexLocker lock(&m_mutex);
     if (m_featureMap.contains(pFeature)) {
         return false;
@@ -74,7 +76,6 @@ bool WBaseLibrary::event(QEvent* pEvent) {
 }
 
 void WBaseLibrary::resizeEvent(QResizeEvent *pEvent) {
-    
     // Detect whether the library is collapsed to change the focus behaviour
     if (pEvent->size().isEmpty()) {
         m_isCollapsed = true;
