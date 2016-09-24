@@ -56,13 +56,13 @@
 								<Layout>vertical</Layout>
 								<Children>
 									<LibraryBreadCrumb>
-										<Id>2</Id>
+										<Id>1</Id>
 									</LibraryBreadCrumb>
 									<SearchBox>
-										<Id>2</Id>
+										<Id>1</Id>
 									</SearchBox>
 									<LibraryPane>
-										<Id>2</Id>
+										<Id>1</Id>
 									</LibraryPane>
 								</Children>
 							</WidgetGroup>
@@ -70,27 +70,13 @@
 								<Layout>vertical</Layout>
 								<Children>
 									<LibraryBreadCrumb>
-										<Id>-1</Id>
+										<Id>2</Id>
 									</LibraryBreadCrumb>
 									<SearchBox>
-										<Id>-1</Id>
+										<Id>2</Id>
 									</SearchBox>
 									<LibraryPane>
-										<Id>-1</Id>
-									</LibraryPane>
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-								<Layout>vertical</Layout>
-								<Children>
-									<LibraryBreadCrumb>
-										<Id>3</Id>
-									</LibraryBreadCrumb>
-									<SearchBox>
-										<Id>3</Id>
-									</SearchBox>
-									<LibraryPane>
-										<Id>3</Id>
+										<Id>2</Id>
 									</LibraryPane>
 								</Children>
 							</WidgetGroup>
