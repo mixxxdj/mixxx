@@ -214,6 +214,7 @@ var loopsize = [1, 2, 4, 8, 0.125, 0.25, 0.5, 16];
 /* global script                                                      */
 /* global print                                                       */
 /* global midi                                                        */
+/* global bpm                                                        */
 ////////////////////////////////////////////////////////////////////////
 
 // Line below to remove warnings from JSHINT page regarding dot notation
