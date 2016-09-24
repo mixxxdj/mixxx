@@ -62,7 +62,7 @@ var intervalsPerRev = 1200,
  * first 4 values used for Autoloop Not shifted
  * last 4 values used for Autoloop Shifted
  **************************/
-var loopsize = [1, 2, 4, 8, 0.125, 0.25, 0.5, 16];
+var loopsize = [2, 4, 8, 16, 1, 0.5, 0.25, 0.125];
 
 /************************  GPL v2 licence  *****************************
  * Numark Mixtrack Pro 3 controller script
@@ -2328,81 +2328,40 @@ NumarkMixtrack3.BeatKnob = function (channel, control, value, status, group) {
         // PadMode button is used, Shift key is not used, we adjust Sampler volumes
         // Define new value of sampler pregain
         // Off = 1, centered = 1, max = 4
-        if (decknum === 1) {
 
-            for (i = 1; i <= 4; i++) {
-                gainValue[i - 1] = engine.getValue("[Sampler" + [i] + "]",
-                    "pregain");
 
-                if (gainValue[i - 1] <= 1) {
-                    // increment value between 0 and 1
-                    gainIncrement = 1 / 20; // 20 increments in one full knob turn   
-                } else {
-                    // increment value between 1 and 4
-                    gainIncrement = 3 / 20; // 20 increments in one full knob turn
-                }
+        var startingSampler = 1 + 4 * (decknum - 1);
+        for (i = startingSampler; i <= startingSampler + 3; i++) {
 
-                // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
-                if (value === 127) {
-                    gainIncrement = -gainIncrement;
-                }
+            gainValue[i - 1] = engine.getValue("[Sampler" + [i] + "]",
+                "pregain");
 
-                gainValue[i - 1] = gainValue[i - 1] + gainIncrement;
-
-                if ((gainValue[i - 1] + gainIncrement) < 0) {
-                    gainValue[i - 1] = 0;
-                }
-
-                if ((gainValue[i - 1] + gainIncrement) > 4) {
-                    gainValue[i - 1] = 4;
-                }
-
+            if (gainValue[i - 1] <= 1) {
+                // increment value between 0 and 1
+                gainIncrement = 1 / 20; // 20 increments in one full knob turn   
+            } else {
+                // increment value between 1 and 4
+                gainIncrement = 3 / 20; // 20 increments in one full knob turn
             }
 
-        } else {
-            for (j = 5; j <= 8; j++) {
-                gainValue[j - 1] = engine.getValue("[Sampler" + [j] + "]",
-                    "pregain");
-
-                if (gainValue[j - 1] <= 1) {
-                    // increment value between 0 and 1
-                    gainIncrement = 1 / 20; // 20 increments in one full knob turn   
-                } else {
-                    // increment value between 1 and 4
-                    gainIncrement = 3 / 20; // 20 increments in one full knob turn
-                }
-
-                // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
-                if (value === 127) {
-                    gainIncrement = -gainIncrement;
-                }
-
-                gainValue[j - 1] = gainValue[j - 1] + gainIncrement;
-
-                if ((gainValue[j - 1] + gainIncrement) < 0) {
-                    gainValue[j - 1] = 0;
-                }
-
-                if ((gainValue[j - 1] + gainIncrement) > 4) {
-                    gainValue[j - 1] = 4;
-                }
+            // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
+            if (value === 127) {
+                gainIncrement = -gainIncrement;
             }
-        }
 
-        // we adjust pregain with adjusted value
-        if (decknum === 1) {
-            for (i = 1; i <= 4; i++) {
-                if (gainValue[i - 1] >= 0 && gainValue[i - 1] <= 4) {
-                    engine.setValue("[Sampler" + i + "]", "pregain",
-                        gainValue[i - 1]);
-                }
+            gainValue[i - 1] = gainValue[i - 1] + gainIncrement;
+
+            if ((gainValue[i - 1] + gainIncrement) < 0) {
+                gainValue[i - 1] = 0;
             }
-        } else {
-            for (i = 5; i <= 8; i++) {
-                if (gainValue[i - 1] >= 0 && gainValue[i - 1] <= 4) {
-                    engine.setValue("[Sampler" + i + "]", "pregain",
-                        gainValue[i - 1]);
-                }
+
+            if ((gainValue[i - 1] + gainIncrement) > 4) {
+                gainValue[i - 1] = 4;
+            }
+
+            if (gainValue[i - 1] >= 0 && gainValue[i - 1] <= 4) {
+                engine.setValue("[Sampler" + i + "]", "pregain",
+                    gainValue[i - 1]);
             }
         }
     }
