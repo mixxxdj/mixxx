@@ -34,7 +34,7 @@ class SidebarModel;
 class TrackModel;
 class TrackCollection;
 class WBaseLibrary;
-class WLibrary;
+class WLibraryPane;
 class WLibrarySidebar;
 class WLibraryBreadCrumb;
 class WButtonBar;
@@ -60,7 +60,7 @@ public:
     
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
     void bindSidebarButtons(WButtonBar* sidebar);
-    void bindPaneWidget(WLibrary* libraryWidget,
+    void bindPaneWidget(WLibraryPane* libraryWidget,
                         KeyboardEventFilter* pKeyboard, int paneId);
     void bindSidebarExpanded(WBaseLibrary* expandedPane, 
                              KeyboardEventFilter* pKeyboard);

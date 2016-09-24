@@ -22,7 +22,7 @@ class TrackModel;
 class TreeItem;
 class TreeItemModel;
 class WBaseLibrary;
-class WLibrary;
+class WLibraryPane;
 class WLibrarySidebar;
 class WTrackTableView;
 

@@ -20,7 +20,7 @@ class KeyboardEventFilter;
 class PlaylistTableModel;
 class TrackCollection;
 class TreeItem;
-class WLibrary;
+class WLibraryPane;
 class WLibraryStack;
 
 class BasePlaylistFeature : public LibraryFeature {

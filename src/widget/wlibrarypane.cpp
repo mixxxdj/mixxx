@@ -1,10 +1,10 @@
 // wlibrary.cpp
 // Created 8/28/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <widget/wlibrarypane.h>
 #include <QtDebug>
 #include <QMutexLocker>
 
-#include "widget/wlibrary.h"
 #include "library/libraryview.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 
@@ -15,12 +15,12 @@ void showLibraryWarning() {
 }
 }
 
-WLibrary::WLibrary(QWidget* parent)
+WLibraryPane::WLibraryPane(QWidget* parent)
         : WBaseLibrary(parent),
           m_mutex(QMutex::Recursive) {
 }
 
-bool WLibrary::registerView(LibraryFeature* pFeature, QWidget* pView) {
+bool WLibraryPane::registerView(LibraryFeature* pFeature, QWidget* pView) {
     QMutexLocker lock(&m_mutex);
     if (pFeature == nullptr || dynamic_cast<LibraryView*>(pView) == nullptr) {
         showLibraryWarning();
@@ -29,7 +29,7 @@ bool WLibrary::registerView(LibraryFeature* pFeature, QWidget* pView) {
     return WBaseLibrary::registerView(pFeature, pView);
 }
 
-LibraryView* WLibrary::getActiveView() const {
+LibraryView* WLibraryPane::getActiveView() const {
     LibraryView* pView = dynamic_cast<LibraryView*>(currentWidget());
     if (pView == nullptr) {
         showLibraryWarning();
@@ -38,7 +38,7 @@ LibraryView* WLibrary::getActiveView() const {
 }
 
 
-void WLibrary::switchToFeature(LibraryFeature *pFeature) {
+void WLibraryPane::switchToFeature(LibraryFeature *pFeature) {
     QMutexLocker lock(&m_mutex);
     auto it = m_featureMap.find(pFeature);
     if (it != m_featureMap.end()) {
@@ -52,7 +52,7 @@ void WLibrary::switchToFeature(LibraryFeature *pFeature) {
     }
 }
 
-void WLibrary::search(const QString& name) {
+void WLibraryPane::search(const QString& name) {
     QMutexLocker lock(&m_mutex);
     LibraryView* view = getActiveView();
     if (view == nullptr) {
@@ -62,7 +62,7 @@ void WLibrary::search(const QString& name) {
     view->onSearch(name);
 }
 
-void WLibrary::searchCleared() {
+void WLibraryPane::searchCleared() {
     LibraryView* view = getActiveView();
     if (view == nullptr) {
         return;
@@ -70,7 +70,7 @@ void WLibrary::searchCleared() {
     view->onSearchCleared();
 }
 
-void WLibrary::searchStarting() {
+void WLibraryPane::searchStarting() {
     LibraryView* view = getActiveView();
     if (view == nullptr) {
         return;

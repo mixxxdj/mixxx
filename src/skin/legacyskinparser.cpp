@@ -1,6 +1,7 @@
 // legacyskinparser.cpp
 // Created 9/19/2010 by RJ Ryan (rryan@mit.edu)
 
+#include <widget/wlibrarypane.h>
 #include "skin/legacyskinparser.h"
 
 #include <QDir>
@@ -66,7 +67,6 @@
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wsearchlineedit.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarybreadcrumb.h"
 #include "widget/wbuttonbar.h"
@@ -1274,16 +1274,17 @@ QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
         return nullptr;
     }
     //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
-    WLibrary* pLibraryWidget = new WLibrary(m_pParent);
-    pLibraryWidget->installEventFilter(m_pKeyboard);
-    pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    WLibraryPane* pLibraryPaneWidget = new WLibraryPane(m_pParent);
+    pLibraryPaneWidget->installEventFilter(m_pKeyboard);
+    pLibraryPaneWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
     
-    m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, id);
+    m_pLibrary->bindPaneWidget(pLibraryPaneWidget, m_pKeyboard, id);
     
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
-    commonWidgetSetup(node, pLibraryWidget, false);
-    return pLibraryWidget;
+    commonWidgetSetup(node, pLibraryPaneWidget, false);
+    return pLibraryPaneWidget;
 }
 
 QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
@@ -1303,7 +1304,7 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 	commonWidgetSetup(node, pSearchBox);
 	pLayout->addWidget(pSearchBox);
 	
-	WLibrary* pLibraryWidget = new WLibrary(pContainer);
+	WLibraryPane* pLibraryWidget = new WLibraryPane(pContainer);
 	pLibraryWidget->installEventFilter(m_pKeyboard);
 	pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 	pLayout->addWidget(pLibraryWidget);

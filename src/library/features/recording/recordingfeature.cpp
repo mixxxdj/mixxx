@@ -1,13 +1,13 @@
 // recordingfeature.cpp
 // Created 03/26/2010 by Tobias Rafreider
 
+#include <widget/wlibrarypane.h>
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/features/recording/dlgrecording.h"
 #include "library/features/recording/recordingfeature.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "track/track.h"
-#include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 
 RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,

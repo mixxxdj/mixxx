@@ -847,7 +847,7 @@ class MixxxCore(Feature):
                    "widget/wtracktableview.cpp",
                    "widget/wtracktableviewheader.cpp",
                    "widget/wlibrarysidebar.cpp",
-                   "widget/wlibrary.cpp",
+                   "widget/wlibrarypane.cpp",
                    "widget/wbaselibrary.cpp",
                    "widget/wlibrarytableview.cpp",
                    "widget/wanalysislibrarytableview.cpp",

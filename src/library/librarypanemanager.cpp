@@ -19,10 +19,10 @@ LibraryPaneManager::LibraryPaneManager(int paneId, Library *pLibrary, QObject* p
 LibraryPaneManager::~LibraryPaneManager() {
 }
 
-void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
+void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pPaneWidget,
                                         KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
-    m_pPaneWidget = pLibraryWidget;
+    m_pPaneWidget = pPaneWidget;
     
     connect(m_pPaneWidget, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
@@ -31,7 +31,7 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
     connect(m_pPaneWidget, SIGNAL(uncollapsed()),
             this, SLOT(slotPaneUncollapsed()));
 
-    WLibrary* lib = qobject_cast<WLibrary*>(m_pPaneWidget);
+    WLibraryPane* lib = qobject_cast<WLibraryPane*>(m_pPaneWidget);
     if (lib == nullptr) {
         return;
     }

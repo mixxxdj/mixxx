@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QList>
 
-#include "widget/wlibrary.h"
+#include "../widget/wlibrarypane.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
 

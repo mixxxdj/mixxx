@@ -2,6 +2,7 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 // Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
 
+#include <widget/wlibrarypane.h>
 #include <QtDebug>
 
 #include "analyzer/analyzerqueue.h"
@@ -14,7 +15,6 @@
 #include "util/debug.h"
 #include "util/dnd.h"
 #include "widget/wanalysislibrarytableview.h"
-#include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 
 AnalysisFeature::AnalysisFeature(UserSettingsPointer pConfig,

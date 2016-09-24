@@ -138,7 +138,7 @@ void Library::bindSidebarButtons(WButtonBar* sidebar) {
     }
 }
 
-void Library::bindPaneWidget(WLibrary* pLibraryWidget,
+void Library::bindPaneWidget(WLibraryPane* pPaneWidget,
                              KeyboardEventFilter* pKeyboard, int paneId) {
     
     // Get the value once to avoid searching again in the hash
@@ -146,7 +146,7 @@ void Library::bindPaneWidget(WLibrary* pLibraryWidget,
     if (pPane == nullptr) {
         return;
     }
-    pPane->bindPaneWidget(pLibraryWidget, pKeyboard); 
+    pPane->bindPaneWidget(pPaneWidget, pKeyboard); 
     
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
@@ -188,7 +188,7 @@ LibraryView* Library::getActiveView() {
         return nullptr;
     }
     WBaseLibrary* pPaneWidget = pPane->getPaneWidget();
-    WLibrary* pLibrary = qobject_cast<WLibrary*>(pPaneWidget);
+    WLibraryPane* pLibrary = qobject_cast<WLibraryPane*>(pPaneWidget);
     DEBUG_ASSERT_AND_HANDLE(pLibrary) {
         return nullptr;
     }

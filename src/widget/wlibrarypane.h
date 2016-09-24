@@ -15,10 +15,10 @@
 
 class KeyboardEventFilter;
 
-class WLibrary : public WBaseLibrary {
+class WLibraryPane : public WBaseLibrary {
     Q_OBJECT
   public:
-    explicit WLibrary(QWidget* parent);
+    explicit WLibraryPane(QWidget* parent);
 
     // registerView is used to add a view to the LibraryWidget which the widget
     // can disply on request via showView(). To switch to a given view, call
