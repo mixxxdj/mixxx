@@ -19,7 +19,7 @@ WBaseLibrary::WBaseLibrary(QWidget* parent)
 
 bool WBaseLibrary::registerView(LibraryFeature* pFeature, QWidget* view) {
     QMutexLocker lock(&m_mutex);
-    if (m_featureMap.contains(pFeature)) {
+    if (m_viewsByFeature.contains(pFeature)) {
         return false;
     }
 
@@ -27,7 +27,7 @@ bool WBaseLibrary::registerView(LibraryFeature* pFeature, QWidget* view) {
     int index = addWidget(view);
     setCurrentIndex(index);
     m_pCurrentFeature = pFeature;
-    m_featureMap[pFeature] = view;
+    m_viewsByFeature.insert(pFeature, view);
     return true;
 }
 
@@ -49,9 +49,9 @@ void WBaseLibrary::setShowFocus(int sFocus) {
 }
 
 void WBaseLibrary::switchToFeature(LibraryFeature *pFeature) {
-    auto it = m_featureMap.find(pFeature);
+    auto it = m_viewsByFeature.find(pFeature);
     // Only change the current feature if it's not shown already
-    if (it != m_featureMap.end() && currentWidget() != (*it)) {
+    if (it != m_viewsByFeature.end() && currentWidget() != (*it)) {
         m_pCurrentFeature = pFeature;
         setCurrentWidget(*it);
     }

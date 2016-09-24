@@ -46,7 +46,7 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
     bool event(QEvent* pEvent) override;
     void resizeEvent(QResizeEvent* pEvent) override;
 
-    QHash<LibraryFeature*, QWidget*> m_featureMap;
+    QHash<LibraryFeature*, QWidget*> m_viewsByFeature;
 
   private:
     

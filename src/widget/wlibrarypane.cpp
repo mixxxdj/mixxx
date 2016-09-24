@@ -40,8 +40,8 @@ LibraryView* WLibraryPane::getActiveView() const {
 
 void WLibraryPane::switchToFeature(LibraryFeature *pFeature) {
     QMutexLocker lock(&m_mutex);
-    auto it = m_featureMap.find(pFeature);
-    if (it != m_featureMap.end()) {
+    auto it = m_viewsByFeature.find(pFeature);
+    if (it != m_viewsByFeature.end()) {
         LibraryView* pView = dynamic_cast<LibraryView*>(*it);
         if (pView == nullptr) {
             showLibraryWarning();

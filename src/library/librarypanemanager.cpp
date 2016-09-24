@@ -24,26 +24,25 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pPaneWidget,
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
     m_pPaneWidget = pPaneWidget;
     
-    connect(m_pPaneWidget, SIGNAL(focused()),
+    connect(pPaneWidget, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
-    connect(m_pPaneWidget, SIGNAL(collapsed()),
+    connect(pPaneWidget, SIGNAL(collapsed()),
             this, SLOT(slotPaneCollapsed()));
-    connect(m_pPaneWidget, SIGNAL(uncollapsed()),
+    connect(pPaneWidget, SIGNAL(uncollapsed()),
             this, SLOT(slotPaneUncollapsed()));
 
-    WLibraryPane* lib = qobject_cast<WLibraryPane*>(m_pPaneWidget);
-    if (lib == nullptr) {
+    if (qobject_cast<WLibraryPane*>(pPaneWidget) == nullptr) {
         return;
     }
     for (LibraryFeature* f : m_features) {
-        //f->bindPaneWidget(lib, pKeyboard, m_paneId);
+        //f->bindPaneWidget(pPaneWidget, pKeyboard, m_paneId);
         
-        QWidget* pPane = f->createPaneWidget(pKeyboard, m_paneId);
-        if (pPane == nullptr) {
+        QWidget* pFeaturePaneWidget = f->createPaneWidget(pKeyboard, m_paneId);
+        if (pFeaturePaneWidget == nullptr) {
             continue;
         }
-        pPane->setParent(lib);
-        lib->registerView(f, pPane);
+        pFeaturePaneWidget->setParent(pPaneWidget);
+        pPaneWidget->registerView(f, pFeaturePaneWidget);
     }
 }
 
