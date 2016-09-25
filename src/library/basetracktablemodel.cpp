@@ -14,6 +14,7 @@
 #include "library/tabledelegates/keydelegate.h"
 #include "library/tabledelegates/locationdelegate.h"
 #include "library/tabledelegates/multilineeditdelegate.h"
+#include "library/tabledelegates/overviewdelegate.h"
 #include "library/tabledelegates/previewbuttondelegate.h"
 #include "library/tabledelegates/stardelegate.h"
 #include "library/trackcollection.h"
@@ -69,6 +70,7 @@ const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_TITLE,
         LIBRARYTABLE_TRACKNUMBER,
         LIBRARYTABLE_YEAR,
+        LIBRARYTABLE_WAVESUMMARYHEX,
 };
 
 inline QSqlDatabase cloneDatabase(
@@ -254,6 +256,9 @@ void BaseTrackTableModel::initHeaderProperties() {
             ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION,
             tr("Location"),
             defaultColumnWidth() * 6);
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX,
+            tr("Overview"),
+            defaultColumnWidth());
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW,
             tr("Preview"),
@@ -526,6 +531,17 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return pCoverArtDelegate;
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
         return new KeyDelegate(pTableView);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) {
+        auto* pOverviewDelegate = new OverviewDelegate(pTableView);
+        connect(pOverviewDelegate,
+                &OverviewDelegate::overviewReady,
+                this,
+                &BaseTrackTableModel::slotOverviewReady);
+        connect(pOverviewDelegate,
+                &OverviewDelegate::overviewChanged,
+                this,
+                &BaseTrackTableModel::slotOverviewChanged);
+        return pOverviewDelegate;
     }
     return nullptr;
 }
@@ -1199,6 +1215,28 @@ void BaseTrackTableModel::slotRefreshCoverRows(
         return;
     }
     emitDataChangedForMultipleRowsInColumn(rows, column);
+}
+
+void BaseTrackTableModel::slotOverviewReady(int row) {
+    const int column = fieldIndex(LIBRARYTABLE_COVERART);
+    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
+        return;
+    }
+    QModelIndex idx = index(row, column);
+    emit dataChanged(idx, idx);
+}
+
+void BaseTrackTableModel::slotOverviewChanged(TrackId trackId) {
+    const int column = fieldIndex(LIBRARYTABLE_COVERART);
+    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
+        return;
+    }
+
+    const auto rows = getTrackRows(trackId);
+    for (int row : rows) {
+        QModelIndex idx = index(row, column);
+        emit dataChanged(idx, idx);
+    }
 }
 
 void BaseTrackTableModel::slotRefreshAllRows() {
