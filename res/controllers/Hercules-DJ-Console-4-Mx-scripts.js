@@ -17,7 +17,7 @@
 //        Removed midi channel configuration. It also required modifying the mapping, so it didn't really work.
 //        Automatically setup some internal values, like 4 decks mode
 //        Support speed sensor on jog wheel and Fx knob. They need to be moved really fast, so it's rarely useful.
-// Version 2016-09-22
+// Version 2016-09-25
 //        Beatgrid editing mode enabled with shift+sync. Allows to correct the beatgrid from the controller. 
 //        (For when you're in the middle of a mix and something is not properly aligned)
 //        Brake effect (power unplug) with shift+stop, backward playing moved to shift+play and forward and rewind by beats.
@@ -31,6 +31,7 @@
 //        New loop edit mode. It allows for a random length loop as well as more beatloop sizes. It is also possible to modify
 //          a loop size with the fx knob. See the updated wiki for a detailed explanation.
 //        The FX "super" knob can be controlled from the controller now. Maintain the fx button pressed and move the knob.
+//        Pressing either of the pitch scale buttons (musical key action) together with moving the fx knob can be used to control the key
 //        
 // Usage:
 // ------
@@ -57,7 +58,7 @@ Hercules4Mx.userSettings = {
     'autoHeadcueOnLoad': true,
     // Flashing at the rythm of the beat on the led. Use the Leds map above.
     // Note: if using sync button, then the button will not show sync master state.
-    'beatFlashLed': Hercules4Mx.Leds.JogLed,
+    'beatFlashLed': Hercules4Mx.Leds.none,
     // Simulate vuMeters using the kill and source buttons. If enabled, shows master vus, or deck vu depending if prefader listen button is enabled or not.
     'useVuMeters': true,
     // KeyRepeat speed for navigating up/down, in milliseconds. 100 is a good value. Lower values make it scroll faster.
@@ -136,19 +137,20 @@ Hercules4Mx.editModes = {
     'beatgrid': 0,
     'effects': 1,
     'loop': 2,
-    'effectknob': 3
+    'effectknob': 3,
+    'loopsizing': 4,
+    'pitchkeychanging': 5
 };
 Hercules4Mx.editModeStatus = {
     'mode': Hercules4Mx.editModes.disabled,
-    'effect': -1
+    'effect': -1,
+    'used': false
 };
 Hercules4Mx.shiftStatus = {
     'pressed': false,
     'used': false,
     'braking': false,
-    'reversing': false,
-    'loopsizing': false,
-    'effectsuperknob': false
+    'reversing': false
 };
 Hercules4Mx.VuMeterL = {
     'initchan': 1, // This is used internally to know that this is VuMeterL
@@ -330,7 +332,7 @@ Hercules4Mx.allLedsOff = function() {
         midi.sendShortMsg(Hercules4Mx.NOnC1, i, 0x00);
         midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x40, 0x00);
     }
-    for (i = 0x1; i <= 0x11; i++) { // Fx, cue, play, cuesel,stop, sync
+    for (i = 0xD; i <= 0x11; i++) { // cue, play, PFL (cuesel),stop, sync
         midi.sendShortMsg(Hercules4Mx.NOnC1, i, 0x00);
         midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x20, 0x00);
     }
@@ -338,9 +340,13 @@ Hercules4Mx.allLedsOff = function() {
         midi.sendShortMsg(Hercules4Mx.NOnC1, i, 0x00);
         midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x20, 0x00);
     }
+    for (i = 0x1; i <= 0xC; i++) { // Fx
+        midi.sendShortMsg(Hercules4Mx.NOnC1, i, 0x00);
+        midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x20, 0x00);
+    }
     // I've put these on a separate loop so that there are more chances for decks A/B leds to light off when shutdown,
     // since there is a strange problem where not all messages are delivered.
-    for (i = 0x1; i <= 0x11; i++) { // Fx, cue, play, cuesel,stop, sync
+    for (i = 0x1; i <= 0x11; i++) { // Fx, cue, play, PFL (cuesel),stop, sync
         midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x40, 0x00);
         midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x60, 0x00);
         midi.sendShortMsg(Hercules4Mx.NOnC2, i, 0x00);
@@ -766,9 +772,15 @@ Hercules4Mx.pScaleDownButton = function(midichan, control, value, status, group)
         engine.setParameter(group, "keylock", !engine.getParameter(group, "keylock"));
         //Tell shift button not to change state.
         Hercules4Mx.shiftStatus.used = true;
-    } else {
-        //Possible improvement: Add also timer to do repeat
+    } else if (value) {
         engine.setParameter(group, "pitch_adjust_down_small", value);
+        if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
+            Hercules4Mx.deactivateEditModeAction();
+        }
+        Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.pitchkeychanging, '');
+        Hercules4Mx.editModeStatus.used = false;
+    } else {
+        Hercules4Mx.deactivateEditModeAction();
     }
 };
 
@@ -779,9 +791,15 @@ Hercules4Mx.pScaleUpButton = function(midichan, control, value, status, group) {
         engine.setParameter(group, "quantize", !engine.getParameter(group, "quantize"));
         //Tell shift button not to change state.
         Hercules4Mx.shiftStatus.used = true;
-    } else {
-        //Possible improvement: Add also timer to do repeat
+    } else if (value) {
         engine.setParameter(group, "pitch_adjust_up_small", value);
+        if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
+            Hercules4Mx.deactivateEditModeAction();
+        }
+        Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.pitchkeychanging, '');
+        Hercules4Mx.editModeStatus.used = false;
+    } else {
+        Hercules4Mx.deactivateEditModeAction();
     }
 };
 
@@ -1006,6 +1024,7 @@ Hercules4Mx.doNavigateAction = function() {
 
 
 Hercules4Mx.effectKnob = function(midichan, control, value, status, group) {
+    //group is: [QuickEffectRack1_[Channel1]]
     var fxGroup;
     //It has a speed sensor, but you have to move it really fast for it to send something different.
     var direction = (value < 0x40) ? value : value - 0x80;
@@ -1017,19 +1036,17 @@ Hercules4Mx.effectKnob = function(midichan, control, value, status, group) {
         //Tell shift button not to change state.
         Hercules4Mx.shiftStatus.used = true;
     }
-    if (Hercules4Mx.shiftStatus.loopsizing) {
+    if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.loopsizing) {
         fxGroup = "[Channel" + group.slice(-3).substr(0, 1) + "]";
         var action = (direction > 0) ? "loop_double" : "loop_halve";
         engine.setValue(fxGroup, action, 1);
         //"Releasing" the button.
         engine.setValue(fxGroup, action, 0);
-        //TODO: do not use shifstatus.used
-        Hercules4Mx.shiftStatus.used = true;
+        Hercules4Mx.editModeStatus.used = true;
     } else if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.effectknob) {
         fxGroup = "[EffectRack1_EffectUnit" + Hercules4Mx.editModeStatus.effect + "]";
         engine.setParameter(fxGroup, "super1", engine.getParameter(fxGroup, "super1") + step * direction);
-        //TODO: do not use shifstatus.used
-        Hercules4Mx.shiftStatus.used = true;
+        Hercules4Mx.editModeStatus.used = true;
     } else if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.beatgrid) {
         var Fxgroup = "[Channel" + group.slice(-3).substr(0, 1) + "]";
         if (direction < 0) {
@@ -1037,8 +1054,28 @@ Hercules4Mx.effectKnob = function(midichan, control, value, status, group) {
         } else {
             engine.setParameter(Fxgroup, "beats_translate_later", direction);
         }
+    } else if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.pitchkeychanging) {
+        fxGroup = "[Channel" + group.slice(-3).substr(0, 1) + "]";
+        if (direction > 0 ) {
+            engine.setParameter(fxGroup, "pitch_adjust_up_small", 1);
+            engine.setParameter(fxGroup, "pitch_adjust_up_small", 0);
+        }
+        else {
+            engine.setParameter(fxGroup, "pitch_adjust_down_small", 1);
+            engine.setParameter(fxGroup, "pitch_adjust_down_small", 0);
+        }
     } else {
-        engine.setParameter(group, "super1", engine.getParameter(group, "super1") + step * direction);
+        var val =  engine.getParameter(group, "super1") + step * direction;
+        if ( Hercules4Mx.shiftStatus.used === false) {
+            //Let's round it properly.
+            if (direction > 0 && val > 0.5 && val - step < 0.5) {
+                val = 0.5;
+            }
+            else if (direction < 0 && val < 0.5 && val + step > 0.5) {
+                val = 0.5;
+            }
+        }
+        engine.setParameter(group, "super1", val);
     }
 };
 
@@ -1061,15 +1098,13 @@ Hercules4Mx.FxSwitchDown = function(group, fxbutton, value, extraparam) {
         Hercules4Mx.deactivateEditModeAction();
     }
     Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.effectknob, extraparam);
-    //TODO: do not use shifstatus.used
-    Hercules4Mx.shiftStatus.used = false;
+    Hercules4Mx.editModeStatus.used = false;
 };
 Hercules4Mx.FxSwitchUp = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
         engine.log("entering Hercules4Mx.FxSwitchUp");
     }
-    //TODO: do not use shifstatus.used
-    if (Hercules4Mx.shiftStatus.used === false) {
+    if (Hercules4Mx.editModeStatus.used === false) {
         var deck = script.deckFromGroup(group);
         var state = engine.getParameter("[EffectRack1_EffectUnit" + extraparam + "]", "group_[Channel" + deck + "]_enable");
         engine.setParameter("[EffectRack1_EffectUnit" + extraparam + "]", "group_[Channel" + deck + "]_enable", !state);
@@ -1098,27 +1133,27 @@ Hercules4Mx.FxSamplerPush = function(group, fxbutton, value, extraparam) {
 };
 /*
  button 1: loop start and loop editing functionality -> 
-		loop enabled and is not one of the two preconfigured: button led is on
-		click: sets loop start (all 6 buttons start blinking). 
-		    If loop was already enabled, moves the start to the current position but does not disable the playing loop
-		click on button 2: set loop end and enable looping (stops blinking and sets led on buttons 1 and 2 to on).
-		click on any of the other 4 buttons: set loop to 2, 8, 16, 32 beats (stops blinking and sets led on button 1 to on).
-		click on button 1: forget start pos (discard loop) (stops blinking and no led is on).
-		click again release loop. 
-		click with shift pressed: Same as clic, but this will be a rolling loop
-		"mousedown" while loop is on and move knob: double or halve the loop. 
+        loop enabled and is not one of the two preconfigured: button led is on
+        click: sets loop start (all 6 buttons start blinking). 
+            If loop was already enabled, moves the start to the current position but does not disable the playing loop
+        click on button 2: set loop end and enable looping (stops blinking and sets led on buttons 1 and 2 to on).
+        click on any of the other 4 buttons: set loop to 2, 8, 16, 32 beats (stops blinking and sets led on button 1 to on).
+        click on button 1: forget start pos (discard loop) (stops blinking and no led is on).
+        click again release loop. 
+        click with shift pressed: Same as clic, but this will be a rolling loop
+        "mousedown" while loop is on and move knob: double or halve the loop. 
 
  button 2: loop end, reloop functionality ->
-		loop present: button led is on.
+        loop present: button led is on.
         click without a loop present: nothing
-		click with a loop present but not active: activate the loop (reloop)
-		click with shift pressed with a loop present but not active: Same as clic, but this will be a rolling loop
-		click when a loop is present and active: release loop
-		click when configuring a loop (see button 1): set loop end and enable looping.
+        click with a loop present but not active: activate the loop (reloop)
+        click with shift pressed with a loop present but not active: Same as clic, but this will be a rolling loop
+        click when a loop is present and active: release loop
+        click when configuring a loop (see button 1): set loop end and enable looping.
 
  buttons 3 and 4: predefined beat loops  -> (maybe user configurable which two he wants. by default could be 1 and 4 beats
-		click when this beatloop is not active: set a loop with specified beats and enable it. (button led is set to on).
-		click when this beatloop is active: release loop.
+        click when this beatloop is not active: set a loop with specified beats and enable it. (button led is set to on).
+        click when this beatloop is active: release loop.
         click with shift pressed:  Same as clic, but this will be a rolling loop
 
  buttons 3 to 6: additional beat loops ->
@@ -1129,16 +1164,17 @@ Hercules4Mx.LoopEditPress = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
         engine.log("entering Hercules4Mx.LoopEditPress");
     }
-    Hercules4Mx.shiftStatus.loopsizing = true;
-    //TODO: do not use shifstatus.used
-    Hercules4Mx.shiftStatus.used = false;
+    if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
+        Hercules4Mx.deactivateEditModeAction();
+    }
+    Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.loopsizing, '');
+    Hercules4Mx.editModeStatus.used = false;
 };
 Hercules4Mx.LoopEditRelease = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
         engine.log("entering Hercules4Mx.LoopEditRelease");
     }
-    //TODO: do not use shifstatus.used
-    if (Hercules4Mx.shiftStatus.used === false) {
+    if (Hercules4Mx.editModeStatus.used === false) {
         var deck = script.deckFromGroup(group);
         if (engine.getValue(group, "loop_enabled") === 0) {
             if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
@@ -1152,7 +1188,7 @@ Hercules4Mx.LoopEditRelease = function(group, fxbutton, value, extraparam) {
             engine.setValue(group, "reloop_exit", 1);
         }
     }
-    Hercules4Mx.shiftStatus.loopsizing = false;
+    Hercules4Mx.deactivateEditModeAction();
 };
 Hercules4Mx.LoopEditComplete = function(group, button) {
     if (Hercules4Mx.debuglog) {
