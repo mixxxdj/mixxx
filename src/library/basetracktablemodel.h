@@ -249,6 +249,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     void slotRefreshCoverRows(
             const QList<int>& rows);
 
+    void slotRefreshOverviewRows(const QList<int>& rows);
+
+    void slotRefreshOverview(const TrackId trackId);
+
     void slotRefreshAllRows();
 
     void slotCoverFound(

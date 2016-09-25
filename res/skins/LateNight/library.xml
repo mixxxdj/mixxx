@@ -110,6 +110,15 @@
               <Library>
                 <ShowButtonText>false</ShowButtonText>
                 <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                <!-- Waveform signal colors used for Overviews in library -->
+                <SignalColor>#fedcba</SignalColor>
+                <!-- Default colors are used for high/mid/low: blue/green/red -->
+                <SignalHighColor></SignalHighColor>
+                <SignalMidColor></SignalMidColor>
+                <SignalLowColor></SignalLowColor>
+                <SignalRGBHighColor></SignalRGBHighColor>
+                <SignalRGBMidColor></SignalRGBMidColor>
+                <SignalRGBLowColor></SignalRGBLowColor>
               </Library>
 
             </Children>

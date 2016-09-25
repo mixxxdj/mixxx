@@ -97,7 +97,6 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_endOfTrackWarningTime(30),
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
           m_zoomSync(true),
-          m_overviewNormalized(false),
           m_untilMarkShowBeats(false),
           m_untilMarkShowTime(false),
           m_untilMarkAlign(Qt::AlignVCenter),
@@ -383,12 +382,14 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         }
     }
 
+    /*
     int overviewNormalized = m_config->getValueString(ConfigKey("[Waveform]","OverviewNormalized")).toInt(&ok);
     if (ok) {
         setOverviewNormalized(static_cast<bool>(overviewNormalized));
     } else {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
+    */
 
     m_playMarkerPosition = m_config->getValue(ConfigKey("[Waveform]", "PlayMarkerPosition"),
             WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
@@ -680,12 +681,14 @@ double WaveformWidgetFactory::getVisualGain(FilterIndex index) const {
     return m_visualGain[index];
 }
 
+/*
 void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
     m_overviewNormalized = normalize;
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
 }
+*/
 
 void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
     m_playMarkerPosition = position;
