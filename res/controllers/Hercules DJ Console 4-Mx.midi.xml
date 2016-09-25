@@ -83,14 +83,11 @@
                 </options>
             </control>
             <control>
-                <group>[Microphone]</group>
-                <key>talkover</key>
+                <group></group>
+                <key></key>
                 <description>Button Mic On/Off (state)</description>
                 <status>0x90</status>
                 <midino>0x47</midino>
-                <options>
-                    <switch/>
-                </options>
             </control>
             <control>
                 <group>[Channel2]</group>
