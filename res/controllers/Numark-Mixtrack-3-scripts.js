@@ -865,8 +865,8 @@ LongShortDoubleBtn.prototype.ButtonDecide = function () {
 // the crossfader closes, when the jog wheel is turned forward the crossfader
 // will open.
 
-var AutoCut = function (deckNum) {
-    this.deckNum = deckNum;
+var AutoCut = function (decknum) {
+    this.decknum = decknum;
     this.timer = 0;
     this.delay = 20;
     this.fadersave = 0;
@@ -880,7 +880,7 @@ AutoCut.prototype.On = function () {
     }
 };
 
-AutoCut.prototype.FaderCut = function (jogValue) {
+AutoCut.prototype.FaderCut = function (jogValue, decknum) {
     if (this.enabled) {
         var direction = Math.sign(jogValue); //Get Jog wheel direction
         // Backward=-1 (close), forward =0 (open)
@@ -889,7 +889,7 @@ AutoCut.prototype.FaderCut = function (jogValue) {
         }
         //  Left Deck ? direction = 0 (open : crossfader to zéro) or 1 (close : crossfader to the right)
         // Right Deck ? direction = 0 (open : crossfader to zéro) or -1 (close : crossfader to the left)
-        if (this.deckNum === 1) {
+        if (decknum === 1) {
             direction = -direction;
         } // else direction is of the good sign
         engine.setValue('[Master]', 'crossfader', direction);
@@ -912,11 +912,11 @@ AutoCut.prototype.Off = function () {
 // if it centers on 0.
 // See http://www.mixxx.org/wiki/doku.php/midi_scripting#scratching
 
-var Jogger = function (group, deckNum, model) {
-    this.deckNum = deckNum;
+var Jogger = function (group, decknum, model) {
+    this.decknum = decknum;
     this.group = group;
     this.wheelTouchInertiaTimer = 0;
-    this.iCUT = new AutoCut(deckNum);
+    this.iCUT = new AutoCut(decknum);
     this.model = model;
 };
 
@@ -972,9 +972,9 @@ NumarkMixtrack3.samplers = new NumarkMixtrack3.SamplerBank();
 // ******************************************************************
 // Decks
 // *********
-NumarkMixtrack3.deck = function (deckNum) {
-    this.deckNum = deckNum;
-    this.group = "[Channel" + deckNum + "]";
+NumarkMixtrack3.deck = function (decknum) {
+    this.decknum = decknum;
+    this.group = "[Channel" + decknum + "]";
     this.loaded = false;
     this.LoadInitiated = false;
     this.jogWheelsInScratchMode = false;
@@ -995,7 +995,7 @@ NumarkMixtrack3.deck = function (deckNum) {
     // NMTP3 is a "Model A" controller for scratching, it centers on 0.
     // See http://www.mixxx.org/wiki/doku.php/midi_scripting#scratching
     // and see "Jogger" object constructor
-    this.Jog = new Jogger(this.group, this.deckNum, "A");
+    this.Jog = new Jogger(this.group, this.decknum, "A");
 };
 
 NumarkMixtrack3.deck.prototype.TrackIsLoaded = function () {
@@ -1907,7 +1907,7 @@ NumarkMixtrack3.WheelMove = function (channel, control, value, status, group) {
         printInfo("   WheelMove - ICUT = true - adjustedJog =" +
             adjustedJog + " value=" + value);
         deck.Jog.iCUT.On();
-        deck.Jog.iCUT.FaderCut(adjustedJog);
+        deck.Jog.iCUT.FaderCut(adjustedJog,decknum);
     }
 
     // the 2 conditions below may not be required as the simply default to 
@@ -2541,11 +2541,13 @@ NumarkMixtrack3.OnVolumeChange = function (value, group, control) {
     var delta = value - deck.lastfadervalue;
 
     if (deck.faderstart) {
-        if (value <= 0.01) {
+        if (value <= 0.01 && deck.isplaying) {
             engine.setValue(group, "play", 0);
+            deck.isplaying = false;
         } else {
-            if (delta > 0) {
+            if (delta > 0 && !deck.isplaying) {
                 engine.setValue(group, "play", 1);
+                deck.isplaying = true;
             }
         }
     }
