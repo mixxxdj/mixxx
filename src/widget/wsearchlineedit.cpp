@@ -264,8 +264,7 @@ void WSearchLineEdit::showPlaceholder() {
     setPalette(pal);
 }
 
-void WSearchLineEdit::updateButtons(const QString& text)
-{
+void WSearchLineEdit::updateButtons(const QString& text) {
     bool visible = !text.isEmpty() && !m_place;
     m_pDropButton->setVisible(true);
     m_pSaveButton->setVisible(true);
@@ -328,9 +327,13 @@ void WSearchLineEdit::restoreQuery() {
         action->setData(-1);
     }
     
-    for (const SavedSearchQuery& query : savedQueries) {
-        QAction* action = menu.addAction(query.title);
-        action->setData(query.id);
+    for (const SavedSearchQuery& sQuery : savedQueries) {
+        QAction* action = menu.addAction(sQuery.title);
+        action->setData(sQuery.id);
+        if (sQuery.pinned) {
+            action->setIcon(QIcon(":/images/ic_library_pinned.png"));
+            action->setIconVisibleInMenu(true);
+        }
     }
     {
         menu.addSeparator();
