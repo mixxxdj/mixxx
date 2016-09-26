@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2016-9-2
+// description: 2016-10-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -153,7 +153,13 @@ VCI102.rateQuantizedLSB = function(ch, midino, value, status, group) {
 };
 
 VCI102.pitch = function(ch, midino, value, status, group) {
-    engine.setValue(group, "pitch", Math.round(value * 3 / 32) - 6);
+    if (engine.getValue(group, "keylock")) {
+        // absolute discrete change up and down to 6 semitones
+        engine.setValue(group, "pitch", Math.round(value * 3 / 32) - 6);
+    } else {
+        // relative continuous change up and down to about whole tone
+        engine.setValue(group, "pitch_adjust", (value - 64) / 32);
+    }
 };
 
 ["parameter1", "parameter2", "parameter3"].forEach(function(key) {
@@ -166,7 +172,7 @@ VCI102.pitch = function(ch, midino, value, status, group) {
                 engine.setValue(group, key + "_link_inverse", value < 0);
             }
         } else {
-            engine.setParameter(group, key, value == 127 ? 1 : value / 128);
+            engine.setParameter(group, key, value < 127 ? value / 128 : 1);
         }
     };
 });
@@ -182,7 +188,7 @@ VCI102.super1 = function(ch, midino, value, status, group) {
         engine.setValue(group, key, VCI102.superKnobValue[ch]);
         VCI102.superKnobKey[ch] = key;
     }
-    VCI102.superKnobValue[ch] = value == 127 ? 1 : value / 128;
+    VCI102.superKnobValue[ch] = value < 127 ? value / 128 : 1;
     engine.setValue(group, key, VCI102.superKnobValue[ch]);
 };
 
@@ -355,6 +361,7 @@ VCI102.init = function(id, debug) {
         }
         engine.softTakeover(VCI102.deck[i], "rate", true);
         engine.softTakeover(VCI102.deck[i], "pitch", true);
+        engine.softTakeover(VCI102.deck[i], "pitch_adjust", true);
         engine.softTakeover(VCI102.fx[i], "super1", true);
         engine.softTakeover(VCI102.fx[i], "mix", true);
     }
