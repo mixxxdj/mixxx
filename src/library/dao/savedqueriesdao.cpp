@@ -110,7 +110,7 @@ SavedSearchQuery SavedQueriesDAO::moveToFirst(LibraryFeature* pFeature, int id) 
     return moveToFirst(pFeature, getSavedQuery(id));
 }
 
-bool SavedQueriesDAO::updateSavedQuery(const SavedSearchQuery& sQuery) {
+bool SavedQueriesDAO::updateSavedQuery(const SavedSearchQuery& sQuery) {    
     QSqlQuery query(m_database);
     query.prepare("UPDATE " SAVEDQUERYTABLE " SET "
             "query = :query, title = :title, selectedItems = :selectedItems, "

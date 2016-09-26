@@ -68,8 +68,7 @@ struct SavedSearchQuery {
 
 class LibraryFeature;
 
-class SavedQueriesDAO : public DAO
-{
+class SavedQueriesDAO : public DAO {
   public:
     SavedQueriesDAO(QSqlDatabase& database);
     
