@@ -16,12 +16,10 @@ void showLibraryWarning() {
 }
 
 WLibraryPane::WLibraryPane(QWidget* parent)
-        : WBaseLibrary(parent),
-          m_mutex(QMutex::Recursive) {
+        : WBaseLibrary(parent) {
 }
 
 bool WLibraryPane::registerView(LibraryFeature* pFeature, QWidget* pView) {
-    QMutexLocker lock(&m_mutex);
     if (pFeature == nullptr || dynamic_cast<LibraryView*>(pView) == nullptr) {
         showLibraryWarning();
         return false;
@@ -39,7 +37,6 @@ LibraryView* WLibraryPane::getActiveView() const {
 
 
 void WLibraryPane::switchToFeature(LibraryFeature *pFeature) {
-    QMutexLocker lock(&m_mutex);
     auto it = m_viewsByFeature.find(pFeature);
     if (it != m_viewsByFeature.end()) {
         LibraryView* pView = dynamic_cast<LibraryView*>(*it);
@@ -53,12 +50,10 @@ void WLibraryPane::switchToFeature(LibraryFeature *pFeature) {
 }
 
 void WLibraryPane::search(const QString& name) {
-    QMutexLocker lock(&m_mutex);
     LibraryView* view = getActiveView();
     if (view == nullptr) {
         return;
     }
-    lock.unlock();
     view->onSearch(name);
 }
 

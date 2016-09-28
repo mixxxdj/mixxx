@@ -26,19 +26,16 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
     // Sets the widget to the focused state, it's not the same as Qt focus
     void setShowFocus(int sFocus);
     
-  signals:
-  
-    void focused();
-    void collapsed();
-    void uncollapsed();
-    
-  public slots:
-
     virtual void switchToFeature(LibraryFeature* pFeature);
-    
     virtual void search(const QString&) {}
     virtual void searchStarting() {}
     virtual void searchCleared() {}
+
+  signals:
+
+    void focused();
+    void collapsed();
+    void uncollapsed();
 
   protected:
       
@@ -51,7 +48,6 @@ class WBaseLibrary : public QStackedWidget, public WBaseWidget
   private:
     
     LibraryFeature* m_pCurrentFeature;
-    QMutex m_mutex;
     int m_showFocus;
     bool m_isCollapsed;
 };

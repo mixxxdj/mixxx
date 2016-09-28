@@ -29,19 +29,14 @@ class WLibraryPane : public WBaseLibrary {
     bool registerView(LibraryFeature* pFeature, QWidget* pView);
 
     LibraryView* getActiveView() const;
-    
-  public slots:
-    // Show the view registered with the given name. Does nothing if the current
+
+    // Show the view registered with the given feature. Does nothing if the current
     // view is the specified view, or if the name does not specify any
     // registered view.
     void switchToFeature(LibraryFeature* pFeature);
-
     void search(const QString& name) override;
     void searchCleared() override;
     void searchStarting() override;
-
-  private:    
-    QMutex m_mutex;
 };
 
 #endif /* WLIBRARY_H */

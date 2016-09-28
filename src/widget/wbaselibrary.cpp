@@ -11,14 +11,12 @@ WBaseLibrary::WBaseLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
           m_pCurrentFeature(nullptr),
-          m_mutex(QMutex::Recursive),
           m_showFocus(0),
           m_isCollapsed(false) {
 
 }
 
 bool WBaseLibrary::registerView(LibraryFeature* pFeature, QWidget* view) {
-    QMutexLocker lock(&m_mutex);
     if (m_viewsByFeature.contains(pFeature)) {
         return false;
     }
