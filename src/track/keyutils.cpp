@@ -1,11 +1,11 @@
 // Horrible Hack to workaround QT 4.8 bug with MSVC compiler. lp:1627826
-// QT 4.8 explicitely disable Initializer list, but initializer list is
+// QT 4.8 explicitely disable Initializer lists, but initializer lists is
 // supported with MSVC 2012 SP2 +
 // http://code.qt.io/cgit/qt/qt.git/tree/src/corelib/global/qglobal.h#n910
 // TODO(XXX): Remove after QT4 deprecation, unneeded with QT5
-#ifdef __WINDOWS__
+#if _MSC_FULL_VER >= 180030324 // VC 12 SP 2 RC
   #define Q_COMPILER_INITIALIZER_LISTS
-#endif
+#endif /* VC 12 SP 2 RC */
 #include <QtDebug>
 #include <QMap>
 #include <QMutexLocker>
