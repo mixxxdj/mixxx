@@ -3,9 +3,9 @@
 // supported with MSVC 2012 SP2 +
 // http://code.qt.io/cgit/qt/qt.git/tree/src/corelib/global/qglobal.h#n910
 // TODO(XXX): Remove after QT4 deprecation, unneeded with QT5
-#if _MSC_FULL_VER >= 180030324 // VC 12 SP 2 RC
+#if _MSC_VER >= 1800 /* MSVS 2013 */
   #define Q_COMPILER_INITIALIZER_LISTS
-#endif /* VC 12 SP 2 RC */
+#endif /* MSVS 2013 */
 #include <QtDebug>
 #include <QMap>
 #include <QMutexLocker>
