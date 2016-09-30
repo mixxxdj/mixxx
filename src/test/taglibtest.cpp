@@ -34,7 +34,7 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
     tmpFile.close(); // close before copying
 
     // Delete empty temporary file
-    ASSERT_TRUE(QFile::remove(tmpFileName));
+    ASSERT_TRUE(tmpFile.remove());
 
     // Copy original to temporary file
     QFile copiedFile(tmpFileName);
