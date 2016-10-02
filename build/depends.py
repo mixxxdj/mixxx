@@ -933,7 +933,6 @@ class MixxxCore(Feature):
                    "library/library.cpp",
                    "library/librarypanemanager.cpp",
                    "library/librarysidebarexpandedmanager.cpp",
-                   "library/sidebarmodel.cpp",
 
                    "library/scanner/libraryscanner.cpp",
                    "library/scanner/libraryscannerdlg.cpp",

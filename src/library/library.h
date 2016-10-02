@@ -52,8 +52,7 @@ public:
     
     static const int kDefaultRowHeightPx;
     
-    Library(QObject* parent,
-            UserSettingsPointer pConfig,
+    Library(UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
@@ -160,7 +159,6 @@ public:
     void handlePreselection();
     
     UserSettingsPointer m_pConfig;
-    SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;

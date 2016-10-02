@@ -30,7 +30,6 @@
 #include "library/librarypanemanager.h"
 #include "library/librarysidebarexpandedmanager.h"
 #include "library/librarytablemodel.h"
-#include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
 #include "mixer/playermanager.h"
@@ -45,11 +44,10 @@
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
 
-Library::Library(QObject* parent, UserSettingsPointer pConfig,
+Library::Library(UserSettingsPointer pConfig,
                  PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
-        m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
@@ -96,9 +94,6 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 }
 
 Library::~Library() {
-    // Delete the sidebar model first since it depends on the LibraryFeatures.
-    delete m_pSidebarModel;
-        
     qDeleteAll(m_features);
     m_features.clear();
 
@@ -201,9 +196,7 @@ void Library::addFeature(LibraryFeature* feature) {
         return;
     }
     m_features.append(feature);
-    
-    m_pSidebarModel->addLibraryFeature(feature);
-    
+
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),

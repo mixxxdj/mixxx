@@ -8,7 +8,6 @@
 #include <QUrl>
 
 #include "library/treeitemmodel.h"
-#include "library/sidebarmodel.h"
 #include "util/dnd.h"
 
 const int expand_time = 250;
@@ -117,36 +116,16 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             // Do nothing.
             event->ignore();
         } else {
-            SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             bool accepted = true;
-            if (sidebarModel) {
+            TreeItemModel* treeModel = dynamic_cast<TreeItemModel*>(model());
+            if (treeModel) {
                 accepted = false;
                 for (const QUrl& url : urls) {
                     QModelIndex destIndex = this->indexAt(event->pos());
-                    if (sidebarModel->dragMoveAccept(destIndex, url)) {
-                        // We only need one URL to be valid for us
-                        // to accept the whole drag...
-                        // consider we have a long list of valid files, checking all will
-                        // take a lot of time that stales Mixxx and this makes the drop feature useless
-                        // Eg. you may have tried to drag two MP3's and an EXE, the drop is accepted here,
-                        // but the EXE is sorted out later after dropping
+                    if (treeModel->dragMoveAccept(destIndex, url)) {
                         accepted = true;
                         break;
                     }
-                }
-            } else {
-                TreeItemModel* treeModel = dynamic_cast<TreeItemModel*>(model());
-                if (treeModel) {
-                    accepted = false;
-                    
-                    for (const QUrl& url : urls) {
-                        QModelIndex destIndex = this->indexAt(event->pos());
-                        if (treeModel->dragMoveAccept(destIndex, url)) {
-                            accepted = true;
-                            break;
-                        }
-                    }
-                    
                 }
             }
             if (accepted) {
@@ -188,28 +167,14 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             //this->selectionModel()->clear();
             //Drag-and-drop from an external application or the track table widget
             //eg. dragging a track from Windows Explorer onto the sidebar
-            SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
-            
-            if (sidebarModel) {
+            TreeItemModel* pTreeModel = dynamic_cast<TreeItemModel*>(model());
+            if (pTreeModel) {
                 QModelIndex destIndex = indexAt(event->pos());
-                // event->source() will return NULL if something is droped from
-                // a different application
                 QList<QUrl> urls(event->mimeData()->urls());
-                if (sidebarModel->dropAccept(destIndex, urls, event->source())) {
+                if (pTreeModel->dropAccept(destIndex, urls, event->source())) {
                     event->acceptProposedAction();
                 } else {
                     event->ignore();
-                }
-            } else {
-                TreeItemModel* pTreeModel = dynamic_cast<TreeItemModel*>(model());
-                if (pTreeModel) {
-                    QModelIndex destIndex = indexAt(event->pos());
-                    QList<QUrl> urls(event->mimeData()->urls());
-                    if (pTreeModel->dropAccept(destIndex, urls, event->source())) {
-                        event->acceptProposedAction();
-                    } else {
-                        event->ignore();
-                    }
                 }
             }
         }

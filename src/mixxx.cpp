@@ -264,7 +264,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     CoverArtCache::create();
 
     // (long)
-    m_pLibrary = new Library(this, pConfig,
+    m_pLibrary = new Library(pConfig,
                              m_pPlayerManager,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
