@@ -18,10 +18,12 @@
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
-    
     explicit WSearchLineEdit(QWidget* pParent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
+    void restoreSearch(const QString& text,
+            QPointer<LibraryFeature> pFeature = nullptr);
+    void slotRestoreSaveButton();
 
   protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -37,12 +39,8 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void focused();
     void cancel();
 
-  public slots:
-    void restoreSearch(const QString& text, QPointer<LibraryFeature> pFeature = nullptr);
-    void slotTextChanged(const QString& text);
-    void slotRestoreSaveButton();
-
   private slots:
+    void slotTextChanged(const QString& text);
     void updateButtons(const QString& text);
     void slotSetupTimer(const QString&);
     void triggerSearch();

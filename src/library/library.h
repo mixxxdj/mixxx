@@ -180,7 +180,7 @@ public:
     LibraryFeature* m_focusedFeature;
     
     // Can be any integer as it's used with a HashMap
-    int m_focusedPane;
+    int m_focusedPaneId;
     int m_preselectedPane;
     int m_previewPreselectedPane;
 };

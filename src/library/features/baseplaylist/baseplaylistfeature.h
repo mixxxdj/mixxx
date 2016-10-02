@@ -133,8 +133,8 @@ class BasePlaylistFeature : public LibraryFeature {
     QSet<int> m_playlistsSelectedTrackIsIn;
     
     QHash<int, QPointer<WLibraryStack> > m_panes;
-    QHash<int, int> m_idBrowse;
-    QHash<int, int> m_idTable;
+    QHash<int, int> m_browseIndexByPaneId;
+    QHash<int, int> m_tableIndexByPaneId;
 };
 
 #endif /* BASEPLAYLISTFEATURE_H */

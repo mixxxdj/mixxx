@@ -208,7 +208,6 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* event) {
     }
 }
 
-// slot
 void WSearchLineEdit::restoreSearch(const QString& text, QPointer<LibraryFeature> pFeature) {
     if(text.isNull()) {
         // disable

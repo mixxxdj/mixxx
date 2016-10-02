@@ -55,7 +55,7 @@ Library::Library(UserSettingsPointer pConfig,
         m_pSidebarExpanded(nullptr),
         m_hoveredFeature(nullptr),
         m_focusedFeature(nullptr),
-        m_focusedPane(-1),
+        m_focusedPaneId(-1),
         m_preselectedPane(-1),
         m_previewPreselectedPane(-1) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
@@ -178,7 +178,7 @@ void Library::destroyInterface() {
 }
 
 LibraryView* Library::getActiveView() {
-    LibraryPaneManager* pPane = m_panes.value(m_focusedPane);
+    LibraryPaneManager* pPane = m_panes.value(m_focusedPaneId);
     DEBUG_ASSERT_AND_HANDLE(pPane) {
         return nullptr;
     }
@@ -216,9 +216,9 @@ void Library::switchToFeature(LibraryFeature* pFeature) {
     if (pPane == nullptr) {
         // No pane is preselected so we are handling an activateChild() method
         // or similar. We only change the input focus to the feature one.
-        m_focusedPane = pFeature->getFeaturePane();
+        m_focusedPaneId = pFeature->getFeaturePaneId();
         handleFocus();
-        return;
+        pPane = getFocusedPane();
     }
     
     pPane->switchToFeature(pFeature);
@@ -283,9 +283,9 @@ void Library::paneFocused(LibraryPaneManager* pPane) {
     }
     
     if (pPane != m_pSidebarExpanded) {
-        m_focusedPane = pPane->getPaneId();
-        pPane->getCurrentFeature()->setFeaturePane(m_focusedPane);
-        DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
+        m_focusedPaneId = pPane->getPaneId();
+        pPane->getCurrentFeature()->setFeaturePane(m_focusedPaneId);
+        DEBUG_ASSERT_AND_HANDLE(m_focusedPaneId != -1) {
             return;
         }
         handleFocus();
@@ -306,7 +306,7 @@ void Library::panePreselected(LibraryPaneManager* pPane, bool value) {
 }
 
 int Library::getFocusedPaneId() {
-    return m_focusedPane;
+    return m_focusedPaneId;
 }
 
 int Library::getPreselectedPaneId() {
@@ -359,7 +359,7 @@ void Library::onSkinLoadFinished() {
         }
         
         // The first pane always shows the Mixxx Library feature on start
-        m_preselectedPane = m_focusedPane = m_panes.begin().key();
+        m_preselectedPane = m_focusedPaneId = m_panes.begin().key();
         handleFocus();
         (*m_features.begin())->setFeaturePane(m_preselectedPane);
         slotActivateFeature(*m_features.begin());
@@ -457,7 +457,7 @@ void Library::paneCollapsed(int paneId) {
     for (LibraryPaneManager* pPane : m_panes) {
         int auxId = pPane->getPaneId();
         if (!m_collapsedPanes.contains(auxId) && !focused) {
-            m_focusedPane = pPane->getPaneId();
+            m_focusedPaneId = pPane->getPaneId();
             pPane->setFocused(true);
             focused = true;
         }
@@ -601,13 +601,13 @@ LibraryPaneManager* Library::getOrCreatePane(int paneId) {
     pPane->addFeatures(m_features);
     m_panes.insert(paneId, pPane);
     
-    m_focusedPane = paneId;
+    m_focusedPaneId = paneId;
     return pPane;
 }
 
 LibraryPaneManager* Library::getFocusedPane() {
     //qDebug() << "Focused" << m_focusedPane;
-    return m_panes.value(m_focusedPane);
+    return m_panes.value(m_focusedPaneId);
 }
 
 LibraryPaneManager* Library::getPreselectedPane() {
@@ -687,7 +687,7 @@ void Library::handleFocus() {
     for (LibraryPaneManager* pPane : m_panes) {
         pPane->setFocused(false);
     }
-    LibraryPaneManager* pFocusPane = m_panes.value(m_focusedPane);
+    LibraryPaneManager* pFocusPane = m_panes.value(m_focusedPaneId);
     if (pFocusPane) {
         pFocusPane->setFocused(true);
     }
@@ -710,7 +710,7 @@ void Library::handlePreselection() {
 }
 
 void Library::focusSearch() {
-    LibraryPaneManager* pFocusPane = m_panes.value(m_focusedPane);
+    LibraryPaneManager* pFocusPane = m_panes.value(m_focusedPaneId);
     if (pFocusPane == nullptr) return;
     bool ok = pFocusPane->focusSearch();
     if (ok) return;

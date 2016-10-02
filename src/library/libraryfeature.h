@@ -26,7 +26,7 @@ class WLibraryPane;
 class WLibrarySidebar;
 class WTrackTableView;
 
-// pure virtual (abstract) class to provide an interface for libraryfeatures
+// abstract class to provide an interface for library features
 class LibraryFeature : public QObject {
     Q_OBJECT
   public:
@@ -70,7 +70,7 @@ class LibraryFeature : public QObject {
     virtual TreeItemModel* getChildModel() = 0;
     
     virtual void setFeaturePane(int paneId);
-    int getFeaturePane();
+    int getFeaturePaneId();
     
     void setSavedPane(int paneId);
     int getSavedPane();
@@ -162,7 +162,7 @@ class LibraryFeature : public QObject {
     
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);
-    QHash<int, QPointer<WTrackTableView> > m_trackTables;
+    QHash<int, QPointer<WTrackTableView> > m_trackTablesByPaneId;
 };
 
 #endif /* LIBRARYFEATURE_H */

@@ -125,11 +125,19 @@ QPointer<PlaylistTableModel> BasePlaylistFeature::getPlaylistTableModel(int pane
 }
 
 void BasePlaylistFeature::activate() {
-    if (m_lastChildClicked[m_featurePane].isValid()) {
-        activateChild(m_lastChildClicked[m_featurePane]);
+    int preselectedPane = getPreselectedPane();
+    if (preselectedPane >= 0) {
+        m_featurePane = preselectedPane;
+    }
+
+    auto modelIt = m_lastChildClicked.find(m_featurePane);
+    if (modelIt != m_lastChildClicked.end() &&  (*modelIt).isValid()) {
+        qDebug() << "BasePlaylistFeature::activate" << "m_lastChildClicked found";
+        // Open last clicked Playlist in the preselectded pane
+        activateChild(*modelIt);
         return;
     }
-    
+
     showBrowse(m_featurePane);
     switchToFeature();
     showBreadCrumb();
@@ -138,8 +146,9 @@ void BasePlaylistFeature::activate() {
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
-    if (getPreselectedPane() >= 0) {
-        m_featurePane = getPreselectedPane();
+    int preselectedPane = getPreselectedPane();
+    if (preselectedPane >= 0) {
+        m_featurePane = preselectedPane;
     }
     
     if (index == m_lastChildClicked[m_featurePane]) {
@@ -654,8 +663,8 @@ int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
 
 void BasePlaylistFeature::showTable(int paneId) {
     auto it = m_panes.find(paneId);
-    auto itId = m_idTable.find(paneId);
-    if (it == m_panes.end() || it->isNull() || itId == m_idTable.end()) {
+    auto itId = m_tableIndexByPaneId.find(paneId);
+    if (it == m_panes.end() || it->isNull() || itId == m_tableIndexByPaneId.end()) {
         return;
     }
     
@@ -664,8 +673,8 @@ void BasePlaylistFeature::showTable(int paneId) {
 
 void BasePlaylistFeature::showBrowse(int paneId) {
     auto it = m_panes.find(paneId);
-    auto itId = m_idBrowse.find(paneId);
-    if (it == m_panes.end() || it->isNull() || itId == m_idBrowse.end()) {
+    auto itId = m_browseIndexByPaneId.find(paneId);
+    if (it == m_panes.end() || it->isNull() || itId == m_browseIndexByPaneId.end()) {
         return;
     }
     
@@ -698,11 +707,11 @@ QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     edit->installEventFilter(pKeyboard);
     connect(edit, SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
-    m_idBrowse[paneId] = pStack->addWidget(edit);
+    m_browseIndexByPaneId[paneId] = pStack->addWidget(edit);
     
     QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId);
     pTable->setParent(pStack);
-    m_idTable[paneId] = pStack->addWidget(pTable);
+    m_tableIndexByPaneId[paneId] = pStack->addWidget(pTable);
     
     return pStack;
 }
