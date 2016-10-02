@@ -172,11 +172,11 @@ void MixxxLibraryFeature::setChildModel(TreeItemModel* pChild) {
     
     m_pChildModel = pChild;
     connect(&m_trackDao, SIGNAL(trackChanged(TrackId)),
-            m_pChildModel, SLOT(reloadTracksTree()));
+            m_pChildModel, SLOT(reloadTree()));
     connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<TrackId>)),
-            m_pChildModel, SLOT(reloadTracksTree()));
+            m_pChildModel, SLOT(reloadTree()));
     connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
-            m_pChildModel, SLOT(reloadTracksTree()));
+            m_pChildModel, SLOT(reloadTree()));
 }
 
 void MixxxLibraryFeature::activate() {

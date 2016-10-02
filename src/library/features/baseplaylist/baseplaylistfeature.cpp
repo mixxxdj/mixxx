@@ -94,8 +94,6 @@ BasePlaylistFeature::BasePlaylistFeature(UserSettingsPointer pConfig,
 
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
             this, SLOT(slotTrackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotResetSelectedTrack()));
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -811,9 +809,4 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     }
 
     m_childModel->triggerRepaint();
-}
-
-
-void BasePlaylistFeature::slotResetSelectedTrack() {
-    slotTrackSelected(TrackPointer());
 }

@@ -621,18 +621,24 @@ LibraryPaneManager* Library::getPreselectedPane() {
     return m_panes.value(m_preselectedPane);
 }
 
-void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface* pPlayerManager) {
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(pConfig, this, this, m_pTrackCollection);
+void Library::createFeatures(UserSettingsPointer pConfig,
+                             PlayerManagerInterface* pPlayerManager) {
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(
+            pConfig, this, this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
 
-    addFeature(new AutoDJFeature(pConfig, this, this, pPlayerManager, m_pTrackCollection));
+    addFeature(new AutoDJFeature(
+            pConfig, this, this, pPlayerManager, m_pTrackCollection));
     
-    addFeature(new LibraryFoldersFeature(pConfig, this, this, m_pTrackCollection));
+    addFeature(new LibraryFoldersFeature(
+            pConfig, this, this, m_pTrackCollection));
     
-    m_pPlaylistFeature = new PlaylistFeature(pConfig, this, this, m_pTrackCollection);
+    m_pPlaylistFeature = new PlaylistFeature(
+            pConfig, this, this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);
     
-    m_pCrateFeature = new CrateFeature(pConfig, this, this, m_pTrackCollection);
+    m_pCrateFeature = new CrateFeature(
+            pConfig, this, this, m_pTrackCollection);
     addFeature(m_pCrateFeature);
     
     BrowseFeature* browseFeature = new BrowseFeature(

@@ -33,7 +33,7 @@ class WLibraryPane : public WBaseLibrary {
     // Show the view registered with the given feature. Does nothing if the current
     // view is the specified view, or if the name does not specify any
     // registered view.
-    void switchToFeature(LibraryFeature* pFeature);
+    void switchToFeature(LibraryFeature* pFeature) override;
     void search(const QString& name) override;
     void searchCleared() override;
     void searchStarting() override;

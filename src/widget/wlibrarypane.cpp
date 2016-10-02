@@ -36,7 +36,8 @@ LibraryView* WLibraryPane::getActiveView() const {
 }
 
 
-void WLibraryPane::switchToFeature(LibraryFeature *pFeature) {
+void WLibraryPane::switchToFeature(LibraryFeature* pFeature) {
+    qDebug() << "switchToFeature" << pFeature;
     auto it = m_viewsByFeature.find(pFeature);
     if (it != m_viewsByFeature.end()) {
         LibraryView* pView = dynamic_cast<LibraryView*>(*it);
