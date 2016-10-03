@@ -389,7 +389,7 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("Jumps to the beginning of the track and stops."));
 
     // Currently used for decks
-    QString cueSet = tr("Places a cue-point at the current position on the waveform.");
+    QString cueSet = tr("Places a cue point at the current position on the waveform.");
     add("play_cue_set")
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
@@ -403,7 +403,7 @@ void Tooltips::addStandardTooltips() {
             << QString("%1 %2: %3").arg(leftClick, whileStopped, tr("Set cue point (Pioneer/Mixxx mode), set cue point and play (CUP mode) OR preview from it (Denon mode)."))
             << tr("Hint: Change the default cue mode in Preferences -> Interface.")
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue-point and stops."));
+            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."));
 
     add("pfl")
             << tr("Headphone")
