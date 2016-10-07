@@ -1306,7 +1306,8 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 	
 	WLibraryPane* pLibraryWidget = new WLibraryPane(pContainer);
 	pLibraryWidget->installEventFilter(m_pKeyboard);
-	pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+	pLibraryWidget->installEventFilter(
+	        m_pControllerManager->getControllerLearningEventFilter());
 	pLayout->addWidget(pLibraryWidget);
 	
 	m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, m_paneId);

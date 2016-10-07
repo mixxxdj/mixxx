@@ -194,19 +194,16 @@ void WLibrarySidebar::toggleSelectedItem() {
         emit(pressed(index));
         // Expand or collapse the item as necessary.
         setExpanded(index, !isExpanded(index));
-        
     }
 }
 
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
-    qDebug() << event->text() << (bool) (event->key() == Qt::Key_Return);
-    
     if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
         toggleSelectedItem();
         return;
     }
 
-    // Fall through to deafult handler.
+    // Fall through to default handler.
     QTreeView::keyPressEvent(event);
 }
 

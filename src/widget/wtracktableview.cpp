@@ -78,7 +78,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotReloadCoverArt()));
 
     // Disable editing
-    //setEditTriggers(QAbstractItemView::NoEditTriggers);
+    setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     // Create all the context m_pMenu->actions (stuff that shows up when you
     //right-click)
@@ -1271,17 +1271,47 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
 }
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Return) {
-        // It is not a good idea if 'key_return'
-        // causes a track to load since we allow in-line editing
-        // of table items in general
-        return;
-    } else if ((event->modifiers() & Qt::ControlModifier) ||
-            event->key() == Qt::Key_F) {
-        qDebug() << "Ctrl+f Table";
-        QTableView::keyPressEvent(event);
+    qDebug() << "WTrackTableView::keyPressEvent" << event;
+    if (event == QKeySequence::Copy) {
+        copy();
+    } else if (event == QKeySequence::Paste) {
+        paste();
+    } else if (event == QKeySequence::Cut) {
+        cut();
+    } else if (event == QKeySequence::SelectAll) {
+        selectAll();
+        event->accept();
+    } else if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
+            event->modifiers() == Qt::NoModifier) {
+        loadSelectedTrack();
+        event->accept();
+    } else if (event == QKeySequence::Delete) {
+        slotRemove();
+        event->accept();
     } else {
-        QTableView::keyPressEvent(event);
+        // QTableView::keyPressEvent(event) will consume all key events due to
+        // it's keyboardSearch feature.
+        // In Mixxx, we prefer that most keyboard mappings are working, so we
+        // pass only some basic keys to the base class
+        switch (event->key()) {
+        case Qt::Key_Down:
+        case Qt::Key_Up:
+        case Qt::Key_Left:
+        case Qt::Key_Right:
+        case Qt::Key_Home:
+        case Qt::Key_End:
+        case Qt::Key_PageUp:
+        case Qt::Key_PageDown:
+        case Qt::Key_Tab:
+        case Qt::Key_Backtab:
+        case Qt::Key_Space:
+        case Qt::Key_Select:
+        case Qt::Key_F2:
+            QTableView::keyPressEvent(event);
+            break;
+        default:
+            event->ignore();
+        }
     }
 }
 
@@ -1700,4 +1730,24 @@ void WTrackTableView::slotReloadCoverArt() {
     if (pCache) {
         pCache->requestGuessCovers(selectedTracks);
     }
+}
+
+void WTrackTableView::cut() {
+    qDebug() << "QKeySequence::Copy";
+    /*
+    QVariant variant;
+    if (d->model)
+        variant = d->model->data(currentIndex(), Qt::DisplayRole);
+    if (variant.type() == QVariant::String)
+        QApplication::clipboard()->setText(variant.toString());
+    event->accept();
+    */
+}
+
+void WTrackTableView::paste() {
+    qDebug() << "QKeySequence::Paste";
+}
+
+void WTrackTableView::copy(){
+    qDebug() << "QKeySequence::Copy";
 }

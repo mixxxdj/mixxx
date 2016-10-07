@@ -659,8 +659,9 @@ void MixxxMainWindow::initializeKeyboard() {
     // initialization into KeyboardEventFilter
     // Workaround for today: KeyboardEventFilter calls delete
     bool keyboardShortcutsEnabled = pConfig->getValueString(
-        ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
+            ConfigKey("[Keyboard]", "Enabled")) == "1";
+    m_pKeyboard = new KeyboardEventFilter(
+            keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
 int MixxxMainWindow::noSoundDlg(void) {

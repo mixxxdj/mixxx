@@ -93,6 +93,9 @@ class WTrackTableView : public WLibraryTableView {
     void dragMoveEvent(QDragMoveEvent * event) override;
     void dragEnterEvent(QDragEnterEvent * event) override;
     void dropEvent(QDropEvent * event) override;
+    void cut();
+    void paste();
+    void copy();
     void lockBpm(bool lock);
     int getVisibleColumn();
 

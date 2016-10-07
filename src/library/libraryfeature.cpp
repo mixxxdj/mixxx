@@ -182,9 +182,7 @@ WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboar
                                                    int paneId) {
     WTrackTableView* pTrackTableView = 
             new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, true);
-    
-    pTrackTableView->installEventFilter(pKeyboard);
-    
+        
     WMiniViewScrollBar* pScrollBar = new WMiniViewScrollBar(pTrackTableView);
     pTrackTableView->setScrollBar(pScrollBar);
     
