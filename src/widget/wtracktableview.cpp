@@ -3,6 +3,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QDrag>
+#include <QClipboard>
 
 #include "widget/wtracktableview.h"
 
@@ -1274,10 +1275,13 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     qDebug() << "WTrackTableView::keyPressEvent" << event;
     if (event == QKeySequence::Copy) {
         copy();
+        event->accept();
     } else if (event == QKeySequence::Paste) {
         paste();
+        event->accept();
     } else if (event == QKeySequence::Cut) {
         cut();
+        event->accept();
     } else if (event == QKeySequence::SelectAll) {
         selectAll();
         event->accept();
@@ -1470,7 +1474,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
             trackIds.append(trackId);
         }
     }
-   if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
+    if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
        QString name;
        bool validNameGiven = false;
 
@@ -1505,7 +1509,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
                                  +name);
            return;
        }
-   }
+    }
     if (trackIds.size() > 0) {
         // TODO(XXX): Care whether the append succeeded.
         m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
@@ -1733,7 +1737,7 @@ void WTrackTableView::slotReloadCoverArt() {
 }
 
 void WTrackTableView::cut() {
-    qDebug() << "QKeySequence::Copy";
+    qDebug() << "QKeySequence::Cut";
     /*
     QVariant variant;
     if (d->model)
@@ -1746,8 +1750,54 @@ void WTrackTableView::cut() {
 
 void WTrackTableView::paste() {
     qDebug() << "QKeySequence::Paste";
+
+    qDebug() << QApplication::clipboard();
+    qDebug() << QApplication::clipboard()->mimeData()->data("text/plain;charset=utf-8");
+    qDebug() << QApplication::clipboard()->mimeData()->urls();
+    qDebug() << QApplication::clipboard()->mimeData()->text();
+    qDebug() << QApplication::clipboard()->mimeData()->formats();
 }
 
 void WTrackTableView::copy(){
     qDebug() << "QKeySequence::Copy";
+
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel) {
+        return;
+    }
+
+    QList<QUrl> locationUrls;
+    QString locations;
+    QByteArray gnomeFormat = QByteArray("copy");
+    QModelIndexList indices = selectionModel()->selectedRows();
+    QList<TrackId> trackIds;
+    for (const QModelIndex& index : indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (!pTrack) {
+            continue;
+        }
+        if (!locations.isEmpty()) {
+            locations += "\n";
+        }
+        locations += pTrack->getLocation();
+        QUrl fileUrl = QUrl::fromLocalFile(pTrack->getLocation());
+        locationUrls.append(fileUrl);
+        gnomeFormat += "\n" + fileUrl.toEncoded();
+    }
+
+    if (locationUrls.isEmpty()) {
+        return;
+    }
+
+    QMimeData* mimeData = new QMimeData();
+    mimeData->setUrls(locationUrls);
+    // According to RFC 6657 this should be "US-ASCII"
+    // However this is used by Gedit and Utf8 character are accepted
+    mimeData->setText(locations);
+    // This is the correct way to pass unicode strings (not used by Gedit)
+    mimeData->setData("text/plain;charset=utf-8", locations.toUtf8());
+    // This is accepted by Nautilus and Co
+    mimeData->setData("x-special/gnome-copied-files", gnomeFormat);
+
+    QApplication::clipboard()->setMimeData(mimeData);
 }
