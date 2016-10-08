@@ -1297,23 +1297,35 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         // it's keyboardSearch feature.
         // In Mixxx, we prefer that most keyboard mappings are working, so we
         // pass only some basic keys to the base class
-        switch (event->key()) {
-        case Qt::Key_Down:
-        case Qt::Key_Up:
-        case Qt::Key_Left:
-        case Qt::Key_Right:
-        case Qt::Key_Home:
-        case Qt::Key_End:
-        case Qt::Key_PageUp:
-        case Qt::Key_PageDown:
-        case Qt::Key_Tab:
-        case Qt::Key_Backtab:
-        case Qt::Key_Space:
-        case Qt::Key_Select:
-        case Qt::Key_F2:
-            QTableView::keyPressEvent(event);
-            break;
-        default:
+        if (event->modifiers() == Qt::NoModifier) {
+            switch (event->key()) {
+            case Qt::Key_Down:
+            case Qt::Key_Up:
+            case Qt::Key_Left:
+            case Qt::Key_Right:
+            case Qt::Key_Home:
+            case Qt::Key_End:
+            case Qt::Key_PageUp:
+            case Qt::Key_PageDown:
+            case Qt::Key_Tab:
+            case Qt::Key_Backtab:
+            case Qt::Key_Space:
+            case Qt::Key_Select:
+            case Qt::Key_F2:
+                QTableView::keyPressEvent(event);
+                break;
+            default:
+                event->ignore();
+            }
+        } else if (event->modifiers() == Qt::SHIFT) {
+            switch (event->key()) {
+            case Qt::Key_Tab:
+                QTableView::keyPressEvent(event);
+                break;
+            default:
+                event->ignore();
+            }
+        } else {
             event->ignore();
         }
     }
