@@ -2059,7 +2059,6 @@ NumarkMixtrack3.PADLoopButton = function (channel, control, value, status,
     }
 };
 
-
 NumarkMixtrack3.StripTouchEffect = function (channel, control, value, status,
     group) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
@@ -2070,18 +2069,6 @@ NumarkMixtrack3.StripTouchEffect = function (channel, control, value, status,
         deck.StripEffect(value, decknum);
     }
 };
-
-NumarkMixtrack3.StripTouchSearch = function (channel, control, value, status,
-    group) {
-    var decknum = NumarkMixtrack3.deckFromGroup(group);
-    var deck = NumarkMixtrack3.decks["D" + decknum];
-    if (deck.shiftKey) {
-        engine.setValue(group, "playposition", value / 127);
-    } else {
-        deck.StripEffect(value, decknum);
-    }
-};
-
 
 NumarkMixtrack3.InstantFXOff = function (channel, control, value, status, group) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
