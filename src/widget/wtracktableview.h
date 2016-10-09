@@ -111,6 +111,9 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities);
 
+    bool insert(const QMimeData* pMimeData, const QModelIndex& destIndex);
+    bool move(const QMimeData* pMimeData, const QModelIndex& destIndex);
+
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
 
