@@ -1320,6 +1320,8 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         } else if (event->modifiers() == Qt::SHIFT) {
             switch (event->key()) {
             case Qt::Key_Tab:
+            case Qt::Key_Down:
+            case Qt::Key_Up:
                 QTableView::keyPressEvent(event);
                 break;
             default:
@@ -1749,25 +1751,94 @@ void WTrackTableView::slotReloadCoverArt() {
 }
 
 void WTrackTableView::cut() {
-    qDebug() << "QKeySequence::Cut";
-    /*
-    QVariant variant;
-    if (d->model)
-        variant = d->model->data(currentIndex(), Qt::DisplayRole);
-    if (variant.type() == QVariant::String)
-        QApplication::clipboard()->setText(variant.toString());
-    event->accept();
-    */
+    copy();
+    slotRemove();
 }
 
 void WTrackTableView::paste() {
-    qDebug() << "QKeySequence::Paste";
+    qDebug() << "WTrackTableView::paste()"
+             << QApplication::clipboard()->mimeData()->formats();
 
-    qDebug() << QApplication::clipboard();
-    qDebug() << QApplication::clipboard()->mimeData()->data("text/plain;charset=utf-8");
-    qDebug() << QApplication::clipboard()->mimeData()->urls();
-    qDebug() << QApplication::clipboard()->mimeData()->text();
-    qDebug() << QApplication::clipboard()->mimeData()->formats();
+    TrackModel* trackModel = getTrackModel();
+
+    // We only do things to the TrackModel in this method so if we don't have
+    // one we should just bail.
+    if (!trackModel) {
+        return;
+    }
+
+    const QMimeData* pMimeData = QApplication::clipboard()->mimeData();
+
+    if (!pMimeData->hasUrls() || trackModel->isLocked()) {
+        return;
+    }
+
+    // Save the vertical scrollbar position. Adding new tracks and moving tracks in
+    // the SQL data models causes a select() (ie. generation of a new result set),
+    // which causes view to reset itself. A view reset causes the widget to scroll back
+    // up to the top, which is confusing when you're dragging and dropping. :)
+    saveView();
+
+    QModelIndex destIndex;
+    QModelIndexList indexes = selectionModel()->selectedRows();
+    if (indexes.size() > 0) {
+        destIndex = indexes.at(0);
+    } else {
+        destIndex = currentIndex();
+    }
+
+    // Reset the selected tracks (if you had any tracks highlighted, it
+    // clears them)
+    selectionModel()->clear();
+
+    // Add all the dropped URLs/tracks to the track model (playlist/crate)
+    QList<QFileInfo> fileList = DragAndDropHelper::supportedTracksFromUrls(
+            pMimeData->urls(), false, true);
+
+    QList<QString> fileLocationList;
+    for (const QFileInfo& fileInfo : fileList) {
+        // TODO(uklotzde): Replace with TrackRef::location()
+        fileLocationList.append(fileInfo.absoluteFilePath());
+    }
+
+    int numNewRows = fileLocationList.count();
+
+    // Have to do this here because the index is invalid after
+    // addTrack
+    int selectionStartRow = destIndex.row();
+
+    // Make a new selection starting from where the first track was
+    // dropped, and select all the dropped tracks
+
+    // If the track was dropped into an empty playlist, start at row
+    // 0 not -1 :)
+    if ((destIndex.row() == -1) && (model()->rowCount() == 0)) {
+        selectionStartRow = 0;
+    } else if ((destIndex.row() == -1) && (model()->rowCount() > 0)) {
+        // If the track was dropped beyond the end of a playlist, then
+        // we need to fudge the destination a bit...
+        //qDebug() << "Beyond end of playlist";
+        //qDebug() << "rowcount is:" << model()->rowCount();
+        selectionStartRow = model()->rowCount();
+    }
+
+    // calling the addTracks returns number of failed additions
+    int tracksAdded = trackModel->addTracks(destIndex, fileLocationList);
+
+    // Decrement # of rows to select if some were skipped
+    numNewRows -= (fileLocationList.size() - tracksAdded);
+
+    // Create the selection, but only if the track model supports
+    // reordering. (eg. crates don't support reordering/indexes)
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+        for (int i = selectionStartRow; i < selectionStartRow + numNewRows; i++) {
+            this->selectionModel()->select(model()->index(i, 0),
+                                           QItemSelectionModel::Select |
+                                           QItemSelectionModel::Rows);
+        }
+    }
+
+    restoreView();
 }
 
 void WTrackTableView::copy(){
