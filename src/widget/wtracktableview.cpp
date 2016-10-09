@@ -1135,6 +1135,17 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     } else if (event == QKeySequence::Delete) {
         slotRemove();
         event->accept();
+    } else if (event->key() == Qt::Key_Down && event->modifiers() == Qt::NoModifier) {
+        // If there is no row selected, select the first
+        // Qt fails to do it for us when there is only a single row
+        QModelIndexList indexes = selectionModel()->selectedRows();
+        if (indexes.size() == 0) {
+            selectionModel()->select(model()->index(0, 0),
+                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
+            event->accept();
+        } else {
+            QTableView::keyPressEvent(event);
+        }
     } else {
         // QTableView::keyPressEvent(event) will consume all key events due to
         // it's keyboardSearch feature.
