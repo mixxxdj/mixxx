@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2016-10-1
+// description: 2016-10-9
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -153,13 +153,11 @@ VCI102.rateQuantizedLSB = function(ch, midino, value, status, group) {
 };
 
 VCI102.pitch = function(ch, midino, value, status, group) {
+    value = (value - 64) / 21;  // up and down to 3 semitones
     if (engine.getValue(group, "keylock")) {
-        // absolute discrete change up and down to 6 semitones
-        engine.setValue(group, "pitch", Math.round(value * 3 / 32) - 6);
-    } else {
-        // relative continuous change up and down to about whole tone
-        engine.setValue(group, "pitch_adjust", (value - 64) / 32);
+        value = Math.round(value);  // discrete change on keylock
     }
+    engine.setValue(group, "pitch_adjust", value);
 };
 
 ["parameter1", "parameter2", "parameter3"].forEach(function(key) {
@@ -360,7 +358,6 @@ VCI102.init = function(id, debug) {
             }
         }
         engine.softTakeover(VCI102.deck[i], "rate", true);
-        engine.softTakeover(VCI102.deck[i], "pitch", true);
         engine.softTakeover(VCI102.deck[i], "pitch_adjust", true);
         engine.softTakeover(VCI102.fx[i], "super1", true);
         engine.softTakeover(VCI102.fx[i], "mix", true);
