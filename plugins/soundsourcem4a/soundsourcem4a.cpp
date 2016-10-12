@@ -265,9 +265,8 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     u_int32_t configBufferSize = 0;
     if (!MP4GetTrackESConfiguration(m_hFile, m_trackId, &configBuffer,
             &configBufferSize)) {
-        /* failed to get mpeg-4 audio config... this is ok.
-         * NeAACDecInit2() will simply use default values instead.
-         */
+        // Failed to get mpeg-4 audio config... this is ok.
+        // NeAACDecInit2() will simply use default values instead.
         qWarning() << "Failed to read the MP4 audio configuration."
                 << "Continuing with default values.";
     }
