@@ -47,13 +47,16 @@ TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 
-QWidget* RecordingFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
-    WTrackTableView* pTable = LibraryFeature::createTableWidget(pKeyboard, paneId);
+QWidget* RecordingFeature::createPaneWidget(
+        KeyboardEventFilter* pKeyboard, int paneId) {
+    Q_UNUSED(pKeyboard);
+    WTrackTableView* pTable = LibraryFeature::createTableWidget(paneId);
     pTable->setSorting(false);    
     return pTable;
 }
 
-QWidget *RecordingFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
+QWidget *RecordingFeature::createInnerSidebarWidget(
+        KeyboardEventFilter* pKeyboard) {
     m_pRecordingView = new DlgRecording(nullptr, 
                                         m_pTrackCollection,
                                         m_pRecordingManager);
@@ -79,7 +82,8 @@ void RecordingFeature::activate() {
 
 BrowseTableModel* RecordingFeature::getBrowseTableModel() {
     if (m_pBrowseModel.isNull()) {
-        m_pBrowseModel = new BrowseTableModel(this, m_pTrackCollection, m_pRecordingManager);
+        m_pBrowseModel = new BrowseTableModel(
+                this, m_pTrackCollection, m_pRecordingManager);
     }
     
     return m_pBrowseModel;

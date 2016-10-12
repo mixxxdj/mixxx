@@ -69,7 +69,8 @@ bool LibraryFeature::dragMoveAcceptChild(const QModelIndex &, QUrl) {
 
 QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                           int paneId) {
-    return createTableWidget(pKeyboard, paneId);
+    Q_UNUSED(pKeyboard);
+    return createTableWidget(paneId);
 }
 
 QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
@@ -178,8 +179,7 @@ QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {
     return m_savedDAO.getSavedQueries(this);
 }
 
-WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboard,
-                                                   int paneId) {
+WTrackTableView* LibraryFeature::createTableWidget(int paneId) {
     WTrackTableView* pTrackTableView = 
             new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, true);
         

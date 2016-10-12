@@ -51,12 +51,12 @@ class LibraryFeature : public QObject {
                             QObject* /* pSource */) {
         return false;
     }
-    virtual bool dropAcceptChild(const QModelIndex& /* index */,
-                                 QList<QUrl> /* urls */, 
-                                 QObject* /* pSource */);
-    virtual bool dragMoveAccept(QUrl /* url */);
-    virtual bool dragMoveAcceptChild(const QModelIndex& /* index */, 
-                                     QUrl /* url */);
+    virtual bool dropAcceptChild(const QModelIndex& index,
+                                 QList<QUrl> urls,
+                                 QObject* pSource);
+    virtual bool dragMoveAccept(QUrl url);
+    virtual bool dragMoveAcceptChild(const QModelIndex& index,
+                                     QUrl url);
     
     // Reimplement this to register custom views with the library widget
     // at the right pane.
@@ -131,8 +131,7 @@ class LibraryFeature : public QObject {
     }
     
     // Creates a table widget with no model
-    WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
-                                               int paneId);
+    WTrackTableView* createTableWidget(int paneId);
     
     // Creates a WLibrarySidebar widget with the getChildModel() function as
     // model

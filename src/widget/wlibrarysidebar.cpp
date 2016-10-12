@@ -6,6 +6,7 @@
 #include <QMimeData>
 #include <QPainter>
 #include <QUrl>
+#include <QClipboard>
 
 #include "library/treeitemmodel.h"
 #include "util/dnd.h"
@@ -198,13 +199,72 @@ void WLibrarySidebar::toggleSelectedItem() {
 }
 
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+    qDebug() << "WLibrarySidebar::keyPressEvent" << event;
+    if (event == QKeySequence::Copy) {
+        event->ignore();
+    } else if (event == QKeySequence::Paste) {
+        if (paste()) {
+            event->accept();
+        } else {
+            event->ignore();
+        }
+    } else if (event == QKeySequence::Cut) {
+        // TODO(XXX) allow delete by key but with a safety pop up
+        // or an undo feature
+        event->ignore();
+    } else if (event == QKeySequence::SelectAll) {
+        selectAll();
+        event->accept();
+    } else if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
+            event->modifiers() == Qt::NoModifier) {
         toggleSelectedItem();
-        return;
-    }
+        event->accept();
+    } else if (event == QKeySequence::Delete) {
+        // TODO(XXX) allow delete by key but with a safety pop up
+        // or an undo feature
+        event->ignore();
+    } else {
+        // QTreeView::keyPressEvent(event) will consume all key events due to
+        // it's keyboardSearch feature.
+        // In Mixxx, we prefer that most keyboard mappings are working, so we
+        // pass only some basic keys to the base class
+        if (event->modifiers() == Qt::NoModifier) {
+            switch (event->key()) {
+            case Qt::Key_Down:
+            case Qt::Key_Up:
+            case Qt::Key_Left:
+            case Qt::Key_Right:
+            case Qt::Key_Home:
+            case Qt::Key_End:
+            case Qt::Key_PageUp:
+            case Qt::Key_PageDown:
+            case Qt::Key_Tab:
+            case Qt::Key_Backtab:
+            case Qt::Key_Space:
+            case Qt::Key_Select:
+            case Qt::Key_F2:
+                QTreeView::keyPressEvent(event);
+                break;
 
-    // Fall through to default handler.
-    QTreeView::keyPressEvent(event);
+            // Ignored even though used in default QT:
+            case Qt::Key_Asterisk:
+            case Qt::Key_Plus:
+            case Qt::Key_Minus:
+            default:
+                event->ignore();
+            }
+        } else if (event->modifiers() == Qt::SHIFT) {
+            switch (event->key()) {
+            case Qt::Key_Tab:
+                QTreeView::keyPressEvent(event);
+                break;
+            default:
+                event->ignore();
+            }
+        } else {
+            event->ignore();
+        }
+    }
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
@@ -227,4 +287,29 @@ bool WLibrarySidebar::event(QEvent* pEvent) {
 
 void WLibrarySidebar::slotSetFont(const QFont& font) {
     setFont(font);
+}
+
+bool WLibrarySidebar::paste() {
+    qDebug() << "WTrackTableView::paste()"
+             << QApplication::clipboard()->mimeData()->formats();
+
+    QModelIndex destIndex;
+    QModelIndexList indexes = selectionModel()->selectedRows();
+    if (indexes.size() > 0) {
+        destIndex = indexes.at(0);
+    } else {
+        destIndex = currentIndex();
+    }
+
+    TreeItemModel* pTreeModel = qobject_cast<TreeItemModel*>(model());
+    if (!pTreeModel)  {
+        return false;
+    }
+
+    const QMimeData* pMimeData = QApplication::clipboard()->mimeData();
+    if (!pMimeData->hasUrls()) {
+        return false;
+    }
+
+    return pTreeModel->dropAccept(destIndex, pMimeData->urls(), nullptr);
 }
