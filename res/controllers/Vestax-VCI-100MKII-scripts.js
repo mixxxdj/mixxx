@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2016-10-9
+// description: 2016-11-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -160,8 +160,16 @@ VCI102.pitch = function(ch, midino, value, status, group) {
     engine.setValue(group, "pitch_adjust", value);
 };
 
+VCI102.fxKnob = [
+    "[EffectRack1_EffectUnit1_Effect1]",
+    "[EffectRack1_EffectUnit2_Effect1]",
+    "[EffectRack1_EffectUnit3_Effect1]",
+    "[EffectRack1_EffectUnit4_Effect1]"
+];
+
 ["parameter1", "parameter2", "parameter3"].forEach(function(key) {
     VCI102[key] = function(ch, midino, value, status, group) {
+        group = VCI102.fxKnob[ch];
         if (VCI102.shift[ch % 2]) {
             // link to super1, inverse variants -> none -> direct variants
             if (engine.getValue(group, key + "_loaded")) {
@@ -188,6 +196,32 @@ VCI102.super1 = function(ch, midino, value, status, group) {
     }
     VCI102.superKnobValue[ch] = value < 127 ? value / 128 : 1;
     engine.setValue(group, key, VCI102.superKnobValue[ch]);
+};
+
+VCI102.prev_chain = function(ch, midino, value, status, group) {
+    if (VCI102.shift[(ch + 1) % 2]) {
+        // select Effect1 of the EffectUnit if shift of the other Deck
+        if (value) {
+            VCI102.fxKnob[ch] = group.slice(0, -1) + "_Effect1]";
+        }
+    } else if (VCI102.fxKnob[ch].slice(-2, -1) > 1) {
+        engine.setValue(VCI102.fxKnob[ch], "prev_effect", value > 0);
+    } else {
+        engine.setValue(group, "prev_chain", value > 0);
+    }
+};
+
+VCI102.next_chain = function(ch, midino, value, status, group) {
+    if (VCI102.shift[(ch + 1) % 2]) {
+        // select Effect2 of the EffectUnit if shift of the other Deck
+        if (value) {
+            VCI102.fxKnob[ch] = group.slice(0, -1) + "_Effect2]";
+        }
+    } else if (VCI102.fxKnob[ch].slice(-2, -1) > 1) {
+        engine.setValue(VCI102.fxKnob[ch], "next_effect", value > 0);
+    } else {
+        engine.setValue(group, "next_chain", value > 0);
+    }
 };
 
 VCI102.loopLength = [4, 4, 4, 4];
