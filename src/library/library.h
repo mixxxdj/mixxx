@@ -34,7 +34,7 @@ class SidebarModel;
 class TrackModel;
 class TrackCollection;
 class WBaseLibrary;
-class WLibrary;
+class WLibraryPane;
 class WLibrarySidebar;
 class WLibraryBreadCrumb;
 class WButtonBar;
@@ -52,15 +52,14 @@ public:
     
     static const int kDefaultRowHeightPx;
     
-    Library(QObject* parent,
-            UserSettingsPointer pConfig,
+    Library(UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
     
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
     void bindSidebarButtons(WButtonBar* sidebar);
-    void bindPaneWidget(WLibrary* libraryWidget,
+    void bindPaneWidget(WLibraryPane* libraryWidget,
                         KeyboardEventFilter* pKeyboard, int paneId);
     void bindSidebarExpanded(WBaseLibrary* expandedPane, 
                              KeyboardEventFilter* pKeyboard);
@@ -101,6 +100,8 @@ public:
     
     int getFocusedPaneId();
     int getPreselectedPaneId();
+
+    void focusSearch();
 
   public slots:
     
@@ -158,7 +159,6 @@ public:
     void handlePreselection();
     
     UserSettingsPointer m_pConfig;
-    SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
@@ -180,7 +180,7 @@ public:
     LibraryFeature* m_focusedFeature;
     
     // Can be any integer as it's used with a HashMap
-    int m_focusedPane;
+    int m_focusedPaneId;
     int m_preselectedPane;
     int m_previewPreselectedPane;
 };

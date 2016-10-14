@@ -94,6 +94,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotNoDeckPassthroughInputConfigured();
     void slotNoVinylControlInputConfigured();
 
+    void slotFocusSearch();
+
   signals:
     void newSkinLoaded();
     // used to uncheck the menu when the dialog of develeoper tools is closed

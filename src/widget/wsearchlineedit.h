@@ -18,15 +18,18 @@
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
-    
     explicit WSearchLineEdit(QWidget* pParent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
+    void restoreSearch(const QString& text,
+            QPointer<LibraryFeature> pFeature = nullptr);
+    void slotRestoreSaveButton();
 
   protected:
-    void resizeEvent(QResizeEvent* /*unused*/) override;
-    void focusInEvent(QFocusEvent* /*unused*/) override;
-    void focusOutEvent(QFocusEvent* /*unused*/) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void focusInEvent(QFocusEvent* event) override;
+    void focusOutEvent(QFocusEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
     bool event(QEvent* pEvent) override;
 
   signals:
@@ -34,13 +37,10 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void searchCleared();
     void searchStarting();
     void focused();
-
-  public slots:
-    void restoreSearch(const QString& text, QPointer<LibraryFeature> pFeature = nullptr);
-    void slotTextChanged(const QString& text);
-    void slotRestoreSaveButton();
+    void cancel();
 
   private slots:
+    void slotTextChanged(const QString& text);
     void updateButtons(const QString& text);
     void slotSetupTimer(const QString&);
     void triggerSearch();

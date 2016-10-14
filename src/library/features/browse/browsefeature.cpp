@@ -1,6 +1,7 @@
 // browsefeature.cpp
 // Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <widget/wlibrarypane.h>
 #include <QAction>
 #include <QDesktopServices>
 #include <QDirModel>
@@ -13,7 +14,6 @@
 #include "library/features/browse/browsefeature.h"
 #include "library/trackcollection.h"
 #include "util/sandbox.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarystack.h"
 #include "widget/wlibrarytextbrowser.h"
 

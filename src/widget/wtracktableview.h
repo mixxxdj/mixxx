@@ -93,6 +93,9 @@ class WTrackTableView : public WLibraryTableView {
     void dragMoveEvent(QDragMoveEvent * event) override;
     void dragEnterEvent(QDragEnterEvent * event) override;
     void dropEvent(QDropEvent * event) override;
+    void cut();
+    void paste();
+    void copy();
     void lockBpm(bool lock);
     int getVisibleColumn();
 
@@ -107,6 +110,9 @@ class WTrackTableView : public WLibraryTableView {
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel() const;
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities);
+
+    bool insert(const QMimeData* pMimeData, const QModelIndex& destIndex);
+    bool move(const QMimeData* pMimeData, const QModelIndex& destIndex);
 
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;

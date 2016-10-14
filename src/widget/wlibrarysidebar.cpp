@@ -6,9 +6,9 @@
 #include <QMimeData>
 #include <QPainter>
 #include <QUrl>
+#include <QClipboard>
 
 #include "library/treeitemmodel.h"
-#include "library/sidebarmodel.h"
 #include "util/dnd.h"
 
 const int expand_time = 250;
@@ -65,6 +65,8 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setAttribute(Qt::WA_MacShowFocusRect, false);
     header()->setStretchLastSection(false);
     header()->setResizeMode(QHeaderView::Stretch);
+
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
@@ -115,36 +117,16 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             // Do nothing.
             event->ignore();
         } else {
-            SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             bool accepted = true;
-            if (sidebarModel) {
+            TreeItemModel* treeModel = dynamic_cast<TreeItemModel*>(model());
+            if (treeModel) {
                 accepted = false;
                 for (const QUrl& url : urls) {
                     QModelIndex destIndex = this->indexAt(event->pos());
-                    if (sidebarModel->dragMoveAccept(destIndex, url)) {
-                        // We only need one URL to be valid for us
-                        // to accept the whole drag...
-                        // consider we have a long list of valid files, checking all will
-                        // take a lot of time that stales Mixxx and this makes the drop feature useless
-                        // Eg. you may have tried to drag two MP3's and an EXE, the drop is accepted here,
-                        // but the EXE is sorted out later after dropping
+                    if (treeModel->dragMoveAccept(destIndex, url)) {
                         accepted = true;
                         break;
                     }
-                }
-            } else {
-                TreeItemModel* treeModel = dynamic_cast<TreeItemModel*>(model());
-                if (treeModel) {
-                    accepted = false;
-                    
-                    for (const QUrl& url : urls) {
-                        QModelIndex destIndex = this->indexAt(event->pos());
-                        if (treeModel->dragMoveAccept(destIndex, url)) {
-                            accepted = true;
-                            break;
-                        }
-                    }
-                    
                 }
             }
             if (accepted) {
@@ -186,28 +168,14 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             //this->selectionModel()->clear();
             //Drag-and-drop from an external application or the track table widget
             //eg. dragging a track from Windows Explorer onto the sidebar
-            SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
-            
-            if (sidebarModel) {
+            TreeItemModel* pTreeModel = dynamic_cast<TreeItemModel*>(model());
+            if (pTreeModel) {
                 QModelIndex destIndex = indexAt(event->pos());
-                // event->source() will return NULL if something is droped from
-                // a different application
                 QList<QUrl> urls(event->mimeData()->urls());
-                if (sidebarModel->dropAccept(destIndex, urls, event->source())) {
+                if (pTreeModel->dropAccept(destIndex, urls, event->source())) {
                     event->acceptProposedAction();
                 } else {
                     event->ignore();
-                }
-            } else {
-                TreeItemModel* pTreeModel = dynamic_cast<TreeItemModel*>(model());
-                if (pTreeModel) {
-                    QModelIndex destIndex = indexAt(event->pos());
-                    QList<QUrl> urls(event->mimeData()->urls());
-                    if (pTreeModel->dropAccept(destIndex, urls, event->source())) {
-                        event->acceptProposedAction();
-                    } else {
-                        event->ignore();
-                    }
                 }
             }
         }
@@ -227,20 +195,76 @@ void WLibrarySidebar::toggleSelectedItem() {
         emit(pressed(index));
         // Expand or collapse the item as necessary.
         setExpanded(index, !isExpanded(index));
-        
     }
 }
 
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
-    qDebug() << event->text() << (bool) (event->key() == Qt::Key_Return);
-    
-    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+    qDebug() << "WLibrarySidebar::keyPressEvent" << event;
+    if (event == QKeySequence::Copy) {
+        event->ignore();
+    } else if (event == QKeySequence::Paste) {
+        if (paste()) {
+            event->accept();
+        } else {
+            event->ignore();
+        }
+    } else if (event == QKeySequence::Cut) {
+        // TODO(XXX) allow delete by key but with a safety pop up
+        // or an undo feature
+        event->ignore();
+    } else if (event == QKeySequence::SelectAll) {
+        selectAll();
+        event->accept();
+    } else if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
+            event->modifiers() == Qt::NoModifier) {
         toggleSelectedItem();
-        return;
-    }
+        event->accept();
+    } else if (event == QKeySequence::Delete) {
+        // TODO(XXX) allow delete by key but with a safety pop up
+        // or an undo feature
+        event->ignore();
+    } else {
+        // QTreeView::keyPressEvent(event) will consume all key events due to
+        // it's keyboardSearch feature.
+        // In Mixxx, we prefer that most keyboard mappings are working, so we
+        // pass only some basic keys to the base class
+        if (event->modifiers() == Qt::NoModifier) {
+            switch (event->key()) {
+            case Qt::Key_Down:
+            case Qt::Key_Up:
+            case Qt::Key_Left:
+            case Qt::Key_Right:
+            case Qt::Key_Home:
+            case Qt::Key_End:
+            case Qt::Key_PageUp:
+            case Qt::Key_PageDown:
+            case Qt::Key_Tab:
+            case Qt::Key_Backtab:
+            case Qt::Key_Space:
+            case Qt::Key_Select:
+            case Qt::Key_F2:
+                QTreeView::keyPressEvent(event);
+                break;
 
-    // Fall through to deafult handler.
-    QTreeView::keyPressEvent(event);
+            // Ignored even though used in default QT:
+            case Qt::Key_Asterisk:
+            case Qt::Key_Plus:
+            case Qt::Key_Minus:
+            default:
+                event->ignore();
+            }
+        } else if (event->modifiers() == Qt::SHIFT) {
+            switch (event->key()) {
+            case Qt::Key_Tab:
+                QTreeView::keyPressEvent(event);
+                break;
+            default:
+                event->ignore();
+            }
+        } else {
+            event->ignore();
+        }
+    }
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
@@ -263,4 +287,29 @@ bool WLibrarySidebar::event(QEvent* pEvent) {
 
 void WLibrarySidebar::slotSetFont(const QFont& font) {
     setFont(font);
+}
+
+bool WLibrarySidebar::paste() {
+    qDebug() << "WTrackTableView::paste()"
+             << QApplication::clipboard()->mimeData()->formats();
+
+    QModelIndex destIndex;
+    QModelIndexList indexes = selectionModel()->selectedRows();
+    if (indexes.size() > 0) {
+        destIndex = indexes.at(0);
+    } else {
+        destIndex = currentIndex();
+    }
+
+    TreeItemModel* pTreeModel = qobject_cast<TreeItemModel*>(model());
+    if (!pTreeModel)  {
+        return false;
+    }
+
+    const QMimeData* pMimeData = QApplication::clipboard()->mimeData();
+    if (!pMimeData->hasUrls()) {
+        return false;
+    }
+
+    return pTreeModel->dropAccept(destIndex, pMimeData->urls(), nullptr);
 }
