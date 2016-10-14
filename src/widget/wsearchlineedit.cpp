@@ -326,21 +326,28 @@ void WSearchLineEdit::restoreQuery() {
     const QList<SavedSearchQuery>& savedQueries = m_pCurrentFeature->getSavedQueries();
     
     QMenu menu;
-    
     if (savedQueries.size() <= 0) {
         QAction* action = menu.addAction(tr("No saved queries"));
         action->setData(-1);
     }
+    QActionGroup* group = new QActionGroup(&menu);
+    group->setExclusive(false);
     
     for (const SavedSearchQuery& sQuery : savedQueries) {
         QAction* action = menu.addAction(sQuery.title);
-        action->setData(sQuery.id);
         if (sQuery.pinned) {
+            action->setActionGroup(group);
+            
             action->setIcon(QIcon(":/images/ic_library_pinned.png"));
             action->setIconVisibleInMenu(true);
+            action->setCheckable(true);
+            action->setChecked(true);
         }
+        action->setData(sQuery.id);
     }
-    {
+    
+    // There's no need to show the queries editor if there are not saved queries
+    if (savedQueries.size() > 0) {
         menu.addSeparator();
         QAction* action = menu.addAction(tr("Queries editor"));
         action->setData(-2);
@@ -353,6 +360,10 @@ void WSearchLineEdit::restoreQuery() {
     if (selected == nullptr) return;
     
     bool ok;
+    
+    // index >= 0  -> Normal data
+    // index == -1 -> No saved queries selected
+    // index == -2 -> Saved queries editor selected
     int index = selected->data().toInt(&ok);
     if (!ok) return;
     
