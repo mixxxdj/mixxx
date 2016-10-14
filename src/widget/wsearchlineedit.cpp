@@ -1,7 +1,3 @@
-#include "wwidget.h"
-#include "wskincolor.h"
-#include "wsearchlineedit.h"
-
 #include <QAction>
 #include <QDebug>
 #include <QFont>
@@ -10,6 +6,11 @@
 #include <QString>
 #include <QStyle>
 #include <QStyleOption>
+
+#include "dialog/savedqueries/dlgsavedquerieseditor.h"
+#include "widget/wsearchlineedit.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QLineEdit(pParent),
@@ -109,6 +110,10 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
     pal.setBrush(foregroundRole(), m_fgc);
     setPalette(pal);
+}
+
+void WSearchLineEdit::setTrackCollection(TrackCollection* pTrackCollection) {
+    m_pTrackCollection = pTrackCollection;
 }
 
 void WSearchLineEdit::slotRestoreSaveButton() {
@@ -264,8 +269,7 @@ void WSearchLineEdit::showPlaceholder() {
     blockSignals(false);
 }
 
-void WSearchLineEdit::updateButtons(const QString& text)
-{
+void WSearchLineEdit::updateButtons(const QString& text) {
     bool visible = !text.isEmpty() && !m_place;
     m_pDropButton->setVisible(true);
     m_pSaveButton->setVisible(true);
@@ -322,31 +326,56 @@ void WSearchLineEdit::restoreQuery() {
     const QList<SavedSearchQuery>& savedQueries = m_pCurrentFeature->getSavedQueries();
     
     QMenu menu;
-    
     if (savedQueries.size() <= 0) {
         QAction* action = menu.addAction(tr("No saved queries"));
         action->setData(-1);
     }
+    QActionGroup* group = new QActionGroup(&menu);
+    group->setExclusive(false);
     
-    for (const SavedSearchQuery& query : savedQueries) {
-        QAction* action = menu.addAction(query.title);
-        action->setData(query.id);
+    for (const SavedSearchQuery& sQuery : savedQueries) {
+        QAction* action = menu.addAction(sQuery.title);
+        if (sQuery.pinned) {
+            action->setActionGroup(group);
+            
+            action->setIcon(QIcon(":/images/ic_library_pinned.png"));
+            action->setIconVisibleInMenu(true);
+            action->setCheckable(true);
+            action->setChecked(true);
+        }
+        action->setData(sQuery.id);
+    }
+    
+    // There's no need to show the queries editor if there are not saved queries
+    if (savedQueries.size() > 0) {
+        menu.addSeparator();
+        QAction* action = menu.addAction(tr("Queries editor"));
+        action->setData(-2);
     }
     
     QPoint position = m_pDropButton->pos();
     position += QPoint(0, m_pDropButton->height());
     
     QAction* selected = menu.exec(mapToGlobal(position));
-    if (selected == nullptr) {
-        return;
-    }
+    if (selected == nullptr) return;
     
-    int index = selected->data().toInt();
-    if (index < 0) {
-        return;
-    }
+    bool ok;
     
-    m_pCurrentFeature->restoreQuery(index);
+    // index >= 0  -> Normal data
+    // index == -1 -> No saved queries selected
+    // index == -2 -> Saved queries editor selected
+    int index = selected->data().toInt(&ok);
+    if (!ok) return;
+    
+    if (index >= 0) {
+        m_pCurrentFeature->restoreQuery(index);
+    } else if (index == -2 && !m_pTrackCollection.isNull()) {
+        // If we don't pass a nullptr as parent it uses the parent's style sheet
+        // and the table shown is weird
+        DlgSavedQueriesEditor editor(m_pCurrentFeature, 
+                                     m_pTrackCollection, nullptr);
+        editor.exec();
+    }
 }
 
 void WSearchLineEdit::slotTextChanged(const QString& text) {

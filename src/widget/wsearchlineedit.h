@@ -10,7 +10,9 @@
 #include <QTimer>
 #include <QToolButton>
 
+#include "library/dao/savedqueriesdao.h"
 #include "library/libraryfeature.h"
+#include "library/trackcollection.h"
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
@@ -24,6 +26,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void restoreSearch(const QString& text,
             QPointer<LibraryFeature> pFeature = nullptr);
     void slotRestoreSaveButton();
+    void setTrackCollection(TrackCollection* pTrackCollection);
 
   protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -59,6 +62,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     QToolButton* m_pDropButton;
     bool m_place;
     QColor m_fgc; //Foreground color
+    QPointer<TrackCollection> m_pTrackCollection;
 };
 
 #endif

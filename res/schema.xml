@@ -441,8 +441,8 @@ METADATA
         sortOrder TEXT,
         vScrollbarPos INTEGER,
         sortColumn INTEGER,
-        sortAscendingOrder BOOLEAN,
-        pinned BOOLEAN
+        sortAscendingOrder NUMERIC,
+        pinned NUMERIC
       );
     </sql>
   </revision>
