@@ -60,7 +60,7 @@ QString AnalysisFeature::getSettingsName() const {
     return "AnalysisFeature";
 }
 
-QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
+QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter*, int paneId) {
     WTrackTableView* pTable = createTableWidget(paneId);
     pTable->loadTrackModel(getAnalysisTableModel());
     connect(pTable->selectionModel(), 
