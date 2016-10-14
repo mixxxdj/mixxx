@@ -3,7 +3,6 @@
 #include <QFont>
 #include <QInputDialog>
 #include <QMenu>
-#include <QShortcut>
 #include <QString>
 #include <QStyle>
 #include <QStyleOption>
@@ -18,12 +17,13 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
           WBaseWidget(this) {
     setAcceptDrops(false);
     
-    QSize iconSize(height()/2, height()/2);
+    QSize iconSize(height() / 2, height() / 2);
     
     m_pClearButton = new QToolButton(this);
     m_pClearButton->setIcon(QIcon(":/skins/cross_2.png"));
     m_pClearButton->setIconSize(iconSize);
     m_pClearButton->setCursor(Qt::ArrowCursor);
+    m_pClearButton->setFocusPolicy(Qt::ClickFocus);
     m_pClearButton->setToolTip(tr("Clear input" , "Clear the search bar input field"));
     m_pClearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     m_pClearButton->hide();
@@ -38,6 +38,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_pSaveButton->setIcon(saveIcon);
     m_pSaveButton->setIconSize(iconSize);
     m_pSaveButton->setCursor(Qt::ArrowCursor);
+    m_pSaveButton->setFocusPolicy(Qt::ClickFocus);
     m_pSaveButton->setToolTip(tr("Save query", "Save the current query for later use"));
     m_pSaveButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     m_pSaveButton->hide();
@@ -46,6 +47,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_pDropButton->setIcon(QIcon(":/skins/downArrow.png"));
     m_pDropButton->setIconSize(iconSize);
     m_pDropButton->setCursor(Qt::ArrowCursor);
+    m_pDropButton->setFocusPolicy(Qt::ClickFocus);
     m_pDropButton->setToolTip(tr("Restore query", 
                                  "Restore the search with one of the selected queries"));
     m_pDropButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
@@ -55,10 +57,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     showPlaceholder();
 
     setFocusPolicy(Qt::ClickFocus);
-    QShortcut* setFocusShortcut = new QShortcut(
-        QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut, SIGNAL(activated()),
-            this, SLOT(setFocus()));
 
     connect(this, SIGNAL(textChanged(const QString&)),
             this, SLOT(slotTextChanged(const QString&)));
@@ -122,8 +120,8 @@ void WSearchLineEdit::slotRestoreSaveButton() {
     m_pSaveButton->setEnabled(true);
 }
 
-void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
-    QLineEdit::resizeEvent(e);
+void WSearchLineEdit::resizeEvent(QResizeEvent* event) {
+    QLineEdit::resizeEvent(event);
     
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     
@@ -153,9 +151,9 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     int posXSave = posXDrop + sizeDrop.width() + space;
     int posXClear = posXSave + sizeSave.width() + space;
     
-    int posYDrop = (height - sizeDrop.height())/2 + Ydeviation;
-    int posYSave = (height - sizeSave.height())/2 + Ydeviation;
-    int posYClear = (height - sizeClear.height())/2 + Ydeviation;
+    int posYDrop = (height - sizeDrop.height()) / 2 + Ydeviation;
+    int posYSave = (height - sizeSave.height()) / 2 + Ydeviation;
+    int posYClear = (height - sizeClear.height()) / 2 + Ydeviation;
     
     if (layoutDirection() == Qt::LeftToRight) {
         posXDrop += sizeDrop.width();
@@ -180,8 +178,8 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
     if (m_place) {
         // This gets rid of the blue mac highlight.
         setAttribute(Qt::WA_MacShowFocusRect, false);
-        //Must block signals here so that we don't emit a search() signal via
-        //textChanged().
+        // Must block signals here so that we don't emit a search() signal via
+        // textChanged().
         blockSignals(true);
         setText("");
         blockSignals(false);
@@ -204,7 +202,17 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
     }
 }
 
-// slot
+void WSearchLineEdit::keyPressEvent(QKeyEvent* event) {
+    switch(event->key())
+    {
+    case Qt::Key_Escape:
+        emit cancel();
+        break;
+    default:
+        QLineEdit::keyPressEvent(event);
+    }
+}
+
 void WSearchLineEdit::restoreSearch(const QString& text, QPointer<LibraryFeature> pFeature) {
     if(text.isNull()) {
         // disable
@@ -248,8 +256,8 @@ void WSearchLineEdit::triggerSearch()
 }
 
 void WSearchLineEdit::showPlaceholder() {
-    //Must block signals here so that we don't emit a search() signal via
-    //textChanged().
+    // Must block signals here so that we don't emit a search() signal via
+    // textChanged().
     blockSignals(true);
     setText(tr("Search..." , "noun"));
     setToolTip(tr("Search" , "noun") + "\n" + tr("Enter a string to search for") + "\n\n"
@@ -259,9 +267,6 @@ void WSearchLineEdit::showPlaceholder() {
                   + tr("Esc") + "  " + tr("Exit search" , "Exit search bar and leave focus")
                   );
     blockSignals(false);
-    QPalette pal = palette();
-    pal.setColor(foregroundRole(), Qt::lightGray);
-    setPalette(pal);
 }
 
 void WSearchLineEdit::updateButtons(const QString& text) {

@@ -69,7 +69,8 @@ bool LibraryFeature::dragMoveAcceptChild(const QModelIndex &, QUrl) {
 
 QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                           int paneId) {
-    return createTableWidget(pKeyboard, paneId);
+    Q_UNUSED(pKeyboard);
+    return createTableWidget(paneId);
 }
 
 QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
@@ -107,7 +108,7 @@ void LibraryFeature::setFeaturePane(int paneId) {
     m_featurePane = paneId;
 }
 
-int LibraryFeature::getFeaturePane() {
+int LibraryFeature::getFeaturePaneId() {
     return m_featurePane;
 }
 
@@ -178,13 +179,10 @@ QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {
     return m_savedDAO.getSavedQueries(this);
 }
 
-WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboard,
-                                                   int paneId) {
+WTrackTableView* LibraryFeature::createTableWidget(int paneId) {
     WTrackTableView* pTrackTableView = 
             new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, true);
-    
-    pTrackTableView->installEventFilter(pKeyboard);
-    
+        
     WMiniViewScrollBar* pScrollBar = new WMiniViewScrollBar(pTrackTableView);
     pTrackTableView->setScrollBar(pScrollBar);
     
@@ -201,7 +199,7 @@ WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboar
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    m_trackTables[paneId] = pTrackTableView;
+    m_trackTablesByPaneId[paneId] = pTrackTableView;
     
     return pTrackTableView;
 }
@@ -236,8 +234,8 @@ WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*
 }
 
 void LibraryFeature::showTrackModel(QAbstractItemModel *model) {
-    auto it = m_trackTables.find(m_featurePane);
-    if (it == m_trackTables.end() || it->isNull()) {
+    auto it = m_trackTablesByPaneId.find(m_featurePane);
+    if (it == m_trackTablesByPaneId.end() || it->isNull()) {
         return;
     }
     (*it)->loadTrackModel(model);
@@ -274,8 +272,8 @@ void LibraryFeature::showBreadCrumb() {
 }
 
 WTrackTableView* LibraryFeature::getFocusedTable() {
-    auto it = m_trackTables.find(m_featurePane);
-    if (it == m_trackTables.end() || it->isNull()) {
+    auto it = m_trackTablesByPaneId.find(m_featurePane);
+    if (it == m_trackTablesByPaneId.end() || it->isNull()) {
         return nullptr;
     }
     return *it;

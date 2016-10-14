@@ -104,7 +104,8 @@ QWidget* MaintenanceFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyb
 
 QWidget* MaintenanceFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
                                               int paneId) {
-    WTrackTableView* pTable = LibraryFeature::createTableWidget(pKeyboard, paneId);
+    Q_UNUSED(pKeyboard);
+    WTrackTableView* pTable = LibraryFeature::createTableWidget(paneId);
 
     return pTable;
 }

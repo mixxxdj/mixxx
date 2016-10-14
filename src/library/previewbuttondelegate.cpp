@@ -10,8 +10,8 @@
 
 PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
         : QStyledItemDelegate(parent),
-          m_pTableView(NULL),
-          m_pButton(NULL),
+          m_pTableView(nullptr),
+          m_pButton(nullptr),
           m_isOneCellInEditMode(false),
           m_column(column) {
     m_pPreviewDeckPlay = new ControlProxy(
@@ -31,6 +31,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
         m_pButton->setObjectName("LibraryPreviewButton");
         m_pButton->setCheckable(true);
         m_pButton->setChecked(false);
+        m_pButton->setFocusPolicy(Qt::ClickFocus);
         m_pButton->hide();
         connect(m_pTableView, SIGNAL(entered(QModelIndex)),
                 this, SLOT(cellEntered(QModelIndex)));
@@ -47,6 +48,7 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
     QPushButton* btn = new QPushButton(parent);
     btn->setObjectName("LibraryPreviewButton");
     btn->setCheckable(true);
+    btn->setFocusPolicy(Qt::ClickFocus);
     bool playing = m_pPreviewDeckPlay->toBool();
     // Check-state is whether the track is loaded (index.data()) and whether
     // it's playing.

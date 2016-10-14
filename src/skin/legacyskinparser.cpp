@@ -1,6 +1,7 @@
 // legacyskinparser.cpp
 // Created 9/19/2010 by RJ Ryan (rryan@mit.edu)
 
+#include <widget/wlibrarypane.h>
 #include "skin/legacyskinparser.h"
 
 #include <QDir>
@@ -66,7 +67,6 @@
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wsearchlineedit.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarybreadcrumb.h"
 #include "widget/wbuttonbar.h"
@@ -1162,7 +1162,6 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
-    
     int id = -1;
     if (!m_pContext->hasNodeSelectInt(node, "Id", &id)) {
         SKIN_WARNING(node, *m_pContext) << "SearchBox Id not found";
@@ -1173,7 +1172,6 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
         return nullptr;
     }
     //qDebug() << "SearchBox ID:" << id;
-
     WSearchLineEdit* pSearchLineEdit = new WSearchLineEdit(m_pParent);
     m_pLibrary->bindSearchBar(pSearchLineEdit, id);
     pSearchLineEdit->setup(node, *m_pContext);
@@ -1266,10 +1264,6 @@ void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
-    WLibrary* pLibraryWidget = new WLibrary(m_pParent);
-    pLibraryWidget->installEventFilter(m_pKeyboard);
-    pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-
     int id = -1;
     if (!m_pContext->hasNodeSelectInt(node, "Id", &id)) {
         SKIN_WARNING(node, *m_pContext) << "Pane Id not found";
@@ -1279,14 +1273,18 @@ QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
         SKIN_WARNING(node, *m_pContext) << "The pane Id cannot be negative";
         return nullptr;
     }
-    
     //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
-    m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, id);
+    WLibraryPane* pLibraryPaneWidget = new WLibraryPane(m_pParent);
+    pLibraryPaneWidget->installEventFilter(m_pKeyboard);
+    pLibraryPaneWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    
+    m_pLibrary->bindPaneWidget(pLibraryPaneWidget, m_pKeyboard, id);
     
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
-    commonWidgetSetup(node, pLibraryWidget, false);
-    return pLibraryWidget;
+    commonWidgetSetup(node, pLibraryPaneWidget, false);
+    return pLibraryPaneWidget;
 }
 
 QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
@@ -1306,9 +1304,10 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 	commonWidgetSetup(node, pSearchBox);
 	pLayout->addWidget(pSearchBox);
 	
-	WLibrary* pLibraryWidget = new WLibrary(pContainer);
+	WLibraryPane* pLibraryWidget = new WLibraryPane(pContainer);
 	pLibraryWidget->installEventFilter(m_pKeyboard);
-	pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+	pLibraryWidget->installEventFilter(
+	        m_pControllerManager->getControllerLearningEventFilter());
 	pLayout->addWidget(pLibraryWidget);
 	
 	m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, m_paneId);
@@ -1333,10 +1332,10 @@ QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
     m_pConfig->set(confKey, QString::number(1.0));
     
     WVerticalScrollArea* scroll = new WVerticalScrollArea(pContainer);
+	scroll->installEventFilter(m_pKeyboard);
     pLayout->addWidget(scroll);
 	
     WButtonBar* pLibrarySidebar = new WButtonBar(scroll);
-	pLibrarySidebar->installEventFilter(m_pKeyboard);
 	m_pLibrary->bindSidebarButtons(pLibrarySidebar);
 	scroll->setWidget(pLibrarySidebar);
 	connect(pLibrarySidebar, SIGNAL(ensureVisible(QWidget*)),
@@ -1355,10 +1354,10 @@ QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseLibrarySidebarButtons(const QDomElement& node) {
     WVerticalScrollArea* scroll = new WVerticalScrollArea(m_pParent);
-    
+    scroll->installEventFilter(m_pKeyboard);    
+
     WButtonBar* pLibrarySidebar = new WButtonBar(scroll);
     pLibrarySidebar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
-    pLibrarySidebar->installEventFilter(m_pKeyboard);
     m_pLibrary->bindSidebarButtons(pLibrarySidebar);
     scroll->setWidget(pLibrarySidebar);
     connect(pLibrarySidebar, SIGNAL(ensureVisible(QWidget*)),
@@ -1378,8 +1377,6 @@ QWidget *LegacySkinParser::parseLibrarySidebarExpanded(const QDomElement &node) 
 }
 
 QWidget* LegacySkinParser::parseLibraryBreadCrumb(const QDomElement& node) {
-    WLibraryBreadCrumb* pLibraryBreacrumb = new WLibraryBreadCrumb(m_pParent);
-    
     int id = -1;
     if (!m_pContext->hasNodeSelectInt(node, "Id", &id)) {
         SKIN_WARNING(node, *m_pContext) << "BreadCrumb Id not found";
@@ -1389,8 +1386,8 @@ QWidget* LegacySkinParser::parseLibraryBreadCrumb(const QDomElement& node) {
         SKIN_WARNING(node, *m_pContext) << "The BreadCrumb Id cannot be negative";
         return nullptr;
     }
-    
     //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
+    WLibraryBreadCrumb* pLibraryBreacrumb = new WLibraryBreadCrumb(m_pParent);
     m_pLibrary->bindBreadCrumb(pLibraryBreacrumb, id);
     setupWidget(node, pLibraryBreacrumb);
     

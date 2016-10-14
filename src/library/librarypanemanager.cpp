@@ -19,31 +19,30 @@ LibraryPaneManager::LibraryPaneManager(int paneId, Library *pLibrary, QObject* p
 LibraryPaneManager::~LibraryPaneManager() {
 }
 
-void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
+void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pPaneWidget,
                                         KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
-    m_pPaneWidget = pLibraryWidget;
+    m_pPaneWidget = pPaneWidget;
     
-    connect(m_pPaneWidget, SIGNAL(focused()),
+    connect(pPaneWidget, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
-    connect(m_pPaneWidget, SIGNAL(collapsed()),
+    connect(pPaneWidget, SIGNAL(collapsed()),
             this, SLOT(slotPaneCollapsed()));
-    connect(m_pPaneWidget, SIGNAL(uncollapsed()),
+    connect(pPaneWidget, SIGNAL(uncollapsed()),
             this, SLOT(slotPaneUncollapsed()));
 
-    WLibrary* lib = qobject_cast<WLibrary*>(m_pPaneWidget);
-    if (lib == nullptr) {
+    if (qobject_cast<WLibraryPane*>(pPaneWidget) == nullptr) {
         return;
     }
     for (LibraryFeature* f : m_features) {
-        //f->bindPaneWidget(lib, pKeyboard, m_paneId);
+        //f->bindPaneWidget(pPaneWidget, pKeyboard, m_paneId);
         
-        QWidget* pPane = f->createPaneWidget(pKeyboard, m_paneId);
-        if (pPane == nullptr) {
+        QWidget* pFeaturePaneWidget = f->createPaneWidget(pKeyboard, m_paneId);
+        if (pFeaturePaneWidget == nullptr) {
             continue;
         }
-        pPane->setParent(lib);
-        lib->registerView(f, pPane);
+        pFeaturePaneWidget->setParent(pPaneWidget);
+        pPaneWidget->registerView(f, pFeaturePaneWidget);
     }
 }
 
@@ -58,7 +57,9 @@ void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchBar) {
             this, SLOT(slotSearchStarting()));
     connect(pSearchBar, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
-    
+    connect(pSearchBar, SIGNAL(cancel()),
+            this, SLOT(slotSearchCancel()));
+
     m_pSearchBar = pSearchBar;
 }
 
@@ -101,12 +102,10 @@ void LibraryPaneManager::setFocused(bool value) {
 }
 
 void LibraryPaneManager::switchToFeature(LibraryFeature* pFeature) {
-    DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull() && pFeature) {
-        return;
-    }
-    
     m_pCurrentFeature = pFeature;
-    m_pPaneWidget->switchToFeature(pFeature);
+    if (!m_pPaneWidget.isNull()) {
+        m_pPaneWidget->switchToFeature(pFeature);
+    }
 }
 
 void LibraryPaneManager::restoreSearch(const QString& text) {
@@ -176,6 +175,15 @@ void LibraryPaneManager::slotPaneFocused() {
     m_pLibrary->paneFocused(this);
 }
 
+void LibraryPaneManager::slotSearchCancel() {
+    if (!m_pPaneWidget.isNull()) {
+        QWidget* cw = m_pPaneWidget->currentWidget();
+        if (cw != nullptr) {
+            cw->setFocus();
+        }
+    }
+}
+
 void LibraryPaneManager::slotSearch(const QString& text) {
     DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull()) {
         return;    
@@ -208,4 +216,15 @@ bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
         m_pLibrary->paneFocused(this);
     }
     return false;
+}
+
+bool LibraryPaneManager::focusSearch() {
+    if (m_pSearchBar.isNull()) {
+        return false;
+    }
+    if (!m_pSearchBar->isEnabled()) {
+        return false;
+    }
+    m_pSearchBar->setFocus();
+    return true;
 }

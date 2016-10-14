@@ -17,6 +17,7 @@ class WVerticalScrollArea : public QScrollArea
   protected:
     bool eventFilter(QObject* o, QEvent* e) override;
     void resizeEvent(QResizeEvent* e) override;
+    bool focusNextPrevChild(bool next) override;
     
   private:
     void calcSize();

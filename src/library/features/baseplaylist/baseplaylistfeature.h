@@ -20,7 +20,7 @@ class KeyboardEventFilter;
 class PlaylistTableModel;
 class TrackCollection;
 class TreeItem;
-class WLibrary;
+class WLibraryPane;
 class WLibraryStack;
 
 class BasePlaylistFeature : public LibraryFeature {
@@ -126,7 +126,6 @@ class BasePlaylistFeature : public LibraryFeature {
 
   private slots:
     void slotTrackSelected(TrackPointer pTrack);
-    void slotResetSelectedTrack();
 
   private:
     virtual QString getRootViewHtml() const = 0;
@@ -134,8 +133,8 @@ class BasePlaylistFeature : public LibraryFeature {
     QSet<int> m_playlistsSelectedTrackIsIn;
     
     QHash<int, QPointer<WLibraryStack> > m_panes;
-    QHash<int, int> m_idBrowse;
-    QHash<int, int> m_idTable;
+    QHash<int, int> m_browseIndexByPaneId;
+    QHash<int, int> m_tableIndexByPaneId;
 };
 
 #endif /* BASEPLAYLISTFEATURE_H */

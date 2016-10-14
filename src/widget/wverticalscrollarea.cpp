@@ -10,6 +10,7 @@ WVerticalScrollArea::WVerticalScrollArea(QWidget* parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setAlignment(Qt::AlignTop);
     setWidgetResizable(true);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WVerticalScrollArea::setWidget(QWidget* widget) {
@@ -40,6 +41,12 @@ void WVerticalScrollArea::calcSize() {
 }
 
 void WVerticalScrollArea::slotEnsureVisible(QWidget* widget) {
-    qDebug() << "WVerticalScrollArea::slotEnsureVisible";
+    //qDebug() << "WVerticalScrollArea::slotEnsureVisible";
     ensureWidgetVisible(widget, 0, 0);
+}
+
+bool WVerticalScrollArea::focusNextPrevChild(bool next) {
+    // QScrollArea::focusNextPrevChild scrolls to center
+    // of focused child. Sip scrolling here.
+    return QWidget::focusNextPrevChild(next);
 }

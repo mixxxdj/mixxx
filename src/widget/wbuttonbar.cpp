@@ -7,7 +7,8 @@
 
 WButtonBar::WButtonBar(QWidget* parent)
         : QFrame(parent),
-          m_focusItem(0) {
+          m_focusItem(0),
+          m_focusFromButton(false) {
     
     QHBoxLayout* pHb = new QHBoxLayout(this);
     pHb->setContentsMargins(0,0,0,0);
@@ -43,86 +44,117 @@ WFeatureClickButton* WButtonBar::addButton(LibraryFeature* pFeature) {
 
 void WButtonBar::keyPressEvent(QKeyEvent* event) {
     bool focusFound = false;
-    switch(event->key()) {
-    case Qt::Key_Up:
-        for (int i = m_pLayout->count() - 1; i >= 0; --i) {
-            QLayoutItem* item = m_pLayout->itemAt(i);
-            if (item) {
-                QWidget* widget = item->widget();
-                if (widget) {
-                    if (widget->hasFocus()) {
-                        m_focusItem = i;
-                        focusFound = true;
-                    } else if (focusFound == true) {
+    if (event->modifiers() == Qt::NoModifier) {
+        switch(event->key()) {
+        case Qt::Key_Up:
+            for (int i = m_pLayout->count() - 1; i >= 0; --i) {
+                QLayoutItem* item = m_pLayout->itemAt(i);
+                if (item) {
+                    QWidget* widget = item->widget();
+                    if (widget) {
+                        if (widget->hasFocus()) {
+                            m_focusItem = i;
+                            focusFound = true;
+                        } else if (focusFound == true) {
+                            widget->setFocus();
+                            emit ensureVisible(widget);
+                            m_focusItem = i;
+                            qDebug() << "Focus to" << i;
+                            event->accept();
+                            return;
+                        }
+                    }
+                }
+            }
+            if (focusFound == false) {
+                QLayoutItem* item = m_pLayout->itemAt(m_focusItem);
+                if (item) {
+                    QWidget* widget = item->widget();
+                    if (widget) {
                         widget->setFocus();
                         emit ensureVisible(widget);
-                        m_focusItem = i;
-                        qDebug() << "Focus to" << i;
+                        event->accept();
                         return;
                     }
                 }
             }
-        }
-        if (focusFound == false) {
-            QLayoutItem* item = m_pLayout->itemAt(m_focusItem);
-            if (item) {
-                QWidget* widget = item->widget();
-                if (widget) {
-                    widget->setFocus();
-                    emit ensureVisible(widget);
-                    return;
+            break;
+        case Qt::Key_Down:
+            for (int i = 0; i < m_pLayout->count(); ++i) {
+                QLayoutItem* item = m_pLayout->itemAt(i);
+                if (item) {
+                    QWidget* widget = item->widget();
+                    if (widget) {
+                        if (widget->hasFocus()) {
+                            m_focusItem = i;
+                            focusFound = true;
+                        } else if (focusFound == true) {
+                            widget->setFocus();
+                            emit ensureVisible(widget);
+                            m_focusItem = i;
+                            qDebug() << "Focus to" << i;
+                            event->accept();
+                            return;
+                        }
+                    }
                 }
             }
-        }
-        QWidget::keyPressEvent(event);
-        break;
-    case Qt::Key_Down:
-        for (int i = 0; i < m_pLayout->count(); ++i) {
-            QLayoutItem* item = m_pLayout->itemAt(i);
-            if (item) {
-                QWidget* widget = item->widget();
-                if (widget) {
-                    if (widget->hasFocus()) {
-                        m_focusItem = i;
-                        focusFound = true;
-                    } else if (focusFound == true) {
+            if (focusFound == false) {
+                QLayoutItem* item = m_pLayout->itemAt(m_focusItem);
+                if (item) {
+                    QWidget* widget = item->widget();
+                    if (widget) {
                         widget->setFocus();
                         emit ensureVisible(widget);
-                        m_focusItem = i;
-                        qDebug() << "Focus to" << i;
+                        event->accept();
                         return;
                     }
                 }
             }
+            break;
         }
-        if (focusFound == false) {
-            QLayoutItem* item = m_pLayout->itemAt(m_focusItem);
-            if (item) {
-                QWidget* widget = item->widget();
-                if (widget) {
-                    widget->setFocus();
-                    emit ensureVisible(widget);
-                    return;
-                }
-            }
-        }
-        QWidget::keyPressEvent(event);
-        break;
-    default:
-        QWidget::keyPressEvent(event);
-        break;
     }
+    QFrame::keyPressEvent(event);
 }
 
 void WButtonBar::focusInEvent(QFocusEvent* event) {
-    QWidget::focusInEvent(event);
-    QLayoutItem* item = m_pLayout->itemAt(m_focusItem);
-    if (item) {
-        QWidget* widget = item->widget();
-        if (widget) {
-            widget->setFocus();
-            emit ensureVisible(widget);
+    QFrame::focusInEvent(event);
+    if (m_focusFromButton) {
+        // don't re-focus buttons, when the focus was just there before
+        focusPreviousChild();
+        m_focusFromButton = false;
+    } else {
+        QLayoutItem* item = m_pLayout->itemAt(m_focusItem);
+        if (item) {
+            QWidget* widget = item->widget();
+            if (widget) {
+                widget->setFocus();
+                emit ensureVisible(widget);
+            }
         }
     }
 }
 
+bool WButtonBar::focusNextPrevChild(bool next) {
+    // focus changing by keyboard
+    // Old item has still the focus, save it if it is one of our buttons
+    m_focusFromButton = false;
+    for (int i = 0; i < m_pLayout->count(); ++i) {
+        QLayoutItem* item = m_pLayout->itemAt(i);
+        if (item) {
+            QWidget* widget = item->widget();
+            if (widget) {
+                if (widget->hasFocus()) {
+                    m_focusItem = i;
+                    if (!next) {
+                        // WButtonBar::focusInEvent() is called short after.
+                        m_focusFromButton = true;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    return QFrame::focusNextPrevChild(next);
+}

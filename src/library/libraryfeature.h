@@ -22,11 +22,11 @@ class TrackModel;
 class TreeItem;
 class TreeItemModel;
 class WBaseLibrary;
-class WLibrary;
+class WLibraryPane;
 class WLibrarySidebar;
 class WTrackTableView;
 
-// pure virtual (abstract) class to provide an interface for libraryfeatures
+// abstract class to provide an interface for library features
 class LibraryFeature : public QObject {
     Q_OBJECT
   public:
@@ -51,12 +51,12 @@ class LibraryFeature : public QObject {
                             QObject* /* pSource */) {
         return false;
     }
-    virtual bool dropAcceptChild(const QModelIndex& /* index */,
-                                 QList<QUrl> /* urls */, 
-                                 QObject* /* pSource */);
-    virtual bool dragMoveAccept(QUrl /* url */);
-    virtual bool dragMoveAcceptChild(const QModelIndex& /* index */, 
-                                     QUrl /* url */);
+    virtual bool dropAcceptChild(const QModelIndex& index,
+                                 QList<QUrl> urls,
+                                 QObject* pSource);
+    virtual bool dragMoveAccept(QUrl url);
+    virtual bool dragMoveAcceptChild(const QModelIndex& index,
+                                     QUrl url);
     
     // Reimplement this to register custom views with the library widget
     // at the right pane.
@@ -70,7 +70,7 @@ class LibraryFeature : public QObject {
     virtual TreeItemModel* getChildModel() = 0;
     
     virtual void setFeaturePane(int paneId);
-    int getFeaturePane();
+    int getFeaturePaneId();
     
     void setSavedPane(int paneId);
     int getSavedPane();
@@ -131,8 +131,7 @@ class LibraryFeature : public QObject {
     }
     
     // Creates a table widget with no model
-    WTrackTableView* createTableWidget(KeyboardEventFilter* pKeyboard, 
-                                               int paneId);
+    WTrackTableView* createTableWidget(int paneId);
     
     // Creates a WLibrarySidebar widget with the getChildModel() function as
     // model
@@ -162,7 +161,7 @@ class LibraryFeature : public QObject {
     
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);
-    QHash<int, QPointer<WTrackTableView> > m_trackTables;
+    QHash<int, QPointer<WTrackTableView> > m_trackTablesByPaneId;
 };
 
 #endif /* LIBRARYFEATURE_H */

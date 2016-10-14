@@ -23,10 +23,12 @@ class WButtonBar : public QFrame
   protected:
     void keyPressEvent(QKeyEvent* event) override;
     void focusInEvent(QFocusEvent* event) override;
+    bool focusNextPrevChild(bool next) override;
 
   private:
     QLayout* m_pLayout;
     int m_focusItem;
+    bool m_focusFromButton;
 };
 
 #endif // WBUTTONBAR_H

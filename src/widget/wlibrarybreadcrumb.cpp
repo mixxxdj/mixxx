@@ -28,6 +28,7 @@ WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent)
     m_preselectIcon.addPixmap(preOn, QIcon::Active, QIcon::Off);
     m_pPreselectButton->setIcon(m_preselectIcon);
     m_pPreselectButton->setChecked(m_preselected);
+    m_pPreselectButton->setFocusPolicy(Qt::ClickFocus);
     
     connect(m_pPreselectButton, SIGNAL(clicked(bool)), 
             this, SIGNAL(preselected(bool)));

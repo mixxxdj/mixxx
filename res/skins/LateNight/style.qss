@@ -1256,7 +1256,10 @@
 #LibrarySidebarButtons:focus,
 #LibrarySidebarButtons QToolButton:focus,
 #LibrarySidebarExpanded > QWidget:focus,
-#LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus {
+#LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus,
+WLibrarySidebar:focus, 
+WLibrary:focus,
+QTableView:focus {
   border: 1px solid #8E5C00;
 }
 
@@ -1406,11 +1409,13 @@ WSearchLineEdit {
   color: #cfb32c; 
 }
 
+
 WSearchLineEdit:focus { 
-  border: 2px solid #FF6600; 
+  border: 1px solid #8E5C00;
   background: #0f0f0f; 
   color: #eece33;
 }
+
 
 /* cover art */
 WCoverArt { background: transparent; color: #ACACAC; }

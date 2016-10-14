@@ -2,6 +2,7 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 // Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
 
+#include <widget/wlibrarypane.h>
 #include <QtDebug>
 
 #include "analyzer/analyzerqueue.h"
@@ -14,7 +15,6 @@
 #include "util/debug.h"
 #include "util/dnd.h"
 #include "widget/wanalysislibrarytableview.h"
-#include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 
 AnalysisFeature::AnalysisFeature(UserSettingsPointer pConfig,
@@ -61,7 +61,7 @@ QString AnalysisFeature::getSettingsName() const {
 }
 
 QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId) {
-    WTrackTableView* pTable = createTableWidget(pKeyboard, paneId);
+    WTrackTableView* pTable = createTableWidget(paneId);
     pTable->loadTrackModel(getAnalysisTableModel());
     connect(pTable->selectionModel(), 
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
@@ -194,9 +194,11 @@ void AnalysisFeature::tableSelectionChanged(const QItemSelection&,
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    QList<QFileInfo> files =
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
+    QList<TrackId> trackIds =
+            m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }
