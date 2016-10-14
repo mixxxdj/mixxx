@@ -58,7 +58,7 @@ QList<SavedSearchQuery> SavedQueriesDAO::getSavedQueries(const QString& settings
     QString queryStr = kSelectStart + 
                        "FROM " SAVEDQUERYTABLE 
                        " WHERE libraryFeature = :featureName "
-                       "ORDER BY id DESC";
+                       "ORDER BY pinned DESC, id DESC";
     query.prepare(queryStr);
     query.bindValue(":featureName", settingsName);
     
