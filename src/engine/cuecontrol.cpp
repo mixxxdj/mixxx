@@ -842,6 +842,7 @@ void CueControl::cuePlay(double v) {
         m_bPreviewing = false;
         m_pPlayButton->set(1.0);
         lock.unlock();
+
     }
 }
 
