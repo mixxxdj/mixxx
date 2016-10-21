@@ -192,7 +192,7 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
-    int err = OK;
+    SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     {
         ScopedWaitCursor cursor;
         m_pKeylockEngine->set(keylockComboBox->currentIndex());
@@ -204,7 +204,7 @@ void DlgPrefSound::slotApply() {
         emit(writePaths(&m_config));
         err = m_pSoundManager->setConfig(m_config);
     }
-    if (err != OK) {
+    if (err != SOUNDDEVICE_ERROR_OK) {
         QString error;
         QString deviceName(tr("a device"));
         QString detailedError(tr("An unknown error occurred"));

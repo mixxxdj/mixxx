@@ -397,14 +397,14 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Try open player device If that fails, the preference panel is opened.
-    int setupDevices = m_pSoundManager->setupDevices();
+    SoundDeviceError result = m_pSoundManager->setupDevices();
     unsigned int numDevices = m_pSoundManager->getConfig().getOutputs().count();
     // test for at least one out device, if none, display another dlg that
     // says "mixxx will barely work with no outs"
-    while (setupDevices != OK || numDevices == 0) {
+    while (result != SOUNDDEVICE_ERROR_OK || numDevices == 0) {
         // Exit when we press the Exit button in the noSoundDlg dialog
-        // only call it if setupDevices != OK
-        if (setupDevices != OK) {
+        // only call it if result != OK
+        if (result != SOUNDDEVICE_ERROR_OK) {
             if (noSoundDlg() != 0) {
                 exit(0);
             }

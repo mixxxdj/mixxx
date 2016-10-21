@@ -25,10 +25,10 @@
 #include "preferences/usersettings.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "soundio/soundmanagerconfig.h"
-#include "util/result.h"
+#include "soundio/sounddevice.h"
+#include "soundio/sounddeviceerror.h"
 #include "util/types.h"
 
-class SoundDevice;
 class EngineMaster;
 class AudioOutput;
 class AudioInput;
@@ -66,7 +66,7 @@ class SoundManager : public QObject {
 
     // Opens all the devices chosen by the user in the preferences dialog, and
     // establishes the proper connections between them and the mixing engine.
-    Result setupDevices();
+    SoundDeviceError setupDevices();
 
     // Playermanager will notify us when the number of decks changes.
     void setConfiguredDeckCount(int count);
@@ -83,7 +83,7 @@ class SoundManager : public QObject {
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
     SoundManagerConfig getConfig() const;
-    Result setConfig(SoundManagerConfig config);
+    SoundDeviceError setConfig(SoundManagerConfig config);
     void checkConfig();
 
     void onDeviceOutputCallback(const unsigned int iFramesPerBuffer);

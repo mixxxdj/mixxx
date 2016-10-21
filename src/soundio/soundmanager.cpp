@@ -313,13 +313,13 @@ void SoundManager::queryDevicesMixxx() {
     m_devices.push_back(currentDevice);
 }
 
-Result SoundManager::setupDevices() {
+SoundDeviceError SoundManager::setupDevices() {
     // NOTE(rryan): Big warning: This function is concurrent with calls to
     // pushBuffer and onDeviceOutputCallback until closeDevices() below.
 
     qDebug() << "SoundManager::setupDevices()";
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
-    Result err = OK;
+    SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     // NOTE(rryan): Do not clear m_pClkRefDevice here. If we didn't touch the
     // SoundDevice that is the clock reference, then it is safe to leave it as
     // it was. Clearing it causes the engine to stop being processed which
@@ -367,8 +367,8 @@ Result SoundManager::setupDevices() {
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
             AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
-            err = device->addInput(aib) != SOUNDDEVICE_ERROR_OK ? ERR : OK;
-            if (err != OK) {
+            err = device->addInput(aib);
+            if (err != SOUNDDEVICE_ERROR_OK) {
                 delete [] aib.getBuffer();
                 goto closeAndError;
             }
@@ -406,8 +406,8 @@ Result SoundManager::setupDevices() {
             }
 
             AudioOutputBuffer aob(out, pBuffer);
-            err = device->addOutput(aob) != SOUNDDEVICE_ERROR_OK ? ERR : OK;
-            if (err != OK) goto closeAndError;
+            err = device->addOutput(aob);
+            if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
             if (out.getType() == AudioOutput::MASTER) {
                 pNewMasterClockRef = device;
             } else if ((out.getType() == AudioOutput::DECK ||
@@ -453,16 +453,13 @@ Result SoundManager::setupDevices() {
             syncBuffers = 2;
         }
         err = device->open(pNewMasterClockRef == device, syncBuffers);
-        if (err != OK) {
-            goto closeAndError;
-        } else {
-            ++devicesOpened;
-            if (mode.isOutput) {
-                ++outputDevicesOpened;
-            }
-            if (mode.isInput) {
-                ++inputDevicesOpened;
-            }
+        if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
+        ++devicesOpened;
+        if (mode.isOutput) {
+            ++outputDevicesOpened;
+        }
+        if (mode.isInput) {
+            ++inputDevicesOpened;
         }
     }
 
@@ -483,10 +480,10 @@ Result SoundManager::setupDevices() {
     // returns OK if we were able to open all the devices the user wanted
     if (devicesAttempted == devicesOpened) {
         emit(devicesSetup());
-        return OK;
+        return SOUNDDEVICE_ERROR_OK;
     }
     m_pErrorDevice = NULL;
-    return ERR;
+    return SOUNDDEVICE_ERROR_ERR;
 
 closeAndError:
     const bool sleepAfterClosing = false;
@@ -502,8 +499,8 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-Result SoundManager::setConfig(SoundManagerConfig config) {
-    Result err = OK;
+SoundDeviceError SoundManager::setConfig(SoundManagerConfig config) {
+    SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     m_config = config;
     checkConfig();
 
@@ -519,7 +516,7 @@ Result SoundManager::setConfig(SoundManagerConfig config) {
     m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
 
     err = setupDevices();
-    if (err == OK) {
+    if (err == SOUNDDEVICE_ERROR_OK) {
         m_config.writeToDisk();
     }
     return err;
