@@ -114,8 +114,8 @@ class MixxxMainWindow : public QMainWindow {
     void initializeKeyboard();
     void checkDirectRendering();
     bool confirmExit();
-    int noSoundDlg(void);
-    int noOutputDlg(bool* continueClicked);
+    QDialog::DialogCode soundDeviceBussyDlg(void);
+    QDialog::DialogCode noOutputDlg(bool* continueClicked);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;

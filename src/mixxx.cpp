@@ -405,14 +405,14 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if result != OK
         if (result != SOUNDDEVICE_ERROR_OK) {
-            if (noSoundDlg() != 0) {
+            if (soundDeviceBussyDlg() != QDialog::Accepted) {
                 exit(0);
             }
         } else if (numDevices == 0) {
             bool continueClicked = false;
-            int noOutput = noOutputDlg(&continueClicked);
+            QDialog::DialogCode noOutput = noOutputDlg(&continueClicked);
             if (continueClicked) break;
-            if (noOutput != 0) {
+            if (noOutput != QDialog::Accepted) {
                 exit(0);
             }
         }
@@ -658,40 +658,40 @@ void MixxxMainWindow::initializeKeyboard() {
     m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
-int MixxxMainWindow::noSoundDlg(void) {
+QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(void) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("Sound Device Busy"));
     msgBox.setText(
-        "<html>" +
-        tr("Mixxx was unable to access all the configured sound devices. "
-        "Another application is using a sound device Mixxx is configured to "
-        "use or a device is not plugged in.") +
-        "<ul>"
-            "<li>" +
-                tr("<b>Retry</b> after closing the other application "
-                "or reconnecting a sound device") +
-            "</li>"
-            "<li>" +
-                tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
-            "</li>"
-            "<li>" +
-                tr("Get <b>Help</b> from the Mixxx Wiki.") +
-            "</li>"
-            "<li>" +
-                tr("<b>Exit</b> Mixxx.") +
-            "</li>"
-        "</ul></html>"
+            "<html>" +
+            tr("Mixxx was unable to access all the configured sound devices. "
+            "Another application is using a sound device Mixxx is configured to "
+            "use or a device is not plugged in.") +
+            "<ul>"
+                "<li>" +
+                    tr("<b>Retry</b> after closing the other application "
+                    "or reconnecting a sound device") +
+                "</li>"
+                "<li>" +
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
+                "</li>"
+                "<li>" +
+                    tr("Get <b>Help</b> from the Mixxx Wiki.") +
+                "</li>"
+                "<li>" +
+                    tr("<b>Exit</b> Mixxx.") +
+                "</li>"
+            "</ul></html>"
     );
 
-    QPushButton *retryButton = msgBox.addButton(tr("Retry"),
-        QMessageBox::ActionRole);
-    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"),
-        QMessageBox::ActionRole);
-    QPushButton *wikiButton = msgBox.addButton(tr("Help"),
-        QMessageBox::ActionRole);
-    QPushButton *exitButton = msgBox.addButton(tr("Exit"),
-        QMessageBox::ActionRole);
+    QPushButton* retryButton =
+            msgBox.addButton(tr("Retry"), QMessageBox::ActionRole);
+    QPushButton* reconfigureButton =
+            msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton* wikiButton =
+            msgBox.addButton(tr("Help"), QMessageBox::ActionRole);
+    QPushButton* exitButton =
+            msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
 
     while (true)
     {
@@ -712,39 +712,43 @@ int MixxxMainWindow::noSoundDlg(void) {
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
-                return 0;
+                return QDialog::Accepted;
             }
 
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            return 1;
+            return QDialog::Rejected;
         }
     }
 }
 
-int MixxxMainWindow::noOutputDlg(bool *continueClicked) {
+QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool *continueClicked) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("No Output Devices"));
-    msgBox.setText( "<html>" + tr("Mixxx was configured without any output sound devices. "
-                    "Audio processing will be disabled without a configured output device.") +
-                    "<ul>"
-                        "<li>" +
-                            tr("<b>Continue</b> without any outputs.") +
-                        "</li>"
-                        "<li>" +
-                            tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
-                        "</li>"
-                        "<li>" +
-                            tr("<b>Exit</b> Mixxx.") +
-                        "</li>"
-                    "</ul></html>"
+    msgBox.setText(
+            "<html>" + tr("Mixxx was configured without any output sound devices. "
+            "Audio processing will be disabled without a configured output device.") +
+            "<ul>"
+                "<li>" +
+                    tr("<b>Continue</b> without any outputs.") +
+                "</li>"
+                "<li>" +
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
+                "</li>"
+                "<li>" +
+                    tr("<b>Exit</b> Mixxx.") +
+                "</li>"
+            "</ul></html>"
     );
 
-    QPushButton *continueButton = msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
-    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
-    QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
+    QPushButton* continueButton =
+            msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
+    QPushButton* reconfigureButton =
+            msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton* exitButton =
+            msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
 
     while (true)
     {
@@ -760,13 +764,13 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked) {
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
-                return 0;
+                return QDialog::Accepted;
             }
 
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            return 1;
+            return QDialog::Rejected;
         }
     }
 }
