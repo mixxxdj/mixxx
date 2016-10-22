@@ -397,27 +397,31 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Try open player device If that fails, the preference panel is opened.
-    SoundDeviceError result = m_pSoundManager->setupDevices();
-    unsigned int numDevices = m_pSoundManager->getConfig().getOutputs().count();
-    // test for at least one out device, if none, display another dlg that
-    // says "mixxx will barely work with no outs"
-    while (result != SOUNDDEVICE_ERROR_OK || numDevices == 0) {
-        // Exit when we press the Exit button in the noSoundDlg dialog
-        // only call it if result != OK
+    bool retryClicked;
+    do {
+        retryClicked = false;
+        SoundDeviceError result = m_pSoundManager->setupDevices();
         if (result != SOUNDDEVICE_ERROR_OK) {
-            if (soundDeviceBussyDlg() != QDialog::Accepted) {
-                exit(0);
-            }
-        } else if (numDevices == 0) {
-            bool continueClicked = false;
-            QDialog::DialogCode noOutput = noOutputDlg(&continueClicked);
-            if (continueClicked) break;
-            if (noOutput != QDialog::Accepted) {
+            if (soundDeviceBussyDlg(&retryClicked) != QDialog::Accepted) {
                 exit(0);
             }
         }
-        numDevices = m_pSoundManager->getConfig().getOutputs().count();
-    }
+    } while (retryClicked);
+
+    // test for at least one out device, if none, display another dlg that
+    // says "mixxx will barely work with no outs"
+    // In case persisting errors, the user has already received a message
+    // box from the preferences dialog above. So we can watch here just the
+    // output count.
+    while (m_pSoundManager->getConfig().getOutputs().count() == 0) {
+        // Exit when we press the Exit button in the noSoundDlg dialog
+        // only call it if result != OK
+        bool continueClicked = false;
+        if (noOutputDlg(&continueClicked) != QDialog::Accepted) {
+            exit(0);
+        }
+        if (continueClicked) break;
+   }
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -658,7 +662,7 @@ void MixxxMainWindow::initializeKeyboard() {
     m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
-QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(void) {
+QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(bool* retryClicked) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("Sound Device Busy"));
@@ -699,7 +703,8 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(void) {
 
         if (msgBox.clickedButton() == retryButton) {
             m_pSoundManager->clearAndQueryDevices();
-            return 0;
+            *retryClicked = true;
+            return QDialog::Accepted;
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(
                 "http://mixxx.org/wiki/doku.php/troubleshooting"
@@ -716,14 +721,13 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(void) {
             }
 
             msgBox.show();
-
         } else if (msgBox.clickedButton() == exitButton) {
             return QDialog::Rejected;
         }
     }
 }
 
-QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool *continueClicked) {
+QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("No Output Devices"));
@@ -756,7 +760,7 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool *continueClicked) {
 
         if (msgBox.clickedButton() == continueButton) {
             *continueClicked = true;
-            return 0;
+            return QDialog::Accepted;
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
 

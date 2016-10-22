@@ -482,7 +482,7 @@ SoundDeviceError SoundManager::setupDevices() {
         return SOUNDDEVICE_ERROR_OK;
     }
     m_pErrorDevice = NULL;
-    return SOUNDDEVICE_ERROR_ERR;
+    return SOUNDDEVICE_ERROR_DEVICE_COUNT;
 
 closeAndError:
     const bool sleepAfterClosing = false;

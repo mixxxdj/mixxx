@@ -180,8 +180,9 @@ void DlgPrefSound::slotUpdate() {
     // we change to this pane, we lose changed and unapplied settings
     // every time. There's no real way around this, just anothe argument
     // for a prefs rewrite -- bkgood
-    loadSettings();
     m_settingsModified = false;
+    loadSettings();
+
 }
 
 /**
@@ -388,8 +389,9 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
             ConfigKey("[Master]", "keylock_engine"), "1").toInt();
     keylockComboBox->setCurrentIndex(keylock_engine);
 
-    emit(loadPaths(m_config));
     m_loading = false;
+    // DlgPrefSoundItem has it's own inhibit flag 
+    emit(loadPaths(m_config));
 }
 
 /**
