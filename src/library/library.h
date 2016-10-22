@@ -169,6 +169,7 @@ public:
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
+    QScopedPointer<ControlObject> m_pKeyNotation;
     
     QHash<int, LibraryPaneManager*> m_panes;
     LibraryPaneManager* m_pSidebarExpanded;

@@ -79,6 +79,10 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
+    if (m_orientation == Qt::Vertical) {
+        glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+        glScalef(-1.0f, 1.0f, 1.0f);
+    }
 
     //t8 = timer.restart(); // 2,611 ns
 

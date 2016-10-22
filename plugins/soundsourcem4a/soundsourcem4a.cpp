@@ -40,6 +40,12 @@ const SINT kNumberOfPrefetchFrames = 2112;
 // The TrackId is a 1-based index of the tracks in an MP4 file
 const u_int32_t kMinTrackId = 1;
 
+// http://www.iis.fraunhofer.de/content/dam/iis/de/doc/ame/wp/FraunhoferIIS_Application-Bulletin_AAC-Transport-Formats.pdf
+// Footnote 13: "The usual frame length for AAC-LC is 1024 samples, but a 960 sample version
+// is used for radio broadcasting, and 480 or 512 sample versions are used for the low-delay
+// codecs AAC-LD and AAC-ELD."
+const MP4Duration kDefaultFramesPerSampleBlock = 1024;
+
 // According to various references DecoderConfigDescriptor.bufferSizeDB
 // is a 24-bit unsigned integer value.
 // MP4 atom:
@@ -195,8 +201,11 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     // can't currently handle these.
     m_framesPerSampleBlock = MP4GetTrackFixedSampleDuration(m_hFile, m_trackId);
     if (MP4_INVALID_DURATION == m_framesPerSampleBlock) {
-      qWarning() << "Unable to decode tracks with non-fixed sample durations: " << getUrlString();
-      return OpenResult::UNSUPPORTED_FORMAT;
+      qWarning() << "Unable to determine the fixed sample duration of track"
+              << m_trackId << "in file" << getUrlString();
+      qWarning() << "Fallback: Using a default sample duration of"
+              << kDefaultFramesPerSampleBlock << "sample frames per block";
+      m_framesPerSampleBlock = kDefaultFramesPerSampleBlock;
     }
 
     const MP4SampleId numberOfSamples =
@@ -256,9 +265,8 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     u_int32_t configBufferSize = 0;
     if (!MP4GetTrackESConfiguration(m_hFile, m_trackId, &configBuffer,
             &configBufferSize)) {
-        /* failed to get mpeg-4 audio config... this is ok.
-         * NeAACDecInit2() will simply use default values instead.
-         */
+        // Failed to get mpeg-4 audio config... this is ok.
+        // NeAACDecInit2() will simply use default values instead.
         qWarning() << "Failed to read the MP4 audio configuration."
                 << "Continuing with default values.";
     }
@@ -277,8 +285,9 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     // Calculate how many sample blocks we need to decode in advance
     // of a random seek in order to get the recommended number of
     // prefetch frames
-    m_numberOfPrefetchSampleBlocks  = (kNumberOfPrefetchFrames +
-                                      (m_framesPerSampleBlock - 1)) / m_framesPerSampleBlock;
+    m_numberOfPrefetchSampleBlocks =
+            (kNumberOfPrefetchFrames + (m_framesPerSampleBlock - 1)) /
+            m_framesPerSampleBlock;
 
     setChannelCount(channelCount);
     setSamplingRate(samplingRate);

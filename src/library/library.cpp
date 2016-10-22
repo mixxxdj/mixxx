@@ -60,6 +60,8 @@ Library::Library(UserSettingsPointer pConfig,
         m_previewPreselectedPane(-1) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
+    m_pKeyNotation.reset(new ControlObject(ConfigKey("[Library]", "key_notation")));
+
     connect(&m_scanner, SIGNAL(scanStarted()),
             this, SIGNAL(scanStarted()));
     connect(&m_scanner, SIGNAL(scanFinished()),

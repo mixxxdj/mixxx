@@ -18,6 +18,8 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     virtual void setup(const QDomNode& node, const SkinContext& context);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
+    virtual void onResize() override;
+
     // Called when a new track is loaded.
     virtual void onSetTrack();
 
