@@ -306,46 +306,6 @@ void SoundManagerConfig::clearInputs() {
 }
 
 /**
- * Removes any outputs with devices that do not exist in the given
- * SoundManager.
- */
-void SoundManagerConfig::filterOutputs(SoundManager *soundManager) {
-    QSet<QString> deviceNames;
-    QSet<QString> toDelete;
-    foreach (SoundDevice *device, soundManager->getDeviceList(m_api, true, false)) {
-        deviceNames.insert(device->getInternalName());
-    }
-    foreach (QString deviceName, m_outputs.uniqueKeys()) {
-        if (!deviceNames.contains(deviceName)) {
-            toDelete.insert(deviceName);
-        }
-    }
-    foreach (QString del, toDelete) {
-        m_outputs.remove(del);
-    }
-}
-
-/**
- * Removes any inputs with devices that do not exist in the given
- * SoundManager.
- */
-void SoundManagerConfig::filterInputs(SoundManager *soundManager) {
-    QSet<QString> deviceNames;
-    QSet<QString> toDelete;
-    foreach (SoundDevice *device, soundManager->getDeviceList(m_api, false, true)) {
-        deviceNames.insert(device->getInternalName());
-    }
-    foreach (QString deviceName, m_inputs.uniqueKeys()) {
-        if (!deviceNames.contains(deviceName)) {
-            toDelete.insert(deviceName);
-        }
-    }
-    foreach (QString del, toDelete) {
-        m_inputs.remove(del);
-    }
-}
-
-/**
  * Loads default values for API, master output, sample rate and/or latency.
  * @param soundManager pointer to SoundManager instance to load data from
  * @param flags Bitfield to determine which defaults to load, use something

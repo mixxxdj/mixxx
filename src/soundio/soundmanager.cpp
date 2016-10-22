@@ -332,9 +332,8 @@ SoundDeviceError SoundManager::setupDevices() {
     int outputDevicesOpened = 0;
     int inputDevicesOpened = 0;
 
-    // filter out any devices in the config we don't actually have
-    m_config.filterOutputs(this);
-    m_config.filterInputs(this);
+    qDebug() << m_devices.count() << "devices availabe";
+    qDebug() << m_config.getInputs().count() + m_config.getOutputs().count() << "devices configured";
 
     // NOTE(rryan): Documenting for future people touching this class. If you
     // would like to remove the fact that we close all the devices first and
