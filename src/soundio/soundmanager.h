@@ -73,6 +73,7 @@ class SoundManager : public QObject {
     int getConfiguredDeckCount() const;
 
     SoundDevice* getErrorDevice() const;
+    QString getLastErrorMessage(SoundDeviceError err) const;
 
     // Returns a list of samplerates we will attempt to support for a given API.
     QList<unsigned int> getSampleRates(QString api) const;

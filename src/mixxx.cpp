@@ -401,8 +401,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     do {
         retryClicked = false;
         SoundDeviceError result = m_pSoundManager->setupDevices();
-        if (result != SOUNDDEVICE_ERROR_OK) {
+        if (result == SOUNDDEVICE_ERROR_DEVICE_COUNT) {
             if (soundDeviceBussyDlg(&retryClicked) != QDialog::Accepted) {
+                exit(0);
+            }
+        } else if (result != SOUNDDEVICE_ERROR_OK) {
+            if (soundDeviceErrorMsgDlg(result, &retryClicked) !=
+                    QDialog::Accepted) {
                 exit(0);
             }
         }
@@ -730,6 +735,32 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(bool* retryClicked) {
                 "</li>"
                 "<li>" +
                     tr("<b>Exit</b> Mixxx.") +
+                "</li>"
+            "</ul></html>"
+    );
+    return soundDeviceErrorDlg(title, text, retryClicked);
+}
+
+QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
+        SoundDeviceError err, bool* retryClicked) {
+    QString title(tr("Sound Device Error"));
+    QString text(
+            "<html> <p>" %
+            tr("Mixxx was unable to open all the configured devices. Last Error:") +
+            "</p> <p>" %
+            m_pSoundManager->getLastErrorMessage(err).replace("\n", "<br/>") %
+            "</p><ul>"
+                "<li>" %
+                    tr("<b>Retry</b> after fixing an issue") %
+                "</li>"
+                "<li>" %
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") %
+                "</li>"
+                "<li>" %
+                    tr("Get <b>Help</b> from the Mixxx Wiki.") %
+                "</li>"
+                "<li>" %
+                    tr("<b>Exit</b> Mixxx.") %
                 "</li>"
             "</ul></html>"
     );

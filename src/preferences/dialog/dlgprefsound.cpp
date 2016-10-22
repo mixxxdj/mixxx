@@ -206,22 +206,7 @@ void DlgPrefSound::slotApply() {
         err = m_pSoundManager->setConfig(m_config);
     }
     if (err != SOUNDDEVICE_ERROR_OK) {
-        QString error;
-        QString deviceName(tr("a device"));
-        QString detailedError(tr("An unknown error occurred"));
-        SoundDevice *device = m_pSoundManager->getErrorDevice();
-        if (device != NULL) {
-            deviceName = tr("sound device \"%1\"").arg(device->getDisplayName());
-            detailedError = device->getError();
-        }
-        switch (err) {
-        case SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL:
-            error = tr("Two outputs cannot share channels on %1").arg(deviceName);
-            break;
-        default:
-            error = tr("Error opening %1\n%2").arg(deviceName, detailedError);
-            break;
-        }
+        QString error = m_pSoundManager->getLastErrorMessage(err);
         QMessageBox::warning(NULL, tr("Configuration error"), error);
     }
     m_settingsModified = false;

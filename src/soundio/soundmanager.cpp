@@ -494,6 +494,26 @@ SoundDevice* SoundManager::getErrorDevice() const {
     return m_pErrorDevice;
 }
 
+QString SoundManager::getLastErrorMessage(SoundDeviceError err) const {
+    QString error;
+    QString deviceName(tr("a device"));
+    QString detailedError(tr("An unknown error occurred"));
+    SoundDevice* device = getErrorDevice();
+    if (device != NULL) {
+        deviceName = device->getDisplayName();
+        detailedError = device->getError();
+    }
+    switch (err) {
+    case SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL:
+        error = tr("Two outputs cannot share channels on \"%1\"").arg(deviceName);
+        break;
+    default:
+        error = tr("Error opening \"%1\"").arg(deviceName) + "\n" + detailedError;
+        break;
+    }
+    return error;
+}
+
 SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
