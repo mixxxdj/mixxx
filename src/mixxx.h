@@ -114,6 +114,8 @@ class MixxxMainWindow : public QMainWindow {
     void initializeKeyboard();
     void checkDirectRendering();
     bool confirmExit();
+    QDialog::DialogCode soundDeviceErrorDlg(
+            const QString &title, const QString &text, bool* retryClicked);
     QDialog::DialogCode soundDeviceBussyDlg(bool* retryClicked);
     QDialog::DialogCode noOutputDlg(bool* continueClicked);
 

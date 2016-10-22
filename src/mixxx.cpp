@@ -662,31 +662,12 @@ void MixxxMainWindow::initializeKeyboard() {
     m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
-QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(bool* retryClicked) {
+QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
+        const QString &title, const QString &text, bool* retryClicked) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
-    msgBox.setWindowTitle(tr("Sound Device Busy"));
-    msgBox.setText(
-            "<html>" +
-            tr("Mixxx was unable to access all the configured sound devices. "
-            "Another application is using a sound device Mixxx is configured to "
-            "use or a device is not plugged in.") +
-            "<ul>"
-                "<li>" +
-                    tr("<b>Retry</b> after closing the other application "
-                    "or reconnecting a sound device") +
-                "</li>"
-                "<li>" +
-                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
-                "</li>"
-                "<li>" +
-                    tr("Get <b>Help</b> from the Mixxx Wiki.") +
-                "</li>"
-                "<li>" +
-                    tr("<b>Exit</b> Mixxx.") +
-                "</li>"
-            "</ul></html>"
-    );
+    msgBox.setWindowTitle(title);
+    msgBox.setText(text);
 
     QPushButton* retryButton =
             msgBox.addButton(tr("Retry"), QMessageBox::ActionRole);
@@ -713,6 +694,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(bool* retryClicked) {
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
 
+            m_pSoundManager->clearAndQueryDevices();
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
@@ -722,9 +704,36 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(bool* retryClicked) {
 
             msgBox.show();
         } else if (msgBox.clickedButton() == exitButton) {
+            // Will finally quit Mixxx
             return QDialog::Rejected;
         }
     }
+}
+
+QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(bool* retryClicked) {
+    QString title(tr("Sound Device Busy"));
+    QString text(
+            "<html>" +
+            tr("Mixxx was unable to access all the configured sound devices. "
+            "Another application is using a sound device Mixxx is configured to "
+            "use or a device is not plugged in.") +
+            "<ul>"
+                "<li>" +
+                    tr("<b>Retry</b> after closing the other application "
+                    "or reconnecting a sound device") +
+                "</li>"
+                "<li>" +
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
+                "</li>"
+                "<li>" +
+                    tr("Get <b>Help</b> from the Mixxx Wiki.") +
+                "</li>"
+                "<li>" +
+                    tr("<b>Exit</b> Mixxx.") +
+                "</li>"
+            "</ul></html>"
+    );
+    return soundDeviceErrorDlg(title, text, retryClicked);
 }
 
 QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
@@ -764,6 +773,7 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
 
+            m_pSoundManager->clearAndQueryDevices();
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
@@ -774,6 +784,7 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
+            // Will finally quit Mixxx
             return QDialog::Rejected;
         }
     }
