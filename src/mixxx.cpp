@@ -401,7 +401,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     do {
         retryClicked = false;
         SoundDeviceError result = m_pSoundManager->setupDevices();
-        if (result == SOUNDDEVICE_ERROR_DEVICE_COUNT) {
+        if (result == SOUNDDEVICE_ERROR_DEVICE_COUNT ||
+                result == SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL) {
             if (soundDeviceBussyDlg(&retryClicked) != QDialog::Accepted) {
                 exit(0);
             }
@@ -746,7 +747,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
     QString title(tr("Sound Device Error"));
     QString text(
             "<html> <p>" %
-            tr("Mixxx was unable to open all the configured devices. Last Error:") +
+            tr("Mixxx was unable to open all the configured devices.") +
             "</p> <p>" %
             m_pSoundManager->getLastErrorMessage(err).replace("\n", "<br/>") %
             "</p><ul>"
@@ -804,7 +805,6 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
 
-            m_pSoundManager->clearAndQueryDevices();
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();

@@ -178,7 +178,7 @@ DlgPrefSound::~DlgPrefSound() {
 void DlgPrefSound::slotUpdate() {
     // this is unfortunate, because slotUpdate is called every time
     // we change to this pane, we lose changed and unapplied settings
-    // every time. There's no real way around this, just anothe argument
+    // every time. There's no real way around this, just another argument
     // for a prefs rewrite -- bkgood
     m_settingsModified = false;
     loadSettings();
@@ -208,8 +208,9 @@ void DlgPrefSound::slotApply() {
     if (err != SOUNDDEVICE_ERROR_OK) {
         QString error = m_pSoundManager->getLastErrorMessage(err);
         QMessageBox::warning(NULL, tr("Configuration error"), error);
+    } else {
+        m_settingsModified = false;
     }
-    m_settingsModified = false;
     loadSettings(); // in case SM decided to change anything it didn't like
 }
 

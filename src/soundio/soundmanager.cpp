@@ -310,7 +310,7 @@ void SoundManager::queryDevicesPortaudio() {
 void SoundManager::queryDevicesMixxx() {
     SoundDeviceNetwork* currentDevice = new SoundDeviceNetwork(
             m_pConfig, this, m_pNetworkStream);
-    m_devices.push_back(currentDevice);
+    m_devices.append(currentDevice);
 }
 
 SoundDeviceError SoundManager::setupDevices() {
@@ -331,9 +331,6 @@ SoundDeviceError SoundManager::setupDevices() {
     int devicesOpened = 0;
     int outputDevicesOpened = 0;
     int inputDevicesOpened = 0;
-
-    qDebug() << m_devices.count() << "devices availabe";
-    qDebug() << m_config.getInputs().count() + m_config.getOutputs().count() << "devices configured";
 
     // NOTE(rryan): Documenting for future people touching this class. If you
     // would like to remove the fact that we close all the devices first and
