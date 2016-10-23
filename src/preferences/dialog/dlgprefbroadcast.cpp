@@ -55,6 +55,12 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     password->setText(m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY,"password")));
 
+
+
+    // Stream "public" checkbox
+    stream_public->setChecked((bool)m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY,"stream_public")).toInt());
+
     // Stream name
     stream_name->setText(m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY,"stream_name")));
@@ -83,13 +89,6 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     }
     stream_genre->setText(tmp_string);
 
-    // Stream "public" checkbox
-    stream_public->setChecked((bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"stream_public")).toInt());
-
-    // OGG "dynamicupdate" checkbox
-    ogg_dynamicupdate->setChecked((bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate")).toInt());
 
     // Encoding bitrate combobox
     QString kbps_pattern = QString("%1 kbps");
@@ -138,24 +137,6 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     }
     comboBoxEncodingChannels->setCurrentIndex(tmp_index);
 
-    // "Enable UTF-8 metadata" checkbox
-    // TODO(rryan): allow arbitrary codecs in the future?
-    QString charset = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "metadata_charset"));
-    enableUtf8Metadata->setChecked(charset == "UTF-8");
-
-    // "Enable custom metadata" checkbox
-    enableCustomMetadata->setChecked((bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"enable_metadata")).toInt());
-
-    // Custom artist
-    custom_artist->setText(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"custom_artist")));
-
-    // Custom title
-    custom_title->setText(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"custom_title")));
-
     // Metadata format
     tmp_string = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY,"metadata_format"));
@@ -164,6 +145,28 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
         tmp_string = kDefaultMetadataFormat;
     }
     metadata_format->setText(tmp_string);
+
+    // Static artist
+    custom_artist->setText(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY,"custom_artist")));
+
+    // Static title
+    custom_title->setText(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY,"custom_title")));
+
+    // "Enable static artist and title" checkbox
+    enableCustomMetadata->setChecked((bool)m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY,"enable_metadata")).toInt());
+
+    // "Enable UTF-8 metadata" checkbox
+    // TODO(rryan): allow arbitrary codecs in the future?
+    QString charset = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "metadata_charset"));
+    enableUtf8Metadata->setChecked(charset == "UTF-8");
+
+    // OGG "dynamicupdate" checkbox
+    ogg_dynamicupdate->setChecked((bool)m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate")).toInt());
 
     slotApply();
 }
