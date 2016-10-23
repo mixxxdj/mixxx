@@ -162,7 +162,14 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QSpinBox" name="spinBoxMaximumReties"/>
+         <widget class="QSpinBox" name="spinBoxMaximumReties">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_18">
@@ -172,7 +179,14 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QSpinBox" name="spinBoxRetryDelay"/>
+         <widget class="QSpinBox" name="spinBoxRetryDelay">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -319,9 +333,6 @@
           <property name="text">
            <string>Stream name</string>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
           <property name="buddy">
            <cstring>comboBoxServerType</cstring>
           </property>
@@ -337,9 +348,6 @@
           </property>
           <property name="text">
            <string>Website</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
           <property name="buddy">
            <cstring>mountpoint</cstring>
@@ -369,9 +377,6 @@
           </property>
           <property name="text">
            <string>Description</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
           <property name="buddy">
            <cstring>stream_desc</cstring>
@@ -421,9 +426,6 @@ p, li { white-space: pre-wrap; }
           </property>
           <property name="text">
            <string>Genre</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
           <property name="buddy">
            <cstring>stream_genre</cstring>
