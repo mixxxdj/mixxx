@@ -32,16 +32,6 @@
      <layout class="QGridLayout">
       <item row="1" column="0">
        <layout class="QGridLayout" name="gridLayoutSC">
-        <item row="0" column="1">
-         <widget class="QComboBox" name="comboBoxServerType">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0">
          <widget class="QLabel" name="label">
           <property name="text">
@@ -49,31 +39,13 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Host</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="host">
-          <property name="text">
-           <string notr="true"/>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>Login</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="login">
-          <property name="text">
-           <string notr="true">source</string>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboBoxServerType">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
          </widget>
         </item>
@@ -86,6 +58,20 @@
         </item>
         <item row="0" column="3">
          <widget class="QLineEdit" name="mountpoint">
+          <property name="text">
+           <string notr="true"/>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Host</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="host">
           <property name="text">
            <string notr="true"/>
           </property>
@@ -108,6 +94,20 @@
           </property>
           <property name="text">
            <string notr="true"/>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Login</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="login">
+          <property name="text">
+           <string notr="true">source</string>
           </property>
          </widget>
         </item>
@@ -145,19 +145,6 @@
       <string>Stream settings</string>
      </property>
      <layout class="QGridLayout">
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="stream_name">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Mixxx Icecast Testing</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0" colspan="2">
        <widget class="QCheckBox" name="stream_public">
         <property name="sizePolicy">
@@ -171,16 +158,26 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="stream_website">
+      <item row="1" column="0" colspan="2">
+       <widget class="QCheckBox" name="enableUtf8Metadata">
+        <property name="text">
+         <string>Use UTF-8 encoding for metadata.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="ogg_dynamicupdate">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="toolTip">
+         <string>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</string>
+        </property>
         <property name="text">
-         <string>http://www.mixxx.org</string>
+         <string>Dynamically update Ogg Vorbis metadata.</string>
         </property>
        </widget>
       </item>
@@ -203,19 +200,16 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QCheckBox" name="ogg_dynamicupdate">
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="stream_name">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="toolTip">
-         <string>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</string>
-        </property>
         <property name="text">
-         <string>Dynamically update Ogg Vorbis metadata.</string>
+         <string>Mixxx Icecast Testing</string>
         </property>
        </widget>
       </item>
@@ -238,8 +232,8 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="1">
-       <widget class="QLineEdit" name="stream_genre">
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="stream_website">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -247,12 +241,12 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Live mix</string>
+         <string>http://www.mixxx.org</string>
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="label_13">
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_12">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -260,20 +254,13 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Genre</string>
+         <string>Description</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
         <property name="buddy">
-         <cstring>stream_genre</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QCheckBox" name="enableUtf8Metadata">
-        <property name="text">
-         <string>Use UTF-8 encoding for metadata.</string>
+         <cstring>stream_desc</cstring>
         </property>
        </widget>
       </item>
@@ -309,8 +296,8 @@ p, li { white-space: pre-wrap; }
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_12">
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_13">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -318,13 +305,26 @@ p, li { white-space: pre-wrap; }
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Description</string>
+         <string>Genre</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
         <property name="buddy">
-         <cstring>stream_desc</cstring>
+         <cstring>stream_genre</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLineEdit" name="stream_genre">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Live mix</string>
         </property>
        </widget>
       </item>
