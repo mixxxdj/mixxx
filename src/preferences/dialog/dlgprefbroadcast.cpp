@@ -57,6 +57,17 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
 
 
 
+    // Maximum Retries
+    spinBoxMaximumReties->setValue(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY,"maximum_retries"), "10").toInt());
+
+    // Retry Delay
+    spinBoxRetryDelay->setValue(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY,"retry_delay")).toInt());
+
+
+
+
     // Stream "public" checkbox
     stream_public->setChecked((bool)m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY,"stream_public")).toInt());
@@ -183,6 +194,8 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     port->setText("");
     login->setText("");
     password->setText("");
+    spinBoxMaximumReties->setValue(10);
+    spinBoxRetryDelay->setValue(0);
     stream_name->setText("");
     stream_website->setText(MIXXX_WEBSITE_URL);
     stream_desc->setText(tr("This stream is online for testing purposes!"));
@@ -250,6 +263,10 @@ void DlgPrefBroadcast::slotApply()
             ConfigValue(login->text()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "password"),
             ConfigValue(password->text()));
+    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"),
+            ConfigValue(spinBoxMaximumReties->value()));
+    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "retry_delay"),
+            ConfigValue(spinBoxRetryDelay->value()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "stream_name"),
             ConfigValue(stream_name->text()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "stream_website"),
