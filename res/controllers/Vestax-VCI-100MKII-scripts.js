@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2016-11-1
+// description: 2016-11-3
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -12,7 +12,6 @@ var VCI102 = {};
 VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
 VCI102.fx12 = ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
 VCI102.fx34 = ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
-VCI102.fx = VCI102.fx12.concat(VCI102.fx34);
 
 VCI102.fxButton = [VCI102.fx12, VCI102.fx12];
 VCI102.shift = [0, 0];
@@ -183,19 +182,23 @@ VCI102.fxKnob = [
     };
 });
 
-VCI102.superKnobKey = ["super1", "super1", "super1", "super1"];
-VCI102.superKnobValue = [0, 0, 0, 0];
-
 VCI102.super1 = function(ch, midino, value, status, group) {
-    var key = VCI102.shift[ch % 2] ? "mix" : "super1";
-    if (VCI102.superKnobKey[ch] != key) {
-        engine.softTakeoverIgnoreNextValue(group, key);
-        // set previous value again on key change to avoid slip
-        engine.setValue(group, key, VCI102.superKnobValue[ch]);
-        VCI102.superKnobKey[ch] = key;
+
+    function getKey() {
+        // if any parameters are linked then "super1" else "mix"
+        var i, j, effect;
+        for (i = engine.getValue(group, "num_effects"); i > 0; i--) {
+            effect = group.slice(0, -1) + "_Effect" + i + "]";
+            for (j = engine.getValue(effect, "num_parameters"); j > 0; j--) {
+                if (engine.getValue(effect, "parameter" + j + "_link_type")) {
+                    return "super1";
+                }
+            }
+        }
+        return "mix";
     }
-    VCI102.superKnobValue[ch] = value < 127 ? value / 128 : 1;
-    engine.setValue(group, key, VCI102.superKnobValue[ch]);
+
+    engine.setValue(group, getKey(), value < 127 ? value / 128 : 1);
 };
 
 VCI102.prev_chain = function(ch, midino, value, status, group) {
@@ -393,8 +396,6 @@ VCI102.init = function(id, debug) {
         }
         engine.softTakeover(VCI102.deck[i], "rate", true);
         engine.softTakeover(VCI102.deck[i], "pitch_adjust", true);
-        engine.softTakeover(VCI102.fx[i], "super1", true);
-        engine.softTakeover(VCI102.fx[i], "mix", true);
     }
     for (i = 1; i <= 4; i++) {
         makeButton(activate = "hotcue_" + i + "_activate");
