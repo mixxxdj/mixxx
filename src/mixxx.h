@@ -117,7 +117,7 @@ class MixxxMainWindow : public QMainWindow {
     bool confirmExit();
     QDialog::DialogCode soundDeviceErrorDlg(
             const QString &title, const QString &text, bool* retryClicked);
-    QDialog::DialogCode soundDeviceBussyDlg(bool* retryClicked);
+    QDialog::DialogCode soundDeviceBusyDlg(bool* retryClicked);
     QDialog::DialogCode soundDeviceErrorMsgDlg(
             SoundDeviceError err, bool* retryClicked);
     QDialog::DialogCode noOutputDlg(bool* continueClicked);

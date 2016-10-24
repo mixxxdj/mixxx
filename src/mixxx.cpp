@@ -403,7 +403,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         SoundDeviceError result = m_pSoundManager->setupDevices();
         if (result == SOUNDDEVICE_ERROR_DEVICE_COUNT ||
                 result == SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL) {
-            if (soundDeviceBussyDlg(&retryClicked) != QDialog::Accepted) {
+            if (soundDeviceBusyDlg(&retryClicked) != QDialog::Accepted) {
                 exit(0);
             }
         } else if (result != SOUNDDEVICE_ERROR_OK) {
@@ -716,7 +716,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
     }
 }
 
-QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(bool* retryClicked) {
+QDialog::DialogCode MixxxMainWindow::soundDeviceBusyDlg(bool* retryClicked) {
     QString title(tr("Sound Device Busy"));
     QString text(
             "<html>" +
@@ -741,6 +741,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBussyDlg(bool* retryClicked) {
     );
     return soundDeviceErrorDlg(title, text, retryClicked);
 }
+
 
 QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
         SoundDeviceError err, bool* retryClicked) {
