@@ -28,7 +28,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     comboBoxServerType->addItem(tr("Icecast 1"), BROADCAST_SERVER_ICECAST1);
 
     int tmp_index = comboBoxServerType->findData(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"servertype")));
+            ConfigKey(BROADCAST_PREF_KEY, "servertype")));
     if (tmp_index < 0) { //Set default if invalid.
         tmp_index = 0;
     }
@@ -36,7 +36,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
 
     // Mountpoint
     mountpoint->setText(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"mountpoint")));
+            ConfigKey(BROADCAST_PREF_KEY, "mountpoint")));
 
     // Host
     host->setText(m_pConfig->getValueString(
@@ -53,28 +53,29 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
 
     // Password
     password->setText(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"password")));
+            ConfigKey(BROADCAST_PREF_KEY, "password")));
 
 
+    // Retry Delay
+    spinBoxReconnectDelay->setValue(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay")).toInt());
 
     // Maximum Retries
     spinBoxMaximumReties->setValue(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"maximum_retries"), "10").toInt());
+            ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt());
 
-    // Retry Delay
-    spinBoxRetryDelay->setValue(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"retry_delay")).toInt());
-
-
+    // Use Maximum Retries
+    checkBoxUseMaximumRetries->setChecked(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "use_maximum_retries"), "1").toInt());
 
 
     // Stream "public" checkbox
     stream_public->setChecked((bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"stream_public")).toInt());
+            ConfigKey(BROADCAST_PREF_KEY, "stream_public")).toInt());
 
     // Stream name
     stream_name->setText(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"stream_name")));
+            ConfigKey(BROADCAST_PREF_KEY, "stream_name")));
 
     // Stream website
     tmp_string = m_pConfig->getValueString(
@@ -194,8 +195,9 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     port->setText("");
     login->setText("");
     password->setText("");
+    spinBoxReconnectDelay->setValue(0);
     spinBoxMaximumReties->setValue(10);
-    spinBoxRetryDelay->setValue(0);
+    checkBoxUseMaximumRetries->setChecked(true);
     stream_name->setText("");
     stream_website->setText(MIXXX_WEBSITE_URL);
     stream_desc->setText(tr("This stream is online for testing purposes!"));
@@ -263,10 +265,12 @@ void DlgPrefBroadcast::slotApply()
             ConfigValue(login->text()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "password"),
             ConfigValue(password->text()));
+    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"),
+            ConfigValue(spinBoxReconnectDelay->value()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"),
             ConfigValue(spinBoxMaximumReties->value()));
-    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "retry_delay"),
-            ConfigValue(spinBoxRetryDelay->value()));
+    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "use_maximum_retries"),
+            ConfigValue(checkBoxUseMaximumRetries->isChecked()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "stream_name"),
             ConfigValue(stream_name->text()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "stream_website"),

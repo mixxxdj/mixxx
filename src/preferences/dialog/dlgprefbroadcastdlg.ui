@@ -164,14 +164,14 @@
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
+        <item row="2" column="0">
          <widget class="QLabel" name="label_17">
           <property name="text">
            <string>Maximum reties</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
+        <item row="2" column="1">
          <widget class="QSpinBox" name="spinBoxMaximumReties">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -184,17 +184,24 @@
         <item row="1" column="0">
          <widget class="QLabel" name="label_18">
           <property name="text">
-           <string>Retry delay [s]</string>
+           <string>Reconnect delay [s]</string>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QSpinBox" name="spinBoxRetryDelay">
+         <widget class="QSpinBox" name="spinBoxReconnectDelay">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QCheckBox" name="checkBoxUseMaximumRetries">
+          <property name="text">
+           <string>Use maximum retires</string>
           </property>
          </widget>
         </item>
