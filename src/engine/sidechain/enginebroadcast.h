@@ -102,6 +102,10 @@ class EngineBroadcast
     bool writeSingle(const unsigned char *data, size_t len);
 
     QByteArray encodeString(const QString& string);
+
+    bool waitForRetry();
+
+
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
     shout_t *m_pShout;
@@ -133,7 +137,13 @@ class EngineBroadcast
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;
+
     QString m_lastErrorStr;
+    int m_retryCount;
+
+    int m_reconnectDelay;
+    int m_maximumRetries;
+    bool m_useMaximumRetries;
 };
 
 #endif // ENGINE_SIDECHAIN_ENGINEBROADCAST_H

@@ -48,7 +48,11 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
           m_threadWaiting(false),
-          m_pOutputFifo(nullptr) {
+          m_pOutputFifo(nullptr),
+          m_retryCount(0),
+          m_reconnectDelay(0),
+          m_maximumRetries(10),
+          m_useMaximumRetries(true) {
     const bool persist = true;
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
@@ -241,6 +245,14 @@ void EngineBroadcast::updateFromPreferences() {
 
     m_metadataFormat = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "metadata_format"));
+
+    m_reconnectDelay = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay")).toInt();
+    m_maximumRetries = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt();
+    m_useMaximumRetries = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "use_maximum_retries"), "1").toInt();
+
 
     int format;
     int protocol;
@@ -466,9 +478,9 @@ bool EngineBroadcast::processConnect() {
 
     // If we don't have any fatal errors let's try to connect
     if ((m_iShoutStatus == SHOUTERR_BUSY ||
-         m_iShoutStatus == SHOUTERR_CONNECTED ||
-         m_iShoutStatus == SHOUTERR_SUCCESS) &&
-         m_iShoutFailures < kMaxShoutFailures) {
+             m_iShoutStatus == SHOUTERR_CONNECTED ||
+             m_iShoutStatus == SHOUTERR_SUCCESS) &&
+             m_iShoutFailures < kMaxShoutFailures) {
         m_iShoutFailures = 0;
         int timeout = 0;
         while (m_iShoutStatus == SHOUTERR_BUSY &&
@@ -906,4 +918,19 @@ void EngineBroadcast::slotEnableCO(double v) {
     if (v > 0.0) {
         serverConnect();
     }
+}
+
+bool EngineBroadcast::waitForRetry() {
+    if (m_useMaximumRetries &&
+            m_retryCount >= m_maximumRetries) {
+        return false;
+    }
+    ++m_retryCount;
+
+    int delay500 = m_reconnectDelay * 2;
+    while (m_pBroadcastEnabled->toBool() &&
+            --delay500 > 0) {
+        QThread::msleep(500);
+    }
+    return true;
 }
