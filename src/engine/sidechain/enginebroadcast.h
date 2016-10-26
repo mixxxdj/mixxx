@@ -75,7 +75,7 @@ class EngineBroadcast
 
   private:
     bool processConnect();
-    void processDisconnect();
+    bool processDisconnect();
 
     // Update the libshout struct with info from Mixxx's broadcast preferences.
     void updateFromPreferences();

@@ -427,7 +427,6 @@ bool EngineBroadcast::processConnect() {
     if (!m_encoder) {
         // updateFromPreferences failed
         m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
-        m_pBroadcastEnabled->set(0);
         qDebug() << "EngineBroadcast::processConnect() returning false";
         return false;
     }
@@ -514,8 +513,7 @@ bool EngineBroadcast::processConnect() {
             setState(NETWORKSTREAMWORKER_STATE_READY);
             qDebug() << "***********Connected to streaming server...";
 
-            // Signal user also that we are connected
-            infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
+            m_retryCount = 0;
 
             if (m_pOutputFifo->readAvailable()) {
                 m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
@@ -546,7 +544,6 @@ bool EngineBroadcast::processConnect() {
     }
     if (m_pBroadcastEnabled->toBool()) {
         m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
-        m_pBroadcastEnabled->set(0);
     } else {
         m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
     }
@@ -554,15 +551,16 @@ bool EngineBroadcast::processConnect() {
     return false;
 }
 
-void EngineBroadcast::processDisconnect() {
+bool EngineBroadcast::processDisconnect() {
     qDebug() << "EngineBroadcast::processDisconnect()";
+    bool disconnected = false;
     if (isConnected()) {
         m_threadWaiting = false;
-        // We are conneced but broadcast is disabled. Disconnect.
+        // We are connected but broadcast is disabled. Disconnect.
         shout_close(m_pShout);
-        infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
         m_iShoutStatus = SHOUTERR_UNCONNECTED;
         emit(broadcastDisconnected());
+        disconnected = true;
     }
 
     if (m_encoder) {
@@ -570,6 +568,7 @@ void EngineBroadcast::processDisconnect() {
         delete m_encoder;
         m_encoder = nullptr;
     }
+    return disconnected;
 }
 
 void EngineBroadcast::write(unsigned char *header, unsigned char *body,
@@ -596,6 +595,7 @@ void EngineBroadcast::write(unsigned char *header, unsigned char *body,
             qDebug() << "shout_queuelen" << queuelen;
             NetworkStreamWorker::debugState();
             if (queuelen > kMaxNetworkCache) {
+                m_lastErrorStr = tr("Network cache overflow");
                 tryReconnect();
             }
         }
@@ -607,9 +607,10 @@ bool EngineBroadcast::writeSingle(const unsigned char* data, size_t len) {
     setFunctionCode(8);
     int ret = shout_send_raw(m_pShout, data, len);
     if (ret < SHOUTERR_SUCCESS && ret != SHOUTERR_BUSY) {
-        // in case of bussy, frames are queued and queue is checked below
-        qDebug() << "EngineBroadcast::write() header error:"
-                 << ret << shout_get_error(m_pShout);
+        // in case of busy, frames are queued and queue is checked later
+        m_lastErrorStr = shout_get_error(m_pShout);
+        qDebug() << "EngineBroadcast::writeSingle() error:"
+                 << ret << m_lastErrorStr;
         NetworkStreamWorker::debugState();
         if (++m_iShoutFailures > kMaxShoutFailures) {
             tryReconnect();
@@ -833,11 +834,15 @@ void EngineBroadcast::run() {
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
     if (!processConnect()) {
+        m_pBroadcastEnabled->set(0);
         errorDialog(tr("Can't connect to streaming server"),
                     m_lastErrorStr + "\n" +
                     tr("Please check your connection to the Internet and verify that your username and password are correct."));
         return;
     }
+
+    // Signal user also that we are connected
+    infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
 
     while(true) {
         setFunctionCode(1);
@@ -847,8 +852,10 @@ void EngineBroadcast::run() {
         // broadcast if necessary.
         if (!m_pBroadcastEnabled->toBool()) {
             m_threadWaiting = false;
-            m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
-            processDisconnect();
+            if (processDisconnect()) {
+                m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
+                infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
+            }
             setFunctionCode(2);
             return;
         }
@@ -919,18 +926,23 @@ bool EngineBroadcast::waitForRetry() {
     }
     ++m_retryCount;
 
+    qDebug() << "waitForRetry()" << m_retryCount << "/" << m_maximumRetries;
+
     int delay500 = m_reconnectDelay * 2;
     while (--delay500 > 0) {
         if (!m_pBroadcastEnabled->toBool()) {
             return false;
         }
+        qDebug() << "sleep";
         QThread::msleep(500);
     }
     return true;
 }
 
 void EngineBroadcast::tryReconnect() {
+    QString originalErrorStr = m_lastErrorStr;
     m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+
     processDisconnect();
     while (waitForRetry()) {
         if (processConnect()) {
@@ -939,7 +951,10 @@ void EngineBroadcast::tryReconnect() {
     }
 
     if (m_pStatusCO->get() == STATUSCO_FAILURE) {
+        m_pBroadcastEnabled->set(0);
+        m_readSema.release();
         errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
+                    originalErrorStr + "\n" +
                     m_lastErrorStr + "\n" +
                     tr("Please check your connection to the Internet"));
     }
