@@ -71,16 +71,19 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
     shout_init();
 
     if (!(m_pShout = shout_new())) {
-        errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_t"));
+        errorDialog(tr("Mixxx encountered a problem"),
+                tr("Could not allocate shout_t"));
     }
 
     if (!(m_pShoutMetaData = shout_metadata_new())) {
-        errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_metadata_t"));
+        errorDialog(tr("Mixxx encountered a problem"),
+                tr("Could not allocate shout_metadata_t"));
     }
 
     setFunctionCode(14);
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
-        errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
+        errorDialog(tr("Error setting non-blocking mode:"),
+                shout_get_error(m_pShout));
     }
 }
 
@@ -269,7 +272,8 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    if (shout_set_port(m_pShout, static_cast<unsigned short>(serverUrl.port(BROADCAST_DEFAULT_PORT)))
+    if (shout_set_port(m_pShout,
+            static_cast<unsigned short>(serverUrl.port(BROADCAST_DEFAULT_PORT)))
             != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting port!"), shout_get_error(m_pShout));
         return;
@@ -281,12 +285,14 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    if (shout_set_mount(m_pShout, serverUrl.path().toLatin1().constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_mount(m_pShout, serverUrl.path().toLatin1().constData())
+            != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting mount!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_user(m_pShout, serverUrl.userName().toLatin1().constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_user(m_pShout, serverUrl.userName().toLatin1().constData())
+            != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting username!"), shout_get_error(m_pShout));
         return;
     }
@@ -590,13 +596,7 @@ void EngineBroadcast::write(unsigned char *header, unsigned char *body,
             qDebug() << "shout_queuelen" << queuelen;
             NetworkStreamWorker::debugState();
             if (queuelen > kMaxNetworkCache) {
-                m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
-                processDisconnect();
-                if (!processConnect()) {
-                    errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
-                                m_lastErrorStr + "\n" +
-                                tr("Please check your connection to the Internet"));
-                }
+                tryReconnect();
             }
         }
     }
@@ -611,16 +611,8 @@ bool EngineBroadcast::writeSingle(const unsigned char* data, size_t len) {
         qDebug() << "EngineBroadcast::write() header error:"
                  << ret << shout_get_error(m_pShout);
         NetworkStreamWorker::debugState();
-        if (m_iShoutFailures > kMaxShoutFailures) {
-            m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
-            processDisconnect();
-            if (!processConnect()) {
-                errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
-                            m_lastErrorStr + "\n" +
-                            tr("Please check your connection to the Internet"));
-            }
-        } else{
-            m_iShoutFailures++;
+        if (++m_iShoutFailures > kMaxShoutFailures) {
+            tryReconnect();
         }
         return false;
     } else {
@@ -928,9 +920,27 @@ bool EngineBroadcast::waitForRetry() {
     ++m_retryCount;
 
     int delay500 = m_reconnectDelay * 2;
-    while (m_pBroadcastEnabled->toBool() &&
-            --delay500 > 0) {
+    while (--delay500 > 0) {
+        if (!m_pBroadcastEnabled->toBool()) {
+            return false;
+        }
         QThread::msleep(500);
     }
     return true;
+}
+
+void EngineBroadcast::tryReconnect() {
+    m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+    processDisconnect();
+    while (waitForRetry()) {
+        if (processConnect()) {
+            break;
+        }
+    }
+
+    if (m_pStatusCO->get() == STATUSCO_FAILURE) {
+        errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
+                    m_lastErrorStr + "\n" +
+                    tr("Please check your connection to the Internet"));
+    }
 }

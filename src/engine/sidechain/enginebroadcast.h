@@ -105,6 +105,8 @@ class EngineBroadcast
 
     bool waitForRetry();
 
+    void tryReconnect();
+
 
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
