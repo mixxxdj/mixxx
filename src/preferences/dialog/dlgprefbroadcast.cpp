@@ -65,8 +65,13 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
             ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt());
 
     // Use Maximum Retries
-    checkBoxLimitReconnects->setChecked(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), "1").toInt());
+    bool limitConnects = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), "1").toInt();
+    checkBoxLimitReconnects->setChecked(
+            limitConnects);
+    spinBoxMaximumRetries->setEnabled(limitConnects);
+    connect(checkBoxLimitReconnects, SIGNAL(stateChanged(int)),
+            this, SLOT(checkBoxLimitReconnectsChanged(int)));
 
 
     // Stream "public" checkbox
@@ -167,8 +172,13 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
             ConfigKey(BROADCAST_PREF_KEY,"custom_title")));
 
     // "Enable static artist and title" checkbox
-    enableCustomMetadata->setChecked((bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"enable_metadata")).toInt());
+    bool enableMetadata = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY,"enable_metadata")).toInt();
+    enableCustomMetadata->setChecked(enableMetadata);
+    custom_artist->setEnabled(enableMetadata);
+    custom_title->setEnabled(enableMetadata);
+    connect(enableCustomMetadata, SIGNAL(stateChanged(int)),
+            this, SLOT(enableCustomMetadataChanged(int)));
 
     // "Enable UTF-8 metadata" checkbox
     // TODO(rryan): allow arbitrary codecs in the future?
@@ -197,6 +207,7 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     password->setText("");
     spinBoxReconnectDelay->setValue(0);
     spinBoxMaximumRetries->setValue(10);
+    spinBoxMaximumRetries->setEnabled(true);
     checkBoxLimitReconnects->setChecked(true);
     stream_name->setText("");
     stream_website->setText(MIXXX_WEBSITE_URL);
@@ -214,6 +225,8 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     metadata_format->setText(kDefaultMetadataFormat);
     custom_artist->setText("");
     custom_title->setText("");
+    custom_artist->setEnabled(false);
+    custom_title->setEnabled(false);
 }
 
 void DlgPrefBroadcast::slotUpdate() {
@@ -311,4 +324,13 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     this->setEnabled(!enabled);
     enableLiveBroadcasting->setChecked(enabled);
 
+}
+
+void DlgPrefBroadcast::checkBoxLimitReconnectsChanged(int value) {
+    spinBoxMaximumRetries->setEnabled(value);
+}
+
+void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
+    custom_artist->setEnabled(value);
+    custom_title->setEnabled(value);
 }
