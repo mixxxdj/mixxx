@@ -61,12 +61,12 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
             ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay")).toInt());
 
     // Maximum Retries
-    spinBoxMaximumReties->setValue(m_pConfig->getValueString(
+    spinBoxMaximumRetries->setValue(m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt());
 
     // Use Maximum Retries
-    checkBoxUseMaximumRetries->setChecked(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "use_maximum_retries"), "1").toInt());
+    checkBoxLimitReconnects->setChecked(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), "1").toInt());
 
 
     // Stream "public" checkbox
@@ -196,8 +196,8 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     login->setText("");
     password->setText("");
     spinBoxReconnectDelay->setValue(0);
-    spinBoxMaximumReties->setValue(10);
-    checkBoxUseMaximumRetries->setChecked(true);
+    spinBoxMaximumRetries->setValue(10);
+    checkBoxLimitReconnects->setChecked(true);
     stream_name->setText("");
     stream_website->setText(MIXXX_WEBSITE_URL);
     stream_desc->setText(tr("This stream is online for testing purposes!"));
@@ -268,9 +268,9 @@ void DlgPrefBroadcast::slotApply()
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"),
             ConfigValue(spinBoxReconnectDelay->value()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"),
-            ConfigValue(spinBoxMaximumReties->value()));
-    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "use_maximum_retries"),
-            ConfigValue(checkBoxUseMaximumRetries->isChecked()));
+            ConfigValue(spinBoxMaximumRetries->value()));
+    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"),
+            ConfigValue(checkBoxLimitReconnects->isChecked()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "stream_name"),
             ConfigValue(stream_name->text()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "stream_website"),
