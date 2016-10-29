@@ -177,10 +177,10 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
             this, SLOT(slotCrateDeleted(int)));
     connect(&m_rCrateDAO, SIGNAL(autoDjChanged(int,bool)),
             this, SLOT(slotCrateAutoDjChanged(int,bool)));
-    connect(&m_rCrateDAO, SIGNAL(trackAdded(int,int)),
-            this, SLOT(slotCrateTrackAdded(int,int)));
-    connect(&m_rCrateDAO, SIGNAL(trackRemoved(int,int)),
-            this, SLOT(slotCrateTrackRemoved(int,int)));
+    connect(&m_rCrateDAO, SIGNAL(trackAdded(int,TrackId)),
+            this, SLOT(slotCrateTrackAdded(int,TrackId)));
+    connect(&m_rCrateDAO, SIGNAL(trackRemoved(int,TrackId)),
+            this, SLOT(slotCrateTrackRemoved(int,TrackId)));
 
     // Be notified when playlists are added/removed.
     // We only care about set-log playlists.
