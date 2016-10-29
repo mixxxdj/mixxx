@@ -467,7 +467,7 @@ void CrateFeature::buildCrateList() {
         "FROM crates "
         "LEFT JOIN crate_tracks ON crate_tracks.crate_id = crates.id "
         "LEFT JOIN library ON crate_tracks.track_id = library.id "
-        "WHERE show = 1 "
+        "WHERE crates.show=1 AND library.mixxx_deleted=0 "
         "GROUP BY crates.id;");
     QSqlQuery query(m_pTrackCollection->getDatabase());
     if (!query.exec(queryString)) {
