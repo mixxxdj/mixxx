@@ -459,10 +459,11 @@ void CrateFeature::buildCrateList() {
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS CratesCountsDurations "
         "AS SELECT "
-        "  crates.id as id, "
-        "  crates.name as name, "
-        "  COUNT(library.id) as count, "
-        "  SUM(library.duration) as durationSeconds "
+        "  crates.id AS id, "
+        "  crates.name AS name, "
+        "  LOWER(crates.name) AS sort_name, "
+        "  COUNT(library.id) AS count, "
+        "  SUM(library.duration) AS durationSeconds "
         "FROM crates "
         "LEFT JOIN crate_tracks ON crate_tracks.crate_id = crates.id "
         "LEFT JOIN library ON crate_tracks.track_id = library.id "
@@ -475,7 +476,7 @@ void CrateFeature::buildCrateList() {
 
     QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
     crateListTableModel.setTable("CratesCountsDurations");
-    crateListTableModel.setSort(crateListTableModel.fieldIndex("name"),
+    crateListTableModel.setSort(crateListTableModel.fieldIndex("sort_name"),
                                 Qt::AscendingOrder);
     crateListTableModel.select();
     while (crateListTableModel.canFetchMore()) {
