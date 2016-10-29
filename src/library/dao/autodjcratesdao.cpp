@@ -191,10 +191,10 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
 
     // Be notified when tracks are added/removed from playlists.
     // We only care about the auto-DJ playlist and the set-log playlists.
-    connect(&m_rPlaylistDAO, SIGNAL(trackAdded(int,int,int)),
-            this, SLOT(slotPlaylistTrackAdded(int,int,int)));
-    connect(&m_rPlaylistDAO, SIGNAL(trackRemoved(int,int,int)),
-            this, SLOT(slotPlaylistTrackRemoved(int,int,int)));
+    connect(&m_rPlaylistDAO, SIGNAL(trackAdded(int,TrackId,int)),
+            this, SLOT(slotPlaylistTrackAdded(int,TrackId,int)));
+    connect(&m_rPlaylistDAO, SIGNAL(trackRemoved(int,TrackId,int)),
+            this, SLOT(slotPlaylistTrackRemoved(int,TrackId,int)));
 
     // Be notified when tracks are loaded to, or unloaded from, a deck.
     // These count as auto-DJ references, i.e. prevent the track from being
