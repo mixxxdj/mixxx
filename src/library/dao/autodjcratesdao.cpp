@@ -165,8 +165,8 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
 
     // Be notified when a track is modified.
     // We only care when the number of times it's been played changes.
-    connect(&m_rTrackDAO, SIGNAL(trackDirty(int)),
-            this, SLOT(slotTrackDirty(int)));
+    connect(&m_rTrackDAO, SIGNAL(trackDirty(TrackId)),
+            this, SLOT(slotTrackDirty(TrackId)));
 
     // Be notified when the status of crates changes.
     // We only care about the crates labeled as auto-DJ, and tracks added to,
