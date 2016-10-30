@@ -370,7 +370,8 @@ bool EngineRecord::openCueFile() {
     }
 
     m_cueFile.write(QString("FILE \"%1\" %2%3\n").arg(
-        QString(m_fileName).replace(QString("\""), QString("\\\"")),
+        QString(m_fileName).mid(m_fileName.lastIndexOf("/")+1) //strip path
+            .replace(QString("\""), QString("\\\"")), // escape doublequote
         QString(m_encoding).toUpper(),
         m_encoding == ENCODING_WAVE ? "E" : " ").toLatin1());
     return true;
