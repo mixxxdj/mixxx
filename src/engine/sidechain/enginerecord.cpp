@@ -308,6 +308,10 @@ bool EngineRecord::openFile() {
 #endif
         if (m_pSndfile) {
             sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_TRUE);
+            // Warning! Depending on how libsndfile is compiled autoclip may not work.
+            // Ensure CPU_CLIPS_NEGATIVE and CPU_CLIPS_NEGATIVE is setup properly in the build.
+            sf_command(m_pSndfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
+
             // Set meta data
             int ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_baTitle.constData());
             if (ret != 0) {
