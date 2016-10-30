@@ -34,22 +34,19 @@ QSize WStarRating::sizeHint() const {
     return widgetSize;
 }
 
-void WStarRating::slotTrackLoaded(TrackPointer track) {
-    if (track) {
-        m_pCurrentTrack = track;
-        connect(track.data(), SIGNAL(changed(Track*)),
-                this, SLOT(updateRating(Track*)));
+void WStarRating::slotTrackLoaded(TrackPointer pTrack) {
+    if (m_pCurrentTrack != pTrack) {
+        if (m_pCurrentTrack) {
+            disconnect(&*m_pCurrentTrack, nullptr, this, nullptr);
+            m_pCurrentTrack = TrackPointer();
+        }
+        if (pTrack) {
+            connect(&*pTrack, SIGNAL(changed(Track*)),
+                    this, SLOT(updateRating(Track*)));
+            m_pCurrentTrack = pTrack;
+        }
         updateRating();
     }
-}
-
-void WStarRating::slotTrackUnloaded(TrackPointer track) {
-    Q_UNUSED(track);
-    if (m_pCurrentTrack) {
-        disconnect(m_pCurrentTrack.data(), nullptr, this, nullptr);
-    }
-    m_pCurrentTrack.clear();
-    updateRating();
 }
 
 void WStarRating::updateRating() {
