@@ -70,7 +70,7 @@ class RecordingManager : public QObject
     ControlPushButton* m_pToggleRecording;
 
     quint64 getFileSplitSize();
-	long getFileSplitTime();
+    long getFileSplitTime();
 
     UserSettingsPointer m_pConfig;
     QString m_recordingDir;
@@ -86,11 +86,11 @@ class RecordingManager : public QObject
     quint64 m_iNumberOfBytesRecorded;
     quint64 m_iNumberOfBytesRecordedSplit;
     quint64 m_split_size;
-	long m_split_time;
+    long m_split_time;
     int m_iNumberSplits;
-	long m_secondsRecorded;
-	long m_secondsRecordedSplit;
-	QString getRecordedDurationStr(quint64 duration);
+    long m_secondsRecorded;
+    long m_secondsRecordedSplit;
+    QString getRecordedDurationStr(quint64 duration);
 };
 
 #endif // RECORDINGMANAGER_H

@@ -69,6 +69,8 @@ void EngineRecord::updateFromPreferences() {
     // returns a number from 1 .. 10
     m_OGGquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toLatin1();
     m_MP3quality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toLatin1();
+    m_WAVEquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "WAVE_Quality")).toLatin1();
+    m_AIFFquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "AIFF_Quality")).toLatin1();
     m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Path"));
     m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toLatin1();
     m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toLatin1();
@@ -131,11 +133,11 @@ bool EngineRecord::metaDataHasChanged()
     }
     m_iMetaDataLife = 0;
 
-	//TODO: Needs improvement. Usually when we start recording, all tracks are stopped
-	// and we start the track just after that. Given that this is executed with start recording, 
-	// it waits for kMetaDataLifeTimeout until it actually notices that the track
-	// has started playing. This translates to the cue file start time being too late.
-	// Maybe we need a signal for this too.
+    //TODO: Needs improvement. Usually when we start recording, all tracks are stopped
+    // and we start the track just after that. Given that this is executed with start recording, 
+    // it waits for kMetaDataLifeTimeout until it actually notices that the track
+    // has started playing. This translates to the cue file start time being too late.
+    // Maybe we need a signal for this too.
     TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
     if (!pTrack)
         return false;
@@ -166,8 +168,8 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             Event::end("EngineRecord recording");
             closeFile();  // Close file and free encoder.
             if (m_bCueIsEnabled) {
-			    closeCueFile();
-			}
+                closeCueFile();
+            }
             emit(isRecording(false, false));
         }
     } else if (recordingStatus == RECORD_READY) {
@@ -203,8 +205,8 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (fileOpen()) {
             closeFile();  // Close file and free encoder.
             if (m_bCueIsEnabled) {
-			    closeCueFile();
-			}
+                closeCueFile();
+            }
         }
         updateFromPreferences();  // Update file location from preferences.
         if (openFile()) {
@@ -234,7 +236,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         }
     }
 
-	if (recordingStatus == RECORD_ON || recordingStatus == RECORD_SPLIT_CONTINUE) {
+    if (recordingStatus == RECORD_ON || recordingStatus == RECORD_SPLIT_CONTINUE) {
         // If recording is enabled process audio to compressed or uncompressed data.
         if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF) {
             if (m_pSndfile != NULL) {
@@ -335,12 +337,21 @@ bool EngineRecord::openFile() {
         m_sfInfo.samplerate = m_sampleRate;
         m_sfInfo.channels = 2;
 
+        int quality_sel;
         if (m_encoding == ENCODING_WAVE) {
-            m_sfInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+            quality_sel = m_WAVEquality.toInt();
+            m_sfInfo.format = SF_FORMAT_WAV;
         } else {
-            m_sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
+            quality_sel = m_AIFFquality.toInt();
+            m_sfInfo.format = SF_FORMAT_AIFF;
         }
-
+        if (quality_sel < 5) {
+            m_sfInfo.format |= SF_FORMAT_PCM_16;
+        } else if (quality_sel < 9) {
+            m_sfInfo.format |= SF_FORMAT_PCM_24;
+        } else {
+            m_sfInfo.format |= SF_FORMAT_FLOAT;
+        }
         // Creates a new WAVE or AIFF file and writes header information.
 #ifdef __WINDOWS__
         // Pointer valid until string changed
@@ -417,7 +428,7 @@ bool EngineRecord::openCueFile() {
     }
 
     m_cueFile.write(QString("FILE \"%1\" %2%3\n").arg(
-		QFileInfo(m_fileName).fileName() //strip path
+        QFileInfo(m_fileName).fileName() //strip path
             .replace(QString("\""), QString("\\\"")), // escape doublequote
         QString(m_encoding).toUpper(),
         m_encoding == ENCODING_WAVE ? "E" : " ").toLatin1());

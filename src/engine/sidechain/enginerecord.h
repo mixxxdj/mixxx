@@ -82,6 +82,8 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     Encoder* m_pEncoder;
     QByteArray m_OGGquality;
     QByteArray m_MP3quality;
+    QByteArray m_WAVEquality;
+    QByteArray m_AIFFquality;
     QByteArray m_encoding;
     QString m_fileName;
     QByteArray m_baTitle;

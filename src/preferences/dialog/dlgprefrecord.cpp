@@ -117,8 +117,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
 
     slotApply();
     // Make sure a corrupt config file won't cause us to record constantly.
-	// TODO: What does this do exactly? I thougth it stopped the recording when showing
-	// the preferences page but it does not (and i would preffer that keeps not stopping it).
+    // TODO: What does this do exactly? I thougth it stopped the recording when showing
+    // the preferences page but it does not (and i would preffer that keeps not stopping it).
     m_pRecordControl->set(RECORD_OFF);
 
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -155,7 +155,12 @@ void DlgPrefRecord::slotSliderQuality() {
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), ConfigValue(SliderQuality->value()));
     } else if (m_pRadioMp3 && m_pRadioMp3->isChecked()) {
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality"), ConfigValue(SliderQuality->value()));
+    } else if (m_pRadioWav && m_pRadioWav->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "WAVE_Quality"), ConfigValue(SliderQuality->value()));
+    } else if (m_pRadioAiff && m_pRadioAiff->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "AIFF_Quality"), ConfigValue(SliderQuality->value()));
     }
+    
 }
 
 int DlgPrefRecord::getSliderQualityVal() {
@@ -164,10 +169,21 @@ int DlgPrefRecord::getSliderQualityVal() {
 }
 
 void DlgPrefRecord::updateTextQuality() {
-    int quality = getSliderQualityVal();
-    //QString encodingType = comboBoxEncoding->currentText();
+    if ((m_pRadioWav && m_pRadioWav->isChecked())
+            || (m_pRadioAiff && m_pRadioAiff->isChecked())) {
+        if (SliderQuality->value() < 5) {
+            TextQuality->setText(tr("16 bits"));
+        } else if (SliderQuality->value() < 9) {
+            TextQuality->setText(tr("24 bits"));
+        } else {
+            TextQuality->setText(tr("32 bits float"));
+        }
+    } else {
+        int quality = getSliderQualityVal();
+        //QString encodingType = comboBoxEncoding->currentText();
 
-    TextQuality->setText(QString(QString::number(quality) + tr("kbps")));
+        TextQuality->setText(QString(QString::number(quality) + tr("kbps")));
+    }
 }
 
 void DlgPrefRecord::slotEncoding() {
@@ -176,14 +192,24 @@ void DlgPrefRecord::slotEncoding() {
     //m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentText()));
 
     if (m_pRadioWav && m_pRadioWav->isChecked()) {
+        int value = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "WAVE_Quality")).toInt();
+        // If value == 0 then a default value of 16 bits is proposed.
+        if (!value)
+            value = 1; // 16 bits
+
+        SliderQuality->setValue(value);
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
-        groupBoxQuality->setEnabled(false);
     } else if (m_pRadioFlac && m_pRadioFlac->isChecked()) {
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_FLAC));
         groupBoxQuality->setEnabled(false);
     } else if (m_pRadioAiff && m_pRadioAiff->isChecked()) {
+        int value = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "AIFF_Quality")).toInt();
+        // If value == 0 then a default value of 16 bits is proposed.
+        if (!value)
+            value = 1; // 16 bits
+
+        SliderQuality->setValue(value);
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_AIFF));
-        groupBoxQuality->setEnabled(false);
     } else if (m_pRadioOgg && m_pRadioOgg->isChecked()) {
         int value = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toInt();
         // If value == 0 then a default value of 128kbps is proposed.
@@ -229,15 +255,15 @@ void DlgPrefRecord::slotRecordPathChange() {
 void DlgPrefRecord::slotResetToDefaults() {
     m_pRadioWav->setChecked(true);
     CheckBoxRecordCueFile->setChecked(false);
-    // 650MB splitting is the default
-    comboBoxSplitting->setCurrentIndex(0);
+    // 4GB splitting is the default
+    comboBoxSplitting->setCurrentIndex(4);
 
     LineEditTitle->setText("");
     LineEditAlbum->setText("");
     LineEditAuthor->setText("");
 
-    // 6 corresponds to 128kbps (only used by MP3 and Ogg though)
-    SliderQuality->setValue(6);
+    // 1 corresponds to 16 bits (WAVE/AIFF)
+    SliderQuality->setValue(1);
 }
 
 // This function updates/refreshes the contents of this dialog.
