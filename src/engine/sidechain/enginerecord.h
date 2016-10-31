@@ -66,7 +66,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     // only one error can occur: the specified file was unable to be opened for
     // writing.
     void isRecording(bool recording, bool error);
-    void durationRecorded(QString duration);
+    void durationRecorded(quint64 durationInt);
 
   private:
     int getActiveTracks();

@@ -117,6 +117,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
 
     slotApply();
     // Make sure a corrupt config file won't cause us to record constantly.
+	// TODO: What does this do exactly? I thougth it stopped the recording when showing
+	// the preferences page but it does not (and i would preffer that keeps not stopping it).
     m_pRecordControl->set(RECORD_OFF);
 
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -124,14 +126,21 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     comboBoxSplitting->addItem(SPLIT_1024MB);
     comboBoxSplitting->addItem(SPLIT_2048MB);
     comboBoxSplitting->addItem(SPLIT_4096MB);
+    comboBoxSplitting->addItem(SPLIT_60MIN);
+    comboBoxSplitting->addItem(SPLIT_74MIN);
+    comboBoxSplitting->addItem(SPLIT_80MIN);
+    comboBoxSplitting->addItem(SPLIT_120MIN);
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
-    if (index > 0) {
+    if (index >= 0) {
         // Set file split size
         comboBoxSplitting->setCurrentIndex(index);
     }
-    // Otherwise 650 MB will be default file split size.
+    else {
+        //Use max RIFF size (4GB) as default index, since usually people don't want to split.
+        comboBoxSplitting->setCurrentIndex(4);
+    }
 
     // Read CUEfile info
     CheckBoxRecordCueFile->setChecked(

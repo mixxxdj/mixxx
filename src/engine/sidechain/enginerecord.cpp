@@ -217,7 +217,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // gets recorded duration and emit signal that will be used
         // by RecordingManager to update the label besides start/stop button
         if (lastDuration != m_recordedDuration) {
-            emit(durationRecorded(getRecordedDurationStr()));
+            emit(durationRecorded(m_recordedDuration));
         }
 
         if (m_bCueIsEnabled) {

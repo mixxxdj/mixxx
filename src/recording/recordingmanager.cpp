@@ -21,9 +21,12 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
           m_recordingLocation(""),
           m_bRecording(false),
           m_iNumberOfBytesRecorded(0),
+          m_iNumberOfBytesRecordedSplit(0),
           m_split_size(0),
+		  m_split_time(0),
           m_iNumberSplits(0),
-          m_durationRecorded("") {
+		  m_secondsRecorded(0),
+		  m_secondsRecordedSplit(0) {
     m_pToggleRecording = new ControlPushButton(ConfigKey(RECORDING_PREF_KEY, "toggle_recording"));
     connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleRecording(double)));
@@ -31,6 +34,7 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
     m_recReady = new ControlProxy(m_recReadyCO->getKey(), this);
 
     m_split_size = getFileSplitSize();
+	m_split_time = getFileSplitTime();
 
 
     // Register EngineRecord with the engine sidechain.
@@ -41,8 +45,8 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
                 this, SLOT(slotIsRecording(bool, bool)));
         connect(pEngineRecord, SIGNAL(bytesRecorded(int)),
                 this, SLOT(slotBytesRecorded(int)));
-        connect(pEngineRecord, SIGNAL(durationRecorded(QString)),
-                this, SLOT(slotDurationRecorded(QString)));
+        connect(pEngineRecord, SIGNAL(durationRecorded(quint64)),
+                this, SLOT(slotDurationRecorded(quint64)));
         pSidechain->addSideChainWorker(pEngineRecord);
     }
 }
@@ -80,14 +84,22 @@ void RecordingManager::slotToggleRecording(double v) {
 }
 
 void RecordingManager::startRecording(bool generateFileName) {
-    m_iNumberOfBytesRecorded = 0;
-    m_split_size = getFileSplitSize();
-    qDebug() << "Split size is:" << m_split_size;
-    QString encodingType = m_pConfig->getValueString(
-            ConfigKey(RECORDING_PREF_KEY, "Encoding"));
+	QString encodingType = m_pConfig->getValueString(
+			ConfigKey(RECORDING_PREF_KEY, "Encoding"));
 
-    if(generateFileName) {
-        m_iNumberSplits = 1;
+	if(generateFileName) {
+		m_iNumberOfBytesRecorded = 0;
+		m_secondsRecorded=0;
+		m_split_size = getFileSplitSize();
+		m_split_time = getFileSplitTime();
+		if (m_split_time < 999999999) {
+			qDebug() << "Split time is:" << m_split_time;
+		}
+		else {
+			qDebug() << "Split size is:" << m_split_size;
+		}
+
+		m_iNumberSplits = 1;
         // Append file extension.
         QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
         m_recordingFile = QString("%1.%2")
@@ -100,17 +112,21 @@ void RecordingManager::startRecording(bool generateFileName) {
         m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), m_recording_base_file +".cue");
-    } else {
+	} else {
         // This is only executed if filesplit occurs.
         ++m_iNumberSplits;
+		m_secondsRecorded+=m_secondsRecordedSplit;
         QString new_base_filename = m_recording_base_file +"part"+QString::number(m_iNumberSplits);
         m_recordingLocation = new_base_filename + "." +encodingType.toLower();
 
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), new_base_filename +".cue");
         m_recordingFile = QFileInfo(m_recordingLocation).fileName();
-    }
+	}
     m_recReady->set(RECORD_READY);
+
+	m_iNumberOfBytesRecordedSplit = 0;
+	m_secondsRecordedSplit=0;
 }
 
 void RecordingManager::stopRecording()
@@ -120,6 +136,7 @@ void RecordingManager::stopRecording()
     m_recordingFile = "";
     m_recordingLocation = "";
     m_iNumberOfBytesRecorded = 0;
+	m_secondsRecorded = 0;
 }
 
 void RecordingManager::setRecordingDir() {
@@ -145,13 +162,27 @@ QString& RecordingManager::getRecordingDir() {
 }
 
 // Only called when recording is active.
-void RecordingManager::slotDurationRecorded(QString durationStr)
+void RecordingManager::slotDurationRecorded(quint64 duration)
 {
-    if(m_durationRecorded != durationStr)
+    if(m_secondsRecordedSplit != duration)
     {
-        m_durationRecorded = durationStr;
-        emit(durationRecorded(m_durationRecorded));
+        m_secondsRecordedSplit = duration;
+		if(duration >= m_split_time)
+		{
+			qDebug() << "Splitting after " << duration << " seconds";
+            stopRecording();
+			// Dont generate a new filename.
+			// This will reuse the previous filename but append a suffix.
+			startRecording(false);
+		}
+		emit(durationRecorded(getRecordedDurationStr(m_secondsRecorded+m_secondsRecordedSplit)));
     }
+}
+// Copy from the implementation in enginerecord.cpp
+QString RecordingManager::getRecordedDurationStr(quint64 duration) {
+    return QString("%1:%2")
+                 .arg(duration / 60, 2, 'f', 0, '0')   // minutes
+                 .arg(duration % 60, 2, 'f', 0, '0');  // seconds
 }
 
 // Only called when recording is active.
@@ -159,8 +190,10 @@ void RecordingManager::slotBytesRecorded(int bytes)
 {
     // auto conversion to long
     m_iNumberOfBytesRecorded += bytes;
-    if(m_iNumberOfBytesRecorded >= m_split_size)
+	m_iNumberOfBytesRecordedSplit += bytes;
+    if(m_iNumberOfBytesRecordedSplit >= m_split_size)
     {
+		qDebug() << "Splitting after " << m_iNumberOfBytesRecorded << " bytes written";
         stopRecording();
         // Dont generate a new filename.
         // This will reuse the previous filename but append a suffix.
@@ -200,7 +233,7 @@ QString& RecordingManager::getRecordingLocation() {
     return m_recordingLocation;
 }
 
-long RecordingManager::getFileSplitSize()
+quint64 RecordingManager::getFileSplitSize()
 {
      QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
      if(fileSizeStr == SPLIT_650MB)
@@ -213,6 +246,28 @@ long RecordingManager::getFileSplitSize()
          return SIZE_2GB;
      else if(fileSizeStr == SPLIT_4096MB)
          return SIZE_4GB;
+     else if(fileSizeStr == SPLIT_60MIN)
+         return SIZE_4GB; //Ignore size limit. use time limit
+     else if(fileSizeStr == SPLIT_74MIN)
+         return SIZE_4GB; //Ignore size limit. use time limit
+     else if(fileSizeStr == SPLIT_80MIN)
+         return SIZE_4GB; //Ignore size limit. use time limit
+     else if(fileSizeStr == SPLIT_120MIN)
+         return SIZE_4GB; //Ignore size limit. use time limit
      else
          return SIZE_650MB;
+}
+long RecordingManager::getFileSplitTime()
+{
+    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
+	if(fileSizeStr == SPLIT_60MIN)
+        return 60*60;
+    else if(fileSizeStr == SPLIT_74MIN)
+        return 74*60;
+    else if(fileSizeStr == SPLIT_80MIN)
+        return 8;//0*60;   //TODO: TEST!. Restore the correct value after that.
+    else if(fileSizeStr == SPLIT_120MIN)
+        return 120*60;
+    else // Do not limit by time for the rest.
+        return 999999999;
 }

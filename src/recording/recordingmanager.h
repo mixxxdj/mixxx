@@ -57,7 +57,7 @@ class RecordingManager : public QObject
   public slots:
     void slotIsRecording(bool recording, bool error);
     void slotBytesRecorded(int);
-    void slotDurationRecorded(QString);
+    void slotDurationRecorded(quint64);
 
   private slots:
     void slotSetRecording(bool recording);
@@ -69,7 +69,8 @@ class RecordingManager : public QObject
     ControlObject* m_recReadyCO;
     ControlPushButton* m_pToggleRecording;
 
-    long getFileSplitSize();
+    quint64 getFileSplitSize();
+	long getFileSplitTime();
 
     UserSettingsPointer m_pConfig;
     QString m_recordingDir;
@@ -83,9 +84,13 @@ class RecordingManager : public QObject
     bool m_bRecording;
     // will be a very large number
     quint64 m_iNumberOfBytesRecorded;
+    quint64 m_iNumberOfBytesRecordedSplit;
     quint64 m_split_size;
+	long m_split_time;
     int m_iNumberSplits;
-    QString m_durationRecorded;
+	long m_secondsRecorded;
+	long m_secondsRecordedSplit;
+	QString getRecordedDurationStr(quint64 duration);
 };
 
 #endif // RECORDINGMANAGER_H
