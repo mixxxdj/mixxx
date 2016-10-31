@@ -112,6 +112,9 @@ void RecordingManager::startRecording(bool generateFileName) {
         m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), m_recording_base_file +".cue");
+
+		m_recReady->set(RECORD_READY);
+
 	} else {
         // This is only executed if filesplit occurs.
         ++m_iNumberSplits;
@@ -122,9 +125,10 @@ void RecordingManager::startRecording(bool generateFileName) {
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), new_base_filename +".cue");
         m_recordingFile = QFileInfo(m_recordingLocation).fileName();
-	}
-    m_recReady->set(RECORD_READY);
 
+		m_recReady->set(RECORD_SPLIT_CONTINUE);
+
+	}
 	m_iNumberOfBytesRecordedSplit = 0;
 	m_secondsRecordedSplit=0;
 }
@@ -138,6 +142,7 @@ void RecordingManager::stopRecording()
     m_iNumberOfBytesRecorded = 0;
 	m_secondsRecorded = 0;
 }
+
 
 void RecordingManager::setRecordingDir() {
     QDir recordDir(m_pConfig->getValueString(
@@ -170,7 +175,6 @@ void RecordingManager::slotDurationRecorded(quint64 duration)
 		if(duration >= m_split_time)
 		{
 			qDebug() << "Splitting after " << duration << " seconds";
-            stopRecording();
 			// Dont generate a new filename.
 			// This will reuse the previous filename but append a suffix.
 			startRecording(false);
@@ -194,7 +198,6 @@ void RecordingManager::slotBytesRecorded(int bytes)
     if(m_iNumberOfBytesRecordedSplit >= m_split_size)
     {
 		qDebug() << "Splitting after " << m_iNumberOfBytesRecorded << " bytes written";
-        stopRecording();
         // Dont generate a new filename.
         // This will reuse the previous filename but append a suffix.
         startRecording(false);

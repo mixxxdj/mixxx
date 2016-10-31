@@ -131,6 +131,11 @@ bool EngineRecord::metaDataHasChanged()
     }
     m_iMetaDataLife = 0;
 
+	//TODO: Needs improvement. Usually when we start recording, all tracks are stopped
+	// and we start the track just after that. Given that this is executed with start recording, 
+	// it waits for kMetaDataLifeTimeout until it actually notices that the track
+	// has started playing. This translates to the cue file start time being too late.
+	// Maybe we need a signal for this too.
     TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
     if (!pTrack)
         return false;
@@ -194,7 +199,42 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // An error occurred.
             emit(isRecording(false, true));
         }
-    } else if (recordingStatus == RECORD_ON) {
+    } else if (recordingStatus == RECORD_SPLIT_CONTINUE) {
+        if (fileOpen()) {
+            closeFile();  // Close file and free encoder.
+            if (m_bCueIsEnabled) {
+			    closeCueFile();
+			}
+        }
+        updateFromPreferences();  // Update file location from preferences.
+        if (openFile()) {
+            qDebug() << "Splitting to a new file: "<< m_fileName;
+            m_pRecReady->set(RECORD_ON);
+            emit(isRecording(true, false));  // will notify the RecordingManager
+
+            // Since we just started recording, timeout and clear the metadata.
+            m_iMetaDataLife = kMetaDataLifeTimeout;
+            m_pCurrentTrack = TrackPointer();
+
+            // clean frames counting and get current sample rate.
+            m_frames = 0;
+            m_sampleRate = m_pSamplerate->get();
+
+            if (m_bCueIsEnabled) {
+                openCueFile();
+                m_cueTrack = 0;
+            }
+        } else {  // Maybe the encoder could not be initialized
+            qDebug() << "Could not open" << m_fileName << "for writing.";
+            Event::end("EngineRecord recording");
+            qDebug("Setting record flag to: OFF");
+            m_pRecReady->slotSet(RECORD_OFF);
+            // An error occurred.
+            emit(isRecording(false, true));
+        }
+    }
+
+	if (recordingStatus == RECORD_ON || recordingStatus == RECORD_SPLIT_CONTINUE) {
         // If recording is enabled process audio to compressed or uncompressed data.
         if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF) {
             if (m_pSndfile != NULL) {

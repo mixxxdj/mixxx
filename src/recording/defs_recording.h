@@ -11,6 +11,7 @@
 #define RECORD_OFF 0.0
 #define RECORD_READY 1.0
 #define RECORD_ON 2.0
+#define RECORD_SPLIT_CONTINUE 3.0
 
 //File options for preferences Splitting
 #define SPLIT_650MB "650 MB (CD)"
