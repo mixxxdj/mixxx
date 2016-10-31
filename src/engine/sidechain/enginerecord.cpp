@@ -160,6 +160,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (fileOpen()) {
             Event::end("EngineRecord recording");
             closeFile();  // Close file and free encoder.
+            if (m_bCueIsEnabled) {
+			    closeCueFile();
+			}
             emit(isRecording(false, false));
         }
     } else if (recordingStatus == RECORD_READY) {
