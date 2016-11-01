@@ -41,6 +41,7 @@ class DlgPrefEQ;
 class DlgPrefEffects;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
+class DlgPrefOsc;
 class DlgPrefKey;
 class DlgPrefBeats;
 class DlgPrefVinyl;
@@ -110,6 +111,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefEffects* m_weffects;
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
+    DlgPrefOsc* m_wosc;
     DlgPrefKey* m_wkey;
     DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;
@@ -129,6 +131,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pEffectsButton;
     QTreeWidgetItem* m_pCrossfaderButton;
     QTreeWidgetItem* m_pRecordingButton;
+    QTreeWidgetItem* m_pOscButton;
     QTreeWidgetItem* m_pBeatDetectionButton;
     QTreeWidgetItem* m_pKeyDetectionButton;
     QTreeWidgetItem* m_pVinylControlButton;

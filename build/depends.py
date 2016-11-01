@@ -22,6 +22,12 @@ class PortAudio(Dependence):
     def sources(self, build):
         return ['soundio/sounddeviceportaudio.cpp']
 
+class LibLo(Dependence):
+    def configure(self, build, conf):
+        libs = ['lo']
+        
+        if not conf.CheckLib(libs):
+            raise Exception("Did not find liblo")
 
 class PortMIDI(Dependence):
 
@@ -640,6 +646,7 @@ class MixxxCore(Feature):
                    "preferences/dialog/dlgpreferences.cpp",
                    "preferences/dialog/dlgpreflibrary.cpp",
                    "preferences/dialog/dlgprefnovinyl.cpp",
+                   "preferences/dialog/dlgprefosc.cpp",
                    "preferences/dialog/dlgprefrecord.cpp",
                    "preferences/dialog/dlgprefreplaygain.cpp",
                    "preferences/dialog/dlgprefsound.cpp",
@@ -890,6 +897,9 @@ class MixxxCore(Feature):
                    "library/recording/dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
                    "engine/sidechain/enginerecord.cpp",
+                   
+                   "oscclient/oscclientmanager.cpp",
+                   "engine/sidechain/engineoscclient.cpp",
 
                    # External Library Features
                    "library/baseexternallibraryfeature.cpp",
@@ -1118,6 +1128,7 @@ class MixxxCore(Feature):
             'preferences/dialog/dlgprefkeydlg.ui',
             'preferences/dialog/dlgpreflibrarydlg.ui',
             'preferences/dialog/dlgprefnovinyldlg.ui',
+            'preferences/dialog/dlgprefoscdlg.ui',
             'preferences/dialog/dlgprefrecorddlg.ui',
             'preferences/dialog/dlgprefreplaygaindlg.ui',
             'preferences/dialog/dlgprefsounddlg.ui',
@@ -1351,7 +1362,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer]
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LibLo]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
