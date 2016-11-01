@@ -69,8 +69,6 @@ void EngineRecord::updateFromPreferences() {
     // returns a number from 1 .. 10
     m_OGGquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toLatin1();
     m_MP3quality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toLatin1();
-    m_WAVEquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "WAVE_Quality")).toLatin1();
-    m_AIFFquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "AIFF_Quality")).toLatin1();
     m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Path"));
     m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toLatin1();
     m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toLatin1();
@@ -337,21 +335,12 @@ bool EngineRecord::openFile() {
         m_sfInfo.samplerate = m_sampleRate;
         m_sfInfo.channels = 2;
 
-        int quality_sel;
         if (m_encoding == ENCODING_WAVE) {
-            quality_sel = m_WAVEquality.toInt();
-            m_sfInfo.format = SF_FORMAT_WAV;
+            m_sfInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
         } else {
-            quality_sel = m_AIFFquality.toInt();
-            m_sfInfo.format = SF_FORMAT_AIFF;
+            m_sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
         }
-        if (quality_sel < 5) {
-            m_sfInfo.format |= SF_FORMAT_PCM_16;
-        } else if (quality_sel < 9) {
-            m_sfInfo.format |= SF_FORMAT_PCM_24;
-        } else {
-            m_sfInfo.format |= SF_FORMAT_FLOAT;
-        }
+
         // Creates a new WAVE or AIFF file and writes header information.
 #ifdef __WINDOWS__
         // Pointer valid until string changed
