@@ -219,7 +219,7 @@ void DlgPreferences::createIcons() {
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pOscButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pOscButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_recording.png"));
+    m_pOscButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_osc.png"));
     m_pOscButton->setText(0, tr("OSC"));
     m_pOscButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pOscButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
