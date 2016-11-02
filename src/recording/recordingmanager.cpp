@@ -3,6 +3,7 @@
 #include <QMutex>
 #include <QDir>
 #include <QtDebug>
+#include <climits>
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
@@ -34,7 +35,7 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
     m_recReady = new ControlProxy(m_recReadyCO->getKey(), this);
 
     m_split_size = getFileSplitSize();
-    m_split_time = getFileSplitTime();
+    m_split_time = getFileSplitSeconds();
 
 
     // Register EngineRecord with the engine sidechain.
@@ -83,54 +84,58 @@ void RecordingManager::slotToggleRecording(double v) {
     }
 }
 
-void RecordingManager::startRecording(bool generateFileName) {
+void RecordingManager::startRecording() {
     QString encodingType = m_pConfig->getValueString(
             ConfigKey(RECORDING_PREF_KEY, "Encoding"));
 
-    if(generateFileName) {
-        m_iNumberOfBytesRecorded = 0;
-        m_secondsRecorded=0;
-        m_split_size = getFileSplitSize();
-        m_split_time = getFileSplitTime();
-        if (m_split_time < 999999999) {
-            qDebug() << "Split time is:" << m_split_time;
-        }
-        else {
-            qDebug() << "Split size is:" << m_split_size;
-        }
-
-        m_iNumberSplits = 1;
-        // Append file extension.
-        QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
-        m_recordingFile = QString("%1.%2")
-                .arg(date_time_str, encodingType.toLower());
-
-        // Storing the absolutePath of the recording file without file extension.
-        m_recording_base_file = getRecordingDir();
-        m_recording_base_file.append("/").append(date_time_str);
-        // Appending file extension to get the filelocation.
-        m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), m_recording_base_file +".cue");
-
-        m_recReady->set(RECORD_READY);
-
-    } else {
-        // This is only executed if filesplit occurs.
-        ++m_iNumberSplits;
-        m_secondsRecorded+=m_secondsRecordedSplit;
-        QString new_base_filename = m_recording_base_file +"part"+QString::number(m_iNumberSplits);
-        m_recordingLocation = new_base_filename + "." +encodingType.toLower();
-
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), new_base_filename +".cue");
-        m_recordingFile = QFileInfo(m_recordingLocation).fileName();
-
-        m_recReady->set(RECORD_SPLIT_CONTINUE);
-
-    }
     m_iNumberOfBytesRecordedSplit = 0;
     m_secondsRecordedSplit=0;
+    m_iNumberOfBytesRecorded = 0;
+    m_secondsRecorded=0;
+    m_split_size = getFileSplitSize();
+    m_split_time = getFileSplitSeconds();
+    if (m_split_time < INT_MAX) {
+        qDebug() << "Split time is:" << m_split_time;
+    }
+    else {
+        qDebug() << "Split size is:" << m_split_size;
+    }
+
+    m_iNumberSplits = 1;
+    // Append file extension.
+    QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
+    m_recordingFile = QString("%1.%2")
+            .arg(date_time_str, encodingType.toLower());
+
+    // Storing the absolutePath of the recording file without file extension.
+    m_recording_base_file = getRecordingDir();
+    m_recording_base_file.append("/").append(date_time_str);
+    // Appending file extension to get the filelocation.
+    m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
+    m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
+    m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), m_recording_base_file +".cue");
+
+    m_recReady->set(RECORD_READY);
+}
+
+void RecordingManager::splitContinueRecording()
+{
+    ++m_iNumberSplits;
+    m_secondsRecorded+=m_secondsRecordedSplit;
+
+    m_iNumberOfBytesRecordedSplit = 0;
+    m_secondsRecordedSplit=0;
+
+    QString encodingType = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
+
+    QString new_base_filename = m_recording_base_file +"part"+QString::number(m_iNumberSplits);
+    m_recordingLocation = new_base_filename + "." +encodingType.toLower();
+
+    m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
+    m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), new_base_filename +".cue");
+    m_recordingFile = QFileInfo(m_recordingLocation).fileName();
+
+    m_recReady->set(RECORD_SPLIT_CONTINUE);
 }
 
 void RecordingManager::stopRecording()
@@ -175,9 +180,8 @@ void RecordingManager::slotDurationRecorded(quint64 duration)
         if(duration >= m_split_time)
         {
             qDebug() << "Splitting after " << duration << " seconds";
-            // Dont generate a new filename.
             // This will reuse the previous filename but append a suffix.
-            startRecording(false);
+            splitContinueRecording();
         }
         emit(durationRecorded(getRecordedDurationStr(m_secondsRecorded+m_secondsRecordedSplit)));
     }
@@ -195,12 +199,15 @@ void RecordingManager::slotBytesRecorded(int bytes)
     // auto conversion to long
     m_iNumberOfBytesRecorded += bytes;
     m_iNumberOfBytesRecordedSplit += bytes;
+
+    //Split before reaching the max size. m_split_size has some headroom, as
+    //seen in the constant defintions in defs_recording.h. Also, note that
+    //bytes are increased in the order of 10s of KBs each call.
     if(m_iNumberOfBytesRecordedSplit >= m_split_size)
     {
         qDebug() << "Splitting after " << m_iNumberOfBytesRecorded << " bytes written";
-        // Dont generate a new filename.
         // This will reuse the previous filename but append a suffix.
-        startRecording(false);
+        splitContinueRecording();
     }
     emit(bytesRecorded(m_iNumberOfBytesRecorded));
 }
@@ -260,7 +267,7 @@ quint64 RecordingManager::getFileSplitSize()
      else
          return SIZE_650MB;
 }
-long RecordingManager::getFileSplitTime()
+int RecordingManager::getFileSplitSeconds()
 {
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     if(fileSizeStr == SPLIT_60MIN)
@@ -272,5 +279,5 @@ long RecordingManager::getFileSplitTime()
     else if(fileSizeStr == SPLIT_120MIN)
         return 120*60;
     else // Do not limit by time for the rest.
-        return 999999999;
+        return INT_MAX;
 }

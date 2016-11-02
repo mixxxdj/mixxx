@@ -37,8 +37,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     setupUi(this);
 
     // See RECORD_* #defines in defs_recording.h
-    m_pRecordControl = new ControlProxy(
-            RECORDING_PREF_KEY, "status", this);
 
     m_pRadioOgg = new QRadioButton("Ogg Vorbis");
     m_pRadioMp3 = new QRadioButton(ENCODING_MP3);
@@ -116,10 +114,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             this, SLOT(slotChangeSplitSize()));
 
     slotApply();
-    // Make sure a corrupt config file won't cause us to record constantly.
-    // TODO: What does this do exactly? I thougth it stopped the recording when showing
-    // the preferences page but it does not (and i would preffer that keeps not stopping it).
-    m_pRecordControl->set(RECORD_OFF);
 
     comboBoxSplitting->addItem(SPLIT_650MB);
     comboBoxSplitting->addItem(SPLIT_700MB);
