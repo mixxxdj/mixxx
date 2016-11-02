@@ -64,23 +64,19 @@ SoundSourceModPlug::~SoundSourceModPlug() {
 
 Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
         TrackMetadata* pTrackMetadata,
-        QImage* /*pCoverArt*/) const {
-    // The modplug library currently does not support reading cover-art from
-    // modplug files -- kain88 (Oct 2014)
+        QImage* pCoverArt) const {
+    if (pTrackMetadata != nullptr) {
+        QFile modFile(getLocalFileName());
+        modFile.open(QIODevice::ReadOnly);
+        const QByteArray fileBuf(modFile.readAll());
+        modFile.close();
 
-    if (pTrackMetadata == nullptr) {
-        return ERR;
-    }
+        ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
+                fileBuf.length());
+        if (pModFile == nullptr) {
+            return ERR;
+        }
 
-    QFile modFile(getLocalFileName());
-    modFile.open(QIODevice::ReadOnly);
-    const QByteArray fileBuf(modFile.readAll());
-    modFile.close();
-
-    ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
-            fileBuf.length());
-
-    if (nullptr != pModFile) {
         pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
         pTrackMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000.0);
@@ -88,7 +84,13 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
         ModPlug::ModPlug_Unload(pModFile);
     }
 
-    return pModFile ? OK : ERR;
+    // The modplug library currently does not support reading cover-art from
+    // modplug files -- kain88 (Oct 2014)
+    // NOTE(uklotzde, 2016-11-02): Leave the QImage passed by the caller untouched
+    // if pCoverArt != nullptr.
+    Q_UNUSED(pCoverArt);
+
+    return OK;
 }
 
 SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
