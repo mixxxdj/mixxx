@@ -35,18 +35,18 @@ EngineOscClient::EngineOscClient(UserSettingsPointer& pConfig) :
 
     connectServer();
 
-    ControlProxy* xfader = new ControlProxy(ConfigKey("[Master]", "crossfader"));
-    connect(xfader,SIGNAL(valueChanged(double)),this,SLOT(maybeSendState()));
+    ControlProxy* xfader = new ControlProxy(ConfigKey("[Master]", "crossfader"), this);
+    xfader->connectValueChanged(SLOT(maybeSendState()));
     connectedControls.append(xfader);
 
     //connect play buttons
     for(int deckNr = 0; deckNr < (int)PlayerManager::numDecks(); deckNr++){
-        ControlProxy* play = new ControlProxy(ConfigKey(PlayerManager::groupForDeck(deckNr), "play"));
-        connect(play,SIGNAL(valueChanged(double)),this,SLOT(sendState()));
+        ControlProxy* play = new ControlProxy(ConfigKey(PlayerManager::groupForDeck(deckNr), "play"), this);
+        play->connectValueChanged(SLOT(sendState()));
         connectedControls.append(play);
 
-        ControlProxy* volume = new ControlProxy(ConfigKey(PlayerManager::groupForDeck(deckNr), "volume"));
-        connect(volume,SIGNAL(valueChanged(double)),this,SLOT(maybeSendState()));
+        ControlProxy* volume = new ControlProxy(ConfigKey(PlayerManager::groupForDeck(deckNr), "volume"), this);
+        volume->connectValueChanged(SLOT(maybeSendState()));
         connectedControls.append(volume);
     }
 
@@ -55,9 +55,6 @@ EngineOscClient::EngineOscClient(UserSettingsPointer& pConfig) :
 }
 
 EngineOscClient::~EngineOscClient() {
-    foreach (ControlProxy* t, connectedControls) {
-       delete t;
-    }
 }
 
 void EngineOscClient::process(const CSAMPLE* pBuffer, const int iBufferSize) {
