@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>692</width>
-    <height>549</height>
+    <height>552</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -164,14 +164,14 @@
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="2" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="label_17">
           <property name="text">
            <string>Maximum retries</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="4" column="1">
          <widget class="QSpinBox" name="spinBoxMaximumRetries">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -195,6 +195,13 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QCheckBox" name="checkBoxNoDelayFirstReconnect">
+          <property name="text">
+           <string>No delay for the first reconnect attempt </string>
           </property>
          </widget>
         </item>
@@ -538,7 +545,7 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="2" column="0">
          <widget class="QLabel" name="label_14">
           <property name="text">
            <string>Static artist</string>
@@ -548,14 +555,14 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="2" column="1">
          <widget class="QLineEdit" name="custom_artist">
           <property name="text">
            <string notr="true">%mainartist</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="0">
          <widget class="QLabel" name="label_15">
           <property name="text">
            <string>Static title</string>
@@ -565,24 +572,14 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="3" column="1">
          <widget class="QLineEdit" name="custom_title">
           <property name="text">
            <string notr="true">%maintitle</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="0" colspan="2">
-         <widget class="QCheckBox" name="enableCustomMetadata">
-          <property name="text">
-           <string>Use static artist and title.</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0" colspan="2">
+        <item row="5" column="0" colspan="2">
          <widget class="QCheckBox" name="ogg_dynamicupdate">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -598,10 +595,20 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="5" column="0" colspan="2">
+        <item row="6" column="0" colspan="2">
          <widget class="QCheckBox" name="enableUtf8Metadata">
           <property name="text">
            <string>Use UTF-8 encoding for metadata.</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QCheckBox" name="enableCustomMetadata">
+          <property name="text">
+           <string>Use static artist and title.</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

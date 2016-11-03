@@ -144,8 +144,9 @@ class EngineBroadcast
     int m_retryCount;
 
     int m_reconnectDelay;
-    int m_maximumRetries;
+    bool m_noDelayFirstReconnect;
     bool m_limitRreconnects;
+    int m_maximumRetries;
 };
 
 #endif // ENGINE_SIDECHAIN_ENGINEBROADCAST_H

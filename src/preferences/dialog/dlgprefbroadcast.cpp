@@ -58,11 +58,11 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
 
     // Retry Delay
     spinBoxReconnectDelay->setValue(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay")).toInt());
+            ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"), "15").toInt());
 
-    // Maximum Retries
-    spinBoxMaximumRetries->setValue(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt());
+    // No delay for the first reconnect attempt
+    checkBoxNoDelayFirstReconnect->setChecked(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"), "1").toInt());
 
     // Use Maximum Retries
     bool limitConnects = m_pConfig->getValueString(
@@ -72,6 +72,10 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     spinBoxMaximumRetries->setEnabled(limitConnects);
     connect(checkBoxLimitReconnects, SIGNAL(stateChanged(int)),
             this, SLOT(checkBoxLimitReconnectsChanged(int)));
+
+    // Maximum Retries
+    spinBoxMaximumRetries->setValue(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt());
 
 
     // Stream "public" checkbox
@@ -205,10 +209,11 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     port->setText("");
     login->setText("");
     password->setText("");
-    spinBoxReconnectDelay->setValue(0);
+    spinBoxReconnectDelay->setValue(15);
+    checkBoxNoDelayFirstReconnect->setChecked(true);
+    checkBoxLimitReconnects->setChecked(true);
     spinBoxMaximumRetries->setValue(10);
     spinBoxMaximumRetries->setEnabled(true);
-    checkBoxLimitReconnects->setChecked(true);
     stream_name->setText("");
     stream_website->setText(MIXXX_WEBSITE_URL);
     stream_desc->setText(tr("This stream is online for testing purposes!"));
@@ -280,10 +285,12 @@ void DlgPrefBroadcast::slotApply()
             ConfigValue(password->text()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"),
             ConfigValue(spinBoxReconnectDelay->value()));
-    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"),
-            ConfigValue(spinBoxMaximumRetries->value()));
+    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"),
+            ConfigValue(checkBoxNoDelayFirstReconnect->isChecked()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"),
             ConfigValue(checkBoxLimitReconnects->isChecked()));
+    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"),
+            ConfigValue(spinBoxMaximumRetries->value()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "stream_name"),
             ConfigValue(stream_name->text()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "stream_website"),

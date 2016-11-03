@@ -50,9 +50,10 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_threadWaiting(false),
           m_pOutputFifo(nullptr),
           m_retryCount(0),
-          m_reconnectDelay(0),
-          m_maximumRetries(10),
-          m_limitRreconnects(true) {
+          m_reconnectDelay(15),
+          m_noDelayFirstReconnect(true),
+          m_limitRreconnects(true),
+          m_maximumRetries(10) {
     const bool persist = true;
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
@@ -250,12 +251,13 @@ void EngineBroadcast::updateFromPreferences() {
             ConfigKey(BROADCAST_PREF_KEY, "metadata_format"));
 
     m_reconnectDelay = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay")).toInt();
-    m_maximumRetries = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt();
+            ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"), "15").toInt();
+    m_noDelayFirstReconnect = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"), "1").toInt();
     m_limitRreconnects = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), "1").toInt();
-
+    m_maximumRetries = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt();
 
     int format;
     int protocol;
@@ -944,6 +946,10 @@ void EngineBroadcast::tryReconnect() {
     m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
 
     processDisconnect();
+    if (m_noDelayFirstReconnect) {
+        ++m_retryCount;
+        processConnect();
+    }
     while (waitForRetry()) {
         if (processConnect()) {
             break;
