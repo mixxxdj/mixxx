@@ -187,7 +187,7 @@ void RecordingManager::slotDurationRecorded(quint64 duration)
     }
 }
 // Copy from the implementation in enginerecord.cpp
-QString RecordingManager::getRecordedDurationStr(quint64 duration) {
+QString RecordingManager::getRecordedDurationStr(unsigned int duration) {
     return QString("%1:%2")
                  .arg(duration / 60, 2, 'f', 0, '0')   // minutes
                  .arg(duration % 60, 2, 'f', 0, '0');  // seconds
@@ -196,7 +196,7 @@ QString RecordingManager::getRecordedDurationStr(quint64 duration) {
 // Only called when recording is active.
 void RecordingManager::slotBytesRecorded(int bytes)
 {
-    // auto conversion to long
+    // auto conversion to quint64
     m_iNumberOfBytesRecorded += bytes;
     m_iNumberOfBytesRecordedSplit += bytes;
 
@@ -267,7 +267,7 @@ quint64 RecordingManager::getFileSplitSize()
      else
          return SIZE_650MB;
 }
-int RecordingManager::getFileSplitSeconds()
+unsigned int RecordingManager::getFileSplitSeconds()
 {
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     if(fileSizeStr == SPLIT_60MIN)

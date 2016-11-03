@@ -46,7 +46,7 @@ class RecordingManager : public QObject
 
   signals:
     // Emits the cumulative number of bytes currently recorded.
-    void bytesRecorded(long);
+    void bytesRecorded(int);
     void isRecording(bool);
     void durationRecorded(QString);
 
@@ -70,7 +70,7 @@ class RecordingManager : public QObject
     ControlPushButton* m_pToggleRecording;
 
     quint64 getFileSplitSize();
-    int getFileSplitSeconds();
+    unsigned int getFileSplitSeconds();
 
     UserSettingsPointer m_pConfig;
     QString m_recordingDir;
@@ -86,11 +86,11 @@ class RecordingManager : public QObject
     quint64 m_iNumberOfBytesRecorded;
     quint64 m_iNumberOfBytesRecordedSplit;
     quint64 m_split_size;
-    long m_split_time;
+    unsigned int m_split_time;
     int m_iNumberSplits;
-    long m_secondsRecorded;
-    long m_secondsRecordedSplit;
-    QString getRecordedDurationStr(quint64 duration);
+    unsigned int m_secondsRecorded;
+    unsigned int m_secondsRecordedSplit;
+    QString getRecordedDurationStr(unsigned int duration);
 };
 
 #endif // RECORDINGMANAGER_H
