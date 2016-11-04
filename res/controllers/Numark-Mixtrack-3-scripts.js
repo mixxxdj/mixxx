@@ -24,6 +24,11 @@ var beatlooprollActivate = false;
 // this is required to expand library view with DM skin.
 var DarkMetalSkin = false;
 
+// Effects mode
+// 1 for multi-effect mode (3 effects controlled in each EffectUnit, best used with Deere Skin)
+// 2 for single effect mode (1 effect controlled in each EffectUnit, best used with skins other than Deere)
+var FXmode = 1; // multi-effect mode by default
+
 //Disable Play on Sync button Double Press
 var noPlayOnSyncDoublePress = false;
 
@@ -80,10 +85,10 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
  * ----------------
  * 2016-01-12 (V0.9) to 2016-01-15 (1.0 beta 3) - Chloé AVRILLON 
  * 2016-02-17 (1.0 beta 4) 2016-04-08 (V1.3 )- Stéphane Morin
- * 2016-04-08 (1.3 ) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/905
- * 2016-09-14 (1.31 ) - Stefan Mikolajczyk - https://github.com/mixxxdj/mixxx/pull/1012
- * 2016-04-08 (1.4 ) to 2016-09-26 (1.8) - Stéphane Morin
- * 2016-10-21 (2.0) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/1014
+ * 2016-04-08 (1.3) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/905
+ * 2016-09-14 (1.31) - Stefan Mikolajczyk - https://github.com/mixxxdj/mixxx/pull/1012
+ * 2016-04-08 (1.4) to 2016-09-26 (1.8) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/1014
+ * 2016-09-26 (2.0) - Stéphane Morin - 4 deck support
  *              - Added 4 deck support (Shift + Tap button = deck toggle)
  *              - Remove TAP LED flashing on BeatActive to prevent confusion with deck selection
  *              - Change Shift Lock visual indicator from TAP LED to 
@@ -91,10 +96,12 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
  *                with the use of LONG_PRESS (stop on release) and Single press (on/off behavior)
  *              - Add brake effect: PADMode + FX button 1
  *              - Add spinback effect: PADMode + FX button 2
+ * 2016-11-03 (2.1) - Stéphane Morin - FX Mode selection based on skin used
+ *
  ***********************************************************************
  *                           GPL v2 licence
  *                           -------------- 
- * Numark Mixtrack Pro 3 controller script 2.0 for Mixxx 2.0+
+ * Numark Mixtrack Pro 3 controller script 2.1 for Mixxx 2.0+
  * Copyright (C) 2016 Stéphane Morin
  *
  * This program is free software; you can redistribute it and/or
@@ -115,7 +122,6 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
 // JSHint configuration                                               //
 ////////////////////////////////////////////////////////////////////////
 /* global engine                                                      */
-/* global script                                                      */
 /* global print                                                       */
 /* global midi                                                        */
 /* global bpm                                                        */
@@ -870,16 +876,33 @@ NumarkMixtrack3.deck.prototype.StripEffect = function(value, decknum) {
     var arrayLength = deck.InstantFX.length;
     var i;
 
-    if (!deck.shiftKey) {
-        // if deck.shiftKey is true, we are fast seeking thru the track
-        for (i = 0; i < arrayLength; i++) {
-            ButtonNum = deck.InstantFX[i];
-            engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
-                "enabled", true);
-        }
-    }
+    if (FXmode === 1) { //3 FX in 4 FX Units
 
-    engine.setValue("[EffectRack1_EffectUnit" + decknum + "]", "super1", value / 127);
+        if (!deck.shiftKey) {
+            // if deck.shiftKey is true, we are fast seeking thru the track
+            for (i = 0; i < arrayLength; i++) {
+                ButtonNum = deck.InstantFX[i];
+                engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
+                    "enabled", true);
+            }
+        }
+
+        engine.setValue("[EffectRack1_EffectUnit" + decknum + "]", "super1", value / 127);
+
+    } else { // 1 FX in 3 FX unit
+
+        if (!deck.shiftKey) {
+            // if deck.shiftKey is true, we are fast seeking thru the track
+            for (i = 0; i < arrayLength; i++) {
+                ButtonNum = deck.InstantFX[i];
+                engine.setValue("[EffectRack1_EffectUnit" + ButtonNum + "]",
+                    "group_[Channel" + decknum + "]_enable", true);
+            }
+        }
+        engine.setValue("[EffectRack1_EffectUnit1]", "super1", value / 127);
+        engine.setValue("[EffectRack1_EffectUnit2]", "super1", value / 127);
+        engine.setValue("[EffectRack1_EffectUnit3]", "super1", value / 127);
+    }
 };
 
 // =====================================================================
@@ -1058,22 +1081,7 @@ NumarkMixtrack3.init = function(id, debug) {
         '[Channel4]': '[Channel4]'
     };
 
-    NumarkMixtrack3.fxControls = {
-        '[EffectRack1_EffectUnit1_Effect1]': 1,
-        '[EffectRack1_EffectUnit1_Effect2]': 1,
-        '[EffectRack1_EffectUnit1_Effect3]': 1,
-        '[EffectRack1_EffectUnit2_Effect1]': 2,
-        '[EffectRack1_EffectUnit2_Effect2]': 2,
-        '[EffectRack1_EffectUnit2_Effect3]': 2,
-        '[EffectRack1_EffectUnit3_Effect1]': 3,
-        '[EffectRack1_EffectUnit3_Effect2]': 3,
-        '[EffectRack1_EffectUnit3_Effect3]': 3,
-        '[EffectRack1_EffectUnit4_Effect1]': 4,
-        '[EffectRack1_EffectUnit4_Effect2]': 4,
-        '[EffectRack1_EffectUnit4_Effect3]': 4
-    };
-
-    NumarkMixtrack3.fxGroups = {
+    NumarkMixtrack3.fxControls = { // used to determine FX Button
         '[EffectRack1_EffectUnit1_Effect1]': 1,
         '[EffectRack1_EffectUnit1_Effect2]': 2,
         '[EffectRack1_EffectUnit1_Effect3]': 3,
@@ -1085,7 +1093,30 @@ NumarkMixtrack3.init = function(id, debug) {
         '[EffectRack1_EffectUnit3_Effect3]': 3,
         '[EffectRack1_EffectUnit4_Effect1]': 1,
         '[EffectRack1_EffectUnit4_Effect2]': 2,
-        '[EffectRack1_EffectUnit4_Effect3]': 3
+        '[EffectRack1_EffectUnit4_Effect3]': 3,
+        '[EffectRack1_EffectUnit1]': 1, //FXmode !== 1
+        '[EffectRack1_EffectUnit2]': 2, //FXmode !== 1
+        '[EffectRack1_EffectUnit3]': 3, //FXmode !== 1
+        '[EffectRack1_EffectUnit4]': 4  //FXmode !== 1
+    };
+
+    NumarkMixtrack3.fxGroups = { //Used to determine deck
+        '[EffectRack1_EffectUnit1_Effect1]': 1,
+        '[EffectRack1_EffectUnit1_Effect2]': 1,
+        '[EffectRack1_EffectUnit1_Effect3]': 1,
+        '[EffectRack1_EffectUnit2_Effect1]': 2,
+        '[EffectRack1_EffectUnit2_Effect2]': 2,
+        '[EffectRack1_EffectUnit2_Effect3]': 2,
+        '[EffectRack1_EffectUnit3_Effect1]': 3,
+        '[EffectRack1_EffectUnit3_Effect2]': 3,
+        '[EffectRack1_EffectUnit3_Effect3]': 3,
+        '[EffectRack1_EffectUnit4_Effect1]': 4,
+        '[EffectRack1_EffectUnit4_Effect2]': 4,
+        '[EffectRack1_EffectUnit4_Effect3]': 4,
+        'group_[Channel1]_enable': 1, //FXmode !== 1
+        'group_[Channel2]_enable': 2, //FXmode !== 1
+        'group_[Channel3]_enable': 3, //FXmode !== 1
+        'group_[Channel4]_enable': 4  //FXmode !== 1
     };
 
     NumarkMixtrack3.Autoloop = {
@@ -1283,16 +1314,31 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         'beatloop_0.125_enabled': 'NumarkMixtrack3.OnPADLoopButtonChange'
     };
 
-    engine.connectControl("[EffectRack1_EffectUnit" + OnDeck + "_Effect1]", "enabled",
-        "NumarkMixtrack3.OnEffectEnabled");
-    engine.connectControl("[EffectRack1_EffectUnit" + OnDeck + "_Effect2]", "enabled",
-        "NumarkMixtrack3.OnEffectEnabled");
-    engine.connectControl("[EffectRack1_EffectUnit" + OnDeck + "_Effect3]", "enabled",
-        "NumarkMixtrack3.OnEffectEnabled");
+   if (FXmode === 1) { //3 FX in 4 FX Units
+        engine.connectControl("[EffectRack1_EffectUnit" + OnDeck + "_Effect1]", "enabled",
+            "NumarkMixtrack3.OnEffectEnabled");
+        engine.connectControl("[EffectRack1_EffectUnit" + OnDeck + "_Effect2]", "enabled",
+            "NumarkMixtrack3.OnEffectEnabled");
+        engine.connectControl("[EffectRack1_EffectUnit" + OnDeck + "_Effect3]", "enabled",
+            "NumarkMixtrack3.OnEffectEnabled");
 
-    engine.trigger("[EffectRack1_EffectUnit" + OnDeck + "_Effect1]", "enabled");
-    engine.trigger("[EffectRack1_EffectUnit" + OnDeck + "_Effect2]", "enabled");
-    engine.trigger("[EffectRack1_EffectUnit" + OnDeck + "_Effect3]", "enabled");
+        engine.trigger("[EffectRack1_EffectUnit" + OnDeck + "_Effect1]", "enabled");
+        engine.trigger("[EffectRack1_EffectUnit" + OnDeck + "_Effect2]", "enabled");
+        engine.trigger("[EffectRack1_EffectUnit" + OnDeck + "_Effect3]", "enabled");
+
+    } else { // 1 FX in 3 FX unit
+
+        for (i = 0; i <= 4; i++) {
+            engine.connectControl("[EffectRack1_EffectUnit1]",
+                "group_[Channel" + OnDeck + "]_enable", "NumarkMixtrack3.OnEffectEnabled");
+
+            engine.connectControl("[EffectRack1_EffectUnit2]",
+                "group_[Channel" + OnDeck + "]_enable", "NumarkMixtrack3.OnEffectEnabled");
+
+            engine.connectControl("[EffectRack1_EffectUnit3]",
+                "group_[Channel" + OnDeck + "]_enable", "NumarkMixtrack3.OnEffectEnabled");
+        }
+    }
 
 
     // Set InstantFX LEDs to flash if required
@@ -1313,7 +1359,7 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         }
     }
 
-    if (!remove) { 
+    if (!remove && FXmode === 1) { 
         for (i = 1; i <= 4; i++) {
             engine.setValue("[EffectRack1_EffectUnit" + i + "_Effect1]", "enabled", false);
             engine.setValue("[EffectRack1_EffectUnit" + i + "_Effect2]", "enabled", false);
@@ -1884,8 +1930,6 @@ NumarkMixtrack3.onPADSampleButtonHold = function(channel, control, value, status
         decknum = 1;
     }
 
-    var deck = NumarkMixtrack3.decks["D" + decknum];
-
     //The event is a Long Press, LONG_PRESS is true, we set a variable so that when the 
     // pad button is lifted, the Sampler stops
     if (eventkind === LONG_PRESS) {
@@ -1936,7 +1980,7 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status,
         trueFalse = true;
     }
 
-    if (value === DOWN && deck.duration != 0) {
+    if (value === DOWN && deck.duration !== 0) {
         // make sure all LED are ON
         deck.LEDs["PADloop1"].onOff(PADcolors.yellow);
         deck.LEDs["PADloop2"].onOff(PADcolors.yellow);
@@ -1959,7 +2003,7 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status,
             "[Channel" + decknum + "]");
     }
 
-    if (value === OFF && deck.duration != 0) { //This triggers the callback function for "PADLoopButtonHold"
+    if (value === OFF && deck.duration !== 0) { //This triggers the callback function for "PADLoopButtonHold"
         deck.PADLoopButtonHold.ButtonUp();
     }
 };
@@ -2036,8 +2080,14 @@ NumarkMixtrack3.InstantFXOff = function(channel, control, value, status, group) 
 
     for (i = 0; i < arrayLength; i++) {
         ButtonNum = deck.InstantFX[i];
-        engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
-            "enabled", false);
+
+        if (FXmode === 1) { //3 FX in 4 FX Units
+            engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
+                "enabled", false);
+        } else { // 1 FX in 3 FX unit
+            engine.setValue("[EffectRack1_EffectUnit" + ButtonNum + "]",
+                "group_[Channel" + decknum + "]_enable", false);
+        }
     }
 };
 
@@ -2081,35 +2131,45 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
             }
         }
     } else if (value === DOWN && !deck.TapDown && !deck.PADMode) {
-
         if (deck.shiftKey) {
             // Select Effect 
-            engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
-                "next_effect", true); // Load FX, but not active
-            engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
-                "enabled", false); // Load FX, but not active
-            engine.setValue("[EffectRack1_EffectUnit" + decknum + "]",
-                "group_[Channel" + decknum + "]_enable", true); // An FX is loaded, activate Effect Unit
+            if (FXmode === 1) { //3 FX in 4 FX Units
+                engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
+                    "next_effect", true); // Load FX, but not active
+                engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
+                    "enabled", false); // Load FX, but not active
+                engine.setValue("[EffectRack1_EffectUnit" + decknum + "]",
+                    "group_[Channel" + decknum + "]_enable", true); // An FX is loaded, activate Effect Unit
+            } else {
+                engine.setValue("[EffectRack1_EffectUnit" + ButtonNum + "]", "prev_chain", true);
+            }
         } else {
             // Toggle effect if InstantFX is not active
             if (deck.InstantFX.indexOf(ButtonNum) === -1) {
-                new_value = !engine.getValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
-                    "enabled");
-                engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]", "enabled",
-                    new_value);
+                if (FXmode === 1) { //3 FX in 4 FX Units
+                    new_value = !engine.getValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
+                        "enabled");
+                    engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]", "enabled",
+                        new_value);
+                } else {
+                    new_value = !engine.getValue("[EffectRack1_EffectUnit" +
+                        ButtonNum + "]", "group_[Channel" + decknum + "]_enable");
+                    engine.setValue("[EffectRack1_EffectUnit" + ButtonNum + "]",
+                        "group_[Channel" + decknum + "]_enable", new_value);
+                }
                 deck.LEDs["fx" + ButtonNum].onOff(new_value ? ON : OFF);
             }
         }
     }
 
-// Standard FX Control done, now deal with extra features
+    // Standard FX Control done, now deal with extra features
 
     if (value === DOWN && deck.PADMode && ButtonNum === 2) {
         engine.spinback(decknum, true); // enable spinback effect
     } else {
         engine.spinback(decknum, false); // disable spinback effect
     }
-    
+
     if (deck.PADMode && ButtonNum === 1) {
         NumarkMixtrack3.brake_button(decknum, value);
     }
@@ -2126,8 +2186,16 @@ NumarkMixtrack3.brake_button = function(decknum, value) {
 };
 
 NumarkMixtrack3.OnEffectEnabled = function(value, group, control) {
-    var index = NumarkMixtrack3.fxGroups[group]; //This gives the index of the button
-    var decknum = NumarkMixtrack3.fxControls[group]; //This give the deck that is targeted
+  var index;
+  var decknum;
+    if (FXmode === 1) {
+        index = NumarkMixtrack3.fxControls[group];
+        decknum = NumarkMixtrack3.fxGroups[group];
+    } else {
+        index = NumarkMixtrack3.fxControls[group];
+        decknum = NumarkMixtrack3.fxGroups[control];
+    }
+
     var deck = NumarkMixtrack3.decks["D" + decknum];
 
     if (deck.InstantFX.indexOf(index) === -1) {
@@ -2135,7 +2203,6 @@ NumarkMixtrack3.OnEffectEnabled = function(value, group, control) {
         deck.LEDs["fx" + index].onOff(new_value ? ON : OFF);
     }
 };
-
 
 /******************     Shift Button :
  * - Press                : toggle PFL
@@ -2228,7 +2295,7 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
         for (i = 1; i <= 4; i++) {
 
             gainValue[i - 1] = engine.getParameter(
-                    "[EffectRack1_EffectUnit" + [i] + "]", "mix");
+                "[EffectRack1_EffectUnit" + [i] + "]", "mix");
 
             // increment value between 0 and 1
             gainIncrement = 1 / 20; // 20 increments in one full knob turn   
@@ -2248,22 +2315,27 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
             }
 
         }
-        
+
         // we adjust pregain with adjusted value
-        for (i = 1; i <=5; i++) {
+        for (i = 1; i <= 5; i++) {
             if (gainValue[i - 1] >= 0 && gainValue[i - 1] <= 4) {
                 if (deck.TapDown) {
                     engine.setParameter("[EffectRack1_EffectUnit" + i +
                         "_Effect1]", "parameter2", gainValue[i - 1]);
                 } else {
-                    if(decknum === i){
-                    engine.setParameter("[EffectRack1_EffectUnit" + i +
-                        "]", "mix", gainValue[i - 1]);
+                    if (FXmode === 1){
+                        if (decknum === i) {
+                            engine.setParameter("[EffectRack1_EffectUnit" + i +
+                                "]", "mix", gainValue[i - 1]);
+                        }
+                    } else { //FX Mode = 1 FX 3 Units
+                            engine.setParameter("[EffectRack1_EffectUnit" + i +
+                                "]", "mix", gainValue[i - 1]);
                     }
                 }
             }
         }
-        
+
     }
 
     if (deck.shiftKey) {
@@ -2379,17 +2451,31 @@ NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
         parameterSoftTakeOver("[EqualizerRack1_[Channel" + decknum +
             "]_Effect1]", "parameter" + EQp, value);
     }
-    if (deck.shiftKey) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect1]", "parameter" + FXp, value);
-    }
-    if (deck.PADMode) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect2]", "parameter" + FXp, value);
-    }
-    if (deck.TapDown) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect3]", "parameter" + FXp, value);
+
+    if (FXmode === 1) {
+        if (deck.shiftKey) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
+                "_Effect1]", "parameter" + FXp, value);
+        }
+        if (deck.PADMode) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
+                "_Effect2]", "parameter" + FXp, value);
+        }
+        if (deck.TapDown) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
+                "_Effect3]", "parameter" + FXp, value);
+        }
+    } else {
+
+        if (deck.shiftKey) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit1_Effect1]", "parameter" + FXp, value);
+        }
+        if (deck.PADMode) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit2_Effect1]", "parameter" + FXp, value);
+        }
+        if (deck.TapDown) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit3_Effect1]", "parameter" + FXp, value);
+        }
     }
 };
 
@@ -2401,17 +2487,30 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
     if (!deck.shiftKey && !deck.PADMode && !deck.TapDown) {
         parameterSoftTakeOver("[QuickEffectRack1_[Channel" + decknum + "]]", "super1", value);
     }
-    if (deck.shiftKey) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect1]", "parameter4", value);
-    }
-    if (deck.PADMode) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect2]", "parameter4", value);
-    }
-    if (deck.TapDown) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect3]", "parameter4", value);
+
+    if (FXmode === 1) {
+        if (deck.shiftKey) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
+                "_Effect1]", "parameter4", value);
+        }
+        if (deck.PADMode) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
+                "_Effect2]", "parameter4", value);
+        }
+        if (deck.TapDown) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
+                "_Effect3]", "parameter4", value);
+        }
+    } else {
+        if (deck.shiftKey) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit1_Effect1]", "parameter4", value);
+        }
+        if (deck.PADMode) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit2_Effect1]", "parameter4", value);
+        }
+        if (deck.TapDown) {
+            parameterSoftTakeOver("[EffectRack1_EffectUnit3_Effect1]", "parameter4", value);
+        }
     }
 };
 
