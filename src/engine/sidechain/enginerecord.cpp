@@ -125,20 +125,25 @@ void EngineRecord::updateFromPreferences() {
 
 bool EngineRecord::metaDataHasChanged()
 {
+    //Originally, m_iMetaDataLife was used so that getCurrentPlayingTrack was called
+    //less often, because it was calculating it.
+    //Nowadays (since Mixxx 1.11), it just accesses a map on a thread safe method.
+    TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
+    if (!pTrack) {
+        m_iMetaDataLife = kMetaDataLifeTimeout;
+        return false;
+    }
+
+    //The counter is kept so that changes back and forth with the faders/crossfader
+    //(like in scratching or other effects) are not counted as multiple track changes
+    //in the cue file. A better solution could consist of a signal from PlayerInfo and
+    //a slot that decides if the changes received are valid or are to be ignored once
+    //the next process call comes. This could also help improve the time written in the CUE.
     if (m_iMetaDataLife < kMetaDataLifeTimeout) {
         m_iMetaDataLife++;
         return false;
     }
     m_iMetaDataLife = 0;
-
-    //TODO: Needs improvement. Usually when we start recording, all tracks are stopped
-    // and we start the track just after that. Given that this is executed with start recording, 
-    // it waits for kMetaDataLifeTimeout until it actually notices that the track
-    // has started playing. This translates to the cue file start time being too late.
-    // Maybe we need a signal for this too.
-    TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    if (!pTrack)
-        return false;
 
     if (m_pCurrentTrack) {
         if (!pTrack->getId().isValid() || !m_pCurrentTrack->getId().isValid()) {
@@ -219,6 +224,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // clean frames counting and get current sample rate.
             m_frames = 0;
             m_sampleRate = m_pSamplerate->get();
+            m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -248,6 +254,16 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
                 m_pEncoder->encodeBuffer(pBuffer, iBufferSize);
             }
         }
+        
+        //Writing cueLine before updating the time counter since we preffer to be ahead
+        //rather than late.
+        if (m_bCueIsEnabled) {
+            if (metaDataHasChanged()) {
+                m_cueTrack++;
+                writeCueLine();
+                m_cueFile.flush();
+            }
+        }
 
         // update frames counting and recorded duration (seconds)
         m_frames += iBufferSize / 2;
@@ -258,14 +274,6 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // by RecordingManager to update the label besides start/stop button
         if (lastDuration != m_recordedDuration) {
             emit(durationRecorded(m_recordedDuration));
-        }
-
-        if (m_bCueIsEnabled) {
-            if (metaDataHasChanged()) {
-                m_cueTrack++;
-                writeCueLine();
-                m_cueFile.flush();
-            }
         }
     }
 }
