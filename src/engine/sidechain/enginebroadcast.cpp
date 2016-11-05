@@ -22,7 +22,6 @@
 #include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/sleep.h"
 
 static const int kConnectRetries = 30;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
@@ -506,7 +505,9 @@ bool EngineBroadcast::processConnect() {
 
             // If socket is busy then we wait half second
             if (m_iShoutStatus == SHOUTERR_BUSY) {
-               QThread::msleep(500);
+                m_enabledMutex.lock();
+                m_waitEnabled.wait(&m_enabledMutex, 500);
+                m_enabledMutex.unlock();
             }
 
             ++ timeout;
@@ -915,9 +916,13 @@ void EngineBroadcast::slotEnableCO(double v) {
         // Wrapping around in WPushbutton does not work
         // since the status button has 4 states, but this CO is bool
         m_pBroadcastEnabled->set(0.0);
+        v = 0.0;
     }
     if (v > 0.0) {
         serverConnect();
+    } else {
+        // return early from Timeouts
+        m_waitEnabled.wakeAll();
     }
 }
 
@@ -930,13 +935,13 @@ bool EngineBroadcast::waitForRetry() {
 
     qDebug() << "waitForRetry()" << m_retryCount << "/" << m_maximumRetries;
 
-    int delay500 = m_reconnectDelay * 2;
-    while (--delay500 > 0) {
+    if (m_reconnectDelay > 0) {
+        m_enabledMutex.lock();
+        m_waitEnabled.wait(&m_enabledMutex, m_reconnectDelay * 1000);
+        m_enabledMutex.unlock();
         if (!m_pBroadcastEnabled->toBool()) {
             return false;
         }
-        qDebug() << "sleep";
-        QThread::msleep(500);
     }
     return true;
 }

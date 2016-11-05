@@ -3,6 +3,7 @@
 
 #include <QMessageBox>
 #include <QMutex>
+#include <QWaitCondition>
 #include <QObject>
 #include <QSemaphore>
 #include <QTextCodec>
@@ -147,6 +148,10 @@ class EngineBroadcast
     bool m_noDelayFirstReconnect;
     bool m_limitRreconnects;
     int m_maximumRetries;
+
+    QMutex m_enabledMutex;
+    QWaitCondition m_waitEnabled;
+
 };
 
 #endif // ENGINE_SIDECHAIN_ENGINEBROADCAST_H
