@@ -21,6 +21,7 @@ namespace {
 
 QFile Logfile;
 QMutex mutexLogfile;
+int debugLevel;
 
 // Debug message handler which outputs to both a logfile and prepends the thread
 // the message came from.
@@ -88,36 +89,42 @@ void MessageHandler(QtMsgType type,
     }
 
     switch (type) {
-    case QtDebugMsg:
-        fprintf(stderr, "Debug %s", ba.constData());
+    // debugLevel is set to 1 by default, can be changed with the cmdline
+    // argument "--debugLevel". Items here are always written to the logfile,
+    // however only Fatal & Critical are displayed on the console by default.
+    case QtDebugMsg: // debugLevel 2
+        if (debugLevel > 1)
+            fprintf(stderr, "Debug: %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Debug ");
             Logfile.write(ba);
         }
         break;
-    case QtWarningMsg:
-        fprintf(stderr, "Warning %s", ba.constData());
+    case QtWarningMsg: // debugLevel 1
+        if (debugLevel > 0)
+            fprintf(stderr, "Warning: %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Warning ");
             Logfile.write(ba);
         }
         break;
-    case QtCriticalMsg:
-        fprintf(stderr, "Critical %s", ba.constData());
+    case QtCriticalMsg: // debugLevel 0 (always shown)
+        fprintf(stderr, "Critical: %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Critical ");
             Logfile.write(ba);
         }
         break; //NOTREACHED
-    case QtFatalMsg:
-        fprintf(stderr, "Fatal %s", ba.constData());
+    case QtFatalMsg: // debugLevel 0 (always shown)
+        fprintf(stderr, "Fatal: %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Fatal ");
             Logfile.write(ba);
         }
         break; //NOTREACHED
-    default:
-        fprintf(stderr, "Unknown %s", ba.constData());
+    default: // debugLevel unknown, we'll assume Warning
+        if (debugLevel > 0)
+            fprintf(stderr, "Unknown: %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Unknown ");
             Logfile.write(ba);

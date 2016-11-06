@@ -12,6 +12,7 @@ CmdlineArgs::CmdlineArgs()
       m_developer(false),
       m_safeMode(false),
       m_settingsPathSet(false),
+      m_debugLevel(1),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
 #ifdef __LINUX__
     m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
@@ -52,12 +53,23 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
         } else if (argv[i] == QString("--timelinePath") && i+1 < argc) {
             m_timelinePath = QString::fromLocal8Bit(argv[i+1]);
             i++;
+        } else if (argv[i] == QString("--debugLevel") && i+1 < argc) { // Set cmdline message verbosity
+            bool isInt; // Scoped variable, will be destroyed at the end of this block @vhexs
+            m_debugLevel = QString::fromLocal8Bit(argv[i+1]).toInt(&isInt); // Try conversion, if it's not an int
+                                                                            // then the if statement below will
+                                                                            // set m_debugLevel back to its
+                                                                            // default value of 1
+            if (!isInt) {
+                fputs("\ndebugLevel argument wasn't a number! Mixxx will only output\n\
+warnings and errors to the console unless this is set properly.\n", stdout);
+                m_debugLevel = 1;
+            }
+            i++;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug", Qt::CaseInsensitive) ||
                    QString::fromLocal8Bit(argv[i]).contains("--controllerDebug", Qt::CaseInsensitive)) {
             m_midiDebug = true;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--developer", Qt::CaseInsensitive)) {
             m_developer = true;
-
         } else if (QString::fromLocal8Bit(argv[i]).contains("--safeMode", Qt::CaseInsensitive)) {
             m_safeMode = true;
         } else {
@@ -112,6 +124,11 @@ void CmdlineArgs::printUsage() {
                         (e.g 'fr')\n\
 \n\
 -f, --fullScreen        Starts Mixxx in full-screen mode\n\
+\n\
+-debugLevel LEVEL       Sets the verbosity of command line debug messages\n\
+                        0 - Critical/Fatal only\n\
+                        1 - Above + Warnings\n\
+                        2 - Above + Debug/Developer messages\n\
 \n\
 -h, --help              Display this help message and exit", stdout);
 
