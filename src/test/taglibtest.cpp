@@ -24,33 +24,49 @@ class TagLibTest : public testing::Test {
     }
 };
 
-TEST_F(TagLibTest, WriteID3v2Tag) {
-    QTemporaryFile tmpFile("no_id3v1_mp3");
-
-    // Generate file name
-    ASSERT_TRUE(tmpFile.open());
-    ASSERT_TRUE(tmpFile.exists());
-    const QString tmpFileName(tmpFile.fileName());
-    tmpFile.close(); // close before copying
-
-    // Delete empty temporary file
-    ASSERT_TRUE(tmpFile.remove());
-
-    // Copy original to temporary file
-    QFile copiedFile(tmpFileName);
-    ASSERT_FALSE(copiedFile.exists());
-    {
-        const QString origFileName(kTestDir.absoluteFilePath("empty.mp3"));
-        QFile origFile(origFileName);
-        ASSERT_TRUE(origFile.exists());
-        qDebug() << "Copying file"
-                << origFileName
-                << "->"
-                <<tmpFileName;
-        ASSERT_TRUE(origFile.copy(tmpFileName));
-        ASSERT_TRUE(copiedFile.exists());
-        ASSERT_EQ(copiedFile.size(), origFile.size());
+class FileRemover final {
+public:
+    explicit FileRemover(const QString& fileName)
+        : m_fileName(fileName) {
     }
+    ~FileRemover() {
+        QFile::remove(m_fileName);
+    }
+private:
+    QString m_fileName;
+};
+
+QString generateTemporaryFileName(const QString& fileNameTemplate) {
+    QTemporaryFile tmpFile(fileNameTemplate);
+    tmpFile.open();
+    DEBUG_ASSERT(tmpFile.exists());
+    const QString tmpFileName(tmpFile.fileName());
+    FileRemover tmpFileRemover(tmpFileName);
+    return tmpFileName;
+}
+
+void copyFile(const QString& srcFileName, const QString& dstFileName) {
+    QFile srcFile(srcFileName);
+    DEBUG_ASSERT(srcFile.exists());
+    qDebug() << "Copying file"
+            << srcFileName
+            << "->"
+            <<dstFileName;
+    srcFile.copy(dstFileName);
+    QFile dstFile(dstFileName);
+    DEBUG_ASSERT(dstFile.exists());
+    DEBUG_ASSERT(srcFile.size() == dstFile.size());
+}
+
+TEST_F(TagLibTest, WriteID3v2Tag) {
+    // Generate a file name for the temporary file
+    const QString tmpFileName = generateTemporaryFileName("no_id3v1_mp3");
+
+    // Create the temporary file by copying an exiting file
+    copyFile(kTestDir.absoluteFilePath("empty.mp3"), tmpFileName);
+
+    // Ensure that the temporary file is removed after the test
+    FileRemover tmpFileRemover(tmpFileName);
 
     // Verify that the file has no tags
     {
