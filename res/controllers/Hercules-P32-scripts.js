@@ -765,8 +765,8 @@ P32.Deck = function (deckNumbers, channel) {
 
     this.quantize = new ToggleButton(
         [0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'quantize'); // sync shifted
-    this.keylock = new ToggleButton(
-        [0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'keylock'); // cue shifted
+    this.alignBeats = new ActionButton(
+        [0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'beats_translate_curpos'); // cue shifted
     this.goToStart = new Control( // play shifted
         [0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck, 
         ['start_stop', function () { return 1; }],

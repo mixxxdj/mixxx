@@ -545,7 +545,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.keylock.input</key>
+                <key>P32.leftDeck.alignBeats.input</key>
                 <status>0x94</status>
                 <midino>0x09</midino>
                 <options>
@@ -806,7 +806,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.keylock.input</key>
+                <key>P32.rightDeck.alignBeats.input</key>
                 <status>0x95</status>
                 <midino>0x09</midino>
                 <options>
