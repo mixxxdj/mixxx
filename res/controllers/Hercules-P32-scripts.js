@@ -666,7 +666,7 @@ P32.PadNumToMIDIControl = function (PadNum, layer) {
 };
 
 P32.browse = function (channel, control, value, status, group) {
-    if (value === 127) {
+    if (value > 64) {
         engine.setValue('[Playlist]', 'SelectPrevTrack', 1);
     } else {
         engine.setValue('[Playlist]', 'SelectNextTrack', 1);
@@ -674,7 +674,7 @@ P32.browse = function (channel, control, value, status, group) {
 };
 
 P32.headMix = function (channel, control, value, status, group) {
-    var direction = (value === 127) ? -1 : 1;
+    var direction = (value > 64) ? -1 : 1;
     engine.setValue('[Master]', 'headMix', engine.getValue('[Master]', 'headMix') + (0.25 * direction));
 };
 
@@ -820,7 +820,7 @@ P32.Deck = function (deckNumbers, channel) {
         null, ['loop_enabled', null]);
     this.loopSize.input = function (channel, control, value, status, group) {
         if (loopEnabledDot) {
-            if (value === 127 && loopSize > 2) { // turn left
+            if (value > 64 && loopSize > 2) { // turn left
                 /**
                     Unfortunately, there is no way to show 1 with a dot on the
                     loop size LED.
@@ -828,7 +828,7 @@ P32.Deck = function (deckNumbers, channel) {
                 loopSize /= 2;
                 engine.setValue(that.currentDeck, 'loop_halve', 1);
                 engine.setValue(that.currentDeck, 'loop_halve', 0);
-            } else if (value === 1 && loopSize < 32) { // turn right
+            } else if (value < 64 && loopSize < 32) { // turn right
                 /**
                     Mixxx supports loops longer than 32 beats, but there is no way
                     to show 64 with a dot on the loop size LED.
@@ -838,7 +838,7 @@ P32.Deck = function (deckNumbers, channel) {
                 engine.setValue(that.currentDeck, 'loop_double', 0);
             }
         } else {
-            if (value === 127 && loopSize > 1/32) { // turn left
+            if (value > 64 && loopSize > 1/32) { // turn left
                 /**
                     Mixxx supports loops shorter than 1/32 beats, but there is no
                     way to set the loop size LED less than 1/32 (even though it
@@ -847,7 +847,7 @@ P32.Deck = function (deckNumbers, channel) {
                 loopSize /= 2;
                 engine.setValue(that.currentDeck, 'loop_halve', 1);
                 engine.setValue(that.currentDeck, 'loop_halve', 0);
-            } else if (value === 1 && loopSize < 64) { // turn right
+            } else if (value < 64 && loopSize < 64) { // turn right
                 /**
                     Mixxx supports loops longer than 64 beats, but the loop size LED
                     only has 2 digits, so it couldn't show 128
@@ -870,7 +870,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.loopSize.trigger();
 
     this.loopMoveEncoder = function (channel, control, value, status, group) {
-        var direction = (value === 127) ? -1 : 1;
+        var direction = (value > 64) ? -1 : 1;
         if (loopSize < 1) {
             engine.setValue(that.currentDeck, 'loop_move', loopSize * direction);
         } else {
@@ -893,7 +893,7 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     this.tempoEncoder = function (channel, control, value, status, group) {
-        var direction = (value === 127) ? -1 : 1;
+        var direction = (value > 64) ? -1 : 1;
         engine.setValue(that.currentDeck, 'rate', engine.getValue(that.currentDeck, 'rate') + (0.01 * direction));
     };
 
@@ -904,11 +904,11 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     this.beatJumpEncoder = function (channel, control, value, status, group) {
-        var direction = (value === 127) ? -1 : 1;
+        var direction = (value > 64) ? -1 : 1;
         if (that.beatJumpEncoderPressed) {
-            if (value === 127 && beatJumpSize > 1/32) { // turn left
+            if (value > 64 && beatJumpSize > 1/32) { // turn left
                 beatJumpSize /= 2;
-            } else if (value === 1 && beatJumpSize < 64) { // turn right
+            } else if (value < 64 && beatJumpSize < 64) { // turn right
                 beatJumpSize *= 2;
             }
             // The firmware will only change the numeric LED readout when sent messages
