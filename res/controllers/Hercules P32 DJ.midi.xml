@@ -67,6 +67,33 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>P32.leftDeck.loopInShifted.input</key>
+                <status>0x94</status>
+                <midino>0x50</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.loopOutShifted.input</key>
+                <status>0x94</status>
+                <midino>0x51</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.loopTogglePadShifted.input</key>
+                <status>0x94</status>
+                <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton1.input</key>
                 <status>0x91</status>
                 <midino>0x60</midino>
@@ -2618,6 +2645,33 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.loopTogglePad.input</key>
                 <status>0x92</status>
+                <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.loopInShifted.input</key>
+                <status>0x95</status>
+                <midino>0x50</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.loopOutShifted.input</key>
+                <status>0x95</status>
+                <midino>0x51</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.loopTogglePadShifted.input</key>
+                <status>0x95</status>
                 <midino>0x52</midino>
                 <options>
                     <script-binding/>

@@ -919,6 +919,16 @@ P32.Deck = function (deckNumbers, channel) {
         [0x90 + channel, 0x52], this.currentDeck,
         P32.padColors.red, P32.padColors.blue);
 
+    this.loopInShifted = new ActionButton(
+        [0x90 + channel + P32.shiftOffset, 0x50], this.currentDeck,
+        'loop_in', P32.padColors.purple);
+    this.loopOutShifted = new ActionButton(
+        [0x90 + channel + P32.shiftOffset, 0x51], this.currentDeck,
+        'loop_out', P32.padColors.purple);
+    this.loopTogglePadShifted = new LoopToggleButton(
+        [0x90 + channel + P32.shiftOffset, 0x52], this.currentDeck,
+        P32.padColors.red, P32.padColors.blue);
+
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
 
     for (var k = 1; k <= 3; k++) {
