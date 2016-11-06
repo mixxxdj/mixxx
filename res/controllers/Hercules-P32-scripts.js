@@ -705,9 +705,6 @@ P32.EffectUnit = function (unitNumber) {
         this['deckButton' + d + 'Shifted'] = new ToggleButton(
             [0x90 + unitNumber + P32.shiftOffset, 0x02 + d], this.group, 'group_[Channel' + d + ']_enable');
     }
-    this.pflToggle = function () {
-        script.toggleControl(this.group, 'group_[Headphone]_enable');
-    };
 
     this.dryWet = new CCLin(
         [0xB0 + unitNumber, 0x09], this.group, 'mix', false, 0, 1);
@@ -923,15 +920,6 @@ P32.Deck = function (deckNumbers, channel) {
         P32.padColors.red, P32.padColors.blue);
 
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
-    this.pfl.input = function (channel, control, value, status, group) {
-        if (value === 127) {
-            if (that.shift) {
-                that.effectUnit.pflToggle();
-            } else {
-                script.toggleControl(that.currentDeck, 'pfl');
-            }
-        }
-    };
 
     for (var k = 1; k <= 3; k++) {
         this['eqKnob' + k] = new CCNonLin(
