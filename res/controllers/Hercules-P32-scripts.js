@@ -727,9 +727,9 @@ P32.EffectUnit = function (unitNumber) {
         });
 
         for (var e = 1; e < 4; e ++) {
-            midi.sendShortMsg(0x90 + unitNumber + P32.shiftOffset,
-                              0x02 + e,
-                              (e === effectNumber) ? 127 : 0);
+            midi.sendShortMsg(0x90 + unitNumber,
+                              P32.PadNumToMIDIControl(e * 4, 1),
+                              (e === effectNumber) ? P32.padColors.blue : 0);
         }
     };
     this.switchEffect1 = function (channel, control, value, status, group) { that.switchEffect(1); };
@@ -737,6 +737,63 @@ P32.EffectUnit = function (unitNumber) {
     this.switchEffect3 = function (channel, control, value, status, group) { that.switchEffect(3); };
     this.switchEffect4 = function (channel, control, value, status, group) { that.switchEffect(4); };
     this.switchEffect(1);
+
+    var Effect = function (effectNumber) {
+        this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + effectNumber + ']';
+        this.toggle = new ToggleButton(
+            [0x90 + unitNumber, P32.PadNumToMIDIControl(effectNumber * 4 - 3, 1)],
+            this.group,
+            'enabled',
+            true,
+            P32.padColors.red);
+        this.previous = new ToggleButtonAsymmetric(
+            [0x90 + unitNumber, P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1)],
+            this.group,
+            'prev_effect',
+            null,
+            false);
+        midi.sendShortMsg(0x90 + unitNumber,
+                          P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1),
+                          P32.padColors.purple);
+        this.next = new ToggleButtonAsymmetric(
+            [0x90 + unitNumber, P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1)],
+            this.group,
+            'next_effect',
+            null,
+            false);
+        midi.sendShortMsg(0x90 + unitNumber,
+                          P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1),
+                          P32.padColors.purple);
+    };
+
+    for (var e = 1; e <= 3; e++) {
+        this['effect' + e] = new Effect(e);
+    }
+
+    this.toggleHeadphones = new ToggleButton(
+        [0x90 + unitNumber, 0x34],
+        this.group,
+        'group_[Headphone]_enable',
+        true,
+        P32.padColors.red);
+    this.toggleMaster = new ToggleButton(
+        [0x90 + unitNumber, 0x35],
+        this.group,
+        'group_[Master]_enable',
+        true,
+        P32.padColors.red);
+    this.toggleMicrophone = new ToggleButton(
+        [0x90 + unitNumber, 0x36],
+        this.group,
+        'group_[Microphone]_enable',
+        true,
+        P32.padColors.red);
+    this.toggleAuxiliary = new ToggleButton(
+        [0x90 + unitNumber, 0x37],
+        this.group,
+        'group_[Auxiliary1]_enable',
+        true,
+        P32.padColors.red);
 };
 
 P32.Deck = function (deckNumbers, channel) {
