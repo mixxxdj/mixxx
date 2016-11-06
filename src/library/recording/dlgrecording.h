@@ -36,7 +36,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
   public slots:
     void toggleRecording(bool toggle);
     void slotRecordingEnabled(bool);
-    void slotBytesRecorded(long);
+    void slotBytesRecorded(int);
     void refreshBrowseModel();
     void slotRestoreSearch();
     void slotDurationRecorded(QString durationRecorded);

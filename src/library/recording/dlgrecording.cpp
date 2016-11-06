@@ -34,8 +34,8 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
 
     connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
             this, SLOT(slotRecordingEnabled(bool)));
-    connect(m_pRecordingManager, SIGNAL(bytesRecorded(long)),
-            this, SLOT(slotBytesRecorded(long)));
+    connect(m_pRecordingManager, SIGNAL(bytesRecorded(int)),
+            this, SLOT(slotBytesRecorded(int)));
     connect(m_pRecordingManager, SIGNAL(durationRecorded(QString)),
             this, SLOT(slotDurationRecorded(QString)));
 
@@ -129,7 +129,7 @@ void DlgRecording::slotRecordingEnabled(bool isRecording) {
 }
 
 // gets number of recorded bytes and update label
-void DlgRecording::slotBytesRecorded(long bytes) {
+void DlgRecording::slotBytesRecorded(int bytes) {
     double megabytes = bytes / 1048576.0;
     m_bytesRecordedStr = QString::number(megabytes,'f',2);
     refreshLabel();
