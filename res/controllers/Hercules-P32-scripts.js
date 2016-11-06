@@ -702,6 +702,8 @@ P32.EffectUnit = function (unitNumber) {
         // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
         this['deckButton' + d] = new ToggleButton(
             [0x90 + unitNumber, 0x02 + d], this.group, 'group_[Channel' + d + ']_enable');
+        this['deckButton' + d + 'Shifted'] = new ToggleButton(
+            [0x90 + unitNumber + P32.shiftOffset, 0x02 + d], this.group, 'group_[Channel' + d + ']_enable');
     }
     this.pflToggle = function () {
         script.toggleControl(this.group, 'group_[Headphone]_enable');
@@ -730,6 +732,9 @@ P32.EffectUnit = function (unitNumber) {
             midi.sendShortMsg(0x90 + unitNumber,
                               P32.PadNumToMIDIControl(e * 4, 1),
                               (e === effectNumber) ? P32.padColors.blue : 0);
+            midi.sendShortMsg(0x90 + unitNumber + P32.shiftOffset,
+                              P32.PadNumToMIDIControl(e * 4, 1),
+                              (e === effectNumber) ? P32.padColors.blue : 0);
         }
     };
     this.switchEffect1 = function (channel, control, value, status, group) { that.switchEffect(1); };
@@ -739,6 +744,7 @@ P32.EffectUnit = function (unitNumber) {
     this.switchEffect(1);
 
     var Effect = function (effectNumber) {
+        var ef = this;
         this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + effectNumber + ']';
         this.toggle = new ToggleButton(
             [0x90 + unitNumber, P32.PadNumToMIDIControl(effectNumber * 4 - 3, 1)],
@@ -746,8 +752,35 @@ P32.EffectUnit = function (unitNumber) {
             'enabled',
             true,
             P32.padColors.red);
+
+        this.resetParameters = new ToggleButtonAsymmetric(
+            [0x90 + unitNumber + P32.shiftOffset, P32.PadNumToMIDIControl(effectNumber * 4 - 3, 1)],
+            this.group,
+            null,
+            'enabled',
+            true,
+            P32.padColors.red);
+        this.resetParameters.input = function (channel, control, value, status, group) {
+            if (value === 127) {
+                var p = engine.getValue(ef.group, 'num_parameters');
+                for (var i = 1; i <= p; i++) {
+                    engine.setValue(ef.group, 'parameter' + i + '_set_default', 1);
+                }
+                var b = engine.getValue(ef.group, 'num_button_parameters');
+                for (var i = 1; i <= b; i++) {
+                    engine.setValue(ef.group, 'button_parameter' + i, 0);
+                }
+            }
+        }
+
         this.previous = new ToggleButtonAsymmetric(
             [0x90 + unitNumber, P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1)],
+            this.group,
+            'prev_effect',
+            null,
+            false);
+        this.previousShifted = new ToggleButtonAsymmetric(
+            [0x90 + unitNumber + P32.shiftOffset, P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1)],
             this.group,
             'prev_effect',
             null,
@@ -755,13 +788,26 @@ P32.EffectUnit = function (unitNumber) {
         midi.sendShortMsg(0x90 + unitNumber,
                           P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1),
                           P32.padColors.purple);
+        midi.sendShortMsg(0x90 + unitNumber + P32.shiftOffset,
+                          P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1),
+                          P32.padColors.purple);
+
         this.next = new ToggleButtonAsymmetric(
             [0x90 + unitNumber, P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1)],
             this.group,
             'next_effect',
             null,
             false);
+        this.nextShifted = new ToggleButtonAsymmetric(
+            [0x90 + unitNumber + P32.shiftOffset, P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1)],
+            this.group,
+            'next_effect',
+            null,
+            false);
         midi.sendShortMsg(0x90 + unitNumber,
+                          P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1),
+                          P32.padColors.purple);
+        midi.sendShortMsg(0x90 + unitNumber + P32.shiftOffset,
                           P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1),
                           P32.padColors.purple);
     };
@@ -776,20 +822,47 @@ P32.EffectUnit = function (unitNumber) {
         'group_[Headphone]_enable',
         true,
         P32.padColors.red);
+    this.toggleHeadphonesShifted = new ToggleButton(
+        [0x90 + unitNumber + P32.shiftOffset, 0x34],
+        this.group,
+        'group_[Headphone]_enable',
+        true,
+        P32.padColors.red);
+
     this.toggleMaster = new ToggleButton(
         [0x90 + unitNumber, 0x35],
         this.group,
         'group_[Master]_enable',
         true,
         P32.padColors.red);
+    this.toggleMasterShifted = new ToggleButton(
+        [0x90 + unitNumber + P32.shiftOffset, 0x35],
+        this.group,
+        'group_[Master]_enable',
+        true,
+        P32.padColors.red);
+
     this.toggleMicrophone = new ToggleButton(
         [0x90 + unitNumber, 0x36],
         this.group,
         'group_[Microphone]_enable',
         true,
         P32.padColors.red);
+    this.toggleMicrophoneShifted = new ToggleButton(
+        [0x90 + unitNumber + P32.shiftOffset, 0x36],
+        this.group,
+        'group_[Microphone]_enable',
+        true,
+        P32.padColors.red);
+
     this.toggleAuxiliary = new ToggleButton(
         [0x90 + unitNumber, 0x37],
+        this.group,
+        'group_[Auxiliary1]_enable',
+        true,
+        P32.padColors.red);
+    this.toggleAuxiliaryShifted = new ToggleButton(
+        [0x90 + unitNumber + P32.shiftOffset, 0x37],
         this.group,
         'group_[Auxiliary1]_enable',
         true,
