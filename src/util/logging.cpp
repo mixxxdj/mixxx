@@ -88,6 +88,8 @@ void MessageHandler(QtMsgType type,
         Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     }
 
+    debugLevel = CmdlineArgs::Instance().getDebugLevel(); // Get verbosity level
+
     switch (type) {
     // debugLevel is set to 1 by default, can be changed with the cmdline
     // argument "--debugLevel". Items here are always written to the logfile,
