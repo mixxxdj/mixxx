@@ -73,6 +73,15 @@ void EngineOscClient::sendState()
         lo_send(serverAdress, "/mixxx/deck/playing" ,"ii", deckNr,(int)playerInfo.isDeckPlaying(deckNr));
         lo_send(serverAdress, "/mixxx/deck/volume" ,"if",deckNr, playerInfo.getDeckVolume(deckNr));
 
+        //speed
+        ControlProxy rate(ConfigKey(PlayerManager::groupForDeck(deckNr), "rate"));
+        ControlProxy rateRange(ConfigKey(PlayerManager::groupForDeck(deckNr), "rateRange"));
+        ControlProxy rev(ConfigKey(PlayerManager::groupForDeck(deckNr), "reverse"));
+        float speed = 1 + float(rate.get()) * float(rateRange.get());
+        if(rev.get())
+            speed *= -1;
+        lo_send(serverAdress, "/mixxx/deck/speed" ,"if", deckNr, speed);
+        
         ControlProxy posRel(ConfigKey(PlayerManager::groupForDeck(deckNr), "playposition"));
         lo_send(serverAdress, "/mixxx/deck/pos" ,"if", deckNr, float(posRel.get()));
 
