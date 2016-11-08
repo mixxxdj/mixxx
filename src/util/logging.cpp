@@ -21,7 +21,7 @@ namespace {
 
 QFile Logfile;
 QMutex mutexLogfile;
-int debugLevel;
+int debugLevel; // enum in cmdlineargs.h
 
 // Debug message handler which outputs to both a logfile and prepends the thread
 // the message came from.
@@ -88,37 +88,34 @@ void MessageHandler(QtMsgType type,
         Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     }
 
-    debugLevel = CmdlineArgs::Instance().getDebugLevel(); // Get verbosity level
+    debugLevel = CmdlineArgs::Instance().getDebugLevel(); // Get message verbosity
 
     switch (type) {
-    // debugLevel is set to 1 by default, can be changed with the cmdline
-    // argument "--debugLevel". Items here are always written to the logfile,
-    // however only Fatal & Critical are displayed on the console by default.
     case QtDebugMsg: // debugLevel 2
-        if (debugLevel > 1)
-            fprintf(stderr, "Debug: %s", ba.constData());
+        if (debugLevel > kDebugLevelDefault)
+            fprintf(stderr, "Debug %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Debug ");
             Logfile.write(ba);
         }
         break;
     case QtWarningMsg: // debugLevel 1
-        if (debugLevel > 0)
-            fprintf(stderr, "Warning: %s", ba.constData());
+        if (debugLevel > kDebugLevelMin)
+            fprintf(stderr, "Warning %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Warning ");
             Logfile.write(ba);
         }
         break;
     case QtCriticalMsg: // debugLevel 0 (always shown)
-        fprintf(stderr, "Critical: %s", ba.constData());
+        fprintf(stderr, "Critical %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Critical ");
             Logfile.write(ba);
         }
         break; //NOTREACHED
     case QtFatalMsg: // debugLevel 0 (always shown)
-        fprintf(stderr, "Fatal: %s", ba.constData());
+        fprintf(stderr, "Fatal %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Fatal ");
             Logfile.write(ba);
@@ -126,7 +123,7 @@ void MessageHandler(QtMsgType type,
         break; //NOTREACHED
     default: // debugLevel unknown, we'll assume Warning
         if (debugLevel > 0)
-            fprintf(stderr, "Unknown: %s", ba.constData());
+            fprintf(stderr, "Unknown %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Unknown ");
             Logfile.write(ba);

@@ -43,7 +43,7 @@ class CmdlineArgs final {
     bool m_developer; // Developer Mode
     bool m_safeMode;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
-    int m_debugLevel; // Level of debug message verbosity (logging.cpp)
+    int m_debugLevel; // Level of debug message verbosity
     QString m_locale;
     QString m_settingsPath;
     QString m_resourcePath;
