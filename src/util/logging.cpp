@@ -21,7 +21,7 @@ namespace {
 
 QFile Logfile;
 QMutex mutexLogfile;
-int debugLevel; // enum in cmdlineargs.h
+int debugLevel;
 
 // Debug message handler which outputs to both a logfile and prepends the thread
 // the message came from.
