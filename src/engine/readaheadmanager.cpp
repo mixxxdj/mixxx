@@ -74,23 +74,17 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         }
     }
 
-    SINT start_sample;
-    if (in_reverse) {
-        start_sample = SampleUtil::roundPlayPosToFrameStart(
-                m_currentPosition, kNumChannels) - samples_from_reader;
-    } else {
-        start_sample = SampleUtil::roundPlayPosToFrameStart(
-                m_currentPosition, kNumChannels);
-    }
-
     // Sanity checks.
     if (samples_from_reader < 0) {
         qDebug() << "Need negative samples in ReadAheadManager::getNextSamples. Ignoring read";
         return 0;
     }
 
-    SINT samples_read = m_pReader->read(start_sample, in_reverse, samples_from_reader,
-                                       pOutput);
+    SINT start_sample = SampleUtil::roundPlayPosToFrameStart(
+            m_currentPosition, kNumChannels);
+
+    SINT samples_read = m_pReader->read(
+            start_sample, in_reverse, samples_from_reader, pOutput);
 
     if (samples_read != samples_from_reader) {
         qDebug() << "didn't get what we wanted" << samples_read << samples_from_reader;

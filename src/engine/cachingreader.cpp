@@ -222,7 +222,16 @@ void CachingReader::process() {
     }
 }
 
-SINT CachingReader::read(SINT sample, bool reverse, SINT numSamples, CSAMPLE* buffer) {
+SINT CachingReader::read(SINT start_sample, bool reverse, SINT numSamples, CSAMPLE* buffer) {
+    // the samples are always read in forward direction
+    // If reverse = true, the frames are copied in reverse order to the
+    // destination buffer
+    SINT sample = start_sample;
+    if (reverse) {
+        // Start with the last sample in buffer
+        sample -= numSamples;
+    }
+
     // Check for bad inputs
     DEBUG_ASSERT_AND_HANDLE(sample % CachingReaderChunk::kChannels == 0) {
         // This problem is easy to fix, but this type of call should be
