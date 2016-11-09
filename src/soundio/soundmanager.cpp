@@ -491,6 +491,14 @@ SoundDevice* SoundManager::getErrorDevice() const {
     return m_pErrorDevice;
 }
 
+QString SoundManager::getErrorDeviceName() const {
+    SoundDevice* device = getErrorDevice();
+    if (device != NULL) {
+        return device->getDisplayName();
+    }
+    return tr("a device");
+}
+
 QString SoundManager::getLastErrorMessage(SoundDeviceError err) const {
     QString error;
     QString deviceName(tr("a device"));

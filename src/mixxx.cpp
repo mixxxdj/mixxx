@@ -719,23 +719,24 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
 QDialog::DialogCode MixxxMainWindow::soundDeviceBusyDlg(bool* retryClicked) {
     QString title(tr("Sound Device Busy"));
     QString text(
-            "<html>" +
-            tr("Mixxx was unable to access all the configured sound devices. "
-            "Another application is using a sound device Mixxx is configured to "
-            "use or a device is not plugged in.") +
-            "<ul>"
-                "<li>" +
+            "<html> <p>" %
+            tr("Mixxx was unable to open all the configured sound devices.") +
+            "</p> <p>" %
+            m_pSoundManager->getErrorDeviceName() %
+            " is used by an other application or not plugged in."
+            "</p><ul>"
+                "<li>" %
                     tr("<b>Retry</b> after closing the other application "
-                    "or reconnecting a sound device") +
+                    "or reconnecting a sound device") %
                 "</li>"
-                "<li>" +
-                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
+                "<li>" %
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") %
                 "</li>"
-                "<li>" +
-                    tr("Get <b>Help</b> from the Mixxx Wiki.") +
+                "<li>" %
+                    tr("Get <b>Help</b> from the Mixxx Wiki.") %
                 "</li>"
-                "<li>" +
-                    tr("<b>Exit</b> Mixxx.") +
+                "<li>" %
+                    tr("<b>Exit</b> Mixxx.") %
                 "</li>"
             "</ul></html>"
     );
@@ -748,7 +749,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
     QString title(tr("Sound Device Error"));
     QString text(
             "<html> <p>" %
-            tr("Mixxx was unable to open all the configured devices.") +
+            tr("Mixxx was unable to open all the configured sound devices.") +
             "</p> <p>" %
             m_pSoundManager->getLastErrorMessage(err).replace("\n", "<br/>") %
             "</p><ul>"
