@@ -74,7 +74,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         }
     }
 
-    int start_sample;
+    SINT start_sample;
     if (in_reverse) {
         start_sample = SampleUtil::roundPlayPosToFrameStart(
                 m_currentPosition, kNumChannels) - samples_from_reader;
