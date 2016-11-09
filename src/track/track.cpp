@@ -665,7 +665,7 @@ QString Track::getURL() const {
     return m_sURL;
 }
 
-ConstWaveformPointer Track::getWaveform() {
+ConstWaveformPointer Track::getWaveform() const {
     return m_waveform;
 }
 
