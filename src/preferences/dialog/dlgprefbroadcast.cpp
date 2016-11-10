@@ -56,9 +56,18 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
             ConfigKey(BROADCAST_PREF_KEY, "password")));
 
 
+    // Enable automatic reconnect
+    bool enableReconnect = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "enable_reconnect"), "1").toInt();
+    checkBoxEnableReconnect->setChecked(enableReconnect);
+    widgetReconnectControls->setEnabled(enableReconnect);
+    connect(checkBoxEnableReconnect, SIGNAL(stateChanged(int)),
+            this, SLOT(checkBoxEnableReconnectChanged(int)));
+
+
     // Retry Delay
     spinBoxReconnectDelay->setValue(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"), "15").toInt());
+            ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"), "5.0").toDouble());
 
     // No delay for the first reconnect attempt
     checkBoxNoDelayFirstReconnect->setChecked(m_pConfig->getValueString(
@@ -209,7 +218,10 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     port->setText("");
     login->setText("");
     password->setText("");
-    spinBoxReconnectDelay->setValue(15);
+
+    checkBoxEnableReconnect->setChecked(true);
+    widgetReconnectControls->setEnabled(true);
+    spinBoxReconnectDelay->setValue(5.0);
     checkBoxNoDelayFirstReconnect->setChecked(true);
     checkBoxLimitReconnects->setChecked(true);
     spinBoxMaximumRetries->setValue(10);
@@ -283,8 +295,10 @@ void DlgPrefBroadcast::slotApply()
             ConfigValue(login->text()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "password"),
             ConfigValue(password->text()));
+    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "enable_reconnect"),
+            ConfigValue(checkBoxEnableReconnect->isChecked()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"),
-            ConfigValue(spinBoxReconnectDelay->value()));
+            ConfigValue(QString::number(spinBoxReconnectDelay->value())));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"),
             ConfigValue(checkBoxNoDelayFirstReconnect->isChecked()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"),
@@ -331,6 +345,10 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     this->setEnabled(!enabled);
     enableLiveBroadcasting->setChecked(enabled);
 
+}
+
+void DlgPrefBroadcast::checkBoxEnableReconnectChanged(int value) {
+    widgetReconnectControls->setEnabled(value);
 }
 
 void DlgPrefBroadcast::checkBoxLimitReconnectsChanged(int value) {

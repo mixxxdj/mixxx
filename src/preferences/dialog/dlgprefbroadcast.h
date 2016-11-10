@@ -23,6 +23,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void slotUpdate();
     void slotResetToDefaults();
     void broadcastEnabledChanged(double value);
+    void checkBoxEnableReconnectChanged(int value);
     void checkBoxLimitReconnectsChanged(int value);
     void enableCustomMetadataChanged(int value);
 
