@@ -25,14 +25,6 @@ SecurityTokenPointer openSecurityToken(
     }
 }
 
-struct TrackDeleter {
-    void operator()(Track* pTrack) {
-        if (pTrack != nullptr) {
-            pTrack->deleteLater();
-        }
-    }
-};
-
 template<typename T>
 inline
 bool compareAndSet(T* pField, const T& value) {
@@ -73,7 +65,7 @@ TrackPointer Track::newTemporary(
                     fileInfo,
                     pSecurityToken,
                     TrackId());
-    return TrackPointer(pTrack, TrackDeleter());
+    return TrackPointer(pTrack);
 }
 
 //static
@@ -85,7 +77,7 @@ TrackPointer Track::newDummy(
                     fileInfo,
                     SecurityTokenPointer(),
                     trackId);
-    return TrackPointer(pTrack, TrackDeleter());
+    return TrackPointer(pTrack);
 }
 
 // static

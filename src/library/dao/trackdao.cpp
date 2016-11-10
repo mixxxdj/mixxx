@@ -97,7 +97,7 @@ void TrackDAO::finish() {
         it.next();
         // Cast from TrackWeakPointer to TrackPointer. If the track still exists
         // then pTrack will be non-nullptr. If the track is dirty then save it.
-        TrackPointer pTrack = it.value();
+        TrackPointer pTrack = TrackPointer(it.value());
         if (pTrack) {
             if (pTrack->isDirty()) {
                 saveTrack(pTrack);
@@ -1489,7 +1489,7 @@ TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
     QHash<TrackId, TrackWeakPointer>::iterator it = m_sTracks.find(trackId);
     if (it != m_sTracks.end()) {
         //qDebug() << "Returning cached TIO for track" << id;
-        pTrack = it.value();
+        pTrack = TrackPointer(it.value());
     }
     // Unlock the track cache mutex. Otherwise we can deadlock.
     locker.unlock();
