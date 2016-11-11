@@ -108,9 +108,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     if (m_pLoadedTrack) {
         emit(loadingTrack(TrackPointer(), m_pLoadedTrack));
-        disconnect(&*m_pLoadedTrack, 0, m_pBPM, 0);
-        disconnect(&*m_pLoadedTrack, 0, this, 0);
-        disconnect(&*m_pLoadedTrack, 0, m_pKey, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.get(), 0, this, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pKey, 0);
         m_pLoadedTrack = TrackPointer();
     }
 
@@ -158,9 +158,9 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
         // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
         // relies on signals and slots to get tons of things done. Don't
         // randomly disconnect things.
-        disconnect(&*m_pLoadedTrack, 0, m_pBPM, 0);
-        disconnect(&*m_pLoadedTrack, 0, this, 0);
-        disconnect(&*m_pLoadedTrack, 0, m_pKey, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.get(), 0, this, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pKey, 0);
 
         // Do not reset m_pReplayGain here, because the track might be still
         // playing and the last buffer will be processed.
@@ -171,14 +171,14 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     m_pLoadedTrack = pNewTrack;
     if (m_pLoadedTrack) {
         // Listen for updates to the file's BPM
-        connect(&*m_pLoadedTrack, SIGNAL(bpmUpdated(double)),
+        connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
                 m_pBPM, SLOT(set(double)));
 
-        connect(&*m_pLoadedTrack, SIGNAL(keyUpdated(double)),
+        connect(m_pLoadedTrack.get(), SIGNAL(keyUpdated(double)),
                 m_pKey, SLOT(set(double)));
 
         // Listen for updates to the file's Replay Gain
-        connect(&*m_pLoadedTrack, SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
+        connect(m_pLoadedTrack.get(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
                 this, SLOT(slotSetReplayGain(mixxx::ReplayGain)));
     }
 
@@ -220,9 +220,9 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         // relies on signals and slots to get tons of things done. Don't
         // randomly disconnect things.
         // m_pLoadedTrack->disconnect();
-        disconnect(&*m_pLoadedTrack, 0, m_pBPM, 0);
-        disconnect(&*m_pLoadedTrack, 0, this, 0);
-        disconnect(&*m_pLoadedTrack, 0, m_pKey, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.get(), 0, this, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pKey, 0);
 
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to change the track and update themselves.

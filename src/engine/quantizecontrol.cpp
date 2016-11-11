@@ -35,14 +35,14 @@ QuantizeControl::~QuantizeControl() {
 void QuantizeControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pOldTrack);
     if (m_pTrack) {
-        disconnect(&*m_pTrack, SIGNAL(beatsUpdated()),
-                       this, SLOT(slotBeatsUpdated()));
+        disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
+                this, SLOT(slotBeatsUpdated()));
     }
 
     if (pNewTrack) {
         m_pTrack = pNewTrack;
         m_pBeats = m_pTrack->getBeats();
-        connect(&*m_pTrack, SIGNAL(beatsUpdated()),
+        connect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotBeatsUpdated()));
         // Initialize prev and next beat as if current position was zero.
         // If there is a cue point, the value will be updated.

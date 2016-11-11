@@ -250,7 +250,7 @@ bool TrackDAO::trackExistsInDatabase(const QString& absoluteFilePath) {
 
 void TrackDAO::saveTrack(const TrackPointer& pTrack) {
     if (pTrack) {
-        saveTrack(&*pTrack);
+        saveTrack(pTrack.get());
     }
 }
 
@@ -1416,19 +1416,19 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     }
 
     // Listen to dirty and changed signals
-    connect(&*pTrack, SIGNAL(dirty(Track*)),
+    connect(pTrack.get(), SIGNAL(dirty(Track*)),
             this, SLOT(slotTrackDirty(Track*)),
             Qt::DirectConnection);
-    connect(&*pTrack, SIGNAL(clean(Track*)),
+    connect(pTrack.get(), SIGNAL(clean(Track*)),
             this, SLOT(slotTrackClean(Track*)),
             Qt::DirectConnection);
-    connect(&*pTrack, SIGNAL(changed(Track*)),
+    connect(pTrack.get(), SIGNAL(changed(Track*)),
             this, SLOT(slotTrackChanged(Track*)),
             Qt::DirectConnection);
     // Queued connection. We are not in a rush to process reference
     // count expirations and it can produce dangerous signal loops.
     // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    connect(&*pTrack, SIGNAL(referenceExpired(Track*)),
+    connect(pTrack.get(), SIGNAL(referenceExpired(Track*)),
             this, SLOT(slotTrackReferenceExpired(Track*)),
             Qt::QueuedConnection);
 

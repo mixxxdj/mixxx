@@ -16,9 +16,9 @@ WTrackText::WTrackText(const char *group, UserSettingsPointer pConfig, QWidget* 
 void WTrackText::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
-        connect(&*track, SIGNAL(changed(Track*)),
+        connect(track.get(), SIGNAL(changed(Track*)),
                 this, SLOT(updateLabel(Track*)));
-        updateLabel(&*track);
+        updateLabel(track.get());
     }
 }
 
@@ -26,7 +26,7 @@ void WTrackText::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack
     Q_UNUSED(pNewTrack);
     Q_UNUSED(pOldTrack);
     if (m_pCurrentTrack) {
-        disconnect(&*m_pCurrentTrack, nullptr, this, nullptr);
+        disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
     m_pCurrentTrack = TrackPointer();
     setText("");

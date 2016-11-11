@@ -325,7 +325,7 @@ SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
 
 SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
     : m_pTrack(pTrack),
-      m_url(getCanonicalUrlForTrack(&*pTrack)),
+      m_url(getCanonicalUrlForTrack(pTrack.get())),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();

@@ -82,6 +82,12 @@ class CuePointer: public QSharedPointer<Cue> {
     explicit CuePointer(Cue* pCue)
           : QSharedPointer<Cue>(pCue, std::bind(&Cue::deleteLater, pCue)) {
     }
+
+    // TODO(uklotzde): Remove this function after migration
+    // from QSharedPointer to std::shared_ptr
+    Cue* get() const {
+        return data();
+    }
 };
 
 #endif // MIXXX_CUE_H

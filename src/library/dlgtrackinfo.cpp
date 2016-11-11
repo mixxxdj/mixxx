@@ -221,7 +221,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     // We already listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.
-    connect(&*pTrack, SIGNAL(changed(Track*)),
+    connect(pTrack.get(), SIGNAL(changed(Track*)),
             this, SLOT(updateTrackMetadata()));
 }
 
@@ -347,7 +347,7 @@ void DlgTrackInfo::saveTrack() {
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
-    disconnect(&*m_pLoadedTrack, SIGNAL(changed(Track*)),
+    disconnect(m_pLoadedTrack.get(), SIGNAL(changed(Track*)),
                this, SLOT(updateTrackMetadata()));
 
     m_pLoadedTrack->setTitle(txtTrackName->text());
@@ -425,7 +425,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setCoverInfo(m_loadedCoverInfo);
 
     // Reconnect changed signals now.
-    connect(&*m_pLoadedTrack, SIGNAL(changed(Track*)),
+    connect(m_pLoadedTrack.get(), SIGNAL(changed(Track*)),
             this, SLOT(updateTrackMetadata()));
 }
 

@@ -226,7 +226,7 @@ void WSpinny::maybeUpdate() {
 
 void WSpinny::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
-        disconnect(&*m_loadedTrack, SIGNAL(coverArtUpdated()),
+        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
     m_lastRequestedCover = CoverInfo();
@@ -234,7 +234,7 @@ void WSpinny::slotLoadTrack(TrackPointer pTrack) {
     m_loadedCoverScaled = QPixmap();
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
-        connect(&*m_loadedTrack, SIGNAL(coverArtUpdated()),
+        connect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                 this, SLOT(slotTrackCoverArtUpdated()));
     }
 
@@ -244,7 +244,7 @@ void WSpinny::slotLoadTrack(TrackPointer pTrack) {
 void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pNewTrack);
     if (m_loadedTrack && pOldTrack == m_loadedTrack) {
-        disconnect(&*m_loadedTrack, SIGNAL(coverArtUpdated()),
+        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
     m_loadedTrack = TrackPointer();

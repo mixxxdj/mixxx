@@ -204,9 +204,9 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack << pOldTrack;
     if (m_pCurrentTrack != nullptr && pOldTrack == m_pCurrentTrack) {
-        disconnect(&*m_pCurrentTrack, SIGNAL(waveformSummaryUpdated()),
+        disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
-        disconnect(&*m_pCurrentTrack, SIGNAL(analyzerProgress(int)),
+        disconnect(m_pCurrentTrack.get(), SIGNAL(analyzerProgress(int)),
                    this, SLOT(slotAnalyzerProgress(int)));
     }
 
@@ -226,9 +226,9 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
         m_pCurrentTrack = pNewTrack;
         m_pWaveform = pNewTrack->getWaveformSummary();
 
-        connect(&*pNewTrack, SIGNAL(waveformSummaryUpdated()),
+        connect(pNewTrack.get(), SIGNAL(waveformSummaryUpdated()),
                 this, SLOT(slotWaveformSummaryUpdated()));
-        connect(&*pNewTrack, SIGNAL(analyzerProgress(int)),
+        connect(pNewTrack.get(), SIGNAL(analyzerProgress(int)),
                 this, SLOT(slotAnalyzerProgress(int)));
 
         slotAnalyzerProgress(pNewTrack->getAnalyzerProgress());
