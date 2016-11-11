@@ -49,7 +49,7 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack
         lookupBeatPositions(0.0);
         updateClosestBeat(0.0);
     } else {
-        m_pTrack = TrackPointer();
+        m_pTrack.reset();
         m_pBeats.clear();
         m_pCOPrevBeat->set(-1);
         m_pCONextBeat->set(-1);

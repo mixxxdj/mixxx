@@ -59,7 +59,7 @@ class FakeDeck : public BaseTrackPlayer {
     void fakeUnloadingTrackEvent(TrackPointer pTrack) {
         play.set(0.0);
         emit(loadingTrack(TrackPointer(), pTrack));
-        loadedTrack = TrackPointer();
+        loadedTrack.reset();
         emit(playerEmpty());
     }
 

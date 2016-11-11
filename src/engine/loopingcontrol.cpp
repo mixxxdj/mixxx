@@ -657,7 +657,7 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack)
         connect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotUpdatedTrackBeats()));
     } else {
-        m_pTrack = TrackPointer();
+        m_pTrack.reset();
         m_pBeats.clear();
     }
 }

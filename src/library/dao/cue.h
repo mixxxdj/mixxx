@@ -83,10 +83,13 @@ class CuePointer: public QSharedPointer<Cue> {
           : QSharedPointer<Cue>(pCue, std::bind(&Cue::deleteLater, pCue)) {
     }
 
-    // TODO(uklotzde): Remove this function after migration
+    // TODO(uklotzde): Remove these functions after migration
     // from QSharedPointer to std::shared_ptr
     Cue* get() const {
         return data();
+    }
+    void reset() {
+        clear();
     }
 };
 

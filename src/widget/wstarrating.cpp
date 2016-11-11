@@ -38,7 +38,7 @@ void WStarRating::slotTrackLoaded(TrackPointer pTrack) {
     if (m_pCurrentTrack != pTrack) {
         if (m_pCurrentTrack) {
             disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
-            m_pCurrentTrack = TrackPointer();
+            m_pCurrentTrack.reset();
         }
         if (pTrack) {
             connect(pTrack.get(), SIGNAL(changed(Track*)),

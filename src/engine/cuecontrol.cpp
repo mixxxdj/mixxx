@@ -225,7 +225,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
         m_pCuePoint->set(-1.0);
-        m_pLoadedTrack = TrackPointer();
+        m_pLoadedTrack.reset();
     }
 
 

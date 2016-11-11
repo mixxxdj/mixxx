@@ -111,7 +111,7 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
         disconnect(m_pLoadedTrack.get(), 0, m_pBPM, 0);
         disconnect(m_pLoadedTrack.get(), 0, this, 0);
         disconnect(m_pLoadedTrack.get(), 0, m_pKey, 0);
-        m_pLoadedTrack = TrackPointer();
+        m_pLoadedTrack.reset();
     }
 
     delete m_pDuration;
@@ -233,7 +233,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         setReplayGain(0);
         m_pLoopInPoint->set(-1);
         m_pLoopOutPoint->set(-1);
-        m_pLoadedTrack = TrackPointer();
+        m_pLoadedTrack.reset();
         emit(playerEmpty());
     } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
         // Successful loaded a new track

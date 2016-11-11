@@ -443,7 +443,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
 void DlgTrackInfo::clear() {
 
     disconnect(this, SLOT(updateTrackMetadata()));
-    m_pLoadedTrack = TrackPointer();
+    m_pLoadedTrack.reset();
 
     txtTrackName->setText("");
     txtArtist->setText("");

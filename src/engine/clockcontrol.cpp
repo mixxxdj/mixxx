@@ -35,7 +35,7 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
                 this, SLOT(slotBeatsUpdated()));
     } else {
         m_pBeats.clear();
-        m_pTrack = TrackPointer();
+        m_pTrack.reset();
     }
 
 }

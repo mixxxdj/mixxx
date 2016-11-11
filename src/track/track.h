@@ -429,10 +429,13 @@ class TrackPointer: public QSharedPointer<Track> {
         : QSharedPointer<Track>(pTrack, deleter) {
     }
 
-    // TODO(uklotzde): Remove this function after migration
+    // TODO(uklotzde): Remove these functions after migration
     // from QSharedPointer to std::shared_ptr
     Track* get() const {
         return data();
+    }
+    void reset() {
+        clear();
     }
 };
 

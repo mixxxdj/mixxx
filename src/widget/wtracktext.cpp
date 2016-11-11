@@ -28,7 +28,7 @@ void WTrackText::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
-    m_pCurrentTrack = TrackPointer();
+    m_pCurrentTrack.reset();
     setText("");
 }
 

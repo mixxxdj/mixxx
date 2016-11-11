@@ -233,7 +233,7 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
         slotAnalyzerProgress(pNewTrack->getAnalyzerProgress());
     } else {
-        m_pCurrentTrack = TrackPointer();
+        m_pCurrentTrack.reset();
         m_pWaveform.clear();
     }
     update();

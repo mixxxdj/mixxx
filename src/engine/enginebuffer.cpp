@@ -553,7 +553,7 @@ void EngineBuffer::ejectTrack() {
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
-    m_pCurrentTrack = TrackPointer();
+    m_pCurrentTrack.reset();
     m_trackSampleRateOld = 0;
     m_trackSamplesOld = 0;
     m_playButton->set(0.0);

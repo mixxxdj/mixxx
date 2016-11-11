@@ -36,7 +36,7 @@ void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
-    m_pCurrentTrack = TrackPointer();
+    m_pCurrentTrack.reset();
     setText("");
 }
 

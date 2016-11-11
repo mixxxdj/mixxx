@@ -187,7 +187,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
             // Since we just started recording, timeout and clear the metadata.
             m_iMetaDataLife = kMetaDataLifeTimeout;
-            m_pCurrentTrack = TrackPointer();
+            m_pCurrentTrack.reset();
 
             // clean frames couting and get current sample rate.
             m_frames = 0;
@@ -219,7 +219,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
             // Since we just started recording, timeout and clear the metadata.
             m_iMetaDataLife = kMetaDataLifeTimeout;
-            m_pCurrentTrack = TrackPointer();
+            m_pCurrentTrack.reset();
 
             // clean frames counting and get current sample rate.
             m_frames = 0;
