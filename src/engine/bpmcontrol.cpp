@@ -34,8 +34,6 @@ BpmControl::BpmControl(QString group,
         m_tapFilter(this, kFilterLength, kMaxInterval),
         m_sGroup(group) {
     m_pPlayButton = new ControlProxy(group, "play", this);
-    m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)),
-            Qt::DirectConnection);
     m_pReverseButton = new ControlProxy(group, "reverse", this);
     m_pRateSlider = new ControlProxy(group, "rate", this);
     m_pRateSlider->connectValueChanged(SLOT(slotAdjustRateSlider()),
@@ -55,8 +53,6 @@ BpmControl::BpmControl(QString group,
     m_pLoopEnabled = new ControlProxy(group, "loop_enabled", this);
     m_pLoopStartPosition = new ControlProxy(group, "loop_start_position", this);
     m_pLoopEndPosition = new ControlProxy(group, "loop_end_position", this);
-
-    m_pVCEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
 
     m_pFileBpm = new ControlObject(ConfigKey(group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
@@ -239,14 +235,6 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     double dRate = calcRateRatio();
     m_pFileBpm->set(averageBpm / dRate);
     slotAdjustRateSlider();
-}
-
-void BpmControl::slotControlPlay(double v) {
-    if (v > 0.0) {
-        if (m_pQuantize->get() > 0.0 && m_pVCEnabled->get() == 0) {
-            getEngineBuffer()->requestSyncPhase();
-        }
-    }
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {

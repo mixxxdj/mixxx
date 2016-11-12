@@ -641,7 +641,19 @@ void EngineBuffer::verifyPlay() {
 }
 
 void EngineBuffer::slotControlPlayRequest(double v) {
+    bool oldPlay = m_playButton->toBool();
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
+
+    if (!oldPlay && verifiedPlay) {
+        if (m_pQuantize->get() > 0.0
+#ifdef __VINYLCONTROL__
+                && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
+#endif
+        ) {
+            requestSyncPhase();
+        }
+    }
+
     // set and confirm must be called here in any case to update the widget toggle state
     m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
 }
