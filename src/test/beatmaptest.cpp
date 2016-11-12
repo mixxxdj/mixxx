@@ -53,7 +53,7 @@ TEST_F(BeatMapTest, Scale) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    BeatMap* pMap = new BeatMap(*m_pTrack, 0, beats);
 
     EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
     pMap->scale(Beats::DOUBLE);
@@ -80,7 +80,7 @@ TEST_F(BeatMapTest, TestNthBeat) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    BeatMap* pMap = new BeatMap(*m_pTrack, 0, beats);
 
     // Check edge cases
     double firstBeat = startOffsetSamples + beatLengthSamples * 0;
@@ -113,7 +113,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    BeatMap* pMap = new BeatMap(*m_pTrack, 0, beats);
 
     // Pretend we're on the 20th beat;
     const int curBeat = 20;
@@ -151,7 +151,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    BeatMap* pMap = new BeatMap(*m_pTrack, 0, beats);
 
     // Pretend we're just before the 20th beat;
     const int curBeat = 20;
@@ -191,7 +191,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    BeatMap* pMap = new BeatMap(*m_pTrack, 0, beats);
 
     // Pretend we're just after the 20th beat;
     const int curBeat = 20;
@@ -232,7 +232,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    BeatMap* pMap = new BeatMap(*m_pTrack, 0, beats);
 
     // Pretend we're half way between the 20th and 21st beat
     double previousBeat = startOffsetSamples + beatLengthSamples * 20.0;
@@ -273,7 +273,7 @@ TEST_F(BeatMapTest, TestBpmAround) {
         beat_pos += beat_length;
     }
 
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    BeatMap* pMap = new BeatMap(*m_pTrack, 0, beats);
 
     // The average of the first 8 beats should be different than the average
     // of the last 8 beats.
@@ -290,7 +290,7 @@ TEST_F(BeatMapTest, TestBpmAround) {
 
     // Try a really, really short track
     beats = createBeatVector(10, 3, getBeatLengthFrames(filebpm));
-    pMap = new BeatMap(m_pTrack, 0, beats);
+    pMap = new BeatMap(*m_pTrack, 0, beats);
 
     EXPECT_DOUBLE_EQ(filebpm, pMap->getBpmAroundPosition(1 * approx_beat_length, 4));
     delete pMap;

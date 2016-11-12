@@ -213,13 +213,11 @@ bool CueDAO::deleteCue(Cue* cue) {
     return false;
 }
 
-void CueDAO::saveTrackCues(TrackId trackId, Track* pTrack) {
+void CueDAO::saveTrackCues(TrackId trackId, const QList<CuePointer>& cueList) {
     //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call
     // this.
     PerformanceTimer time;
-
-    const QList<CuePointer> cueList(pTrack->getCuePoints());
 
     // qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
     //          << "new size:" << cueList.size();
@@ -242,7 +240,7 @@ void CueDAO::saveTrackCues(TrackId trackId, Track* pTrack) {
         }
         // Update or save cue
         if (pCue->isDirty()) {
-            saveCue(pCue.data());
+            saveCue(pCue.get());
 
             // Since this cue didn't have an id until now, add it to the list of
             // cues not to delete.

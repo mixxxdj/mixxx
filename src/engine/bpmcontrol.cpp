@@ -739,7 +739,7 @@ void BpmControl::slotAdjustRateSlider() {
 void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pOldTrack);
     if (m_pTrack) {
-        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+        disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));
     }
 
@@ -749,10 +749,10 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     if (pNewTrack) {
         m_pTrack = pNewTrack;
         m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+        connect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotUpdatedTrackBeats()));
     } else {
-        m_pTrack.clear();
+        m_pTrack.reset();
         m_pBeats.clear();
     }
 }

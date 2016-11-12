@@ -37,11 +37,11 @@ QSize WStarRating::sizeHint() const {
 void WStarRating::slotTrackLoaded(TrackPointer pTrack) {
     if (m_pCurrentTrack != pTrack) {
         if (m_pCurrentTrack) {
-            disconnect(&*m_pCurrentTrack, nullptr, this, nullptr);
-            m_pCurrentTrack = TrackPointer();
+            disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
+            m_pCurrentTrack.reset();
         }
         if (pTrack) {
-            connect(&*pTrack, SIGNAL(changed(Track*)),
+            connect(pTrack.get(), SIGNAL(changed(Track*)),
                     this, SLOT(updateRating(Track*)));
             m_pCurrentTrack = pTrack;
         }

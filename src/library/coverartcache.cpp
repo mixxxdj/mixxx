@@ -112,12 +112,12 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 }
 
 //static
-void CoverArtCache::requestCover(const Track* pTrack,
+void CoverArtCache::requestCover(const Track& track,
                          const QObject* pRequestor) {
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache == nullptr || pTrack == nullptr) return;
+    if (pCache == nullptr) return;
 
-    CoverInfo info = pTrack->getCoverInfo();
+    CoverInfo info = track.getCoverInfo();
     pCache->requestCover(info, pRequestor, 0, false, true);
 }
 

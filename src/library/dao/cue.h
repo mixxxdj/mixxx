@@ -1,8 +1,7 @@
-// cue.h
-// Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
+#ifndef MIXXX_CUE_H
+#define MIXXX_CUE_H
 
-#ifndef CUE_H
-#define CUE_H
+#include <functional>
 
 #include <QObject>
 #include <QMutex>
@@ -77,6 +76,21 @@ class Cue : public QObject {
     friend class CueDAO;
 };
 
-typedef QSharedPointer<Cue> CuePointer;
+class CuePointer: public QSharedPointer<Cue> {
+  public:
+    CuePointer() {}
+    explicit CuePointer(Cue* pCue)
+          : QSharedPointer<Cue>(pCue, std::bind(&Cue::deleteLater, pCue)) {
+    }
 
-#endif /* CUE_H */
+    // TODO(uklotzde): Remove these functions after migration
+    // from QSharedPointer to std::shared_ptr
+    Cue* get() const {
+        return data();
+    }
+    void reset() {
+        clear();
+    }
+};
+
+#endif // MIXXX_CUE_H

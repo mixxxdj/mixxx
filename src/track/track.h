@@ -1,5 +1,7 @@
-#ifndef TRACK_TRACK_H
-#define TRACK_TRACK_H
+#ifndef MIXXX_TRACK_H
+#define MIXXX_TRACK_H
+
+#include <functional>
 
 #include <QAtomicInt>
 #include <QFileInfo>
@@ -21,7 +23,7 @@
 #include "waveform/waveform.h"
 
 class Track;
-typedef QSharedPointer<Track> TrackPointer;
+class TrackPointer;
 typedef QWeakPointer<Track> TrackWeakPointer;
 
 class Track : public QObject {
@@ -234,7 +236,7 @@ class Track : public QObject {
     // Output a formatted string with artist and title.
     QString getInfo() const;
 
-    ConstWaveformPointer getWaveform();
+    ConstWaveformPointer getWaveform() const;
     void setWaveform(ConstWaveformPointer pWaveform);
 
     ConstWaveformPointer getWaveformSummary() const;
@@ -414,4 +416,27 @@ class Track : public QObject {
     friend class TrackDAO;
 };
 
-#endif // TRACK_TRACK_H
+class TrackPointer: public QSharedPointer<Track> {
+  public:
+    TrackPointer() {}
+    explicit TrackPointer(const TrackWeakPointer& pTrack)
+        : QSharedPointer<Track>(pTrack) {
+    }
+    explicit TrackPointer(Track* pTrack)
+        : QSharedPointer<Track>(pTrack, std::bind(&Track::deleteLater, pTrack)) {
+    }
+    TrackPointer(Track* pTrack, void (*deleter)(Track*))
+        : QSharedPointer<Track>(pTrack, deleter) {
+    }
+
+    // TODO(uklotzde): Remove these functions after migration
+    // from QSharedPointer to std::shared_ptr
+    Track* get() const {
+        return data();
+    }
+    void reset() {
+        clear();
+    }
+};
+
+#endif // MIXXX_TRACK_H

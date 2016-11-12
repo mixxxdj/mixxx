@@ -822,7 +822,7 @@ QString CrateFeature::getRootViewHtml() const {
 
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
-    TrackId trackId(pTrack.isNull() ? TrackId() : pTrack->getId());
+    TrackId trackId(pTrack ? pTrack->getId() : TrackId());
     m_crateDao.getCratesTrackIsIn(trackId, &m_cratesSelectedTrackIsIn);
 
     TreeItem* rootItem = m_childModel.getItem(QModelIndex());
