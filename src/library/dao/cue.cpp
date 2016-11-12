@@ -9,6 +9,7 @@
 
 namespace {
     const QColor kDefaultColor = QColor("#FF0000");
+    const QString kDefaultLabel = ""; // empty string, not null
 }
 
 Cue::~Cue() {
@@ -23,8 +24,9 @@ Cue::Cue(TrackId trackId)
           m_iPosition(-1),
           m_iLength(0),
           m_iHotCue(-1),
-          m_label(),
+          m_label(kDefaultLabel),
           m_color(kDefaultColor) {
+    DEBUG_ASSERT(!m_label.isNull());
 }
 
 
@@ -39,6 +41,7 @@ Cue::Cue(int id, TrackId trackId, Cue::CueType type, int position, int length,
           m_iHotCue(hotCue),
           m_label(label),
           m_color(color) {
+    DEBUG_ASSERT(!m_label.isNull());
 }
 
 int Cue::getId() const {
@@ -133,6 +136,7 @@ QString Cue::getLabel() const {
 
 void Cue::setLabel(const QString label) {
     //qDebug() << "setLabel()" << m_label << "-" << label;
+    DEBUG_ASSERT(!label.isNull());
     QMutexLocker lock(&m_mutex);
     m_label = label;
     m_bDirty = true;
