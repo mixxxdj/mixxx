@@ -249,14 +249,21 @@ void EngineBroadcast::updateFromPreferences() {
     m_metadataFormat = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "metadata_format"));
 
-    m_reconnectDelay = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"), "15").toInt();
-    m_noDelayFirstReconnect = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"), "1").toInt();
-    m_limitRreconnects = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), "1").toInt();
-    m_maximumRetries = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt();
+    bool enableReconnect = m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "enable_reconnect"), "1").toInt();
+    if (enableReconnect) {
+        m_reconnectDelay = m_pConfig->getValueString(
+                ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"), "15").toInt();
+        m_noDelayFirstReconnect = m_pConfig->getValueString(
+                ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"), "1").toInt();
+        m_limitRreconnects = m_pConfig->getValueString(
+                ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), "1").toInt();
+        m_maximumRetries = m_pConfig->getValueString(
+                ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt();
+    } else {
+        m_limitRreconnects = true;
+        m_maximumRetries = 0;
+    }
 
     int format;
     int protocol;
