@@ -65,13 +65,13 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
             this, SLOT(checkBoxEnableReconnectChanged(int)));
 
 
-    // Retry Delay
-    spinBoxReconnectDelay->setValue(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"), "5.0").toDouble());
+    // Wait until first attempt
+    spinBoxFirstDelay->setValue(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "reconnect_first_delay"), "0").toDouble());
 
-    // No delay for the first reconnect attempt
-    checkBoxNoDelayFirstReconnect->setChecked(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"), "1").toInt());
+    // Retry Delay
+    spinBoxReconnectPeriod->setValue(m_pConfig->getValueString(
+            ConfigKey(BROADCAST_PREF_KEY, "reconnect_period"), "5.0").toDouble());
 
     // Use Maximum Retries
     bool limitConnects = m_pConfig->getValueString(
@@ -221,8 +221,8 @@ void DlgPrefBroadcast::slotResetToDefaults() {
 
     checkBoxEnableReconnect->setChecked(true);
     widgetReconnectControls->setEnabled(true);
-    spinBoxReconnectDelay->setValue(5.0);
-    checkBoxNoDelayFirstReconnect->setChecked(true);
+    spinBoxFirstDelay->setValue(0.0);
+    spinBoxReconnectPeriod->setValue(5.0);
     checkBoxLimitReconnects->setChecked(true);
     spinBoxMaximumRetries->setValue(10);
     spinBoxMaximumRetries->setEnabled(true);
@@ -297,10 +297,10 @@ void DlgPrefBroadcast::slotApply()
             ConfigValue(password->text()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "enable_reconnect"),
             ConfigValue(checkBoxEnableReconnect->isChecked()));
-    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"),
-            ConfigValue(QString::number(spinBoxReconnectDelay->value())));
-    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"),
-            ConfigValue(checkBoxNoDelayFirstReconnect->isChecked()));
+    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "reconnect_first_delay"),
+            ConfigValue(QString::number(spinBoxFirstDelay->value())));
+    m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "reconnect_period"),
+            ConfigValue(QString::number(spinBoxReconnectPeriod->value())));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"),
             ConfigValue(checkBoxLimitReconnects->isChecked()));
     m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"),

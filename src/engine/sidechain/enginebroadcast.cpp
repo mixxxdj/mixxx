@@ -49,7 +49,8 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_threadWaiting(false),
           m_pOutputFifo(nullptr),
           m_retryCount(0),
-          m_reconnectDelay(15),
+          m_reconnectFirstDelay(0.0),
+          m_reconnectPeriod(5.0),
           m_noDelayFirstReconnect(true),
           m_limitRreconnects(true),
           m_maximumRetries(10) {
@@ -252,8 +253,10 @@ void EngineBroadcast::updateFromPreferences() {
     bool enableReconnect = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "enable_reconnect"), "1").toInt();
     if (enableReconnect) {
-        m_reconnectDelay = m_pConfig->getValueString(
-                ConfigKey(BROADCAST_PREF_KEY, "reconnect_delay"), "15").toInt();
+        m_reconnectFirstDelay = m_pConfig->getValueString(
+                ConfigKey(BROADCAST_PREF_KEY, "reconnect_first_delay"), "5").toDouble();
+        m_reconnectPeriod = m_pConfig->getValueString(
+                ConfigKey(BROADCAST_PREF_KEY, "reconnect_period"), "5").toDouble();
         m_noDelayFirstReconnect = m_pConfig->getValueString(
                 ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"), "1").toInt();
         m_limitRreconnects = m_pConfig->getValueString(
@@ -942,9 +945,16 @@ bool EngineBroadcast::waitForRetry() {
 
     qDebug() << "waitForRetry()" << m_retryCount << "/" << m_maximumRetries;
 
-    if (m_reconnectDelay > 0) {
+    double delay;
+    if (m_retryCount == 1) {
+        delay = m_reconnectFirstDelay;
+    } else {
+        delay = m_reconnectPeriod;
+    }
+
+    if (delay > 0) {
         m_enabledMutex.lock();
-        m_waitEnabled.wait(&m_enabledMutex, m_reconnectDelay * 1000);
+        m_waitEnabled.wait(&m_enabledMutex, delay * 1000);
         m_enabledMutex.unlock();
         if (!m_pBroadcastEnabled->toBool()) {
             return false;
@@ -958,10 +968,6 @@ void EngineBroadcast::tryReconnect() {
     m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
 
     processDisconnect();
-    if (m_noDelayFirstReconnect) {
-        ++m_retryCount;
-        processConnect();
-    }
     while (waitForRetry()) {
         if (processConnect()) {
             break;
@@ -971,7 +977,8 @@ void EngineBroadcast::tryReconnect() {
     if (m_pStatusCO->get() == STATUSCO_FAILURE) {
         m_pBroadcastEnabled->set(0);
         m_readSema.release();
-        errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
+        errorDialog(tr("Lost connection to streaming server and %1 attempts to reconnect have failed.")
+                    .arg(m_retryCount),
                     originalErrorStr + "\n" +
                     m_lastErrorStr + "\n" +
                     tr("Please check your connection to the Internet"));

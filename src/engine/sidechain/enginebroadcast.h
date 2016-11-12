@@ -144,7 +144,8 @@ class EngineBroadcast
     QString m_lastErrorStr;
     int m_retryCount;
 
-    int m_reconnectDelay;
+    double m_reconnectFirstDelay;
+    double m_reconnectPeriod;
     bool m_noDelayFirstReconnect;
     bool m_limitRreconnects;
     int m_maximumRetries;

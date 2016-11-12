@@ -532,6 +532,9 @@ p, li { white-space: pre-wrap; }
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <widget class="QCheckBox" name="checkBoxEnableReconnect">
+          <property name="toolTip">
+           <string>Reconnect if the connection to the streaming server is lost.</string>
+          </property>
           <property name="text">
            <string>Enable automatic reconnect</string>
           </property>
@@ -548,21 +551,27 @@ p, li { white-space: pre-wrap; }
              <item row="1" column="0">
               <widget class="QLabel" name="label_18">
                <property name="text">
-                <string>Reconnect delay</string>
+                <string>Reconnect period</string>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="spinBoxReconnectDelay">
+              <widget class="QDoubleSpinBox" name="spinBoxReconnectPeriod">
+               <property name="toolTip">
+                <string>Time to wait between two reconnection attempts.</string>
+               </property>
                <property name="suffix">
                 <string> seconds</string>
                </property>
                <property name="decimals">
-                <number>1</number>
+                <number>2</number>
+               </property>
+               <property name="maximum">
+                <double>3600.000000000000000</double>
                </property>
               </widget>
              </item>
-             <item row="4" column="1">
+             <item row="3" column="1">
               <widget class="QSpinBox" name="spinBoxMaximumRetries">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -570,9 +579,15 @@ p, li { white-space: pre-wrap; }
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
               </widget>
              </item>
-             <item row="4" column="0">
+             <item row="3" column="0">
               <widget class="QLabel" name="label_17">
                <property name="text">
                 <string>Maximum retries</string>
@@ -580,16 +595,32 @@ p, li { white-space: pre-wrap; }
               </widget>
              </item>
              <item row="2" column="0" colspan="2">
-              <widget class="QCheckBox" name="checkBoxNoDelayFirstReconnect">
+              <widget class="QCheckBox" name="checkBoxLimitReconnects">
+               <property name="toolTip">
+                <string comment="Uncheck for unlimited reconnect attempts."/>
+               </property>
                <property name="text">
-                <string>No delay for the first reconnect attempt </string>
+                <string>Limit number of reconnection attempts</string>
                </property>
               </widget>
              </item>
-             <item row="3" column="0" colspan="2">
-              <widget class="QCheckBox" name="checkBoxLimitReconnects">
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="spinBoxFirstDelay">
+               <property name="toolTip">
+                <string>Time to wait before the first reconnection attempt is made.</string>
+               </property>
+               <property name="suffix">
+                <string> seconds</string>
+               </property>
+               <property name="maximum">
+                <double>3600.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_19">
                <property name="text">
-                <string>Limit number of reconnection attempts</string>
+                <string>Wait until first attempt</string>
                </property>
               </widget>
              </item>
