@@ -155,8 +155,8 @@ class KeyUtils {
         }
     }
 
-    static int keyToCircleOfFithsOrder(mixxx::track::io::key::ChromaticKey key,
-                                       double notationValue);
+    static int keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
+                                        KeyNotation notation);
 
   private:
     static QMutex s_notationMutex;
