@@ -447,9 +447,15 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
         int position = pCue->getPosition();
         if (position != -1) {
             seekAbs(position);
-            // don't move the cue point to the hot cue point in DENON mode
-            m_bypassCueSetByPlay = true;
-            m_pPlay->set(1.0);
+            if (!isPlayingByPlayButton()) {
+                // cueGoto is processed asynchrony.
+                // avoid a wrong cue set if seek by cueGoto is still pending
+                m_bPreviewing = false;
+                m_iCurrentlyPreviewingHotcues = 0;
+                // don't move the cue point to the hot cue point in DENON mode
+                m_bypassCueSetByPlay = true;
+                m_pPlay->set(1.0);
+            }
         }
     }
 }
@@ -650,6 +656,8 @@ void CueControl::cueGotoAndPlay(double v)
     if (!isPlayingByPlayButton()) {
         // cueGoto is processed asynchrony.
         // avoid a wrong cue set if seek by cueGoto is still pending
+        m_bPreviewing = false;
+        m_iCurrentlyPreviewingHotcues = 0;
         m_bypassCueSetByPlay = true;
         m_pPlay->set(1.0);
     }
