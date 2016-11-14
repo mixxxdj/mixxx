@@ -24,6 +24,8 @@ CueControl::CueControl(QString group,
                        UserSettingsPointer pConfig) :
         EngineControl(group, pConfig),
         m_bPreviewing(false),
+        // m_pPlay->toBoo() -> engine play state
+        // m_pPlay->set(1.0) -> emulate play button press
         m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
         m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
         m_iCurrentlyPreviewingHotcues(0),
@@ -470,9 +472,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
             if (pCue->getPosition() == -1) {
                 hotcueSet(pControl, v);
             } else {
-                if (!m_iCurrentlyPreviewingHotcues &&
-                        !m_bPreviewing &&
-                        m_pPlay->toBool()) {
+                if (isPlayingByPlayButton()) {
                     hotcueGoto(pControl, v);
                 } else {
                     hotcueActivatePreview(pControl, v);
@@ -647,7 +647,7 @@ void CueControl::cueGotoAndPlay(double v)
     cueGoto(v);
     QMutexLocker lock(&m_mutex);
     // Start playing if not already
-    if (!m_pPlay->toBool()) {
+    if (!isPlayingByPlayButton()) {
         // cueGoto is processed asynchrony.
         // avoid a wrong cue set if seek by cueGoto is still pending
         m_bypassCueSetByPlay = true;
@@ -872,7 +872,7 @@ void CueControl::playStutter(double v) {
     QMutexLocker lock(&m_mutex);
     //qDebug() << "playStutter" << v;
     if (v != 0.0) {
-        if (m_pPlay->toBool()) {
+        if (isPlayingByPlayButton()) {
             cueGoto(1.0);
         } else {
             m_pPlay->set(1.0);
@@ -1020,6 +1020,12 @@ void CueControl::updateIndicators() {
 bool CueControl::isTrackAtCue() {
     return (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f);
 }
+
+bool CueControl::isPlayingByPlayButton() {
+    return m_pPlay->toBool() &&
+            !m_iCurrentlyPreviewingHotcues && !m_bPreviewing;
+}
+
 
 ConfigKey HotcueControl::keyForControl(int hotcue, const char* name) {
     ConfigKey key;

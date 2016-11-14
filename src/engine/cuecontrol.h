@@ -91,6 +91,7 @@ class CueControl : public EngineControl {
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtCue();
+    bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
 
   public slots:
