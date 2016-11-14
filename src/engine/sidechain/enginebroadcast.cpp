@@ -25,6 +25,8 @@
 
 static const int kConnectRetries = 30;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
+// Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
+// http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 static const int kMaxShoutFailures = 3;
 
 EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
