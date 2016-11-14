@@ -621,8 +621,14 @@ bool EngineBroadcast::writeSingle(const unsigned char* data, size_t len) {
     // We are already synced by EngineNetworkstream
     setFunctionCode(8);
     int ret = shout_send_raw(m_pShout, data, len);
-    if (ret < SHOUTERR_SUCCESS && ret != SHOUTERR_BUSY) {
-        // in case of busy, frames are queued and queue is checked later
+    if (ret == SHOUTERR_BUSY) {
+        // in case of busy, frames are queued
+        // try to flush queue after a short sleep
+        qDebug() << "EngineBroadcast::writeSingle() SHOUTERR_BUSY, trying again";
+        QThread::msleep(10);
+        // if this fails, the queue is transmitted later
+        (void)shout_send_raw(m_pShout, nullptr, 0);
+    } else if (ret < SHOUTERR_SUCCESS) {
         m_lastErrorStr = shout_get_error(m_pShout);
         qDebug() << "EngineBroadcast::writeSingle() error:"
                  << ret << m_lastErrorStr;
