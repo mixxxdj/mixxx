@@ -13,10 +13,11 @@
 class KeyUtils {
   public:
     enum KeyNotation {
-        CUSTOM = 0,
-        OPEN_KEY = 1,
-        LANCELOT = 2,
-        TRADITIONAL = 3,
+        INVALID = 0,
+        CUSTOM = 1,
+        OPEN_KEY = 2,
+        LANCELOT = 3,
+        TRADITIONAL = 4,
     };
 
     static QString keyDebugName(mixxx::track::io::key::ChromaticKey key);
@@ -48,6 +49,7 @@ class KeyUtils {
             KeyNotation notation = CUSTOM);
 
     static mixxx::track::io::key::ChromaticKey keyFromNumericValue(double value);
+    static KeyNotation keyNotationFromNumericValue(double value);
 
     static double keyToNumericValue(mixxx::track::io::key::ChromaticKey key);
 

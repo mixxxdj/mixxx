@@ -623,7 +623,7 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
         else
             result = -1;
     } else if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
-        KeyUtils::KeyNotation notation = static_cast<KeyUtils::KeyNotation>(
+        KeyUtils::KeyNotation notation = KeyUtils::keyNotationFromNumericValue(
             m_pKeyNotationCP->get());
 
         int key1 = KeyUtils::keyToCircleOfFifthsOrder(

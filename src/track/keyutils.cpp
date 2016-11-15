@@ -337,6 +337,14 @@ ChromaticKey KeyUtils::keyFromNumericValue(double value) {
     return static_cast<ChromaticKey>(value_floored);
 }
 
+KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
+    int value_floored = int(value);
+    if (value < 0 || value > TRADITIONAL) {
+        return INVALID;
+    }
+    return static_cast<KeyNotation>(value_floored);
+}
+
 // static
 double KeyUtils::keyToNumericValue(ChromaticKey key) {
     return key;
