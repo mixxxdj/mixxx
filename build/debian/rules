@@ -27,7 +27,7 @@ MIXXX_SCONS_FLAGS += prefix=/usr
 MIXXX_SCONS_FLAGS += install_root=$(CURDIR)/debian/tmp/usr
 
 %:
-	dh $@ --parallel --with=autotools_dev
+	dh $@ --parallel
 
 override_dh_auto_build:
 	scons $(MIXXX_SCONS_FLAGS) w=1
