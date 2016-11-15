@@ -338,8 +338,8 @@ ChromaticKey KeyUtils::keyFromNumericValue(double value) {
 }
 
 KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
-    int value_floored = int(value);
-    if (value_floored < 0 || value_floored > TRADITIONAL) {
+    int value_floored = static_cast<int>(value);
+    if (value_floored < 0 || value_floored >= KEY_NOTATION_MAX) {
         return INVALID;
     }
     return static_cast<KeyNotation>(value_floored);

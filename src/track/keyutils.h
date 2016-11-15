@@ -18,6 +18,7 @@ class KeyUtils {
         OPEN_KEY = 2,
         LANCELOT = 3,
         TRADITIONAL = 4,
+        KEY_NOTATION_MAX
     };
 
     static QString keyDebugName(mixxx::track::io::key::ChromaticKey key);
