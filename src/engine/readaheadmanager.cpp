@@ -84,7 +84,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
             m_currentPosition, kNumChannels);
 
     SINT samples_read = m_pReader->read(
-            start_sample, in_reverse, samples_from_reader, pOutput);
+            start_sample, samples_from_reader, in_reverse, pOutput);
 
     if (samples_read != samples_from_reader) {
         qDebug() << "didn't get what we wanted" << samples_read << samples_from_reader;
@@ -134,7 +134,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
                     m_currentPosition + (in_reverse ? preloop_samples : -preloop_samples), kNumChannels);
 
             int looping_samples_read = m_pReader->read(
-                    loop_read_position, in_reverse, samples_read, m_pCrossFadeBuffer);
+                    loop_read_position, samples_read, in_reverse, m_pCrossFadeBuffer);
 
             if (looping_samples_read != samples_read) {
                 qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";

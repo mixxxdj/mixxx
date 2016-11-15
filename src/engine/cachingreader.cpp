@@ -222,11 +222,11 @@ void CachingReader::process() {
     }
 }
 
-SINT CachingReader::read(SINT start_sample, bool reverse, SINT numSamples, CSAMPLE* buffer) {
+SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer) {
     // the samples are always read in forward direction
     // If reverse = true, the frames are copied in reverse order to the
     // destination buffer
-    SINT sample = start_sample;
+    SINT sample = startSample;
     if (reverse) {
         // Start with the last sample in buffer
         sample -= numSamples;

@@ -17,12 +17,12 @@ class StubReader : public CachingReader {
     StubReader()
             : CachingReader("[test]", UserSettingsPointer()) { }
 
-    SINT read(SINT sample, bool reverse, SINT num_samples,
+    SINT read(SINT startSample, SINT numSamples, bool reverse,
              CSAMPLE* buffer) override {
-        Q_UNUSED(sample);
+        Q_UNUSED(startSample);
         Q_UNUSED(reverse);
-        SampleUtil::clear(buffer, num_samples);
-        return num_samples;
+        SampleUtil::clear(buffer, numSamples);
+        return numSamples;
     }
 };
 
