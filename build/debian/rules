@@ -47,8 +47,6 @@ override_dh_auto_install:
 		-exec rm -f {} \;
 	find $(CURDIR)/debian/tmp -name '*.js' -exec chmod -x {} \;
 	find $(CURDIR)/debian/tmp/usr/share/mixxx/ -type f -exec chmod -x {} \;
-	chrpath -d debian/tmp/usr/bin/mixxx \
-		debian/tmp/usr/lib/mixxx/plugins/vamp/libmixxxminimal.so
 
 override_dh_gencontrol:
 	dh_gencontrol -- $(SUBSTVARS)
