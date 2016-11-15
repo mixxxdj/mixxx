@@ -893,14 +893,16 @@ def BuildUbuntuPackage(target, source, env):
                         command.extend(['pdebuild'])
                 result = os.system(' '.join(command))
 
+                source_changes_file = os.path.join(
+                        '..', '%s_%s_source.changes' % (package_name, package_version))
                 if package_target == 'source':
-                        if result == 0:
-                                # TODO(rryan) check it actually succeeded
+                        if result == 0 and os.path.exists(source_changes_file):
                                 print "* Done! Signed source package is in ubuntu/"
                                 print
                         else:
                                 print "* Build failed."
                                 print
+                                raise Exception('Ubuntu source package build/signing failed.')
                 else:
                         result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
                         result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
@@ -937,15 +939,22 @@ def BuildUbuntuPackage(target, source, env):
                         else:
                                 print "* Build failed."
                                 print
+                                raise Exception('Ubuntu package build failed.')
 
                 # print "Signing the .deb changes file..."
                 # os.system('sudo debsign /var/cache/pbuilder/result/*.changes')
 
                 if ubuntu_ppa is not None:
                         # dput this changes file to the PPA
-                        dput_command = 'dput %s ../%s_%s_source.changes' % (ubuntu_ppa, package_name, package_version)
+                        dput_command = 'dput %s %s' % (ubuntu_ppa, source_changes_file)
                         print "* Uploading package for", ubuntu_distro, "to launchpad:", dput_command
-                        os.system(dput_command)
+                        result = os.system(dput_command)
+                        if result == 0:
+                                print "* Package upload succeeded."
+                        else:
+                                print "* Package upload failed."
+                                print
+                                raise Exception('Ubuntu package upload failed.')
 
         # Return back to the starting directory, otherwise you'll get a .sconsign.dblite error!
         os.chdir('../..')
