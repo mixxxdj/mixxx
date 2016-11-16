@@ -1,8 +1,6 @@
 #ifndef MIXXX_TRACK_H
 #define MIXXX_TRACK_H
 
-#include <functional>
-
 #include <QAtomicInt>
 #include <QFileInfo>
 #include <QList>
@@ -423,7 +421,7 @@ class TrackPointer: public QSharedPointer<Track> {
         : QSharedPointer<Track>(pTrack) {
     }
     explicit TrackPointer(Track* pTrack)
-        : QSharedPointer<Track>(pTrack, std::bind(&Track::deleteLater, pTrack)) {
+        : QSharedPointer<Track>(pTrack, deleteLater) {
     }
     TrackPointer(Track* pTrack, void (*deleter)(Track*))
         : QSharedPointer<Track>(pTrack, deleter) {
@@ -436,6 +434,13 @@ class TrackPointer: public QSharedPointer<Track> {
     }
     void reset() {
         clear();
+    }
+
+  private:
+    static void deleteLater(Track* pTrack) {
+        if (pTrack != nullptr) {
+            pTrack->deleteLater();
+        }
     }
 };
 
