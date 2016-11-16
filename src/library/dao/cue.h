@@ -1,8 +1,6 @@
 #ifndef MIXXX_CUE_H
 #define MIXXX_CUE_H
 
-#include <functional>
-
 #include <QObject>
 #include <QMutex>
 #include <QSharedPointer>
@@ -80,7 +78,7 @@ class CuePointer: public QSharedPointer<Cue> {
   public:
     CuePointer() {}
     explicit CuePointer(Cue* pCue)
-          : QSharedPointer<Cue>(pCue, std::bind(&Cue::deleteLater, pCue)) {
+          : QSharedPointer<Cue>(pCue, deleteLater) {
     }
 
     // TODO(uklotzde): Remove these functions after migration
@@ -90,6 +88,13 @@ class CuePointer: public QSharedPointer<Cue> {
     }
     void reset() {
         clear();
+    }
+
+  private:
+    static void deleteLater(Cue* pCue) {
+        if (pCue != nullptr) {
+            pCue->deleteLater();
+        }
     }
 };
 
