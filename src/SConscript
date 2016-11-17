@@ -318,7 +318,7 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
 qt_modules = depends.Qt.enabled_modules(build)
 qt5 = depends.Qt.qt5_enabled(build)
 
-if build.platform_is_windows and not build.static_dependencies:
+if build.platform_is_windows and not build.static_qt:
     if qt5:
         suffix = 'd.dll' if build.build_is_debug else '.dll'
         qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
@@ -335,15 +335,16 @@ qt_imagesformats = depends.Qt.enabled_imageformats(build)
 
 if qt5:
         suffix = 'd.dll' if build.build_is_debug else '.dll'
-        imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+        if not build.static_qt:
+            imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
         # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
         pdbSuffix = 'd.pdb' if (bundle_pdbs and build.build_is_debug) else ''
         if pdbSuffix:
                  imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 else:
         suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-        if not build.static_dependencies:
-                imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+        if not build.static_qt:
+            imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
         # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
         pdbSuffix = 'd4.pdb' if (bundle_pdbs and build.build_is_debug) else ''
         if pdbSuffix:
