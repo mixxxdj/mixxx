@@ -888,8 +888,18 @@ def BuildUbuntuPackage(target, source, env):
                 if package_target == 'source':
                         # TODO(rryan) we have to figure out the key-signing situation
                         # here.
-                        # Preserve the MIXXX_SCONS_FLAGS environment variable.
-                        command.extend(['debuild', '-eMIXXX_SCONS_FLAGS', '-S', '-sa',])
+                        num_jobs = GetOption('num_jobs')
+                        command.extend(['debuild',
+                                        # Preserve the MIXXX_SCONS_FLAGS
+                                        # environment variable.
+                                        '-eMIXXX_SCONS_FLAGS',
+                                        # Pass the scons -jX option in in
+                                        # DEB_BUILD_OPTIONS. The Debian package
+                                        # rules file reads this option to set
+                                        # the -jX flag on the scons commands it
+                                        # runs.
+                                        '-eDEB_BUILD_OPTIONS="parallel=%s"' % num_jobs,
+                                        '-S', '-sa',])
                 else:
                         command.extend(['pdebuild'])
                 result = os.system(' '.join(command))
