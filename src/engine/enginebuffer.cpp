@@ -439,7 +439,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     if (m_rate_old != 0.0) {
         // Before seeking, read extra buffer for crossfading
-        // (calls notifySeek())
+        // this also sets m_pReadAheadManager to newpos
         readToCrossfadeBuffer(m_iLastBufferSize);
     } else {
         m_pReadAheadManager->notifySeek(m_filepos_play);
@@ -960,10 +960,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
-            //if (rate == 0) {
-            //    qDebug() << "ramp to rate 0";
-            //}
-
             // Perform scaling of Reader buffer into buffer.
             double framesRead =
                     m_pScale->scaleBuffer(pOutput, iBufferSize);
@@ -980,7 +976,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             } else {
                 // Adjust filepos_play by the amount we processed.
                 m_filepos_play =
-                        m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
+                        m_pReadAheadManager->getFilePlaypositionFromLog(
                                 m_filepos_play, samplesRead);
             }
             if (m_bCrossfadeReady) {
