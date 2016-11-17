@@ -23,7 +23,6 @@ void WComboBox::setup(const QDomNode& node, const SkinContext& context) {
             } else {
                 SKIN_WARNING(state, context)
                         << "WComboBox ignoring <State> without <Number> node.";
-                continue;
             }
         }
         state = state.nextSibling();
