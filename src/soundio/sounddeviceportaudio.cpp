@@ -1017,12 +1017,14 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
         m_invalidTimeInfoCount++;
 
         if (m_invalidTimeInfoCount == m_invalidTimeInfoWarningCount) {
-            qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
-                       << "syncing waveforms with a CPU Timer"
-                       << "DacTime:" << timeInfo->outputBufferDacTime
-                       << "EntrytoDac:" << callbackEntrytoDacSecs
-                       << "TimeSinceLastCb:" << timeSinceLastCbSecs
-                       << "diff:" << diff;
+            if (CmdlineArgs::Instance().getDeveloper()) {
+                qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
+                           << "syncing waveforms with a CPU Timer"
+                           << "DacTime:" << timeInfo->outputBufferDacTime
+                           << "EntrytoDac:" << callbackEntrytoDacSecs
+                           << "TimeSinceLastCb:" << timeSinceLastCbSecs
+                           << "diff:" << diff;
+            }
         }
 
         callbackEntrytoDacSecs = (m_lastCallbackEntrytoDacSecs + bufferSizeSec)
