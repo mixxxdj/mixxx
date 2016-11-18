@@ -49,7 +49,8 @@ WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* p
         m_b(0.0),
         m_dAnalyzerProgress(1.0),
         m_bAnalyzerFinalizing(false),
-        m_trackLoaded(false) {
+        m_trackLoaded(false),
+        m_orientation(Qt::Horizontal) {
     m_endOfTrackControl = new ControlProxy(
             m_group, "end_of_track", this);
     m_endOfTrackControl->connectValueChanged(
