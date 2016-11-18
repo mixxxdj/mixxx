@@ -157,7 +157,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
         qDebug() << "updateIndexWithTrackpointer:" << pTrack->getLocation();
     }
 
-    if (pTrack.isNull()) {
+    if (!pTrack) {
         return false;
     }
 
@@ -623,11 +623,13 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
         else
             result = -1;
     } else if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
-        double notation = m_pKeyNotationCP->get();
-        int key1 = KeyUtils::keyToCircleOfFithsOrder(
-                       KeyUtils::guessKeyFromText(val1.toString()), notation);
-        int key2 = KeyUtils::keyToCircleOfFithsOrder(
-                       KeyUtils::guessKeyFromText(val2.toString()), notation);
+        KeyUtils::KeyNotation notation = KeyUtils::keyNotationFromNumericValue(
+            m_pKeyNotationCP->get());
+
+        int key1 = KeyUtils::keyToCircleOfFifthsOrder(
+            KeyUtils::guessKeyFromText(val1.toString()), notation);
+        int key2 = KeyUtils::keyToCircleOfFifthsOrder(
+            KeyUtils::guessKeyFromText(val2.toString()), notation);
         if (key1 > key2) {
             result = 1;
         } else if (key1 < key2) {

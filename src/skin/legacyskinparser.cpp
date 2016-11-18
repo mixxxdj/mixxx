@@ -1027,8 +1027,8 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-            p, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+    connect(pPlayer, SIGNAL(playerEmpty()),
+            p, SLOT(slotTrackLoaded()));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {

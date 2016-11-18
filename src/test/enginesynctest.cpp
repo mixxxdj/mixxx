@@ -1205,9 +1205,9 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
         ConfigKey(m_sGroup2, "file_bpm")));
     pFileBpm1->set(128.0);
     pFileBpm2->set(128.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 128, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 128, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 128, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1240,12 +1240,12 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     QScopedPointer<ControlProxy> pFileBpm1(getControlProxy(
         ConfigKey(m_sGroup1, "file_bpm")));
     pFileBpm1->set(70);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 70, 0.0);
     m_pTrack1->setBeats(pBeats1);
     QScopedPointer<ControlProxy> pFileBpm2(getControlProxy(
         ConfigKey(m_sGroup2, "file_bpm")));
     pFileBpm2->set(140);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 140, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1309,9 +1309,9 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     QScopedPointer<ControlProxy> pFileBpm2(getControlProxy(
         ConfigKey(m_sGroup2, "file_bpm")));
     pFileBpm2->set(175.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 80, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 80, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 175, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 175, 0.0);
     m_pTrack2->setBeats(pBeats2);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
 
@@ -1368,9 +1368,9 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
     QScopedPointer<ControlProxy> pFileBpm2(getControlProxy(
         ConfigKey(m_sGroup2, "file_bpm")));
     pFileBpm2->set(140.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 70, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 140, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1399,7 +1399,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
         ConfigKey(m_sGroup1, "file_bpm")));
     ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
     pFileBpm1->set(130.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 130, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
     m_pTrack1->setBeats(pBeats1);
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
 
@@ -1409,7 +1409,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
         ConfigKey(m_sGroup2, "file_bpm")));
     ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.8);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 100, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 100, 0.0);
     m_pTrack2->setBeats(pBeats2);
     pFileBpm2->set(100.0);
 
@@ -1448,7 +1448,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
         ConfigKey(m_sGroup3, "file_bpm")));
     ControlObject::getControl(ConfigKey(m_sGroup3, "beat_distance"))->set(0.6);
     ControlObject::getControl(ConfigKey(m_sGroup3, "rate"))->set(getRateSliderValue(1.0));
-    BeatsPointer pBeats3 = BeatFactory::makeBeatGrid(m_pTrack3.data(), 140, 0.0);
+    BeatsPointer pBeats3 = BeatFactory::makeBeatGrid(*m_pTrack3, 140, 0.0);
     m_pTrack3->setBeats(pBeats3);
     pFileBpm3->set(140.0);
     pButtonSyncEnabled1->set(0.0);
@@ -1481,9 +1481,9 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     QScopedPointer<ControlProxy> pFileBpm2(getControlProxy(
         ConfigKey(m_sGroup2, "file_bpm")));
     pFileBpm2->set(128.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 128, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 128, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 128, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1542,7 +1542,7 @@ TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
         ConfigKey(m_sGroup1, "file_bpm")));
     pFileBpm1->set(0.0);
     // Maybe the beatgrid ended up at zero also.
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 0.0, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 0.0, 0.0);
     m_pTrack1->setBeats(pBeats1);
 
     QScopedPointer<ControlProxy> pButtonSyncEnabled1(getControlProxy(
