@@ -2,7 +2,7 @@
 
 #include <QFile>
 
-namespace Mixxx {
+namespace mixxx {
 
 //static
 WavpackStreamReader SoundSourceWV::s_streamReader = {
@@ -18,10 +18,10 @@ WavpackStreamReader SoundSourceWV::s_streamReader = {
 
 SoundSourceWV::SoundSourceWV(const QUrl& url)
         : SoundSourcePlugin(url, "wv"),
-          m_wpc(NULL),
+          m_wpc(nullptr),
           m_sampleScaleFactor(CSAMPLE_ZERO), 
-          m_pWVFile(NULL),
-          m_pWVCFile(NULL) {
+          m_pWVFile(nullptr),
+          m_pWVCFile(nullptr) {
 }
 
 SoundSourceWV::~SoundSourceWV() {
@@ -74,17 +74,17 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
 void SoundSourceWV::close() {
     if (m_wpc) {
         WavpackCloseFile(m_wpc);
-        m_wpc = NULL;
+        m_wpc = nullptr;
     }
     if (m_pWVFile) {
         m_pWVFile->close();
         delete m_pWVFile;
-        m_pWVFile = NULL;
+        m_pWVFile = nullptr;
     }
     if (m_pWVCFile) {
         m_pWVCFile->close();
         delete m_pWVCFile;
-        m_pWVCFile = NULL;
+        m_pWVCFile = nullptr;
     }
 }
 
@@ -126,7 +126,7 @@ QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
 }
 
 SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
-    return exportSoundSourcePlugin(new SoundSourceWV(url));
+    return newSoundSourcePluginFromUrl<SoundSourceWV>(url);
 }
 
 //static
@@ -221,17 +221,17 @@ int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount)
     return (int32_t)pFile->write((char*)data, bcount);
 }
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderWV is stateless and a single instance
     // can safely be shared
-    static Mixxx::SoundSourceProviderWV singleton;
+    static mixxx::SoundSourceProviderWV singleton;
     return &singleton;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
     // The statically allocated instance must not be deleted!
 }

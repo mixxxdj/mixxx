@@ -18,8 +18,8 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu, SIGNAL(coverArtSelected(const CoverArt&)),
-            this, SIGNAL(coverArtSelected(const CoverArt&)));
+    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
+            this, SIGNAL(coverInfoSelected(const CoverInfo&)));
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SIGNAL(reloadCoverArt()));
 
@@ -34,11 +34,13 @@ WCoverArtLabel::~WCoverArtLabel() {
     delete m_pDlgFullSize;
 }
 
-void WCoverArtLabel::setCoverArt(const QString& trackLocation, const CoverInfo& coverInfo, QPixmap px) {
+void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
+                                 QPixmap px) {
     qDebug() << "WCoverArtLabel::setCoverArt" << coverInfo << px.size();
 
-    m_coverInfo = coverInfo;
-    m_pCoverMenu->setCoverArt(trackLocation, coverInfo);
+    m_loadedCover = px;
+    m_pCoverMenu->setCoverArt(coverInfo);
+
 
     if (px.isNull()) {
         setPixmap(m_defaultCover);
@@ -66,7 +68,7 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
-            m_pDlgFullSize->init(m_coverInfo);
+            m_pDlgFullSize->init(m_loadedCover);
         }
     }
 }

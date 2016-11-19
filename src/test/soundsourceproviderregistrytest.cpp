@@ -4,7 +4,7 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -161,4 +161,4 @@ TEST_F(SoundSourceProviderRegistryTest, registerProviders) {
 
 }  // anonymous namespace
 
-}  // namespace Mixxx
+}  // namespace mixxx

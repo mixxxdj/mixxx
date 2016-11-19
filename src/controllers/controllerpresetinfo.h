@@ -15,39 +15,50 @@
 #include <QString>
 #include <QMap>
 #include <QList>
-#include <QHash>
 #include <QDomElement>
 
 #include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetfilehandler.h"
 
+struct ProductInfo {
+    QString protocol;
+    QString vendor_id;
+    QString product_id;
+
+    // HID-specific
+    QString in_epaddr;
+    QString out_epaddr;
+
+    // Bulk-specific
+    QString usage_page;
+    QString usage;
+    QString interface_number;
+};
+
 class PresetInfo {
   public:
     PresetInfo();
-    PresetInfo(const QString path);
-    virtual ~PresetInfo() {};
+    PresetInfo(const QString& path);
+
 
     inline bool isValid() const {
         return m_valid;
     }
 
-    inline const QString getPath() const { return m_path; };
+    inline const QString getPath() const { return m_path; }
 
-    inline const QString getName() const { return m_name; } ;
-    inline const QString getDescription() const { return m_description; };
-    inline const QString getForumLink() const { return m_forumlink; };
-    inline const QString getWikiLink() const { return m_wikilink; };
-    inline const QString getAuthor() const { return m_author; };
+    inline const QString getName() const { return m_name; }
+    inline const QString getDescription() const { return m_description; }
+    inline const QString getForumLink() const { return m_forumlink; }
+    inline const QString getWikiLink() const { return m_wikilink; }
+    inline const QString getAuthor() const { return m_author; }
 
-    inline const QList<QHash<QString,QString> > getProducts() const { return m_products; };
+    inline const QList<ProductInfo>& getProducts() const { return m_products; }
 
   private:
-    QHash<QString,QString> parseBulkProduct(const QDomElement& element) const;
-    QHash<QString,QString> parseHIDProduct(const QDomElement& element) const;
-    // Note - following are just stubs, not yet implemented
-    QHash<QString,QString> parseMIDIProduct(const QDomElement& element) const;
-    QHash<QString,QString> parseOSCProduct(const QDomElement& element) const;
+    ProductInfo parseBulkProduct(const QDomElement& element) const;
+    ProductInfo parseHIDProduct(const QDomElement& element) const;
 
     bool m_valid;
     QString m_path;
@@ -56,7 +67,7 @@ class PresetInfo {
     QString m_description;
     QString m_forumlink;
     QString m_wikilink;
-    QList<QHash<QString,QString> > m_products;
+    QList<ProductInfo> m_products;
 };
 
 #endif

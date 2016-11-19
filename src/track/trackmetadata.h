@@ -6,7 +6,7 @@
 #include "track/bpm.h"
 #include "track/replaygain.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // DTO for track metadata properties. Must not be subclassed (no virtual destructor)!
 class TrackMetadata {
@@ -122,10 +122,10 @@ public:
     }
 
     // #seconds
-    int getDuration() const {
+    double getDuration() const {
         return m_duration;
     }
-    void setDuration(int duration) {
+    void setDuration(double duration) {
         m_duration = duration;
     }
 
@@ -189,10 +189,12 @@ private:
     Bpm m_bpm;
     ReplayGain m_replayGain;
 
+    // Floating-point fields (in alphabetical order)
+    double m_duration; // seconds
+
     // Integer fields (in alphabetical order)
     int m_bitrate; // kbit/s
     int m_channels;
-    int m_duration; // seconds
     int m_sampleRate; // Hz
 };
 

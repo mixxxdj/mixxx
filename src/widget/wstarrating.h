@@ -16,12 +16,11 @@ class WStarRating : public WWidget {
   public:
     WStarRating(QString group, QWidget* pParent);
 
-    virtual void setup(QDomNode node, const SkinContext& context);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
     QSize sizeHint() const override;
 
   public slots:
-    void slotTrackLoaded(TrackPointer track);
-    void slotTrackUnloaded(TrackPointer track);
+    void slotTrackLoaded(TrackPointer pTrack = TrackPointer());
 
   private slots:
     void updateRating(Track*);

@@ -85,10 +85,14 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
     // Sharps
     EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
               KeyUtils::guessKeyFromText("C#"));
+    EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
+              KeyUtils::guessKeyFromText(QString::fromUtf8("C♯")));
 
     // Flats
     EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
               KeyUtils::guessKeyFromText("Db"));
+    EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
+              KeyUtils::guessKeyFromText(QString::fromUtf8("D♭")));
 
     // Mixed sharps and flats.
     EXPECT_EQ(mixxx::track::io::key::C_MINOR,

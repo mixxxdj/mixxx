@@ -58,7 +58,7 @@ class HotcueControl : public QObject {
     void hotcuePlay(double v);
 
   private:
-    ConfigKey keyForControl(int hotcue, QString name);
+    ConfigKey keyForControl(int hotcue, const char* name);
 
     QString m_group;
     int m_iHotcueNumber;
@@ -91,6 +91,7 @@ class CueControl : public EngineControl {
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtCue();
+    bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
 
   public slots:
@@ -115,6 +116,7 @@ class CueControl : public EngineControl {
     void cuePreview(double v);
     void cueCDJ(double v);
     void cueDenon(double v);
+    void cuePlay(double v);
     void cueDefault(double v);
     void pause(double v);
     void playStutter(double v);
@@ -127,7 +129,7 @@ class CueControl : public EngineControl {
     void saveCuePoint(double cuePoint);
 
     bool m_bPreviewing;
-    ControlObject* m_pPlayButton;
+    ControlObject* m_pPlay;
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
@@ -149,6 +151,7 @@ class CueControl : public EngineControl {
     ControlIndicator* m_pPlayIndicator;
     ControlPushButton* m_pCueGoto;
     ControlPushButton* m_pCueGotoAndPlay;
+    ControlPushButton* m_pCuePlay;
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
     ControlProxy* m_pVinylControlEnabled;

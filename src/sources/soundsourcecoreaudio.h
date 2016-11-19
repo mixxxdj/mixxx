@@ -18,12 +18,12 @@
 #include "AudioFormat.h"
 #endif
 
-namespace Mixxx {
+namespace mixxx {
 
-class SoundSourceCoreAudio : public Mixxx::SoundSource {
+class SoundSourceCoreAudio : public mixxx::SoundSource {
 public:
     explicit SoundSourceCoreAudio(QUrl url);
-    ~SoundSourceCoreAudio();
+    ~SoundSourceCoreAudio() override;
 
     void close() override;
 
@@ -49,10 +49,10 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceCoreAudio(url));
+        return newSoundSourceFromUrl<SoundSourceCoreAudio>(url);
     }
 };
 
-}  // namespace Mixxx
+}  // namespace mixxx
 
 #endif // SOUNDSOURCECOREAUDIO_H

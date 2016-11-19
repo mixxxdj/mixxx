@@ -5,7 +5,7 @@
 
 #include <id3tag.h>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -154,11 +154,11 @@ bool decodeFrameHeader(
 
 } // anonymous namespace
 
-SoundSourceMp3::SoundSourceMp3(QUrl url)
+SoundSourceMp3::SoundSourceMp3(const QUrl& url)
         : SoundSource(url, "mp3"),
           m_file(getLocalFileName()),
           m_fileSize(0),
-          m_pFileData(NULL),
+          m_pFileData(nullptr),
           m_avgSeekFrameCount(0),
           m_curFrameIndex(getMinFrameIndex()),
           m_madSynthCount(0) {
@@ -185,8 +185,8 @@ void SoundSourceMp3::finishDecoding() {
 }
 
 SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    DEBUG_ASSERT(!hasChannelCount());
-    DEBUG_ASSERT(!hasSamplingRate());
+    DEBUG_ASSERT(!hasValidChannelCount());
+    DEBUG_ASSERT(!hasValidSamplingRate());
 
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
@@ -371,7 +371,7 @@ void SoundSourceMp3::close() {
 
     if (m_pFileData) {
         m_file.unmap(m_pFileData);
-        m_pFileData = NULL;
+        m_pFileData = nullptr;
     }
 
     m_file.close();
@@ -431,7 +431,7 @@ void SoundSourceMp3::addSeekFrame(
     DEBUG_ASSERT(m_seekFrameList.empty() ||
             (m_seekFrameList.back().frameIndex < frameIndex));
     DEBUG_ASSERT(m_seekFrameList.empty() ||
-            (NULL == pInputData) ||
+            (nullptr == pInputData) ||
             (0 < (pInputData - m_seekFrameList.back().pInputData)));
     SeekFrameType seekFrame;
     seekFrame.pInputData = pInputData;
@@ -718,4 +718,4 @@ QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

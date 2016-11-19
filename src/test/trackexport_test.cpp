@@ -69,6 +69,7 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     // Export a tracklist with two existing tracks -- overwrite one and skip
     // the other.
     QFileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    const qint64 fileSize1 = fileinfo1.size();
     TrackPointer track1(Track::newTemporary(fileinfo1));
     QFileInfo fileinfo2(m_testDataDir.filePath("cover-test.m4a"));
     TrackPointer track2(Track::newTemporary(fileinfo2));
@@ -103,7 +104,7 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     // one written.
     QFileInfo newfile1(m_exportDir.filePath("cover-test.ogg"));
     EXPECT_TRUE(newfile1.exists());
-    EXPECT_EQ(110106, newfile1.size());
+    EXPECT_EQ(fileSize1, newfile1.size());
 
     QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
     EXPECT_TRUE(newfile2.exists());
@@ -113,8 +114,10 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
 TEST_F(TrackExporterTest, OverwriteAll) {
     // Export a tracklist with two existing tracks -- overwrite both.
     QFileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    const qint64 fileSize1 = fileinfo1.size();
     TrackPointer track1(Track::newTemporary(fileinfo1));
     QFileInfo fileinfo2(m_testDataDir.filePath("cover-test.m4a"));
+    const qint64 fileSize2 = fileinfo2.size();
     TrackPointer track2(Track::newTemporary(fileinfo2));
 
     // Create empty versions at the destination so we can see if we actually
@@ -144,11 +147,11 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     // Both files should have been overwritten.
     QFileInfo newfile1(m_exportDir.filePath("cover-test.ogg"));
     EXPECT_TRUE(newfile1.exists());
-    EXPECT_EQ(110106, newfile1.size());
+    EXPECT_EQ(fileSize1, newfile1.size());
 
     QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
     EXPECT_TRUE(newfile2.exists());
-    EXPECT_EQ(373820, newfile2.size());
+    EXPECT_EQ(fileSize2, newfile2.size());
 }
 
 TEST_F(TrackExporterTest, SkipAll) {

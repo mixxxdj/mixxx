@@ -1,12 +1,12 @@
 # 
 # Translators:
 # Jorge Marcos <jormarchav@gmail.com>, 2016
-# Josep Maria Antolin Segura <josepma@gmail.com>, 2016
+# Josep Maria Antolin <josepma@gmail.com>, 2016
 # Sébastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-01-09 20:21+0000\n"
+"PO-Revision-Date: 2016-01-10 14:23+0000\n"
 "Last-Translator: Sébastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Spanish (Spain) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/es_ES/)\n"
 "MIME-Version: 1.0\n"

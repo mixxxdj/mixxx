@@ -40,7 +40,7 @@ METADATA
         genre varchar(32), tracknumber varchar(3),
         location varchar(512) REFERENCES track_locations(location),
         comment varchar(20), url varchar(256),
-        duration integer,
+        duration float,
         bitrate integer, samplerate integer,
         cuepoint integer, bpm float,
         wavesummaryhex blob,
@@ -113,7 +113,7 @@ METADATA
         location integer REFERENCES track_locations(location),
         comment varchar(256),
         url varchar(256),
-        duration integer,
+        duration float,
         bitrate integer,
         samplerate integer,
         cuepoint integer,
@@ -414,6 +414,16 @@ METADATA
     </description>
     <sql>
       ALTER TABLE library ADD COLUMN tracktotal TEXT DEFAULT '//';
+    </sql>
+  </revision>
+  <revision version="27" min_compatible="3">
+    <description>
+      Add cue color support. Default color is #FF0000.
+      See library/dao/cue.h.
+    </description>
+    <sql>
+      <!-- Default color is #FFFF0000 (in base 10) -->
+      ALTER TABLE cues ADD COLUMN color INTEGER DEFAULT 4294901760 NOT NULL;
     </sql>
   </revision>
 </schema>

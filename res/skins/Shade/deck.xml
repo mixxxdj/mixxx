@@ -65,8 +65,8 @@
 								<ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_status</ConfigKey>
 							</Connection>
 						</StatusLight>
-	
-						<!-- Collapsing Waveform, Vinylcontrol & spinning Vinyl widget-->
+
+						<!-- Collapsing Waveform, VinylControl & spinning Vinyl widget-->
 						<WidgetGroup>
 							<Pos>2,43</Pos>
 							<Size>313,117</Size>
@@ -145,8 +145,8 @@
 										<TextColor>#FFFFFF</TextColor>
 									</Mark>
 								</Visual>
-	
-								<!-- Spinning Vinyl & Vinylcontrol -->
+
+								<!-- Spinning Vinyl & VinylControl -->
 								<WidgetGroup>
 									<Style>
                                         QGroupBox { 
@@ -223,7 +223,7 @@
 							<PlayPosColor>#00FF00</PlayPosColor>
 							<EndOfTrackColor>#EA0000</EndOfTrackColor>
 							<DefaultMark>
-								<Align>bottom</Align>
+								<Align>bottom|right</Align>
 								<Color>#FD0564</Color>
 								<TextColor>#FFFFFF</TextColor>
 								<Text> %1 </Text>
@@ -238,7 +238,7 @@
 							<Mark>
 								<Control>cue_point</Control>
 								<Text>C</Text>
-								<Align>top</Align>
+								<Align>top|right</Align>
 								<Color>#FF001C</Color>
 								<TextColor>#FFFFFF</TextColor>
 							</Mark>

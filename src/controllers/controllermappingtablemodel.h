@@ -18,46 +18,23 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     Q_OBJECT
   public:
     ControllerMappingTableModel(QObject* pParent);
-    virtual ~ControllerMappingTableModel();
+    ~ControllerMappingTableModel() override;
 
     void setPreset(ControllerPresetPointer pPreset);
-    void visit(HidControllerPreset* pHidPreset);
-    void visit(MidiControllerPreset* pMidiPreset);
-
-    // Apply the changes to the loaded preset.
-    virtual void apply() = 0;
+    void visit(HidControllerPreset* pHidPreset) override;
+    void visit(MidiControllerPreset* pMidiPreset) override;
 
     // Revert changes made since the last apply.
     virtual void cancel();
-
-    // Clears all input mappings in the preset.
-    virtual void clear() = 0;
-
-    // Adds an empty mapping.
-    virtual void addEmptyMapping() = 0;
-
-    // Removes the provided mappings.
-    virtual void removeMappings(QModelIndexList indices) = 0;
-
-    // Returns a delegate for the provided column or NULL if the column does not
-    // need a delegate.
-    virtual QAbstractItemDelegate* delegateForColumn(int column,
-                                                     QWidget* pParent) = 0;
-
-    // Validates the mappings.
-    // TODO(rryan): do something with this
-    virtual bool validate() {
-        return true;
-    }
 
     ////////////////////////////////////////////////////////////////////////////
     // QAbstractItemModel methods
     ////////////////////////////////////////////////////////////////////////////
     bool setHeaderData(int section, Qt::Orientation orientation,
-                       const QVariant& value, int role = Qt::EditRole);
+                       const QVariant& value, int role = Qt::EditRole) override;
     QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const;
-    Qt::ItemFlags flags(const QModelIndex& index) const;
+                        int role = Qt::DisplayRole) const override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   protected:
     // Called after a preset is loaded. If the preset is a MIDI preset,

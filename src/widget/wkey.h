@@ -12,7 +12,7 @@ class WKey : public WLabel  {
     explicit WKey(const char* group, QWidget* pParent=nullptr);
 
     void onConnectedControlChanged(double dParameter, double dValue) override;
-    void setup(QDomNode node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
     void setValue(double dValue);

@@ -45,6 +45,8 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     connect(radioButtonAllSongs, SIGNAL(clicked()),
             this,  SLOT(showAllSongs()));
 
+    // TODO(rryan): This triggers a library search before the UI has even
+    // started up. Accounts for 0.2% of skin creation time. Get rid of this!
     radioButtonRecentlyAdded->click();
 
     labelProgress->setText("");

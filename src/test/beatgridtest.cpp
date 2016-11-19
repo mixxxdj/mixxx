@@ -26,7 +26,7 @@ TEST_F(BeatGridTest, Scale) {
     pTrack->setBpm(bpm);
     pTrack->setSampleRate(sampleRate);
 
-    BeatGrid* pGrid = new BeatGrid(pTrack.data(), 0);
+    BeatGrid* pGrid = new BeatGrid(*pTrack, 0);
     pGrid->setBpm(bpm);
 
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
@@ -53,7 +53,7 @@ TEST_F(BeatGridTest, TestNthBeatWhenOnBeat) {
     pTrack->setSampleRate(sampleRate);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    BeatGrid* pGrid = new BeatGrid(pTrack.data(), 0);
+    BeatGrid* pGrid = new BeatGrid(*pTrack, 0);
     pGrid->setBpm(bpm);
     // Pretend we're on the 20th beat;
     double position = beatLength * 20;
@@ -89,7 +89,7 @@ TEST_F(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     pTrack->setSampleRate(sampleRate);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    BeatGrid* pGrid = new BeatGrid(pTrack.data(), 0);
+    BeatGrid* pGrid = new BeatGrid(*pTrack, 0);
     pGrid->setBpm(bpm);
 
     // Pretend we're just before the 20th beat.
@@ -127,7 +127,7 @@ TEST_F(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     pTrack->setSampleRate(sampleRate);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    BeatGrid* pGrid = new BeatGrid(pTrack.data(), 0);
+    BeatGrid* pGrid = new BeatGrid(*pTrack, 0);
     pGrid->setBpm(bpm);
 
     // Pretend we're just before the 20th beat.
@@ -164,7 +164,7 @@ TEST_F(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     pTrack->setSampleRate(sampleRate);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    BeatGrid* pGrid = new BeatGrid(pTrack.data(), 0);
+    BeatGrid* pGrid = new BeatGrid(*pTrack, 0);
     pGrid->setBpm(bpm);
 
     // Pretend we're half way between the 20th and 21st beat

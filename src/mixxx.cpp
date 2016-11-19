@@ -108,7 +108,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_cmdLineArgs(args),
           m_pTouchShift(nullptr) {
     m_runtime_timer.start();
-    Time::start();
+    mixxx::Time::start();
 
     Version::logBuildDetails();
 
@@ -134,8 +134,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
     m_pWidgetParent = (QWidget*)m_pLaunchImage;
     setCentralWidget(m_pWidgetParent);
-    // move the app in the center of the primary screen
-    slotToCenterOfPrimaryScreen();
 
     show();
 #if defined(Q_WS_X11)
@@ -161,8 +159,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     qRegisterMetaType<TrackId>("TrackId");
     qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
     qRegisterMetaType<TrackPointer>("TrackPointer");
-    qRegisterMetaType<Mixxx::ReplayGain>("Mixxx::ReplayGain");
-    qRegisterMetaType<Mixxx::Bpm>("Mixxx::Bpm");
+    qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
+    qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
@@ -446,6 +444,12 @@ void MixxxMainWindow::finalize() {
     Timer t("MixxxMainWindow::~finalize");
     t.start();
 
+    // Save the current window state (position, maximized, etc)
+    m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
+        QString(saveGeometry().toBase64()));
+    m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "state"),
+        QString(saveState().toBase64()));
+
     setCentralWidget(NULL);
 
     // TODO(rryan): WMainMenuBar holds references to controls so we need to delete it
@@ -597,6 +601,12 @@ void MixxxMainWindow::initializeWindow() {
     // restore default QMenuBar background
     Pal.setColor(QPalette::Background, MenuBarBackground);
     m_pMenuBar->setPalette(Pal);
+
+    // Restore the current window state (position, maximized, etc)
+    restoreGeometry(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
+        ConfigKey("[MainWindow]", "geometry")).toUtf8()));
+    restoreState(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
+        ConfigKey("[MainWindow]", "state")).toUtf8()));
 
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     slotUpdateWindowTitle(TrackPointer());
@@ -792,8 +802,7 @@ void MixxxMainWindow::connectMenuBar() {
             m_pMenuBar, SLOT(onNewSkinLoaded()));
 
     // Misc
-    connect(m_pMenuBar, SIGNAL(quit()),
-            this, SLOT(slotFileQuit()));
+    connect(m_pMenuBar, SIGNAL(quit()), this, SLOT(close()));
     connect(m_pMenuBar, SIGNAL(showPreferences()),
             this, SLOT(slotOptionsPreferences()));
     connect(m_pMenuBar, SIGNAL(loadTrackToDeck(int)),
@@ -908,13 +917,6 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
     }
 }
 
-void MixxxMainWindow::slotFileQuit() {
-    if (!confirmExit()) {
-        return;
-    }
-    hide();
-    qApp->quit();
-}
 
 void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
@@ -1129,20 +1131,12 @@ bool MixxxMainWindow::event(QEvent* e) {
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     if (!confirmExit()) {
         event->ignore();
-    }
-}
-
-void MixxxMainWindow::slotToCenterOfPrimaryScreen() {
-    if (!m_pWidgetParent)
         return;
-
-    QDesktopWidget* desktop = QApplication::desktop();
-    int primaryScreen = desktop->primaryScreen();
-    QRect primaryScreenRect = desktop->availableGeometry(primaryScreen);
-
-    move(primaryScreenRect.left() + (primaryScreenRect.width() - m_pWidgetParent->width()) / 2,
-         primaryScreenRect.top() + (primaryScreenRect.height() - m_pWidgetParent->height()) / 2);
+    }
+    finalize();
+    QMainWindow::closeEvent(event);
 }
+
 
 void MixxxMainWindow::checkDirectRendering() {
     // IF
@@ -1226,8 +1220,6 @@ bool MixxxMainWindow::confirmExit() {
             m_pPrefDlg->close();
         }
     }
-
-    finalize();
 
     return true;
 }

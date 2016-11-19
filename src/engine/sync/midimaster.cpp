@@ -78,7 +78,7 @@ double MidiMasterClock::getBeatDistance() const {
     const mixxx::Duration last_beat = mixxx::Duration::fromNanos(
             static_cast<qint64>(m_pMidiSourceClockLastBeatTime->get()));
     double raw_percent = MidiSourceClock::beatFraction(
-            last_beat, Time::elapsed(), m_pMidiSourceClockBpm->get());
+            last_beat, mixxx::Time::elapsed(), m_pMidiSourceClockBpm->get());
     raw_percent += m_pMidiSourceClockSyncAdjust->get();
     // Fix beat loop-around.
     return raw_percent - floor(raw_percent);

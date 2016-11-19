@@ -1,6 +1,6 @@
 #include "track/bpm.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // TODO(uklotzde): Replace 'const' with 'constexpr' and remove
 // initialization after switching to Visual Studio 2015.
@@ -57,4 +57,4 @@ void Bpm::normalizeValue() {
     }
 }
 
-} //namespace Mixxx
+} //namespace mixxx

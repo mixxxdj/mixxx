@@ -1,15 +1,15 @@
 #include <gtest/gtest.h>
 
-#include "util/time.h"
+#include "util/duration.h"
 
 #include <QtDebug>
 
 namespace {
 
-class TimeUtilTest : public testing::Test {
+class DurationUtilTest : public testing::Test {
   protected:
 
-    TimeUtilTest() {
+    DurationUtilTest() {
     }
 
     virtual void SetUp() {
@@ -20,13 +20,13 @@ class TimeUtilTest : public testing::Test {
     
     static QString adjustPrecision(
         QString withMilliseconds,
-        Time::Precision precision) {
+        mixxx::Duration::Precision precision) {
         switch (precision) {
-        case Time::Precision::SECONDS:
+        case mixxx::Duration::Precision::SECONDS:
         {
             return withMilliseconds.left(withMilliseconds.length() - 4);
         }
-        case Time::Precision::CENTISECONDS:
+        case mixxx::Duration::Precision::CENTISECONDS:
         {
             return withMilliseconds.left(withMilliseconds.length() - 1);
         }
@@ -38,28 +38,28 @@ class TimeUtilTest : public testing::Test {
     void formatSeconds(QString expectedMilliseconds, double dSeconds) {
         ASSERT_LE(4, expectedMilliseconds.length()); // 3 digits + 1 decimal point
         const QString actualSeconds =
-            Time::formatSeconds(dSeconds, Time::Precision::SECONDS);
+            mixxx::Duration::formatSeconds(dSeconds, mixxx::Duration::Precision::SECONDS);
         const QString expectedSeconds =
-                adjustPrecision(expectedMilliseconds, Time::Precision::SECONDS);
+                adjustPrecision(expectedMilliseconds, mixxx::Duration::Precision::SECONDS);
         EXPECT_EQ(expectedSeconds, actualSeconds);
         const QString expectedCentiseconds =
-                adjustPrecision(expectedMilliseconds, Time::Precision::CENTISECONDS);
+                adjustPrecision(expectedMilliseconds, mixxx::Duration::Precision::CENTISECONDS);
         const QString actualCentiseconds =
-            Time::formatSeconds(dSeconds, Time::Precision::CENTISECONDS);
+            mixxx::Duration::formatSeconds(dSeconds, mixxx::Duration::Precision::CENTISECONDS);
         EXPECT_EQ(expectedCentiseconds, actualCentiseconds);
         const QString actualMilliseconds =
-            Time::formatSeconds(dSeconds, Time::Precision::MILLISECONDS);
+            mixxx::Duration::formatSeconds(dSeconds, mixxx::Duration::Precision::MILLISECONDS);
         EXPECT_EQ(actualMilliseconds, actualMilliseconds);
     }
 };
 
-TEST_F(TimeUtilTest, FormatSecondsNegative) {
-    EXPECT_EQ("?", Time::formatSeconds(-1, Time::Precision::SECONDS));
-    EXPECT_EQ("?", Time::formatSeconds(-1, Time::Precision::CENTISECONDS));
-    EXPECT_EQ("?", Time::formatSeconds(-1, Time::Precision::MILLISECONDS));
+TEST_F(DurationUtilTest, FormatSecondsNegative) {
+    EXPECT_EQ("?", mixxx::Duration::formatSeconds(-1, mixxx::Duration::Precision::SECONDS));
+    EXPECT_EQ("?", mixxx::Duration::formatSeconds(-1, mixxx::Duration::Precision::CENTISECONDS));
+    EXPECT_EQ("?", mixxx::Duration::formatSeconds(-1, mixxx::Duration::Precision::MILLISECONDS));
 }
 
-TEST_F(TimeUtilTest, FormatSeconds) {
+TEST_F(DurationUtilTest, FormatSeconds) {
     formatSeconds("00:00.000", 0);
     formatSeconds("00:01.000", 1);
     formatSeconds("00:59.000", 59);

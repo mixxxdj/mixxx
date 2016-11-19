@@ -40,6 +40,8 @@ bool AnalyzerEbur128::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 void AnalyzerEbur128::cleanup() {
     if (isInitialized()) {
         ebur128_destroy(&m_pState);
+        // ebur128_destroy clears the pointer but let's not rely on that.
+        m_pState = nullptr;
     }
     DEBUG_ASSERT(!isInitialized());
 }
@@ -50,8 +52,7 @@ void AnalyzerEbur128::cleanup(TrackPointer tio) {
 }
 
 void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
-    DEBUG_ASSERT_AND_HANDLE(isInitialized()) {
-        qWarning() << "AnalyzerEbur128::process(): Not initialized!";
+    if (!isInitialized()) {
         return;
     }
     ScopedTimer t("AnalyzerEbur128::process()");
@@ -64,8 +65,7 @@ void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
 }
 
 void AnalyzerEbur128::finalize(TrackPointer tio) {
-    DEBUG_ASSERT_AND_HANDLE(isInitialized()) {
-        qWarning() << "AnalyzerEbur128::finalize(): Not initialized!";
+    if (!isInitialized()) {
         return;
     }
     double averageLufs;
@@ -82,7 +82,7 @@ void AnalyzerEbur128::finalize(TrackPointer tio) {
     }
 
     const double fReplayGain2 = kReplayGain2ReferenceLUFS - averageLufs;
-    Mixxx::ReplayGain replayGain(tio->getReplayGain());
+    mixxx::ReplayGain replayGain(tio->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGain2));
     tio->setReplayGain(replayGain);
     qDebug() << "ReplayGain 2.0 (libebur128) result is" << fReplayGain2 << "dB for" << tio->getLocation();

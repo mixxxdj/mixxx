@@ -2,7 +2,7 @@
 
 #include "util/math.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // TODO(uklotzde): Replace 'const' with 'constexpr' and remove
 // initialization after switching to Visual Studio 2015.
@@ -159,4 +159,4 @@ CSAMPLE ReplayGain::normalizePeak(CSAMPLE peak) {
     }
 }
 
-} //namespace Mixxx
+} //namespace mixxx
