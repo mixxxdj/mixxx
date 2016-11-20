@@ -691,7 +691,7 @@ def BuildRelease(target, source, env):
             # Call the NSIS build
             buildwin64 = "/Dx64=1" if build.machine_is_64bit else ''
             staticdeps = "/DSTATICDEPS=1" if build.static_dependencies else ''
-            command = '%(path)s /DPACKAGE_NAME=%(package_name)s /DPRODUCT_VERSION=%(version)s /DQTDIR=%(qtpath)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s %(staticdeps)s build\\nsis\\Mixxx.nsi' % \
+            command = '%(path)s /DPACKAGE_NAME=\"%(package_name)s\" /DPRODUCT_VERSION=%(version)s /DQTDIR=%(qtpath)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s %(staticdeps)s build\\nsis\\Mixxx.nsi' % \
                 {'path': nsis_path,
                  'package_name': exe_name,
                  'version': mixxx_version,
