@@ -3,10 +3,11 @@
 
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "library/dao/cratedao.h"
+#include "library/dao/crateschema.h"
 #include "library/dao/settingsdao.h"
 #include "library/dao/trackdao.h"
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/dao/autodjcratesdao.h"
 

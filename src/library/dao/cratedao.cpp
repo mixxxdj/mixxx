@@ -9,6 +9,8 @@
 #include "library/dao/cratedao.h"
 #include "library/queryutil.h"
 
+#include "library/dao/crateschema.h"
+#include "library/dao/trackschema.h"
 CrateDAO::CrateDAO(QSqlDatabase& database)
         : m_database(database) {
 }

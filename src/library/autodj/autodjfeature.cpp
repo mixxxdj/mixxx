@@ -10,6 +10,7 @@
 
 #include "library/library.h"
 #include "library/parser.h"
+#include "library/dao/crateschema.h"
 #include "mixer/playermanager.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"

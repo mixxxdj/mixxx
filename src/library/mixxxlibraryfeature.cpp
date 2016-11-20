@@ -12,6 +12,7 @@
 #include "library/missingtablemodel.h"
 #include "library/hiddentablemodel.h"
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "treeitem.h"
 #include "sources/soundsourceproxy.h"

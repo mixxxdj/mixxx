@@ -4,7 +4,7 @@
 
 #include "library/queryutil.h"
 #include "track/keyutils.h"
-#include "library/dao/trackdao.h"
+#include "library/dao/trackschema.h"
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {

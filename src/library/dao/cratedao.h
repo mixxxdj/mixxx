@@ -14,19 +14,6 @@
 #include "track/trackid.h"
 #include "util/class.h"
 
-#define CRATE_TABLE "crates"
-#define CRATE_TRACKS_TABLE "crate_tracks"
-
-const QString CRATETABLE_ID = "id";
-const QString CRATETABLE_NAME = "name";
-const QString CRATETABLE_COUNT = "count";
-const QString CRATETABLE_SHOW = "show";
-const QString CRATETABLE_LOCKED = "locked";
-const QString CRATETABLE_AUTODJ_SOURCE = "autodj_source";
-
-const QString CRATETRACKSTABLE_TRACKID = "track_id";
-const QString CRATETRACKSTABLE_CRATEID = "crate_id";
-
 class CrateDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:

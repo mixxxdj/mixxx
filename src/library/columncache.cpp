@@ -1,8 +1,8 @@
 #include "library/columncache.h"
 
-#include "library/dao/trackdao.h"
+#include "library/dao/trackschema.h"
 #include "library/dao/playlistdao.h"
-#include "library/dao/cratedao.h"
+#include "library/dao/crateschema.h"
 #include "track/keyutils.h"
 #include "track/key_preferences.h"
 #include "control/controlproxy.h"

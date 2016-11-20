@@ -1,5 +1,8 @@
 #include "library/hiddentablemodel.h"
 
+#include "library/dao/trackschema.h"
+
+
 HiddenTableModel::HiddenTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection)
         : BaseSqlTableModel(parent, pTrackCollection, "mixxx.db.model.missing") {

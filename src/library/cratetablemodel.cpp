@@ -6,6 +6,8 @@
 
 #include "library/cratetablemodel.h"
 #include "library/queryutil.h"
+#include "library/dao/crateschema.h"
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "mixer/playermanager.h"
 

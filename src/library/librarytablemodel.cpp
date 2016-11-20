@@ -1,6 +1,7 @@
 
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "mixer/playermanager.h"
 
 namespace {

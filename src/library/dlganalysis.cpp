@@ -3,6 +3,7 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wanalysislibrarytableview.h"
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
 #include "util/assert.h"

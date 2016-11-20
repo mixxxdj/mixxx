@@ -1,3 +1,5 @@
+#include "library/dao/trackdao.h"
+
 #include <QtDebug>
 #include <QDir>
 #include <QDirIterator>
@@ -8,13 +10,12 @@
 #include <QCoreApplication>
 #include <QChar>
 
-#include "library/dao/trackdao.h"
-
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "library/queryutil.h"
 #include "library/coverart.h"
 #include "library/coverartutils.h"
+#include "library/dao/trackschema.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"

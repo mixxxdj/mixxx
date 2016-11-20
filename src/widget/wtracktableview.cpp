@@ -15,6 +15,7 @@
 #include "library/dlgtrackinfo.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
+#include "library/dao/trackschema.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
