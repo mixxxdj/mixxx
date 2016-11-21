@@ -393,8 +393,134 @@ bool TrackCollection::removeCrateTracks(
 }
 
 #ifdef __SQLITE3__
+
 // from public domain code
 // http://www.archivum.info/qt-interest@trolltech.com/2008-12/00584/Re-%28Qt-interest%29-Qt-Sqlite-UserDefinedFunction.html
+
+namespace {
+
+inline
+int compareLocalAwareCaseInsensitive(
+        const QString& first, const QString& second) {
+    return QString::localeAwareCompare(first.toLower(), second.toLower());
+}
+
+void makeLatinLow(QChar* c, int count) {
+    for (int i = 0; i < count; ++i) {
+        if (c[i].decompositionTag() != QChar::NoDecomposition) {
+            c[i] = c[i].decomposition()[0];
+        }
+        if (c[i].isUpper()) {
+            c[i] = c[i].toLower();
+        }
+    }
+}
+
+const QChar LIKE_MATCH_ONE = '_';
+const QChar LIKE_MATCH_ALL = '%';
+const QChar LIKE_DEFAULT_ESCAPE = '\0';
+
+// The collating function callback is invoked with a copy of the pArg
+// application data pointer and with two strings in the encoding specified
+// by the eTextRep argument.
+// The collating function must return an integer that is negative, zero,
+// or positive if the first string is less than, equal to, or greater
+// than the second, respectively.
+int sqliteStringCompare(void* pArg,
+                        int len1, const void* data1,
+                        int len2, const void* data2) {
+    Q_UNUSED(pArg);
+    // Construct a QString without copy
+    QString string1 = QString::fromRawData(reinterpret_cast<const QChar*>(data1),
+                                           len1 / sizeof(QChar));
+    QString string2 = QString::fromRawData(reinterpret_cast<const QChar*>(data2),
+                                           len2 / sizeof(QChar));
+    return compareLocalAwareCaseInsensitive(string1, string2);
+}
+
+// Compare two strings for equality where the first string is
+// a "LIKE" expression. Return true (1) if they are the same and
+// false (0) if they are different.
+// This is the original sqlite3 icuLikeCompare rewritten for QChar
+int likeCompareInner(
+    const QChar* pattern, // LIKE pattern
+    int patternSize,
+    const QChar* string, // The string to compare against
+    int stringSize,
+    const QChar esc) { // The escape character
+
+    int iPattern = 0; // Current index in pattern
+    int iString = 0; // Current index in string
+
+    bool prevEscape = false; // True if the previous character was uEsc
+
+    while (iPattern < patternSize) {
+        // Read (and consume) the next character from the input pattern.
+        QChar uPattern = pattern[iPattern++];
+        // There are now 4 possibilities:
+        // 1. uPattern is an unescaped match-all character "%",
+        // 2. uPattern is an unescaped match-one character "_",
+        // 3. uPattern is an unescaped escape character, or
+        // 4. uPattern is to be handled as an ordinary character
+
+        if (!prevEscape && uPattern == LIKE_MATCH_ALL) {
+            // Case 1.
+            QChar c;
+
+            // Skip any LIKE_MATCH_ALL or LIKE_MATCH_ONE characters that follow a
+            // LIKE_MATCH_ALL. For each LIKE_MATCH_ONE, skip one character in the
+            // test string.
+
+            if (iPattern >= patternSize) {
+                // Tailing %
+                return 1;
+            }
+
+            while ((c = pattern[iPattern]) == LIKE_MATCH_ALL || c == LIKE_MATCH_ONE) {
+                if (c == LIKE_MATCH_ONE) {
+                    if (++iString == stringSize) {
+                        return 0;
+                    }
+                }
+                if (++iPattern == patternSize) {
+                    // Two or more tailing %
+                    return 1;
+                }
+            }
+
+            while (iString < stringSize) {
+                if (likeCompareInner(&pattern[iPattern], patternSize - iPattern,
+                                &string[iString], stringSize - iString, esc)) {
+                    return 1;
+                }
+                iString++;
+            }
+            return 0;
+        } else if (!prevEscape && uPattern == LIKE_MATCH_ONE) {
+            // Case 2.
+            if (++iString == stringSize) {
+                return 0;
+            }
+        } else if (!prevEscape && uPattern == esc) {
+            // Case 3.
+            prevEscape = 1;
+        } else {
+            // Case 4.
+            if (iString == stringSize) {
+                return 0;
+            }
+            QChar uString = string[iString++];
+            if (uString != uPattern) {
+                return 0;
+            }
+            prevEscape = false;
+        }
+    }
+    return iString == stringSize;
+}
+
+} // anonymous namespace
+
 void TrackCollection::installSorting(QSqlDatabase &db) {
     QVariant v = db.driver()->handle();
     if (v.isValid() && strcmp(v.typeName(), "sqlite3*") == 0) {
@@ -406,7 +532,7 @@ void TrackCollection::installSorting(QSqlDatabase &db) {
                     "localeAwareCompare",
                     SQLITE_UTF16,
                     NULL,
-                    sqliteLocaleAwareCompare);
+                    sqliteStringCompare);
             if (result != SQLITE_OK)
             qWarning() << "Could not add string collation function: " << result;
 
@@ -439,25 +565,6 @@ void TrackCollection::installSorting(QSqlDatabase &db) {
     }
 }
 
-// The collating function callback is invoked with a copy of the pArg
-// application data pointer and with two strings in the encoding specified
-// by the eTextRep argument.
-// The collating function must return an integer that is negative, zero,
-// or positive if the first string is less than, equal to, or greater
-// than the second, respectively.
-//static
-int TrackCollection::sqliteLocaleAwareCompare(void* pArg,
-                                              int len1, const void* data1,
-                                              int len2, const void* data2) {
-    Q_UNUSED(pArg);
-    // Construct a QString without copy
-    QString string1 = QString::fromRawData(reinterpret_cast<const QChar*>(data1),
-                                           len1 / sizeof(QChar));
-    QString string2 = QString::fromRawData(reinterpret_cast<const QChar*>(data2),
-                                           len2 / sizeof(QChar));
-    return QString::localeAwareCompare(string1, string2);
-}
-
 // This implements the like() SQL function. This is used by the LIKE operator.
 // The SQL statement 'A LIKE B' is implemented as 'like(B, A)', and if there is
 // an escape character, say E, it is implemented as 'like(B, A, E)'
@@ -481,11 +588,11 @@ void TrackCollection::sqliteLike(sqlite3_context *context,
     QString stringB = QString::fromUtf8(b); // Like String
     QString stringA = QString::fromUtf8(a);
 
-    QChar esc = '\0'; // Escape
+    QChar esc = LIKE_DEFAULT_ESCAPE;
     if (aArgc == 3) {
         const char* e = reinterpret_cast<const char*>(
                 sqlite3_value_text(aArgv[2]));
-        if(e) {
+        if (e) {
             QString stringE = QString::fromUtf8(e);
             if (!stringE.isEmpty()) {
                 esc = stringE.data()[0];
@@ -499,111 +606,14 @@ void TrackCollection::sqliteLike(sqlite3_context *context,
 }
 
 //static
-void TrackCollection::makeLatinLow(QChar* c, int count) {
-    for (int i = 0; i < count; ++i) {
-        if (c[i].decompositionTag() != QChar::NoDecomposition) {
-            c[i] = c[i].decomposition()[0];
-        }
-        if (c[i].isUpper()) {
-            c[i] = c[i].toLower();
-        }
-    }
-}
-
-//static
 int TrackCollection::likeCompareLatinLow(
         QString* pattern,
         QString* string,
-        const QChar esc) {
+        QChar esc) {
     makeLatinLow(pattern->data(), pattern->length());
     makeLatinLow(string->data(), string->length());
     //qDebug() << *pattern << *string;
     return likeCompareInner(pattern->data(), pattern->length(), string->data(), string->length(), esc);
-}
-
-// Compare two strings for equality where the first string is
-// a "LIKE" expression. Return true (1) if they are the same and
-// false (0) if they are different.
-// This is the original sqlite3 icuLikeCompare rewritten for QChar
-//static
-int TrackCollection::likeCompareInner(
-  const QChar* pattern, // LIKE pattern
-  int patternSize,
-  const QChar* string, // The string to compare against
-  int stringSize,
-  const QChar esc // The escape character
-) {
-    static const QChar MATCH_ONE = QChar('_');
-    static const QChar MATCH_ALL = QChar('%');
-
-    int iPattern = 0; // Current index in pattern
-    int iString = 0; // Current index in string
-
-    bool prevEscape = false; // True if the previous character was uEsc
-
-    while (iPattern < patternSize) {
-        // Read (and consume) the next character from the input pattern.
-        QChar uPattern = pattern[iPattern++];
-        // There are now 4 possibilities:
-        // 1. uPattern is an unescaped match-all character "%",
-        // 2. uPattern is an unescaped match-one character "_",
-        // 3. uPattern is an unescaped escape character, or
-        // 4. uPattern is to be handled as an ordinary character
-
-        if (!prevEscape && uPattern == MATCH_ALL) {
-            // Case 1.
-            QChar c;
-
-            // Skip any MATCH_ALL or MATCH_ONE characters that follow a
-            // MATCH_ALL. For each MATCH_ONE, skip one character in the
-            // test string.
-
-            if (iPattern >= patternSize) {
-                // Tailing %
-                return 1;
-            }
-
-            while ((c = pattern[iPattern]) == MATCH_ALL || c == MATCH_ONE) {
-                if (c == MATCH_ONE) {
-                    if (++iString == stringSize) {
-                        return 0;
-                    }
-                }
-                if (++iPattern == patternSize) {
-                    // Two or more tailing %
-                    return 1;
-                }
-            }
-
-            while (iString < stringSize) {
-                if (likeCompareInner(&pattern[iPattern], patternSize - iPattern,
-                                &string[iString], stringSize - iString, esc)) {
-                    return 1;
-                }
-                iString++;
-            }
-            return 0;
-        } else if (!prevEscape && uPattern == MATCH_ONE) {
-            // Case 2.
-            if (++iString == stringSize) {
-                return 0;
-            }
-        } else if (!prevEscape && uPattern == esc) {
-            // Case 3.
-            prevEscape = 1;
-        } else {
-            // Case 4.
-            if (iString == stringSize) {
-                return 0;
-            }
-            QChar uString = string[iString++];
-            if (uString != uPattern) {
-                return 0;
-            }
-            prevEscape = false;
-        }
-    }
-    return iString == stringSize;
 }
 
 
@@ -615,8 +625,8 @@ likeCompare(nsAString::const_iterator aPatternItr,
             nsAString::const_iterator aStringEnd,
             PRUnichar aEscape)
 {
-  const PRUnichar MATCH_ALL('%');
-  const PRUnichar MATCH_ONE('_');
+  const PRUnichar LIKE_MATCH_ALL('%');
+  const PRUnichar LIKE_MATCH_ONE('_');
 
   PRBool lastWasEscape = PR_FALSE;
   while (aPatternItr != aPatternEnd) {
@@ -628,15 +638,15 @@ likeCompare(nsAString::const_iterator aPatternItr,
 * 3) character is an un-escaped escape character
 * 4) character is not any of the above
 
-    if (!lastWasEscape && *aPatternItr == MATCH_ALL) {
+    if (!lastWasEscape && *aPatternItr == LIKE_MATCH_ALL) {
       // CASE 1
 
-* Now we need to skip any MATCH_ALL or MATCH_ONE characters that follow a
-* MATCH_ALL character. For each MATCH_ONE character, skip one character
+* Now we need to skip any LIKE_MATCH_ALL or LIKE_MATCH_ONE characters that follow a
+* LIKE_MATCH_ALL character. For each LIKE_MATCH_ONE character, skip one character
 * in the pattern string.
 
-      while (*aPatternItr == MATCH_ALL || *aPatternItr == MATCH_ONE) {
-        if (*aPatternItr == MATCH_ONE) {
+      while (*aPatternItr == LIKE_MATCH_ALL || *aPatternItr == LIKE_MATCH_ONE) {
+        if (*aPatternItr == LIKE_MATCH_ONE) {
           // If we've hit the end of the string we are testing, no match
           if (aStringItr == aStringEnd)
             return 0;
@@ -659,7 +669,7 @@ likeCompare(nsAString::const_iterator aPatternItr,
 
       // No match
       return 0;
-    } else if (!lastWasEscape && *aPatternItr == MATCH_ONE) {
+    } else if (!lastWasEscape && *aPatternItr == LIKE_MATCH_ONE) {
       // CASE 2
       if (aStringItr == aStringEnd) {
         // If we've hit the end of the string we are testing, no match
@@ -721,4 +731,4 @@ StorageUnicodeFunctions::likeFunction(sqlite3_context *p,
                                     itrString, endString, E));
 }
 */
-#endif
+#endif //  __SQLITE3__
