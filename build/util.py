@@ -91,7 +91,8 @@ def get_git_branch_name():
     branch_name = os.popen(
         "git rev-parse --abbrev-ref HEAD").readline().strip()
     if branch_name == 'HEAD':
-        branch_name = '(no branch)'
+        # Use APPVEYOR_REPO_BRANCH variable if building on appveyor or (no branch) if unset
+        branch_name = os.getenv("APPVEYOR_REPO_BRANCH", '(no branch)')
     return branch_name
 
 
@@ -127,7 +128,7 @@ def get_mixxx_version():
     versionMask = '^\d+\.\d+\.\d+([-~].+)?$'
     if not re.match(versionMask, version):
         raise ValueError("Version format mismatch. See src/defs_version.h comment")
-        
+
     return version
 
 
@@ -157,7 +158,7 @@ def CheckForPKGConfig(context, version='0.0.0'):
     context.Result(ret)
     return ret
 
-    
+
 # Uses pkg-config to check for a minimum version
 def CheckForPKG(context, name, version=""):
     if version == "":
