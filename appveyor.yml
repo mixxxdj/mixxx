@@ -26,12 +26,12 @@ install:
   - echo *** Downloading and installing scons
   # SF.net download currently broken from EC2 to some mirrors, so hosting scons myself
 #  - curl -fsS -L -o scons-2.5.1.zip http://prdownloads.sourceforge.net/scons/scons-2.5.1.zip
-  - curl -fsS -L -o scons-2.5.1.zip http://url_to_appveyor_build_env/scons-2.5.1.zip
+  - curl -fsS -L -o scons-2.5.1.zip http://downloads.mixxx.org/builds/appveyor/environments/2.0/scons-2.5.1.zip
   - 7z x scons-2.5.1.zip
   - cd scons-2.5.1
   - python setup.py install
   - echo *** Downloading precompiled build environment if not in build-cache
-  - curl -fsS -L -o install_buildenv.bat http://url_to_appveyor_build_env/install_buildenv.bat
+  - curl -fsS -L -o install_buildenv.bat http://downloads.mixxx.org/builds/appveyor/environments/2.0/install_buildenv.bat
   - .\install_buildenv.bat %platform% %configuration%
 before_build:
   - cd C:\projects\mixxx
