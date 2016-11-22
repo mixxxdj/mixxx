@@ -842,6 +842,15 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>P32.leftDeck.cueShifted.input</key>
+                <status>0x94</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>P32.leftDeck.goToStart.input</key>
                 <status>0x94</status>
                 <midino>0x0A</midino>
@@ -860,9 +869,63 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.alignBeats.input</key>
+                <key>P32.leftDeck.syncMomentary.input</key>
                 <status>0x94</status>
-                <midino>0x09</midino>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.tempSlow.input</key>
+                <status>0x91</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.tempSlowShifted.input</key>
+                <status>0x94</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.tempFast.input</key>
+                <status>0x91</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.tempFastShifted.input</key>
+                <status>0x94</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.alignBeats.input</key>
+                <status>0x91</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.alignBeatsShifted.input</key>
+                <status>0x94</status>
+                <midino>0x46</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -870,8 +933,17 @@
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.quantize.input</key>
+                <status>0x91</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.quantizeShifted.input</key>
                 <status>0x94</status>
-                <midino>0x08</midino>
+                <midino>0x47</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1103,6 +1175,15 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>P32.rightDeck.cueShifted.input</key>
+                <status>0x95</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>P32.rightDeck.goToStart.input</key>
                 <status>0x95</status>
                 <midino>0x0A</midino>
@@ -1121,16 +1202,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.alignBeats.input</key>
-                <status>0x95</status>
-                <midino>0x09</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.quantize.input</key>
+                <key>P32.rightDeck.syncMomentary.input</key>
                 <status>0x95</status>
                 <midino>0x08</midino>
                 <options>
@@ -2040,15 +2112,6 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopToggle.input</key>
-                <status>0x92</status>
-                <midino>0x52</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>P32.sampler1.input</key>
                 <status>0x91</status>
                 <midino>0x30</midino>
@@ -2673,6 +2736,78 @@
                 <key>P32.rightDeck.loopTogglePadShifted.input</key>
                 <status>0x95</status>
                 <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.tempSlow.input</key>
+                <status>0x92</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.tempSlowShifted.input</key>
+                <status>0x95</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.tempFast.input</key>
+                <status>0x92</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.tempFastShifted.input</key>
+                <status>0x95</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.alignBeats.input</key>
+                <status>0x92</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.alignBeatsShifted.input</key>
+                <status>0x95</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.quantize.input</key>
+                <status>0x92</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.quantizeShifted.input</key>
+                <status>0x95</status>
+                <midino>0x47</midino>
                 <options>
                     <script-binding/>
                 </options>

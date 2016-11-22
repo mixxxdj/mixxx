@@ -887,13 +887,10 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     this.sync = new ToggleButton([0x90 + channel, 0x08], this.currentDeck, 'sync_enabled');
+    this.syncMomentary = new ToggleButtonAsymmetric([0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'beatsync', 'sync_enabled');
     this.cue = new CueButton([0x90 + channel, 0x09], this.currentDeck);
+    this.cueShifted = new CueButton([0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck);
     this.play = new PlayButton([0x90 + channel, 0x0A], this.currentDeck);
-
-    this.quantize = new ToggleButton(
-        [0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'quantize'); // sync shifted
-    this.alignBeats = new ActionButton(
-        [0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'beats_translate_curpos'); // cue shifted
     this.goToStart = new Control( // play shifted
         [0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck, 
         ['start_stop', function () { return 1; }],
@@ -928,6 +925,33 @@ P32.Deck = function (deckNumbers, channel) {
     this.loopTogglePadShifted = new LoopToggleButton(
         [0x90 + channel + P32.shiftOffset, 0x52], this.currentDeck,
         P32.padColors.red, P32.padColors.blue);
+
+    this.tempSlow = new ToggleButtonAsymmetric(
+        [0x90 + channel, 0x44], this.currentDeck,
+        'rate_temp_down', null, false);
+    this.tempSlow.send(P32.padColors.purple);
+    this.tempSlowShifted = new ToggleButtonAsymmetric(
+        [0x90 + channel + P32.shiftOffset, 0x44], this.currentDeck,
+        'rate_temp_down', null, false);
+    this.tempSlowShifted.send(P32.padColors.purple);
+    this.tempFast = new ToggleButtonAsymmetric(
+        [0x90 + channel, 0x45], this.currentDeck,
+        'rate_temp_up', null, false);
+    this.tempFast.send(P32.padColors.purple);
+    this.tempFastShifted = new ToggleButtonAsymmetric(
+        [0x90 + channel + P32.shiftOffset, 0x45], this.currentDeck,
+        'rate_temp_up', null, false);
+    this.tempFastShifted.send(P32.padColors.purple);
+    this.alignBeats = new ActionButton(
+        [0x90 + channel, 0x46], this.currentDeck, 'beats_translate_curpos', P32.padColors.blue);
+    this.alignBeatsShifted = new ActionButton(
+        [0x90 + channel + P32.shiftOffset, 0x46], this.currentDeck, 'beats_translate_curpos', P32.padColors.blue);
+    this.quantize = new ToggleButton(
+        [0x90 + channel, 0x47], this.currentDeck, 'quantize',
+        true, P32.padColors.red, P32.padColors.blue);
+    this.quantizeShifted = new ToggleButton(
+        [0x90 + channel + P32.shiftOffset, 0x47], this.currentDeck, 'quantize',
+        true, P32.padColors.red, P32.padColors.blue);
 
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
 
