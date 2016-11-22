@@ -124,7 +124,7 @@ void CmdlineArgs::printUsage() {
 \n\
 -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
--debugLevel LEVEL       Sets the verbosity of command line debug messages\n\
+--debugLevel LEVEL      Sets the verbosity of command line debug messages\n\
                         0 - Critical/Fatal only\n\
                         1 - Above + Warnings\n\
                         2 - Above + Debug/Developer messages\n\
