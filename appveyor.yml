@@ -31,9 +31,10 @@ install:
   - cd scons-2.5.1
   - python setup.py install
   - echo *** Downloading precompiled build environment if not in build-cache
+  - cd %APPVEYOR_BUILD_FOLDER%
   - build\appveyor\install_buildenv.bat %platform% %configuration%
 before_build:
-  - cd C:\projects\mixxx
+  - cd %APPVEYOR_BUILD_FOLDER%
 build_script:
   - build\appveyor\build_mixxx.bat %platform% %configuration%
 test_script:
