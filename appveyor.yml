@@ -14,9 +14,9 @@ configuration:
 environment:
   matrix:
     - platform: x64
-      bindir: dist64
+      distdir: dist64
     - platform: x86
-      bindir: dist32
+      distdir: dist32
 matrix:
   fast_finish: false     # set this flag to true to immediately finish build once one of the jobs fails.
 cache:
@@ -41,9 +41,9 @@ test_script:
   - echo *** Testing
   # Calling mixxx-test under bash to have standard output
   # and use stdbuf to unbuffer standard & error output
-  - bash -c "stdbuf -oL -eL %bindir%/mixxx-test.exe 2>&1"
+  - bash -c "stdbuf -oL -eL %distdir%/mixxx-test.exe 2>&1"
   - timeout 5 > NUL
-  - bash -c "stdbuf -oL -eL %bindir%/mixxx-test.exe --benchmark 2>&1"
+  - bash -c "stdbuf -oL -eL %distdir%/mixxx-test.exe --benchmark 2>&1"
   - timeout 5 > NUL
 artifacts:
   - path: '*.exe'
