@@ -6,8 +6,6 @@
 class LibraryTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    static const QString DEFAULT_LIBRARYFILTER;
-
     LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection,
                       const char* settingsNamespace);
     ~LibraryTableModel() override;
