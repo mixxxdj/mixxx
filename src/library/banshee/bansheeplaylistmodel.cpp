@@ -33,7 +33,6 @@
 
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
-          m_pTrackCollection(pTrackCollection),
           m_pConnection(pConnection),
           m_playlistId(-1) {
 }

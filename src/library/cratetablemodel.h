@@ -29,7 +29,6 @@ class CrateTableModel : public BaseSqlTableModel {
 
   private:
     int m_iCrateId;
-    CrateDAO& m_crateDAO;
 };
 
 #endif /* CRATETABLEMODEL_H */

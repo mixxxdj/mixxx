@@ -42,7 +42,6 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
     QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
 
-    TrackCollection* m_pTrackCollection;
     BansheeDbConnection* m_pConnection;
     int m_playlistId;
 };
