@@ -41,7 +41,7 @@ test_script:
   - echo *** Testing
   # Calling mixxx-test under bash to have standard output
   # and use stdbuf to unbuffer standard & error output
-  - bash -c "stdbuf -oL -eL %distdir%/mixxx-test.exe 2>&1"
+  - bash -c "stdbuf -oL -eL %distdir%/mixxx-test.exe --gtest_output=xml:test_results.xml 2>&1"
   - timeout 5 > NUL
   - bash -c "stdbuf -oL -eL %distdir%/mixxx-test.exe --benchmark 2>&1"
   - timeout 5 > NUL
@@ -53,6 +53,7 @@ on_success:
 on_failure:
   - echo "*** FAILURE ***"
 on_finish:
+  - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test_results.xml))
   # Uncomment the following line if you don't want the build VM to be destroyed
   # and be able to RDP on it until a special “lock” file on VM desktop is deleted
   # The RDP session is limited by overall build time (60 min).
