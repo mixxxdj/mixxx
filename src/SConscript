@@ -710,7 +710,7 @@ def BuildRelease(target, source, env):
         else:
             print "    Using Windows SDK in " + WinSDK_directory
 
-        WinSDK_path = '%s' % os.path.join(WinSDK_directory, "\Samples\sysmgmt\msi\scripts")
+        WinSDK_path = '%s' % os.path.join(WinSDK_directory, "Samples\sysmgmt\msi\scripts")
 
         if not os.path.isfile(WinSDK_path + '\wisubstg.vbs'):
             raise Exception ('can not find ' + WinSDK_path + '\wisubstg.vbs')
