@@ -65,7 +65,6 @@ class MixxxTest : public testing::Test {
     static QScopedPointer<MixxxApplication> s_pApplication;
 
     const QDir m_testDataDir;
-    const QString m_testDataCfg;
 
   protected:
     UserSettingsPointer m_pConfig;
