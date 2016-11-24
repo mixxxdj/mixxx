@@ -40,21 +40,25 @@ class MixxxTest : public testing::Test {
         return s_pApplication.data();
     }
 
-    UserSettingsPointer config() {
+    UserSettingsPointer config() const {
         return m_pConfig;
     }
 
-    ControlProxy* getControlProxy(const ConfigKey& key) {
+    ControlProxy* getControlProxy(const ConfigKey& key) const {
         return new ControlProxy(key);
     }
 
-    QTemporaryFile* makeTemporaryFile(const QString contents) {
+    QTemporaryFile* makeTemporaryFile(const QString& contents) const {
         QByteArray contentsBa = contents.toLocal8Bit();
         QTemporaryFile* file = new QTemporaryFile();
         file->open();
         file->write(contentsBa);
         file->close();
         return file;
+    }
+
+    QDir getTestDataDir() const {
+        return m_testDataDir;
     }
 
   private:
@@ -64,7 +68,7 @@ class MixxxTest : public testing::Test {
     const QString m_testDataCfg;
 
   protected:
-    const UserSettingsPointer m_pConfig;
+    UserSettingsPointer m_pConfig;
 };
 
 
