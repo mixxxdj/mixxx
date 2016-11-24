@@ -33,88 +33,184 @@ var samplerCrossfaderAssign = true;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
+'use strict';
+/*
+Vanilla JS port of jQuery's extend function
+from https://github.com/justmoon/node-extend/blob/master/index.js
 
-var Control = function (signals, group, inOptions, outOptions) {
-    /**
-    A Control represents a physical component on a controller, such as a button, knob, encoder, or fader.
-    This constructor function can help set up both the input and output handling functions easily.
-    Derivative objects are provided below with even more convenient constructor functions for common use cases.
+The MIT License (MIT)
 
-    Any of these parameters can be null or ommitted, which can be helpful when setting this Control's properties after initialization.
-    It is also helpful to intentionally avoid overwriting certain properties of Controls using LayerContainer.applyLayer().
+Copyright (c) 2014 Stefan Thomas
 
-    signals, array with 2 members: first two bytes of the MIDI message (status and note numbers)
-    group, string: the group this belongs to, for example '[Channel1]'
-    inOptions, array with up to 3 members:
-        1st member of array, string: Mixxx CO that this affects when receiving MIDI input, for example, 'play'
-        2nd member of array, function: function to execute upon receiving MIDI input. The function should return
-                                       the value to set the 1st member of the array to. The function's 'this' object
-                                       is set to the Control. If null, you need to set the inFunc or input property yourself,
-                                       which is helpful if you want to define a long, custom input function.
-        3rd member of array, boolean, optional: whether to react only when a button is pressed, or on both press & release.
-                                                Default to true if ommitted.
-    outOptions, array with up to 4 members, optional: If null or ommitted, you need to set up the output yourself.
-        1st member of array, string: send signals back to the controller when this Mixxx CO changes, for example, 'play_indicator'
-        2nd member of array, function: function to execute when Mixxx CO specified by 1st member of array changes.
-                                       The function should return a value to send back as the 3rd byte of a MIDI message
-                                       (with the first 2 bytes of the MIDI message being those specified in the first argument).
-                                       The function's 'this' object is set to the Control. If null, you need to set the input property yourself,
-                                       which is helpful if you want to define a long, custom output function.
-        3rd member of array, boolean, optional: whether to connect the Mixxx CO (1st member) to the function (2nd member) immediately.
-                                                Default to true if ommitted.
-        4th member of array, boolean, optional: whether to execute the function (2nd member) immediately. Default to true if ommitted.
-    **/
-    if (arguments.length === 1 && arguments[0] === null) {
-        this = null;
-        return;
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+var hasOwn = Object.prototype.hasOwnProperty;
+var toStr = Object.prototype.toString;
+
+var isArray = function isArray(arr) {
+    if (typeof Array.isArray === 'function') {
+        return Array.isArray(arr);
     }
 
-    var that = this;
+    return toStr.call(arr) === '[object Array]';
+};
 
-    if (Array.isArray(signals)) {
-        this.midi = {status: signals[0], note: signals[1]};
+var isPlainObject = function isPlainObject(obj) {
+    if (!obj || toStr.call(obj) !== '[object Object]') {
+        return false;
     }
-    if (typeof group === 'string') {
-        this.group = group;
+
+    var hasOwnConstructor = hasOwn.call(obj, 'constructor');
+    var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+    // Not own constructor property must be Object
+    if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
+        return false;
     }
 
-    this.setValue = function (value) {
-        engine.setValue(this.group, this.inCo, value);
-    };
+    // Own properties are enumerated firstly, so to speed up,
+    // if last one is own, then all properties are own.
+    var key;
+    for (key in obj) { /**/ }
 
-    this.getValue = function () {
-        return engine.getValue(this.group, this.inCo);
-    };
+    return typeof key === 'undefined' || hasOwn.call(obj, key);
+};
 
-    this.toggle = function () {
-        this.setValue( ! this.getValue());
-    };
+script.extend = function extend() {
+    var options, name, src, copy, copyIsArray, clone;
+    var target = arguments[0];
+    var i = 1;
+    var length = arguments.length;
+    var deep = false;
 
-    this.inSetup = function (inOptions) {
-        if (inOptions === null || inOptions === undefined) {
-            return;
+    // Handle a deep copy situation
+    if (typeof target === 'boolean') {
+        deep = target;
+        target = arguments[1] || {};
+        // skip the boolean and the target
+        i = 2;
+    } else if ((typeof target !== 'object' && typeof target !== 'function') || target == null) {
+        target = {};
+    }
+
+    for (; i < length; ++i) {
+        options = arguments[i];
+        // Only deal with non-null/undefined values
+        if (options != null) {
+            // Extend the base object
+            for (name in options) {
+                src = target[name];
+                copy = options[name];
+
+                // Prevent never-ending loop
+                if (target !== copy) {
+                    // Recurse if we're merging plain objects or arrays
+                    if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+                        if (copyIsArray) {
+                            copyIsArray = false;
+                            clone = src && isArray(src) ? src : [];
+                        } else {
+                            clone = src && isPlainObject(src) ? src : {};
+                        }
+
+                        // Never move original objects, clone them
+                        target[name] = extend(deep, clone, copy);
+
+                    // Don't bring in undefined values
+                    } else if (typeof copy !== 'undefined') {
+                        target[name] = copy;
+                    }
+                }
+            }
         }
-        this.inCo = inOptions[0];
-        var inFunc = inOptions[1];
-        if (inFunc === undefined) {inFunc = function (value) {return value;};}
-        this.onlyOnPress = inOptions[2];
-        if (this.onlyOnPress === undefined) {this.onlyOnPress = true;}
-        this.input = function (channel, control, value, status, group) {
-            // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
-            if (that.onlyOnPress) {
+    }
+
+    // Return the modified object
+    return target;
+};
+
+/* end MIT licensed code */
+
+/**
+A Control represents a physical component on a controller, such as a button, knob, encoder, or fader.
+**/
+var Control = function (options) {
+    if (Array.isArray(options) && typeof options[0] === 'number') {
+        this.midi = options;
+    } else {
+        script.extend(this, options);
+    }
+
+    // This cannot be in the prototype; it must be unique to each instance.
+    this.connections = [];
+
+    if (this.outConnect && this.group !== undefined && this.outCo !== undefined) {
+        this.connect();
+        if (this.outTrigger) {
+            this.trigger();
+        }
+    }
+};
+Control.prototype = {
+    /**
+     default attributes
+     You should probably overwrite at least some of these.
+     **/
+    inFunc: function (value) {return value;} ,
+    input: function (channel, control, value, status, group) {
+            if (this.onlyOnPress) {
                 if (value > 0) {
-                    that.setValue(inFunc.call(that, value));
+                    this.setValue(this.inFunc.call(this, value));
                 }
             } else {
-                that.setValue(inFunc.call(that, value));
+                this.setValue(this.inFunc.call(this, value));
             }
-        };
-    };
-    this.inSetup(inOptions);
-    this.previousInput = null;
+        },
+    outFunc: function (value) {return value;},
+    output: function (value, group, control) {
+                this.send(this.outFunc.call(this, value));
+            },
+    onlyOnPress: true,
+    outConnect: true,
+    outTrigger: true,
+    on: 127,
+    off: 0,
 
-    this.connections = [];
-    this.connect = function () {
+    /**
+     common functions
+     In most cases, you should not overwrite these.
+     **/
+    setValue: function (value) {
+        engine.setValue(this.group, this.inCo, value);
+    },
+    // outCo value is set by output() callback, so no need for separate setValueIn/setValueOut functions
+    getValueIn: function () {
+        return engine.getValue(this.group, this.inCo);
+    },
+    getValueOut: function () {
+        return engine.getValue(this.group, this.outCo);
+    },
+    toggle: function () {
+        this.setValue( ! this.getValueIn());
+    },
+    connect: function () {
         /**
         Override this method with a custom one to connect multiple Mixxx COs
         for a single Control. Add the connection objects to the this.connections array so
@@ -124,195 +220,95 @@ var Control = function (signals, group, inOptions, outOptions) {
         and SamplerButton.output() for an example.
         **/
         this.connections[0] = engine.connectControl(this.group, this.outCo, this.output);
-    };
-    this.disconnect = function () {
-        this.connections.forEach(function (connection) {
-            connection.disconnect();
-        });
-    };
-    this.trigger = function() { engine.trigger(this.group, this.outCo); };
-    this.send = function (value) { midi.sendShortMsg(this.midi.status, this.midi.note, value); };
-
-    this.outSetup = function (outOptions) {
-        if (outOptions === null || outOptions === undefined) {
-            return;
+    },
+    disconnect: function () {
+        if (this.connections.length > 0) {
+            this.connections.forEach(function (connection) {
+                connection.disconnect();
+            });
         }
-        this.outCo = outOptions[0];
-        this.outFunc = outOptions[1];
-        var connect = outOptions[2];
-        var trigger = outOptions[3];
-        if (this.outFunc === undefined) {this.outFunc = function (value) {return value;};}
-        if (connect === undefined) {connect = true;}
-        if (trigger === undefined) {trigger = true;}
-        if (this.outFunc === null) {
-            this.output = null;
-        } else {
-            this.output = function (value, group, control) {
-                this.send(this.outFunc.call(this, value));
-            };
+    },
+    trigger: function() { engine.trigger(this.group, this.outCo); },
+    send: function (value) {
+        midi.sendShortMsg(this.midi[0], this.midi[1], value);
+        if (this.sendShifted) {
+            midi.sendShortMsg(this.midi[0] + this.shiftOffset, this.midi[1], value);
         }
-        if (connect) { this.connect(); }
-        if (trigger) { this.trigger(); }
-    };
-    this.outSetup(outOptions);
-    this.previousOutput = null;
+    },
+    sendShifted: false,
+    shiftOffset: 0,
 };
 
-var ToggleButton = function (signals, group, co, onlyOnPress, on, off) {
-    /**
-    A Control that toggles a binary Mixxx CO
-
-    signals: two member array, first two bytes of the MIDI message (status and note numbers)
-    group: string, the group this belongs to, for example '[Channel1]'
-    co, string: the Mixxx CO to toggle
-    onlyOnPress, boolean, optional: whether to toggle the CO only when the button is pressed,
-                                    or on both press and release. Defaults to true if ommited.
-    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when the Mixxx CO is on
-                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
-    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when the Mixxx CO is off
-                           Defaults to 0 if ommitted.
-    **/
-    if (on === undefined) {on = 127;}
-    if (off === undefined) {off = 0;}
-    Control.call(this, signals, group,
-                [co, function () { return ! this.getValue(); }, onlyOnPress],
-                [co, function () { return (this.getValue()) ? on : off; } ]);
+var Button = function (options) {
+    if (options !== undefined && typeof options.co === 'string') {
+        this.inCo = options.co;
+        this.outCo = options.co;
+    }
+    Control.call(this, options);
 };
-ToggleButton.prototype = Object.create(Control.prototype);
-ToggleButton.prototype.constructor = ToggleButton;
+Button.prototype = new Control({
+    inFunc: function() { return ! this.getValueIn(); },
+    outFunc: function() { return (this.getValueOut()) ? this.on : this.off; }
+});
 
-var ToggleButtonAsymmetric = function (signals, group, inCo, outCo, onlyOnPress, on, off) {
-    /**
-    A Control that toggles a binary Mixxx CO, but its LEDs respond to a different CO
-
-    signals: two member array, first two bytes of the MIDI message (status and note numbers)
-    group: string, the group this belongs to, for example '[Channel1]'
-    inCo, string: the Mixxx CO to toggle when receiving MIDI input
-    outCo, string: send signals back to the controller when this Mixxx CO changes
-    onlyOnPress, boolean, optional: whether to toggle inCO only when the button is pressed,
-                                    or on both press and release. Defaults to true if ommited.
-    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when outCo on
-                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
-    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when outCo is off
-                           Defaults to 0 if ommitted.
-    **/
-    if (on === undefined) {on = 127;}
-    if (off === undefined) {off = 0;}
-    Control.call(this, signals, group,
-                [inCo, function () { return ! this.getValue(); }, onlyOnPress],
-                [outCo, function (value) { return (value) ? on : off; } ]);
+var PlayButton = function (options) {
+    Button.call(this, options);
 };
-ToggleButtonAsymmetric.prototype = Object.create(Control.prototype);
-ToggleButtonAsymmetric.prototype.constructor = ToggleButtonAsymmetric;
+PlayButton.prototype = new Button({
+    inCo: 'play',
+    outCo: 'play_indicator'
+});
 
-var CueButton = function (signals, group, on, off) {
-    /**
-    A Control for cue buttons
-
-    signals: two member array, first two bytes of the MIDI message (status and note numbers)
-    group: string, the group this belongs to, for example '[Channel1]'
-    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when cue_indicator is 1
-                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
-    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when cue_indicator is 0
-                           Defaults to 0 if ommitted.
-    **/
-    if (on === undefined) {on = 127;}
-    if (off === undefined) {off = 0;}
-    ToggleButtonAsymmetric.call(this, signals, group, 'cue_default', 'cue_indicator', false, on, off);
+var CueButton = function (options) {
+    Button.call(this, options);
 };
-CueButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
-CueButton.prototype.constructor = CueButton;
+CueButton.prototype = new Button({
+    inCo: 'cue_default',
+    outCo: 'cue_indicator',
+    onlyOnPress: false
+});
 
-var PlayButton = function (signals, group, on, off) {
-    /**
-    A Control for play buttons
-
-    signals: two member array, first two bytes of the MIDI message (status and note numbers)
-    group: string, the group this belongs to, for example '[Channel1]'
-    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when play_indicator is 1
-                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
-    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when play_indicator is 0
-                           Defaults to 0 if ommitted.
-    **/
-    if (on === undefined) {on = 127;}
-    if (off === undefined) {off = 0;}
-    ToggleButtonAsymmetric.call(this, signals, group,
-                               'play', 'play_indicator', true, on, off);
+var LoopButton = function (options) {
+    Button.call(this, options);
 };
-PlayButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
-PlayButton.prototype.constructor = PlayButton;
+LoopButton.prototype = new Button({
+    inCo: 'reloop_exit',
+    inFunc: function() { return 1; },
+    outCo: 'loop_enabled',
+    outFunc: function(value) { return (value) ? this.on : this.off; }
+});
 
-
-var ActionButton = function (signals, group, inCo, on) {
-    Control.call(this,
-                 signals, group,
-                 [inCo, function () { return 1; }],
-                 null);
-
-   if (on !== undefined) {
-       this.send(on);
-   }
-}
-
-var LoopToggleButton = function (signals, group, on, off) {
-    if (on === undefined) {on = 127;}
-    if (off === undefined) {off = 0;}
-    Control.call(this,
-        signals, group,
-        ['reloop_exit', function () { return 1; }],
-        ['loop_enabled', function (value) { return (value) ? on : off; } ]);
-}
-LoopToggleButton.prototype = Object.create(Control.prototype);
-LoopToggleButton.prototype.constructor = LoopToggleButton;
-
-var HotcueButton = function (signals, group, hotcueNumber, on, off) {
-    /**
-    A Control for hotcue buttons
-
-    signals: two member array, first two bytes of the MIDI message (status and note numbers)
-    group: string, the group this belongs to, for example '[Channel1]'
-    hotcueNumber, number: the number of the hotcue
-    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when cue_indicator is 1
-                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
-    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when cue_indicator is 0
-                           Defaults to 0 if ommitted.
-    **/
-    if (on === undefined) {on = 127;}
-    if (off === undefined) {off = 0;}
-    ToggleButtonAsymmetric.call(this, signals, group,
-                               'hotcue_'+hotcueNumber+'_activate', 'hotcue_'+hotcueNumber+'_enabled', false, on, off);
+var HotcueButton = function (options) {
+    if (options.number === undefined) {
+        print('WARNING: No hotcue number specified for new HotcueButton.');
+    }
+    this.number = options.number;
+    this.inCo = 'hotcue_' + this.number + '_activate';
+    this.outCo = 'hotcue_' + this.number + '_enabled';
+    Button.call(this, options);
 };
-HotcueButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
-HotcueButton.prototype.constructor = HotcueButton;
+HotcueButton.prototype = new Button({
+    onlyOnPress: false
+});
 
-var HotcueClearButton = function (signals, group, hotcueNumber, on, off) {
-    /**
-    A Control for buttons to clear a hotcue. Typically, these are the same buttons as HotcueButtons,
-    but active with a shift button held.
-
-    signals: two member array, first two bytes of the MIDI message (status and note numbers)
-    group: string, the group this belongs to, for example '[Channel1]'
-    hotcueNumber, number: the number of the hotcue
-    on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when cue_indicator is 1
-                          Defaults to 127 if ommited. Use this if the button has a multicolor LED.
-    off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when cue_indicator is 0
-                           Defaults to 0 if ommitted.
-    **/
-    if (on === undefined) {on = 127;}
-    if (off === undefined) {off = 0;}
-    HotcueButton.call(this, signals, group, hotcueNumber, on, off);
-    this.inSetup(['hotcue_'+hotcueNumber+'_clear', function () {return 1;} ]);
+var HotcueClearButton = function (options) {
+    if (options.number === undefined) {
+        print('WARNING: No hotcue number specified for new HotcueClearButton.');
+    }
+    this.number = options.number;
+    this.inCo = 'hotcue_' + this.number + '_clear';
+    this.outCo = 'hotcue_' + this.number + '_enabled';
+    Button.call(this, options);
 };
-HotcueClearButton.prototype = Object.create(HotcueButton.prototype);
-HotcueClearButton.prototype.constructor = HotcueClearButton;
+HotcueClearButton.prototype = new Button();
 
 /**
 A Control for sampler buttons. Press the button to load the track selected in
 the library into an empty sampler. Press a loaded sampler to play it from
 its cue point. Press again while playing to jump back to the cue point.
 
-@param {Array} signals: first two bytes of the MIDI message (status and note numbers)
-@param {Integer} samplerNumber: number of the sampler
+@param {Array} midi: first two bytes of the MIDI message (status and note numbers)
+@param {Integer} number: number of the sampler
 @param {Number} on (optional): MIDI value to send back to button LED when sampler
                                is loaded. Defaults to 127. Use this to for multicolor LEDs.
 @param {Number} off (optional): MIDI value to send back to button LED when sampler
@@ -323,52 +319,49 @@ its cue point. Press again while playing to jump back to the cue point.
                                     the "on" parameter is sent when the sampler
                                     is loaded, regardless of whether it is playing.
 **/
-var SamplerButton = function (signals, samplerNumber, on, off, playing) {
-    if (on === undefined) {on = 127;}
-    if (off === undefined) {off = 0;}
-    // track_samples is 0 when the sampler is empty and > 0 when a sample is loaded
-    Control.call(this, signals, '[Sampler' + samplerNumber + ']', null,
-                 null);
-    var that = this; // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
-
-    this.input = function (channel, control, value, status, group) {
+var SamplerButton = function (options) {
+    if (options.number === undefined) {
+        print('WARNING: No sampler number specified for new SamplerButton.');
+    }
+    this.number = options.number;
+    this.group = '[Sampler' + this.number + ']';
+    Button.call(this, options);
+};
+SamplerButton.prototype = new Button({
+    input: function (channel, control, value, status, group) {
         if (value > 0) {
-            if (engine.getValue(that.group, 'track_samples') === 0) {
-                engine.setValue(that.group, 'LoadSelectedTrack', 1);
+            // track_samples is 0 when the sampler is empty and > 0 when a sample is loaded
+            // TODO: duration?
+            if (engine.getValue(this.group, 'track_samples') === 0) {
+                engine.setValue(this.group, 'LoadSelectedTrack', 1);
             } else {
-                engine.setValue(that.group, 'cue_gotoandplay', 1);
+                engine.setValue(this.group, 'cue_gotoandplay', 1);
             }
         }
-    };
-
-    this.output = function (value, group, control) {
-        if (engine.getValue(that.group, 'track_samples') > 0) {
-            if (playing === undefined) {
-                that.send(on);
+    },
+    output: function (value, group, control) {
+        if (engine.getValue(this.group, 'track_samples') > 0) {
+            if (this.playing === undefined) {
+                this.send(this.on);
             } else {
-                if (engine.getValue(that.group, 'play') === 1) {
-                    that.send(on);
+                if (engine.getValue(this.group, 'play') === 1) {
+                    this.send(this.on);
                 } else {
-                    that.send(playing);
+                    this.send(this.playing);
                 }
             }
         } else {
-            that.send(off);
+            this.send(this.off);
         }
-    };
-
-    this.connect = function() {
+    },
+    connect: function() {
         this.connections[0] = engine.connectControl(this.group, 'track_samples', this.output);
-        if (playing !== undefined) {
+        if (this.playing !== undefined) {
             this.connections[1] = engine.connectControl(this.group, 'play', this.output);
         }
-    };
-
-    this.connect();
-    this.trigger();
-}
-SamplerButton.prototype = Object.create(Control.prototype);
-SamplerButton.prototype.constructor = SamplerButton;
+    },
+    outCo: null, // hack to get Control constructor to call connect()
+});
 
 /**
 A Control for buttons to stop samplers. Typically, these are the same buttons
@@ -387,25 +380,27 @@ eject the loaded sample.
                                     the "on" parameter is sent when the sampler
                                     is loaded, regardless of whether it is playing.
 **/
-var SamplerStopButton = function (signals, samplerNumber, on, off, playing) {
-    SamplerButton.call(this, signals, samplerNumber, on, off, playing);
-
-    var that = this; // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
-
-    this.input = function (channel, control, value, status, group) {
+var SamplerClearButton = function (options) {
+    if (options.number === undefined) {
+        print('WARNING: No sampler number specified for new SamplerClearButton.');
+    }
+    this.number = options.number;
+    this.group = '[Sampler' + this.number + ']';
+    Button.call(this, options);
+};
+SamplerClearButton.prototype = new SamplerButton({
+    input: function (channel, control, value, status, group) {
         if (value > 0) {
-            if (engine.getValue(that.group, 'play') === 1) {
-                engine.setValue(that.group, 'play', 0);
+            if (engine.getValue(this.group, 'play') === 1) {
+                engine.setValue(this.group, 'play', 0);
             } else {
-                engine.setValue(that.group, 'eject', 1);
+                engine.setValue(this.group, 'eject', 1);
             }
         }
-    };
-}
-SamplerStopButton.prototype = Object.create(SamplerButton);
-SamplerStopButton.prototype.constructor = SamplerStopButton;
+    }
+});
 
-var CC = function (signals, group, co, softTakeoverInit, max) {
+var CC = function (options) {
     /**
     A Control for faders and knobs with finite ranges. Although these do not
     respond to a change in a Mixxx CO to send MIDI signals back to the controller,
@@ -422,94 +417,71 @@ var CC = function (signals, group, co, softTakeoverInit, max) {
                                          So, for these controllers, call this constructor function with softTakeoverInit as false.
     max, number, optional: the maximum value received from the controller. Defaults to 127 if ommitted.
     **/
-    var that = this;
-    if (softTakeoverInit === undefined) { softTakeoverInit = true; }
-    if (max === undefined) { max = 127; }
-    Control.call(this, signals, group,
-                 [co, null],
-                 null);
+    if (options !== undefined && typeof options.co === 'string') {
+        this.inCo = options.co;
+    }
 
-    this.input = function (channel, control, value, status, group) {
-        engine.setParameter(that.group, co, value / max);
-    };
+    Control.call(this, options);
 
-    this.connect = function () {
-        engine.softTakeover(that.group, that.inCo, true);
-    };
-    if (softTakeoverInit) {
+    if (this.softTakeoverInit) {
         this.connect();
     }
-    this.disconnect = function () {
-        engine.softTakeoverIgnoreNextValue(that.group, that.inCo);
-    };
-    this.trigger = function () {};
 };
-CC.prototype = Object.create(Control.prototype);
-CC.prototype.constructor = CC;
+CC.prototype = new Control({
+    input: function (channel, control, value, status, group) {
+        // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
+        if (this.range === undefined) {
+            engine.setParameter(this.group, this.inCo, value / this.max);
+        } else if (Array.isArray(this.range)) {
+            switch (this.range.length) {
+                case 2:
+                    engine.setValue(this.group, this.inCo,
+                                    script.absoluteLin(value, this.range[0], this.range[1]));
+                    break;
+                case 3:
+                    engine.setValue(this.group, this.inCo,
+                                    script.absoluteNonLin(value, this.range[0], this.range[1], this.range[2]));
+                    break;
+                case 4:
+                    engine.setValue(this.group, this.inCo,
+                                    script.absoluteLin(value, this.range[0], this.range[1], this.range[2], this.range[3]));
+                    break;
+                case 5:
+                    engine.setValue(this.group, this.inCo,
+                                    script.absoluteNonLin(value, this.range[0], this.range[1], this.range[2], this.range[3], this.range[4]));
+                    break;
+            }
+        }
+    },
+    connect: function () {
+        engine.softTakeover(this.group, this.inCo, true);
+    },
+    disconnect: function () {
+        engine.softTakeoverIgnoreNextValue(this.group, this.inCo);
+    },
+    trigger: function () {},
+    max: 127,
+    softTakeoverInit: true
+});
 
-// FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
-var CCLin = function (signals, group, co, softTakeoverInit, low, high, min, max) {
-    /**
-    A CC for Mixxx COs with linear responses, because engine.softTakeover()
-    doesn't work with soft takeover yet.
+/**
+A LayerContainer is an object that contains Controls as properties, with
+methods to help manipulate the Controls. Layers are merely objects that
+contain Controls to overwrite the active Controls of a LayerContainer. Layers
+are deeply merged with the applyLayer() method, so if a new layer does not
+define a property for a Control, the Control's old property will be retained.
+To avoid defining properties of Controls, pass null as an argument to the
+Control constructor function.
 
-    signals: two member array, first two bytes of the MIDI message (status and note numbers)
-    group: string, the group this belongs to, for example '[Channel1]'
-    co, string: the Mixxx CO to change
-    softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults to true if ommitted.
-                                         Some controllers (like the Hercules P32) can be sent a message to tell it to send
-                                         signals back with the positions of all the controls. It is helpful to send the message
-                                         in the script's init function, but it requires that soft takeover isn't enabled to work.
-                                         So, for these controllers, call this constructor function with softTakeoverInit as false.
-    low, high, min, max: arguments for script.absoluteLin()
-    **/
-    var that = this;
-    CC.call(this, signals, group, co, softTakeoverInit);
-    this.input = function (channel, control, value, status, group) {
-        engine.setValue(that.group, that.inCo, script.absoluteLin(value, low, high, min, max));
-    };
-};
-CCLin.prototype = Object.create(CC.prototype);
-CCLin.prototype.constructor = CCLin;
-
-// FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
-var CCNonLin = function (signals, group, co, softTakeoverInit, low, mid, high, min, max) {
-    /**
-    A CC for Mixxx COs with nonlinear responses, because engine.softTakeover()
-    doesn't work with soft takeover yet.
-
-    signals: two member array, first two bytes of the MIDI message (status and note numbers)
-    group: string, the group this belongs to, for example '[Channel1]'
-    co, string: the Mixxx CO to change
-    softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults to true if ommitted.
-                                         Some controllers (like the Hercules P32) can be sent a message to tell it to send
-                                         signals back with the positions of all the controls. It is helpful to send the message
-                                         in the script's init function, but it requires that soft takeover isn't enabled to work.
-                                         So, for these controllers, call this constructor function with softTakeoverInit as false.
-    low, mid, high, min, max: arguments for script.absoluteNonLin()
-    **/
-    var that = this;
-    CC.call(this, signals, group, co, softTakeoverInit);
-    this.input = function (channel, control, value, status, group) {
-        engine.setValue(that.group, that.inCo, script.absoluteNonLin(value, low, mid, high, min, max));
-    };
-};
-CCNonLin.prototype = Object.create(CC.prototype);
-CCNonLin.prototype.constructor = CCNonLin;
-
+initialLayer, object, optional: the layer to activate upon initialization
+**/
 var LayerContainer = function (initialLayer) {
-    /**
-    A LayerContainer is an object that contains Controls as properties, with
-    methods to help manipulate the Controls. Layers are merely objects that
-    contain Controls to overwrite the active Controls of a LayerContainer. Layers
-    are deeply merged with the applyLayer() method, so if a new layer does not
-    define a property for a Control, the Control's old property will be retained.
-    To avoid defining properties of Controls, pass null as an argument to the
-    Control constructor function.
-
-    initialLayer, object, optional: the layer to activate upon initialization
-    **/
-    this.forEachControl = function (operation, recursive) {
+    if (typeof initialLayer === 'object') {
+        this.applyLayer(initialLayer);
+    }
+};
+LayerContainer.prototype = {
+    forEachControl: function (operation, recursive) {
         /**
         operation, function that takes 1 argument: the function to call for each Control.
                                                    Takes each Control as its first argument.
@@ -528,7 +500,7 @@ var LayerContainer = function (initialLayer) {
             if (obj instanceof Control) {
                 operation.call(that, obj);
             } else if (recursive && obj instanceof LayerContainer) {
-                obj.forEachControl(op);
+                obj.forEachControl(operation);
             } else if (Array.isArray(obj)) {
                 obj.forEach(function (element) {
                     applyOperationTo(element);
@@ -541,9 +513,8 @@ var LayerContainer = function (initialLayer) {
                 applyOperationTo(this[memberName]);
             }
         }
-    };
-
-    this.reconnectControls = function (operation) {
+    },
+    reconnectControls: function (operation, recursive) {
         /**
         operation, function that takes one argument, optional: a function to call for each Control in this LayerContainer
                                                                before reconnecting the output callback.
@@ -556,19 +527,12 @@ var LayerContainer = function (initialLayer) {
             }
             control.connect();
             control.trigger();
-        });
-    };
-
-    this.applyLayer = function (newLayer, operation) {
-        //FIXME: What is the best way to implement script.extend?
-        //There is a pure JS port of jQuery's extend method at https://github.com/justmoon/node-extend under the MIT License
-        //Copy that into common-controller-scripts.js? Make it a separate file to include in the XML?
-        script.extend(true, this, newLayer); // Recursively merge newLayer with this LayerContainer
+        }, recursive);
+    },
+    applyLayer: function (newLayer, operation) {
+        // Recursively merge newLayer with this LayerContainer
+        script.extend(true, this, newLayer);
         this.reconnectControls(operation);
-    };
-
-    if (typeof initialLayer === 'object') {
-        this.applyLayer(initialLayer);
     }
 };
 
@@ -587,17 +551,20 @@ var Deck = function (deckNumbers) {
     deckNumbers, array of numbers, size arbitrary: which deck numbers this can cycle through with the toggle() method
                                                    Typically [1, 3] or [2, 4]
     **/
-    LayerContainer.call(this);
-    this.currentDeck = '[Channel' + deckNumbers[0] + ']';
-
-    this.toggle = function () {
-        var index = deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
-        if (index === (deckNumbers.length - 1)) {
+    if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
+        this.currentDeck = '[Channel' + deckNumbers[0] + ']';
+        this.deckNumbers = deckNumbers;
+    }
+};
+Deck.prototype = new LayerContainer({
+    toggle: function () {
+        var index = this.deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
+        if (index === (this.deckNumbers.length - 1)) {
             index = 0;
         } else {
             index += 1;
         }
-        this.currentDeck = "[Channel" + deckNumbers[index] + "]";
+        this.currentDeck = "[Channel" + this.deckNumbers[index] + "]";
 
         this.reconnectControls(function (control) {
             if (control.group.search(script.eqKnobRegEx) !== -1) {
@@ -608,40 +575,47 @@ var Deck = function (deckNumbers) {
                 control.group = this.currentDeck;
             }
         });
-    };
-};
-Deck.prototype = Object.create(LayerContainer.prototype);
-Deck.prototype.constructor = Deck;
+    }
+});
 
 var P32 = {};
 
 P32.init = function () {
+    Control.prototype.shiftOffset = 3;
+    CC.prototype.softTakeoverInit = false;
     P32.leftDeck = new P32.Deck([1,3], 1);
     P32.rightDeck = new P32.Deck([2,4], 2);
 
     if (engine.getValue('[Master]', 'num_samplers') < 32) {
         engine.setValue('[Master]', 'num_samplers', 32);
     }
+    this.sampler = [];
+    this.samplerClear = [];
     for (var channel = 1; channel <= 2; channel++) {
         for (var s = 1; s <= 16; s++) {
             var samplerNumber = s + (channel - 1) * 16;
-            this['sampler' + samplerNumber] = new SamplerButton(
-                [0x90 + channel, P32.PadNumToMIDIControl(s, 0)], samplerNumber,
-                P32.padColors.red, P32.padColors.off, P32.padColors.blue);
-            this['samplerClear' + samplerNumber] = new SamplerStopButton(
-                [0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(s, 0)], samplerNumber,
-                P32.padColors.red, P32.padColors.off, P32.padColors.blue);
+            this.sampler[samplerNumber] = new SamplerButton({
+                midi: [0x90 + channel, P32.PadNumToMIDIControl(s, 0)],
+                number: samplerNumber,
+                on: P32.padColors.red,
+                off: P32.padColors.off,
+                playing: P32.padColors.blue
+            });
+            this.samplerClear[samplerNumber] = new SamplerClearButton({
+                midi: [0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(s, 0)],
+                number: samplerNumber,
+                on: P32.padColors.red,
+                off: P32.padColors.off,
+                playing: P32.padColors.blue
+            });
+            if (samplerCrossfaderAssign) {
+                engine.setValue('[Sampler' + s + ']',
+                                'orientation',
+                                (channel === 1) ? 0 : 2
+                );
+            }
         }
     }
-    if (samplerCrossfaderAssign) {
-      for (s = 1; s <= 16; s++) {
-        engine.setValue('[Sampler' + s + ']', 'orientation', 0);
-      }
-      for (s = 17; s <= 32; s++) {
-        engine.setValue('[Sampler' + s + ']', 'orientation', 2);
-      }
-    }
-
     // tell controller to send MIDI messages with positions of faders and knobs
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
 };
@@ -678,197 +652,25 @@ P32.headMix = function (channel, control, value, status, group) {
     engine.setValue('[Master]', 'headMix', engine.getValue('[Master]', 'headMix') + (0.25 * direction));
 };
 
-P32.record = new Control([0x90, 0x02], '[Recording]',
-                         null,
-                         ['status', function (val) {return val * 127;} ]);
-P32.record.input = function (channel, control, value, status, group) {
-    if (value === 127) {
-        if (P32.leftDeck.shift) {
-            P32.leftDeck.toggle();
-        } else if (P32.rightDeck.shift) {
-            P32.rightDeck.toggle();
-        } else {
-            script.toggleControl('[Recording]', 'toggle_recording');
-        }
-    }
-};
-
-P32.EffectUnit = function (unitNumber) {
-    var that = this;
-    this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
-
-    // deck enable buttons
-    for (var d = 1; d <= 4; d++) {
-        // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
-        this['deckButton' + d] = new ToggleButton(
-            [0x90 + unitNumber, 0x02 + d], this.group, 'group_[Channel' + d + ']_enable');
-        this['deckButton' + d + 'Shifted'] = new ToggleButton(
-            [0x90 + unitNumber + P32.shiftOffset, 0x02 + d], this.group, 'group_[Channel' + d + ']_enable');
-    }
-
-    this.dryWet = new CCLin(
-        [0xB0 + unitNumber, 0x09], this.group, 'mix', false, 0, 1);
-    this.superKnob = new CCLin(
-        [0xB0 + unitNumber, 0x09], this.group, 'super1', true, 0, 1);
-
-    this.activeEffect = new LayerContainer();
-    for (var p = 1; p <= 3; p++) {
-        // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
-        this.activeEffect['parameterKnob' + p] = new CC(
-            [0xB0 + unitNumber, 0x06],
-            '[EffectRack1_EffectUnit' + unitNumber + '_Effect1]', 'parameter' + p, false);
-    }
-
-    // buttons to select the effect that the knobs control
-    this.switchEffect = function (effectNumber) {
-        this.activeEffect.reconnectControls(function (control) {
-            control.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + effectNumber + ']';
-        });
-
-        for (var e = 1; e < 4; e ++) {
-            midi.sendShortMsg(0x90 + unitNumber,
-                              P32.PadNumToMIDIControl(e * 4, 1),
-                              (e === effectNumber) ? P32.padColors.blue : 0);
-            midi.sendShortMsg(0x90 + unitNumber + P32.shiftOffset,
-                              P32.PadNumToMIDIControl(e * 4, 1),
-                              (e === effectNumber) ? P32.padColors.blue : 0);
-        }
-    };
-    this.switchEffect1 = function (channel, control, value, status, group) { that.switchEffect(1); };
-    this.switchEffect2 = function (channel, control, value, status, group) { that.switchEffect(2); };
-    this.switchEffect3 = function (channel, control, value, status, group) { that.switchEffect(3); };
-    this.switchEffect4 = function (channel, control, value, status, group) { that.switchEffect(4); };
-    this.switchEffect(1);
-
-    var Effect = function (effectNumber) {
-        var ef = this;
-        this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + effectNumber + ']';
-        this.toggle = new ToggleButton(
-            [0x90 + unitNumber, P32.PadNumToMIDIControl(effectNumber * 4 - 3, 1)],
-            this.group,
-            'enabled',
-            true,
-            P32.padColors.red);
-
-        this.resetParameters = new ToggleButtonAsymmetric(
-            [0x90 + unitNumber + P32.shiftOffset, P32.PadNumToMIDIControl(effectNumber * 4 - 3, 1)],
-            this.group,
-            null,
-            'enabled',
-            true,
-            P32.padColors.red);
-        this.resetParameters.input = function (channel, control, value, status, group) {
+P32.record = new Button({
+    midi: [0x90, 0x02],
+    group: '[Recording]',
+    input: function (channel, control, value, status, group) {
             if (value === 127) {
-                var p = engine.getValue(ef.group, 'num_parameters');
-                for (var i = 1; i <= p; i++) {
-                    engine.setValue(ef.group, 'parameter' + i + '_set_default', 1);
-                }
-                var b = engine.getValue(ef.group, 'num_button_parameters');
-                for (var i = 1; i <= b; i++) {
-                    engine.setValue(ef.group, 'button_parameter' + i, 0);
+                if (P32.leftDeck.shift) {
+                    P32.leftDeck.toggle();
+                } else if (P32.rightDeck.shift) {
+                    P32.rightDeck.toggle();
+                } else {
+                    engine.setValue('[Recording]', 'toggle_recording', 1);
                 }
             }
-        }
-
-        this.previous = new ToggleButtonAsymmetric(
-            [0x90 + unitNumber, P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1)],
-            this.group,
-            'prev_effect',
-            null,
-            false);
-        this.previousShifted = new ToggleButtonAsymmetric(
-            [0x90 + unitNumber + P32.shiftOffset, P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1)],
-            this.group,
-            'prev_effect',
-            null,
-            false);
-        midi.sendShortMsg(0x90 + unitNumber,
-                          P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1),
-                          P32.padColors.purple);
-        midi.sendShortMsg(0x90 + unitNumber + P32.shiftOffset,
-                          P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1),
-                          P32.padColors.purple);
-
-        this.next = new ToggleButtonAsymmetric(
-            [0x90 + unitNumber, P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1)],
-            this.group,
-            'next_effect',
-            null,
-            false);
-        this.nextShifted = new ToggleButtonAsymmetric(
-            [0x90 + unitNumber + P32.shiftOffset, P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1)],
-            this.group,
-            'next_effect',
-            null,
-            false);
-        midi.sendShortMsg(0x90 + unitNumber,
-                          P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1),
-                          P32.padColors.purple);
-        midi.sendShortMsg(0x90 + unitNumber + P32.shiftOffset,
-                          P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1),
-                          P32.padColors.purple);
-    };
-
-    for (var e = 1; e <= 3; e++) {
-        this['effect' + e] = new Effect(e);
-    }
-
-    this.toggleHeadphones = new ToggleButton(
-        [0x90 + unitNumber, 0x34],
-        this.group,
-        'group_[Headphone]_enable',
-        true,
-        P32.padColors.red);
-    this.toggleHeadphonesShifted = new ToggleButton(
-        [0x90 + unitNumber + P32.shiftOffset, 0x34],
-        this.group,
-        'group_[Headphone]_enable',
-        true,
-        P32.padColors.red);
-
-    this.toggleMaster = new ToggleButton(
-        [0x90 + unitNumber, 0x35],
-        this.group,
-        'group_[Master]_enable',
-        true,
-        P32.padColors.red);
-    this.toggleMasterShifted = new ToggleButton(
-        [0x90 + unitNumber + P32.shiftOffset, 0x35],
-        this.group,
-        'group_[Master]_enable',
-        true,
-        P32.padColors.red);
-
-    this.toggleMicrophone = new ToggleButton(
-        [0x90 + unitNumber, 0x36],
-        this.group,
-        'group_[Microphone]_enable',
-        true,
-        P32.padColors.red);
-    this.toggleMicrophoneShifted = new ToggleButton(
-        [0x90 + unitNumber + P32.shiftOffset, 0x36],
-        this.group,
-        'group_[Microphone]_enable',
-        true,
-        P32.padColors.red);
-
-    this.toggleAuxiliary = new ToggleButton(
-        [0x90 + unitNumber, 0x37],
-        this.group,
-        'group_[Auxiliary1]_enable',
-        true,
-        P32.padColors.red);
-    this.toggleAuxiliaryShifted = new ToggleButton(
-        [0x90 + unitNumber + P32.shiftOffset, 0x37],
-        this.group,
-        'group_[Auxiliary1]_enable',
-        true,
-        P32.padColors.red);
-};
+        },
+    outCo: 'status'
+});
 
 P32.Deck = function (deckNumbers, channel) {
     Deck.call(this, deckNumbers);
-    var that = this;
     var loopSize = defaultLoopSize;
     var beatJumpSize = defaultBeatJumpSize;
     this.shift = false;
@@ -877,187 +679,217 @@ P32.Deck = function (deckNumbers, channel) {
 
     this.shiftButton = function (channel, control, value, status, group) {
         if (value === 127) {
-            that.shift = true;
-            that.effectUnit.dryWet.connect();
-            that.effectUnit.dryWet.disconnect();
+            this.shift = true;
+            this.effectUnit.dryWet.connect();
+            this.effectUnit.dryWet.disconnect();
         } else {
-            that.shift = false;
-            that.effectUnit.superKnob.disconnect();
+            this.shift = false;
+            this.effectUnit.superKnob.disconnect();
         }
     };
 
-    this.sync = new ToggleButton([0x90 + channel, 0x08], this.currentDeck, 'sync_enabled');
-    this.syncMomentary = new ToggleButtonAsymmetric([0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'beatsync', 'sync_enabled');
-    this.cue = new CueButton([0x90 + channel, 0x09], this.currentDeck);
-    this.cueShifted = new CueButton([0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck);
-    this.play = new PlayButton([0x90 + channel, 0x0A], this.currentDeck);
-    this.goToStart = new Control( // play shifted
-        [0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck, 
-        ['start_stop', function () { return 1; }],
-        ['play_indicator', function (val) { return val * 127; } ]);
+    // ===================================== TRANSPORT =========================================
+    this.sync = new Button({
+        midi: [0x90 + channel, 0x08],
+        co: 'sync_enabled'
+    });
+    this.syncMomentary = new Button({
+        midi: [0x90 + channel + P32.shiftOffset, 0x08],
+        inCo: 'beatsync',
+        outCo: 'sync_enabled'
+    });
+    this.cue = new CueButton({
+        midi: [0x90 + channel, 0x09],
+        sendShifted: true
+    });
+    this.play = new PlayButton([0x90 + channel, 0x0A]);
+    this.goToStart = new Control({ // play shifted
+        midi: [0x90 + channel + P32.shiftOffset, 0x0A],
+        inCo: 'start_stop',
+        inFunc: function () { return 1; },
+        outCo: 'play_indicator',
+        outFunc: function (val) { return val * this.on; }
+    });
 
-    for (var i = 1; i <= 16; i++) {
-        // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
-        this['hotcueButton' + i] = new HotcueButton(
-            [0x90 + channel, P32.PadNumToMIDIControl(i, 3)], this.currentDeck,
-            i, P32.padColors.red, P32.padColors.off);
-        this['hotcueButtonShift' + i] = new HotcueClearButton(
-            [0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i, 3)], this.currentDeck,
-            i, P32.padColors.red, P32.padColors.off);
-    }
-
-    this.loopIn = new ActionButton(
-        [0x90 + channel, 0x50], this.currentDeck,
-        'loop_in', P32.padColors.purple);
-    this.loopOut = new ActionButton(
-        [0x90 + channel, 0x51], this.currentDeck,
-        'loop_out', P32.padColors.purple);
-    this.loopTogglePad = new LoopToggleButton(
-        [0x90 + channel, 0x52], this.currentDeck,
-        P32.padColors.red, P32.padColors.blue);
-
-    this.loopInShifted = new ActionButton(
-        [0x90 + channel + P32.shiftOffset, 0x50], this.currentDeck,
-        'loop_in', P32.padColors.purple);
-    this.loopOutShifted = new ActionButton(
-        [0x90 + channel + P32.shiftOffset, 0x51], this.currentDeck,
-        'loop_out', P32.padColors.purple);
-    this.loopTogglePadShifted = new LoopToggleButton(
-        [0x90 + channel + P32.shiftOffset, 0x52], this.currentDeck,
-        P32.padColors.red, P32.padColors.blue);
-
-    this.tempSlow = new ToggleButtonAsymmetric(
-        [0x90 + channel, 0x44], this.currentDeck,
-        'rate_temp_down', null, false);
-    this.tempSlow.send(P32.padColors.purple);
-    this.tempSlowShifted = new ToggleButtonAsymmetric(
-        [0x90 + channel + P32.shiftOffset, 0x44], this.currentDeck,
-        'rate_temp_down', null, false);
-    this.tempSlowShifted.send(P32.padColors.purple);
-    this.tempFast = new ToggleButtonAsymmetric(
-        [0x90 + channel, 0x45], this.currentDeck,
-        'rate_temp_up', null, false);
-    this.tempFast.send(P32.padColors.purple);
-    this.tempFastShifted = new ToggleButtonAsymmetric(
-        [0x90 + channel + P32.shiftOffset, 0x45], this.currentDeck,
-        'rate_temp_up', null, false);
-    this.tempFastShifted.send(P32.padColors.purple);
-    this.alignBeats = new ActionButton(
-        [0x90 + channel, 0x46], this.currentDeck, 'beats_translate_curpos', P32.padColors.blue);
-    this.alignBeatsShifted = new ActionButton(
-        [0x90 + channel + P32.shiftOffset, 0x46], this.currentDeck, 'beats_translate_curpos', P32.padColors.blue);
-    this.quantize = new ToggleButton(
-        [0x90 + channel, 0x47], this.currentDeck, 'quantize',
-        true, P32.padColors.red, P32.padColors.blue);
-    this.quantizeShifted = new ToggleButton(
-        [0x90 + channel + P32.shiftOffset, 0x47], this.currentDeck, 'quantize',
-        true, P32.padColors.red, P32.padColors.blue);
-
-    this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
-
+    // ===================================== MIXER ==============================================
+    this.eqKnob = [];
     for (var k = 1; k <= 3; k++) {
-        this['eqKnob' + k] = new CCNonLin(
-            [0xB0 + channel, 0x02 + k],
-            '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
-            'parameter' + k,
-            false,
-            0, 1, 4);
+        this.eqKnob[k] = new CC({
+            midi: [0xB0 + channel, 0x02 + k],
+            group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
+            co: 'parameter' + k,
+            range: [0, 1, 4]
+        });
     }
 
-    this.volume = new CCNonLin(
-        [0xB0 + channel, 0x01], this.currentDeck, 'volume', false, 0, 0.25, 1);
+    this.pfl = new Button({
+        midi: [0x90 + channel, 0x10],
+        co: 'pfl'
+    });
 
-    this.loopSize = new Control(
-        [0xB0 + channel, 0x1B], this.currentDeck,
-        null, ['loop_enabled', null]);
-    this.loopSize.input = function (channel, control, value, status, group) {
-        if (loopEnabledDot) {
-            if (value > 64 && loopSize > 2) { // turn left
-                /**
-                    Unfortunately, there is no way to show 1 with a dot on the
-                    loop size LED.
-                **/
-                loopSize /= 2;
-                engine.setValue(that.currentDeck, 'loop_halve', 1);
-                engine.setValue(that.currentDeck, 'loop_halve', 0);
-            } else if (value < 64 && loopSize < 32) { // turn right
-                /**
-                    Mixxx supports loops longer than 32 beats, but there is no way
-                    to show 64 with a dot on the loop size LED.
-                **/
-                loopSize *= 2;
-                engine.setValue(that.currentDeck, 'loop_double', 1);
-                engine.setValue(that.currentDeck, 'loop_double', 0);
+    this.volume = new CC({
+        midi: [0xB0 + channel, 0x01],
+        co: 'volume',
+        range: [0, 0.25, 1]
+    });
+
+    // ==================================== PAD GRID ============================================
+    this.hotcueButton = [];
+    this.hotcueButtonClear = [];
+    for (var i = 1; i <= 16; i++) {
+        this.hotcueButton[i] = new HotcueButton({
+            midi: [0x90 + channel,
+                   P32.PadNumToMIDIControl(i, 3)],
+            number: i,
+            on: P32.padColors.red
+        });
+        this.hotcueButtonClear[i] = new HotcueClearButton({
+            midi: [0x90 + channel + P32.shiftOffset,
+                   P32.PadNumToMIDIControl(i, 3)],
+            number: i,
+            on: P32.padColors.red
+        });
+    }
+
+    this.loopIn = new Button({
+        midi: [0x90 + channel, 0x50],
+        inCo: 'loop_in',
+        sendShifted: true
+    });
+    this.loopOut = new Button({
+        midi: [0x90 + channel, 0x51],
+        inCo: 'loop_out',
+        sendShifted: true
+    });
+    this.loopTogglePad = new LoopButton({
+        midi: [0x90 + channel, 0x52],
+        on: P32.padColors.red,
+        off: P32.padColors.blue,
+        sendShifted: true
+    });
+    this.loopIn.send(P32.padColors.purple);
+    this.loopOut.send(P32.padColors.purple);
+
+    this.tempSlow = new Button({
+        midi: [0x90 + channel, 0x44],
+        inCo: 'rate_temp_down',
+        onlyOnPress: false,
+        sendShifted: true
+    });
+    this.tempFast = new Button({
+        midi: [0x90 + channel, 0x45],
+        inCo: 'rate_temp_down',
+        onlyOnPress: false,
+        sendShifted: true
+    });
+    this.alignBeats = new Button({
+        midi: [0x90 + channel, 0x46],
+        inCo: 'beats_translate_curpos',
+        sendShifted: true
+    });
+    this.quantize = new Button({
+        midi: [0x90 + channel, 0x47],
+        co: 'quantize',
+        on: P32.padColors.red,
+        off: P32.padColors.blue,
+        sendShifted: true
+    });
+    this.tempSlow.send(P32.padColors.purple);
+    this.tempFast.send(P32.padColors.purple);
+    this.alignBeats.send(P32.padColors.blue);
+
+    // =================================== ENCODERS ==============================================
+    this.loopSizeEncoder = new Control({
+        midi: [0xB0 + channel, 0x1B], // Note: these are the MIDI bytes for the LED readout, not
+                                      // input from the encoder.
+        input: function (channel, control, value, status, group) {
+            if (loopEnabledDot) {
+                if (value > 64 && loopSize > 2) { // turn left
+                    /**
+                        Unfortunately, there is no way to show 1 with a dot on the
+                        loop size LED.
+                    **/
+                    loopSize /= 2;
+                    engine.setValue(this.group, 'loop_halve', 1);
+                    engine.setValue(this.group, 'loop_halve', 0);
+                } else if (value < 64 && loopSize < 32) { // turn right
+                    /**
+                        Mixxx supports loops longer than 32 beats, but there is no way
+                        to show 64 with a dot on the loop size LED.
+                    **/
+                    loopSize *= 2;
+                    engine.setValue(this.group, 'loop_double', 1);
+                    engine.setValue(this.group, 'loop_double', 0);
+                }
+            } else {
+                if (value > 64 && loopSize > 1/32) { // turn left
+                    /**
+                        Mixxx supports loops shorter than 1/32 beats, but there is no
+                        way to set the loop size LED less than 1/32 (even though it
+                        should be able to show 1/64)
+                    **/
+                    loopSize /= 2;
+                    engine.setValue(this.group, 'loop_halve', 1);
+                    engine.setValue(this.group, 'loop_halve', 0);
+                } else if (value < 64 && loopSize < 64) { // turn right
+                    /**
+                        Mixxx supports loops longer than 64 beats, but the loop size LED
+                        only has 2 digits, so it couldn't show 128
+                    **/
+                    loopSize *= 2;
+                    engine.setValue(this.group, 'loop_double', 1);
+                    engine.setValue(this.group, 'loop_double', 0);
+                }
             }
-        } else {
-            if (value > 64 && loopSize > 1/32) { // turn left
-                /**
-                    Mixxx supports loops shorter than 1/32 beats, but there is no
-                    way to set the loop size LED less than 1/32 (even though it
-                    should be able to show 1/64)
-                **/
-                loopSize /= 2;
-                engine.setValue(that.currentDeck, 'loop_halve', 1);
-                engine.setValue(that.currentDeck, 'loop_halve', 0);
-            } else if (value < 64 && loopSize < 64) { // turn right
-                /**
-                    Mixxx supports loops longer than 64 beats, but the loop size LED
-                    only has 2 digits, so it couldn't show 128
-                **/
-                loopSize *= 2;
-                engine.setValue(that.currentDeck, 'loop_double', 1);
-                engine.setValue(that.currentDeck, 'loop_double', 0);
+            this.trigger();
+        },
+        outCo: 'loop_enabled',
+        output: function (value, group, control) {
+            if (loopEnabledDot && value) {
+                this.send(5 - Math.log(loopSize) / Math.log(2));
+            } else {
+                this.send(5 + Math.log(loopSize) / Math.log(2));
             }
         }
-        that.loopSize.trigger(); // FIXME: ugly hack around https://bugs.launchpad.net/mixxx/+bug/1567203
-    };
-    this.loopSize.output = function (value, group, control) {
-        if (loopEnabledDot && value) {
-            this.send(5 - Math.log(loopSize) / Math.log(2));
-        } else {
-            this.send(5 + Math.log(loopSize) / Math.log(2));
-        }
-    };
-    this.loopSize.connect();
-    this.loopSize.trigger();
+    });
 
     this.loopMoveEncoder = function (channel, control, value, status, group) {
         var direction = (value > 64) ? -1 : 1;
         if (loopSize < 1) {
-            engine.setValue(that.currentDeck, 'loop_move', loopSize * direction);
+            engine.setValue(this.currentDeck, 'loop_move', loopSize * direction);
         } else {
-            engine.setValue(that.currentDeck, 'loop_move', 1 * direction);
+            engine.setValue(this.currentDeck, 'loop_move', 1 * direction);
         }
     };
 
-    this.loopToggle = function (channel, control, value, status, group) {
+    this.loopToggleEncoderPress = function (channel, control, value, status, group) {
         if (value) {
-            if (engine.getValue(that.currentDeck, 'loop_enabled')) {
-                engine.setValue(that.currentDeck, 'reloop_exit', 1);
+            if (engine.getValue(this.currentDeck, 'loop_enabled')) {
+                engine.setValue(this.currentDeck, 'reloop_exit', 1);
             } else {
-                engine.setValue(that.currentDeck, 'beatloop_' + loopSize + '_activate', 1);
+                engine.setValue(this.currentDeck, 'beatloop_' + loopSize + '_activate', 1);
             }
         } else {
-            if (loopSize <= 1 && engine.getValue(that.currentDeck, 'loop_enabled')) {
-                engine.setValue(that.currentDeck, 'reloop_exit', 1);
+            if (loopSize <= 1 && engine.getValue(this.currentDeck, 'loop_enabled')) {
+                engine.setValue(this.currentDeck, 'reloop_exit', 1);
             }
         }
     };
 
     this.tempoEncoder = function (channel, control, value, status, group) {
         var direction = (value > 64) ? -1 : 1;
-        engine.setValue(that.currentDeck, 'rate', engine.getValue(that.currentDeck, 'rate') + (0.01 * direction));
+        engine.setValue(this.currentDeck, 'rate', engine.getValue(this.currentDeck, 'rate') + (0.01 * direction));
     };
 
     this.tempoPress = function (channel, control, value, status, group) {
         if (value) {
-            engine.setValue(that.currentDeck, 'rate', 0);
+            engine.setValue(this.currentDeck, 'rate', 0);
         }
     };
 
     this.beatJumpEncoder = function (channel, control, value, status, group) {
         var direction = (value > 64) ? -1 : 1;
-        if (that.beatJumpEncoderPressed) {
+        if (this.beatJumpEncoderPressed) {
             if (value > 64 && beatJumpSize > 1/32) { // turn left
                 beatJumpSize /= 2;
             } else if (value < 64 && beatJumpSize < 64) { // turn right
@@ -1067,7 +899,7 @@ P32.Deck = function (deckNumbers, channel) {
             // on the unshifted channel.
             midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
         } else {
-            engine.setValue(that.currentDeck, 'beatjump', direction * beatJumpSize);
+            engine.setValue(this.currentDeck, 'beatjump', direction * beatJumpSize);
         }
     };
 
@@ -1075,26 +907,172 @@ P32.Deck = function (deckNumbers, channel) {
         // The firmware will only change the numeric LED readout when sent messages
         // on the unshifted channel.
         if (value === 127) {
-            that.beatJumpEncoderPressed = true;
+            this.beatJumpEncoderPressed = true;
             midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
         } else {
-            that.beatJumpEncoderPressed = false;
+            this.beatJumpEncoderPressed = false;
             midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B, 5 + Math.log(loopSize) / Math.log(2));
         }
     };
 
     this.loadTrack = function (channel, control, value, status, group) {
         if (value === 127) {
-            engine.setValue(that.currentDeck, 'LoadSelectedTrack', 1);
+            engine.setValue(this.currentDeck, 'LoadSelectedTrack', 1);
         }
     };
 
     this.ejectTrack = function (channel, control, value, status, group) {
         if (value === 127) {
-            engine.setValue(that.currentDeck, 'eject', 1);
-            engine.beginTimer(250, 'engine.setValue("'+that.currentDeck+'", "eject", 0)', true);
+            engine.setValue(this.currentDeck, 'eject', 1);
+            engine.beginTimer(250, 'engine.setValue("'+this.currentDeck+'", "eject", 0)', true);
         }
     };
+
+    this.reconnectControls(function (control) {
+        if (control.group === undefined) {
+            control.group = this.currentDeck;
+        }
+    }, false);
+    print(this.toggle);
 };
-P32.Deck.prototype = Object.create(Deck.prototype);
-P32.Deck.prototype.constructor = P32.Deck;
+P32.Deck.prototype = new Deck();
+
+P32.EffectUnit = function (unitNumber) {
+    this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
+
+    this.deckEnableButton = [];
+    for (var d = 1; d <= 4; d++) {
+        this.deckEnableButton[d] = new Button({
+            midi: [0x90 + unitNumber, 0x02 + d],
+            co: 'group_[Channel' + d + ']_enable',
+        });
+    }
+
+    this.dryWet = new CC({
+        midi: [0xB0 + unitNumber, 0x09],
+        co: 'mix',
+        range: [0, 1]
+    });
+    this.superKnob = new CC({
+        midi: [0xB0 + unitNumber + P32.shiftOffset, 0x09],
+        co: 'super1',
+        range: [0, 1]
+    });
+
+    this.toggleHeadphones = new Button({
+        midi: [0x90 + unitNumber, 0x34],
+        co: 'group_[Headphone]_enable',
+    });
+    this.toggleMaster = new Button({
+        midi: [0x90 + unitNumber, 0x35],
+        co: 'group_[Master]_enable',
+    });
+    this.toggleMicrophone = new Button({
+        midi: [0x90 + unitNumber, 0x36],
+        co: 'group_[Microphone]_enable',
+    });
+    this.toggleAuxiliary = new Button({
+        midi: [0x90 + unitNumber, 0x37],
+        co: 'group_[Auxiliary1]_enable',
+    });
+
+    this.reconnectControls(function (control) {
+        if (control.group === undefined) {
+            control.group = this.group;
+            control.on = P32.padColors.red;
+            control.sendShifted = true;
+        }
+    });
+
+    var EffectRow = function (effectNumber) {
+        var ef = this;
+        this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + effectNumber + ']';
+        this.toggle = new Button({
+            midi: [0x90 + unitNumber,
+                   P32.PadNumToMIDIControl(effectNumber * 4 - 3, 1)],
+            co: 'enabled',
+            on: P32.padColors.red,
+        });
+
+        this.resetParameters = new Button({
+            midi: [0x90 + unitNumber + P32.shiftOffset,
+                   P32.PadNumToMIDIControl(effectNumber * 4 - 3, 1)],
+            input:  function (channel, control, value, status, group) {
+                if (value === 127) {
+                    var p = engine.getValue(ef.group, 'num_parameters');
+                    for (var i = 1; i <= p; i++) {
+                        engine.setValue(ef.group, 'parameter' + i + '_set_default', 1);
+                    }
+                    var b = engine.getValue(ef.group, 'num_button_parameters');
+                    for (var i = 1; i <= b; i++) {
+                        engine.setValue(ef.group, 'button_parameter' + i, 0);
+                    }
+                }
+            }
+        });
+
+        this.previous = new Button({
+            midi: [0x90 + unitNumber,
+                   P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1)],
+            inCo: 'prev_effect',
+            onlyOnPress: false
+        });
+
+        this.next = new Button({
+            midi: [0x90 + unitNumber,
+                   P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1)],
+            inCo: 'next_effect',
+            onlyOnPress: false
+        });
+        this.reconnectControls(function (control) {
+            if (control.group === undefined) {
+                control.group = this.group;
+                control.sendShifted = true;
+            }
+        });
+
+        this.previous.send(P32.padColors.purple);
+        this.next.send(P32.padColors.purple);
+    };
+    EffectRow.prototype = new LayerContainer();
+
+    this.effect = [];
+    for (var e = 1; e <= 3; e++) {
+        this.effect[e] = new EffectRow(e);
+    }
+
+    this.activeEffect = new LayerContainer();
+    var ae = this.activeEffect;
+    ae.number = 1;
+    ae.parameterKnob = [];
+    ae.switchEffectButton = []; 
+    for (var p = 1; p <= 3; p++) {
+        ae.parameterKnob[p] = new CC({
+            midi: [0xB0 + unitNumber, 0x05 + p],
+            co: 'parameter' + p
+        });
+        ae.switchEffectButton[p] = new Control({
+            midi: [0x90 + unitNumber,
+                   P32.PadNumToMIDIControl(p * 4, 1)],
+            on: P32.padColors.blue,
+            number: p,
+            input: function (channel, control, value, status, group) {
+                if (value > 0) {
+                    ae.number = this.number;
+                    ae.reconnectControls(function (control) {
+                        control.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + ae.number + ']';
+                    });
+                }
+            },
+            trigger: function (value, group, control) {
+                // called by ae.reconnectControls() in this.input()
+                this.send((this.number === ae.number) ? this.on : this.off);
+            },
+            disconnect: function() {},
+            connect: function () {},
+            sendShifted: true
+        });
+    }
+    ae.switchEffectButton[1].input(null, null, 127, null, null);
+};
+P32.EffectUnit.prototype = new LayerContainer();
