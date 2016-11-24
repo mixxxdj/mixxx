@@ -700,8 +700,8 @@ def BuildRelease(target, source, env):
         print "Looking for Windows SDKs..."
         WinSDK_path = None
         if not build.crosscompile and build.platform_is_windows:
-            WinSDK_directory = win32_find_program_via_registry("Microsoft\\Microsoft SDKs\\Windows")
-            WinSDK_path = '%s' % os.path.join(WinSDK_directory, "Samples\sysmgmt\msi\scripts")
+            WinSDK_directory = SCons.ARGUMENTS.get('mssdk_dir', None)
+            WinSDK_path = '%s' % os.path.join(WinSDK_directory, "\Samples\sysmgmt\msi\scripts")
         elif build.crosscompile and build.platform_is_windows:
             # TODO(XXX) How to handle that ? what does this exactly means ?
             raise Exception('Unimplemented...')
@@ -712,10 +712,10 @@ def BuildRelease(target, source, env):
             print "    Found Windows SDK in " + WinSDK_path
 
         if not os.path.isfile(WinSDK_path + '\wisubstg.vbs'):
-            raise Exception ('can not find' + WinSDK_path + '\wisubstg.vbs')
+            raise Exception ('can not find ' + WinSDK_path + '\wisubstg.vbs')
 
         if not os.path.isfile(WinSDK_path + '\WiLangId.vbs'):
-            raise Exception ('can not find' + WinSDK_path + '\WiLangId.vbs')
+            raise Exception ('can not find ' + WinSDK_path + '\WiLangId.vbs')
 
         # The default language
         defaultLanguage="en-us"
