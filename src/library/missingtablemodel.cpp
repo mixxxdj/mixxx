@@ -6,7 +6,7 @@
 
 namespace {
 
-const QString kMissinbgFilter = "mixxx_deleted=0 AND fs_deleted=1";
+const QString kMissingFilter = "mixxx_deleted=0 AND fs_deleted=1";
 
 } // anonymous namespace
 
@@ -33,7 +33,7 @@ void MissingTableModel::setTableModel(int id) {
                   " FROM library "
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
-                  "WHERE " + kMissinbgFilter);
+                  "WHERE " + kMissingFilter);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
