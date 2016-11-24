@@ -697,20 +697,7 @@ def BuildRelease(target, source, env):
         else:
             print "    Found Wix Toolset in " + wix_path
 
-        print "Looking for Windows SDKs..."
-        WinSDK_path = None
-        if not build.crosscompile and build.platform_is_windows:
-            WinSDK_directory = SCons.ARGUMENTS.get('mssdk_dir', None)
-        elif build.crosscompile and build.platform_is_windows:
-            # TODO(XXX) How to handle that ? what does this exactly means ?
-            raise Exception('Unimplemented...')
-
-        if WinSDK_directory is None:
-            raise Exception ('no SDK path was specified. Specify the path to your platform SDK with mssdk_dir.')
-        else:
-            print "    Using Windows SDK in " + WinSDK_directory
-
-        WinSDK_path = '%s' % os.path.join(WinSDK_directory, "Samples\sysmgmt\msi\scripts")
+        WinSDK_path = 'build\\wix'
 
         if not os.path.isfile(WinSDK_path + '\wisubstg.vbs'):
             raise Exception ('can not find ' + WinSDK_path + '\wisubstg.vbs')
