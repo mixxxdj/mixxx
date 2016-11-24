@@ -708,7 +708,7 @@ def BuildRelease(target, source, env):
         if WinSDK_directory is None:
             raise Exception ('no SDK path was specified. Specify the path to your platform SDK with mssdk_dir.')
         else:
-            print "    Using Windows SDK in " + WinSDK_path
+            print "    Using Windows SDK in " + WinSDK_directory
 
         WinSDK_path = '%s' % os.path.join(WinSDK_directory, "\Samples\sysmgmt\msi\scripts")
 
