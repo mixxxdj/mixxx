@@ -116,23 +116,14 @@ Control.prototype = {
     inFunc: function (value) {return value;},
     // map input in the XML file, not inFunc
     input: function (channel, control, value, status, group) {
-                if (this.onlyOnPress) {
-                    if (value > 0) {
-                        this.setValue(this.inFunc.call(this, value));
-                    }
-                } else {
-                    this.setValue(this.inFunc.call(this, value));
-                }
+               this.setValue(this.inFunc.call(this, value));
             },
     outFunc: function (value) {return value;},
     output: function (value, group, control) {
                 this.send(this.outFunc.call(this, value));
             },
-    onlyOnPress: true,
     outConnect: true,
     outTrigger: true,
-    on: 127,
-    off: 0,
 
     // common functions
     // In most cases, you should not overwrite these.
@@ -198,7 +189,19 @@ var Button = function (options) {
     Control.call(this, options);
 };
 Button.prototype = new Control({
-    inFunc: function() { return ! this.getValueIn(); },
+    onlyOnPress: true,
+    on: 127,
+    off: 0,
+    inFunc: function () { return ! this.getValueIn(); },
+    input: function (channel, control, value, status, group) {
+               if (this.onlyOnPress) {
+                   if (value > 0) {
+                       this.setValue(this.inFunc.call(this, value));
+                   }
+                } else {
+                       this.setValue(this.inFunc.call(this, value));
+                }
+    },
     outFunc: function() { return (this.getValueOut()) ? this.on : this.off; }
 });
 
@@ -1005,7 +1008,7 @@ P32.EffectUnit = function (unitNumber) {
             midi: [0xB0 + unitNumber, 0x05 + p],
             inCo: 'parameter' + p
         });
-        ae.switchEffectButton[p] = new Control({
+        ae.switchEffectButton[p] = new Button({
             midi: [0x90 + unitNumber,
                    P32.PadNumToMIDIControl(p * 4, 1)],
             on: P32.padColors.blue,
