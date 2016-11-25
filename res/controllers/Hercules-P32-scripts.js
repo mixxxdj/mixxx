@@ -40,14 +40,17 @@ A Control is a JavaScript object that represents a physical component on a contr
 button, knob, encoder, or fader. It encapsulates all the information needed to receive MIDI input
 from that component and send MIDI signals out to the controller to activate its LED(s). It provides
 generic functions that can be made to work for most use cases just by changing some attributes
-of the Control, without having to write much or any custom code. Controls should generally be
-properties of a ControlContainer object, which provides functions for conveniently doing batch
-operations on a collection of related Controls.
+of the Control, without having to write much or any custom code.
+
+Controls should generally be properties of a ControlContainer object, which provides functions for
+conveniently doing batch operations on a collection of related Controls. Most Controls should be
+properties of a custom Deck object, which is a derivative of ControlContainer. Refer to the Deck
+documentation for more details and an example.
 
 The input function needs to be mapped to the incoming MIDI signals in the XML file. For example:
 <control>
     <group>[Channel1]</group>
-    <!-- MyController.leftDeck would be a ControlContainer. -->
+    <!-- MyController.leftDeck would be an instance of a custom Deck. -->
     <key>MyController.leftDeck.quantizeButton.input</key>
     <status>0x90</status>
     <midino>0x01</midino>
@@ -180,6 +183,7 @@ Control.prototype = {
     },
     // outCo value generally shouldn't be set directly,
     // only by the output() callback when its value changes,
+    // or by calling trigger()
     // so don't provide separate setValueIn/setValueOut functions.
     getValueIn: function () {
         return engine.getValue(this.group, this.inCo);
@@ -290,6 +294,13 @@ Button.prototype = new Control({
     outFunc: function() { return (this.getValueOut()) ? this.on : this.off; }
 });
 
+/**
+Default behavior: play/pause
+Shift behavior: go to start of track and stop
+
+LED behavior depends on cue mode selected by the user in the preferences
+Refer to http://mixxx.org/manual/latest/chapters/user_interface.html#interface-cue-modes
+**/
 var PlayButton = function (options) {
     Button.call(this, options);
 };
@@ -299,6 +310,10 @@ PlayButton.prototype = new Button({
     outCo: 'play_indicator'
 });
 
+/**
+Behavior depends on cue mode configured by the user in the preferences
+Refer to http://mixxx.org/manual/latest/chapters/user_interface.html#interface-cue-modes
+**/
 var CueButton = function (options) {
     Button.call(this, options);
 };
@@ -308,6 +323,10 @@ CueButton.prototype = new Button({
     onlyOnPress: false
 });
 
+/**
+Default behavior: toggle sync lock (master sync)
+Shift behavior: momentary sync without toggling sync lock
+**/
 var SyncButton = function (options) {
     Button.call(this, options);
 };
@@ -317,6 +336,7 @@ SyncButton.prototype = new Button({
     outCo: 'sync_enabled'
 });
 
+// Toggle a loop on/off
 var LoopToggleButton = function (options) {
     Button.call(this, options);
 };
@@ -327,6 +347,12 @@ LoopToggleButton.prototype = new Button({
     outFunc: function(value) { return (value) ? this.on : this.off; }
 });
 
+/**
+Default behavior: set hotcue if it is not set. If it is set, jump to it.
+Shift behavior: delete hotcue
+
+LED indicates whether the hotcue is set.
+**/
 var HotcueButton = function (options) {
     if (options.number === undefined) {
         print('WARNING: No hotcue number specified for new HotcueButton.');
@@ -342,20 +368,43 @@ HotcueButton.prototype = new Button({
 });
 
 /**
-A Control for sampler buttons. Press the button to load the track selected in
-the library into an empty sampler. Press a loaded sampler to play it from
-its cue point. Press again while playing to jump back to the cue point.
+Default behavior:
+Press the button to load the track selected in the library into an empty sampler. Press a loaded
+sampler to play it from its cue point. Press again while playing to jump back to the cue point.
+Shift behavior:
+If the sampler is playing, stop it. If the sampler is stopped, eject it.
 
-@param {Integer} number: number of the sampler
-@param {Number} on (optional): MIDI value to send back to button LED when sampler
-                               is loaded. Defaults to 127. Use this to for multicolor LEDs.
-@param {Number} off (optional): MIDI value to send back to button LED when sampler
-                                is empty. Defaults to 0.
-@param {Number} playing (optional): MIDI value to send back to button LED when sampler
-                                    is playing. Useful for buttons with multicolor LEDs.
-                                    If ommitted, only the MIDI message specified by
-                                    the "on" parameter is sent when the sampler
-                                    is loaded, regardless of whether it is playing.
+Specify the sampler number as the number property of the object passed to the constructor. There
+is no need to manually specify the group. For example:
+var samplerButton = [];
+var samplerButton[1] = new SamplerButton(
+    midi: [0x91, 0x02],
+    number: 1
+)};
+
+When the sampler is loaded, the LED will be set to the value of the "on" property. When the sampler
+is empty, the LED will be set to the value of the "off" property. These are inherited from
+Button.prototype if they are not manually specified. If your controller's pads have multicolor LEDs,
+specify the value to send for a different LED color with the playing property to set the LED to a
+different color while the sampler is playing. For example:
+
+MyController.padColors = {
+// These values are just examples, consult the MIDI documentation from your controller's
+manufacturer to find the values for your controller. If that information is not available,
+guess and check to find the values.
+    red: 125,
+    blue: 126,
+    purple: 127,
+    off: 0
+};
+var samplerButton = [];
+var samplerButton[1] = new SamplerButton(
+    midi: [0x91, 0x02],
+    number: 1,
+    on: MyController.padColors.blue,
+    playing: MyController.padColors.red,
+    // off is inherited from Button.prototype
+)};
 **/
 var SamplerButton = function (options) {
     if (options.number === undefined) {
@@ -412,18 +461,15 @@ SamplerButton.prototype = new Button({
 });
 
 /**
-A Control for faders and knobs with finite ranges. Although these do not respond to a change in a
-Mixxx CO to send MIDI signals back to the controller, using a CC is helpful because Control.connect
-and Control.disconnect are overwritten to take care of soft takeover when switching layers with
-ControlContainer.reconnectControls() and ControlContainer.applyLayer().
+A CC is a Control for potentiometers (faders and knobs) with finite ranges. The name CC comes
+from MIDI Control Change signals. Using a CC is helpful because CC.connect() and CC.disconnect()
+take care of soft takeover when switching layers with ControlContainer.reconnectControls() and
+ControlContainer.applyLayer().
 
-softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults
-to true if ommitted. Some controllers (like the Hercules P32) can be sent a message to tell it to
-send signals back with the positions of all the controls. It is helpful to send the message in the
-script's init function, but it requires that soft takeover isn't enabled to work. So, for these
-controllers, set CC.prototype.softTakeoverInit as false in your script's init function.
-
-max, number, optional: the maximum value received from the controller. Defaults to 127 if ommitted.
+If you send your controller a MIDI message in your init function to make the controller send back
+signals indicating the state of all its potentiometers, set CC.prototype.softTakeoverInit to
+false before sending that MIDI signal. Otherwise, soft takeover will be activated before
+the first signals are received and the initial state of Mixxx won't reflect the controller.
 **/
 var CC = function (options) {
     Control.call(this, options);
@@ -472,9 +518,7 @@ CC.prototype = new Control({
 
 /**
 A ControlContainer is an object that contains Controls as properties, with methods to help
-with batch manipulation of those Controls.
-
-initialLayer, object, optional: the layer to activate upon initialization
+with batch manipulation of those Controls. Documentation for each method is inline below.
 **/
 var ControlContainer = function (initialLayer) {
     if (typeof initialLayer === 'object') {
@@ -483,13 +527,14 @@ var ControlContainer = function (initialLayer) {
 };
 ControlContainer.prototype = {
     forEachControl: function (operation, recursive) {
-        /**
-        operation, function that takes 1 argument: the function to call for each Control.
-                                                   Takes each Control as its first argument.
-        recursive, boolean, optional: whether to call forEachControl recursively
-                                      for each ControlContainer within this ControlContainer.
-                                      Defaults to true if ommitted.
-        **/
+    /**
+    operation, function that takes 1 argument:
+    the function to call for each Control. Takes each Control as its first argument.
+    "this" in the context of the function refers to the ControlContainer.
+    recursive, boolean, optional:
+    whether to call forEachControl recursively for each ControlContainer within this
+    ControlContainer. Defaults to true if ommitted.
+    **/
         if (typeof operation !== 'function') {
             print('ERROR: ControlContainer.forEachContainer requires a function argument');
             return;
@@ -516,11 +561,11 @@ ControlContainer.prototype = {
         }
     },
     reconnectControls: function (operation, recursive) {
-        /**
-        operation, function that takes one argument, optional: a function to call for each Control in this ControlContainer
-                                                               before reconnecting the output callback.
-                                                               The Control is passed as the first argument.
-        **/
+    /**
+    Disconnect and reconnect output callbacks for each Control. Optionally perform an operation
+    on each Control between disconnecting and reconnecting the output callbacks. Arguments are
+    the same as forEachControl().
+    **/
         this.forEachControl(function (control) {
             control.disconnect();
             if (typeof operation === 'function') {
@@ -530,11 +575,44 @@ ControlContainer.prototype = {
             control.trigger();
         }, recursive);
     },
+    // Call each Control's shift() function if it exists.
+    shift: function () {
+        this.forEachControl(function (control) {
+            if (typeof control.shift === 'function') {
+                control.shift();
+            }
+        });
+        this.isShifted = true;
+    },
+    // Call each Control's unshift() function if it exists.
+    unshift: function () {
+        this.forEachControl(function (control) {
+            if (typeof control.unshift === 'function') {
+                control.unshift();
+            }
+        });
+        this.isShifted = false;
+    },
+    isShifted: false,
     applyLayer: function (newLayer, reconnectControls) {
     /**
-    Layers are merely objects that contain Controls to overwrite the active Controls of a
-    ControlContainer. Layers are deeply merged with the applyLayer() method, so if a new layer does
-    not define a property for a Control, the Control's old property will be retained.
+    Activate a new layer of functionality. Layers are merely objects with properties to overwrite
+    the of the Controls within this ControlContainer. Layers objects are deeply merged. If a new
+    layer does not define a property for a Control, the Control's old property will be retained.
+
+    In the most common case, for providing alternate functionality when a shift button is pressed,
+    using applyLayer() is likely overcomplicated and may be slow. Use shift()/unshift() instead.
+    Use applyLayer() if you need to cycle through more than two alternate layers.
+
+    For example:
+    someControlContainer.applyLayer({
+        someButton: { inCo: 'alternate inCo' },
+        anotherButton: { outCo: 'alternate outCo' }
+    });
+
+    By default, the old layer's output callbacks are disconnected and the new layer's output
+    callbacks are connected. To avoid this behavior, which would be desirable if you are not
+    changing any output functionality, pass false as the second argument to applyLayer().
     **/
         if (reconnectControls !== false) {
             reconnectControls = true;
@@ -557,23 +635,6 @@ ControlContainer.prototype = {
             });
         }
     },
-    shift: function () {
-        this.forEachControl(function (control) {
-            if (typeof control.shift === 'function') {
-                control.shift();
-            }
-        });
-        this.isShifted = true;
-    },
-    unshift: function () {
-        this.forEachControl(function (control) {
-            if (typeof control.unshift === 'function') {
-                control.unshift();
-            }
-        });
-        this.isShifted = false;
-    },
-    isShifted: false
 };
 
 script.samplerRegEx = /\[Sampler(\d+)\]/ ;
@@ -582,34 +643,64 @@ script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/ ;
 script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/ ;
 
 /**
-A ControlContainer with a toggle() method for conveniently changing the group attributes of
-contained Controls to switch the deck that a set of Controls is manipulating.
+A Deck is a ControlContainer with methods for conveniently changing the group attributes of
+contained Controls to switch the deck that a set of Controls is manipulating. The setCurrentDeck()
+method takes the new deck as a string and sets the Controls' group property appropriately, including
+for equalizer knobs and QuickEffect (filter) knobs.
 
-deckNumbers, array of numbers, size arbitrary: which deck numbers this can cycle through with the toggle() method
-                                                Typically [1, 3] or [2, 4]
+The Deck constructor takes one argument, an array of deck numbers to cycle through with the toggle()
+method. Typically this will be [1, 3] or [2, 4].
+
+To map your own controller, create a custom derivative of Deck and create instances of your custom
+Deck objects in your controller's init() function. Use a constructor function to create all the
+Controls you need for your particular controller and assign your custom derivative's prototype
+to Deck. For example:
+
+MyController.init = function () {
+    this.leftDeck = new MyController.Deck([1, 2]);
+    this.rightDeck = new MyController.Deck([2, 4]);
+};
+MyController.Deck = function (deckNumbers, channel) {
+    Deck.call(this, deckNumbers); // call the Deck constructor to setup the currentDeck and
+                                  // deckNumber properties
+    var channel = deckNumbers[0]; // many controllers use the same MIDI messages for both sides,
+                                  // but with a different MIDI channel number
+    this.hotcueButton = [];
+    for (var i = 1; i <= 8; i++) {
+        this.hotcueButton[i] = new HotcueButton({
+            midi: [0x90 + channel, 0x10 + i],
+            number: i
+        });
+    }
+};
+MyController.Deck.prototype = new Deck();
 **/
 var Deck = function (deckNumbers) {
     if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
+        // These must be unique to each instance, so they cannot be in the prototype.
         this.currentDeck = '[Channel' + deckNumbers[0] + ']';
         this.deckNumbers = deckNumbers;
     }
 };
 Deck.prototype = new ControlContainer({
-    setCurrentDeck: function (newGroup, recursive) {
+    setCurrentDeck: function (newGroup) {
         this.currentDeck = newGroup;
-        if (recursive !== true) { recursive = false; }
         this.reconnectControls(function (control) {
-            if (control.group.search(script.eqKnobRegEx) !== -1) {
+            if (control.group.search(script.channelRegEx) !== -1) {
+                control.group = this.currentDeck;
+            } else if (control.group.search(script.eqKnobRegEx) !== -1) {
                 control.group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
             } else if (control.group.search(script.quickEffectRegEx) !== -1) {
                 control.group = '[QuickEffectRack1_' + this.currentDeck + ']';
-            } else {
-                control.group = this.currentDeck;
             }
-        }, recursive);
+            // Do not alter the Control's group if it does not match any of those RegExs because
+            // that could break effects Controls.
+        });
     },
-    toggle: function (recursive) {
-        var index = this.deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
+    toggle: function () {
+        var index = this.deckNumbers.indexOf(parseInt(
+            script.channelRegEx.exec(this.currentDeck)[1]
+        ));
         if (index === (this.deckNumbers.length - 1)) {
             index = 0;
         } else {
@@ -627,8 +718,8 @@ P32.init = function () {
     Button.prototype.sendShifted = true;
     CC.prototype.softTakeoverInit = false;
 
-    P32.leftDeck = new P32.Deck([1,3], 1);
-    P32.rightDeck = new P32.Deck([2,4], 2);
+    P32.leftDeck = new P32.Deck([1,3]);
+    P32.rightDeck = new P32.Deck([2,4]);
 
     if (engine.getValue('[Master]', 'num_samplers') < 32) {
         engine.setValue('[Master]', 'num_samplers', 32);
@@ -651,7 +742,8 @@ P32.shiftOffset = 3;
 P32.padColors = {
     red: 125,
     blue: 126,
-    purple: 127
+    purple: 127,
+    off: 0
 };
 
 P32.PadNumToMIDIControl = function (PadNum, layer) {
@@ -721,6 +813,8 @@ P32.slipButton = new Button({
 
 P32.Deck = function (deckNumbers, channel) {
     Deck.call(this, deckNumbers);
+    var channel = deckNumbers[0];
+
     var loopSize = defaultLoopSize;
     var beatJumpSize = defaultBeatJumpSize;
     var theDeck = this;
@@ -745,7 +839,7 @@ P32.Deck = function (deckNumbers, channel) {
             midi: [0xB0 + channel, 0x02 + k],
             group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
             inCo: 'parameter' + k,
-            range: [0, 1, 4]
+            range: [0, 1, 4] // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
         });
     }
 
@@ -757,7 +851,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.volume = new CC({
         midi: [0xB0 + channel, 0x01],
         inCo: 'volume',
-        range: [0, 0.25, 1]
+        range: [0, 0.25, 1] // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
     });
 
     // ==================================== PAD GRID ============================================
@@ -985,7 +1079,7 @@ P32.EffectUnit = function (unitNumber) {
             this.disconnect();
             this.connect();
         },
-        range: [0, 1]
+        range: [0, 1] // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
     });
 
     // ON/MACRO buttons
