@@ -148,7 +148,7 @@ var PlayButton = function (options) {
 };
 PlayButton.prototype = new Button({
     unshift: function () { this.inCo = 'play'; },
-    shift: function () { this.inCo = 'start_stop' },
+    shift: function () { this.inCo = 'start_stop'; },
     outCo: 'play_indicator'
 });
 
@@ -163,10 +163,10 @@ CueButton.prototype = new Button({
 
 var SyncButton = function (options) {
     Button.call(this, options);
-}
+};
 SyncButton.prototype = new Button({
-    unshift: function () { this.inCo = 'sync_enabled' },
-    shift: function () { this.inCo = 'beatsync' },
+    unshift: function () { this.inCo = 'sync_enabled'; },
+    shift: function () { this.inCo = 'beatsync'; },
     outCo: 'sync_enabled'
 });
 
@@ -189,7 +189,7 @@ var HotcueButton = function (options) {
     Button.call(this, options);
 };
 HotcueButton.prototype = new Button({
-    unshift: function () { this.inCo = 'hotcue_' + this.number + '_activate' },
+    unshift: function () { this.inCo = 'hotcue_' + this.number + '_activate'; },
     shift: function () { this.inCo = 'hotcue_' + this.number + '_clear'; },
     onlyOnPress: false
 });
@@ -455,7 +455,7 @@ var Deck = function (deckNumbers) {
 Deck.prototype = new ControlContainer({
     setCurrentDeck: function (newGroup, recursive) {
         this.currentDeck = newGroup;
-        if (recursive !== true) { recursive = false; };
+        if (recursive !== true) { recursive = false; }
         this.reconnectControls(function (control) {
             if (control.group.search(script.eqKnobRegEx) !== -1) {
                 control.group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
@@ -902,12 +902,12 @@ P32.EffectUnit = function (unitNumber) {
                         engine.setValue(ef.group, 'parameter' + i + '_set_default', 1);
                     }
                     var b = engine.getValue(ef.group, 'num_button_parameters');
-                    for (var i = 1; i <= b; i++) {
-                        engine.setValue(ef.group, 'button_parameter' + i, 0);
+                    for (var n = 1; n <= b; n++) {
+                        engine.setValue(ef.group, 'button_parameter' + n, 0);
                     }
                 }
             },
-            shift: function () { this.input = this.inputShifted },
+            shift: function () { this.input = this.inputShifted; },
             on: P32.padColors.red,
         });
 
