@@ -73,11 +73,7 @@ the group that both the inCo and outCo manipulate, for example '[Channel1]' for 
 property is the name of the Mixxx Control Object (see http://mixxx.org/wiki/doku.php/mixxxcontrols
 for a list of them) that this JavaScript Control manipulates when it receives a MIDI input signal.
 When the Mixxx CO specified by outCo changes, this JavaScript Control sends MIDI signals back out to
-the controller. The output callback is automatically connected by the constructor function if the
-outCo and group properties are specified (unless the outConnect property is set to false to
-intentionally avoid that). This makes it easy to map the controller so its LEDs stay synchronized
-with the status of Mixxx, whether the outCo changes because of the Control receiving MIDI input or
-the user changing it with the keyboard, mouse, or another controller. For example:
+the controller. For example:
 
 var quantizeButton = new Button({
     midi: [0x91, 0x01],
@@ -86,12 +82,28 @@ var quantizeButton = new Button({
     outCo: 'quantize'
 });
 
+The output callback is automatically connected by the constructor function if the outCo and group
+properties are specified to the constructor (unless the outConnect property is set to false to
+intentionally avoid that). This makes it easy to map the controller so its LEDs stay synchronized
+with the status of Mixxx, whether the outCo changes because of the Control receiving MIDI input or
+the user changing it with the keyboard, mouse, or another controller. The output callback can be
+easily connected and disconnected by calling the Control's connect and disconnect functions. The
+output callback can also be manually run with the appropriate arguments simply by calling the
+Control's trigger function. The connect, disconnect, and trigger functions are automatically called
+by ControlContainer's reconnectControls and applyLayer functions to make activating different layers
+of functionality easy.
+
 Controls can be used to manage alternate behaviors in different conditions. The most common use case
 for this is for shift buttons. For that case, assign functions to the shift and unshift properties
-that manipulate the Control appropriately. To avoid redundancy (like typing the name of the inCo
-both as the inCo property and in the unshift function), the Control constructor will automatically
-call the unshift function if it exists. The shift and unshift functions of ControlContainer
-will call the appropriate function of all the Controls within it that have that function defined.
+that manipulate the Control appropriately. In some cases, using the shift/unshift functions to
+change the Control's inCo, outCo, or group properties will be sufficient. See HotcueButton for an
+example. If you want to use custom input or output functions when shifting and unshifting, define
+each alternate function as a different property of the Control and use the shift/unshift functions
+to assign the Control's input/output properties to the appropriate function. See SamplerButton for
+an example. To avoid redundancy (like typing the name of the inCo both as the inCo property and in
+the unshift function), the Control constructor will automatically call the unshift function if it
+exists. The shift and unshift functions of ControlContainer will call the appropriate function of
+all the Controls within it that have that function defined.
 
 Control and its derivative objects use constructor functions with a minimal amount of logic. Most of
 the functionality of Controls comes from their prototype objects. In JavaScript, making a change to
@@ -232,8 +244,9 @@ LoopToggleButton
 HotcueButton
 SamplerButton
 These make it easy to map those kinds of buttons without having to worry about particularities
-of Mixxx's ControlObjects that can make mapping them not so straightforward. The HotcueButton
-and SamplerButton objects also provide alternate functionality for when a shift button is pressed.
+of Mixxx's ControlObjects that can make mapping them not so straightforward. The PlayButton,
+SyncButton, HotcueButton, and SamplerButton objects also provide alternate functionality for when a
+shift button is pressed.
 
 By default, the inCo is toggled only when the button is pressed. For buttons that activate an inCo
 only while they are held down, set the onlyOnPress property to false.
@@ -403,7 +416,6 @@ A Control for faders and knobs with finite ranges. Although these do not respond
 Mixxx CO to send MIDI signals back to the controller, using a CC is helpful because Control.connect
 and Control.disconnect are overwritten to take care of soft takeover when switching layers with
 ControlContainer.reconnectControls() and ControlContainer.applyLayer().
-
 
 softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults
 to true if ommitted. Some controllers (like the Hercules P32) can be sent a message to tell it to
