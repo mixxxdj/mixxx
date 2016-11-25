@@ -8,6 +8,7 @@
     </info>
     <controller id="Hercules">
         <scriptfiles>
+            <file functionprefix="" filename="lodash.mixxx.js"/>
             <file functionprefix="P32" filename="Hercules-P32-scripts.js"/>
         </scriptfiles>
         <controls>
@@ -851,7 +852,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.goToStart.input</key>
+                <key>P32.leftDeck.play.input</key>
                 <status>0x94</status>
                 <midino>0x0A</midino>
                 <options>
@@ -869,7 +870,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.syncMomentary.input</key>
+                <key>P32.leftDeck.sync.input</key>
                 <status>0x94</status>
                 <midino>0x08</midino>
                 <options>
@@ -1184,7 +1185,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.goToStart.input</key>
+                <key>P32.rightDeck.play.input</key>
                 <status>0x95</status>
                 <midino>0x0A</midino>
                 <options>
@@ -1202,7 +1203,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.syncMomentary.input</key>
+                <key>P32.rightDeck.sync.input</key>
                 <status>0x95</status>
                 <midino>0x08</midino>
                 <options>
