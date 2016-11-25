@@ -55,29 +55,29 @@ The input function needs to be mapped to the incoming MIDI signals in the XML fi
         <script-binding/>
     </options>
 </control>
+The output function does not need to be mapped in XML.
 
 A handful of derivative Control objects are available that are more convenient for common use cases.
 These derivative objects will cover most use cases. In practice, most Controls are derivatives
 of the Button or CC Controls. Only if you need to make a lot of changes to the default Control
 attributes should you use the Control constructor directly.
 
-Control and its derivative objects use constructor functions with a minimal amount of logic. Create
-Controls by calling the constructor with JavaScript's "new" keyword. The Control constructor takes
-a single argument. This is an options object containing properties that get merged with the Control
-when it is created, making it easy to customize the functionality of the Control. Most Controls will
-need at least their midi, group, inCo, and outCo attributes specified.
+Create Controls by calling the constructor with JavaScript's "new" keyword. The Control constructor
+takes a single argument. This is an options object containing properties that get merged with the
+Control when it is created, making it easy to customize the functionality of the Control. Most
+Controls will need at least their midi, group, inCo, and outCo attributes specified.
 
 The midi attribute is a two member array corresponding to the first two MIDI bytes that the
 controller sends/receives when the physical component changes state. The group property specifies
 the group that both the inCo and outCo manipulate, for example '[Channel1]' for deck 1. The inCo
-property is the name of the Mixxx Control Object (see http://mixxx.org/wiki/doku.php/mixxxcontrol
-sfor a list of them) that this JavaScript Control manipulates when it receives a MIDI input signal.
+property is the name of the Mixxx Control Object (see http://mixxx.org/wiki/doku.php/mixxxcontrols
+for a list of them) that this JavaScript Control manipulates when it receives a MIDI input signal.
 When the Mixxx CO specified by outCo changes, this JavaScript Control sends MIDI signals back out to
 the controller. The output callback is automatically connected by the constructor function if the
 outCo and group properties are specified (unless the outConnect property is set to false to
 intentionally avoid that). This makes it easy to map the controller so its LEDs stay synchronized
 with the status of Mixxx, whether the outCo changes because of the Control receiving MIDI input or
-the user changing it with the keyboard, mouse, or another controller. For example,
+the user changing it with the keyboard, mouse, or another controller. For example:
 
 var quantizeButton = new Button({
     midi: [0x91, 0x01],
@@ -86,10 +86,18 @@ var quantizeButton = new Button({
     outCo: 'quantize'
 });
 
-Most of the functionality of Controls comes from their prototype objects. In JavaScript, making a
-change to an object's prototype immediately changes all existing and future objects that have it in
-their prototype change (regardless of the context in which the derivative objects were created).
-This makes it easy to change the behavior for all (of a subtype) of Control to accomodate the MIDI
+Controls can be used to manage alternate behaviors in different conditions. The most common use case
+for this is for shift buttons. For that case, assign functions to the shift and unshift properties
+that manipulate the Control appropriately. To avoid redundancy (like typing the name of the inCo
+both as the inCo property and in the unshift function), the Control constructor will automatically
+call the unshift function if it exists. The shift and unshift functions of ControlContainer
+will call the appropriate function of all the Controls within it that have that function defined.
+
+Control and its derivative objects use constructor functions with a minimal amount of logic. Most of
+the functionality of Controls comes from their prototype objects. In JavaScript, making a change to
+an object's prototype immediately changes all existing and future objects that have it in their
+prototype change (regardless of the context in which the derivative objects were created). This
+makes it easy to change the behavior for all (of a subtype) of Control to accomodate the MIDI
 signals used by a particular controller. For example, the Hercules P32 controller sends and receives
 two sets of MIDI signals for most physical components, one for when the shift button is pressed and
 one for when the shift button is not pressed. The controller changes the state of its LEDs when the
@@ -104,13 +112,8 @@ Control.prototype.shiftChannel = true;
 Button.prototype.sendShifted = true;
 This causes the Control.prototype.send function to send both the shifted and unshifted MIDI
 signals when the Control's outCo changes.
-
-Controls can be used to manage alternate behaviors in different conditions. The most common use case
-for this is for shift buttons. For that case, assign functions to the shift and unshift properties
-that manipulate the Control appropriately. To avoid redundancy (like typing the name of the inCo
-both as the inCo property and in the unshift function), the Control constructor will automatically
-call the unshift function if it exists. The shift and unshift functions of ControlContainer
-will call the appropriate function of all the Controls within it that have that function defined.
+If your controller uses the same MIDI channel but different control numbers when a shift button
+is pressed, set Control.prototype.shiftControl to true instead of Control.prototype.shiftChannel.
 
 To avoid typing out the group every time, Controls that share a group can be part of a
 ControlContainer and the ControlContainer's reconnectControls method can assign the group to all
@@ -210,8 +213,9 @@ Control.prototype = {
 };
 
 /**
-A Control for buttons/pads. If the inCo and outCo are the same, you can specify just a "co" property
-for the constructor. If the inCo and outCo are different, specify each of them.
+A Button is a Control derivative for buttons/pads. If the inCo and outCo are the same, you can
+specify just a "co" property for the constructor. If the inCo and outCo are different, specify
+each of them.
 
 For example:
 var quantize = new Control({
@@ -219,6 +223,17 @@ var quantize = new Control({
     group: '[Channel1]'
     co: 'quantize'
 });
+
+Derivative Buttons are provided for many common use cases, including:
+PlayButton
+CueButton
+SyncButton
+LoopToggleButton
+HotcueButton
+SamplerButton
+These make it easy to map those kinds of buttons without having to worry about particularities
+of Mixxx's ControlObjects that can make mapping them not so straightforward. The HotcueButton
+and SamplerButton objects also provide alternate functionality for when a shift button is pressed.
 
 By default, the inCo is toggled only when the button is pressed. For buttons that activate an inCo
 only while they are held down, set the onlyOnPress property to false.
