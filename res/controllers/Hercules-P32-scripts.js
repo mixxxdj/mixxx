@@ -35,10 +35,60 @@ var samplerCrossfaderAssign = true;
 **/
 'use strict';
 
-/* end MIT licensed code */
-
 /**
 A Control represents a physical component on a controller, such as a button, knob, encoder, or fader.
+It encapsulates all the information needed to receive input from that component and all the
+information needed to send MIDI signals out to the controller to manipulate LEDs. It also provides
+generic functions that can be made to work for most use cases just by changing some attributes
+of the Control, without having to write much or any custom code.
+
+In most cases, specifying the inCo and outCo properties will be sufficient. The inCo property is
+the name of the Mixxx Control Object (see http://mixxx.org/wiki/doku.php/mixxxcontrols for a list
+of them) that this JavaScript Control manipulates when it receives a MIDI input signal. The outCo
+property is the Mixxx CO that this JavaScript Control sends MIDI signals back out to the controller
+when the CO changes. The output callback is automatically connected by the constructor function if
+the outCo and group properties are specified (unless the outConnect property is set to false to
+intentionally avoid that).
+
+The input function needs to be mapped to the incoming MIDI signals in the XML file. For example:
+<control>
+    <group>[Channel1]</group>
+    <key>MyController.playButton.input</key>
+    <status>0x90</status>
+    <midino>0x02</midino>
+    <options>
+        <script-binding/>
+    </options>
+</control>
+
+The constructor should be passed an object to that is merged with the Control to specify custom
+attributes. Most Controls will need at least their MIDI signals and group specified. The first
+two bytes of the MIDI signals sent and received from that physical control are specified in a two
+member array. For example:
+
+var quantize = new Control({
+    midi: [0x91, 0x01],
+    group: '[Channel1]'
+    inCo: 'quantize',
+    outCo: 'quantize'
+});
+
+
+A handful of subclasses are available that are more convenient for common use cases. For the above
+example, it would actually be better to make a new Button than directly make a new Control.
+The subclasses will cover most use cases. Only if you need to make a lot of changes to the default
+Control attributes should you use the Control constructor directly.
+
+Controls can be used to manage alternate behaviors in different conditions. The most common use case
+for this is for shift buttons. For that case, assign functions to the shift and unshift properties
+that manipulate the Control appropriately. To avoid redundancy (like typing the name of the inCo
+both as the inCo property and in the unshift function), the Control constructor will automatically
+call the unshift function if it exists. The shift and unshift functions of ControlContainer
+will call the appropriate function of all the Controls within it that have that function defined.
+
+To avoid typing out the group every time, Controls that share a group can be part of a
+ControlContainer and the ControlContainer's reconnectControls method can assign the group to all
+of them.
 **/
 var Control = function (options) {
     if (Array.isArray(options) && typeof options[0] === 'number') {
@@ -61,11 +111,10 @@ var Control = function (options) {
     }
 };
 Control.prototype = {
-    /**
-     default attributes
-     You should probably overwrite at least some of these.
-     **/
+    // default attributes
+    // You should probably overwrite at least some of these.
     inFunc: function (value) {return value;},
+    // map input in the XML file, not inFunc
     input: function (channel, control, value, status, group) {
                 if (this.onlyOnPress) {
                     if (value > 0) {
@@ -85,14 +134,14 @@ Control.prototype = {
     on: 127,
     off: 0,
 
-    /**
-     common functions
-     In most cases, you should not overwrite these.
-     **/
+    // common functions
+    // In most cases, you should not overwrite these.
     setValue: function (value) {
         engine.setValue(this.group, this.inCo, value);
     },
-    // outCo value is set by output() callback, so no need for separate setValueIn/setValueOut functions
+    // outCo value generally shouldn't be set directly,
+    // only by the output() callback when its value changes,
+    // so don't provide separate setValueIn/setValueOut functions.
     getValueIn: function () {
         return engine.getValue(this.group, this.inCo);
     },
@@ -104,11 +153,10 @@ Control.prototype = {
     },
     connect: function () {
         /**
-        Override this method with a custom one to connect multiple Mixxx COs
-        for a single Control. Add the connection objects to the this.connections array so
-        they all get disconnected just by calling this.disconnect().
-        This can be helpful for multicolor LEDs that show a different color depending
-        on the state of different Mixxx COs. See SamplerButton.connect()
+        Override this method with a custom one to connect multiple Mixxx COs for a single Control.
+        Add the connection objects to the this.connections array so they all get disconnected just
+        by calling this.disconnect(). This can be helpful for multicolor LEDs that show a
+        different color depending on the state of different Mixxx COs. See SamplerButton.connect()
         and SamplerButton.output() for an example.
         **/
         this.connections[0] = engine.connectControl(this.group, this.outCo, this.output);
@@ -131,6 +179,17 @@ Control.prototype = {
     shiftOffset: 0,
 };
 
+/**
+A Control for buttons/pads. If the inCo and outCo are the same, you can specify just a "co" property
+for the constructor. If the inCo and outCo are different, specify each of them.
+
+For example:
+var quantize = new Control({
+    midi: [0x91, 0x01],
+    group: '[Channel1]'
+    co: 'quantize'
+});
+**/
 var Button = function (options) {
     if (options !== undefined && typeof options.co === 'string') {
         this.inCo = options.co;
@@ -199,7 +258,6 @@ A Control for sampler buttons. Press the button to load the track selected in
 the library into an empty sampler. Press a loaded sampler to play it from
 its cue point. Press again while playing to jump back to the cue point.
 
-@param {Array} midi: first two bytes of the MIDI message (status and note numbers)
 @param {Integer} number: number of the sampler
 @param {Number} on (optional): MIDI value to send back to button LED when sampler
                                is loaded. Defaults to 127. Use this to for multicolor LEDs.
@@ -266,19 +324,18 @@ SamplerButton.prototype = new Button({
 });
 
 /**
-A Control for faders and knobs with finite ranges. Although these do not
-respond to a change in a Mixxx CO to send MIDI signals back to the controller,
-using a CC is helpful because Control.connect and Control.disconnect are
-overwritten to take care of soft takeover when switching layers with ControlContainer.applyLayer().
+A Control for faders and knobs with finite ranges. Although these do not respond to a change in a
+Mixxx CO to send MIDI signals back to the controller, using a CC is helpful because Control.connect
+and Control.disconnect are overwritten to take care of soft takeover when switching layers with
+ControlContainer.reconnectControls() and ControlContainer.applyLayer().
 
-signals: two member array, first two bytes of the MIDI message (status and note numbers)
-group: string, the group this belongs to, for example '[Channel1]'
-co, string: the Mixxx CO to change
-softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults to true if ommitted.
-                                        Some controllers (like the Hercules P32) can be sent a message to tell it to send
-                                        signals back with the positions of all the controls. It is helpful to send the message
-                                        in the script's init function, but it requires that soft takeover isn't enabled to work.
-                                        So, for these controllers, call this constructor function with softTakeoverInit as false.
+
+softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults
+to true if ommitted. Some controllers (like the Hercules P32) can be sent a message to tell it to
+send signals back with the positions of all the controls. It is helpful to send the message in the
+script's init function, but it requires that soft takeover isn't enabled to work. So, for these
+controllers, set CC.prototype.softTakeoverInit as false in your script's init function.
+
 max, number, optional: the maximum value received from the controller. Defaults to 127 if ommitted.
 **/
 var CC = function (options) {
@@ -327,13 +384,8 @@ CC.prototype = new Control({
 });
 
 /**
-A ControlContainer is an object that contains Controls as properties, with
-methods to help manipulate the Controls. Layers are merely objects that
-contain Controls to overwrite the active Controls of a ControlContainer. Layers
-are deeply merged with the applyLayer() method, so if a new layer does not
-define a property for a Control, the Control's old property will be retained.
-To avoid defining properties of Controls, pass null as an argument to the
-Control constructor function.
+A ControlContainer is an object that contains Controls as properties, with methods to help
+with batch manipulation of those Controls.
 
 initialLayer, object, optional: the layer to activate upon initialization
 **/
@@ -392,6 +444,11 @@ ControlContainer.prototype = {
         }, recursive);
     },
     applyLayer: function (newLayer, reconnectControls) {
+    /**
+    Layers are merely objects that contain Controls to overwrite the active Controls of a
+    ControlContainer. Layers are deeply merged with the applyLayer() method, so if a new layer does
+    not define a property for a Control, the Control's old property will be retained.
+    **/
         if (reconnectControls !== false) {
             reconnectControls = true;
         }
@@ -438,10 +495,8 @@ script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/ ;
 script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/ ;
 
 /**
-A ControlContainer with a toggle() method for conveniently changing the group
-attributes of contained Controls to switch the deck that a set of Controls
-is manipulating. The toggle() method can be used instead of defining a layer
-for each deck and using ControlContainer.applyLayer().
+A ControlContainer with a toggle() method for conveniently changing the group attributes of
+contained Controls to switch the deck that a set of Controls is manipulating.
 
 deckNumbers, array of numbers, size arbitrary: which deck numbers this can cycle through with the toggle() method
                                                 Typically [1, 3] or [2, 4]
