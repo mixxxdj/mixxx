@@ -67,14 +67,14 @@ Control.prototype = {
      **/
     inFunc: function (value) {return value;},
     input: function (channel, control, value, status, group) {
-            if (this.onlyOnPress) {
-                if (value > 0) {
+                if (this.onlyOnPress) {
+                    if (value > 0) {
+                        this.setValue(this.inFunc.call(this, value));
+                    }
+                } else {
                     this.setValue(this.inFunc.call(this, value));
                 }
-            } else {
-                this.setValue(this.inFunc.call(this, value));
-            }
-        },
+            },
     outFunc: function (value) {return value;},
     output: function (value, group, control) {
                 this.send(this.outFunc.call(this, value));
@@ -453,15 +453,8 @@ var Deck = function (deckNumbers) {
     }
 };
 Deck.prototype = new ControlContainer({
-    toggle: function (recursive) {
-        var index = this.deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
-        if (index === (this.deckNumbers.length - 1)) {
-            index = 0;
-        } else {
-            index += 1;
-        }
-        this.currentDeck = "[Channel" + this.deckNumbers[index] + "]";
-
+    setCurrentDeck: function (newGroup, recursive) {
+        this.currentDeck = newGroup;
         if (recursive !== true) { recursive = false; };
         this.reconnectControls(function (control) {
             if (control.group.search(script.eqKnobRegEx) !== -1) {
@@ -472,6 +465,15 @@ Deck.prototype = new ControlContainer({
                 control.group = this.currentDeck;
             }
         }, recursive);
+    },
+    toggle: function (recursive) {
+        var index = this.deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
+        if (index === (this.deckNumbers.length - 1)) {
+            index = 0;
+        } else {
+            index += 1;
+        }
+        this.setCurrentDeck("[Channel" + this.deckNumbers[index] + "]");
     }
 });
 
@@ -488,16 +490,18 @@ P32.init = function () {
     if (engine.getValue('[Master]', 'num_samplers') < 32) {
         engine.setValue('[Master]', 'num_samplers', 32);
     }
-    this.sampler = [];
-    this.samplerClear = [];
-    for (var channel = 1; channel <= 2; channel++) {
 
-    }
     // tell controller to send MIDI messages with positions of faders and knobs
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
 };
 
-P32.shutdown = function () {};
+P32.shutdown = function () {
+    for (var channel = 0; channel <= 5; channel++) {
+        for (var button = 1; button <= 0x63; button++) {
+            midi.sendShortMsg(0x90 + channel, button, 0);
+        }
+    }
+};
 
 P32.shiftOffset = 3;
 
@@ -516,7 +520,7 @@ P32.PadNumToMIDIControl = function (PadNum, layer) {
     return 0x24 + 16 * layer + midiRow*4 + PadNum%4;
 };
 
-P32.browse = function (channel, control, value, status, group) {
+P32.browseEncoder = function (channel, control, value, status, group) {
     if (value > 64) {
         engine.setValue('[Playlist]', 'SelectPrevTrack', 1);
     } else {
@@ -524,32 +528,59 @@ P32.browse = function (channel, control, value, status, group) {
     }
 };
 
-P32.headMix = function (channel, control, value, status, group) {
+P32.headMixEncoder = function (channel, control, value, status, group) {
     var direction = (value > 64) ? -1 : 1;
     engine.setValue('[Master]', 'headMix', engine.getValue('[Master]', 'headMix') + (0.25 * direction));
 };
 
-P32.record = new Button({
+P32.recordButton = new Button({
     midi: [0x90, 0x02],
     group: '[Recording]',
+    inCo: 'toggle_recording',
+    outCo: 'status'
+});
+
+P32.slipButton = new Button({
+    midi: [0x90, 0x03],
     input: function (channel, control, value, status, group) {
-            if (value === 127) {
+        if (value === 127) {
                 if (P32.leftDeck.isShifted) {
                     P32.leftDeck.toggle();
                 } else if (P32.rightDeck.isShifted) {
                     P32.rightDeck.toggle();
                 } else {
-                    engine.setValue('[Recording]', 'toggle_recording', 1);
+                    for (var i = 1; i <= 4; i++) {
+                        script.toggleControl('[Channel' + i + ']', 'slip_enabled');
+                    }
                 }
+        }
+    },
+    connect: function () {
+        for (var d = 1; d <= 4; d++) {
+            this.connections.push(
+                engine.connectControl('[Channel' + d + ']', 'slip_enabled', this.output)
+            );
+        }
+    },
+    output: function (value, group, control) {
+        var slipEnabledOnAnyDeck = false;
+        for (var d = 1; d <= 4; d++) {
+            if (engine.getValue('[Channel' + d + ']', 'slip_enabled')) {
+                slipEnabledOnAnyDeck = true;
+                break;
             }
-        },
-    outCo: 'status'
+        }
+        this.send(slipEnabledOnAnyDeck ? this.on : this.off);
+    },
+    co: 'slip_enabled',
+    group: null // hack to get Control constructor to call this.connect()
 });
 
 P32.Deck = function (deckNumbers, channel) {
     Deck.call(this, deckNumbers);
     var loopSize = defaultLoopSize;
     var beatJumpSize = defaultBeatJumpSize;
+    var theDeck = this;
 
     this.shiftButton = function (channel, control, value, status, group) {
         if (value === 127) {
@@ -577,7 +608,7 @@ P32.Deck = function (deckNumbers, channel) {
 
     this.pfl = new Button({
         midi: [0x90 + channel, 0x10],
-        co: 'pfl'
+        co: 'pfl',
     });
 
     this.volume = new CC({
@@ -737,7 +768,7 @@ P32.Deck = function (deckNumbers, channel) {
         engine.setValue(this.currentDeck, 'rate', engine.getValue(this.currentDeck, 'rate') + (0.01 * direction));
     };
 
-    this.tempoPress = function (channel, control, value, status, group) {
+    this.tempoEncoderPress = function (channel, control, value, status, group) {
         if (value) {
             engine.setValue(this.currentDeck, 'rate', 0);
         }
@@ -759,7 +790,7 @@ P32.Deck = function (deckNumbers, channel) {
         }
     };
 
-    this.beatJumpPress = function (channel, control, value, status, group) {
+    this.beatJumpEncoderPress = function (channel, control, value, status, group) {
         // The firmware will only change the numeric LED readout when sent messages
         // on the unshifted channel.
         if (value === 127) {

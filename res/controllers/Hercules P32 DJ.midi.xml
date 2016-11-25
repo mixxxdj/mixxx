@@ -32,7 +32,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>P32.headMix</key>
+                <key>P32.headMixEncoder</key>
                 <status>0xB3</status>
                 <midino>0x02</midino>
                 <options>
@@ -1005,7 +1005,7 @@
             </control>
             <control>
                 <group>[Playlist]</group>
-                <key>P32.browse</key>
+                <key>P32.browseEncoder</key>
                 <status>0xB0</status>
                 <midino>0x02</midino>
                 <options>
@@ -1077,7 +1077,7 @@
             </control>
             <control>
                 <group>[Recording]</group>
-                <key>P32.record.input</key>
+                <key>P32.recordButton.input</key>
                 <status>0x90</status>
                 <midino>0x02</midino>
                 <options>
@@ -1085,8 +1085,17 @@
                 </options>
             </control>
             <control>
+                <group>[Recording]</group>
+                <key>P32.slipButton.input</key>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.tempoPress</key>
+                <key>P32.leftDeck.tempoEncoderPress</key>
                 <status>0x91</status>
                 <midino>0x02</midino>
                 <options>
@@ -1122,7 +1131,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.beatJumpPress</key>
+                <key>P32.leftDeck.beatJumpEncoderPress</key>
                 <status>0x94</status>
                 <midino>0x02</midino>
                 <options>
@@ -1329,7 +1338,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.tempoPress</key>
+                <key>P32.rightDeck.tempoEncoderPress</key>
                 <status>0x92</status>
                 <midino>0x02</midino>
                 <options>
@@ -1365,7 +1374,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.beatJumpPress</key>
+                <key>P32.rightDeck.beatJumpEncoderPress</key>
                 <status>0x95</status>
                 <midino>0x02</midino>
                 <options>
