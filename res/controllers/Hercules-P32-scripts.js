@@ -47,6 +47,9 @@ var Control = function (options) {
         _.assign(this, options);
     }
 
+    if (typeof this.unshift === 'function') {
+        this.unshift();
+    }
     // This cannot be in the prototype; it must be unique to each instance.
     this.connections = [];
 
@@ -62,7 +65,7 @@ Control.prototype = {
      default attributes
      You should probably overwrite at least some of these.
      **/
-    inFunc: function (value) {return value;} ,
+    inFunc: function (value) {return value;},
     input: function (channel, control, value, status, group) {
             if (this.onlyOnPress) {
                 if (value > 0) {
@@ -111,7 +114,7 @@ Control.prototype = {
         this.connections[0] = engine.connectControl(this.group, this.outCo, this.output);
     },
     disconnect: function () {
-        if (this.connections.length > 0) {
+        if (this.connections[0] !== undefined) {
             this.connections.forEach(function (connection) {
                 connection.disconnect();
             });
@@ -144,7 +147,8 @@ var PlayButton = function (options) {
     Button.call(this, options);
 };
 PlayButton.prototype = new Button({
-    inCo: 'play',
+    unshift: function () { this.inCo = 'play'; },
+    shift: function () { this.inCo = 'start_stop' },
     outCo: 'play_indicator'
 });
 
@@ -155,6 +159,15 @@ CueButton.prototype = new Button({
     inCo: 'cue_default',
     outCo: 'cue_indicator',
     onlyOnPress: false
+});
+
+var SyncButton = function (options) {
+    Button.call(this, options);
+}
+SyncButton.prototype = new Button({
+    unshift: function () { this.inCo = 'sync_enabled' },
+    shift: function () { this.inCo = 'beatsync' },
+    outCo: 'sync_enabled'
 });
 
 var LoopButton = function (options) {
@@ -172,24 +185,14 @@ var HotcueButton = function (options) {
         print('WARNING: No hotcue number specified for new HotcueButton.');
     }
     this.number = options.number;
-    this.inCo = 'hotcue_' + this.number + '_activate';
     this.outCo = 'hotcue_' + this.number + '_enabled';
     Button.call(this, options);
 };
 HotcueButton.prototype = new Button({
+    unshift: function () { this.inCo = 'hotcue_' + this.number + '_activate' },
+    shift: function () { this.inCo = 'hotcue_' + this.number + '_clear'; },
     onlyOnPress: false
 });
-
-var HotcueClearButton = function (options) {
-    if (options.number === undefined) {
-        print('WARNING: No hotcue number specified for new HotcueClearButton.');
-    }
-    this.number = options.number;
-    this.inCo = 'hotcue_' + this.number + '_clear';
-    this.outCo = 'hotcue_' + this.number + '_enabled';
-    Button.call(this, options);
-};
-HotcueClearButton.prototype = new Button();
 
 /**
 A Control for sampler buttons. Press the button to load the track selected in
@@ -217,10 +220,9 @@ var SamplerButton = function (options) {
     Button.call(this, options);
 };
 SamplerButton.prototype = new Button({
-    input: function (channel, control, value, status, group) {
+    inputUnshifted: function (channel, control, value, status, group) {
         if (value > 0) {
             // track_samples is 0 when the sampler is empty and > 0 when a sample is loaded
-            // TODO: duration?
             if (engine.getValue(this.group, 'track_samples') === 0) {
                 engine.setValue(this.group, 'LoadSelectedTrack', 1);
             } else {
@@ -228,6 +230,17 @@ SamplerButton.prototype = new Button({
             }
         }
     },
+    unshift: function () { this.input = this.inputUnshifted; },
+    inputShifted: function (channel, control, value, status, group) {
+        if (value > 0) {
+            if (engine.getValue(this.group, 'play') === 1) {
+                engine.setValue(this.group, 'play', 0);
+            } else {
+                engine.setValue(this.group, 'eject', 1);
+            }
+        }
+    },
+    shift: function() { this.input = this.inputShifted; },
     output: function (value, group, control) {
         if (engine.getValue(this.group, 'track_samples') > 0) {
             if (this.playing === undefined) {
@@ -253,63 +266,22 @@ SamplerButton.prototype = new Button({
 });
 
 /**
-A Control for buttons to stop samplers. Typically, these are the same buttons
-as SamplerButtons but active with shift held down. If the sampler is stopped,
-eject the loaded sample.
+A Control for faders and knobs with finite ranges. Although these do not
+respond to a change in a Mixxx CO to send MIDI signals back to the controller,
+using a CC is helpful because Control.connect and Control.disconnect are
+overwritten to take care of soft takeover when switching layers with ControlContainer.applyLayer().
 
-@param {Array} signals: first two bytes of the MIDI message (status and note numbers)
-@param {Integer} samplerNumber: number of the sampler
-@param {Number} on (optional): MIDI value to send back to button LED when sampler
-                               is loaded. Defaults to 127. Use this to for multicolor LEDs.
-@param {Number} off (optional): MIDI value to send back to button LED when sampler
-                                is empty. Defaults to 0.
-@param {Number} playing (optional): MIDI value to send back to button LED when sampler
-                                    is playing. Useful for buttons with multicolor LEDs.
-                                    If ommitted, only the MIDI message specified by
-                                    the "on" parameter is sent when the sampler
-                                    is loaded, regardless of whether it is playing.
+signals: two member array, first two bytes of the MIDI message (status and note numbers)
+group: string, the group this belongs to, for example '[Channel1]'
+co, string: the Mixxx CO to change
+softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults to true if ommitted.
+                                        Some controllers (like the Hercules P32) can be sent a message to tell it to send
+                                        signals back with the positions of all the controls. It is helpful to send the message
+                                        in the script's init function, but it requires that soft takeover isn't enabled to work.
+                                        So, for these controllers, call this constructor function with softTakeoverInit as false.
+max, number, optional: the maximum value received from the controller. Defaults to 127 if ommitted.
 **/
-var SamplerClearButton = function (options) {
-    if (options.number === undefined) {
-        print('WARNING: No sampler number specified for new SamplerClearButton.');
-    }
-    this.number = options.number;
-    this.group = '[Sampler' + this.number + ']';
-    Button.call(this, options);
-};
-SamplerClearButton.prototype = new SamplerButton({
-    input: function (channel, control, value, status, group) {
-        if (value > 0) {
-            if (engine.getValue(this.group, 'play') === 1) {
-                engine.setValue(this.group, 'play', 0);
-            } else {
-                engine.setValue(this.group, 'eject', 1);
-            }
-        }
-    }
-});
-
 var CC = function (options) {
-    /**
-    A Control for faders and knobs with finite ranges. Although these do not
-    respond to a change in a Mixxx CO to send MIDI signals back to the controller,
-    using a CC is helpful because Control.connect and Control.disconnect are
-    overwritten to take care of soft takeover when switching layers with LayerContainer.applyLayer().
-
-    signals: two member array, first two bytes of the MIDI message (status and note numbers)
-    group: string, the group this belongs to, for example '[Channel1]'
-    co, string: the Mixxx CO to change
-    softTakeoverInit, boolean, optional: Whether to activate soft takeover upon initialization. Defaults to true if ommitted.
-                                         Some controllers (like the Hercules P32) can be sent a message to tell it to send
-                                         signals back with the positions of all the controls. It is helpful to send the message
-                                         in the script's init function, but it requires that soft takeover isn't enabled to work.
-                                         So, for these controllers, call this constructor function with softTakeoverInit as false.
-    max, number, optional: the maximum value received from the controller. Defaults to 127 if ommitted.
-    **/
-    if (options !== undefined && typeof options.co === 'string') {
-        this.inCo = options.co;
-    }
-
     Control.call(this, options);
 
     if (this.softTakeoverInit) {
@@ -319,6 +291,7 @@ var CC = function (options) {
 CC.prototype = new Control({
     input: function (channel, control, value, status, group) {
         // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
+        // just use engine.setParameter() when soft takeover works for it
         if (this.range === undefined) {
             engine.setParameter(this.group, this.inCo, value / this.max);
         } else if (Array.isArray(this.range)) {
@@ -354,9 +327,9 @@ CC.prototype = new Control({
 });
 
 /**
-A LayerContainer is an object that contains Controls as properties, with
+A ControlContainer is an object that contains Controls as properties, with
 methods to help manipulate the Controls. Layers are merely objects that
-contain Controls to overwrite the active Controls of a LayerContainer. Layers
+contain Controls to overwrite the active Controls of a ControlContainer. Layers
 are deeply merged with the applyLayer() method, so if a new layer does not
 define a property for a Control, the Control's old property will be retained.
 To avoid defining properties of Controls, pass null as an argument to the
@@ -364,22 +337,22 @@ Control constructor function.
 
 initialLayer, object, optional: the layer to activate upon initialization
 **/
-var LayerContainer = function (initialLayer) {
+var ControlContainer = function (initialLayer) {
     if (typeof initialLayer === 'object') {
         this.applyLayer(initialLayer);
     }
 };
-LayerContainer.prototype = {
+ControlContainer.prototype = {
     forEachControl: function (operation, recursive) {
         /**
         operation, function that takes 1 argument: the function to call for each Control.
                                                    Takes each Control as its first argument.
         recursive, boolean, optional: whether to call forEachControl recursively
-                                      for each LayerContainer within this LayerContainer.
+                                      for each ControlContainer within this ControlContainer.
                                       Defaults to true if ommitted.
         **/
         if (typeof operation !== 'function') {
-            print('ERROR: LayerContainer.forEachContainer requires a function argument');
+            print('ERROR: ControlContainer.forEachContainer requires a function argument');
             return;
         }
         if (recursive === undefined) { recursive = true; }
@@ -388,7 +361,7 @@ LayerContainer.prototype = {
         var applyOperationTo = function (obj) {
             if (obj instanceof Control) {
                 operation.call(that, obj);
-            } else if (recursive && obj instanceof LayerContainer) {
+            } else if (recursive && obj instanceof ControlContainer) {
                 obj.forEachControl(operation);
             } else if (Array.isArray(obj)) {
                 obj.forEach(function (element) {
@@ -405,7 +378,7 @@ LayerContainer.prototype = {
     },
     reconnectControls: function (operation, recursive) {
         /**
-        operation, function that takes one argument, optional: a function to call for each Control in this LayerContainer
+        operation, function that takes one argument, optional: a function to call for each Control in this ControlContainer
                                                                before reconnecting the output callback.
                                                                The Control is passed as the first argument.
         **/
@@ -418,20 +391,45 @@ LayerContainer.prototype = {
             control.trigger();
         }, recursive);
     },
-    applyLayer: function (newLayer, operation) {
-        this.forEachControl(function (control) {
-            control.disconnect();
-        });
-        // Recursively merge newLayer with this LayerContainer
+    applyLayer: function (newLayer, reconnectControls) {
+        if (reconnectControls !== false) {
+            reconnectControls = true;
+        }
+        if (reconnectControls === true) {
+            this.forEachControl(function (control) {
+                control.disconnect();
+            });
+        }
+
         _.merge(this, newLayer);
+
+        if (reconnectControls === true) {
+            this.forEachControl(function (control) {
+                if (typeof operation === 'function') {
+                    operation.call(this, control);
+                }
+                control.connect();
+                control.trigger();
+            });
+        }
+    },
+    shift: function () {
         this.forEachControl(function (control) {
-            if (typeof operation === 'function') {
-                operation.call(this, control);
+            if (typeof control.shift === 'function') {
+                control.shift();
             }
-            control.connect();
-            control.trigger();
         });
-    }
+        this.isShifted = true;
+    },
+    unshift: function () {
+        this.forEachControl(function (control) {
+            if (typeof control.unshift === 'function') {
+                control.unshift();
+            }
+        });
+        this.isShifted = false;
+    },
+    isShifted: false
 };
 
 script.samplerRegEx = /\[Sampler(\d+)\]/ ;
@@ -439,23 +437,23 @@ script.channelRegEx = /\[Channel(\d+)\]/ ;
 script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/ ;
 script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/ ;
 
-var Deck = function (deckNumbers) {
-    /**
-    A LayerContainer with a toggle() method for conveniently changing the group
-    attributes of contained Controls to switch the deck that a set of Controls
-    is manipulating. The toggle() method can be used instead of defining a layer
-    for each deck and using LayerContainer.applyLayer().
+/**
+A ControlContainer with a toggle() method for conveniently changing the group
+attributes of contained Controls to switch the deck that a set of Controls
+is manipulating. The toggle() method can be used instead of defining a layer
+for each deck and using ControlContainer.applyLayer().
 
-    deckNumbers, array of numbers, size arbitrary: which deck numbers this can cycle through with the toggle() method
-                                                   Typically [1, 3] or [2, 4]
-    **/
+deckNumbers, array of numbers, size arbitrary: which deck numbers this can cycle through with the toggle() method
+                                                Typically [1, 3] or [2, 4]
+**/
+var Deck = function (deckNumbers) {
     if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
         this.currentDeck = '[Channel' + deckNumbers[0] + ']';
         this.deckNumbers = deckNumbers;
     }
 };
-Deck.prototype = new LayerContainer({
-    toggle: function () {
+Deck.prototype = new ControlContainer({
+    toggle: function (recursive) {
         var index = this.deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
         if (index === (this.deckNumbers.length - 1)) {
             index = 0;
@@ -464,6 +462,7 @@ Deck.prototype = new LayerContainer({
         }
         this.currentDeck = "[Channel" + this.deckNumbers[index] + "]";
 
+        if (recursive !== true) { recursive = false; };
         this.reconnectControls(function (control) {
             if (control.group.search(script.eqKnobRegEx) !== -1) {
                 control.group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
@@ -472,7 +471,7 @@ Deck.prototype = new LayerContainer({
             } else {
                 control.group = this.currentDeck;
             }
-        });
+        }, recursive);
     }
 });
 
@@ -480,7 +479,9 @@ var P32 = {};
 
 P32.init = function () {
     Control.prototype.shiftOffset = 3;
+    Button.prototype.sendShifted = true;
     CC.prototype.softTakeoverInit = false;
+
     P32.leftDeck = new P32.Deck([1,3], 1);
     P32.rightDeck = new P32.Deck([2,4], 2);
 
@@ -490,29 +491,7 @@ P32.init = function () {
     this.sampler = [];
     this.samplerClear = [];
     for (var channel = 1; channel <= 2; channel++) {
-        for (var s = 1; s <= 16; s++) {
-            var samplerNumber = s + (channel - 1) * 16;
-            this.sampler[samplerNumber] = new SamplerButton({
-                midi: [0x90 + channel, P32.PadNumToMIDIControl(s, 0)],
-                number: samplerNumber,
-                on: P32.padColors.red,
-                off: P32.padColors.off,
-                playing: P32.padColors.blue
-            });
-            this.samplerClear[samplerNumber] = new SamplerClearButton({
-                midi: [0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(s, 0)],
-                number: samplerNumber,
-                on: P32.padColors.red,
-                off: P32.padColors.off,
-                playing: P32.padColors.blue
-            });
-            if (samplerCrossfaderAssign) {
-                engine.setValue('[Sampler' + s + ']',
-                                'orientation',
-                                (channel === 1) ? 0 : 2
-                );
-            }
-        }
+
     }
     // tell controller to send MIDI messages with positions of faders and knobs
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
@@ -555,9 +534,9 @@ P32.record = new Button({
     group: '[Recording]',
     input: function (channel, control, value, status, group) {
             if (value === 127) {
-                if (P32.leftDeck.shift) {
+                if (P32.leftDeck.isShifted) {
                     P32.leftDeck.toggle();
-                } else if (P32.rightDeck.shift) {
+                } else if (P32.rightDeck.isShifted) {
                     P32.rightDeck.toggle();
                 } else {
                     engine.setValue('[Recording]', 'toggle_recording', 1);
@@ -571,43 +550,19 @@ P32.Deck = function (deckNumbers, channel) {
     Deck.call(this, deckNumbers);
     var loopSize = defaultLoopSize;
     var beatJumpSize = defaultBeatJumpSize;
-    this.shift = false;
-
-    this.effectUnit = new P32.EffectUnit(deckNumbers[0]);
 
     this.shiftButton = function (channel, control, value, status, group) {
         if (value === 127) {
-            this.shift = true;
-            this.effectUnit.dryWet.connect();
-            this.effectUnit.dryWet.disconnect();
+            this.shift();
         } else {
-            this.shift = false;
-            this.effectUnit.superKnob.disconnect();
+            this.unshift();
         }
     };
 
     // ===================================== TRANSPORT =========================================
-    this.sync = new Button({
-        midi: [0x90 + channel, 0x08],
-        co: 'sync_enabled'
-    });
-    this.syncMomentary = new Button({
-        midi: [0x90 + channel + P32.shiftOffset, 0x08],
-        inCo: 'beatsync',
-        outCo: 'sync_enabled'
-    });
-    this.cue = new CueButton({
-        midi: [0x90 + channel, 0x09],
-        sendShifted: true
-    });
+    this.sync = new SyncButton([0x90 + channel, 0x08]);
+    this.cue = new CueButton([0x90 + channel, 0x09]);
     this.play = new PlayButton([0x90 + channel, 0x0A]);
-    this.goToStart = new Control({ // play shifted
-        midi: [0x90 + channel + P32.shiftOffset, 0x0A],
-        inCo: 'start_stop',
-        inFunc: function () { return 1; },
-        outCo: 'play_indicator',
-        outFunc: function (val) { return val * this.on; }
-    });
 
     // ===================================== MIXER ==============================================
     this.eqKnob = [];
@@ -615,7 +570,7 @@ P32.Deck = function (deckNumbers, channel) {
         this.eqKnob[k] = new CC({
             midi: [0xB0 + channel, 0x02 + k],
             group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
-            co: 'parameter' + k,
+            inCo: 'parameter' + k,
             range: [0, 1, 4]
         });
     }
@@ -627,13 +582,15 @@ P32.Deck = function (deckNumbers, channel) {
 
     this.volume = new CC({
         midi: [0xB0 + channel, 0x01],
-        co: 'volume',
+        inCo: 'volume',
         range: [0, 0.25, 1]
     });
 
     // ==================================== PAD GRID ============================================
+    // Slicer layer set up in P32.EffectUnit()
+
     this.hotcueButton = [];
-    this.hotcueButtonClear = [];
+    this.samplerButton = [];
     for (var i = 1; i <= 16; i++) {
         this.hotcueButton[i] = new HotcueButton({
             midi: [0x90 + channel,
@@ -641,29 +598,34 @@ P32.Deck = function (deckNumbers, channel) {
             number: i,
             on: P32.padColors.red
         });
-        this.hotcueButtonClear[i] = new HotcueClearButton({
-            midi: [0x90 + channel + P32.shiftOffset,
-                   P32.PadNumToMIDIControl(i, 3)],
-            number: i,
-            on: P32.padColors.red
+        var samplerNumber = i + (channel - 1) * 16;
+        this.samplerButton[samplerNumber] = new SamplerButton({
+            midi: [0x90 + channel, P32.PadNumToMIDIControl(i, 0)],
+            number: samplerNumber,
+            on: P32.padColors.red,
+            off: P32.padColors.off,
+            playing: P32.padColors.blue
         });
+        if (samplerCrossfaderAssign) {
+            engine.setValue('[Sampler' + samplerNumber + ']',
+                            'orientation',
+                            (channel === 1) ? 0 : 2
+            );
+        }
     }
 
     this.loopIn = new Button({
         midi: [0x90 + channel, 0x50],
         inCo: 'loop_in',
-        sendShifted: true
     });
     this.loopOut = new Button({
         midi: [0x90 + channel, 0x51],
         inCo: 'loop_out',
-        sendShifted: true
     });
     this.loopTogglePad = new LoopButton({
         midi: [0x90 + channel, 0x52],
         on: P32.padColors.red,
         off: P32.padColors.blue,
-        sendShifted: true
     });
     this.loopIn.send(P32.padColors.purple);
     this.loopOut.send(P32.padColors.purple);
@@ -672,25 +634,21 @@ P32.Deck = function (deckNumbers, channel) {
         midi: [0x90 + channel, 0x44],
         inCo: 'rate_temp_down',
         onlyOnPress: false,
-        sendShifted: true
     });
     this.tempFast = new Button({
         midi: [0x90 + channel, 0x45],
         inCo: 'rate_temp_down',
         onlyOnPress: false,
-        sendShifted: true
     });
     this.alignBeats = new Button({
         midi: [0x90 + channel, 0x46],
         inCo: 'beats_translate_curpos',
-        sendShifted: true
     });
     this.quantize = new Button({
         midi: [0x90 + channel, 0x47],
         co: 'quantize',
         on: P32.padColors.red,
         off: P32.padColors.blue,
-        sendShifted: true
     });
     this.tempSlow.send(P32.padColors.purple);
     this.tempFast.send(P32.padColors.purple);
@@ -830,55 +788,71 @@ P32.Deck = function (deckNumbers, channel) {
         if (control.group === undefined) {
             control.group = this.currentDeck;
         }
-    }, false);
-    print(this.toggle);
+    });
+
+    this.effectUnit = new P32.EffectUnit(deckNumbers[0]);
 };
 P32.Deck.prototype = new Deck();
 
 P32.EffectUnit = function (unitNumber) {
     this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
 
+    this.dryWetKnob = new CC({
+        midi: [0xB0 + unitNumber, 0x09],
+        unshift: function () {
+            this.inCo = 'mix';
+            // for soft takeover
+            this.disconnect();
+            this.connect();
+        },
+        shift: function () {
+            this.inCo = 'super1';
+            // for soft takeover
+            this.disconnect();
+            this.connect();
+        },
+        range: [0, 1]
+    });
+
+    // ON/MACRO buttons
     this.deckEnableButton = [];
     for (var d = 1; d <= 4; d++) {
         this.deckEnableButton[d] = new Button({
-            midi: [0x90 + unitNumber, 0x02 + d],
+            midi: [0x90 + unitNumber,
+                   0x02 + d],
             co: 'group_[Channel' + d + ']_enable',
         });
     }
 
-    this.dryWet = new CC({
-        midi: [0xB0 + unitNumber, 0x09],
-        co: 'mix',
-        range: [0, 1]
-    });
-    this.superKnob = new CC({
-        midi: [0xB0 + unitNumber + P32.shiftOffset, 0x09],
-        co: 'super1',
-        range: [0, 1]
-    });
-
     this.toggleHeadphones = new Button({
         midi: [0x90 + unitNumber, 0x34],
         co: 'group_[Headphone]_enable',
+        on: P32.padColors.red,
+        off: P32.padColors.blue
     });
     this.toggleMaster = new Button({
         midi: [0x90 + unitNumber, 0x35],
         co: 'group_[Master]_enable',
+        on: P32.padColors.red,
+        off: P32.padColors.blue
     });
     this.toggleMicrophone = new Button({
         midi: [0x90 + unitNumber, 0x36],
         co: 'group_[Microphone]_enable',
+        on: P32.padColors.red,
+        off: P32.padColors.blue
     });
     this.toggleAuxiliary = new Button({
         midi: [0x90 + unitNumber, 0x37],
         co: 'group_[Auxiliary1]_enable',
+        on: P32.padColors.red,
+        off: P32.padColors.blue
     });
 
     this.reconnectControls(function (control) {
         if (control.group === undefined) {
             control.group = this.group;
             control.on = P32.padColors.red;
-            control.sendShifted = true;
         }
     });
 
@@ -889,13 +863,8 @@ P32.EffectUnit = function (unitNumber) {
             midi: [0x90 + unitNumber,
                    P32.PadNumToMIDIControl(effectNumber * 4 - 3, 1)],
             co: 'enabled',
-            on: P32.padColors.red,
-        });
-
-        this.resetParameters = new Button({
-            midi: [0x90 + unitNumber + P32.shiftOffset,
-                   P32.PadNumToMIDIControl(effectNumber * 4 - 3, 1)],
-            input:  function (channel, control, value, status, group) {
+            unshift: function () { this.input = Button.prototype.input; },
+            inputShifted: function (channel, control, value, status, group) {
                 if (value === 127) {
                     var p = engine.getValue(ef.group, 'num_parameters');
                     for (var i = 1; i <= p; i++) {
@@ -906,7 +875,9 @@ P32.EffectUnit = function (unitNumber) {
                         engine.setValue(ef.group, 'button_parameter' + i, 0);
                     }
                 }
-            }
+            },
+            shift: function () { this.input = this.inputShifted },
+            on: P32.padColors.red,
         });
 
         this.previous = new Button({
@@ -915,31 +886,30 @@ P32.EffectUnit = function (unitNumber) {
             inCo: 'prev_effect',
             onlyOnPress: false
         });
-
         this.next = new Button({
             midi: [0x90 + unitNumber,
                    P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1)],
             inCo: 'next_effect',
             onlyOnPress: false
         });
+
         this.reconnectControls(function (control) {
             if (control.group === undefined) {
                 control.group = this.group;
-                control.sendShifted = true;
             }
         });
 
         this.previous.send(P32.padColors.purple);
         this.next.send(P32.padColors.purple);
     };
-    EffectRow.prototype = new LayerContainer();
+    EffectRow.prototype = new ControlContainer();
 
     this.effect = [];
     for (var e = 1; e <= 3; e++) {
         this.effect[e] = new EffectRow(e);
     }
 
-    this.activeEffect = new LayerContainer();
+    this.activeEffect = new ControlContainer();
     var ae = this.activeEffect;
     ae.number = 1;
     ae.parameterKnob = [];
@@ -947,7 +917,7 @@ P32.EffectUnit = function (unitNumber) {
     for (var p = 1; p <= 3; p++) {
         ae.parameterKnob[p] = new CC({
             midi: [0xB0 + unitNumber, 0x05 + p],
-            co: 'parameter' + p
+            inCo: 'parameter' + p
         });
         ae.switchEffectButton[p] = new Control({
             midi: [0x90 + unitNumber,
@@ -966,11 +936,11 @@ P32.EffectUnit = function (unitNumber) {
                 // called by ae.reconnectControls() in this.input()
                 this.send((this.number === ae.number) ? this.on : this.off);
             },
-            disconnect: function() {},
+            disconnect: function () {},
             connect: function () {},
             sendShifted: true
         });
     }
     ae.switchEffectButton[1].input(null, null, 127, null, null);
 };
-P32.EffectUnit.prototype = new LayerContainer();
+P32.EffectUnit.prototype = new ControlContainer();
