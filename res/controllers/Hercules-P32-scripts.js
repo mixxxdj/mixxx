@@ -180,6 +180,17 @@ var quantize = new Control({
     group: '[Channel1]'
     co: 'quantize'
 });
+
+By default, the inCo is toggled only when the button is pressed. For buttons that activate an inCo
+only while they are held down, set the onlyOnPress property to false.
+
+By default, this works for controllers that send MIDI messages with a different 3rd byte of the
+MIDI message (value) to indicate the button being pressed/released, with the first two bytes
+(status and control) remaining the same for both press and release. If your controller sends
+separate MIDI note on/off messages with on indicated by the first nybble (hexadecimal digit) of
+the first (status) byte being 9 and note off with the first nybble being 8, in your script's init
+function, set Button.prototype.separateNoteOnOff to true and map both the note on and off messages
+to the Button object's input property.
 **/
 var Button = function (options) {
     if (options !== undefined && typeof options.co === 'string') {
@@ -193,9 +204,16 @@ Button.prototype = new Control({
     on: 127,
     off: 0,
     inFunc: function () { return ! this.getValueIn(); },
+    separateNoteOnOff: false,
     input: function (channel, control, value, status, group) {
                if (this.onlyOnPress) {
-                   if (value > 0) {
+                   var pressed = value > 0;
+                   if (this.separateNoteOnOff) {
+                       // Does the first nybble of the first MIDI byte indicate a
+                       // note on or note off message?
+                       pressed = (status & 0xF0) === 0x90;
+                   }
+                   if (pressed) {
                        this.setValue(this.inFunc.call(this, value));
                    }
                 } else {
