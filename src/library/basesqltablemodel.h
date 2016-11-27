@@ -3,6 +3,7 @@
 #define BASESQLTABLEMODEL_H
 
 #include <QHash>
+#include <QMultiHash>
 #include <QtSql>
 
 #include "library/basetrackcache.h"
@@ -150,7 +151,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool m_bInitialized;
     QSqlRecord m_queryRecord;
     QHash<TrackId, int> m_trackSortOrder;
-    QHash<TrackId, QLinkedList<int> > m_trackIdToRows;
+    QMultiHash<TrackId, int> m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant> > m_headerInfo;

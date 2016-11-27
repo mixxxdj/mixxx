@@ -293,7 +293,7 @@ void BaseSqlTableModel::select() {
     // should not disturb that if we are only removing tracks.
     qStableSort(rowInfo.begin(), rowInfo.end());
 
-    m_trackIdToRows.clear();
+    QMultiHash<TrackId, int> trackIdToRows;
     for (int i = 0; i < rowInfo.size(); ++i) {
         const RowInfo& row = rowInfo[i];
 
@@ -303,14 +303,14 @@ void BaseSqlTableModel::select() {
             rowInfo.resize(i);
             break;
         }
-        QLinkedList<int>& rows = m_trackIdToRows[row.trackId];
-        rows.push_back(i);
+        trackIdToRows.insert(row.trackId, i);
     }
 
     // We're done! Issue the update signals and replace the master maps.
     if (!rowInfo.isEmpty()) {
         beginInsertRows(QModelIndex(), 0, rowInfo.size() - 1);
         m_rowInfo = rowInfo;
+        m_trackIdToRows = trackIdToRows;
         endInsertRows();
     }
 
@@ -809,12 +809,18 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
 }
 
 const QLinkedList<int> BaseSqlTableModel::getTrackRows(TrackId trackId) const {
-    QHash<TrackId, QLinkedList<int> >::const_iterator it =
+    QLinkedList<int> result;
+    for (QMultiHash<TrackId, int>::const_iterator it =
             m_trackIdToRows.constFind(trackId);
-    if (it != m_trackIdToRows.constEnd()) {
-        return it.value();
+            it != m_trackIdToRows.constEnd();
+            ++it) {
+        if (it.key() == trackId) {
+            result.append(it.value());
+        } else {
+            break;
+        }
     }
-    return QLinkedList<int>();
+    return result;
 }
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
