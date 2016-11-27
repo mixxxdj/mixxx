@@ -278,11 +278,13 @@ Button.prototype = new Control({
     separateNoteOnOff: false,
     input: function (channel, control, value, status, group) {
                if (this.onlyOnPress) {
-                   var pressed = value > 0;
+                   var pressed;
                    if (this.separateNoteOnOff) {
                        // Does the first nybble of the first MIDI byte indicate a
                        // note on or note off message?
                        pressed = (status & 0xF0) === 0x90;
+                   } else {
+                       pressed = value > 0;
                    }
                    if (pressed) {
                        this.setValue(this.inFunc.call(this, value));
