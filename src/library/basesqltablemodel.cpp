@@ -808,14 +808,15 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
     return defaultFlags;
 }
 
-const QLinkedList<int> BaseSqlTableModel::getTrackRows(TrackId trackId) const {
-    QLinkedList<int> result;
+QVector<int> BaseSqlTableModel::getTrackRows(TrackId trackId) const {
+    QVector<int> result;
+    result.reserve(m_trackIdToRows.count(trackId));
     for (QMultiHash<TrackId, int>::const_iterator it =
             m_trackIdToRows.constFind(trackId);
             it != m_trackIdToRows.constEnd();
             ++it) {
         if (it.key() == trackId) {
-            result.append(it.value());
+            result.push_back(it.value());
         } else {
             break;
         }
@@ -850,9 +851,9 @@ void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
         // preview state will update.
         if (m_previewDeckTrackId.isValid()) {
             const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
+            QVector<int> rows = getTrackRows(m_previewDeckTrackId);
             m_previewDeckTrackId = TrackId(); // invalidate
-            foreach (int row, rows) {
+            for (int row: rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
                 emit(dataChanged(left, right));
@@ -869,8 +870,8 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
 
     const int numColumns = columnCount();
     for (const auto& trackId : trackIds) {
-        QLinkedList<int> rows = getTrackRows(trackId);
-        foreach (int row, rows) {
+        QVector<int> rows = getTrackRows(trackId);
+        for (int row: rows) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex left = index(row, 0);
             QModelIndex right = index(row, numColumns);

@@ -51,7 +51,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
 
     QString getTrackLocation(const QModelIndex& index) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
-    const QLinkedList<int> getTrackRows(TrackId trackId) const override;
+    QVector<int> getTrackRows(TrackId trackId) const override;
     void search(const QString& searchText,const QString& extraFilter = QString()) override;
     void removeTracks(const QModelIndexList& indices) override;
     QMimeData* mimeData(const QModelIndexList &indexes) const override;
