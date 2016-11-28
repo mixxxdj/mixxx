@@ -303,8 +303,7 @@ void BaseSqlTableModel::select() {
             rowInfo.resize(i);
             break;
         }
-        QLinkedList<int>& rows = m_trackIdToRows[row.trackId];
-        rows.push_back(i);
+        m_trackIdToRows[row.trackId].push_back(i);
     }
 
     // We're done! Issue the update signals and replace the master maps.
@@ -808,13 +807,14 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
     return defaultFlags;
 }
 
-const QLinkedList<int> BaseSqlTableModel::getTrackRows(TrackId trackId) const {
-    QHash<TrackId, QLinkedList<int> >::const_iterator it =
+QVector<int> BaseSqlTableModel::getTrackRows(TrackId trackId) const {
+    QHash<TrackId, QVector<int> >::const_iterator it =
             m_trackIdToRows.constFind(trackId);
     if (it != m_trackIdToRows.constEnd()) {
         return it.value();
+    } else {
+        return QVector<int>();
     }
-    return QLinkedList<int>();
 }
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
@@ -844,9 +844,9 @@ void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
         // preview state will update.
         if (m_previewDeckTrackId.isValid()) {
             const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
+            QVector<int> rows = getTrackRows(m_previewDeckTrackId);
             m_previewDeckTrackId = TrackId(); // invalidate
-            foreach (int row, rows) {
+            for (int row: rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
                 emit(dataChanged(left, right));
@@ -863,8 +863,8 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
 
     const int numColumns = columnCount();
     for (const auto& trackId : trackIds) {
-        QLinkedList<int> rows = getTrackRows(trackId);
-        foreach (int row, rows) {
+        QVector<int> rows = getTrackRows(trackId);
+        for (int row: rows) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex left = index(row, 0);
             QModelIndex right = index(row, numColumns);
