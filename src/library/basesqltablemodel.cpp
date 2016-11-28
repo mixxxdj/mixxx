@@ -293,7 +293,7 @@ void BaseSqlTableModel::select() {
     // should not disturb that if we are only removing tracks.
     qStableSort(rowInfo.begin(), rowInfo.end());
 
-    m_trackIdToRows.clear();
+    QHash<TrackId, QVector<int> > trackIdToRows;
     for (int i = 0; i < rowInfo.size(); ++i) {
         const RowInfo& row = rowInfo[i];
 
@@ -303,13 +303,14 @@ void BaseSqlTableModel::select() {
             rowInfo.resize(i);
             break;
         }
-        m_trackIdToRows[row.trackId].push_back(i);
+        trackIdToRows[row.trackId].push_back(i);
     }
 
     // We're done! Issue the update signals and replace the master maps.
     if (!rowInfo.isEmpty()) {
         beginInsertRows(QModelIndex(), 0, rowInfo.size() - 1);
         m_rowInfo = rowInfo;
+        m_trackIdToRows = trackIdToRows;
         endInsertRows();
     }
 
