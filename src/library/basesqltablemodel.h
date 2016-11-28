@@ -68,6 +68,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool isColumnHiddenByDefault(int column) override;
     TrackPointer getTrack(const QModelIndex& index) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
+    const QLinkedList<int> getTrackRows(TrackId trackId) const;
     QString getTrackLocation(const QModelIndex& index) const override;
     void hideTracks(const QModelIndexList& indices) override;
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
@@ -85,7 +86,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
   protected:
     // Returns the row of trackId in this result set. If trackId is not present,
     // returns -1.
-    const QLinkedList<int> getTrackRows(TrackId trackId) const;
     void setTable(const QString& tableName, const QString& trackIdColumn,
                   const QStringList& tableColumns,
                   QSharedPointer<BaseTrackCache> trackSource);
