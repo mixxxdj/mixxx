@@ -314,6 +314,9 @@ void BaseSqlTableModel::select() {
         endInsertRows();
     }
 
+    DEBUG_ASSERT(m_rowInfo.empty() == m_trackIdToRows.empty());
+    DEBUG_ASSERT(m_rowInfo.size() >= m_trackIdToRows.size());
+
     qDebug() << this << "select() took" << time.elapsed().debugMillisWithUnit()
              << rowInfo.size();
 }
