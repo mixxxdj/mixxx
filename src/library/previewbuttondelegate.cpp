@@ -1,5 +1,6 @@
 #include <QPainter>
 #include <QPushButton>
+#include <QStylePainter>
 
 #include "library/previewbuttondelegate.h"
 #include "library/trackmodel.h"
@@ -48,7 +49,7 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
     QPushButton* btn = new QPushButton(parent);
     btn->setObjectName("LibraryPreviewButton");
     btn->setCheckable(true);
-    btn->setFocusPolicy(Qt::ClickFocus);
+    btn->setFocusPolicy(Qt::NoFocus);
     bool playing = m_pPreviewDeckPlay->toBool();
     // Check-state is whether the track is loaded (index.data()) and whether
     // it's playing.
@@ -74,10 +75,20 @@ void PreviewButtonDelegate::setModelData(QWidget *editor,
     Q_UNUSED(index);
 }
 
-void PreviewButtonDelegate::paint(QPainter *painter,
-                                  const QStyleOptionViewItem &option,
-                                  const QModelIndex &index) const {
-    // Let the editor paint in this case
+void PreviewButtonDelegate::paint(QPainter* painter,
+                                  const QStyleOptionViewItem& option,
+                                  const QModelIndex& index) const {
+
+    QStyleOptionViewItemV4 opt = option;
+    initStyleOption(&opt, index);
+
+    // Draw original item without text as background
+    opt.text = QString();
+    const QWidget *widget = opt.widget;
+    QStyle *style = widget ? widget->style() : QApplication::style();
+    style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, widget);
+
+    // Let the editor paint the button in this case
     if (index == m_currentEditedCellIndex) {
         return;
     }
@@ -91,10 +102,6 @@ void PreviewButtonDelegate::paint(QPainter *painter,
     // Check-state is whether the track is loaded (index.data()) and whether
     // it's playing.
     m_pButton->setChecked(index.data().toBool() && playing);
-
-    if (option.state == QStyle::State_Selected) {
-        painter->fillRect(option.rect, option.palette.base());
-    }
 
     painter->save();
     // Render button at the desired position
