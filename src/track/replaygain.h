@@ -114,6 +114,7 @@ bool operator!=(const ReplayGain& lhs, const ReplayGain& rhs) {
 
 }
 
+Q_DECLARE_TYPEINFO(mixxx::ReplayGain, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::ReplayGain)
 
 #endif // MIXXX_REPLAYGAIN_H
