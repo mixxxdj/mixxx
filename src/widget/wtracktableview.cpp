@@ -269,7 +269,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     setHorizontalHeader(header);
     header->setMovable(true);
     header->setClickable(true);
-    header->setHighlightSections(true);
     header->setSortIndicatorShown(m_sorting);
     header->setDefaultAlignment(Qt::AlignLeft);
 
