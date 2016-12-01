@@ -50,7 +50,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void slotPlaylistContentChanged(int playlistId) = 0;
     virtual void slotPlaylistTableRenamed(int playlistId, QString a_strName) = 0;
     void slotCreatePlaylist();
-    void setFeaturePane(int focus);
+    void setFeaturePaneId(int focus);
 
   protected slots:
     void slotDeletePlaylist();

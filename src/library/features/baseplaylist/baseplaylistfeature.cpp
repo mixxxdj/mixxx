@@ -125,10 +125,7 @@ QPointer<PlaylistTableModel> BasePlaylistFeature::getPlaylistTableModel(int pane
 }
 
 void BasePlaylistFeature::activate() {
-    int preselectedPane = getPreselectedPane();
-    if (preselectedPane >= 0) {
-        m_featurePane = preselectedPane;
-    }
+    adoptPreselectedPane();
 
     auto modelIt = m_lastChildClicked.constFind(m_featurePane);
     if (modelIt != m_lastChildClicked.constEnd() &&  (*modelIt).isValid()) {
@@ -146,10 +143,7 @@ void BasePlaylistFeature::activate() {
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
-    int preselectedPane = getPreselectedPane();
-    if (preselectedPane >= 0) {
-        m_featurePane = preselectedPane;
-    }
+    adoptPreselectedPane();
     
     if (index == m_lastChildClicked.value(m_featurePane)) {
         restoreSearch("");
@@ -317,9 +311,9 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     }
 }
 
-void BasePlaylistFeature::setFeaturePane(int focus) {
+void BasePlaylistFeature::setFeaturePaneId(int focus) {
     m_pPlaylistTableModel = getPlaylistTableModel(focus);
-    LibraryFeature::setFeaturePane(focus);
+    LibraryFeature::setFeaturePaneId(focus);
 }
 
 void BasePlaylistFeature::slotDeletePlaylist() {

@@ -219,10 +219,7 @@ TreeItemModel* CrateFeature::getChildModel() {
 }
 
 void CrateFeature::activate() {
-    int preselectedPane = getPreselectedPane();
-    if (preselectedPane >= 0) {
-        m_featurePane = preselectedPane;
-    }
+    adoptPreselectedPane();
 
     auto modelIt = m_lastClickedIndex.constFind(m_featurePane);
     if (modelIt != m_lastClickedIndex.constEnd() &&  (*modelIt).isValid()) {
@@ -237,10 +234,7 @@ void CrateFeature::activate() {
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
-    int preselectedPane = getPreselectedPane();
-    if (preselectedPane >= 0) {
-        m_featurePane = preselectedPane;
-    }
+    adoptPreselectedPane();
     
     m_lastClickedIndex[m_featurePane] = index;
     int crateId = crateIdFromIndex(index);

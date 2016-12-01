@@ -69,14 +69,11 @@ class LibraryFeature : public QObject {
     
     virtual TreeItemModel* getChildModel() = 0;
     
-    virtual void setFeaturePane(int paneId);
+    virtual void setFeaturePaneId(int paneId);
     int getFeaturePaneId();
     
-    void setSavedPane(int paneId);
-    int getSavedPane();
-    
     int getFocusedPane();
-    int getPreselectedPane();
+    void adoptPreselectedPane();
     
     virtual SavedSearchQuery saveQuery(SavedSearchQuery sQuery);
     virtual void restoreQuery(int id);
@@ -167,7 +164,6 @@ class LibraryFeature : public QObject {
     SavedQueriesDAO& m_savedDAO;
     
     int m_featurePane;
-    int m_savedPane;
     
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);

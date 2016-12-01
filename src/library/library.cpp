@@ -175,7 +175,7 @@ void Library::destroyInterface() {
     }
     
     for (LibraryFeature* f : m_features) {
-        f->setFeaturePane(-1);
+        f->setFeaturePaneId(-1);
     }
     m_panes.clear();
 }
@@ -296,7 +296,7 @@ void Library::paneFocused(LibraryPaneManager* pPane) {
     
     if (pPane != m_pSidebarExpanded) {
         m_focusedPaneId = pPane->getPaneId();
-        pPane->getCurrentFeature()->setFeaturePane(m_focusedPaneId);
+        pPane->getCurrentFeature()->setFeaturePaneId(m_focusedPaneId);
         DEBUG_ASSERT_AND_HANDLE(m_focusedPaneId != -1) {
             return;
         }
@@ -355,15 +355,14 @@ void Library::onSkinLoadFinished() {
                 first = false;
                 // Set the first pane as saved pane to all features
                 for (LibraryFeature* pFeature : m_features) {
-                    pFeature->setSavedPane(m_preselectedPane);
+                    pFeature->setFeaturePaneId(m_preselectedPane);
                 }
             }
             
             m_savedFeatures[m_preselectedPane] = *itF;
             (*itP)->setCurrentFeature(*itF);
             
-            (*itF)->setFeaturePane(m_preselectedPane);
-            (*itF)->setSavedPane(m_preselectedPane);
+            (*itF)->setFeaturePaneId(m_preselectedPane);
             (*itF)->activate();
             
             ++itP;
@@ -373,7 +372,7 @@ void Library::onSkinLoadFinished() {
         // The first pane always shows the Mixxx Library feature on start
         m_preselectedPane = m_focusedPaneId = m_panes.begin().key();
         handleFocus();
-        (*m_features.begin())->setFeaturePane(m_preselectedPane);
+        (*m_features.begin())->setFeaturePaneId(m_preselectedPane);
         slotActivateFeature(*m_features.begin());
     }
     else {
@@ -493,14 +492,14 @@ void Library::paneUncollapsed(int paneId) {
     if (pFeature == nullptr) {
         return;
     }
-    pFeature->setFeaturePane(pPane->getPaneId());
+    pFeature->setFeaturePaneId(pPane->getPaneId());
     
     for (LibraryPaneManager* pPane : m_panes) {
         int auxId = pPane->getPaneId();
         if (auxId != paneId && pFeature == pPane->getCurrentFeature()) {
             LibraryFeature* pSaved = m_savedFeatures[auxId];
             pPane->switchToFeature(pSaved);
-            pSaved->setFeaturePane(auxId);
+            pSaved->setFeaturePaneId(auxId);
             pSaved->activate();
         }
     }    
@@ -510,14 +509,13 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
     int selectedPane = m_preselectedPane;
     if (selectedPane  < 0) {
         // No pane is preselected, use the saved pane instead
-        selectedPane  = pFeature->getSavedPane();
+        selectedPane  = pFeature->getFeaturePaneId();
     }
     
     bool featureActivated = false;
     LibraryPaneManager* pSelectedPane = m_panes.value(selectedPane);
     if (pSelectedPane) {
-        pFeature->setSavedPane(selectedPane);
-        pFeature->setFeaturePane(selectedPane);
+        pFeature->setFeaturePaneId(selectedPane);
 
         if (pSelectedPane->getCurrentFeature() != pFeature) {
             pSelectedPane->setCurrentFeature(pFeature);
@@ -556,14 +554,14 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
 
 void Library::slotSetHoveredFeature(LibraryFeature* pFeature) {
     m_hoveredFeature = pFeature;
-    m_previewPreselectedPane = pFeature->getSavedPane();
+    m_previewPreselectedPane = pFeature->getFeaturePaneId();
     handlePreselection();
 }
 
 void Library::slotResetHoveredFeature(LibraryFeature* pFeature) {
     if (pFeature == m_hoveredFeature) {
         if (m_focusedFeature) {
-            m_previewPreselectedPane = m_focusedFeature->getSavedPane();
+            m_previewPreselectedPane = m_focusedFeature->getFeaturePaneId();
         } else {
             m_previewPreselectedPane = -1;
         }
@@ -574,14 +572,14 @@ void Library::slotResetHoveredFeature(LibraryFeature* pFeature) {
 
 void Library::slotSetFocusedFeature(LibraryFeature* pFeature) {
     m_focusedFeature = pFeature;
-    m_previewPreselectedPane = pFeature->getSavedPane();
+    m_previewPreselectedPane = pFeature->getFeaturePaneId();
     handlePreselection();
 }
 
 void Library::slotResetFocusedFeature(LibraryFeature* pFeature) {
     if (pFeature == m_focusedFeature) {
         if (m_hoveredFeature) {
-            m_previewPreselectedPane = m_hoveredFeature->getSavedPane();
+            m_previewPreselectedPane = m_hoveredFeature->getFeaturePaneId();
         } else {
             m_previewPreselectedPane = -1;
         }
@@ -707,13 +705,8 @@ void Library::handleFocus() {
 
 void Library::handlePreselection() {
     for (LibraryPaneManager* pPane : m_panes) {
-
-
         pPane->setPreselected(false);
         pPane->setPreviewed(false);
-
-
-
     }
     LibraryPaneManager* pSelectedPane = m_panes.value(m_preselectedPane);
     if (pSelectedPane) {

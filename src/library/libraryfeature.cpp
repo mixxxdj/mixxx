@@ -36,8 +36,7 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
           m_savedDAO(m_pTrackCollection->getSavedQueriesDAO()),
-          m_featurePane(-1),
-          m_savedPane(-1) {
+          m_featurePane(-1) {
 }
 
 LibraryFeature::~LibraryFeature() {
@@ -104,7 +103,7 @@ QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     return pContainer;
 }
 
-void LibraryFeature::setFeaturePane(int paneId) {
+void LibraryFeature::setFeaturePaneId(int paneId) {
     m_featurePane = paneId;
 }
 
@@ -112,20 +111,18 @@ int LibraryFeature::getFeaturePaneId() {
     return m_featurePane;
 }
 
-void LibraryFeature::setSavedPane(int paneId) {
-    m_savedPane = paneId;
-}
-
-int LibraryFeature::getSavedPane() {
-    return m_savedPane;
-}
-
 int LibraryFeature::getFocusedPane() {
     return m_pLibrary->getFocusedPaneId();
 }
 
-int LibraryFeature::getPreselectedPane() {
-    return m_pLibrary->getPreselectedPaneId();
+void LibraryFeature::adoptPreselectedPane() {
+    int preselectedPane = m_pLibrary->getPreselectedPaneId();
+    if (preselectedPane >= 0 &&
+            m_featurePane != preselectedPane) {
+        m_featurePane = preselectedPane;
+        // Refresh preselect button
+        emit focusIn(this);
+    }
 }
 
 SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery sQuery) {
