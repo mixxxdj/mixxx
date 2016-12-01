@@ -224,8 +224,8 @@ void CrateFeature::activate() {
         m_featurePane = preselectedPane;
     }
 
-    auto modelIt = m_lastClickedIndex.find(m_featurePane);
-    if (modelIt != m_lastClickedIndex.end() &&  (*modelIt).isValid()) {
+    auto modelIt = m_lastClickedIndex.constFind(m_featurePane);
+    if (modelIt != m_lastClickedIndex.constEnd() &&  (*modelIt).isValid()) {
         activateChild(*modelIt);
         return;
     }

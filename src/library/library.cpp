@@ -208,6 +208,15 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SIGNAL(enableCoverArtDisplay(bool)));
     connect(feature, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+
+    connect(feature, SIGNAL(hovered(LibraryFeature*)),
+            this, SLOT(slotSetHoveredFeature(LibraryFeature*)));
+    connect(feature, SIGNAL(leaved(LibraryFeature*)),
+            this, SLOT(slotResetHoveredFeature(LibraryFeature*)));
+    connect(feature, SIGNAL(focusIn(LibraryFeature*)),
+            this, SLOT(slotSetFocusedFeature(LibraryFeature*)));
+    connect(feature, SIGNAL(focusOut(LibraryFeature*)),
+            this, SLOT(slotResetFocusedFeature(LibraryFeature*)));
 }
 
 void Library::switchToFeature(LibraryFeature* pFeature) {

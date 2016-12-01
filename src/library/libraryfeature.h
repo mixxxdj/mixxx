@@ -98,6 +98,11 @@ class LibraryFeature : public QObject {
     
     virtual void onSearch(const QString&) {}
     
+    void slotSetHoveredSidebar() { emit hovered(this); };
+    void slotResetHoveredSidebar() { emit leaved(this); };
+    void slotSetFocusedSidebar() { emit focusIn(this); };
+    void slotResetFocusedSidebar() { emit focusOut(this); };
+
   signals:
     
     void loadTrack(TrackPointer);
@@ -115,6 +120,11 @@ class LibraryFeature : public QObject {
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer);
     
+    void hovered(LibraryFeature* pLibraryFeature);
+    void leaved(LibraryFeature* pLibraryFeature);
+    void focusIn(LibraryFeature* pLibraryFeature);
+    void focusOut(LibraryFeature* pLibraryFeature);
+
   protected slots:
     void restoreSaveButton();
     

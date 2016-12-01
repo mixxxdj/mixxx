@@ -56,8 +56,8 @@ void MaintenanceFeature::selectionChanged(const QItemSelection&,
         return;
     }
 
-    auto it = m_idPaneCurrent.find(m_featurePane);
-    if (it == m_idPaneCurrent.end()) {
+    auto it = m_idPaneCurrent.constFind(m_featurePane);
+    if (it == m_idPaneCurrent.constEnd()) {
         return;
     }
 

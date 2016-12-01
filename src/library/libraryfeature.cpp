@@ -230,12 +230,21 @@ WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*
     connect(this, SIGNAL(selectIndex(const QModelIndex&)),
             pSidebar, SLOT(selectIndex(const QModelIndex&)));
     
+    connect(pSidebar, SIGNAL(hovered()),
+            this, SLOT(slotSetHoveredSidebar()));
+    connect(pSidebar, SIGNAL(leaved()),
+            this, SLOT(slotResetHoveredSidebar()));
+    connect(pSidebar, SIGNAL(focusIn()),
+            this, SLOT(slotSetFocusedSidebar()));
+    connect(pSidebar, SIGNAL(focusOut()),
+            this, SLOT(slotResetFocusedSidebar()));
+
     return pSidebar;
 }
 
 void LibraryFeature::showTrackModel(QAbstractItemModel *model) {
-    auto it = m_trackTablesByPaneId.find(m_featurePane);
-    if (it == m_trackTablesByPaneId.end() || it->isNull()) {
+    auto it = m_trackTablesByPaneId.constFind(m_featurePane);
+    if (it == m_trackTablesByPaneId.constEnd() || it->isNull()) {
         return;
     }
     (*it)->loadTrackModel(model);
@@ -272,8 +281,8 @@ void LibraryFeature::showBreadCrumb() {
 }
 
 WTrackTableView* LibraryFeature::getFocusedTable() {
-    auto it = m_trackTablesByPaneId.find(m_featurePane);
-    if (it == m_trackTablesByPaneId.end() || it->isNull()) {
+    auto it = m_trackTablesByPaneId.constFind(m_featurePane);
+    if (it == m_trackTablesByPaneId.constEnd() || it->isNull()) {
         return nullptr;
     }
     return *it;

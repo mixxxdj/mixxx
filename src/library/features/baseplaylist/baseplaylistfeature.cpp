@@ -130,8 +130,8 @@ void BasePlaylistFeature::activate() {
         m_featurePane = preselectedPane;
     }
 
-    auto modelIt = m_lastChildClicked.find(m_featurePane);
-    if (modelIt != m_lastChildClicked.end() &&  (*modelIt).isValid()) {
+    auto modelIt = m_lastChildClicked.constFind(m_featurePane);
+    if (modelIt != m_lastChildClicked.constEnd() &&  (*modelIt).isValid()) {
         qDebug() << "BasePlaylistFeature::activate" << "m_lastChildClicked found";
         // Open last clicked Playlist in the preselectded pane
         activateChild(*modelIt);
@@ -151,7 +151,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
         m_featurePane = preselectedPane;
     }
     
-    if (index == m_lastChildClicked[m_featurePane]) {
+    if (index == m_lastChildClicked.value(m_featurePane)) {
         restoreSearch("");
         showTable(m_featurePane);
         switchToFeature();
