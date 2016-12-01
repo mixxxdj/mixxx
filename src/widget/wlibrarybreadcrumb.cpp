@@ -18,14 +18,16 @@ WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent)
     layout->addWidget(m_pIcon);
     layout->addWidget(m_pText);
     
-    QPixmap preOn(WPixmapStore::getLibraryPixmap(
+    QPixmap preHovered(WPixmapStore::getLibraryPixmap(
                         ":/images/library/ic_library_preselect.png"));
     QPixmap preOff(WPixmapStore::getLibraryPixmap(
                         ":/images/library/ic_library_notpreselect.png"));
+    QPixmap preLock(WPixmapStore::getLibraryPixmap(
+                        ":/images/library/ic_library_lockpreselect.png"));
     
-    m_preselectIcon.addPixmap(preOn, QIcon::Normal, QIcon::On);
+    m_preselectIcon.addPixmap(preLock, QIcon::Normal, QIcon::On);
     m_preselectIcon.addPixmap(preOff, QIcon::Normal, QIcon::Off);
-    m_preselectIcon.addPixmap(preOn, QIcon::Active, QIcon::Off);
+    m_preselectIcon.addPixmap(preHovered, QIcon::Active, QIcon::Off);
     m_pPreselectButton->setIcon(m_preselectIcon);
     m_pPreselectButton->setChecked(m_preselected);
     m_pPreselectButton->setFocusPolicy(Qt::ClickFocus);

@@ -1270,9 +1270,8 @@ QTableView:focus {
 
 #LibrarySidebarButtons, QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
-  /*font: 15px/18px;*/
   color: #cfb32c;
-  background-color: #191919;
+  background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
 
   selection-color: #cfb32c;
@@ -1296,14 +1295,26 @@ WBaseLibrary QLabel {
   border: 0px solid blue;
 }
 
+QTreeView::item:selected:active, 
+QTableView::item:selected:active {
+  color: #cfb32c;
+  background-color: #725309;
+}
+
+QTreeView::item:selected:!active,
+QTableView::item:selected:!active {
+  color: #cfb32c;
+  background-color: #4c3b11;
+}
+
+QTableView:!focus {
+  selection-background-color: #4c3b11;
+}
+
 /* checkbox in library "Played" column */
 QTableView::indicator { width: 12px; height: 12px;}
 QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
 QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
-QTableView::item:selected {
-  color: #cfb32c;
-  background-color: #725309;
-}
 
 /* BPM lock icon in the library "BPM" column. */
 #LibraryBPMButton::indicator:checked { image: url(:/images/library/ic_library_checked.png); }
@@ -1314,18 +1325,18 @@ QTableView::item:selected {
 }
 
 /* Button in library "Preview" column */
-QPushButton#LibraryPreviewButton {
+
+#LibraryPreviewButton {
   width: 23px;
   height: 12px;
-  background: transparent;
+  image: url(skin:/style/style_library_preview_play.png); 
+  background-color: transparent;
   border: 0px;
 }
-/*QPushButton#LibraryPreviewButton:focus {
-  background-color: #725309;
-}*/
 
-QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
-QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
+#LibraryPreviewButton:checked { 
+    image: url(skin:/style/style_library_preview_pause.png); 
+}
 
 QHeaderView {
   font: 13px/15px;
@@ -1445,26 +1456,30 @@ WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 QTreeView { margin: 0px 0px 0px 0px; }
 
 /* triangle for closed/opened branches in treeview */
-QTreeView { show-decoration-selected: 0; background-color: #151515; } /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
+QTreeView::branch,
+QTreeView { 
+  background-color: #0f0f0f; } /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
 QTreeView::branch:has-children:!has-siblings:closed,
-QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);
+QTreeView::branch:closed:has-children:has-siblings { 
+  border-image: none; 
+  image: url(skin:/style/style_branch_closed.png);
   background-color:#0f0f0f;
 }
 QTreeView::branch:open:has-children:!has-siblings,
-QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);
+QTreeView::branch:open:has-children:has-siblings { 
+  border-image: none; 
+  image: url(skin:/style/style_branch_open.png);
   background-color:#0f0f0f;
 }
 QTreeView::branch:has-children:!has-siblings:closed:selected,
-QTreeView::branch:closed:has-children:has-siblings:selected { border-image: none; image: url(skin:/style/style_branch_closed.png);
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+QTreeView::branch:closed:has-children:has-siblings:selected { 
+  border-image: none; 
+  image: url(skin:/style/style_branch_closed.png);
 }
 QTreeView::branch:open:has-children:!has-siblings:selected,
-QTreeView::branch:open:has-children:has-siblings:selected { border-image: none; image: url(skin:/style/style_branch_open.png);
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
-}
-QTreeView::item:selected {
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
-  color: #cfb32c;
+QTreeView::branch:open:has-children:has-siblings:selected { 
+  border-image: none; 
+  image: url(skin:/style/style_branch_open.png);
 }
 
 WLibrary[showFocus="0"] {
