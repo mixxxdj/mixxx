@@ -1,9 +1,8 @@
 Source: mixxx
 Section: sound
 Priority: optional
-Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
-XSBC-Original-Maintainer: RJ Ryan <rryan@mixxx.org>
-Build-Depends: debhelper (>= 4.0.0),
+Maintainer: RJ Ryan <rryan@mixxx.org>
+Build-Depends: debhelper (>= 9),
                pkg-config,
                docbook-to-man,
                libglu1-mesa-dev,
@@ -33,12 +32,12 @@ Build-Depends: debhelper (>= 4.0.0),
                libsoundtouch-dev,
                libhidapi-dev,
                libupower-glib-dev
-Standards-Version: 3.7.3
+Standards-Version: 3.9.8
 Homepage: http://www.mixxx.org/
 
 Package: mixxx
 Section: sound
-Architecture: any
+Architecture: linux-any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          libqt4-opengl,

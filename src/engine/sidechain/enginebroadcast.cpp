@@ -423,7 +423,7 @@ bool EngineBroadcast::processConnect() {
     // clear metadata, to make sure the first track is not skipped
     // because it was sent via an previous connection (see metaDataHasChanged)
     if(m_pMetaData) {
-        m_pMetaData.clear();
+        m_pMetaData.reset();
     }
     // If static metadata is available, we only need to send metadata one time
     m_firstCall = false;

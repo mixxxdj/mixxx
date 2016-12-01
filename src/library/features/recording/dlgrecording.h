@@ -30,7 +30,7 @@ class DlgRecording : public QFrame, public Ui::DlgRecording {
   public slots:
     void toggleRecording(bool toggle);
     void slotRecordingEnabled(bool);
-    void slotBytesRecorded(long);
+    void slotBytesRecorded(int);
     void refreshBrowseModel();
     void slotDurationRecorded(QString durationRecorded);
 

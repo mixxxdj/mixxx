@@ -439,7 +439,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     if (m_rate_old != 0.0) {
         // Before seeking, read extra buffer for crossfading
-        // (calls notifySeek())
+        // this also sets m_pReadAheadManager to newpos
         readToCrossfadeBuffer(m_iLastBufferSize);
     } else {
         m_pReadAheadManager->notifySeek(m_filepos_play);
@@ -492,7 +492,7 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
     pTrack->setDuration(10);
     if (filebpm > 0) {
         double bpm = pTrack->setBpm(filebpm);
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0.0);
         pTrack->setBeats(pBeats);
     }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
@@ -553,7 +553,7 @@ void EngineBuffer::ejectTrack() {
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
-    m_pCurrentTrack.clear();
+    m_pCurrentTrack.reset();
     m_trackSampleRateOld = 0;
     m_trackSamplesOld = 0;
     m_playButton->set(0.0);
@@ -641,7 +641,19 @@ void EngineBuffer::verifyPlay() {
 }
 
 void EngineBuffer::slotControlPlayRequest(double v) {
+    bool oldPlay = m_playButton->toBool();
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
+
+    if (!oldPlay && verifiedPlay) {
+        if (m_pQuantize->get() > 0.0
+#ifdef __VINYLCONTROL__
+                && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
+#endif
+        ) {
+            requestSyncPhase();
+        }
+    }
+
     // set and confirm must be called here in any case to update the widget toggle state
     m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
 }
@@ -948,10 +960,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
-            //if (rate == 0) {
-            //    qDebug() << "ramp to rate 0";
-            //}
-
             // Perform scaling of Reader buffer into buffer.
             double framesRead =
                     m_pScale->scaleBuffer(pOutput, iBufferSize);
@@ -968,7 +976,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             } else {
                 // Adjust filepos_play by the amount we processed.
                 m_filepos_play =
-                        m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
+                        m_pReadAheadManager->getFilePlaypositionFromLog(
                                 m_filepos_play, samplesRead);
             }
             if (m_bCrossfadeReady) {
@@ -1245,14 +1253,14 @@ void EngineBuffer::hintReader(const double dRate) {
 
 // WARNING: This method runs in the GUI thread
 void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
-    if (pTrack.isNull()) {
-        // Loading a null track means "eject"
-        ejectTrack();
-    } else {
+    if (pTrack) {
         // Signal to the reader to load the track. The reader will respond with
         // trackLoading and then either with trackLoaded or trackLoadFailed signals.
         m_bPlayAfterLoading = play;
         m_pReader->newTrack(pTrack);
+    } else {
+        // Loading a null track means "eject"
+        ejectTrack();
     }
 }
 

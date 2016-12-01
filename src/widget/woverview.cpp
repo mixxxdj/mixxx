@@ -45,6 +45,7 @@ WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* p
         m_endOfTrack(false),
         m_bDrag(false),
         m_iPos(0),
+        m_orientation(Qt::Horizontal),
         m_a(1.0),
         m_b(0.0),
         m_dAnalyzerProgress(1.0),
@@ -202,11 +203,11 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
 }
 
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack << pOldTrack;
+    //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack << pOldTrack;
     if (m_pCurrentTrack != nullptr && pOldTrack == m_pCurrentTrack) {
-        disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
+        disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
-        disconnect(m_pCurrentTrack.data(), SIGNAL(analyzerProgress(int)),
+        disconnect(m_pCurrentTrack.get(), SIGNAL(analyzerProgress(int)),
                    this, SLOT(slotAnalyzerProgress(int)));
     }
 
@@ -226,14 +227,14 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
         m_pCurrentTrack = pNewTrack;
         m_pWaveform = pNewTrack->getWaveformSummary();
 
-        connect(pNewTrack.data(), SIGNAL(waveformSummaryUpdated()),
+        connect(pNewTrack.get(), SIGNAL(waveformSummaryUpdated()),
                 this, SLOT(slotWaveformSummaryUpdated()));
-        connect(pNewTrack.data(), SIGNAL(analyzerProgress(int)),
+        connect(pNewTrack.get(), SIGNAL(analyzerProgress(int)),
                 this, SLOT(slotAnalyzerProgress(int)));
 
         slotAnalyzerProgress(pNewTrack->getAnalyzerProgress());
     } else {
-        m_pCurrentTrack.clear();
+        m_pCurrentTrack.reset();
         m_pWaveform.clear();
     }
     update();

@@ -10,26 +10,19 @@ class PlaylistTableModel : public BaseSqlTableModel {
   public:
     PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection,
                        const char* settingsNamespace, bool showAll = false);
-    virtual ~PlaylistTableModel();
+    ~PlaylistTableModel() final;
     void setTableModel(int playlistId = -1);
     void setTableModel(const QSet<int>& playlistIds);
 
+    void setTableModel(int playlistId = -1);
     int getPlaylist() const {
         return m_iPlaylistId;
     }
 
-    bool isColumnInternal(int column);
-    bool isColumnHiddenByDefault(int column);
-    // This function should only be used by AUTODJ
-    void removeTrack(const QModelIndex& index);
-    void removeTracks(const QModelIndexList& indices);
-    // Adding multiple tracks at one to a playlist. Returns the number of
-    // successful additions.
-    int addTracks(const QModelIndex& index, const QList<QString>& locations);
     bool appendTrack(TrackId trackId);
     void moveTrack(const QModelIndex& sourceIndex,
                    const QModelIndex& destIndex);
-    bool isLocked();
+    void removeTrack(const QModelIndex& index);
     void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
     TrackModel::CapabilitiesFlags getCapabilities() const;
     
@@ -37,6 +30,16 @@ class PlaylistTableModel : public BaseSqlTableModel {
     QModelIndexList getSavedSelectionIndices();
     
     void select() override;
+
+    bool isColumnInternal(int column) final;
+    bool isColumnHiddenByDefault(int column) final;
+    // This function should only be used by AUTODJ
+    void removeTracks(const QModelIndexList& indices) final;
+    // Adding multiple tracks at one to a playlist. Returns the number of
+    // successful additions.
+    int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
+    bool isLocked() final;
+    CapabilitiesFlags getCapabilities() const final;
 
   private slots:
     void playlistChanged(int playlistId);

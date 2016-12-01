@@ -318,7 +318,7 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
 qt_modules = depends.Qt.enabled_modules(build)
 qt5 = depends.Qt.qt5_enabled(build)
 
-if build.platform_is_windows and not build.static_dependencies:
+if build.platform_is_windows and not build.static_qt:
     if qt5:
         suffix = 'd.dll' if build.build_is_debug else '.dll'
         qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
@@ -335,15 +335,16 @@ qt_imagesformats = depends.Qt.enabled_imageformats(build)
 
 if qt5:
         suffix = 'd.dll' if build.build_is_debug else '.dll'
-        imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+        if not build.static_qt:
+            imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
         # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
         pdbSuffix = 'd.pdb' if (bundle_pdbs and build.build_is_debug) else ''
         if pdbSuffix:
                  imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 else:
         suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-        if not build.static_dependencies:
-                imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+        if not build.static_qt:
+            imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
         # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
         pdbSuffix = 'd4.pdb' if (bundle_pdbs and build.build_is_debug) else ''
         if pdbSuffix:
@@ -690,7 +691,7 @@ def BuildRelease(target, source, env):
             # Call the NSIS build
             buildwin64 = "/Dx64=1" if build.machine_is_64bit else ''
             staticdeps = "/DSTATICDEPS=1" if build.static_dependencies else ''
-            command = '%(path)s /DPACKAGE_NAME=%(package_name)s /DPRODUCT_VERSION=%(version)s /DQTDIR=%(qtpath)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s %(staticdeps)s build\\nsis\\Mixxx.nsi' % \
+            command = '%(path)s /DPACKAGE_NAME=\"%(package_name)s\" /DPRODUCT_VERSION=%(version)s /DQTDIR=%(qtpath)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s %(staticdeps)s build\\nsis\\Mixxx.nsi' % \
                 {'path': nsis_path,
                  'package_name': exe_name,
                  'version': mixxx_version,
@@ -887,20 +888,32 @@ def BuildUbuntuPackage(target, source, env):
                 if package_target == 'source':
                         # TODO(rryan) we have to figure out the key-signing situation
                         # here.
-                        # Preserve the MIXXX_SCONS_FLAGS environment variable.
-                        command.extend(['debuild', '-eMIXXX_SCONS_FLAGS', '-S', '-sa',])
+                        num_jobs = GetOption('num_jobs')
+                        command.extend(['debuild',
+                                        # Preserve the MIXXX_SCONS_FLAGS
+                                        # environment variable.
+                                        '-eMIXXX_SCONS_FLAGS',
+                                        # Pass the scons -jX option in in
+                                        # DEB_BUILD_OPTIONS. The Debian package
+                                        # rules file reads this option to set
+                                        # the -jX flag on the scons commands it
+                                        # runs.
+                                        '-eDEB_BUILD_OPTIONS="parallel=%s"' % num_jobs,
+                                        '-S', '-sa',])
                 else:
                         command.extend(['pdebuild'])
                 result = os.system(' '.join(command))
 
+                source_changes_file = os.path.join(
+                        '..', '%s_%s_source.changes' % (package_name, package_version))
                 if package_target == 'source':
-                        if result == 0:
-                                # TODO(rryan) check it actually succeeded
+                        if result == 0 and os.path.exists(source_changes_file):
                                 print "* Done! Signed source package is in ubuntu/"
                                 print
                         else:
                                 print "* Build failed."
                                 print
+                                raise Exception('Ubuntu source package build/signing failed.')
                 else:
                         result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
                         result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
@@ -937,15 +950,22 @@ def BuildUbuntuPackage(target, source, env):
                         else:
                                 print "* Build failed."
                                 print
+                                raise Exception('Ubuntu package build failed.')
 
                 # print "Signing the .deb changes file..."
                 # os.system('sudo debsign /var/cache/pbuilder/result/*.changes')
 
                 if ubuntu_ppa is not None:
                         # dput this changes file to the PPA
-                        dput_command = 'dput %s ../%s_%s_source.changes' % (ubuntu_ppa, package_name, package_version)
+                        dput_command = 'dput %s %s' % (ubuntu_ppa, source_changes_file)
                         print "* Uploading package for", ubuntu_distro, "to launchpad:", dput_command
-                        os.system(dput_command)
+                        result = os.system(dput_command)
+                        if result == 0:
+                                print "* Package upload succeeded."
+                        else:
+                                print "* Package upload failed."
+                                print
+                                raise Exception('Ubuntu package upload failed.')
 
         # Return back to the starting directory, otherwise you'll get a .sconsign.dblite error!
         os.chdir('../..')

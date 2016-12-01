@@ -80,7 +80,7 @@ void CachingReaderWorker::run() {
             { // locking scope
                 QMutexLocker locker(&m_newTrackMutex);
                 pLoadTrack = m_newTrack;
-                m_newTrack = TrackPointer();
+                m_newTrack.reset();
             } // implicitly unlocks the mutex
             loadTrack(pLoadTrack);
         } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {

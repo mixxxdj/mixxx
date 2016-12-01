@@ -59,7 +59,7 @@ class FakeDeck : public BaseTrackPlayer {
     void fakeUnloadingTrackEvent(TrackPointer pTrack) {
         play.set(0.0);
         emit(loadingTrack(TrackPointer(), pTrack));
-        loadedTrack.clear();
+        loadedTrack.reset();
         emit(playerEmpty());
     }
 
@@ -190,7 +190,7 @@ class AutoDJProcessorTest : public LibraryTest {
 
     TrackId addTrackToCollection(const QString& trackLocation) {
         TrackPointer pTrack(collection()->getTrackDAO().addSingleTrack(trackLocation, false));
-        return pTrack.isNull() ? TrackId() : pTrack->getId();
+        return pTrack ? pTrack->getId() : TrackId();
     }
 
     FakeMaster master;

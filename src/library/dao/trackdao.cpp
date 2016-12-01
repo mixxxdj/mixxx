@@ -39,7 +39,7 @@ enum { UndefinedRecordIndex = -2 };
 RecentTrackCacheItem::RecentTrackCacheItem(
         const TrackPointer& pTrack)
         : m_pTrack(pTrack) {
-    DEBUG_ASSERT(!m_pTrack.isNull());
+    DEBUG_ASSERT(m_pTrack);
 }
 
 RecentTrackCacheItem::~RecentTrackCacheItem() {
@@ -97,8 +97,8 @@ void TrackDAO::finish() {
         it.next();
         // Cast from TrackWeakPointer to TrackPointer. If the track still exists
         // then pTrack will be non-nullptr. If the track is dirty then save it.
-        TrackPointer pTrack = it.value();
-        if (!pTrack.isNull()) {
+        TrackPointer pTrack = TrackPointer(it.value());
+        if (pTrack) {
             if (pTrack->isDirty()) {
                 saveTrack(pTrack);
             }
@@ -248,9 +248,9 @@ bool TrackDAO::trackExistsInDatabase(const QString& absoluteFilePath) {
     return getTrackId(absoluteFilePath).isValid();
 }
 
-void TrackDAO::saveTrack(TrackPointer track) {
-    if (track) {
-        saveTrack(track.data());
+void TrackDAO::saveTrack(const TrackPointer& pTrack) {
+    if (pTrack) {
+        saveTrack(pTrack.get());
     }
 }
 
@@ -552,7 +552,7 @@ namespace {
 } // anonymous namespace
 
 TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
-    DEBUG_ASSERT(!pTrack.isNull());
+    DEBUG_ASSERT(pTrack);
     DEBUG_ASSERT_AND_HANDLE(m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
         m_pQueryLibrarySelect || m_pQueryTrackLocationSelect) {
         qDebug() << "TrackDAO::addTracksAddTrack: needed SqlQuerys have not "
@@ -654,8 +654,8 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             return TrackId();
         }
 
-        m_analysisDao.saveTrackAnalyses(pTrack.data());
-        m_cueDao.saveTrackCues(trackId, pTrack.data());
+        m_analysisDao.saveTrackAnalyses(*pTrack);
+        m_cueDao.saveTrackCues(trackId, pTrack->getCuePoints());
 
         DEBUG_ASSERT(!m_tracksAddedSet.contains(trackId));
         m_tracksAddedSet.insert(trackId);
@@ -726,8 +726,8 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
 TrackPointer TrackDAO::addSingleTrack(const QFileInfo& fileInfo, bool unremove) {
     addTracksPrepare();
     TrackPointer pTrack(addTracksAddFile(fileInfo, unremove));
-    addTracksFinish(pTrack.isNull());
-    if (!pTrack.isNull()) {
+    addTracksFinish(!pTrack);
+    if (pTrack) {
         cacheRecentTrack(pTrack->getId(), pTrack);
     }
     return pTrack;
@@ -1180,7 +1180,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
     bool bpmLocked = record.value(column + 4).toBool();
     BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
-            pTrack, beatsVersion, beatsSubVersion, &beatsBlob);
+            *pTrack, beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
         pTrack->setBeats(pBeats);
     } else {
@@ -1416,19 +1416,19 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     }
 
     // Listen to dirty and changed signals
-    connect(pTrack.data(), SIGNAL(dirty(Track*)),
+    connect(pTrack.get(), SIGNAL(dirty(Track*)),
             this, SLOT(slotTrackDirty(Track*)),
             Qt::DirectConnection);
-    connect(pTrack.data(), SIGNAL(clean(Track*)),
+    connect(pTrack.get(), SIGNAL(clean(Track*)),
             this, SLOT(slotTrackClean(Track*)),
             Qt::DirectConnection);
-    connect(pTrack.data(), SIGNAL(changed(Track*)),
+    connect(pTrack.get(), SIGNAL(changed(Track*)),
             this, SLOT(slotTrackChanged(Track*)),
             Qt::DirectConnection);
     // Queued connection. We are not in a rush to process reference
     // count expirations and it can produce dangerous signal loops.
     // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    connect(pTrack.data(), SIGNAL(referenceExpired(Track*)),
+    connect(pTrack.get(), SIGNAL(referenceExpired(Track*)),
             this, SLOT(slotTrackReferenceExpired(Track*)),
             Qt::QueuedConnection);
 
@@ -1489,7 +1489,7 @@ TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
     QHash<TrackId, TrackWeakPointer>::iterator it = m_sTracks.find(trackId);
     if (it != m_sTracks.end()) {
         //qDebug() << "Returning cached TIO for track" << id;
-        pTrack = it.value();
+        pTrack = TrackPointer(it.value());
     }
     // Unlock the track cache mutex. Otherwise we can deadlock.
     locker.unlock();
@@ -1497,17 +1497,17 @@ TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
     // If we were able to convert a weak reference to a strong reference then
     // re-insert it into the recent tracks cache so that its least-recently-used
     // tracking is accurate.
-    if (pTrack.isNull()) {
+    if (pTrack) {
+        // If we were able to convert a weak reference to a strong reference then
+        // re-insert it into the recent tracks cache so that its least-recently-used
+        // tracking is accurate.
+        cacheRecentTrack(trackId, pTrack);
+    } else {
         // Cache miss
         if (!cacheOnly) {
             // Deserialize the track from the database.
             pTrack = getTrackFromDB(trackId);
         }
-    } else {
-        // If we were able to convert a weak reference to a strong reference then
-        // re-insert it into the recent tracks cache so that its least-recently-used
-        // tracking is accurate.
-        cacheRecentTrack(trackId, pTrack);
     }
     return pTrack;
 }
@@ -1583,8 +1583,8 @@ bool TrackDAO::updateTrack(Track* pTrack) {
 
     //qDebug() << "Update track took : " << time.elapsed().formatMillisWithUnit() << "Now updating cues";
     //time.start();
-    m_analysisDao.saveTrackAnalyses(pTrack);
-    m_cueDao.saveTrackCues(trackId, pTrack);
+    m_analysisDao.saveTrackAnalyses(*pTrack);
+    m_cueDao.saveTrackCues(trackId, pTrack->getCuePoints());
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();
@@ -2083,7 +2083,7 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
     }
 
     // addTrack or getTrack may fail.
-    if (pTrack.isNull()) {
+    if (!pTrack) {
         qWarning() << "Failed to load track"
                 << trackLocation;
         return pTrack;

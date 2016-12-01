@@ -13,8 +13,7 @@ CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
                             "mixxx.db.model.crate"),
-          m_iCrateId(-1),
-          m_crateDAO(pTrackCollection->getCrateDAO()) {
+          m_iCrateId(-1) {
 }
 
 CrateTableModel::~CrateTableModel() {
@@ -88,7 +87,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     // a duplicate. It also handles unremoving logic if the track has been
     // removed from the library recently and re-adds it.
     const TrackPointer pTrack(trackDao.addSingleTrack(fileInfo, true));
-    if (pTrack.isNull()) {
+    if (!pTrack) {
         qDebug() << "CrateTableModel::addTrack:"
                 << "Failed to add track"
                 << location
@@ -126,7 +125,7 @@ int CrateTableModel::addTracks(const QModelIndex& index,
 
     QList<TrackId> trackIds(m_trackDAO.addMultipleTracks(fileInfoList, true));
 
-    int tracksAdded = m_crateDAO.addTracksToCrate(m_iCrateId, &trackIds);
+    int tracksAdded = m_pTrackCollection->getCrateDAO().addTracksToCrate(m_iCrateId, &trackIds);
     if (tracksAdded > 0) {
         select();
     }
@@ -140,14 +139,14 @@ int CrateTableModel::addTracks(const QModelIndex& index,
 }
 
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {
-    bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
+    bool locked = m_pTrackCollection->getCrateDAO().isCrateLocked(m_iCrateId);
 
     if (!locked) {
         QList<TrackId> trackIds;
         foreach (QModelIndex index, indices) {
             trackIds.append(getTrackId(index));
         }
-        m_crateDAO.removeTracksFromCrate(trackIds, m_iCrateId);
+        m_pTrackCollection->getCrateDAO().removeTracksFromCrate(trackIds, m_iCrateId);
         select();
     }
 }
@@ -186,7 +185,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
 
-    bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
+    bool locked = m_pTrackCollection->getCrateDAO().isCrateLocked(m_iCrateId);
     if (locked) {
         caps |= TRACKMODELCAPS_LOCKED;
     }

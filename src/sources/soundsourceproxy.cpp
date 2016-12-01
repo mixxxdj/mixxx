@@ -325,7 +325,7 @@ SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
 
 SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
     : m_pTrack(pTrack),
-      m_url(getCanonicalUrlForTrack(pTrack.data())),
+      m_url(getCanonicalUrlForTrack(pTrack.get())),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
@@ -520,6 +520,13 @@ namespace {
 // is still in use.
 class AudioSourceProxy: public mixxx::AudioSource {
 public:
+    AudioSourceProxy(
+            const TrackPointer& pTrack,
+            const mixxx::AudioSourcePointer& pAudioSource)
+        : mixxx::AudioSource(*pAudioSource),
+          m_pTrack(pTrack),
+          m_pAudioSource(pAudioSource) {
+    }
     AudioSourceProxy(const AudioSourceProxy&) = delete;
     AudioSourceProxy(AudioSourceProxy&&) = delete;
 
@@ -556,14 +563,6 @@ public:
     }
 
 private:
-    AudioSourceProxy(
-            const TrackPointer& pTrack,
-            const mixxx::AudioSourcePointer& pAudioSource)
-        : mixxx::AudioSource(*pAudioSource),
-          m_pTrack(pTrack),
-          m_pAudioSource(pAudioSource) {
-    }
-
     const TrackPointer m_pTrack;
     const mixxx::AudioSourcePointer m_pAudioSource;
 };

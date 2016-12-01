@@ -793,7 +793,7 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) const {
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
     TrackId trackId;
-    if (!pTrack.isNull()) {
+    if (pTrack) {
         trackId = pTrack->getId();
     }
     m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);

@@ -80,7 +80,7 @@ class CachingReader : public QObject {
     // Read numSamples from the SoundSource starting with sample into
     // buffer. Returns the total number of samples actually written to buffer
     // support reading stereo samples in reverse (backward) order
-    virtual SINT read(SINT sample, bool reverse, SINT numSamples, CSAMPLE* buffer);
+    virtual SINT read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer);
 
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,
