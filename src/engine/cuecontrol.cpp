@@ -830,6 +830,13 @@ void CueControl::cuePlay(double v) {
             cueSet(v);
             // Just in case.
             m_bPreviewing = false;
+            // If quantize is enabled, jump to the cue point since it's not
+            // necessarily where we currently are
+            if (m_pQuantizeEnabled->get() > 0.0) {
+                lock.unlock();  // prevent deadlock.
+                // Enginebuffer will quantize more exactly than we can.
+                seekAbs(m_pCuePoint->get());
+            }
         }
     } else if (isTrackAtCue()){
         m_bPreviewing = false;
