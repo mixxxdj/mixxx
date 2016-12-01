@@ -696,8 +696,13 @@ void Library::handleFocus() {
 
 void Library::handlePreselection() {
     for (LibraryPaneManager* pPane : m_panes) {
+
+
         pPane->setPreselected(false);
         pPane->setPreviewed(false);
+
+
+
     }
     LibraryPaneManager* pSelectedPane = m_panes.value(m_preselectedPane);
     if (pSelectedPane) {
@@ -705,7 +710,7 @@ void Library::handlePreselection() {
     } else {
         pSelectedPane = m_panes.value(m_previewPreselectedPane);
         if (pSelectedPane) {
-            pSelectedPane->setPreselected(true);
+            pSelectedPane->setPreviewed(true);
         }
     }
 }

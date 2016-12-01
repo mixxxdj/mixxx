@@ -1,5 +1,5 @@
 #include "wtristatebutton.h"
-
+#include <QDebug>
 
 WTriStateButton::WTriStateButton(QWidget* parent)
         : QToolButton(parent),
@@ -8,8 +8,10 @@ WTriStateButton::WTriStateButton(QWidget* parent)
 }
 
 void WTriStateButton::setChecked(bool value) {
-    m_state = value ? State::Active : State::Unactive;
-    updateButton();
+    qDebug() << this << "setChecked" << value;
+    // This omits the Hovered state
+    State state = value ? State::Active : State::Unactive;
+    setState(state);
 }
 
 bool WTriStateButton::isChecked() const {
@@ -17,6 +19,7 @@ bool WTriStateButton::isChecked() const {
 }
 
 void WTriStateButton::setState(State state) {
+    if (state == m_state) return;
     m_state = state;
     updateButton();
 }
@@ -26,8 +29,9 @@ WTriStateButton::State WTriStateButton::getState() const {
 }
 
 void WTriStateButton::setHovered(bool value) {
-    m_state = value ? State::Hovered : State::Unactive;
-    updateButton();
+    qDebug() << this << "setHovered" << value;
+    State state = value ? State::Hovered : State::Unactive;
+    setState(state);
 }
 
 void WTriStateButton::setIcon(const QIcon& icon) {
@@ -40,13 +44,17 @@ void WTriStateButton::updateButton() {
     switch (m_state) {
         case State::Unactive:
             pix = m_icon.pixmap(height(), QIcon::Normal, QIcon::Off);
+            QToolButton::setChecked(false);
             break;
         case State::Active:
             pix = m_icon.pixmap(height(), QIcon::Normal, QIcon::On);
+            QToolButton::setChecked(true);
             break;
         case State::Hovered:
             pix = m_icon.pixmap(height(), QIcon::Active, QIcon::Off);
+            QToolButton::setChecked(false);
             break;
     }
+
     QToolButton::setIcon(QIcon(pix));
 }

@@ -159,6 +159,7 @@ void LibraryPaneManager::setPreviewed(bool value) {
 }
 
 void LibraryPaneManager::slotPanePreselected(bool value) {
+    // Preselect button clicked
     setPreselected(value);
     m_pLibrary->panePreselected(this, value);
 }
