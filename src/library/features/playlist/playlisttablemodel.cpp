@@ -138,7 +138,8 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index) {
         return;
     }
 
-    m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, getPosition(index));
+    m_pTrackCollection->getPlaylistDAO()
+            .removeTrackFromPlaylist(m_iPlaylistId, getPosition(index));
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
@@ -151,7 +152,8 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         trackPositions.append(getPosition(index));
     }
 
-    m_playlistDao.removeTracksFromPlaylist(m_iPlaylistId, trackPositions);
+    m_pTrackCollection->getPlaylistDAO()
+            .removeTracksFromPlaylist(m_iPlaylistId, trackPositions);
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,

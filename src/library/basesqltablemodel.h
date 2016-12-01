@@ -29,23 +29,17 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool initialized() const {
         return m_bInitialized;
     }
-    TrackId getTrackId(const QModelIndex& index) const;
-    
-    void search(const QString& searchText, const QString& extraFilter = QString()) override;
 
     void setSearch(const QString& searchText, const QString& extraFilter = QString());
     void onSearchStarting() override;
     void onSearchCleared() override;
-    const QString currentSearch() const;
     void setSort(int column, Qt::SortOrder order);
 
-    void hideTracks(const QModelIndexList& indices) override;
-    int fieldIndex(ColumnCache::Column column) const;
-    int fieldIndex(const QString& fieldName) const override;
 
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from TrackModel
     ///////////////////////////////////////////////////////////////////////////
+    int fieldIndex(ColumnCache::Column column) const;
     int fieldIndex(const QString& fieldName) const final;
 
     // Methods reimplemented from QAbstractItemModel
@@ -87,12 +81,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
     const QString currentSearch() const override;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Inherited from QAbstractItemModel
-    ///////////////////////////////////////////////////////////////////////////
-    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
-
+    
   public slots:
     void select();
 

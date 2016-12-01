@@ -14,7 +14,6 @@ class PlaylistTableModel : public BaseSqlTableModel {
     void setTableModel(int playlistId = -1);
     void setTableModel(const QSet<int>& playlistIds);
 
-    void setTableModel(int playlistId = -1);
     int getPlaylist() const {
         return m_iPlaylistId;
     }
@@ -24,7 +23,6 @@ class PlaylistTableModel : public BaseSqlTableModel {
                    const QModelIndex& destIndex);
     void removeTrack(const QModelIndex& index);
     void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
-    TrackModel::CapabilitiesFlags getCapabilities() const;
     
     void saveSelection(const QModelIndexList& selection);
     QModelIndexList getSavedSelectionIndices();
@@ -48,7 +46,6 @@ class PlaylistTableModel : public BaseSqlTableModel {
     
     int getPosition(const QModelIndex& index);
     
-    PlaylistDAO& m_playlistDao;
     int m_iPlaylistId;
     QSet<int> m_playlistIds;
     bool m_showAll;
