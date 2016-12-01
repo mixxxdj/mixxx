@@ -164,14 +164,14 @@ var Control = function (options) {
 Control.prototype = {
     // default attributes
     // You should probably overwrite at least some of these.
-    inFunc: function (value) {return value;},
-    // map input in the XML file, not inFunc
+    inValueScale: function (value) {return value;},
+    // map input in the XML file, not inValueScale
     input: function (channel, control, value, status, group) {
-               this.setValue(this.inFunc.call(this, value));
+               this.setValue(this.inValueScale(value));
             },
-    outFunc: function (value) {return value;},
+    outValueScale: function (value) {return value;},
     output: function (value, group, control) {
-                this.send(this.outFunc.call(this, value));
+                this.send(this.outValueScale(value));
             },
     outConnect: true,
     outTrigger: true,
@@ -274,7 +274,7 @@ Button.prototype = new Control({
     onlyOnPress: true,
     on: 127,
     off: 0,
-    inFunc: function () { return ! this.getValueIn(); },
+    inValueScale: function () { return ! this.getValueIn(); },
     separateNoteOnOff: false,
     input: function (channel, control, value, status, group) {
                if (this.onlyOnPress) {
@@ -287,13 +287,13 @@ Button.prototype = new Control({
                        pressed = value > 0;
                    }
                    if (pressed) {
-                       this.setValue(this.inFunc.call(this, value));
+                       this.setValue(this.inValueScale(value));
                    }
                 } else {
-                       this.setValue(this.inFunc.call(this, value));
+                       this.setValue(this.inValueScale(value));
                 }
     },
-    outFunc: function() { return (this.getValueOut()) ? this.on : this.off; }
+    outValueScale: function() { return (this.getValueOut()) ? this.on : this.off; }
 });
 
 /**
@@ -344,9 +344,9 @@ var LoopToggleButton = function (options) {
 };
 LoopToggleButton.prototype = new Button({
     inCo: 'reloop_exit',
-    inFunc: function() { return 1; },
+    inValueScale: function() { return 1; },
     outCo: 'loop_enabled',
-    outFunc: function(value) { return (value) ? this.on : this.off; }
+    outValueScale: function(value) { return (value) ? this.on : this.off; }
 });
 
 /**
