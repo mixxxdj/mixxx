@@ -50,6 +50,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
 
   private:
     bool paste();
+    bool isDividerSelected();
 
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;

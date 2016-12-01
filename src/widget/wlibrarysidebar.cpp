@@ -47,7 +47,6 @@ void WSidebarItemDelegate::paint(QPainter* painter,
     painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
 }
 
-
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this) {
@@ -122,7 +121,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             if (treeModel) {
                 accepted = false;
                 for (const QUrl& url : urls) {
-                    QModelIndex destIndex = this->indexAt(event->pos());
+                    QModelIndex destIndex = indexAt(event->pos());
                     if (treeModel->dragMoveAccept(destIndex, url)) {
                         accepted = true;
                         break;
@@ -165,7 +164,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             event->ignore();
         } else {
             //Reset the selected items (if you had anything highlighted, it clears it)
-            //this->selectionModel()->clear();
+            //selectionModel()->clear();
             //Drag-and-drop from an external application or the track table widget
             //eg. dragging a track from Windows Explorer onto the sidebar
             TreeItemModel* pTreeModel = dynamic_cast<TreeItemModel*>(model());
@@ -186,9 +185,8 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
     }
 }
 
-
 void WLibrarySidebar::toggleSelectedItem() {
-    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
     if (selectedIndices.size() > 0) {
         QModelIndex index = selectedIndices.at(0);
         // Activate the item so its content shows in the main library.
@@ -196,6 +194,14 @@ void WLibrarySidebar::toggleSelectedItem() {
         // Expand or collapse the item as necessary.
         setExpanded(index, !isExpanded(index));
     }
+}
+
+bool WLibrarySidebar::isDividerSelected() {
+    QModelIndex current = currentIndex();
+    if (current.isValid()) {
+        return current.data(AbstractRole::RoleDivider).toBool();
+    }
+    return false;
 }
 
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
@@ -213,8 +219,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         // or an undo feature
         event->ignore();
     } else if (event == QKeySequence::SelectAll) {
-        selectAll();
-        event->accept();
+        event->ignore();
     } else if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
             event->modifiers() == Qt::NoModifier) {
         toggleSelectedItem();
@@ -223,6 +228,18 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         // TODO(XXX) allow delete by key but with a safety pop up
         // or an undo feature
         event->ignore();
+    } else if (event->key() == Qt::Key_Down &&
+            event->modifiers() == Qt::NoModifier) {
+        QTreeView::keyPressEvent(event);
+        if (isDividerSelected()) {
+            QTreeView::keyPressEvent(event);
+        }
+    } else if (event->key() == Qt::Key_Up &&
+            event->modifiers() == Qt::NoModifier) {
+        QTreeView::keyPressEvent(event);
+        if (isDividerSelected()) {
+            QTreeView::keyPressEvent(event);
+        }
     } else {
         // QTreeView::keyPressEvent(event) will consume all key events due to
         // it's keyboardSearch feature.
@@ -230,8 +247,6 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         // pass only some basic keys to the base class
         if (event->modifiers() == Qt::NoModifier) {
             switch (event->key()) {
-            case Qt::Key_Down:
-            case Qt::Key_Up:
             case Qt::Key_Left:
             case Qt::Key_Right:
             case Qt::Key_Home:
