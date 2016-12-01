@@ -106,7 +106,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     }
 
     QList<QFileInfo> fileInfoList;
-    foreach (QString fileLocation, locations) {
+    for (const QString& fileLocation : locations) {
         QFileInfo fileInfo(fileLocation);
         if (fileInfo.exists()) {
             fileInfoList.append(fileInfo);
@@ -147,7 +147,7 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     QList<int> trackPositions;
-    foreach (QModelIndex index, indices) {
+    for (const QModelIndex& index : indices) {
         trackPositions.append(getPosition(index));
     }
 
@@ -191,7 +191,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     }
     if (shuffle.count() > 1) {
         // if there is more then one track selected, shuffle selection only
-        foreach(QModelIndex shuffleIndex, shuffle) {
+        for (const QModelIndex& shuffleIndex : shuffle) {
             int oldPosition = getPosition(shuffleIndex);
             if (oldPosition != excludePos) {
                 positions.append(oldPosition);
