@@ -46,7 +46,6 @@ class PlaylistTableModel : public BaseSqlTableModel {
     
     int getPosition(const QModelIndex& index);
     
-    PlaylistDAO& m_playlistDao;
     int m_iPlaylistId;
     QSet<int> m_playlistIds;
     bool m_showAll;
