@@ -36,8 +36,7 @@ LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
           m_savedDAO(m_pTrackCollection->getSavedQueriesDAO()),
-          m_featureFocus(-1),
-          m_focusedPane(-1),
+          m_featurePane(-1),
           m_savedPane(-1) {
 }
 
@@ -70,7 +69,8 @@ bool LibraryFeature::dragMoveAcceptChild(const QModelIndex &, QUrl) {
 
 QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                           int paneId) {
-    return createTableWidget(pKeyboard, paneId);
+    Q_UNUSED(pKeyboard);
+    return createTableWidget(paneId);
 }
 
 QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
@@ -104,29 +104,28 @@ QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
     return pContainer;
 }
 
-void LibraryFeature::setFeatureFocus(int focus) {
-    m_featureFocus = focus;
+void LibraryFeature::setFeaturePane(int paneId) {
+    m_featurePane = paneId;
 }
 
-int LibraryFeature::getFeatureFocus() {
-    return m_featureFocus;
-}
-
-void LibraryFeature::setFocusedPane(int paneId) {
-    m_focusedPane = paneId;
-}
-
-int LibraryFeature::getFocusedPane() {
-    return m_focusedPane;
+int LibraryFeature::getFeaturePaneId() {
+    return m_featurePane;
 }
 
 void LibraryFeature::setSavedPane(int paneId) {
     m_savedPane = paneId;
-    setFeatureFocus(m_savedPane);
 }
 
 int LibraryFeature::getSavedPane() {
     return m_savedPane;
+}
+
+int LibraryFeature::getFocusedPane() {
+    return m_pLibrary->getFocusedPaneId();
+}
+
+int LibraryFeature::getPreselectedPane() {
+    return m_pLibrary->getPreselectedPaneId();
 }
 
 SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery sQuery) {
@@ -180,13 +179,10 @@ QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {
     return m_savedDAO.getSavedQueries(this);
 }
 
-WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboard,
-                                                   int paneId) {
+WTrackTableView* LibraryFeature::createTableWidget(int paneId) {
     WTrackTableView* pTrackTableView = 
             new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, true);
-    
-    pTrackTableView->installEventFilter(pKeyboard);
-    
+        
     WMiniViewScrollBar* pScrollBar = new WMiniViewScrollBar(pTrackTableView);
     pTrackTableView->setScrollBar(pScrollBar);
     
@@ -203,7 +199,7 @@ WTrackTableView* LibraryFeature::createTableWidget(KeyboardEventFilter* pKeyboar
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    m_trackTables[paneId] = pTrackTableView;
+    m_trackTablesByPaneId[paneId] = pTrackTableView;
     
     return pTrackTableView;
 }
@@ -220,8 +216,6 @@ WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*
     // Set sidebar mini view
     WMiniViewScrollBar* pMiniView = new WMiniViewScrollBar(pSidebar);
     pMiniView->setTreeView(pSidebar);
-    pMiniView->setSortColumn(0);
-    pMiniView->setRole(Qt::DisplayRole);
     pMiniView->setModel(pModel);
     pSidebar->setVerticalScrollBar(pMiniView);
     
@@ -233,12 +227,15 @@ WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*
             this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
     connect(pSidebar, SIGNAL(expanded(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
+    connect(this, SIGNAL(selectIndex(const QModelIndex&)),
+            pSidebar, SLOT(selectIndex(const QModelIndex&)));
+    
     return pSidebar;
 }
 
 void LibraryFeature::showTrackModel(QAbstractItemModel *model) {
-    auto it = m_trackTables.find(m_featureFocus);
-    if (it == m_trackTables.end() || it->isNull()) {
+    auto it = m_trackTablesByPaneId.find(m_featurePane);
+    if (it == m_trackTablesByPaneId.end() || it->isNull()) {
         return;
     }
     (*it)->loadTrackModel(model);
@@ -250,32 +247,33 @@ void LibraryFeature::switchToFeature() {
 }
 
 void LibraryFeature::restoreSearch(const QString& search) {
-    m_pLibrary->restoreSearch(search);
+    m_pLibrary->restoreSearch(m_featurePane, search);
 }
 
 void LibraryFeature::restoreSaveButton() {
-    m_pLibrary->restoreSaveButton();
+    m_pLibrary->restoreSaveButton(m_featurePane);
 }
 
 void LibraryFeature::showBreadCrumb(TreeItem *pTree) {
-    m_pLibrary->showBreadCrumb(pTree);
+    m_pLibrary->showBreadCrumb(m_featurePane, pTree);
 }
 
 void LibraryFeature::showBreadCrumb(const QModelIndex& index) {
-    showBreadCrumb(static_cast<TreeItem*>(index.internalPointer()));
+    showBreadCrumb(index.data(AbstractRole::RoleBreadCrumb).toString(),
+                   getIcon());
 }
 
 void LibraryFeature::showBreadCrumb(const QString &text, const QIcon& icon) {
-    m_pLibrary->showBreadCrumb(text, icon);
+    m_pLibrary->showBreadCrumb(m_featurePane, text, icon);
 }
 
 void LibraryFeature::showBreadCrumb() {
-    m_pLibrary->showBreadCrumb(title().toString(), getIcon());
+    showBreadCrumb(title().toString(), getIcon());
 }
 
-WTrackTableView *LibraryFeature::getFocusedTable() {
-    auto it = m_trackTables.find(m_featureFocus);
-    if (it == m_trackTables.end() || it->isNull()) {
+WTrackTableView* LibraryFeature::getFocusedTable() {
+    auto it = m_trackTablesByPaneId.find(m_featurePane);
+    if (it == m_trackTablesByPaneId.end() || it->isNull()) {
         return nullptr;
     }
     return *it;

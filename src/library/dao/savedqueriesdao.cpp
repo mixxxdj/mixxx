@@ -36,8 +36,8 @@ SavedSearchQuery SavedQueriesDAO::saveQuery(LibraryFeature* pFeature,
     query.bindValue(":sortOrder", sQuery.sortOrder);
     query.bindValue(":vScrollbarPos", sQuery.vScrollBarPos);
     query.bindValue(":sortColumn", sQuery.sortColumn);
-    query.bindValue(":sortAscendingOrder", sQuery.sortAscendingOrder);
-    query.bindValue(":pinned", sQuery.pinned);
+    query.bindValue(":sortAscendingOrder", (int) sQuery.sortAscendingOrder);
+    query.bindValue(":pinned", (int) sQuery.pinned);
     
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -58,7 +58,7 @@ QList<SavedSearchQuery> SavedQueriesDAO::getSavedQueries(const QString& settings
     QString queryStr = kSelectStart + 
                        "FROM " SAVEDQUERYTABLE 
                        " WHERE libraryFeature = :featureName "
-                       "ORDER BY id DESC";
+                       "ORDER BY pinned DESC, id DESC";
     query.prepare(queryStr);
     query.bindValue(":featureName", settingsName);
     
@@ -108,6 +108,32 @@ SavedSearchQuery SavedQueriesDAO::moveToFirst(LibraryFeature* pFeature,
 
 SavedSearchQuery SavedQueriesDAO::moveToFirst(LibraryFeature* pFeature, int id) {
     return moveToFirst(pFeature, getSavedQuery(id));
+}
+
+bool SavedQueriesDAO::updateSavedQuery(const SavedSearchQuery& sQuery) {    
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE " SAVEDQUERYTABLE " SET "
+            "query = :query, title = :title, selectedItems = :selectedItems, "
+            "sortOrder = :sortOrder, vScrollbarPos = :vScrollbarPos, "
+            "sortColumn = :sortColumn, "
+            "sortAscendingOrder = :sortAscendingOrder, pinned = :pinned "
+            "WHERE id = :id");
+    
+    query.bindValue(":query", sQuery.query);
+    query.bindValue(":title", sQuery.title);        
+    query.bindValue(":selectedItems", serializeItems(sQuery.selectedItems));
+    query.bindValue(":sortOrder", sQuery.sortOrder);
+    query.bindValue(":vScrollbarPos", sQuery.vScrollBarPos);
+    query.bindValue(":sortColumn", sQuery.sortColumn);
+    query.bindValue(":sortAscendingOrder", (int) sQuery.sortAscendingOrder);
+    query.bindValue(":pinned", (int) sQuery.pinned);
+    query.bindValue(":id", sQuery.id);
+    
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    return true;
 }
 
 bool SavedQueriesDAO::deleteSavedQuery(int id) {

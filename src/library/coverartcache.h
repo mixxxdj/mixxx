@@ -29,7 +29,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
                          const bool onlyCached,
                          const bool signalWhenDone);
 
-    static void requestCover(const Track* pTrack,
+    static void requestCover(const Track& track,
                              const QObject* pRequestor);
 
     // Guesses the cover art for the provided tracks by searching the tracks'
@@ -41,13 +41,11 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     struct FutureResult {
         FutureResult()
                 : pRequestor(NULL),
-                  desiredWidth(0),
                   signalWhenDone(false) {
         }
 
         CoverArt cover;
         const QObject* pRequestor;
-        int desiredWidth;
         bool signalWhenDone;
     };
 
@@ -74,7 +72,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     // Guesses the cover art for each track.
     void guessCovers(QList<TrackPointer> tracks);
     void guessCover(TrackPointer pTrack);
-    QPixmap cacheCover(CoverArt cover, int width);
 
   private:
     QSet<QPair<const QObject*, quint16> > m_runningRequests;

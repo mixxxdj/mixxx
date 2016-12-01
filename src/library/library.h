@@ -34,7 +34,7 @@ class SidebarModel;
 class TrackModel;
 class TrackCollection;
 class WBaseLibrary;
-class WLibrary;
+class WLibraryPane;
 class WLibrarySidebar;
 class WLibraryBreadCrumb;
 class WButtonBar;
@@ -52,15 +52,14 @@ public:
     
     static const int kDefaultRowHeightPx;
     
-    Library(QObject* parent,
-            UserSettingsPointer pConfig,
+    Library(UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
     
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
-    void bindSidebarWidget(WButtonBar* sidebar);
-    void bindPaneWidget(WLibrary* libraryWidget,
+    void bindSidebarButtons(WButtonBar* sidebar);
+    void bindPaneWidget(WLibraryPane* libraryWidget,
                         KeyboardEventFilter* pKeyboard, int paneId);
     void bindSidebarExpanded(WBaseLibrary* expandedPane, 
                              KeyboardEventFilter* pKeyboard);
@@ -92,10 +91,17 @@ public:
     }
     
     void switchToFeature(LibraryFeature* pFeature);
-    void showBreadCrumb(TreeItem* pTree);
-    void showBreadCrumb(const QString& text, const QIcon& icon);
-    void restoreSearch(const QString& text);
-    void restoreSaveButton();
+    void showBreadCrumb(int paneId, TreeItem* pTree);
+    void showBreadCrumb(int paneId, const QString& text, const QIcon& icon);
+    void restoreSearch(int paneId, const QString& text);
+    void restoreSaveButton(int paneId);
+    void paneFocused(LibraryPaneManager *pPane);
+    void panePreselected(LibraryPaneManager* pPane, bool value);
+    
+    int getFocusedPaneId();
+    int getPreselectedPaneId();
+
+    void focusSearch();
 
   public slots:
     
@@ -115,10 +121,11 @@ public:
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
-    void slotPaneFocused(LibraryPaneManager *pPane);
     
-    // Updates with the focus feature
-    void slotUpdateFocus(LibraryFeature* pFeature);
+    void slotSetHoveredFeature(LibraryFeature* pFeature);
+    void slotResetHoveredFeature(LibraryFeature* pFeature);
+    void slotSetFocusedFeature(LibraryFeature* pFeature);
+    void slotResetFocusedFeature(LibraryFeature* pFeature);
 
     void scan() {
         m_scanner.scan();
@@ -142,16 +149,16 @@ public:
   private:
     
     // If the pane exists returns it, otherwise it creates the pane
-    LibraryPaneManager* getPane(int paneId);
+    LibraryPaneManager* getOrCreatePane(int paneId);
     LibraryPaneManager* getFocusedPane();
+    LibraryPaneManager* getPreselectedPane();
     
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
-    void setFocusedPane();
     
     void handleFocus();
+    void handlePreselection();
     
     UserSettingsPointer m_pConfig;
-    SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
@@ -162,15 +169,21 @@ public:
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
+    QScopedPointer<ControlObject> m_pKeyNotation;
     
     QHash<int, LibraryPaneManager*> m_panes;
     LibraryPaneManager* m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
     QSet<int> m_collapsedPanes;
     QHash<int, LibraryFeature*> m_savedFeatures;
+    // Used to show the preselected pane when the mouse is over the button
+    LibraryFeature* m_hoveredFeature;
+    LibraryFeature* m_focusedFeature;
     
     // Can be any integer as it's used with a HashMap
-    int m_focusedPane;
+    int m_focusedPaneId;
+    int m_preselectedPane;
+    int m_previewPreselectedPane;
 };
 
 #endif /* LIBRARY_H */

@@ -294,7 +294,7 @@ void AnalyzerQueue::run() {
     if (m_aq.size() == 0)
         return;
 
-    m_progressInfo.current_track.clear();
+    m_progressInfo.current_track.reset();
     m_progressInfo.track_progress = 0;
     m_progressInfo.queue_size = 0;
     m_progressInfo.sema.release(); // Initialize with one
@@ -409,7 +409,7 @@ void AnalyzerQueue::slotUpdateProgress() {
     if (m_progressInfo.current_track) {
         m_progressInfo.current_track->setAnalyzerProgress(
         		m_progressInfo.track_progress);
-        m_progressInfo.current_track.clear();
+        m_progressInfo.current_track.reset();
     }
     emit(trackProgress(m_progressInfo.track_progress / 10));
     if (m_progressInfo.track_progress == 1000) {
@@ -457,6 +457,9 @@ AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
         UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
+    if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"))) {
+        ret->addAnalyzer(new AnalyzerWaveform(pConfig));
+    }
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__

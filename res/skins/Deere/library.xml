@@ -25,6 +25,9 @@
                 <SetVariable name="object_name">LibraryToggle</SetVariable>
                 <SetVariable name="control">[Library],show_library</SetVariable>
               </Template>
+              <WidgetGroup>
+                <Size>6,6</Size>
+              </WidgetGroup>
               <LibrarySidebarButtons>
                 <SizePolicy>min,me</SizePolicy>
                 <ObjectName>LibrarySidebarButtons</ObjectName>

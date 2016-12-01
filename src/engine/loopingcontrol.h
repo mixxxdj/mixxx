@@ -115,6 +115,7 @@ class LoopingControl : public EngineControl {
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
+    // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     QAtomicInt m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;

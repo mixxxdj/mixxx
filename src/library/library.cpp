@@ -1,60 +1,66 @@
 // library.cpp
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QDebug>
+#include <QDir>
 #include <QItemSelectionModel>
 #include <QMessageBox>
 #include <QTranslator>
-#include <QDir>
-#include <QDebug>
 
-#include "library/analysisfeature.h"
-#include "library/autodj/autodjfeature.h"
-#include "library/banshee/bansheefeature.h"
-#include "library/browse/browsefeature.h"
-#include "library/cratefeature.h"
-#include "library/libraryfoldersfeature.h"
-#include "library/historyfeature.h"
-#include "library/itunes/itunesfeature.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+
+#include "library/features/analysis/analysisfeature.h"
+#include "library/features/autodj/autodjfeature.h"
+#include "library/features/banshee/bansheefeature.h"
+#include "library/features/browse/browsefeature.h"
+#include "library/features/crates/cratefeature.h"
+#include "library/features/history/historyfeature.h"
+#include "library/features/itunes/itunesfeature.h"
+#include "library/features/libraryfolder/libraryfoldersfeature.h"
+#include "library/features/maintenance/maintenancefeature.h"
+#include "library/features/mixxxlibrary/mixxxlibraryfeature.h"
+#include "library/features/playlist/playlistfeature.h"
+#include "library/features/recording/recordingfeature.h"
+#include "library/features/rhythmbox/rhythmboxfeature.h"
+#include "library/features/traktor/traktorfeature.h"
+
+#include "library/library_preferences.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
-#include "library/library.h"
 #include "library/librarypanemanager.h"
-#include "library/library_preferences.h"
 #include "library/librarysidebarexpandedmanager.h"
 #include "library/librarytablemodel.h"
-#include "library/maintenancefeature.h"
-#include "library/mixxxlibraryfeature.h"
-#include "library/playlistfeature.h"
-#include "library/recording/recordingfeature.h"
-#include "library/rhythmbox/rhythmboxfeature.h"
-#include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
-#include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
 #include "util/assert.h"
 #include "util/sandbox.h"
 
-
 #include "widget/wbuttonbar.h"
 #include "widget/wfeatureclickbutton.h"
 
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/library.h"
 
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
 
-Library::Library(QObject* parent, UserSettingsPointer pConfig,
+Library::Library(UserSettingsPointer pConfig,
                  PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
-        m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
         m_scanner(m_pTrackCollection, pConfig),
-        m_pSidebarExpanded(nullptr) {
+        m_pSidebarExpanded(nullptr),
+        m_hoveredFeature(nullptr),
+        m_focusedFeature(nullptr),
+        m_focusedPaneId(-1),
+        m_preselectedPane(-1),
+        m_previewPreselectedPane(-1) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
+
+    m_pKeyNotation.reset(new ControlObject(ConfigKey("[Library]", "key_notation")));
 
     connect(&m_scanner, SIGNAL(scanStarted()),
             this, SIGNAL(scanStarted()));
@@ -90,9 +96,6 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 }
 
 Library::~Library() {
-    // Delete the sidebar model first since it depends on the LibraryFeatures.
-    delete m_pSidebarModel;
-        
     qDeleteAll(m_features);
     m_features.clear();
 
@@ -107,11 +110,12 @@ Library::~Library() {
 
 void Library::bindSearchBar(WSearchLineEdit* searchLine, int id) {
     // Get the value once to avoid searching again in the hash
-    LibraryPaneManager* pPane = getPane(id);
+    LibraryPaneManager* pPane = getOrCreatePane(id);
+    searchLine->setTrackCollection(m_pTrackCollection);
     pPane->bindSearchBar(searchLine);
 }
 
-void Library::bindSidebarWidget(WButtonBar* sidebar) {    
+void Library::bindSidebarButtons(WButtonBar* sidebar) {    
     for (LibraryFeature* f : m_features) {
         WFeatureClickButton* button = sidebar->addButton(f);
         
@@ -121,18 +125,26 @@ void Library::bindSidebarWidget(WButtonBar* sidebar) {
                 this, SLOT(slotHoverFeature(LibraryFeature*)));
         connect(button, SIGNAL(rightClicked(const QPoint&)),
                 f, SLOT(onRightClick(const QPoint&)));
+        connect(button, SIGNAL(hovered(LibraryFeature*)),
+                this, SLOT(slotSetHoveredFeature(LibraryFeature*)));
+        connect(button, SIGNAL(leaved(LibraryFeature*)),
+                this, SLOT(slotResetHoveredFeature(LibraryFeature*)));
+        connect(button, SIGNAL(focusIn(LibraryFeature*)),
+                this, SLOT(slotSetFocusedFeature(LibraryFeature*)));
+        connect(button, SIGNAL(focusOut(LibraryFeature*)),
+                this, SLOT(slotResetFocusedFeature(LibraryFeature*)));
     }
 }
 
-void Library::bindPaneWidget(WLibrary* pLibraryWidget,
+void Library::bindPaneWidget(WLibraryPane* pPaneWidget,
                              KeyboardEventFilter* pKeyboard, int paneId) {
     
     // Get the value once to avoid searching again in the hash
-    LibraryPaneManager* pPane = getPane(paneId);
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     if (pPane == nullptr) {
         return;
     }
-    pPane->bindPaneWidget(pLibraryWidget, pKeyboard); 
+    pPane->bindPaneWidget(pPaneWidget, pKeyboard); 
     
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
@@ -150,26 +162,31 @@ void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
 
 void Library::bindBreadCrumb(WLibraryBreadCrumb* pBreadCrumb, int paneId) {
     // Get the value once to avoid searching again in the hash
-    LibraryPaneManager* pPane = getPane(paneId);
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     pPane->setBreadCrumb(pBreadCrumb);
 }
 
 void Library::destroyInterface() {
     m_pSidebarExpanded->deleteLater();
+    m_pSidebarExpanded = nullptr;
     
     for (LibraryPaneManager* p : m_panes) {
         p->deleteLater();
     }
     
     for (LibraryFeature* f : m_features) {
-        f->setFeatureFocus(-1);
+        f->setFeaturePane(-1);
     }
     m_panes.clear();
 }
 
 LibraryView* Library::getActiveView() {
-    WBaseLibrary* pPane = m_panes[m_focusedPane]->getPaneWidget();
-    WLibrary* pLibrary = qobject_cast<WLibrary*>(pPane);
+    LibraryPaneManager* pPane = m_panes.value(m_focusedPaneId);
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
+        return nullptr;
+    }
+    WBaseLibrary* pPaneWidget = pPane->getPaneWidget();
+    WLibraryPane* pLibrary = qobject_cast<WLibraryPane*>(pPaneWidget);
     DEBUG_ASSERT_AND_HANDLE(pLibrary) {
         return nullptr;
     }
@@ -182,9 +199,7 @@ void Library::addFeature(LibraryFeature* feature) {
         return;
     }
     m_features.append(feature);
-    
-    m_pSidebarModel->addLibraryFeature(feature);
-    
+
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -196,25 +211,26 @@ void Library::addFeature(LibraryFeature* feature) {
 }
 
 void Library::switchToFeature(LibraryFeature* pFeature) {
-    m_pSidebarExpanded->switchToFeature(pFeature);
-    slotUpdateFocus(pFeature);
-    
-    LibraryPaneManager* pPane = getFocusedPane();
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
-        return;
+    if (m_pSidebarExpanded) {
+        m_pSidebarExpanded->switchToFeature(pFeature);
     }
     
-    WBaseLibrary* pWLibrary = pPane->getPaneWidget();
-    // Only change the current pane if it's not shown already
-    if (pWLibrary->getCurrentFeature() != pFeature) {
-        pPane->switchToFeature(pFeature);
+    LibraryPaneManager* pPane = getPreselectedPane();
+    if (pPane == nullptr) {
+        // No pane is preselected so we are handling an activateChild() method
+        // or similar. We only change the input focus to the feature one.
+        m_focusedPaneId = pFeature->getFeaturePaneId();
+        handleFocus();
+        pPane = getFocusedPane();
     }
     
-    handleFocus();
+    pPane->switchToFeature(pFeature);
+    m_preselectedPane = -1;
+    handlePreselection();
 }
 
-void Library::showBreadCrumb(TreeItem *pTree) {
-    LibraryPaneManager* pPane = getFocusedPane();
+void Library::showBreadCrumb(int paneId, TreeItem *pTree) {
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     DEBUG_ASSERT_AND_HANDLE(pPane) {
         return;
     }
@@ -222,8 +238,8 @@ void Library::showBreadCrumb(TreeItem *pTree) {
     pPane->showBreadCrumb(pTree);
 }
 
-void Library::showBreadCrumb(const QString &text, const QIcon &icon) {
-    LibraryPaneManager* pPane = getFocusedPane();
+void Library::showBreadCrumb(int paneId, const QString &text, const QIcon &icon) {
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     DEBUG_ASSERT_AND_HANDLE(pPane) {
         return;
     }
@@ -238,7 +254,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
     TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
             .getOrAddTrack(location, true, NULL);
-    if (!pTrack.isNull()) {
+    if (pTrack) {
         emit(loadTrackToPlayer(pTrack, group));
     }
 }
@@ -247,8 +263,8 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
     emit(loadTrackToPlayer(pTrack, group, play));
 }
 
-void Library::restoreSearch(const QString& text) {
-    LibraryPaneManager* pPane = getFocusedPane();
+void Library::restoreSearch(int paneId, const QString& text) {
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     DEBUG_ASSERT_AND_HANDLE(pPane) {
         return;
     }
@@ -256,14 +272,49 @@ void Library::restoreSearch(const QString& text) {
 }
 
 
-void Library::restoreSaveButton() {
-    LibraryPaneManager* pPane = getFocusedPane();
+void Library::restoreSaveButton(int paneId) {
+    LibraryPaneManager* pPane = getOrCreatePane(paneId);
     DEBUG_ASSERT_AND_HANDLE(pPane) {
         return;
     }
     pPane->restoreSaveButton();
 }
 
+void Library::paneFocused(LibraryPaneManager* pPane) {
+    DEBUG_ASSERT_AND_HANDLE(pPane) {
+        return;
+    }
+    
+    if (pPane != m_pSidebarExpanded) {
+        m_focusedPaneId = pPane->getPaneId();
+        pPane->getCurrentFeature()->setFeaturePane(m_focusedPaneId);
+        DEBUG_ASSERT_AND_HANDLE(m_focusedPaneId != -1) {
+            return;
+        }
+        handleFocus();
+    }
+    
+    //qDebug() << "Library::slotPaneFocused" << m_focusedPane;
+}
+
+void Library::panePreselected(LibraryPaneManager* pPane, bool value) {
+    // Since only one pane can be preselected, set the other panes as not
+    // preselected
+    if (value) {
+        m_preselectedPane = pPane->getPaneId();
+    } else if (m_preselectedPane == pPane->getPaneId()) {
+        m_preselectedPane = -1;
+    }
+    handlePreselection();
+}
+
+int Library::getFocusedPaneId() {
+    return m_focusedPaneId;
+}
+
+int Library::getPreselectedPaneId() {
+    return m_preselectedPane;
+}
 
 void Library::slotRefreshLibraryModels() {
    m_pMixxxLibraryFeature->refreshLibraryModels();
@@ -290,27 +341,30 @@ void Library::onSkinLoadFinished() {
         // Assign a feature to show on each pane unless there are more panes
         // than features
         while (itP != m_panes.end() && itF != m_features.end()) {
-            m_focusedPane = itP.key();
+            m_preselectedPane = itP.key();
             if (first) {
                 first = false;
                 // Set the first pane as saved pane to all features
                 for (LibraryFeature* pFeature : m_features) {
-                    pFeature->setSavedPane(m_focusedPane);
+                    pFeature->setSavedPane(m_preselectedPane);
                 }
             }
             
-            (*itF)->setFeatureFocus(m_focusedPane);
-            (*itF)->setSavedPane(m_focusedPane);
+            m_savedFeatures[m_preselectedPane] = *itF;
+            (*itP)->setCurrentFeature(*itF);
+            
+            (*itF)->setFeaturePane(m_preselectedPane);
+            (*itF)->setSavedPane(m_preselectedPane);
             (*itF)->activate();
-            m_savedFeatures[m_focusedPane] = *itF;
             
             ++itP;
             ++itF;
         }
         
         // The first pane always shows the Mixxx Library feature on start
-        m_focusedPane = m_panes.begin().key();
-        (*m_features.begin())->setFeatureFocus(m_focusedPane);
+        m_preselectedPane = m_focusedPaneId = m_panes.begin().key();
+        handleFocus();
+        (*m_features.begin())->setFeaturePane(m_preselectedPane);
         slotActivateFeature(*m_features.begin());
     }
     else {
@@ -396,15 +450,18 @@ void Library::paneCollapsed(int paneId) {
     m_collapsedPanes.insert(paneId);
     
     // Automatically switch the focus to a non collapsed pane
-    m_panes[paneId]->clearFocus();
+    LibraryPaneManager* pPane = m_panes.value(paneId);
+    if (pPane) {
+        pPane->setFocused(false);
+    }
+
     
     bool focused = false;
     for (LibraryPaneManager* pPane : m_panes) {
         int auxId = pPane->getPaneId();
         if (!m_collapsedPanes.contains(auxId) && !focused) {
-            m_focusedPane = pPane->getPaneId();
-            setFocusedPane();
-            pPane->setFocus();
+            m_focusedPaneId = pPane->getPaneId();
+            pPane->setFocused(true);
             focused = true;
         }
         
@@ -419,72 +476,63 @@ void Library::paneUncollapsed(int paneId) {
     // If the current shown feature in some pane is the same as the uncollapsed
     // pane feature, switch the feature from one pane to the other and set
     // instead the saved feature
-    LibraryFeature* pPaneFeature = m_panes[paneId]->getCurrentFeature();
-    pPaneFeature->setFeatureFocus(m_panes[paneId]->getPaneId());
+    LibraryPaneManager* pPane = m_panes.value(paneId);
+    if (pPane == nullptr) {
+        return;
+    }
+    LibraryFeature* pFeature = pPane->getCurrentFeature();
+    if (pFeature == nullptr) {
+        return;
+    }
+    pFeature->setFeaturePane(pPane->getPaneId());
     
     for (LibraryPaneManager* pPane : m_panes) {
         int auxId = pPane->getPaneId();
-        if (auxId != paneId && pPaneFeature == pPane->getCurrentFeature()) {
+        if (auxId != paneId && pFeature == pPane->getCurrentFeature()) {
             LibraryFeature* pSaved = m_savedFeatures[auxId];
             pPane->switchToFeature(pSaved);
-            pSaved->setFeatureFocus(auxId);
+            pSaved->setFeaturePane(auxId);
             pSaved->activate();
         }
     }    
 }
 
 void Library::slotActivateFeature(LibraryFeature* pFeature) {
-    // The feature is being shown currently in the focused pane
-    if (m_panes[m_focusedPane]->getCurrentFeature() == pFeature) {
-        pFeature->setSavedPane(m_focusedPane);
-        m_pSidebarExpanded->switchToFeature(pFeature);
-        handleFocus();
-        return;
-    } 
+    int selectedPane = m_preselectedPane;
+    if (selectedPane  < 0) {
+        // No pane is preselected, use the saved pane instead
+        selectedPane  = pFeature->getSavedPane();
+    }
+    
+    bool featureActivated = false;
+    LibraryPaneManager* pSelectedPane = m_panes.value(selectedPane);
+    if (pSelectedPane) {
+        pFeature->setSavedPane(selectedPane);
+        pFeature->setFeaturePane(selectedPane);
 
-    if (m_pSidebarExpanded->getCurrentFeature() != pFeature) {
-        // If the feature is not already shown, follow restore in old pane
-        int savedPane = pFeature->getSavedPane();
-        if (savedPane >= 0 && !m_collapsedPanes.contains(savedPane)) {
-            // The feature is shown in some not collapsed pane
-            m_focusedPane = savedPane;
-            setFocusedPane();
-        }
-    } else if (pFeature->isSinglePane()) {
-        // Swap panes in case of a single Pane feature
-        LibraryFeature* pOldFeature = m_panes[m_focusedPane]->getCurrentFeature();
-        int newFocusPane = m_focusedPane;
-        m_focusedPane = pFeature->getSavedPane();
-        m_panes[m_focusedPane]->setCurrentFeature(pOldFeature);
-        pOldFeature->setSavedPane(m_focusedPane);
-        pOldFeature->activate();
-        m_focusedPane = newFocusPane;
-    }
-    
-    LibraryFeature* pCurrentFeature = m_panes[m_focusedPane]->getCurrentFeature();
-    if (pCurrentFeature != pFeature && 
-            pCurrentFeature->getSavedPane() == m_focusedPane) {
-        // If this feature it's still shown in another pane change the feature 
-        // focus to the other pane
-        for (LibraryPaneManager* p : m_panes) {
-            if (!m_collapsedPanes.contains(p->getPaneId()) && 
-                    p->getCurrentFeature() == pCurrentFeature) {
-                pCurrentFeature->setSavedPane(p->getPaneId());
-                break;
-            }
+        if (pSelectedPane->getCurrentFeature() != pFeature) {
+            pSelectedPane->setCurrentFeature(pFeature);
+            pFeature->activate();
+            featureActivated = true;
         }
     }
     
-    m_panes[m_focusedPane]->setCurrentFeature(pFeature);
-    pFeature->setSavedPane(m_focusedPane);    
-    pFeature->activate();
-    handleFocus();
+    if (!featureActivated) {
+        // Feature already in a pane, we need only switch the SidebarExpanded
+        if (m_pSidebarExpanded) {
+            m_pSidebarExpanded->switchToFeature(pFeature);
+        }
+    }
+    m_preselectedPane = -1;
+    handlePreselection();
 }
 
 void Library::slotHoverFeature(LibraryFeature *pFeature) {
     // This function only changes the sidebar expanded to allow dropping items
     // directly in some features sidebar panes
-    m_pSidebarExpanded->switchToFeature(pFeature);
+    if (m_pSidebarExpanded) {
+        m_pSidebarExpanded->switchToFeature(pFeature);
+    }
 }
 
 void Library::slotSetTrackTableFont(const QFont& font) {
@@ -497,38 +545,53 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::slotPaneFocused(LibraryPaneManager* pPane) {
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
-        return;
-    }
-    
-    if (pPane != m_pSidebarExpanded) {
-        m_focusedPane = pPane->getPaneId();
-        pPane->getCurrentFeature()->setFeatureFocus(m_focusedPane);
-        DEBUG_ASSERT_AND_HANDLE(m_focusedPane != -1) {
-            return;
+void Library::slotSetHoveredFeature(LibraryFeature* pFeature) {
+    m_hoveredFeature = pFeature;
+    m_previewPreselectedPane = pFeature->getSavedPane();
+    handlePreselection();
+}
+
+void Library::slotResetHoveredFeature(LibraryFeature* pFeature) {
+    if (pFeature == m_hoveredFeature) {
+        if (m_focusedFeature) {
+            m_previewPreselectedPane = m_focusedFeature->getSavedPane();
+        } else {
+            m_previewPreselectedPane = -1;
         }
-        setFocusedPane();
-        handleFocus();
+        m_hoveredFeature = nullptr;
     }
-    
-    //qDebug() << "Library::slotPaneFocused" << m_focusedPane;
+    handlePreselection();
 }
 
-void Library::slotUpdateFocus(LibraryFeature* pFeature) {
-    if (pFeature->getFeatureFocus() >= 0) {
-        m_focusedPane = pFeature->getFeatureFocus();
-        setFocusedPane();
-    }
+void Library::slotSetFocusedFeature(LibraryFeature* pFeature) {
+    m_focusedFeature = pFeature;
+    m_previewPreselectedPane = pFeature->getSavedPane();
+    handlePreselection();
 }
 
+void Library::slotResetFocusedFeature(LibraryFeature* pFeature) {
+    if (pFeature == m_focusedFeature) {
+        if (m_hoveredFeature) {
+            m_previewPreselectedPane = m_hoveredFeature->getSavedPane();
+        } else {
+            m_previewPreselectedPane = -1;
+        }
+        m_hoveredFeature = nullptr;
+    }
+    handlePreselection();
+}
 
-LibraryPaneManager* Library::getPane(int paneId) {
+LibraryPaneManager* Library::getOrCreatePane(int paneId) {
     //qDebug() << "Library::createPane" << id;
     // Get the value once to avoid searching again in the hash
-    auto it = m_panes.find(paneId);
-    if (it != m_panes.end()) {
-        return *it;
+    LibraryPaneManager* pPane = m_panes.value(paneId);
+    if (pPane) {
+        return pPane;
+    }
+    
+    // The paneId must be non negative
+    DEBUG_ASSERT_AND_HANDLE(paneId >= 0) {
+        return nullptr;
     }
     
     // Create a new pane only if there are more features than panes
@@ -537,37 +600,41 @@ LibraryPaneManager* Library::getPane(int paneId) {
         return nullptr;
     }
     
-    LibraryPaneManager* pPane = new LibraryPaneManager(paneId, this);
+    pPane = new LibraryPaneManager(paneId, this);
     pPane->addFeatures(m_features);
     m_panes.insert(paneId, pPane);
     
-    m_focusedPane = paneId;
-    setFocusedPane();
+    m_focusedPaneId = paneId;
     return pPane;
 }
 
 LibraryPaneManager* Library::getFocusedPane() {
     //qDebug() << "Focused" << m_focusedPane;
-    auto it = m_panes.find(m_focusedPane);
-    if (it == m_panes.end()) {
-        return nullptr;
-    }
-    
-    return *it;
+    return m_panes.value(m_focusedPaneId);
 }
 
-void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface* pPlayerManager) {
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(pConfig, this, this, m_pTrackCollection);
+LibraryPaneManager* Library::getPreselectedPane() {
+    return m_panes.value(m_preselectedPane);
+}
+
+void Library::createFeatures(UserSettingsPointer pConfig,
+                             PlayerManagerInterface* pPlayerManager) {
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(
+            pConfig, this, this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
 
-    addFeature(new AutoDJFeature(pConfig, this, this, pPlayerManager, m_pTrackCollection));
+    addFeature(new AutoDJFeature(
+            pConfig, this, this, pPlayerManager, m_pTrackCollection));
     
-    addFeature(new LibraryFoldersFeature(pConfig, this, this, m_pTrackCollection));
+    addFeature(new LibraryFoldersFeature(
+            pConfig, this, this, m_pTrackCollection));
     
-    m_pPlaylistFeature = new PlaylistFeature(pConfig, this, this, m_pTrackCollection);
+    m_pPlaylistFeature = new PlaylistFeature(
+            pConfig, this, this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);
     
-    m_pCrateFeature = new CrateFeature(pConfig, this, this, m_pTrackCollection);
+    m_pCrateFeature = new CrateFeature(
+            pConfig, this, this, m_pTrackCollection);
     addFeature(m_pCrateFeature);
     
     BrowseFeature* browseFeature = new BrowseFeature(
@@ -617,20 +684,43 @@ void Library::createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface
     addFeature(new MaintenanceFeature(pConfig, this, this, m_pTrackCollection));
 }
 
-void Library::setFocusedPane() {
-    for (LibraryFeature* pFeature : m_features) {
-        pFeature->setFocusedPane(m_focusedPane);
-    }
-}
-
 void Library::handleFocus() {
     // Changes the visual focus effect, removes the existing one and adds the
     // new focus
-    m_panes[m_focusedPane]->setFocus();
-    for (auto it = m_panes.begin(); it != m_panes.end(); ++it) {
-        // Remove the focus from not focused panes
-        if (it.key() != m_focusedPane) {
-            it.value()->clearFocus();
+    for (LibraryPaneManager* pPane : m_panes) {
+        pPane->setFocused(false);
+    }
+    LibraryPaneManager* pFocusPane = m_panes.value(m_focusedPaneId);
+    if (pFocusPane) {
+        pFocusPane->setFocused(true);
+    }
+}
+
+void Library::handlePreselection() {
+    for (LibraryPaneManager* pPane : m_panes) {
+        pPane->setPreselected(false);
+        pPane->setPreviewed(false);
+    }
+    LibraryPaneManager* pSelectedPane = m_panes.value(m_preselectedPane);
+    if (pSelectedPane) {
+        pSelectedPane->setPreselected(true);
+    } else {
+        pSelectedPane = m_panes.value(m_previewPreselectedPane);
+        if (pSelectedPane) {
+            pSelectedPane->setPreselected(true);
         }
     }
 }
+
+void Library::focusSearch() {
+    LibraryPaneManager* pFocusPane = m_panes.value(m_focusedPaneId);
+    if (pFocusPane == nullptr) return;
+    bool ok = pFocusPane->focusSearch();
+    if (ok) return;
+    for (LibraryPaneManager* pPane : m_panes) {
+        if (pPane == nullptr) continue;
+        ok = pPane->focusSearch();
+        if (ok) break;
+    }
+}
+

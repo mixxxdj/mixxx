@@ -1220,7 +1220,7 @@
 #LibrarySidebarButtons QToolButton {
   margin: 0px 0px 0px 0px;
   padding: 0px 0px 0px 0px;
-  border: none;
+  border: 1px solid #191919;
   color: #cfb32c;
   background-color: #191919;
 }
@@ -1256,13 +1256,16 @@
 #LibrarySidebarButtons:focus,
 #LibrarySidebarButtons QToolButton:focus,
 #LibrarySidebarExpanded > QWidget:focus,
-#LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus {
+#LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus,
+WLibrarySidebar:focus, 
+WLibrary:focus,
+QTableView:focus {
   border: 1px solid #8E5C00;
 }
 
 #LibrarySidebarButtons WButtonBar {
   background-color: #191919;
-  margin: 0px 2px 0px 0px;
+  margin: 0px 1px 0px 0px;
 }
 
 #LibrarySidebarButtons, QTableView, QTextBrowser, QTreeView {
@@ -1278,6 +1281,12 @@
 
 WLibraryBreadCrumb QLabel {
   margin: 4px 0px 6px 3px;
+}
+
+WLibraryBreadCrumb QToolButton {
+  margin-right: 3px;
+  background: none;
+  border: none;
 }
 
 WBaseLibrary QLabel {
@@ -1400,11 +1409,13 @@ WSearchLineEdit {
   color: #cfb32c; 
 }
 
+
 WSearchLineEdit:focus { 
-  border: 2px solid #FF6600; 
+  border: 1px solid #8E5C00;
   background: #0f0f0f; 
   color: #eece33;
 }
+
 
 /* cover art */
 WCoverArt { background: transparent; color: #ACACAC; }
@@ -1457,11 +1468,9 @@ QTreeView::item:selected {
 }
 
 WLibrary[showFocus="0"] {
-  padding: 2px 0 0 0;
-  border: none;
+  border-top: 2px solid #0f0f0f;
 }
 
 WLibrary[showFocus="1"] {
-  padding: 2px 0 0 0;
-  border-top: 2px solid #FF7100 !important;
+  border-top: 2px solid #FF7100;
 }

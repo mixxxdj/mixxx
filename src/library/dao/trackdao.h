@@ -185,7 +185,7 @@ class TrackDAO : public QObject, public virtual DAO {
     // have a guarantee that the track will not be deleted while we are working
     // on it. However, private parts of TrackDAO can use the raw saveTrack(TIO*)
     // call.
-    void saveTrack(TrackPointer pTrack);
+    void saveTrack(const TrackPointer& pTrack);
 
     // Clears the cached Tracks, which can be useful when the
     // underlying database tables change (eg. during a library rescan,

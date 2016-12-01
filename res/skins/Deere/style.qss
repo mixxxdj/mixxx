@@ -148,12 +148,10 @@ QTableView::indicator:unchecked {
 }
 
 WBaseLibrary[showFocus="0"] {
-  padding: 2px 0 0 0;
-  border: none;
+  border-top: 2px solid transparent;
 }
 
 WBaseLibrary[showFocus="1"] {
-  padding: 2px 0 0 0;
   border-top: 2px solid #0080BE;
 }
 
@@ -166,12 +164,13 @@ WBaseLibrary[showFocus="1"] {
   image: url(:/images/library/ic_library_unchecked.png);
 }
 
-#LibrarySidebarButtons {
-  margin-top: 5px;
-}
-
 #LibrarySidebarButtons, WButtonBar {
   background-color: #4B4B4B;
+}
+
+QToolButton:focus, 
+QToolButton:focus::hover {
+    background-color: #006596;
 }
 
 WLibraryBreadCrumb QLabel {
@@ -179,6 +178,16 @@ WLibraryBreadCrumb QLabel {
   font-size: 12px;
   font-weight: bold;
   color: #B3B3B3;
+}
+
+WLibraryBreadCrumb QToolButton {
+  margin-right: 3px;
+  background: none;
+  border: none;
+}
+
+WLibraryBreadCrumb QToolButton:hover {
+  background: none;
 }
 
 WBaseLibrary QLabel {

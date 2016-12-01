@@ -14,37 +14,35 @@ LibraryPaneManager::LibraryPaneManager(int paneId, Library *pLibrary, QObject* p
           m_pBreadCrumb(nullptr),
           m_paneId(paneId),
           m_pLibrary(pLibrary) {
-    qApp->installEventFilter(this);
 }
 
 LibraryPaneManager::~LibraryPaneManager() {
 }
 
-void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pLibraryWidget,
+void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pPaneWidget,
                                         KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
-    m_pPaneWidget = pLibraryWidget;
+    m_pPaneWidget = pPaneWidget;
     
-    connect(m_pPaneWidget, SIGNAL(focused()),
+    connect(pPaneWidget, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
-    connect(m_pPaneWidget, SIGNAL(collapsed()),
+    connect(pPaneWidget, SIGNAL(collapsed()),
             this, SLOT(slotPaneCollapsed()));
-    connect(m_pPaneWidget, SIGNAL(uncollapsed()),
+    connect(pPaneWidget, SIGNAL(uncollapsed()),
             this, SLOT(slotPaneUncollapsed()));
 
-    WLibrary* lib = qobject_cast<WLibrary*>(m_pPaneWidget);
-    if (lib == nullptr) {
+    if (qobject_cast<WLibraryPane*>(pPaneWidget) == nullptr) {
         return;
     }
     for (LibraryFeature* f : m_features) {
-        //f->bindPaneWidget(lib, pKeyboard, m_paneId);
+        //f->bindPaneWidget(pPaneWidget, pKeyboard, m_paneId);
         
-        QWidget* pPane = f->createPaneWidget(pKeyboard, m_paneId);
-        if (pPane == nullptr) {
+        QWidget* pFeaturePaneWidget = f->createPaneWidget(pKeyboard, m_paneId);
+        if (pFeaturePaneWidget == nullptr) {
             continue;
         }
-        pPane->setParent(lib);
-        lib->registerView(f, pPane);
+        pFeaturePaneWidget->setParent(pPaneWidget);
+        pPaneWidget->registerView(f, pFeaturePaneWidget);
     }
 }
 
@@ -59,13 +57,16 @@ void LibraryPaneManager::bindSearchBar(WSearchLineEdit* pSearchBar) {
             this, SLOT(slotSearchStarting()));
     connect(pSearchBar, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
-    
+    connect(pSearchBar, SIGNAL(cancel()),
+            this, SLOT(slotSearchCancel()));
+
     m_pSearchBar = pSearchBar;
 }
 
 void LibraryPaneManager::setBreadCrumb(WLibraryBreadCrumb* pBreadCrumb) {
     m_pBreadCrumb = pBreadCrumb;
-    pBreadCrumb->installEventFilter(this);
+    connect(m_pBreadCrumb, SIGNAL(preselected(bool)),
+            this, SLOT(slotPanePreselected(bool)));
 }
 
 void LibraryPaneManager::addFeature(LibraryFeature* feature) {
@@ -92,27 +93,19 @@ LibraryFeature *LibraryPaneManager::getCurrentFeature() const {
     return m_pCurrentFeature;
 }
 
-void LibraryPaneManager::setFocus() {
-    //qDebug() << "LibraryPaneManager::setFocus";
+void LibraryPaneManager::setFocused(bool value) {
     DEBUG_ASSERT_AND_HANDLE(m_pPaneWidget) {
         return;
     }
     
-    m_pPaneWidget->setProperty("showFocus", 1);
-}
-
-void LibraryPaneManager::clearFocus() {
-    //qDebug() << "LibraryPaneManager::clearFocus";
-    m_pPaneWidget->setProperty("showFocus", 0);
+    m_pPaneWidget->setProperty("showFocus", (int) value);
 }
 
 void LibraryPaneManager::switchToFeature(LibraryFeature* pFeature) {
-    DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull() && pFeature) {
-        return;
-    }
-    
     m_pCurrentFeature = pFeature;
-    m_pPaneWidget->switchToFeature(pFeature);
+    if (!m_pPaneWidget.isNull()) {
+        m_pPaneWidget->switchToFeature(pFeature);
+    }
 }
 
 void LibraryPaneManager::restoreSearch(const QString& text) {
@@ -142,8 +135,32 @@ void LibraryPaneManager::showBreadCrumb(const QString &text, const QIcon& icon) 
     m_pBreadCrumb->showBreadCrumb(text, icon);
 }
 
-int LibraryPaneManager::getPaneId() {
+int LibraryPaneManager::getPaneId() const {
     return m_paneId;
+}
+
+void LibraryPaneManager::setPreselected(bool value) {
+    if (!m_pBreadCrumb.isNull()) {
+        m_pBreadCrumb->setPreselected(value);
+    }
+}
+
+bool LibraryPaneManager::isPreselected() const {
+    if (!m_pBreadCrumb.isNull()) {
+        return m_pBreadCrumb->isPreselected();
+    }
+    return false;
+}
+
+void LibraryPaneManager::setPreviewed(bool value) {
+    if (!m_pBreadCrumb.isNull()) {
+        m_pBreadCrumb->setPreviewed(value);
+    }
+}
+
+void LibraryPaneManager::slotPanePreselected(bool value) {
+    setPreselected(value);
+    m_pLibrary->panePreselected(this, value);
 }
 
 void LibraryPaneManager::slotPaneCollapsed() {
@@ -155,7 +172,16 @@ void LibraryPaneManager::slotPaneUncollapsed() {
 }
 
 void LibraryPaneManager::slotPaneFocused() {
-    m_pLibrary->slotPaneFocused(this);
+    m_pLibrary->paneFocused(this);
+}
+
+void LibraryPaneManager::slotSearchCancel() {
+    if (!m_pPaneWidget.isNull()) {
+        QWidget* cw = m_pPaneWidget->currentWidget();
+        if (cw != nullptr) {
+            cw->setFocus();
+        }
+    }
 }
 
 void LibraryPaneManager::slotSearch(const QString& text) {
@@ -179,20 +205,26 @@ void LibraryPaneManager::slotSearchCleared() {
 }
 
 bool LibraryPaneManager::eventFilter(QObject*, QEvent* event) {
-    if (m_pPaneWidget.isNull() || m_pSearchBar.isNull() || 
-        m_pBreadCrumb.isNull()) {
+    if (m_pPaneWidget.isNull() || m_pSearchBar.isNull()) {
         return false;
     }
 
     if (event->type() == QEvent::MouseButtonPress &&
-        (m_pPaneWidget->underMouse() || 
-         m_pSearchBar->underMouse() || 
-         m_pBreadCrumb->underMouse())) {
-        m_pLibrary->slotPaneFocused(this);
+            (m_pPaneWidget->underMouse() || m_pSearchBar->underMouse())) {
+        m_pLibrary->paneFocused(this);
+    } else if (event->type() == QEvent::FocusIn) {
+        m_pLibrary->paneFocused(this);
     }
-
-    // Since this event filter is for the entire application (to handle the
-    // mouse event), NEVER return true. If true is returned I will block all
-    // application events and will block the entire application.
     return false;
+}
+
+bool LibraryPaneManager::focusSearch() {
+    if (m_pSearchBar.isNull()) {
+        return false;
+    }
+    if (!m_pSearchBar->isEnabled()) {
+        return false;
+    }
+    m_pSearchBar->setFocus();
+    return true;
 }

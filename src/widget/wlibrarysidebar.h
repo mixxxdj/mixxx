@@ -49,6 +49,8 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     bool event(QEvent* pEvent) override;
 
   private:
+    bool paste();
+
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
 };

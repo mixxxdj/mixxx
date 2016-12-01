@@ -1,3 +1,4 @@
+#include <widget/wlibrarypane.h>
 #include "library/librarycontrol.h"
 
 #include <QApplication>
@@ -9,7 +10,6 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "library/library.h"
 #include "library/libraryview.h"

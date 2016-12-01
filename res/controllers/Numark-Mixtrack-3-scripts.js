@@ -148,6 +148,8 @@ var intervalsPerRev = 1200,
  *            - removed trailing empty lines at end of script
  *            - line 1749, change .75 to 0.75 in var gammaOutputRange 
  *            - added spacing in numerous place for easier reading
+ *2016-09-14 (1.3 ) - Stefan Mikolajczyk - https://github.com/mixxxdj/mixxx/pull/1012
+ *            - changed PADLoopButton behaviour to fit native serato behaviour (2, 4, 8, 16 instead of 1/8, 1/4, 1/2, 1)
  *
  * To do - (maybe..)
  * ----------------
@@ -1816,9 +1818,9 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
     var trueFalse;
     
     if (deck.shiftKey) {
-        loopsize = Math.pow(2, padindex);
-    } else {
         loopsize = Math.pow(2, padindex - 4);
+    } else {
+        loopsize = Math.pow(2, padindex);
     }
     
     var loopCommand1; //verify if loop is active

@@ -49,7 +49,7 @@ class AnalysisDao : public DAO {
     bool deleteAnalysesForTrack(TrackId trackId);
     bool deleteAnalysesByType(AnalysisType type);
 
-    void saveTrackAnalyses(Track* pTrack);
+    void saveTrackAnalyses(const Track& track);
 
     size_t getDiskUsageInBytes(AnalysisType type);
 

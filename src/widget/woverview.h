@@ -55,6 +55,14 @@ class WOverview : public WWidget {
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
+    inline int length() {
+        return m_orientation == Qt::Horizontal ? width() : height();
+    }
+
+    inline int breadth() {
+        return m_orientation == Qt::Horizontal ? height() : width();
+    }
+
     ConstWaveformPointer getWaveform() const {
         return m_pWaveform;
     }
@@ -107,6 +115,8 @@ class WOverview : public WWidget {
     bool m_bDrag;
     // Internal storage of slider position in pixels
     int m_iPos;
+
+    Qt::Orientation m_orientation;
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;

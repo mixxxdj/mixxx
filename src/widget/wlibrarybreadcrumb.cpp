@@ -3,15 +3,38 @@
 #include "widget/wlibrarybreadcrumb.h"
 
 #include "library/treeitemmodel.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wtristatebutton.h"
 
 WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent) 
-		: QWidget(parent) {
-    QHBoxLayout* layout = new QHBoxLayout(this);
-    m_pIcon = new QLabel(this);    
-    m_pText = new QLabel(this);
+		: QWidget(parent),
+          m_pIcon(new QLabel(this)),
+          m_pText(new QLabel(this)),
+          m_pPreselectButton(new WTriStateButton(this)),
+          m_preselected(false) {
+    QLayout* layout = new QHBoxLayout(this);
+    
+    m_pIcon->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_pIcon);
     layout->addWidget(m_pText);
+    
+    QPixmap preOn(WPixmapStore::getLibraryPixmap(
+                        ":/images/library/ic_library_preselect.png"));
+    QPixmap preOff(WPixmapStore::getLibraryPixmap(
+                        ":/images/library/ic_library_notpreselect.png"));
+    
+    m_preselectIcon.addPixmap(preOn, QIcon::Normal, QIcon::On);
+    m_preselectIcon.addPixmap(preOff, QIcon::Normal, QIcon::Off);
+    m_preselectIcon.addPixmap(preOn, QIcon::Active, QIcon::Off);
+    m_pPreselectButton->setIcon(m_preselectIcon);
+    m_pPreselectButton->setChecked(m_preselected);
+    m_pPreselectButton->setFocusPolicy(Qt::ClickFocus);
+    
+    connect(m_pPreselectButton, SIGNAL(clicked(bool)), 
+            this, SIGNAL(preselected(bool)));
+    
     layout->addItem(new QSpacerItem(0,0, QSizePolicy::MinimumExpanding));
+    layout->addWidget(m_pPreselectButton);
     layout->setSpacing(2);
     layout->setContentsMargins(0,0,0,0);
     layout->setAlignment(Qt::AlignVCenter);
@@ -26,6 +49,20 @@ WLibraryBreadCrumb::WLibraryBreadCrumb(QWidget* parent)
 QSize WLibraryBreadCrumb::minimumSizeHint() const {
     QSize min = m_pText->minimumSizeHint();
     return QSize(0, min.height());
+}
+
+void WLibraryBreadCrumb::setPreselected(bool value) {
+    m_preselected = value;
+    m_pPreselectButton->setChecked(value);
+    refreshWidth();
+}
+
+bool WLibraryBreadCrumb::isPreselected() const {
+    return m_preselected;
+}
+
+void WLibraryBreadCrumb::setPreviewed(bool value) {
+    m_pPreselectButton->setHovered(value);
 }
 
 void WLibraryBreadCrumb::showBreadCrumb(TreeItem* pTree) {
@@ -47,7 +84,6 @@ void WLibraryBreadCrumb::setBreadIcon(const QIcon& icon) {
     // Get font height
     int height = m_pText->fontMetrics().height();
     QPixmap pix = icon.pixmap(height);
-    m_pIcon->setContentsMargins(0, 0, 0, 0);
     m_pIcon->setPixmap(pix);
 }
 
@@ -66,12 +102,15 @@ void WLibraryBreadCrumb::refreshWidth() {
     QFontMetrics metrics(fontMetrics());
     
     // Measure the text for the label width
-    int mLText, mRText, mLIcon, mRIcon;
+    int mLText, mRText, mLIcon, mRIcon, mLPLabel, mRPLabel;
     m_pText->getContentsMargins(&mLText, nullptr, &mRText, nullptr);
     m_pIcon->getContentsMargins(&mLIcon, nullptr, &mRIcon, nullptr);
-    int margins = mLText + mRText + layout()->spacing() + mLIcon + mRIcon;
+    m_pPreselectButton->getContentsMargins(&mLPLabel, nullptr, &mRPLabel, nullptr);
+    int margins = mLIcon + mRIcon + layout()->spacing() + 
+            mLText + mRText + mLPLabel + mRPLabel;
     
-    int newSize = width() - m_pIcon->width() - margins;
+    int newSize = width() - m_pIcon->width() - margins - 
+            m_pPreselectButton->width();
     QString elidedText = metrics.elidedText(m_longText, Qt::ElideRight, newSize);
     m_pText->setText(elidedText);
 }

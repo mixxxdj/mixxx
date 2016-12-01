@@ -8,7 +8,7 @@
 class ControlObject;
 class ControlPushButton;
 class Library;
-class WLibrary;
+class WLibraryPane;
 class WLibrarySidebar;
 class KeyboardEventFilter;
 

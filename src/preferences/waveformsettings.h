@@ -15,6 +15,16 @@ class WaveformSettings {
                 ConfigKey("[Library]", "EnableWaveformCaching"), enabled);
     }
 
+    bool waveformGenerationWithAnalysisEnabled() const {
+        return m_pConfig->getValue<bool>(
+                ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true);
+    }
+
+    void setWaveformGenerationWithAnalysisEnabled(bool enabled) {
+        m_pConfig->setValue<bool>(
+                ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), enabled);
+    }
+
   private:
     UserSettingsPointer m_pConfig;
 };

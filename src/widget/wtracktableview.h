@@ -79,7 +79,7 @@ class WTrackTableView : public WLibraryTableView {
     // Signalled 20 times per second (every 50ms) by GuiTick.
     void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
-    void slotCoverArtSelected(const CoverArt& art);
+    void slotCoverInfoSelected(const CoverInfo& coverInfo);
     void slotReloadCoverArt();
 
     void slotTrackInfoClosed();
@@ -93,6 +93,9 @@ class WTrackTableView : public WLibraryTableView {
     void dragMoveEvent(QDragMoveEvent * event) override;
     void dragEnterEvent(QDragEnterEvent * event) override;
     void dropEvent(QDropEvent * event) override;
+    void cut();
+    void paste();
+    void copy();
     void lockBpm(bool lock);
     int getVisibleColumn();
 
@@ -107,6 +110,9 @@ class WTrackTableView : public WLibraryTableView {
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel() const;
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities);
+
+    bool insert(const QMimeData* pMimeData, const QModelIndex& destIndex);
+    bool move(const QMimeData* pMimeData, const QModelIndex& destIndex);
 
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;

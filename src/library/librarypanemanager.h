@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QList>
 
-#include "widget/wlibrary.h"
+#include "../widget/wlibrarypane.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
 
@@ -39,8 +39,7 @@ class LibraryPaneManager : public QObject {
     void setCurrentFeature(LibraryFeature* pFeature);
     LibraryFeature* getCurrentFeature() const;
 
-    void setFocus();
-    void clearFocus();
+    void setFocused(bool value);
     
     void restoreSearch(const QString& text);
     void restoreSaveButton();
@@ -48,7 +47,14 @@ class LibraryPaneManager : public QObject {
     void showBreadCrumb(TreeItem* pTree);
     void showBreadCrumb(const QString& text, const QIcon &icon);
     
-    int getPaneId();
+    int getPaneId() const;
+    
+    void setPreselected(bool value);
+    bool isPreselected() const;
+    
+    void setPreviewed(bool value);
+
+    bool focusSearch();
 
   signals:
     
@@ -57,12 +63,14 @@ class LibraryPaneManager : public QObject {
 
   public slots:
 
+    void slotPanePreselected(bool value);
     void slotPaneCollapsed();
     void slotPaneUncollapsed();
     void slotPaneFocused();
     void slotSearch(const QString& text);
     void slotSearchStarting();
     void slotSearchCleared();
+    void slotSearchCancel();
 
   protected:
 
