@@ -29,16 +29,16 @@ static const bool sDebug = false;
 static const int kIdColumn = 0;
 static const int kMaxSortColumns = 3;
 
-// Constant for getModelSetting(name) 
+// Constant for getModelSetting(name)
 static const char* COLUMNS_SORTING = "ColumnsSorting";
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
                                      const char* settingsNamespace)
         : QAbstractTableModel(pParent),
-          TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
+          TrackModel(pTrackCollection->database(), settingsNamespace),
           m_pTrackCollection(pTrackCollection),
-          m_database(pTrackCollection->getDatabase()),
+          m_database(pTrackCollection->database()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_bInitialized(false),
           m_currentSearch("") {
@@ -424,24 +424,24 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;
     }
-        
+
     // There's no item to sort already, load from Settings last sort
     if (m_sortColumns.isEmpty()) {
         QString val = getModelSetting(COLUMNS_SORTING);
         QTextStream in(&val);
-        
+
         while (!in.atEnd()) {
             int ordI = -1;
             QString name;
-            
+
             in >> name >> ordI;
-            
+
             int col = fieldIndex(name);
             if (col < 0) continue;
-            
+
             Qt::SortOrder ord;
             ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
-            
+
             m_sortColumns << SortColumn(col, ord);
         }
     }
@@ -465,13 +465,13 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_sortColumns.removeLast();
         }
     }
-    
+
     // Write new sortColumns order to user settings
     QString val;
     QTextStream out(&val);
     for (SortColumn& sc : m_sortColumns) {
 
-        QString name;        
+        QString name;
         if (sc.m_column > 0 && sc.m_column < m_tableColumns.size()) {
             name = m_tableColumns[sc.m_column];
         } else {
@@ -489,7 +489,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     if (sDebug) {
         qDebug() << "setSort() sortColumns:" << val;
     }
-    
+
 
     // we have two selects for sorting, since keeping the select history
     // across the two selects is hard, we do this only for the trackSource
@@ -511,9 +511,8 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             QString field = m_tableColumns[column];
             QString sort_field = QString("%1.%2").arg(m_tableName, field);
             m_tableOrderBy.append(sort_field);
-        #ifdef __SQLITE3__
-            m_tableOrderBy.append(" COLLATE localeAwareCompare");
-        #endif
+            m_tableOrderBy.append(" COLLATE ");
+            m_tableOrderBy.append(DbConnection::kStringCollationFunc);
             m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
         }
         m_sortColumns.clear();
@@ -530,7 +529,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                     sort_field = "RANDOM()";
                 } else {
                     // we can't sort by other table columns here since primary sort is a track
-                    // column: skip   
+                    // column: skip
                     continue;
                 }
             } else {
@@ -544,10 +543,8 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
             m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
             m_trackSourceOrderBy.append(sort_field);
-
-    #ifdef __SQLITE3__
-            m_trackSourceOrderBy.append(" COLLATE localeAwareCompare");
-    #endif
+            m_trackSourceOrderBy.append(" COLLATE ");
+            m_trackSourceOrderBy.append(DbConnection::kStringCollationFunc);
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
                     " ASC" : " DESC");
             //qDebug() << m_trackSourceOrderBy;

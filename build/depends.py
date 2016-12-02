@@ -1099,6 +1099,7 @@ class MixxxCore(Feature):
                    "util/tapfilter.cpp",
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
+                   "util/db/dbconnection.cpp",
                    "util/db/dbid.cpp",
                    "util/db/fwdsqlquery.cpp",
                    "util/db/sqllikeescaper.cpp",

@@ -15,11 +15,7 @@
 #include "library/dao/analysisdao.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
-
-#ifdef __SQLITE3__
-typedef struct sqlite3_context sqlite3_context;
-typedef struct Mem sqlite3_value;
-#endif
+#include "util/db/dbconnection.h"
 
 // forward declaration(s)
 class Track;
@@ -35,13 +31,17 @@ class TrackCollection : public QObject {
   public:
     static const int kRequiredSchemaVersion;
 
-    TrackCollection(UserSettingsPointer pConfig);
-    virtual ~TrackCollection();
+    explicit TrackCollection(
+    		UserSettingsPointer pConfig);
+    ~TrackCollection() override;
 
     bool checkForTables();
 
     void resetLibaryCancellation();
-    QSqlDatabase& getDatabase();
+
+    QSqlDatabase& database() {
+    	return m_dbConnection.database();
+    }
 
     const CrateStorage& crates() const {
         return m_crates;
@@ -87,21 +87,9 @@ class TrackCollection : public QObject {
     void crateSummaryChanged(
             const QSet<CrateId>& crates);
 
-  protected:
-#ifdef __SQLITE3__
-    static void installSorting(QSqlDatabase &db);
-    static void sqliteLike(sqlite3_context *p,
-                          int aArgc,
-                          sqlite3_value **aArgv);
-    static int likeCompareLatinLow(
-            QString* pattern,
-            QString* string,
-            QChar esc);
-#endif // __SQLITE3__
-
   private:
     UserSettingsPointer m_pConfig;
-    QSqlDatabase m_db;
+    DbConnection m_dbConnection;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;
     PlaylistDAO m_playlistDao;
     CrateStorage m_crates;

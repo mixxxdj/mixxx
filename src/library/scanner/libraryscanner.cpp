@@ -124,7 +124,7 @@ void LibraryScanner::run() {
     Trace trace("LibraryScanner");
     if (m_pCollection != NULL) { // false only during tests
         if (!m_database.isValid()) {
-            m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(), "LIBRARY_SCANNER");
+            m_database = QSqlDatabase::cloneDatabase(m_pCollection->database(), "LIBRARY_SCANNER");
         }
 
         if (!m_database.isOpen()) {

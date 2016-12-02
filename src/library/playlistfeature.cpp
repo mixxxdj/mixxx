@@ -140,13 +140,13 @@ void PlaylistFeature::buildPlaylistList() {
         "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
         "WHERE Playlists.hidden = 0 "
         "GROUP BY Playlists.id;");
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(m_pTrackCollection->database());
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
 
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("PlaylistsCountsDurations");
     playlistTableModel.setSort(playlistTableModel.fieldIndex("sort_name"),
                                Qt::AscendingOrder);

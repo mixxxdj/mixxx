@@ -1,10 +1,11 @@
 #include "library/crate/cratestorage.h"
 
 #include "library/crate/crateschema.h"
-
 #include "library/dao/trackschema.h"
-#include "util/db/fwdsqlquery.h"
+
+#include "util/db/dbconnection.h"
 #include "util/db/sqltransaction.h"
+#include "util/db/fwdsqlquery.h"
 
 #include <QtDebug>
 
@@ -318,9 +319,11 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
 
 CrateSelectIterator CrateStorage::selectCrates() const {
     FwdSqlQuery query(m_database, QString(
-            "SELECT * FROM %1 ORDER BY %2 COLLATE localeAwareCompare").arg(
+            "SELECT * FROM %1 ORDER BY %2 COLLATE %3").arg(
             CRATE_TABLE,
-            CRATETABLE_NAME));
+            CRATETABLE_NAME,
+            DbConnection::kStringCollationFunc));
+
     if (query.execPrepared()) {
         return CrateSelectIterator(query);
     } else {
@@ -331,10 +334,11 @@ CrateSelectIterator CrateStorage::selectCrates() const {
 
 CrateSelectIterator CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
     FwdSqlQuery query(m_database, QString(
-            "SELECT * FROM %1 WHERE %2=:autoDjSource ORDER BY %3 COLLATE localeAwareCompare").arg(
+            "SELECT * FROM %1 WHERE %2=:autoDjSource ORDER BY %3 COLLATE %4").arg(
             CRATE_TABLE,
             CRATETABLE_AUTODJ_SOURCE,
-            CRATETABLE_NAME));
+            CRATETABLE_NAME,
+            DbConnection::kStringCollationFunc));
     query.bindValue(":autoDjSource", autoDjSource);
     if (query.execPrepared()) {
         return CrateSelectIterator(query);
@@ -346,9 +350,10 @@ CrateSelectIterator CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
 
 CrateSummarySelectIterator CrateStorage::selectCrateSummaries() const {
     FwdSqlQuery query(m_database, QString(
-            "SELECT * FROM %1 ORDER BY %2 COLLATE localeAwareCompare").arg(
+            "SELECT * FROM %1 ORDER BY %2 COLLATE %3").arg(
             CRATE_SUMMARY_VIEW,
-            CRATETABLE_NAME));
+            CRATETABLE_NAME,
+            DbConnection::kStringCollationFunc));
     if (query.execPrepared()) {
         return CrateSummarySelectIterator(query);
     } else {
