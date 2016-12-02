@@ -571,12 +571,14 @@
                         border: 2px solid #e74421;
                     }
 
-                    WBaseLibrary[showFocus="0"] {
-                        border-top: 2px solid transparent;
-                    }
-
-                    WBaseLibrary[showFocus="1"] {
-                        border-top: 2px solid #e74421;
+                    #LibrarySidebarButtons:focus,
+                    #LibrarySidebarButtons QToolButton:focus,
+                    #LibrarySidebarExpanded > QWidget:focus,
+                    #LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus,
+                    WLibrarySidebar:focus, 
+                    WLibrary:focus,
+                    QTableView:focus {
+                      border: 1px solid #e74421;
                     }
 
                     WLibraryBreadCrumb QLabel {
