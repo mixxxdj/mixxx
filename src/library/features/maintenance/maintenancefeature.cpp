@@ -19,7 +19,9 @@ MaintenanceFeature::MaintenanceFeature(UserSettingsPointer pConfig,
           kMissingTitle(tr("Missing Tracks")),
           m_pHiddenView(nullptr),
           m_pMissingView(nullptr),
-          m_pTab(nullptr) {
+          m_pTab(nullptr),
+          m_idExpandedHidden(-1),
+          m_idExpandedMissing(-1) {
 
 }
 
@@ -112,8 +114,7 @@ QWidget* MaintenanceFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
 
 void MaintenanceFeature::slotTabIndexChanged(int index) {
     QPointer<WTrackTableView> pTable = getFocusedTable();
-
-    DEBUG_ASSERT_AND_HANDLE(!pTable.isNull()) {
+    if (pTable.isNull()) {
         return;
     }
     pTable->setSortingEnabled(false);

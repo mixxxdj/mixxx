@@ -179,6 +179,7 @@ QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {
 WTrackTableView* LibraryFeature::createTableWidget(int paneId) {
     WTrackTableView* pTrackTableView = 
             new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, true);
+    m_trackTablesByPaneId[paneId] = pTrackTableView;
         
     WMiniViewScrollBar* pScrollBar = new WMiniViewScrollBar(pTrackTableView);
     pTrackTableView->setScrollBar(pScrollBar);
@@ -196,7 +197,6 @@ WTrackTableView* LibraryFeature::createTableWidget(int paneId) {
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    m_trackTablesByPaneId[paneId] = pTrackTableView;
     
     return pTrackTableView;
 }
