@@ -32,6 +32,7 @@
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
+#include "library/queryutil.h"
 #include "mixer/playermanager.h"
 #include "util/assert.h"
 #include "util/sandbox.h"
@@ -70,6 +71,7 @@ Library::Library(UserSettingsPointer pConfig,
     connect(&m_scanner, SIGNAL(scanFinished()),
             this, SLOT(slotRefreshLibraryModels()));
     
+    createTrackCache();
     createFeatures(pConfig, pPlayerManager);
 
     // On startup we need to check if all of the user's library folders are
@@ -623,6 +625,73 @@ LibraryPaneManager* Library::getFocusedPane() {
 LibraryPaneManager* Library::getPreselectedPane() {
     return m_panes.value(m_preselectedPane);
 }
+
+void Library::createTrackCache() {
+    QStringList columns;
+    columns << "library." + LIBRARYTABLE_ID
+            << "library." + LIBRARYTABLE_PLAYED
+            << "library." + LIBRARYTABLE_TIMESPLAYED
+            //has to be up here otherwise Played and TimesPlayed are not show
+            << "library." + LIBRARYTABLE_ALBUMARTIST
+            << "library." + LIBRARYTABLE_ALBUM
+            << "library." + LIBRARYTABLE_ARTIST
+            << "library." + LIBRARYTABLE_TITLE
+            << "library." + LIBRARYTABLE_YEAR
+            << "library." + LIBRARYTABLE_RATING
+            << "library." + LIBRARYTABLE_GENRE
+            << "library." + LIBRARYTABLE_COMPOSER
+            << "library." + LIBRARYTABLE_GROUPING
+            << "library." + LIBRARYTABLE_TRACKNUMBER
+            << "library." + LIBRARYTABLE_KEY
+            << "library." + LIBRARYTABLE_KEY_ID
+            << "library." + LIBRARYTABLE_BPM
+            << "library." + LIBRARYTABLE_BPM_LOCK
+            << "library." + LIBRARYTABLE_DURATION
+            << "library." + LIBRARYTABLE_BITRATE
+            << "library." + LIBRARYTABLE_REPLAYGAIN
+            << "library." + LIBRARYTABLE_FILETYPE
+            << "library." + LIBRARYTABLE_DATETIMEADDED
+            << "track_locations.location"
+            << "track_locations.fs_deleted"
+            << "track_locations.directory"
+            << "library." + LIBRARYTABLE_COMMENT
+            << "library." + LIBRARYTABLE_MIXXXDELETED
+            << "library." + LIBRARYTABLE_COVERART_SOURCE
+            << "library." + LIBRARYTABLE_COVERART_TYPE
+            << "library." + LIBRARYTABLE_COVERART_LOCATION
+            << "library." + LIBRARYTABLE_COVERART_HASH;
+
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QString tableName = "library_cache_view";
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM library "
+        "INNER JOIN track_locations ON library.location = track_locations.id")
+            .arg(tableName, columns.join(","));
+    qDebug() << queryString;
+    query.prepare(queryString);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Strip out library. and track_locations.
+    for (QStringList::iterator it = columns.begin();
+         it != columns.end(); ++it) {
+        if (it->startsWith("library.")) {
+            *it = it->replace("library.", "");
+        } else if (it->startsWith("track_locations.")) {
+            *it = it->replace("track_locations.", "");
+        }
+    }
+
+    QSharedPointer<BaseTrackCache> pBaseTrackCache(
+            new BaseTrackCache(
+                    m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true));
+
+    m_pTrackCollection->setTrackSource(pBaseTrackCache);
+}
+
+
 
 void Library::createFeatures(UserSettingsPointer pConfig,
                              PlayerManagerInterface* pPlayerManager) {

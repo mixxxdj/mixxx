@@ -153,6 +153,7 @@ public:
     LibraryPaneManager* getFocusedPane();
     LibraryPaneManager* getPreselectedPane();
     
+    void createTrackCache();
     void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
     
     void handleFocus();
