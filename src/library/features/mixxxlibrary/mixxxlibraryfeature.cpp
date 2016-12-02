@@ -194,6 +194,8 @@ void MixxxLibraryFeature::activate() {
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
+    if (!index.isValid()) return;
+
     QString query = index.data(AbstractRole::RoleQuery).toString();
     //qDebug() << "MixxxLibraryFeature::activateChild" << query;
     
@@ -207,6 +209,10 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     switchToFeature();
     showBreadCrumb(index.data(AbstractRole::RoleBreadCrumb).toString(), getIcon());
     restoreSearch(query);
+}
+
+void MixxxLibraryFeature::invalidateChild() {
+    m_lastClickedIndex = QModelIndex();
 }
 
 void MixxxLibraryFeature::onRightClickChild(const QPoint& pos, 

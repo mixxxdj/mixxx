@@ -215,6 +215,8 @@ WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*
     pMiniView->setTreeView(pSidebar);
     pMiniView->setModel(pModel);
     pSidebar->setVerticalScrollBar(pMiniView);
+    // invalidate probably stored QModelIndex
+    invalidateChild();
     
     connect(pSidebar, SIGNAL(pressed(const QModelIndex&)),
             this, SLOT(activateChild(const QModelIndex&)));

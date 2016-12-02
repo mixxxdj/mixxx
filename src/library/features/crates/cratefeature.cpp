@@ -250,6 +250,10 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     showTrackModel(m_pCrateTableModel);
 }
 
+void CrateFeature::invalidateChild() {
+    m_lastClickedIndex.clear();
+}
+
 void CrateFeature::activateCrate(int crateId) {
     //qDebug() << "CrateFeature::activateCrate()" << crateId;
     m_pCrateTableModel = getTableModel(m_featurePane);
@@ -274,7 +278,7 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
     menu.exec(globalPos);
 }
 
-void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int crateId = crateIdFromIndex(index);

@@ -172,6 +172,10 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     }
 }
 
+void BasePlaylistFeature::invalidateChild() {
+    m_lastChildClicked.clear();
+}
+
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
     if (playlistId != -1 && m_pPlaylistTableModel) {

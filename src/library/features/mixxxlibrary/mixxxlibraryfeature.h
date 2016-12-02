@@ -51,9 +51,10 @@ class MixxxLibraryFeature : public LibraryFeature {
     QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
     void onRightClickChild(const QPoint& pos, const QModelIndex&) override;
+    void invalidateChild() override;
     void refreshLibraryModels();
 
     void onSearch(const QString&) override;

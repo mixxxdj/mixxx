@@ -41,8 +41,10 @@ class BasePlaylistFeature : public LibraryFeature {
     void analyzeTracks(QList<TrackId>);
 
   public slots:
-    virtual void activate();
-    virtual void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
+    void invalidateChild() override;
+
     virtual void activatePlaylist(int playlistId);
     virtual void htmlLinkClicked(const QUrl& link);
 

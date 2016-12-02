@@ -84,6 +84,8 @@ class LibraryFeature : public QObject {
     virtual void activate() = 0;
     // called when you single click on a child item, e.g., a concrete playlist or crate
     virtual void activateChild(const QModelIndex&) {}
+    // called when the QModelIndex passed by activateChild() becomes invalid.
+    virtual void invalidateChild() {}
     // called when you right click on the root item
     virtual void onRightClick(const QPoint&) {}
     // called when you right click on a child item, e.g., a concrete playlist or crate
