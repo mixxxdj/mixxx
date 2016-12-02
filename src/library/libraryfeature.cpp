@@ -259,7 +259,9 @@ void LibraryFeature::restoreSearch(const QString& search) {
 }
 
 void LibraryFeature::restoreSaveButton() {
-    m_pLibrary->restoreSaveButton(m_featurePane);
+    if (m_featurePane >= 0) {
+        m_pLibrary->restoreSaveButton(m_featurePane);
+    }
 }
 
 void LibraryFeature::showBreadCrumb(TreeItem *pTree) {
