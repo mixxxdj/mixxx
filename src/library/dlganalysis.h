@@ -38,7 +38,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void selectAll();
     void analyze();
     void trackAnalysisFinished(int size);
-    void trackAnalysisProgress(int progress);
+    void trackAnalysisProgress(int worker, int progress);
     void trackAnalysisStarted(int size);
     void showRecentSongs();
     void showAllSongs();
@@ -60,6 +60,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     QButtonGroup m_songsButtonGroup;
     WAnalysisLibraryTableView* m_pAnalysisLibraryTableView;
     AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;
+    //Since we iterate it, it is better to provide a consistent order
+    QMap<int,int> m_percentages;
     int m_tracksInQueue;
     int m_currentTrack;
 };

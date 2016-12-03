@@ -32,23 +32,23 @@ public:
 public slots:
     // This slot is called from the decks and samplers when the track is loaded.
     void slotAnalyseTrack(TrackPointer tio);
-    void slotUpdateProgress(struct AnalyzerWorker::progress_info*);
+    void slotUpdateProgress(int, struct AnalyzerWorker::progress_info*);
     void slotNextTrack(AnalyzerWorker*);
     void slotPaused(AnalyzerWorker*);
     void slotWorkerFinished(AnalyzerWorker*);
     void slotErrorString(QString);
 
 signals:
-    void trackProgress(int progress);
+    void trackProgress(int worker, int progress);
     void trackDone(TrackPointer track);
     void trackFinished(int size);
     void queueEmpty();
 private:
 
     AnalyzerWorker* createNewWorker(bool batchJob);
-
     static AnalyzerManager* m_pAnalyzerManager;
     UserSettingsPointer m_pConfig;
+    int m_nextWorkerId;
     int m_MaxThreads;
     // The processing queue and associated mutex
     QQueue<TrackPointer> m_batchTrackQueue;
@@ -57,6 +57,8 @@ private:
     QList<AnalyzerWorker*> m_backgroundWorkers;
     QList<AnalyzerWorker*> m_foregroundWorkers;
     QList<AnalyzerWorker*> m_pausedWorkers;
+    //This list is used mostly so that isActive() can return the correct value
+    QList<AnalyzerWorker*> m_endingWorkers;
 };
 
 #endif /* ANALYZER_ANALYZERMANAGER_H */

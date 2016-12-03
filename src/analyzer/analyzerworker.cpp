@@ -35,13 +35,15 @@ namespace {
 // 0 for no progress during finalize
 // 1 to display the text "finalizing"
 // 100 for 10% step after finalize
+// NOTE: If this is changed, change woverview.cpp slotAnalyzerProgress().
 #define FINALIZE_PROMILLE 1
 
 // --- CONSTRUCTOR ---
-AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig, bool batchJob) :
+AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool batchJob) :
     m_pConfig(pConfig),
     m_analyzelist(),
     m_batchJob(batchJob),
+    m_workerIdx(workerIdx),
     m_sampleBuffer(kAnalysisSamplesPerBlock),
     m_exit(false),
     m_pauseRequested(false),
@@ -51,7 +53,7 @@ AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig, bool batchJob) :
 
 // --- DESTRUCTOR ---
 AnalyzerWorker::~AnalyzerWorker() {
-    qDebug << "Ending analyzer";
+    qDebug() << "Ending analyzer";
     // free resources
     m_progressInfo.sema.release();
  
@@ -194,8 +196,7 @@ bool AnalyzerWorker::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAud
 }
 
 void AnalyzerWorker::slotProcess() {
-    unsigned static id = 0; // the id of this thread, for debugging purposes
-    QThread::currentThread()->setObjectName(QString("AnalyzerWorker %1").arg(++id));
+    QThread::currentThread()->setObjectName(QString("AnalyzerWorker %1").arg(m_workerIdx));
 
     //The instantiation of the initializers needs to be done on the worker thread. 
     //cannot be done on constructor.
@@ -213,7 +214,7 @@ void AnalyzerWorker::slotProcess() {
         if (m_exit) {
             break;
         }
-        Event::start(QString("AnalyzerWorker %1 process").arg(id));
+        Event::start(QString("AnalyzerWorker %1 process").arg(m_workerIdx));
         Trace trace("AnalyzerWorker analyzing track");
 
         // Get the audio
@@ -262,7 +263,7 @@ void AnalyzerWorker::slotProcess() {
             emitUpdateProgress(1000); // 100%
             qDebug() << "Skipping track analysis because no analyzer initialized.";
         }
-        Event::end(QString("AnalyzerWorker %1 process").arg(id));
+        Event::end(QString("AnalyzerWorker %1 process").arg(m_workerIdx));
     }
     emit(workerFinished(this));
     emit(finished());
@@ -291,7 +292,7 @@ void AnalyzerWorker::emitUpdateProgress(int progress) {
         }
         m_progressInfo.current_track = m_currentTrack;
         m_progressInfo.track_progress = progress;
-        emit(updateProgress(&m_progressInfo));
+        emit(updateProgress(m_workerIdx, &m_progressInfo));
     }
 }
 

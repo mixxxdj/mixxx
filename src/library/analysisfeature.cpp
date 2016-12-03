@@ -109,8 +109,8 @@ void AnalysisFeature::activate() {
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     AnalyzerManager& analyzerManager = AnalyzerManager::getInstance(m_pConfig);
 
-    connect(&analyzerManager, SIGNAL(trackProgress(int)),
-            m_pAnalysisView, SLOT(trackAnalysisProgress(int)));
+    connect(&analyzerManager, SIGNAL(trackProgress(int, int)),
+            m_pAnalysisView, SLOT(trackAnalysisProgress(int, int)));
     connect(&analyzerManager, SIGNAL(trackFinished(int)),
             this, SLOT(slotProgressUpdate(int)));
     connect(&analyzerManager, SIGNAL(trackFinished(int)),
@@ -137,7 +137,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 void AnalysisFeature::slotProgressUpdate(int num_left) {
     int num_tracks = m_pAnalysisView->getNumTracks();
     if (num_left > 0) {
-        int currentTrack = num_tracks - num_left + 1;
+        int currentTrack = num_tracks - num_left;
         setTitleProgress(currentTrack, num_tracks);
     }
 }

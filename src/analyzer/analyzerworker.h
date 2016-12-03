@@ -17,23 +17,12 @@
 class Analyzer;
 class QThread;
 
-
-/*
-start_the_job{
-Worker* worker1 = new Worker(this);
-worker1.addAnalyzer(new xxx);
-connect(worker, SIGNAL(updateProgress(struct progress_info*)), this, SLOT(slotUpdateProgress(struct progress_info*)));
-connect(worker, SIGNAL(waitingForNextTrack(AnalyzerWorker*)), this, SLOT(slotNextTrack(AnalyzerWorker*)));
-connect(worker, SIGNAL(paused(AnalyzerWorker*)), this, SLOT(slotPaused(AnalyzerWorker*)));
-connect(worker, SIGNAL(error(QString)), this, SLOT(errorString(QString)));
-worker1->start();
-}
-*/
 class AnalyzerWorker : public QObject {
     Q_OBJECT
 
 public:
     struct progress_info {
+        int worker;
         TrackPointer current_track;
         int track_progress; // in 0.1 %
         QSemaphore sema;
@@ -42,7 +31,7 @@ public:
     //pConfig is stored and batchJob indicates if this worker is a analysisfeature job (batch)
     //or player job.
     // Call Qthread->start() when you are ready for the worker to start.
-    AnalyzerWorker(UserSettingsPointer pConfig, bool batchJob);
+    AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool batchJob);
     virtual ~AnalyzerWorker();
 
     //Called by the manager as a response to the waitingForNextTrack signal. and ONLY then.
@@ -63,7 +52,7 @@ public slots:
 
 signals:
     //Signal that informs about the progress of the analysis.
-    void updateProgress(struct AnalyzerWorker::progress_info*);
+    void updateProgress(int workerIdx, struct AnalyzerWorker::progress_info*);
     //Signal emited to the manager in order to receive a new track. The manager should call nextTrack();
     void waitingForNextTrack(AnalyzerWorker* worker);
     //Signal emited when the worker has effectively paused
@@ -86,6 +75,7 @@ private:
     UserSettingsPointer m_pConfig;
     QList<Analyzer*> m_analyzelist;
     bool m_batchJob;
+    int m_workerIdx;
     SampleBuffer m_sampleBuffer;
     TrackPointer m_currentTrack;
 

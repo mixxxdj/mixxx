@@ -39,6 +39,7 @@ AnalyzerManager& AnalyzerManager::getInstance(UserSettingsPointer pConfig) {
 
 AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig) :
     m_pConfig(pConfig),
+    m_nextWorkerId(0),
     m_batchTrackQueue(),
     m_prioTrackQueue(),
     m_backgroundWorkers(),
@@ -51,7 +52,6 @@ AnalyzerManager::~AnalyzerManager() {
 }
 
 bool AnalyzerManager::isActive(bool includeForeground) {
-    //I don't count foregroundWorkers because
     int total = (includeForeground ? m_foregroundWorkers.size() : 0) +
         m_backgroundWorkers.size() + m_pausedWorkers.size();
     return total > 0;
@@ -62,17 +62,20 @@ void AnalyzerManager::stop(bool shutdown) {
     while (it.hasNext()) {
         AnalyzerWorker* worker = it.next();
         worker->endProcess();
+        m_endingWorkers.append(worker);
     }
     QListIterator<AnalyzerWorker*> it3(m_pausedWorkers);
     while (it3.hasNext()) {
         AnalyzerWorker* worker = it3.next();
         worker->endProcess();
+        m_endingWorkers.append(worker);
     }
     if (shutdown) {
         QListIterator<AnalyzerWorker*> it2(m_foregroundWorkers);
         while (it2.hasNext()) {
             AnalyzerWorker* worker = it2.next();
             worker->endProcess();
+            m_endingWorkers.append(worker);
         }
         //TODO: ensure that they are all forcibly stopped.
     }
@@ -82,6 +85,8 @@ void AnalyzerManager::analyseTrackNow(TrackPointer tio) {
     if (m_batchTrackQueue.contains(tio)) {
         m_batchTrackQueue.removeAll(tio);
     }
+    //TODO: There's one scenario that we still miss: load on a deck a track that is currently
+    //being analyzed by the background worker. We cannot reuse the background worker, but we should discard its work.
     if (!m_prioTrackQueue.contains(tio)) {
         m_prioTrackQueue.append(tio);
         if (m_foregroundWorkers.size() < m_MaxThreads) {
@@ -114,19 +119,23 @@ void AnalyzerManager::slotAnalyseTrack(TrackPointer tio) {
 
 
 //slot
-void AnalyzerManager::slotUpdateProgress(struct AnalyzerWorker::progress_info* progressInfo) {
-    if (progressInfo->current_track) {
-        progressInfo->current_track->setAnalyzerProgress(
-            progressInfo->track_progress);
-        if (progressInfo->track_progress == 1000) {
-            emit(trackDone(progressInfo->current_track));
-        }
-        progressInfo->current_track.clear();
-    }
-    emit(trackProgress(progressInfo->track_progress / 10));
+void AnalyzerManager::slotUpdateProgress(int workerIdx, struct AnalyzerWorker::progress_info* progressInfo) {
+    //Updates to wave overview and player status text comes from a signal emited from the track by calling setAnalyzerProgress.
+    progressInfo->current_track->setAnalyzerProgress(progressInfo->track_progress);
+    //These update the Analysis feature and analysis view.
+    emit(trackProgress(workerIdx, progressInfo->track_progress / 10));
     if (progressInfo->track_progress == 1000) {
+        //Right now no one is listening to trackDone, but it's here just in case.
+        emit(trackDone(progressInfo->current_track));
+        //Report that a track analysis has finished, and how many are still remaining.
         emit(trackFinished(m_backgroundWorkers.size() + m_batchTrackQueue.size() - 1));
     }
+    //TODO: Which is the consequence of not calling clear?
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    progressInfo->current_track.clear();
+#else
+    progressInfo->current_track.reset();
+#endif
     progressInfo->sema.release();
 }
 
@@ -153,18 +162,24 @@ void AnalyzerManager::slotNextTrack(AnalyzerWorker* worker) {
     }
     else {
         worker->endProcess();
+        //Removing from active lists, so that "isActive" can return the correct value.
+        m_backgroundWorkers.removeAll(worker);
+        m_foregroundWorkers.removeAll(worker);
+        m_endingWorkers.append(worker);
+
         if (!m_pausedWorkers.isEmpty()) {
             AnalyzerWorker* otherworker = m_pausedWorkers.first();
             otherworker->resume();
             m_pausedWorkers.removeOne(otherworker);
         }
     }
-    //Check if all queues are empty.
+    //Check if background workers are empty.
     if (!isActive(false)) {
         emit(queueEmpty());
     }
 }
 void AnalyzerManager::slotWorkerFinished(AnalyzerWorker* worker) {
+    m_endingWorkers.removeAll(worker);
     m_backgroundWorkers.removeAll(worker);
     m_foregroundWorkers.removeAll(worker);
     m_pausedWorkers.removeAll(worker);
@@ -179,7 +194,7 @@ void AnalyzerManager::slotErrorString(QString errMsg) {
 
 AnalyzerWorker* AnalyzerManager::createNewWorker(bool batchJob) {
     QThread* thread = new QThread();
-    AnalyzerWorker* worker = new AnalyzerWorker(m_pConfig, batchJob);
+    AnalyzerWorker* worker = new AnalyzerWorker(m_pConfig, ++m_nextWorkerId, batchJob);
     worker->moveToThread(thread);
     //Auto startup and auto cleanup of worker and thread.
     connect(thread, SIGNAL(started()), worker, SLOT(slotProcess()));
@@ -187,12 +202,12 @@ AnalyzerWorker* AnalyzerManager::createNewWorker(bool batchJob) {
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     //Connect with manager.
-    connect(worker, SIGNAL(updateProgress(struct AnalyzerWorker::progress_info*)), this, SLOT(slotUpdateProgress(struct AnalyzerWorker::progress_info*)));
+    connect(worker, SIGNAL(updateProgress(int, struct AnalyzerWorker::progress_info*)), this, SLOT(slotUpdateProgress(int, struct AnalyzerWorker::progress_info*)));
     connect(worker, SIGNAL(waitingForNextTrack(AnalyzerWorker*)), this, SLOT(slotNextTrack(AnalyzerWorker*)));
     connect(worker, SIGNAL(paused(AnalyzerWorker*)), this, SLOT(slotPaused(AnalyzerWorker*)));
     connect(worker, SIGNAL(workerFinished(AnalyzerWorker*)), this, SLOT(slotWorkerFinished(AnalyzerWorker*)));
     connect(worker, SIGNAL(error(QString)), this, SLOT(slotErrorString(QString)));
-    thread->start();
+    thread->start(QThread::LowPriority);
     if (batchJob) {
         m_backgroundWorkers.append(worker);
     }

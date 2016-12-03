@@ -39,6 +39,7 @@ namespace {
             kAnalysisFramesPerBlock * kAnalysisChannels;
 } // anonymous namespace
 
+//DEPRECATED. Now we use AnalyzerManager and AnalyzerWorkers.
 AnalyzerQueue::AnalyzerQueue(TrackCollection* pTrackCollection)
         : m_aq(),
           m_exit(false),
