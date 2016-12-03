@@ -58,6 +58,7 @@ bool AnalyzerManager::isActive(bool includeForeground) {
 }
 
 void AnalyzerManager::stop(bool shutdown) {
+    m_batchTrackQueue.clear();
     QListIterator<AnalyzerWorker*> it(m_backgroundWorkers);
     while (it.hasNext()) {
         AnalyzerWorker* worker = it.next();
@@ -71,6 +72,7 @@ void AnalyzerManager::stop(bool shutdown) {
         m_endingWorkers.append(worker);
     }
     if (shutdown) {
+        m_prioTrackQueue.clear();
         QListIterator<AnalyzerWorker*> it2(m_foregroundWorkers);
         while (it2.hasNext()) {
             AnalyzerWorker* worker = it2.next();
@@ -183,6 +185,9 @@ void AnalyzerManager::slotWorkerFinished(AnalyzerWorker* worker) {
     m_backgroundWorkers.removeAll(worker);
     m_foregroundWorkers.removeAll(worker);
     m_pausedWorkers.removeAll(worker);
+    if (!isActive(false)) {
+        emit(queueEmpty());
+    }
 }
 void AnalyzerManager::slotPaused(AnalyzerWorker* worker) {
     //No useful code to execute right now.
