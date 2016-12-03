@@ -175,7 +175,7 @@ void DlgAnalysis::trackAnalysisProgress(int worker, int progress) {
         labelProgress->setText(text);
         //This isn't strictly necessary, but it is useful to remove foreground (player) worker analysis
         //which would accumulate otherwise. Another option is to not send this signal for foreground workers.
-        if (progress == 1000) {
+        if (progress == 100) {
             m_percentages.remove(worker);
         }
     }
