@@ -91,7 +91,12 @@ def get_git_branch_name():
     branch_name = os.popen(
         "git rev-parse --abbrev-ref HEAD").readline().strip()
     if branch_name == 'HEAD':
-        branch_name = '(no branch)'
+        # Use APPVEYOR_REPO_BRANCH variable if building on appveyor or (no branch) if unset
+        branch_name = os.getenv("APPVEYOR_REPO_BRANCH", '(no branch)')
+    # Add PR# to branch name if building a PR in appveyor to avoid package naming collision
+    PRnum = os.getenv("APPVEYOR_PULL_REQUEST_NUMBER")
+    if PRnum != None:
+        branch_name += ("-PR" + PRnum)
     return branch_name
 
 
