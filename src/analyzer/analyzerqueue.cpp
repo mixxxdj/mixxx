@@ -439,12 +439,12 @@ AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
         UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
-    ret->addAnalyzer(new AnalyzerWaveform(pConfig));
+    ret->addAnalyzer(new AnalyzerWaveform(pConfig, false));
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
-    ret->addAnalyzer(new AnalyzerBeats(pConfig));
+    ret->addAnalyzer(new AnalyzerBeats(pConfig, false));
     ret->addAnalyzer(new AnalyzerKey(pConfig));
 #endif
 
@@ -457,14 +457,12 @@ AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
         UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
-    if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"))) {
-        ret->addAnalyzer(new AnalyzerWaveform(pConfig));
-    }
+    ret->addAnalyzer(new AnalyzerWaveform(pConfig, true));
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
-    ret->addAnalyzer(new AnalyzerBeats(pConfig));
+    ret->addAnalyzer(new AnalyzerBeats(pConfig, true));
     ret->addAnalyzer(new AnalyzerKey(pConfig));
 #endif
 

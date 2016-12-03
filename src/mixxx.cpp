@@ -24,7 +24,7 @@
 #include <QUrl>
 #include <QtDebug>
 
-#include "analyzer/analyzerqueue.h"
+#include "analyzer/analyzermanager.h"
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"

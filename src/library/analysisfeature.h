@@ -17,7 +17,6 @@
 #include "treeitemmodel.h"
 #include "library/dlganalysis.h"
 
-class AnalyzerQueue;
 class TrackCollection;
 
 class AnalysisFeature : public LibraryFeature {
@@ -64,9 +63,6 @@ class AnalysisFeature : public LibraryFeature {
 
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
-    AnalyzerQueue* m_pAnalyzerQueue;
-    // Used to temporarily enable BPM detection in the prefs before we analyse
-    int m_iOldBpmEnabled;
     // The title returned by title()
     QVariant m_Title;
     TreeItemModel m_childModel;

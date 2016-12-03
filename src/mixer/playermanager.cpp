@@ -4,7 +4,7 @@
 
 #include <QMutexLocker>
 
-#include "analyzer/analyzerqueue.h"
+#include "analyzer/analyzermanager.h"
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
@@ -35,7 +35,6 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
-        m_pAnalyzerQueue(NULL),
         m_pCONumDecks(new ControlObject(
             ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
@@ -109,9 +108,6 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumPreviewDecks;
     delete m_pCONumMicrophones;
     delete m_pCONumAuxiliaries;
-    if (m_pAnalyzerQueue) {
-        delete m_pAnalyzerQueue;
-    }
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
@@ -123,28 +119,27 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
-    m_pAnalyzerQueue = AnalyzerQueue::createDefaultAnalyzerQueue(m_pConfig,
-            pLibrary->getTrackCollection());
+    AnalyzerManager& analyzerManager = AnalyzerManager::getInstance(m_pConfig);
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(Deck* pDeck, m_decks) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+            &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(Sampler* pSampler, m_samplers) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+            &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(PreviewDeck* pPreviewDeck, m_preview_decks) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+            &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 }
 
@@ -344,10 +339,10 @@ void PlayerManager::addDeckInner() {
     connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
             this, SIGNAL(noVinylControlInputConfigured()));
 
-    if (m_pAnalyzerQueue) {
-        connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
-    }
+    AnalyzerManager& analyzerManager = AnalyzerManager::getInstance(m_pConfig);
+    connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
+        &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+
 
     m_players[group] = pDeck;
     m_decks.append(pDeck);
@@ -398,10 +393,10 @@ void PlayerManager::addSamplerInner() {
 
     Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
                                     m_pEffectsManager, orientation, group);
-    if (m_pAnalyzerQueue) {
-        connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
-    }
+
+    AnalyzerManager& analyzerManager = AnalyzerManager::getInstance(m_pConfig);
+    connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
+                &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
 
     m_players[group] = pSampler;
     m_samplers.append(pSampler);
@@ -426,10 +421,10 @@ void PlayerManager::addPreviewDeckInner() {
     PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
                                                 m_pEffectsManager, orientation,
                                                 group);
-    if (m_pAnalyzerQueue) {
-        connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
-    }
+
+    AnalyzerManager& analyzerManager = AnalyzerManager::getInstance(m_pConfig);
+    connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
+                &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
 
     m_players[group] = pPreviewDeck;
     m_preview_decks.append(pPreviewDeck);

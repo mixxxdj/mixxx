@@ -10,8 +10,10 @@
 #include "track/track.h"
 #include "waveform/waveformfactory.h"
 
-AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :
+AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig, bool batch) :
         m_skipProcessing(false),
+        m_batch(batch),
+        m_pConfig(pConfig),
         m_waveformData(nullptr),
         m_waveformSummaryData(nullptr),
         m_stride(0, 0),
@@ -104,6 +106,10 @@ bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSam
 }
 
 bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
+    if (m_batch && m_pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"))) {
+        return true;
+    }
+
     ConstWaveformPointer pTrackWaveform = tio->getWaveform();
     ConstWaveformPointer pTrackWaveformSummary = tio->getWaveformSummary();
     ConstWaveformPointer pLoadedTrackWaveform;

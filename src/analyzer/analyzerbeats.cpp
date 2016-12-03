@@ -17,7 +17,7 @@
 #include "track/beatutils.h"
 #include "track/track.h"
 
-AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig)
+AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool batch)
         : m_pConfig(pConfig),
           m_pVamp(NULL),
           m_bPreferencesReanalyzeOldBpm(false),
@@ -27,7 +27,8 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig)
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_iMinBpm(0),
-          m_iMaxBpm(9999) {
+          m_iMaxBpm(9999),
+          m_batch(batch) {
 }
 
 AnalyzerBeats::~AnalyzerBeats() {
@@ -38,7 +39,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    bool bPreferencesBeatDetectionEnabled = static_cast<bool>(
+    bool bPreferencesBeatDetectionEnabled = m_batch || static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED)).toInt());
     if (!bPreferencesBeatDetectionEnabled) {

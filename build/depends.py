@@ -240,10 +240,10 @@ class Qt(Dependence):
     def enabled_imageformats(build):
         qt5 = Qt.qt5_enabled(build)
         qt_imageformats = [
-            'qgif', 'qico', 'qjpeg',  'qmng', 'qtga', 'qtiff', 'qsvg'
+            'qgif', 'qico', 'qjpeg',  'qtga', 'qtiff', 'qsvg'
         ]
         if qt5:
-            qt_imageformats.extend(['qdds', 'qicns', 'qjp2', 'qwbmp', 'qwebp'])
+            qt_imageformats.extend(['qdds', 'qicns', 'qwbmp', 'qwebp'])
         return qt_imageformats
 
     def satisfy(self):
@@ -737,7 +737,8 @@ class MixxxCore(Feature):
                    "engine/cachingreaderchunk.cpp",
                    "engine/cachingreaderworker.cpp",
 
-                   "analyzer/analyzerqueue.cpp",
+                   "analyzer/analyzermanager.cpp",
+                   "analyzer/analyzerworker.cpp",
                    "analyzer/analyzerwaveform.cpp",
                    "analyzer/analyzergain.cpp",
                    "analyzer/analyzerebur128.cpp",

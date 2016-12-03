@@ -140,7 +140,7 @@ struct WaveformStride {
 
 class AnalyzerWaveform : public Analyzer {
   public:
-    AnalyzerWaveform(UserSettingsPointer pConfig);
+    AnalyzerWaveform(UserSettingsPointer pConfig, bool batch);
     virtual ~AnalyzerWaveform();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
@@ -158,6 +158,8 @@ class AnalyzerWaveform : public Analyzer {
     void storeIfGreater(float* pDest, float source);
 
     bool m_skipProcessing;
+    bool m_batch;
+    UserSettingsPointer m_pConfig;
 
     WaveformPointer m_waveform;
     WaveformPointer m_waveformSummary;
