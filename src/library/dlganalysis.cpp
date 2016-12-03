@@ -165,7 +165,7 @@ void DlgAnalysis::trackAnalysisProgress(int worker, int progress) {
             if (add) {
                 perc+= "% ";
             }
-            perc += QString::number(percentage / 10);
+            perc += QString::number(percentage);
             add = true;
         }
         QString text = tr("Analyzing %1/%2 %3%").arg(
