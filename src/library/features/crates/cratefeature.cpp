@@ -499,12 +499,12 @@ void CrateFeature::buildCrateList() {
         "  crates.id AS id, "
         "  crates.name AS name, "
         "  LOWER(crates.name) AS sort_name, "
-        "  COUNT(library.id) AS count, "
+        "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) AS count, "
         "  SUM(library.duration) AS durationSeconds "
         "FROM crates "
         "LEFT JOIN crate_tracks ON crate_tracks.crate_id = crates.id "
         "LEFT JOIN library ON crate_tracks.track_id = library.id "
-        "WHERE crates.show=1 AND library.mixxx_deleted=0 "
+        "WHERE crates.show=1 "
         "GROUP BY crates.id;");
     QSqlQuery query(m_pTrackCollection->getDatabase());
     if (!query.exec(queryString)) {
