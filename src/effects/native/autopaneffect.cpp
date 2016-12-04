@@ -63,7 +63,7 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     period->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
-    period->setDefaultLinkInversion(EffectManifestParameter::LINK_INVERTED);
+    period->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     period->setMinimum(0.0625);     // 1 / 16
     period->setMaximum(129.0);      // 128 + 1
     period->setDefault(3.0);

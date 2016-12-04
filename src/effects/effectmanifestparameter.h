@@ -40,9 +40,9 @@ class EffectManifestParameter {
         NUM_LINK_TYPES
     };
 
-    enum LinkInversion {
-        LINK_NOT_INVERTED = 0,
-        LINK_INVERTED = 1
+    enum class LinkInversion {
+        NOT_INVERTED = 0,
+        INVERTED = 1
     };
 
     EffectManifestParameter()
@@ -50,7 +50,7 @@ class EffectManifestParameter {
               m_semanticHint(SEMANTIC_UNKNOWN),
               m_unitsHint(UNITS_UNKNOWN),
               m_defaultLinkType(LINK_NONE),
-              m_defaultLinkInversion(LINK_NOT_INVERTED),
+              m_defaultLinkInversion(LinkInversion::NOT_INVERTED),
               m_neutralPointOnScale(0.0),
               m_default(0),
               m_minimum(0),
