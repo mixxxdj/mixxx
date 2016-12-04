@@ -325,14 +325,12 @@ class MixxxBuild(object):
 
             print 'Automatically detecting Mac OS X SDK.'
 
-            # Mixxx >2.0 requires C++11 which is only available with libc++ and
-            # OS X 10.7 onwards.
+
+            # Returns a version like "10.8.0". We strip off the last ".0".
+            osx_min_version = util.get_osx_min_version()
+            assert osx_min_version.endswith('.0')
+            osx_min_version = osx_min_version[:len(osx_min_version) - 1]
             osx_stdlib = 'libc++'
-            sdk_version_default = '10.7'
-            # TODO(rryan): This flag is misnamed. It should be
-            # osx_version_min. We can use a newer SDK with a min OSX version of
-            # 10.7.
-            min_osx_version = Script.ARGUMENTS.get('osx_sdk_version_min', sdk_version_default)
 
             print "XCode developer directory:", os.popen('xcode-select -p').readline().strip()
 
@@ -359,7 +357,7 @@ class MixxxBuild(object):
                     print "Automatically selected OS X SDK:", sdk_path
 
                     common_flags = ['-isysroot', sdk_path,
-                                    '-mmacosx-version-min=%s' % min_osx_version,
+                                    '-mmacosx-version-min=%s' % osx_min_version,
                                     '-stdlib=%s' % osx_stdlib]
                     link_flags = [
                         '-Wl,-syslibroot,' + sdk_path,
