@@ -329,7 +329,7 @@ class MixxxBuild(object):
             # Returns a version like "10.8.0". We strip off the last ".0".
             osx_min_version = util.get_osx_min_version()
             assert osx_min_version.endswith('.0')
-            osx_min_version = osx_min_version[:len(osx_min_version) - 1]
+            osx_min_version = osx_min_version[:len(osx_min_version) - 2]
             osx_stdlib = 'libc++'
 
             print "XCode developer directory:", os.popen('xcode-select -p').readline().strip()
