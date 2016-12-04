@@ -149,7 +149,7 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
     m_pSoftTakeover->ignoreNext();
 }
 
-void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool force) {
+void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != NULL) {
         // Intermediate cast to integer is needed for VC++.
@@ -172,7 +172,7 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
                             neutral = 1.0 - neutral;
                         }
                         // Knob is already a split knob
-                        // Match to center position of Super knob
+                        // Match to center position of meta knob
                         if (parameter <= 0.5) {
                             parameter /= 0.5;
                             parameter *= neutral;

@@ -6,6 +6,7 @@
 #include <QString>
 
 #include "control/controlobject.h"
+#include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "effects/effect.h"
 #include "effects/effectparameterslot.h"
@@ -36,7 +37,7 @@ class EffectSlot : public QObject {
     EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
     EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
 
-    void onChainSuperParameterChanged(double parameter, bool force=false);
+    void onEffectMetaParameterChanged(double parameter, bool force=false);
 
     // ensures that Softtakover is bypassed for the following
     // ChainParameterChange. Uses for testing only
@@ -62,6 +63,7 @@ class EffectSlot : public QObject {
     void slotClear(double v);
     void slotEffectSelector(double v);
     void slotEffectEnabledChanged(bool enabled);
+    void slotEffectMetaParameter(double v);
 
   signals:
     // Indicates that the effect pEffect has been loaded into this
@@ -106,6 +108,7 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlPrevEffect;
     ControlObject* m_pControlEffectSelector;
     ControlObject* m_pControlClear;
+    ControlPotmeter* m_pControlMetaParameter;
     QList<EffectParameterSlotPointer> m_parameters;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 

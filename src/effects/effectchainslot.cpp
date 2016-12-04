@@ -68,6 +68,11 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
 
     connect(&m_channelStatusMapper, SIGNAL(mapped(const QString&)),
             this, SLOT(slotChannelStatusChanged(const QString&)));
+
+    // It is up to skins and controller mappings to do anything useful with this.
+    m_pControlExpanded = new ControlPushButton(ConfigKey(m_group, "expanded"));
+    m_pControlExpanded->setDefaultValue(false);
+    m_pControlExpanded->set(false);
 }
 
 EffectChainSlot::~EffectChainSlot() {
@@ -84,6 +89,7 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
     delete m_pControlChainSelector;
+    delete m_pControlExpanded;
 
     for (QMap<QString, ChannelInfo*>::iterator it = m_channelInfoByName.begin();
          it != m_channelInfoByName.end();) {
@@ -360,7 +366,7 @@ void EffectChainSlot::slotControlChainSuperParameter(double v) {
         m_pControlChainSuperParameter->set(v);
     }
     for (int i = 0; i < m_slots.size(); ++i) {
-        m_slots[i]->onChainSuperParameterChanged(v);
+        m_slots[i]->slotEffectMetaParameter(v);
     }
 }
 

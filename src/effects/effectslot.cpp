@@ -64,6 +64,12 @@ EffectSlot::EffectSlot(const QString& group,
         addEffectButtonParameterSlot();
     }
 
+    m_pControlMetaParameter = new ControlPotmeter(ConfigKey(m_group, "meta"), 0.0, 1.0);
+    connect(m_pControlMetaParameter, SIGNAL(valueChanged(double)),
+            this, SLOT(slotEffectMetaParameter(double)));
+    m_pControlMetaParameter->set(0.0);
+    m_pControlMetaParameter->setDefaultValue(0.0);
+
     clear();
 }
 
@@ -244,14 +250,26 @@ void EffectSlot::slotClear(double v) {
     }
 }
 
-void EffectSlot::onChainSuperParameterChanged(double parameter, bool force) {
+void EffectSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     for (int i = 0; i < m_parameters.size(); ++i) {
-        m_parameters[i]->onChainSuperParameterChanged(parameter, force);
+        m_parameters[i]->onEffectMetaParameterChanged(parameter, force);
     }
 }
 
 void EffectSlot::syncSofttakeover() {
     for (int i = 0; i < m_parameters.size(); ++i) {
         m_parameters[i]->syncSofttakeover();
+    }
+}
+
+void EffectSlot::slotEffectMetaParameter(double v) {
+    // Clamp to [0.0, 1.0]
+    if (v < 0.0 || v > 1.0) {
+        qWarning() << debugString() << "value out of limits";
+        v = math_clamp(v, 0.0, 1.0);
+        m_pControlMetaParameter->set(v);
+    }
+    for (int i = 0; i < m_parameters.size(); ++i) {
+        m_parameters[i]->onEffectMetaParameterChanged(v);
     }
 }
