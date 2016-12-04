@@ -115,14 +115,14 @@ class EffectManifestParameter {
     virtual LinkType defaultLinkType() const {
         return m_defaultLinkType;
     }
-    virtual void setDefaultLinkType(LinkType linkType) {
+    virtual void setDefaultLinkType(const LinkType linkType) {
         m_defaultLinkType = linkType;
     }
 
     virtual LinkInversion defaultLinkInversion() const {
         return m_defaultLinkInversion;
     }
-    virtual void setDefaultLinkInversion(LinkInversion linkInversion) {
+    virtual void setDefaultLinkInversion(const LinkInversion linkInversion) {
         m_defaultLinkInversion = linkInversion;
     }
 
