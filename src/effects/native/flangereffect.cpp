@@ -54,7 +54,7 @@ EffectManifest FlangerEffect::getManifest() {
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period->setDefault(50000.0);
+    period->setDefault(666666.6);
     period->setMinimum(50000.0);
     period->setMaximum(2000000.0);
 
