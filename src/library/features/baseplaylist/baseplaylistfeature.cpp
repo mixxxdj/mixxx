@@ -644,11 +644,11 @@ QString BasePlaylistFeature::getValidPlaylistName() const {
 QSet<int> BasePlaylistFeature::playlistIdsFromIndex(const QModelIndex &index) const {
     bool ok = false;
     int playlistId = index.data(AbstractRole::RoleDataPath).toInt(&ok);
-    if (!ok) {
-        return QSet<int>();
+    QSet<int> set;
+    if (ok) {
+        set.insert(playlistId);
     }
-    return QSet<int>::fromList({ playlistId });
-    
+    return set;
 }
 
 
