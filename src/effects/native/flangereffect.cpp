@@ -43,7 +43,7 @@ EffectManifest FlangerEffect::getManifest() {
     delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    delay->setDefault(50.0);
+    delay->setDefault(3333.3);
     delay->setMinimum(50.0);
     delay->setMaximum(10000.0);
 
