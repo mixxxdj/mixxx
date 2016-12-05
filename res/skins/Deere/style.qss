@@ -787,6 +787,10 @@ WWidget, QLabel {
   border-left:none;
 }
 
+#EffectChainGroupControlButton {
+  font: 10px;
+}
+
 #EffectUnit1 {
   border-left: 1px solid #222;
 }
@@ -829,9 +833,6 @@ WWidget, QLabel {
 #EffectKnob {
 }
 
-#EffectButton {
-}
-
 #EffectButtonParameter {
   margin-top: 3px;
 }
@@ -869,6 +870,10 @@ WWidget, QLabel {
   qproperty-alignment: 'AlignHCenter | AlignTop';
   font: 10px;
   margin-top: -2px;
+}
+
+#EffectButton {
+  font: 10px;
 }
 
 #EffectButtonLabel {
@@ -1083,16 +1088,8 @@ WStarRating {
   font-size: 15px;
 }
 
-#EffectUnit1 {
-}
-
-#EffectUnit2 {
-}
-
-#EffectUnit3 {
-}
-
-#EffectUnit4 {
+#EffectUnit1, #EffectUnit2 {
+  /*border-bottom: none;*/
 }
 
 #SampleDecksContainer {
@@ -1329,6 +1326,18 @@ WPushButton[value="2"]:hover {
                                       stop: 1 #0080BE);
 
     border: 0px solid #0080BE;
+}
+
+#EffectSlotParameterLinkInversionButton {
+    margin: 0px 4px 0px 4px;
+}
+
+#EffectSlotParameterLinkInversionButton[value="1"] {
+    background-color: #b90505;
+}
+
+#EffectSlotParameterLinkInversionButton[value="1"]:hover {
+    background-color: #e80808;
 }
 
 /* Special case "hide/show" button
