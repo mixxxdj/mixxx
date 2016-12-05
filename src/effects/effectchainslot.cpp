@@ -71,6 +71,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
 
     // It is up to skins and controller mappings to do anything useful with this.
     m_pControlExpanded = new ControlPushButton(ConfigKey(m_group, "expanded"));
+    m_pControlExpanded->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlExpanded->setDefaultValue(false);
     m_pControlExpanded->set(false);
 }
