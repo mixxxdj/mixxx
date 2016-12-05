@@ -13,13 +13,13 @@
     <MaximumSize>-1,50</MaximumSize>
     <Children>
 
+      <Template src="skin:effect_single_controls.xml"/>
+
       <EffectName>
         <EffectRack><Variable name="EffectRack"/></EffectRack>
         <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
         <Effect><Variable name="Effect"/></Effect>
       </EffectName>
-
-      <Template src="skin:effect_single_controls.xml"/>
 
     </Children>
   </WidgetGroup>

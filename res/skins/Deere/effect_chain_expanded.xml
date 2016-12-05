@@ -18,6 +18,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
+            <ObjectName>EffectUnitEffects</ObjectName>
             <Layout>vertical</Layout>
             <Children>
 
@@ -40,12 +41,6 @@
             <Layout>vertical</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>
-              <Template src="skin:knob_with_label.xml">
-                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-                <SetVariable name="control">super1</SetVariable>
-                <SetVariable name="label">Super</SetVariable>
-                <SetVariable name="color">yellow</SetVariable>
-              </Template>
 
               <Template src="skin:knob_with_label.xml">
                 <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
@@ -53,6 +48,14 @@
                 <SetVariable name="label">Mix</SetVariable>
                 <SetVariable name="color">blue</SetVariable>
               </Template>
+
+              <Template src="skin:knob_with_label.xml">
+                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+                <SetVariable name="control">super1</SetVariable>
+                <SetVariable name="label">Super</SetVariable>
+                <SetVariable name="color">yellow</SetVariable>
+              </Template>
+
             </Children>
           </WidgetGroup>
         </Children>
