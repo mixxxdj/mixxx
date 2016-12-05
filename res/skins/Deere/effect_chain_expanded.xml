@@ -19,6 +19,7 @@
         <Children>
           <WidgetGroup>
             <ObjectName>EffectUnitEffects</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 

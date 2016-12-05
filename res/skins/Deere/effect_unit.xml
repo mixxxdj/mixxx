@@ -10,9 +10,9 @@
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,f</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <MinimumSize>-1,50</MinimumSize>
-    <MaximumSize>-1,150</MaximumSize>
+    <MaximumSize>-1,166</MaximumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitGroupControls</ObjectName>
