@@ -11,16 +11,24 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <Size>40f,30f</Size>
+    <Size>55f,36f</Size>
     <Children>
-      <Template src="skin:small_knob.xml">
-        <SetVariable name="TooltipId">EffectSlot_parameter</SetVariable>
-        <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
-        <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
-        <SetVariable name="color"><Variable name="color"/></SetVariable>
-      </Template>
+
+      <WidgetGroup>
+        <ObjectName>EffectParameterSmallKnob</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:small_knob.xml">
+            <SetVariable name="TooltipId">EffectSlot_parameter</SetVariable>
+            <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
+            <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
+            <SetVariable name="color"><Variable name="color"/></SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
       <EffectParameterName>
-        <Size>40f,10f</Size>
+        <Size>50f,12f</Size>
         <ObjectName>EffectKnobLabel</ObjectName>
         <EffectRack><Variable name="EffectRack"/></EffectRack>
         <EffectUnit><Variable name="EffectUnit"/></EffectUnit>

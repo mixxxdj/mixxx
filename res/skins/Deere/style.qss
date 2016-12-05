@@ -808,6 +808,25 @@ WWidget, QLabel {
   font-size: 11px;
 }
 
+#EffectMetaKnobControls > WPushButton {
+  qproperty-alignment: 'AlignHCenter';
+}
+
+#EffectUnitGroupControlsLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+#EffectUnitGroupControlsRight {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#EffectMetaKnob, WEffect {
+  font-size: 12px;
+  background-color: none;
+  border: none;
+  qproperty-alignment: 'AlignHCenter';
+}
+
 #EffectKnob {
 }
 
@@ -841,11 +860,15 @@ WWidget, QLabel {
     qproperty-layoutSpacing: 7;
 }
 
+#EffectParameterSmallKnob {
+  qproperty-alignment: 'AlignHCenter | AlignTop';
+}
+
 #EffectKnobLabel {
   background-color: none;
   border: none;
   qproperty-alignment: 'AlignHCenter | AlignTop';
-  font: 8px;
+  font: 10px;
   margin-top: -2px;
 }
 
@@ -853,7 +876,7 @@ WWidget, QLabel {
   background-color: none;
   border: none;
   qproperty-alignment: 'AlignHCenter';
-  font: 8px;
+  font: 10px;
   margin-top: 1px;
 }
 
@@ -1009,9 +1032,6 @@ WStarRating {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                     stop: 0 #333333,
                                     stop: 1.0 #333333);
-}
-
-#EffectRackExpanded, #EffectRackCollapsed {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
