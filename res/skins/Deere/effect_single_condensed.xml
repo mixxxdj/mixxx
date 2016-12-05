@@ -1,0 +1,27 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A condensed single effect.
+  Variables:
+    control: The control to connect to.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <MinimumSize>-1,50</MinimumSize>
+    <MaximumSize>-1,50</MaximumSize>
+    <Children>
+
+      <EffectName>
+        <EffectRack><Variable name="EffectRack"/></EffectRack>
+        <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+        <Effect><Variable name="Effect"/></Effect>
+      </EffectName>
+
+      <Template src="skin:effect_single_controls.xml"/>
+
+    </Children>
+  </WidgetGroup>
+
+</Template>

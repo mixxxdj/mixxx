@@ -12,6 +12,8 @@
     <Layout>horizontal</Layout>
     <Children>
 
+      <Template src="skin:effect_meta_knob.xml"/>
+
       <Template src="skin:left_2state_button.xml">
         <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
         <SetVariable name="ObjectName"></SetVariable>
@@ -41,7 +43,7 @@
 
       <EffectName>
         <MinimumSize>50,-1</MinimumSize>
-        <MaximumSize>50,-1</MaximumSize>
+        <MaximumSize>100,-1</MaximumSize>
         <EffectRack><Variable name="EffectRack"/></EffectRack>
         <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
         <Effect><Variable name="Effect"/></Effect>
