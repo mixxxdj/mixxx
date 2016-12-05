@@ -21,7 +21,7 @@
             <ObjectName>EffectUnitsRow</ObjectName>
             <Layout>horizontal</Layout>
             <MinimumSize>-1,50</MinimumSize>
-            <MaximumSize>-1,150</MaximumSize>
+            <MaximumSize>-1,166</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Children>
               <Template src="skin:effect_unit.xml">
