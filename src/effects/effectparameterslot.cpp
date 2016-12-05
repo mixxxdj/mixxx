@@ -225,7 +225,7 @@ void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool fo
             parameter = 1.0 - parameter;
         }
 
-        //qDebug() << "onChainParameterChanged" << parameter;
+        // qDebug() << "onEffectMetaParameterChanged" << parameter;
         if (force) {
             m_pControlValue->setParameterFrom(parameter, NULL);
             // This ensures that softtakover is in sync for following updates

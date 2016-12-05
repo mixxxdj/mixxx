@@ -367,7 +367,7 @@ void EffectChainSlot::slotControlChainSuperParameter(double v) {
         m_pControlChainSuperParameter->set(v);
     }
     for (int i = 0; i < m_slots.size(); ++i) {
-        m_slots[i]->slotEffectMetaParameter(v);
+        m_slots[i]->setMetaParameter(v);
     }
 }
 
