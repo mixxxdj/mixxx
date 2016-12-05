@@ -21,7 +21,11 @@ void WEffectParameterBase::setEffectParameterSlot(
 
 void WEffectParameterBase::parameterUpdated() {
     if (m_pEffectParameterSlot) {
-        setText(m_pEffectParameterSlot->name());
+        if (! m_pEffectParameterSlot->shortName().isEmpty()) {
+            setText(m_pEffectParameterSlot->shortName());
+        } else {
+            setText(m_pEffectParameterSlot->name());
+        }
         setBaseTooltip(m_pEffectParameterSlot->description());
     } else {
         setText(tr("None"));
