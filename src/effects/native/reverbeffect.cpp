@@ -26,6 +26,7 @@ EffectManifest ReverbEffect::getManifest() {
     EffectManifestParameter* time = manifest.addParameter();
     time->setId("bandwidth");
     time->setName(QObject::tr("Bandwidth"));
+    time->setName(QObject::tr("Band"));
     time->setDescription(QObject::tr("Higher bandwidth values cause more "
             "bright (high-frequency) tones to be included"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
