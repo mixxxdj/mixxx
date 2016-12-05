@@ -14,8 +14,8 @@
           <Template src="skin:effect_single_controls.xml"/>
 
           <EffectName>
-            <MinimumSize>150,-1</MinimumSize>
-            <MaximumSize>150,-1</MaximumSize>
+            <MinimumSize>80,-1</MinimumSize>
+            <MaximumSize>80,-1</MaximumSize>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>

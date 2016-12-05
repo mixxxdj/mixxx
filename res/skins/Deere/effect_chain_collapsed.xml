@@ -11,8 +11,8 @@
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
-    <MinimumSize>-1,50</MinimumSize>
-    <MaximumSize>-1,150</MaximumSize>
+    <MinimumSize>-1,55</MinimumSize>
+    <MaximumSize>-1,55</MaximumSize>
     <Children>
 
       <WidgetGroup>
@@ -20,31 +20,45 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,max</SizePolicy>
         <Children>
-          <Template src="skin:knob_with_label.xml">
-            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-            <SetVariable name="control">mix</SetVariable>
-            <SetVariable name="label">Mix</SetVariable>
-            <SetVariable name="color">blue</SetVariable>
-          </Template>
 
-          <Template src="skin:knob_with_label.xml">
-            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-            <SetVariable name="control">super1</SetVariable>
-            <SetVariable name="label">Super</SetVariable>
-            <SetVariable name="color">yellow</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <ObjectName>EffectUnitEffects</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:effect_single_condensed.xml">
+                <SetVariable name="Effect">1</SetVariable>
+              </Template>
 
-          <Template src="skin:effect_single_condensed.xml">
-            <SetVariable name="Effect">1</SetVariable>
-          </Template>
+              <Template src="skin:effect_single_condensed.xml">
+                <SetVariable name="Effect">2</SetVariable>
+              </Template>
 
-          <Template src="skin:effect_single_condensed.xml">
-            <SetVariable name="Effect">2</SetVariable>
-          </Template>
+              <Template src="skin:effect_single_condensed.xml">
+                <SetVariable name="Effect">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
 
-          <Template src="skin:effect_single_condensed.xml">
-            <SetVariable name="Effect">3</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <ObjectName>EffectUnitControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:knob_with_label.xml">
+                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+                <SetVariable name="control">super1</SetVariable>
+                <SetVariable name="label">Super</SetVariable>
+                <SetVariable name="color">yellow</SetVariable>
+              </Template>
+
+              <Template src="skin:knob_with_label.xml">
+                <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+                <SetVariable name="control">mix</SetVariable>
+                <SetVariable name="label">Mix</SetVariable>
+                <SetVariable name="color">blue</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
 

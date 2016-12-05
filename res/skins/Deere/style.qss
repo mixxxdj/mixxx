@@ -1062,7 +1062,7 @@ WStarRating {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
-#EffectUnitParameters {
+#EffectUnitEffects, #EffectUnitParameters {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   qproperty-layoutSpacing: 2;
