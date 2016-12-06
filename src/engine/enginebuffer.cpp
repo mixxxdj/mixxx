@@ -780,6 +780,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         double speed = m_pRateControl->calculateSpeed(
                 baserate, tempoRatio, paused, iBufferSize, &is_scratching, &is_reverse);
 
+        // The cue indicator may change when scratch state is changed
+        if (is_scratching != m_scratching_old) {
+            m_pCueControl->updateIndicators();
+        }
+
         bool useIndependentPitchAndTempoScaling = false;
 
         // TODO(owen): Maybe change this so that rubberband doesn't disable
