@@ -151,7 +151,8 @@ var Control = function (options) {
     if (typeof this.unshift === 'function') {
         this.unshift();
     }
-    // This cannot be in the prototype; it must be unique to each instance.
+    // These cannot be in the prototype; they must be unique to each instance.
+    this.isShifted = false;
     this.connections = [];
 
     if (this.outConnect && this.group !== undefined && this.outCo !== undefined) {
@@ -217,6 +218,9 @@ Control.prototype = {
     shiftChannel: false,
     shiftControl: false,
     send: function (value) {
+        if (this.midi === undefined) {
+            return;
+        }
         midi.sendShortMsg(this.midi[0], this.midi[1], value);
         if (this.sendShifted) {
             if (this.shiftChannel) {
@@ -690,6 +694,178 @@ Deck.prototype = new ControlContainer({
     }
 });
 
+/**
+This EffectUnit ControlContainer provides Controls designed to be mapped to the common arrangement
+of 3 knobs with 3 buttons for controlling effects, plus a knob or encoder for dry/wet and an
+additional button to toggle the effect unit between collapsed and expanded modes. Turning the
+dry/wet knob with shift controls the superknob for the whole effect unit. The Controls provided are:
+
+dryWetKnob (CC)
+expandButton (Button)
+toggleButton[1-4] (Button)
+buttons[1-3] (Buttons)
+knobs[1-3] (CCs)
+
+When the effect unit is collapsed, the knobs control the metaknob of each effect in the unit.
+The buttons control whether each effect is enabled. Pressing a button with shift switches to the
+next available effect.
+
+When the effect unit is expanded, the knobs control the first 3 parameters of one effect in the
+effect unit. The effect that the knobs manipulate is selected by pressing one of the buttons.
+Pressing a button with shift toggles whether the corresponding effect is enabled.
+
+This EffectUnit provides Buttons to toggle whether the effect unit is enabled for a deck,
+but not many controllers have buttons for that. If yours does not, you should probably enable
+effect units for specific decks in your script's init() function.
+
+To map an EffectUnit for your controller, call the constructor with the unit number of the effect
+unit as the only argument. Then, set the midi attributes for the expandButton, buttons[1-3], and
+optionally toggleButton[1-3] (setting the midi attributes for the CCs is not necessary because
+they do not send any output). After the midi attributes are set up, call
+EffectUnit.expandButton.trigger() then EffectUnit.reconnectControls(). For example:
+
+MyController.effectUnit = new EffectUnit(1);
+MyController.effectUnit.buttons[1].midi = [0x90, 0x01];
+MyController.effectUnit.buttons[2].midi = [0x90, 0x02];
+MyController.effectUnit.buttons[3].midi = [0x90, 0x03];
+MyController.effectUnit.expandButton.midi = [0x90, 0x04];
+MyController.effectUnit.expandButton.trigger();
+MyController.effectUnit.reconnectControls();
+**/
+EffectUnit = function (unitNumber) {
+    this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
+
+    this.dryWetKnob = new CC({
+        group: this.group,
+        unshift: function () {
+            this.inCo = 'mix';
+            // for soft takeover
+            this.disconnect();
+            this.connect();
+        },
+        shift: function () {
+            this.inCo = 'super1';
+            // for soft takeover
+            this.disconnect();
+            this.connect();
+        },
+        outConnect: false,
+    });
+
+    this.toggleButton = new ControlContainer();
+    for (var d = 1; d <= 4; d++) {
+      this.toggleButton[d] = new Button({
+          group: this.group,
+          co: 'group_[Channel' + d + ']_enable',
+          outConnect: false,
+      });
+    }
+
+    var eu = this;
+    this.activeEffect = 1;
+    this.buttons = new ControlContainer();
+    this.knobs = new ControlContainer();
+    for (var d = 1; d <= 3; d++) {
+        this.knobs[d] = new CC({
+            number: d,
+            collapse: function () {
+                this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.number + ']';
+                this.inCo = 'meta';
+            },
+            expand: function () {
+                this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + eu.activeEffect + ']';
+                this.inCo = 'parameter' + this.number;
+            },
+            outConnect: false,
+        });
+        this.buttons[d] = new Button({
+            number: d,
+            collapse: function () {
+                this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.number + ']';
+                this.input = Button.prototype.input;
+                this.unshift = function () {
+                    this.isShifted = false;
+                    this.disconnect();
+                    this.inCo = 'enabled';
+                    this.outCo = 'enabled';
+                    this.onlyOnPress = true;
+                    this.connect();
+                    this.trigger();
+                };
+                this.shift = function () {
+                    this.isShifted = true;
+                    this.inCo = 'next_effect';
+                    this.onlyOnPress = false;
+                };
+                if (this.isShifted) {
+                    this.shift();
+                } else {
+                    this.unshift();
+                }
+            },
+            expand: function () {
+                this.unshift = function () {
+                    this.isShifted = false;
+                    this.input = function (channel, control, value, status, group) {
+                        if (value > 0) {
+                            eu.activeEffect = this.number;
+                            eu.knobs.forEachControl(function (c) {
+                                if (typeof c.expand === 'function') {
+                                    c.expand(); // to set new group property
+                                }
+                            });
+                            eu.buttons.forEachControl(function (c) {
+                                c.disconnect();
+                                if (c.number === eu.activeEffect) {
+                                    c.send(c.on);
+                                } else {
+                                    c.send(c.off);
+                                }
+                            });
+                        }
+                    };
+                };
+                this.shift = function () {
+                    this.isShifted = true;
+                    this.input = Button.prototype.input;
+                    this.inCo = 'enabled';
+                    this.onlyOnPress = true;
+                };
+                if (this.isShifted) {
+                    this.shift();
+                } else {
+                    this.unshift();
+                    this.input(null, null, this.number === eu.activeEffect, null, null);
+                }
+            },
+            outConnect: false
+        });
+    }
+
+    this.expandButton = new Button({
+        group: this.group,
+        co: 'expanded',
+        output: function (value, group, control) {
+            this.send((value > 0) ? this.on : this.off);
+            if (value === 0) {
+                eu.forEachControl(function (c) {
+                    if (typeof c.collapse === 'function') {
+                        c.collapse();
+                    }
+                });
+            } else {
+                eu.forEachControl(function (c) {
+                    if (typeof c.expand === 'function') {
+                        c.expand();
+                    }
+                });
+            }
+        },
+        outConnect: false
+    });
+};
+EffectUnit.prototype = new ControlContainer();
+
 var P32 = {};
 
 P32.init = function () {
@@ -700,6 +876,12 @@ P32.init = function () {
 
     P32.leftDeck = new P32.Deck([1,3], 1);
     P32.rightDeck = new P32.Deck([2,4], 2);
+
+    engine.setValue('[EffectRack1_EffectUnit1]', 'group_[Channel1]_enable', 1);
+    engine.setValue('[EffectRack1_EffectUnit1]', 'group_[Channel3]_enable', 1);
+
+    engine.setValue('[EffectRack1_EffectUnit2]', 'group_[Channel2]_enable', 1);
+    engine.setValue('[EffectRack1_EffectUnit2]', 'group_[Channel4]_enable', 1);
 
     if (engine.getValue('[Master]', 'num_samplers') < 32) {
         engine.setValue('[Master]', 'num_samplers', 32);
@@ -759,15 +941,15 @@ P32.slipButton = new Button({
     midi: [0x90, 0x03],
     input: function (channel, control, value, status, group) {
         if (value === 127) {
-                if (P32.leftDeck.isShifted) {
-                    P32.leftDeck.toggle();
-                } else if (P32.rightDeck.isShifted) {
-                    P32.rightDeck.toggle();
-                } else {
-                    for (var i = 1; i <= 4; i++) {
-                        script.toggleControl('[Channel' + i + ']', 'slip_enabled');
-                    }
+            if (P32.leftDeck.isShifted) {
+                P32.leftDeck.toggle();
+            } else if (P32.rightDeck.isShifted) {
+                P32.rightDeck.toggle();
+            } else {
+                for (var i = 1; i <= 4; i++) {
+                    script.toggleControl('[Channel' + i + ']', 'slip_enabled');
                 }
+            }
         }
     },
     connect: function () {
@@ -1035,155 +1217,40 @@ P32.Deck = function (deckNumbers, channel) {
         }
     });
 
-    this.effectUnit = new P32.EffectUnit(deckNumbers[0]);
-};
-P32.Deck.prototype = new Deck();
-
-P32.EffectUnit = function (unitNumber) {
-    this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
-
-    this.dryWetKnob = new CC({
-        midi: [0xB0 + unitNumber, 0x09],
-        unshift: function () {
-            this.inCo = 'mix';
-            // for soft takeover
-            this.disconnect();
-            this.connect();
-        },
-        shift: function () {
-            this.inCo = 'super1';
-            // for soft takeover
-            this.disconnect();
-            this.connect();
-        },
-
-    // ON/MACRO buttons
-    this.deckEnableButton = [];
-    for (var d = 1; d <= 4; d++) {
-        this.deckEnableButton[d] = new Button({
-            midi: [0x90 + unitNumber,
-                   0x02 + d],
-            co: 'group_[Channel' + d + ']_enable',
-        });
-    }
-
-    this.toggleHeadphones = new Button({
-        midi: [0x90 + unitNumber, 0x34],
+    this.effectUnit = new EffectUnit(deckNumbers[0]);
+    this.effectUnit.buttons[1].midi = [0x90 + channel, 0x03];
+    this.effectUnit.buttons[2].midi = [0x90 + channel, 0x04];
+    this.effectUnit.buttons[3].midi = [0x90 + channel, 0x05];
+    this.effectUnit.expandButton.midi = [0x90 + channel, 0x06];
+    this.effectUnit.expandButton.trigger();
+    this.effectUnit.toggleHeadphones = new Button({
+        midi: [0x90 + channel, 0x34],
         co: 'group_[Headphone]_enable',
         on: P32.padColors.red,
         off: P32.padColors.blue
     });
-    this.toggleMaster = new Button({
-        midi: [0x90 + unitNumber, 0x35],
+    this.effectUnit.toggleMaster = new Button({
+        midi: [0x90 + channel, 0x35],
         co: 'group_[Master]_enable',
         on: P32.padColors.red,
         off: P32.padColors.blue
     });
-    this.toggleMicrophone = new Button({
-        midi: [0x90 + unitNumber, 0x36],
+    this.effectUnit.toggleMicrophone = new Button({
+        midi: [0x90 + channel, 0x36],
         co: 'group_[Microphone]_enable',
         on: P32.padColors.red,
         off: P32.padColors.blue
     });
-    this.toggleAuxiliary = new Button({
-        midi: [0x90 + unitNumber, 0x37],
+    this.effectUnit.toggleAuxiliary = new Button({
+        midi: [0x90 + channel, 0x37],
         co: 'group_[Auxiliary1]_enable',
         on: P32.padColors.red,
         off: P32.padColors.blue
     });
-
-    this.reconnectControls(function (control) {
-        if (control.group === undefined) {
-            control.group = this.group;
-            control.on = P32.padColors.red;
+    this.effectUnit.reconnectControls(function (c) {
+        if (c.group === undefined) {
+            c.group = this.group;
         }
     });
-
-    var EffectRow = function (effectNumber) {
-        var ef = this;
-        this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + effectNumber + ']';
-        this.toggle = new Button({
-            midi: [0x90 + unitNumber,
-                   P32.PadNumToMIDIControl(effectNumber * 4 - 3, 1)],
-            co: 'enabled',
-            unshift: function () { this.input = Button.prototype.input; },
-            inputShifted: function (channel, control, value, status, group) {
-                if (value === 127) {
-                    var p = engine.getValue(ef.group, 'num_parameters');
-                    for (var i = 1; i <= p; i++) {
-                        engine.setValue(ef.group, 'parameter' + i + '_set_default', 1);
-                    }
-                    var b = engine.getValue(ef.group, 'num_button_parameters');
-                    for (var n = 1; n <= b; n++) {
-                        engine.setValue(ef.group, 'button_parameter' + n, 0);
-                    }
-                }
-            },
-            shift: function () { this.input = this.inputShifted; },
-            on: P32.padColors.red,
-        });
-
-        this.previous = new Button({
-            midi: [0x90 + unitNumber,
-                   P32.PadNumToMIDIControl(effectNumber * 4 - 2, 1)],
-            inCo: 'prev_effect',
-            onlyOnPress: false
-        });
-        this.next = new Button({
-            midi: [0x90 + unitNumber,
-                   P32.PadNumToMIDIControl(effectNumber * 4 - 1, 1)],
-            inCo: 'next_effect',
-            onlyOnPress: false
-        });
-
-        this.reconnectControls(function (control) {
-            if (control.group === undefined) {
-                control.group = this.group;
-            }
-        });
-
-        this.previous.send(P32.padColors.purple);
-        this.next.send(P32.padColors.purple);
-    };
-    EffectRow.prototype = new ControlContainer();
-
-    this.effect = [];
-    for (var e = 1; e <= 3; e++) {
-        this.effect[e] = new EffectRow(e);
-    }
-
-    this.activeEffect = new ControlContainer();
-    var ae = this.activeEffect;
-    ae.number = 1;
-    ae.parameterKnob = [];
-    ae.switchEffectButton = []; 
-    for (var p = 1; p <= 3; p++) {
-        ae.parameterKnob[p] = new CC({
-            midi: [0xB0 + unitNumber, 0x05 + p],
-            inCo: 'parameter' + p
-        });
-        ae.switchEffectButton[p] = new Button({
-            midi: [0x90 + unitNumber,
-                   P32.PadNumToMIDIControl(p * 4, 1)],
-            on: P32.padColors.blue,
-            number: p,
-            input: function (channel, control, value, status, group) {
-                if (value > 0) {
-                    ae.number = this.number;
-                    ae.reconnectControls(function (control) {
-                        control.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + ae.number + ']';
-                    });
-                }
-            },
-            trigger: function (value, group, control) {
-                // called by ae.reconnectControls() in this.input()
-                this.send((this.number === ae.number) ? this.on : this.off);
-            },
-            disconnect: function () {},
-            connect: function () {},
-            sendShifted: true
-        });
-    }
-    ae.switchEffectButton[1].input(null, null, 127, null, null);
 };
-P32.EffectUnit.prototype = new ControlContainer();
+P32.Deck.prototype = new Deck();

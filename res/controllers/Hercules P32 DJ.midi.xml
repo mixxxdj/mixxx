@@ -383,7 +383,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob[1].input</key>
+                <key>P32.leftDeck.effectUnit.knobs[1].input</key>
                 <status>0xB1</status>
                 <midino>0x06</midino>
                 <options>
@@ -392,7 +392,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob[2].input</key>
+                <key>P32.leftDeck.effectUnit.knobs[2].input</key>
                 <status>0xB1</status>
                 <midino>0x07</midino>
                 <options>
@@ -401,7 +401,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob[3].input</key>
+                <key>P32.leftDeck.effectUnit.knobs[3].input</key>
                 <status>0xB1</status>
                 <midino>0x08</midino>
                 <options>
@@ -411,7 +411,7 @@
             <!-- shifted parameter knobs -->
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob[1].input</key>
+                <key>P32.leftDeck.effectUnit.knobs[1].input</key>
                 <status>0xB4</status>
                 <midino>0x06</midino>
                 <options>
@@ -420,7 +420,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob[2].input</key>
+                <key>P32.leftDeck.effectUnit.knobs[2].input</key>
                 <status>0xB4</status>
                 <midino>0x07</midino>
                 <options>
@@ -429,7 +429,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob[3].input</key>
+                <key>P32.leftDeck.effectUnit.knobs[3].input</key>
                 <status>0xB4</status>
                 <midino>0x08</midino>
                 <options>
@@ -456,7 +456,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.deckEnableButton[1].input</key>
+                <key>P32.leftDeck.effectUnit.buttons[1].input</key>
                 <status>0x91</status>
                 <midino>0x03</midino>
                 <options>
@@ -465,7 +465,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.deckEnableButton[2].input</key>
+                <key>P32.leftDeck.effectUnit.buttons[2].input</key>
                 <status>0x91</status>
                 <midino>0x04</midino>
                 <options>
@@ -474,7 +474,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.deckEnableButton[3].input</key>
+                <key>P32.leftDeck.effectUnit.buttons[3].input</key>
                 <status>0x91</status>
                 <midino>0x05</midino>
                 <options>
@@ -483,7 +483,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.deckEnableButton[4].input</key>
+                <key>P32.leftDeck.effectUnit.expandButton.input</key>
                 <status>0x91</status>
                 <midino>0x06</midino>
                 <options>
@@ -492,7 +492,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.deckEnableButton[1].input</key>
+                <key>P32.leftDeck.effectUnit.buttons[1].input</key>
                 <status>0x94</status>
                 <midino>0x03</midino>
                 <options>
@@ -501,7 +501,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.deckEnableButton[2].input</key>
+                <key>P32.leftDeck.effectUnit.buttons[2].input</key>
                 <status>0x94</status>
                 <midino>0x04</midino>
                 <options>
@@ -510,7 +510,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.deckEnableButton[3].input</key>
+                <key>P32.leftDeck.effectUnit.buttons[3].input</key>
                 <status>0x94</status>
                 <midino>0x05</midino>
                 <options>
@@ -519,225 +519,9 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.deckEnableButton[4].input</key>
+                <key>P32.leftDeck.effectUnit.expandButton.input</key>
                 <status>0x94</status>
                 <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[1].toggle.input</key>
-                <status>0x91</status>
-                <midino>0x40</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[2].toggle.input</key>
-                <status>0x91</status>
-                <midino>0x3C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[3].toggle.input</key>
-                <status>0x91</status>
-                <midino>0x38</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[1].toggle.input</key>
-                <status>0x94</status>
-                <midino>0x40</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[2].toggle.input</key>
-                <status>0x94</status>
-                <midino>0x3C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[3].toggle.input</key>
-                <status>0x94</status>
-                <midino>0x38</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[1].previous.input</key>
-                <status>0x91</status>
-                <midino>0x41</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[2].previous.input</key>
-                <status>0x91</status>
-                <midino>0x3D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[3].previous.input</key>
-                <status>0x91</status>
-                <midino>0x39</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[1].previous.input</key>
-                <status>0x94</status>
-                <midino>0x41</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[2].previous.input</key>
-                <status>0x94</status>
-                <midino>0x3D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[3].previous.input</key>
-                <status>0x94</status>
-                <midino>0x39</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[1].next.input</key>
-                <status>0x91</status>
-                <midino>0x42</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[2].next.input</key>
-                <status>0x91</status>
-                <midino>0x3E</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[3].next.input</key>
-                <status>0x91</status>
-                <midino>0x3A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[1].next.input</key>
-                <status>0x94</status>
-                <midino>0x42</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[2].next.input</key>
-                <status>0x94</status>
-                <midino>0x3E</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.effect[3].next.input</key>
-                <status>0x94</status>
-                <midino>0x3A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.switchEffectButton[1].input</key>
-                <status>0x91</status>
-                <midino>0x43</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.switchEffectButton[2].input</key>
-                <status>0x91</status>
-                <midino>0x3F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.switchEffectButton[3].input</key>
-                <status>0x91</status>
-                <midino>0x3B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.switchEffectButton[1].input</key>
-                <status>0x94</status>
-                <midino>0x43</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.switchEffectButton[2].input</key>
-                <status>0x94</status>
-                <midino>0x3F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.activeEffect.switchEffectButton[3].input</key>
-                <status>0x94</status>
-                <midino>0x3B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1689,7 +1473,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob[1].input</key>
+                <key>P32.rightDeck.effectUnit.knobs[1].input</key>
                 <status>0xB2</status>
                 <midino>0x06</midino>
                 <options>
@@ -1698,7 +1482,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob[2].input</key>
+                <key>P32.rightDeck.effectUnit.knobs[2].input</key>
                 <status>0xB2</status>
                 <midino>0x07</midino>
                 <options>
@@ -1707,7 +1491,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob[3].input</key>
+                <key>P32.rightDeck.effectUnit.knobs[3].input</key>
                 <status>0xB2</status>
                 <midino>0x08</midino>
                 <options>
@@ -1717,7 +1501,7 @@
             <!-- shifted parameter knobs -->
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob[1].input</key>
+                <key>P32.rightDeck.effectUnit.knobs[1].input</key>
                 <status>0xB5</status>
                 <midino>0x06</midino>
                 <options>
@@ -1726,7 +1510,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob[2].input</key>
+                <key>P32.rightDeck.effectUnit.knobs[2].input</key>
                 <status>0xB5</status>
                 <midino>0x07</midino>
                 <options>
@@ -1735,7 +1519,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob[3].input</key>
+                <key>P32.rightDeck.effectUnit.knobs[3].input</key>
                 <status>0xB5</status>
                 <midino>0x08</midino>
                 <options>
@@ -1762,7 +1546,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.deckEnableButton[1].input</key>
+                <key>P32.rightDeck.effectUnit.buttons[1].input</key>
                 <status>0x92</status>
                 <midino>0x03</midino>
                 <options>
@@ -1771,7 +1555,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.deckEnableButton[2].input</key>
+                <key>P32.rightDeck.effectUnit.buttons[2].input</key>
                 <status>0x92</status>
                 <midino>0x04</midino>
                 <options>
@@ -1780,7 +1564,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.deckEnableButton[3].input</key>
+                <key>P32.rightDeck.effectUnit.buttons[3].input</key>
                 <status>0x92</status>
                 <midino>0x05</midino>
                 <options>
@@ -1789,7 +1573,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.deckEnableButton[4].input</key>
+                <key>P32.rightDeck.effectUnit.expandButton.input</key>
                 <status>0x92</status>
                 <midino>0x06</midino>
                 <options>
@@ -1798,7 +1582,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.deckEnableButton[1].input</key>
+                <key>P32.rightDeck.effectUnit.buttons[1].input</key>
                 <status>0x95</status>
                 <midino>0x03</midino>
                 <options>
@@ -1807,7 +1591,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.deckEnableButton[2].input</key>
+                <key>P32.rightDeck.effectUnit.buttons[2].input</key>
                 <status>0x95</status>
                 <midino>0x04</midino>
                 <options>
@@ -1816,7 +1600,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.deckEnableButton[3].input</key>
+                <key>P32.rightDeck.effectUnit.buttons[3].input</key>
                 <status>0x95</status>
                 <midino>0x05</midino>
                 <options>
@@ -1825,225 +1609,9 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.deckEnableButton[4].input</key>
+                <key>P32.rightDeck.effectUnit.expandButton.input</key>
                 <status>0x95</status>
                 <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[1].toggle.input</key>
-                <status>0x92</status>
-                <midino>0x40</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[2].toggle.input</key>
-                <status>0x92</status>
-                <midino>0x3C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[3].toggle.input</key>
-                <status>0x92</status>
-                <midino>0x38</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[1].toggle.input</key>
-                <status>0x95</status>
-                <midino>0x40</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[2].toggle.input</key>
-                <status>0x95</status>
-                <midino>0x3C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[3].toggle.input</key>
-                <status>0x95</status>
-                <midino>0x38</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[1].previous.input</key>
-                <status>0x92</status>
-                <midino>0x41</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[2].previous.input</key>
-                <status>0x92</status>
-                <midino>0x3D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[3].previous.input</key>
-                <status>0x92</status>
-                <midino>0x39</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[1].previous.input</key>
-                <status>0x95</status>
-                <midino>0x41</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[2].previous.input</key>
-                <status>0x95</status>
-                <midino>0x3D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[3].previous.input</key>
-                <status>0x95</status>
-                <midino>0x39</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[1].next.input</key>
-                <status>0x92</status>
-                <midino>0x42</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[2].next.input</key>
-                <status>0x92</status>
-                <midino>0x3E</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[3].next.input</key>
-                <status>0x92</status>
-                <midino>0x3A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[1].next.input</key>
-                <status>0x95</status>
-                <midino>0x42</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[2].next.input</key>
-                <status>0x95</status>
-                <midino>0x3E</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.effect[3].next.input</key>
-                <status>0x95</status>
-                <midino>0x3A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.switchEffectButton[1].input</key>
-                <status>0x92</status>
-                <midino>0x43</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.switchEffectButton[2].input</key>
-                <status>0x92</status>
-                <midino>0x3F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.switchEffectButton[3].input</key>
-                <status>0x92</status>
-                <midino>0x3B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.switchEffectButton[1].input</key>
-                <status>0x95</status>
-                <midino>0x43</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.switchEffectButton[2].input</key>
-                <status>0x95</status>
-                <midino>0x3F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.activeEffect.switchEffectButton[3].input</key>
-                <status>0x95</status>
-                <midino>0x3B</midino>
                 <options>
                     <script-binding/>
                 </options>
