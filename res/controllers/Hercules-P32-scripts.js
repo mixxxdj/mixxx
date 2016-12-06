@@ -720,8 +720,8 @@ P32.init = function () {
     Button.prototype.sendShifted = true;
     CC.prototype.softTakeoverInit = false;
 
-    P32.leftDeck = new P32.Deck([1,3]);
-    P32.rightDeck = new P32.Deck([2,4]);
+    P32.leftDeck = new P32.Deck([1,3], 1);
+    P32.rightDeck = new P32.Deck([2,4], 2);
 
     if (engine.getValue('[Master]', 'num_samplers') < 32) {
         engine.setValue('[Master]', 'num_samplers', 32);
@@ -815,7 +815,6 @@ P32.slipButton = new Button({
 
 P32.Deck = function (deckNumbers, channel) {
     Deck.call(this, deckNumbers);
-    var channel = deckNumbers[0];
 
     var loopSize = defaultLoopSize;
     var beatJumpSize = defaultBeatJumpSize;
