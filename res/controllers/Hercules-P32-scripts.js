@@ -481,31 +481,9 @@ var CC = function (options) {
     }
 };
 CC.prototype = new Control({
+    inValueScale: function (value) { return value / this.max; },
     input: function (channel, control, value, status, group) {
-        // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
-        // just use engine.setParameter() when soft takeover works for it
-        if (this.range === undefined) {
-            engine.setParameter(this.group, this.inCo, value / this.max);
-        } else if (Array.isArray(this.range)) {
-            switch (this.range.length) {
-                case 2:
-                    engine.setValue(this.group, this.inCo,
-                                    script.absoluteLin(value, this.range[0], this.range[1]));
-                    break;
-                case 3:
-                    engine.setValue(this.group, this.inCo,
-                                    script.absoluteNonLin(value, this.range[0], this.range[1], this.range[2]));
-                    break;
-                case 4:
-                    engine.setValue(this.group, this.inCo,
-                                    script.absoluteLin(value, this.range[0], this.range[1], this.range[2], this.range[3]));
-                    break;
-                case 5:
-                    engine.setValue(this.group, this.inCo,
-                                    script.absoluteNonLin(value, this.range[0], this.range[1], this.range[2], this.range[3], this.range[4]));
-                    break;
-            }
-        }
+        engine.setParameter(this.group, this.inCo, this.inValueScale(value));
     },
     connect: function () {
         engine.softTakeover(this.group, this.inCo, true);
@@ -840,7 +818,6 @@ P32.Deck = function (deckNumbers, channel) {
             midi: [0xB0 + channel, 0x02 + k],
             group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
             inCo: 'parameter' + k,
-            range: [0, 1, 4] // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
         });
     }
 
@@ -852,7 +829,6 @@ P32.Deck = function (deckNumbers, channel) {
     this.volume = new CC({
         midi: [0xB0 + channel, 0x01],
         inCo: 'volume',
-        range: [0, 0.25, 1] // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
     });
 
     // ==================================== PAD GRID ============================================
@@ -1080,8 +1056,6 @@ P32.EffectUnit = function (unitNumber) {
             this.disconnect();
             this.connect();
         },
-        range: [0, 1] // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
-    });
 
     // ON/MACRO buttons
     this.deckEnableButton = [];
