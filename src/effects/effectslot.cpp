@@ -198,6 +198,8 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             pParameter->loadEffect(pEffect);
         }
 
+        onEffectMetaParameterChanged(m_pControlMetaParameter->get(), true);
+
         emit(effectLoaded(pEffect, m_iEffectNumber));
     } else {
         clear();
