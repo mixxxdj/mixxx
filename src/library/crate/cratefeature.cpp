@@ -20,6 +20,11 @@
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 
+namespace {
+    QIcon kCratesIcon(":/images/library/ic_library_crates.png");
+    QIcon kLockedCrateIcon(":/images/library/ic_library_locked.png");
+}
+
 CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
                            UserSettingsPointer pConfig)
@@ -112,7 +117,7 @@ QVariant CrateFeature::title() {
 }
 
 QIcon CrateFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_crates.png");
+    return kCratesIcon;
 }
 
 CrateId CrateFeature::crateIdFromIndex(QModelIndex index) {
@@ -495,40 +500,51 @@ QVector<CrateSummary> CrateFeature::buildCrateList() {
   * we require the sidebar model not to reset.
   * This method queries the database and does dynamic insertion
 */
-QModelIndex CrateFeature::constructChildModel(CrateId selected_id) {
+QModelIndex CrateFeature::constructChildModel(CrateId selectedCrateId) {
     QVector<CrateSummary> crates = buildCrateList();
-    QList<TreeItem*> data_list;
-    int selected_row = -1;
+    DEBUG_ASSERT(crates.size() == m_crateList.size());
+
+    QList<TreeItem*> modelRows;
+    modelRows.reserve(m_crateList.size());
+
+    TrackId selectedTrackId =
+            m_pSelectedTrack ? m_pSelectedTrack->getId() : TrackId();
+
+    int selectedRow = -1;
     // Access the invisible root item
     TreeItem* root = m_childModel.getItem(QModelIndex());
 
     int row = 0;
-    for (QList<QPair<CrateId, QString> >::const_iterator it = m_crateList.begin();
-         it != m_crateList.end(); ++it, ++row) {
-        CrateId crate_id = it->first;
-        QString crate_name = it->second;
-
-        if (selected_id == crate_id) {
+    for (const QPair<CrateId, QString>& cratePair: m_crateList) {
+        CrateId crateId = cratePair.first;
+        if (selectedCrateId == crateId) {
             // save index for selection
-            selected_row = row;
-            m_childModel.index(selected_row, 0);
+            selectedRow = row;
         }
-
-        // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(crate_name, crate_id.toString(), this, root);
+        TreeItem* pCrateItem =
+                new TreeItem(cratePair.second, crateId.toString(), this, root);
+        DEBUG_ASSERT(row < crates.size());
         const Crate& crate = crates[row];
-        DEBUG_ASSERT(crate.getId() == it->first);
-        item->setIcon(crate.isLocked() ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
-        item->setBold(m_cratesSelectedTrackIsIn.contains(crate_id));
-        data_list.append(item);
+        DEBUG_ASSERT(crate.getId() == crateId);
+        pCrateItem->setIcon(
+                crate.isLocked() ? kLockedCrateIcon : QIcon());
+        bool crateContainsTrack =
+                selectedTrackId.isValid() &&
+                m_pTrackCollection->crates().isCrateTrack(
+                        crateId,
+                        selectedTrackId);
+        pCrateItem->setBold(crateContainsTrack);
+        modelRows.append(pCrateItem);
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertRows(data_list, 0, m_crateList.size());
-    if (selected_row == -1) {
+    DEBUG_ASSERT(modelRows.size() == m_crateList.size());
+    m_childModel.insertRows(modelRows, 0, modelRows.size());
+    if (selectedRow >= 0) {
+        return m_childModel.index(selectedRow, 0);
+    } else {
         return QModelIndex();
     }
-    return m_childModel.index(selected_row, 0);
 }
 
 void CrateFeature::updateChildModel(CrateId selected_id) {
@@ -822,25 +838,29 @@ QString CrateFeature::getRootViewHtml() const {
 
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
-    TrackId trackId(pTrack ? pTrack->getId() : TrackId());
-    m_cratesSelectedTrackIsIn = m_pTrackCollection->crates().collectTrackCrates(trackId);
 
     TreeItem* rootItem = m_childModel.getItem(QModelIndex());
     if (rootItem == nullptr) {
         return;
     }
 
+    TrackId selectedTrackId(pTrack ? pTrack->getId() : TrackId());
+
     // Set all crates the track is in bold (or if there is no track selected,
     // clear all the bolding).
     int row = 0;
-    for (QList<QPair<CrateId, QString> >::const_iterator it = m_crateList.begin();
-         it != m_crateList.end(); ++it, ++row) {
-        TreeItem* crate = rootItem->child(row);
-        if (crate == nullptr) {
+    for (const QPair<CrateId, QString>& cratePair: m_crateList) {
+        TreeItem* pCrateItem = rootItem->child(row++);
+        if (pCrateItem == nullptr) {
             continue;
         }
-        bool shouldBold = m_cratesSelectedTrackIsIn.contains(it->first);
-        crate->setBold(shouldBold);
+        CrateId crateId = cratePair.first;
+        bool crateContainsTrack =
+                selectedTrackId.isValid() &&
+                m_pTrackCollection->crates().isCrateTrack(
+                        crateId,
+                        selectedTrackId);
+        pCrateItem->setBold(crateContainsTrack);
     }
 
     m_childModel.triggerRepaint();

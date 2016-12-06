@@ -10,7 +10,6 @@
 #include <QUrl>
 #include <QIcon>
 #include <QPoint>
-#include <QSet>
 
 #include "library/crate/cratetablemodel.h"
 
@@ -108,7 +107,6 @@ class CrateFeature : public LibraryFeature {
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;
-    QSet<CrateId> m_cratesSelectedTrackIsIn;
 };
 
 
