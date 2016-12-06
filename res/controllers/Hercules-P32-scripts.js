@@ -731,6 +731,12 @@ MyController.effectUnit.buttons[3].midi = [0x90, 0x03];
 MyController.effectUnit.expandButton.midi = [0x90, 0x04];
 MyController.effectUnit.expandButton.trigger();
 MyController.effectUnit.reconnectControls();
+
+Controllers designed for Serato and Rekordbox often have an encoder instead of a dry/wet knob
+(labeled "Beats" for Serato or "Release FX" for Rekordbox) and a button labeled "Tap". It is
+recommended to map the "Tap" button to the EffectUnit's expandButton. To use the dryWetKnob Control
+with an encoder, replace its inValueScale() function with a function that can appropriately
+handle the signals sent by your controller.
 **/
 EffectUnit = function (unitNumber) {
     this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
