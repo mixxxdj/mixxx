@@ -133,7 +133,7 @@ bool MixxxLibraryTreeModel::setData(const QModelIndex& index, const QVariant& va
 
 void MixxxLibraryTreeModel::reloadTree() {    
     //qDebug() << "LibraryTreeModel::reloadTracksTree";
-    
+    beginResetModel();
     // Create root item
     TreeItem* pRootItem = new TreeItem();
     pRootItem->setLibraryFeature(m_pFeature);
@@ -148,7 +148,7 @@ void MixxxLibraryTreeModel::reloadTree() {
     // Deletes the old root item if the previous root item was not null
     setRootItem(pRootItem);
     createTracksTree();
-    triggerRepaint();
+    endResetModel();
 }
 
 void MixxxLibraryTreeModel::coverFound(const QObject* requestor, int requestReference,
