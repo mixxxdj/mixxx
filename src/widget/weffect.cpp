@@ -44,12 +44,13 @@ void WEffect::effectUpdated() {
         EffectPointer pEffect = m_pEffectSlot->getEffect();
         if (pEffect) {
             const EffectManifest& manifest = pEffect->getManifest();
-            if (! manifest.shortName().isEmpty()) {
+            if (!manifest.shortName().isEmpty()) {
                 name = manifest.shortName();
+                description = manifest.name() + ": " + manifest.description();
             } else {
                 name = manifest.name();
+                description = manifest.description();
             }
-            description = manifest.description();
         }
     } else {
         name = tr("None");

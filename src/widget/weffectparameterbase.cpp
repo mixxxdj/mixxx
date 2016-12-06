@@ -21,12 +21,15 @@ void WEffectParameterBase::setEffectParameterSlot(
 
 void WEffectParameterBase::parameterUpdated() {
     if (m_pEffectParameterSlot) {
-        if (! m_pEffectParameterSlot->shortName().isEmpty()) {
+        if (!m_pEffectParameterSlot->shortName().isEmpty()) {
             setText(m_pEffectParameterSlot->shortName());
+            setBaseTooltip(m_pEffectParameterSlot->name()
+                           + QString(": ") +
+                           m_pEffectParameterSlot->description());
         } else {
             setText(m_pEffectParameterSlot->name());
+            setBaseTooltip(m_pEffectParameterSlot->description());
         }
-        setBaseTooltip(m_pEffectParameterSlot->description());
     } else {
         setText(tr("None"));
         setBaseTooltip(tr("No effect loaded."));
