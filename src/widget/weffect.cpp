@@ -46,7 +46,9 @@ void WEffect::effectUpdated() {
             const EffectManifest& manifest = pEffect->getManifest();
             if (!manifest.shortName().isEmpty()) {
                 name = manifest.shortName();
-                description = manifest.name() + tr(": ") + manifest.description();
+                // %1 = effect name
+                // %2 = effect description
+                description = tr("%1: %2").arg(manifest.name(), manifest.description());
             } else {
                 name = manifest.name();
                 description = manifest.description();
