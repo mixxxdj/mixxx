@@ -140,7 +140,6 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;
     ControlPushButton* m_pControlChainPrevPreset;
-    ControlPushButton* m_pControlExpanded;
 
     struct ChannelInfo {
         // Takes ownership of pEnabled.
