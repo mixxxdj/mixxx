@@ -607,9 +607,11 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    // TODO(XXX): support soft takeover.
     if (coScript != nullptr) {
-        coScript->setParameter(newParameter);
+        ControlObject* pControl = ControlObject::getControl(coScript->getKey());
+        if (pControl && !m_st.ignore(pControl, newParameter)) {
+          coScript->setParameter(newParameter);
+        }
     }
 }
 

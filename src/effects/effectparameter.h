@@ -39,6 +39,7 @@ class EffectParameter : public QObject {
     ///////////////////////////////////////////////////////////////////////////
 
     EffectManifestParameter::LinkType getDefaultLinkType() const;
+    EffectManifestParameter::LinkInversion getDefaultLinkInversion() const;
     double getNeutralPointOnScale() const;
 
     double getValue() const;
