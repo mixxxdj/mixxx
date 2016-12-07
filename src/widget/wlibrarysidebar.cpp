@@ -1,5 +1,6 @@
 #include "widget/wlibrarysidebar.h"
 
+#include <QApplication>
 #include <QDebug>
 #include <QFileInfo>
 #include <QHeaderView>

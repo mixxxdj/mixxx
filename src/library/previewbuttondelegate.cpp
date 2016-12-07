@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QPainter>
 #include <QPushButton>
 #include <QStylePainter>
