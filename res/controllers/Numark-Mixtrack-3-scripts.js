@@ -32,6 +32,9 @@ var FXmode = 1; // multi-effect mode by default
 //Disable Play on Sync button Double Press
 var noPlayOnSyncDoublePress = false;
 
+// allow pitch bend with wheel when wheel is not active 
+var PitchBendOnWheelOff = true;
+
 /**************************
  *  scriptpause
  * ---------------
@@ -97,6 +100,9 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
  *              - Add brake effect: PADMode + FX button 1
  *              - Add spinback effect: PADMode + FX button 2
  * 2016-11-03 (2.1) - Stéphane Morin - FX Mode selection based on skin used
+ * 2016-12-05 (2.2) - Stéphane Morin 
+ *              - Always allow use of wheel to position song when song is not playing 
+ *              - Add configuration option for to choose if pitch bend is allowed when wheel is off
  *
  ***********************************************************************
  *                           GPL v2 licence
@@ -1759,14 +1765,15 @@ NumarkMixtrack3.WheelTouch = function(channel, control, value, status, group) {
     */
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
-
+    var isplaying = engine.getValue("[Channel" + decknum + "]", "play");
+    
     deck.touch = false;
     deck.iCutStatus = false;
     deck.seekingfast = false;
 
     if (value === DOWN) {
 
-        if (deck.jogWheelsInScratchMode) {
+        if (deck.jogWheelsInScratchMode || !isplaying) {
 
             engine.scratchEnable(decknum, intervalsPerRev, rpm, alpha, beta);
 
@@ -1797,6 +1804,7 @@ NumarkMixtrack3.WheelMove = function(channel, control, value, status, group) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
 
+
     // Set jog value
     var adjustedJog = parseFloat(value);
     var posNeg = 1;
@@ -1824,10 +1832,9 @@ NumarkMixtrack3.WheelMove = function(channel, control, value, status, group) {
         engine.setValue(deck.Jog.group, "beatjump", adjustedJog * 2);
     }
 
-    // added condition to test to ensure wheel is ON prior to recording ticks.
-    if (deck.jogWheelsInScratchMode) {
-        engine.scratchTick(decknum, adjustedJog);
-
+    engine.scratchTick(decknum, adjustedJog);
+    
+    if(PitchBendOnWheelOff) {
         //Pitch bend when playing - side or platter have same effect        
         if (engine.getValue(deck.Jog.group, "play")) {
             var gammaInputRange = 13; // Max jog speed
@@ -1840,6 +1847,21 @@ NumarkMixtrack3.WheelMove = function(channel, control, value, status, group) {
                 sensitivity);
             engine.setValue(deck.Jog.group, "jog", adjustedJog);
         }
+    } else {
+        //Pitch bend when playing - side or platter have same effect        
+        if (deck.jogWheelsInScratchMode) {
+            if (engine.getValue(deck.Jog.group, "play")) {
+                var gammaInputRange = 13; // Max jog speed
+                var maxOutFraction = 0.8; // Where on the curve it should peak; 0.5 is half-way
+                var sensitivity = 0.5; // Adjustment gamma
+                var gammaOutputRange = 0.75; // Max rate change
+
+                adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(
+                        adjustedJog) / (gammaInputRange * maxOutFraction),
+                    sensitivity);
+                engine.setValue(deck.Jog.group, "jog", adjustedJog);
+            }
+        } 
     }
 };
 
