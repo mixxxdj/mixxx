@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QTableView>
 
 #include "library/coverartdelegate.h"

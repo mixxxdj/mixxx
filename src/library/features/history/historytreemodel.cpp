@@ -128,11 +128,12 @@ QList<QVariant> HistoryTreeModel::idsFromItem(TreeItem* pTree) const {
     if (pTree->childCount() <= 0) {
         bool ok;
         int value = pTree->dataPath().toInt(&ok);
+        QList<QVariant> ret;
         if (!ok) {
-            return QList<QVariant>();
+            return ret;
         }
-        
-        return { value };
+        ret.append(value);
+        return ret;
     }
     
     QList<QVariant> res;
