@@ -24,7 +24,7 @@ void WEffectParameterBase::parameterUpdated() {
         if (!m_pEffectParameterSlot->shortName().isEmpty()) {
             setText(m_pEffectParameterSlot->shortName());
             setBaseTooltip(m_pEffectParameterSlot->name()
-                           + QString(": ") +
+                           + tr(": ") +
                            m_pEffectParameterSlot->description());
         } else {
             setText(m_pEffectParameterSlot->name());
