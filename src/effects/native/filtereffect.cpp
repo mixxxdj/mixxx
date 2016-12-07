@@ -30,6 +30,7 @@ EffectManifest FilterEffect::getManifest() {
     lpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     lpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT);
+    lpf->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     lpf->setNeutralPointOnScale(1);
     lpf->setDefault(kMaxCorner);
     lpf->setMinimum(kMinCorner);

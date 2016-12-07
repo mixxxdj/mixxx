@@ -88,6 +88,10 @@ EffectManifestParameter::LinkType EffectParameter::getDefaultLinkType() const {
     return m_parameter.defaultLinkType();
 }
 
+EffectManifestParameter::LinkInversion EffectParameter::getDefaultLinkInversion() const {
+    return m_parameter.defaultLinkInversion();
+}
+
 double EffectParameter::getNeutralPointOnScale() const {
     return m_parameter.neutralPointOnScale();
 }

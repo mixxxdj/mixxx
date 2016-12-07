@@ -156,17 +156,19 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 void PlaylistFeature::buildPlaylistList() {
     m_playlistList.clear();
 
-    QString queryString = "SELECT "
-                          "Playlists.id as id, "
-                          "Playlists.name as name, "
-                          "COUNT(library.id) as count, "
-                          "SUM(library.duration) as durationSeconds "
-                          "FROM Playlists "
-                          "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
-                          "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
-                          "WHERE Playlists.hidden = 0 "
-                          "GROUP BY Playlists.id "
-                          "ORDER BY name";
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
+        "AS SELECT "
+        "  Playlists.id AS id, "
+        "  Playlists.name AS name, "
+        "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) AS count, "
+        "  SUM(case library.mixxx_deleted when 0 then library.duration else 0 end) AS durationSeconds "
+        "FROM Playlists "
+        "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
+        "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
+        "WHERE Playlists.hidden = 0 "
+        "GROUP BY Playlists.id "
+        "ORDER BY LOWER(Playlists.name);");
     QSqlQuery query(m_pTrackCollection->getDatabase());
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);

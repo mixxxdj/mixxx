@@ -190,3 +190,10 @@ def write_build_header(path):
     finally:
         f.close()
         os.chmod(path, stat.S_IRWXU | stat.S_IRWXG |stat.S_IRWXO)
+
+def get_osx_min_version():
+    """Gets the minimum required OS X version from product_definition.plist."""
+    # Mixxx 2.0 supported OS X 10.6 and up.
+    # Mixxx >2.0 requires C++11 which is only available with libc++ and OS X
+    # 10.7 onwards. std::promise/std::future requires OS X 10.8.
+    return os.popen("/usr/libexec/PlistBuddy -c 'Print os:0' build/osx/product_definition.plist").readline().strip()
