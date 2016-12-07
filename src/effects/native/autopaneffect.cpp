@@ -34,6 +34,7 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    width->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
     width->setMinimum(0.0);
     width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
     width->setDefault(0.5);
@@ -46,7 +47,7 @@ EffectManifest AutoPanEffect::getManifest() {
     periodUnit->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
     periodUnit->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     periodUnit->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    periodUnit->setDefault(0);
+    periodUnit->setDefault(1);
     periodUnit->setMinimum(0);
     periodUnit->setMaximum(1);
 
@@ -61,6 +62,8 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    period->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    period->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     period->setMinimum(0.0625);     // 1 / 16
     period->setMaximum(129.0);      // 128 + 1
     period->setDefault(3.0);

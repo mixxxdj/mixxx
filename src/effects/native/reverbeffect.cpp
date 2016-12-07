@@ -31,6 +31,8 @@ EffectManifest ReverbEffect::getManifest() {
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    time->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    time->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     time->setMinimum(0.0005);
     time->setDefault(0.5);
     time->setMaximum(1.0);
