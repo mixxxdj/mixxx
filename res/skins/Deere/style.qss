@@ -129,8 +129,22 @@ QTableView, QTreeView {
   border: 1px solid #1A1A1A;
 }
 
-QTreeView::branch:selected, QTableView::item:selected, QTreeView::item:selected {
+QTreeView::branch {
+  background-color: #1F1F1F;
+}
+ 
+QTableView::item:selected:active, 
+QTreeView::item:selected:active {
+  color: #ffffff;
+
   background-color: #006596;
+}
+
+
+QTableView::item:selected:!active, 
+QTreeView::item:selected:!active {
+  color: #d2d2d2;
+  background-color: #0d4866;
 }
 
 /* checkbox in library "Played" column */
@@ -145,14 +159,6 @@ QTableView::indicator:checked {
 
 QTableView::indicator:unchecked {
   background: url(skin:/image/style_checkbox_unchecked.png);
-}
-
-WBaseLibrary[showFocus="0"] {
-  border-top: 2px solid transparent;
-}
-
-WBaseLibrary[showFocus="1"] {
-  border-top: 2px solid #0080BE;
 }
 
 /* BPM lock icon in the library "BPM" column. */
@@ -205,7 +211,8 @@ WBaseLibrary QLabel {
   border: 1px solid #1A1A1A;
 }
 
-#LibraryCoverArtSplitter QTabWidget QTreeView, #DlgAutoDJ {
+#LibraryCoverArtSplitter QTabWidget QTreeView, 
+#DlgAutoDJ {
   margin: 0;
   border: none;
 }
@@ -280,6 +287,17 @@ QPushButton#LibraryPreviewButton:!checked {
 
 QPushButton#LibraryPreviewButton:checked {
   image: url(skin:/image/style_library_preview_pause.png);
+}
+
+
+#LibrarySidebarButtons:focus,
+#LibrarySidebarButtons QToolButton:focus,
+#LibrarySidebarExpanded > QWidget:focus,
+#LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus,
+WLibrarySidebar:focus, 
+WLibrary:focus,
+QTableView:focus {
+  border: 1px solid #0080BE;
 }
 
 /* library header row */
@@ -469,6 +487,10 @@ WBaseLibrary QPushButton {
   border: 1px solid #4B4B4B;
   border-radius: 2px;
   outline: none;
+}
+
+WBaseLibrary QPushButton:focus {
+  background-color: #006596;
 }
 
 WBaseLibrary QPushButton:!enabled {

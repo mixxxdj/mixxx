@@ -32,7 +32,8 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
     reloadTree();
 }
 
-bool LibraryFolderModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+bool LibraryFolderModel::setData(
+        const QModelIndex& index, const QVariant& value, int role) {
     if (role == AbstractRole::RoleSettings) {
         m_folderRecursive = value.toBool();
         m_pConfig->set(ConfigKey("[Library]", "FolderRecursive"), 
@@ -75,6 +76,8 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
 }
 
 void LibraryFolderModel::reloadTree() {
+    //qDebug() <<  "LibraryFolderModel::reloadTree()";
+    beginResetModel();
     // Remove current root
     setRootItem(new TreeItem(m_pFeature));
 
@@ -109,6 +112,7 @@ void LibraryFolderModel::reloadTree() {
         // For each source folder create the tree
         createTreeForLibraryDir(dir, query);
     }
+    endResetModel();
 }
 
 void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& query) {

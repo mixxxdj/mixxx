@@ -44,86 +44,22 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          TrackCollection* pTrackCollection)
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_trackDao(pTrackCollection->getTrackDAO()) {
-    QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID
-            << "library." + LIBRARYTABLE_PLAYED
-            << "library." + LIBRARYTABLE_TIMESPLAYED
-            //has to be up here otherwise Played and TimesPlayed are not show
-            << "library." + LIBRARYTABLE_ALBUMARTIST
-            << "library." + LIBRARYTABLE_ALBUM
-            << "library." + LIBRARYTABLE_ARTIST
-            << "library." + LIBRARYTABLE_TITLE
-            << "library." + LIBRARYTABLE_YEAR
-            << "library." + LIBRARYTABLE_RATING
-            << "library." + LIBRARYTABLE_GENRE
-            << "library." + LIBRARYTABLE_COMPOSER
-            << "library." + LIBRARYTABLE_GROUPING
-            << "library." + LIBRARYTABLE_TRACKNUMBER
-            << "library." + LIBRARYTABLE_KEY
-            << "library." + LIBRARYTABLE_KEY_ID
-            << "library." + LIBRARYTABLE_BPM
-            << "library." + LIBRARYTABLE_BPM_LOCK
-            << "library." + LIBRARYTABLE_DURATION
-            << "library." + LIBRARYTABLE_BITRATE
-            << "library." + LIBRARYTABLE_REPLAYGAIN
-            << "library." + LIBRARYTABLE_FILETYPE
-            << "library." + LIBRARYTABLE_DATETIMEADDED
-            << "track_locations.location"
-            << "track_locations.fs_deleted"
-            << "track_locations.directory"
-            << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED
-            << "library." + LIBRARYTABLE_COVERART_SOURCE
-            << "library." + LIBRARYTABLE_COVERART_TYPE
-            << "library." + LIBRARYTABLE_COVERART_LOCATION
-            << "library." + LIBRARYTABLE_COVERART_HASH;
 
-    QSqlQuery query(pTrackCollection->getDatabase());
-    QString tableName = "library_cache_view";
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM library "
-        "INNER JOIN track_locations ON library.location = track_locations.id")
-            .arg(tableName, columns.join(","));
-    qDebug() << queryString;
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    // Strip out library. and track_locations.
-    for (QStringList::iterator it = columns.begin();
-         it != columns.end(); ++it) {
-        if (it->startsWith("library.")) {
-            *it = it->replace("library.", "");
-        } else if (it->startsWith("track_locations.")) {
-            *it = it->replace("track_locations.", "");
-        }
-    }
-
-    BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-            pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
+    m_pBaseTrackCache = pTrackCollection->getTrackSource();
     connect(&m_trackDao, SIGNAL(trackDirty(TrackId)),
-            pBaseTrackCache, SLOT(slotTrackDirty(TrackId)));
+            m_pBaseTrackCache.data(), SLOT(slotTrackDirty(TrackId)));
     connect(&m_trackDao, SIGNAL(trackClean(TrackId)),
-            pBaseTrackCache, SLOT(slotTrackClean(TrackId)));
+            m_pBaseTrackCache.data(), SLOT(slotTrackClean(TrackId)));
     connect(&m_trackDao, SIGNAL(trackChanged(TrackId)),
-            pBaseTrackCache, SLOT(slotTrackChanged(TrackId)));
+            m_pBaseTrackCache.data(), SLOT(slotTrackChanged(TrackId)));
     connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
-            pBaseTrackCache, SLOT(slotTracksAdded(QSet<TrackId>)));
+            m_pBaseTrackCache.data(), SLOT(slotTracksAdded(QSet<TrackId>)));
     connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<TrackId>)),
-            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<TrackId>)));
+            m_pBaseTrackCache.data(), SLOT(slotTracksRemoved(QSet<TrackId>)));
     connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
-            pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
+            m_pBaseTrackCache.data(), SLOT(slotDbTrackAdded(TrackPointer)));
 
     setChildModel(new MixxxLibraryTreeModel(this, m_pTrackCollection, m_pConfig));
-    
-    m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
-    
-    
-    pTrackCollection->setTrackSource(m_pBaseTrackCache);
-
-    // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
 }
 
@@ -197,6 +133,8 @@ void MixxxLibraryFeature::activate() {
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
+    if (!index.isValid()) return;
+
     QString query = index.data(AbstractRole::RoleQuery).toString();
     //qDebug() << "MixxxLibraryFeature::activateChild" << query;
     
@@ -210,6 +148,10 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     switchToFeature();
     showBreadCrumb(index.data(AbstractRole::RoleBreadCrumb).toString(), getIcon());
     restoreSearch(query);
+}
+
+void MixxxLibraryFeature::invalidateChild() {
+    m_lastClickedIndex = QModelIndex();
 }
 
 void MixxxLibraryFeature::onRightClickChild(const QPoint& pos, 

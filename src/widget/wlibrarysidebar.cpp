@@ -329,3 +329,24 @@ bool WLibrarySidebar::paste() {
 
     return pTreeModel->dropAccept(destIndex, pMimeData->urls(), nullptr);
 }
+
+void WLibrarySidebar::enterEvent(QEvent* pEvent) {
+    QTreeView::enterEvent(pEvent);
+    emit(hovered());
+}
+
+void WLibrarySidebar::leaveEvent(QEvent* pEvent) {
+    QTreeView::leaveEvent(pEvent);
+    emit(leaved());
+}
+
+void WLibrarySidebar::focusInEvent(QFocusEvent* pEvent) {
+    QTreeView::focusInEvent(pEvent);
+    emit(focusIn());
+}
+
+void WLibrarySidebar::focusOutEvent(QFocusEvent* pEvent) {
+    QTreeView::focusOutEvent(pEvent);
+    emit(focusOut());
+}
+

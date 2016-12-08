@@ -8,7 +8,7 @@ WTriStateButton::WTriStateButton(QWidget* parent)
 }
 
 void WTriStateButton::setChecked(bool value) {
-    qDebug() << this << "setChecked" << value;
+    //qDebug() << this << "setChecked" << value;
     // This omits the Hovered state
     State state = value ? State::Active : State::Unactive;
     setState(state);
@@ -29,7 +29,7 @@ WTriStateButton::State WTriStateButton::getState() const {
 }
 
 void WTriStateButton::setHovered(bool value) {
-    qDebug() << this << "setHovered" << value;
+    //qDebug() << this << "setHovered" << value;
     State state = value ? State::Hovered : State::Unactive;
     setState(state);
 }

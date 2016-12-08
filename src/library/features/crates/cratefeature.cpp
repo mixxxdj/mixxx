@@ -219,13 +219,10 @@ TreeItemModel* CrateFeature::getChildModel() {
 }
 
 void CrateFeature::activate() {
-    int preselectedPane = getPreselectedPane();
-    if (preselectedPane >= 0) {
-        m_featurePane = preselectedPane;
-    }
+    adoptPreselectedPane();
 
-    auto modelIt = m_lastClickedIndex.find(m_featurePane);
-    if (modelIt != m_lastClickedIndex.end() &&  (*modelIt).isValid()) {
+    auto modelIt = m_lastClickedIndex.constFind(m_featurePane);
+    if (modelIt != m_lastClickedIndex.constEnd() &&  (*modelIt).isValid()) {
         activateChild(*modelIt);
         return;
     }
@@ -237,10 +234,7 @@ void CrateFeature::activate() {
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
-    int preselectedPane = getPreselectedPane();
-    if (preselectedPane >= 0) {
-        m_featurePane = preselectedPane;
-    }
+    adoptPreselectedPane();
     
     m_lastClickedIndex[m_featurePane] = index;
     int crateId = crateIdFromIndex(index);
@@ -254,6 +248,10 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     restoreSearch("");
     showBreadCrumb(index);
     showTrackModel(m_pCrateTableModel);
+}
+
+void CrateFeature::invalidateChild() {
+    m_lastClickedIndex.clear();
 }
 
 void CrateFeature::activateCrate(int crateId) {
@@ -280,7 +278,7 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
     menu.exec(globalPos);
 }
 
-void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int crateId = crateIdFromIndex(index);

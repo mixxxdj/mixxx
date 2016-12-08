@@ -199,7 +199,8 @@ void TreeItemModel::setRootItem(TreeItem *item) {
  * Before you can resize the data model dynamically by using 'insertRows' and 'removeRows'
  * make sure you have initialized
  */
-bool TreeItemModel::insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent) {
+bool TreeItemModel::insertRows(
+        QList<TreeItem*>& data, int position, int rows, const QModelIndex &parent) {
     if (rows == 0) {
         return true;
     }
@@ -239,6 +240,7 @@ void TreeItemModel::triggerRepaint() {
     emit(dataChanged(left, right));
 }
 
+//static
 QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {    
     // Base case
     if (pTree == nullptr || pTree->getFeature() == nullptr) {
@@ -254,6 +256,7 @@ QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {
     return next % QLatin1String(" > ") % text;
 }
 
+//static
 QSize TreeItemModel::getDefaultIconSize() {
     return QSize(32, 32);
 }

@@ -45,8 +45,17 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
 
+    void hovered();
+    void leaved();
+    void focusIn();
+    void focusOut();
+
   protected:
     bool event(QEvent* pEvent) override;
+    void enterEvent(QEvent*) override;
+    void leaveEvent(QEvent*) override;
+    void focusInEvent(QFocusEvent*) override;
+    void focusOutEvent(QFocusEvent*) override;
 
   private:
     bool paste();
