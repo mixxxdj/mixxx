@@ -21,19 +21,22 @@
 
 const QString MixxxLibraryFeature::kLibraryTitle = tr("Library");
 
-const QStringList MixxxLibraryFeature::kGroupingText = {
-    tr("Artist > Album"),
-    tr("Album"),
-    tr("Genre > Artist > Album"),
-    tr("Genre > Album")
-};
+const QStringList MixxxLibraryFeature::kGroupingText = 
+    QStringList::fromStdList({
+        tr("Artist > Album"),
+        tr("Album"),
+        tr("Genre > Artist > Album"),
+        tr("Genre > Album")
+});
 
-const QList<QStringList> MixxxLibraryFeature::kGroupingOptions = {
-        { LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM },
-        { LIBRARYTABLE_ALBUM },
-        { LIBRARYTABLE_GENRE, LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM },
-        { LIBRARYTABLE_GENRE, LIBRARYTABLE_ALBUM }
-};
+const QList<QStringList> MixxxLibraryFeature::kGroupingOptions =
+    QList<QStringList>::fromStdList({
+        QStringList::fromStdList({ LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM }),
+        QStringList::fromStdList({ LIBRARYTABLE_ALBUM }),
+        QStringList::fromStdList({ LIBRARYTABLE_GENRE, LIBRARYTABLE_ARTIST, 
+                                   LIBRARYTABLE_ALBUM }),
+        QStringList::fromStdList({ LIBRARYTABLE_GENRE, LIBRARYTABLE_ALBUM })
+});
 
 MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          Library* pLibrary,
