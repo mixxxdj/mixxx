@@ -54,15 +54,13 @@ BrowseFeature::BrowseFeature(QObject* parent,
     m_proxyModel.setDynamicSortFilter(true);
 
     // The invisible root item of the child model
-    TreeItem* rootItem = new TreeItem(this);
+    auto pRootItem = std::make_unique<TreeItem>(this);
 
-    m_pQuickLinkItem = rootItem->appendChild(
-            new TreeItem(this, tr("Quick Links"), QUICK_LINK_NODE));
+    m_pQuickLinkItem = pRootItem->appendChild(tr("Quick Links"), QUICK_LINK_NODE);
 
     // Create the 'devices' shortcut
 #if defined(__WINDOWS__)
-    TreeItem* devices_link = rootItem->appendChild(
-            new TreeItem(this, tr("Devices"), DEVICE_NODE));
+    TreeItem* devices_link = pRootItem->appendChild(tr("Devices"), DEVICE_NODE);
     // show drive letters
     QFileInfoList drives = QDir::drives();
     // show drive letters
@@ -82,23 +80,18 @@ BrowseFeature::BrowseFeature(QObject* parent,
         }
         TreeItem* driveLetter =
         devices_link->appendChild(
-                new TreeItem(
-                        this ,
-                        display_path, // Displays C:
-                        drive.filePath())); // Displays C:/
+                display_path, // Displays C:
+                drive.filePath()); // Displays C:/
     }
 #elif defined(__APPLE__)
     // Apple hides the base Linux file structure But all devices are mounted at
     // /Volumes
-    TreeItem* devices_link = rootItem->appendChild(
-        new TreeItem(this, tr("Devices"), "/Volumes/"));
+    pRootItem->appendChild(tr("Devices"), "/Volumes/");
 #else  // LINUX
-    TreeItem* devices_link = rootItem->appendChild(
-        new TreeItem(this, tr("Removable Devices"), "/media/"));
+    pRootItem->appendChild(tr("Removable Devices"), "/media/");
 
     // show root directory on UNIX-based operating systems
-    TreeItem* root_folder_item = rootItem->appendChild(
-        new TreeItem(this, QDir::rootPath(), QDir::rootPath()));
+    pRootItem->appendChild(QDir::rootPath(), QDir::rootPath());
 #endif
 
     // Just a word about how the TreeItem objects are used for the BrowseFeature:
@@ -118,12 +111,11 @@ BrowseFeature::BrowseFeature(QObject* parent,
     foreach (QString quickLinkPath, m_quickLinkList) {
         QString name = extractNameFromPath(quickLinkPath);
         qDebug() << "Appending Quick Link: " << name << "---" << quickLinkPath;
-        m_pQuickLinkItem->appendChild(
-            new TreeItem(this, name, quickLinkPath));
+        m_pQuickLinkItem->appendChild(name, quickLinkPath);
     }
 
     // initialize the model
-    m_childModel.setRootItem(rootItem);
+    m_childModel.setRootItem(std::move(pRootItem));
 }
 
 BrowseFeature::~BrowseFeature() {
@@ -141,7 +133,7 @@ void BrowseFeature::slotAddQuickLink() {
     QVariant vpath = m_pLastRightClickedItem->getData();
     QString spath = vpath.toString();
     QString name = extractNameFromPath(spath);
-    m_pQuickLinkItem->appendChild(new TreeItem(this, name, vpath));
+    m_pQuickLinkItem->appendChild(name, vpath);
     m_quickLinkList.append(spath);
     saveQuickLinks();
 }

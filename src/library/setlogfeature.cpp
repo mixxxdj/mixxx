@@ -21,8 +21,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
                                                    true); //show all tracks
 
     //construct child model
-    TreeItem *rootItem = new TreeItem(this);
-    m_childModel.setRootItem(rootItem);
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_childModel.setRootItem(std::move(pRootItem));
     constructChildModel(-1);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);

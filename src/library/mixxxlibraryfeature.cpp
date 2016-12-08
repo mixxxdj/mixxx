@@ -108,11 +108,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
 
-    TreeItem* pRootItem = new TreeItem(this);
-    pRootItem->appendChild(new TreeItem(this, kMissingTitle));
-    pRootItem->appendChild(new TreeItem(this, kHiddenTitle));
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    pRootItem->appendChild(kMissingTitle);
+    pRootItem->appendChild(kHiddenTitle);
 
-    m_childModel.setRootItem(pRootItem);
+    m_childModel.setRootItem(std::move(pRootItem));
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {

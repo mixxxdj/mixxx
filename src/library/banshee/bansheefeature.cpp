@@ -91,25 +91,19 @@ void BansheeFeature::activate() {
 
         m_isActivated =  true;
 
-        TreeItem* playlist_root = new TreeItem(this);
-
-        QList<struct BansheeDbConnection::Playlist> list = m_connection.getPlaylists();
-
-        struct BansheeDbConnection::Playlist playlist;
-        foreach (playlist, list) {
+        auto pRootItem = std::make_unique<TreeItem>(this);
+        QList<BansheeDbConnection::Playlist> playlists = m_connection.getPlaylists();
+        for (const BansheeDbConnection::Playlist& playlist: playlists) {
             qDebug() << playlist.name;
             // append the playlist to the child model
-            playlist_root->appendChild(
-                    new TreeItem(this, playlist.name, playlist.playlistId));
+            pRootItem->appendChild(playlist.name, playlist.playlistId);
         }
+        m_childModel.setRootItem(std::move(pRootItem));
 
-        if (playlist_root) {
-            m_childModel.setRootItem(playlist_root);
-            if (m_isActivated) {
-                activate();
-            }
-            qDebug() << "Banshee library loaded: success";
+        if (m_isActivated) {
+            activate();
         }
+        qDebug() << "Banshee library loaded: success";
 
         //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
         m_title = tr("Banshee");

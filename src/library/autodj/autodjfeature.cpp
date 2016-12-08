@@ -56,14 +56,14 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
 
 
     // Create the "Crates" tree-item under the root item.
-    TreeItem* root = new TreeItem(this);
-    m_pCratesTreeItem = root->appendChild(new TreeItem(this, tr("Crates")));
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
 
     // Create tree-items under "Crates".
     constructCrateChildModel();
 
-    m_childModel.setRootItem(root);
+    m_childModel.setRootItem(std::move(pRootItem));
 
     // Be notified when the status of crates changes.
     connect(&m_crateDao, SIGNAL(added(int)),
@@ -323,7 +323,7 @@ void AutoDJFeature::constructCrateChildModel() {
         m_crateList.append(qMakePair(id, name));
 
         // Create the TreeItem for this crate.
-        m_pCratesTreeItem->appendChild(new TreeItem(this, name));
+        m_pCratesTreeItem->appendChild(name);
     }
 }
 

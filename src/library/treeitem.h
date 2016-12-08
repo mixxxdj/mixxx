@@ -7,6 +7,9 @@
 
 #include "library/libraryfeature.h"
 
+#include "util/memory.h"
+
+
 class TreeItem final {
   public:
     static const int kInvalidRow = -1;
@@ -58,14 +61,16 @@ class TreeItem final {
     }
     TreeItem* child(int row) const;
 
-    /** appends a child item to this object **/
-    TreeItem* appendChild(TreeItem* pChild);
-    /** remove a child item at the given index **/
+    // single child items
+    TreeItem* appendChild(
+            std::unique_ptr<TreeItem> pChild);
+    TreeItem* appendChild(
+            const QString& label,
+            const QVariant& data = QVariant());
     void removeChild(int row);
 
-    /** for dynamic resizing models **/
-    void insertChildren(const QList<TreeItem*>& children, int row, int count);
-    /** Removes <count> children from the child list starting at index <position> **/
+    // multiple child items
+    void insertChildren(QList<TreeItem*>& children, int row, int count); // take ownership
     void removeChildren(int row, int count);
 
 
@@ -102,6 +107,8 @@ class TreeItem final {
     }
 
   private:
+    void appendChild(TreeItem* pChild);
+
     LibraryFeature* m_pFeature;
 
     TreeItem* m_pParent;

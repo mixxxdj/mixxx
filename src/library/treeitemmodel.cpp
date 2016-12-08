@@ -28,11 +28,10 @@
  */
 TreeItemModel::TreeItemModel(QObject *parent)
         : QAbstractItemModel(parent),
-          m_pRootItem(new TreeItem()) {
+          m_pRootItem(std::make_unique<TreeItem>()) {
 }
 
 TreeItemModel::~TreeItemModel() {
-    delete m_pRootItem;
 }
 
 //Our Treeview Model supports exactly a single column
@@ -42,11 +41,9 @@ int TreeItemModel::columnCount(const QModelIndex &parent) const {
 }
 
 QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return QVariant();
-
-    if (role != Qt::DisplayRole && role != kDataRole && role != kBoldRole)
-        return QVariant();
+    }
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
@@ -67,7 +64,7 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
                             const QVariant &a_rValue, int a_iRole) {
     // Get the item referred to by this index.
     TreeItem *pItem = static_cast<TreeItem*>(a_rIndex.internalPointer());
-    if (pItem == NULL) {
+    if (pItem == nullptr) {
         return false;
     }
 
@@ -91,10 +88,11 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
 }
 
 Qt::ItemFlags TreeItemModel::flags(const QModelIndex &index) const {
-    if (!index.isValid())
+    if (index.isValid()) {
+        return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    } else {
         return 0;
-
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    }
 }
 
 QVariant TreeItemModel::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -105,52 +103,50 @@ QVariant TreeItemModel::headerData(int section, Qt::Orientation orientation, int
 }
 
 QModelIndex TreeItemModel::index(int row, int column, const QModelIndex &parent) const {
-    if (!hasIndex(row, column, parent))
+    if (!hasIndex(row, column, parent)) {
         return QModelIndex();
+    }
 
-    TreeItem *parentItem = NULL;
-
-    if (!parent.isValid())
-        parentItem = m_pRootItem;
-    else
+    TreeItem *parentItem;
+    if (parent.isValid()) {
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
+    } else {
+        parentItem = getRootItem();
+    }
 
     TreeItem *childItem = parentItem->child(row);
-    if (childItem)
+    if (childItem) {
         return createIndex(row, column, childItem);
-    else
+    } else {
         return QModelIndex();
+    }
 }
 
-QModelIndex TreeItemModel::parent(const QModelIndex &index) const {
-    if (!index.isValid())
+QModelIndex TreeItemModel::parent(const QModelIndex& index) const {
+    if (!index.isValid()) {
         return QModelIndex();
+    }
 
     TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
     TreeItem *parentItem = childItem->parent();
-
-    if (parentItem == m_pRootItem)
+    if (parentItem == getRootItem()) {
         return QModelIndex();
-
-    return createIndex(parentItem->parentRow(), 0, parentItem);
+    } else {
+        return createIndex(parentItem->parentRow(), 0, parentItem);
+    }
 }
 
-int TreeItemModel::rowCount(const QModelIndex &parent) const {
-    if (parent.column() > 0)
+int TreeItemModel::rowCount(const QModelIndex& parent) const {
+    if (parent.column() > 0) {
         return 0;
-
-    TreeItem *parentItem = NULL;
-    //qDebug() << "parent data: " << parent.getData();
-    if (!parent.isValid()) {
-        parentItem = m_pRootItem;
     }
-    else{
+
+    TreeItem* parentItem;
+    if (parent.isValid()) {
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
-
+    } else {
+        parentItem = getRootItem();
     }
-
-    //qDebug() << "TreeItem data: " << parent.internalPointer();
-
     return parentItem->childRows();
 }
 
@@ -158,10 +154,10 @@ int TreeItemModel::rowCount(const QModelIndex &parent) const {
  * Populates the model and notifies the view.
  * Call this method first, before you do call any other methods.
  */
-void TreeItemModel::setRootItem(TreeItem *item) {
-    delete m_pRootItem;
-    m_pRootItem = item;
+TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
+    m_pRootItem = std::move(pRootItem);
     reset();
+    return getRootItem();
 }
 
 /**
@@ -196,10 +192,12 @@ bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent
 
 TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
     if (index.isValid()) {
-        TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-        if (item) return item;
+        TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+        if (pItem != nullptr) {
+            return pItem;
+        }
     }
-    return m_pRootItem;
+    return getRootItem();
 }
 
 void TreeItemModel::triggerRepaint() {

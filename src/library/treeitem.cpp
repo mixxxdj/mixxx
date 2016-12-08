@@ -61,13 +61,22 @@ TreeItem* TreeItem::child(int row) const {
     return m_children[row];
 }
 
-TreeItem* TreeItem::appendChild(TreeItem* pChild) {
+void TreeItem::appendChild(TreeItem* pChild) {
     DEBUG_ASSERT(feature() != nullptr);
     DEBUG_ASSERT(pChild != nullptr);
     DEBUG_ASSERT(pChild->feature() == feature());
     DEBUG_ASSERT(!pChild->hasParent());
     m_children.append(pChild);
     pChild->m_pParent = this;
+}
+
+TreeItem* TreeItem::appendChild(
+        const QString& label,
+        const QVariant& data) {
+    auto pNewChild = std::make_unique<TreeItem>(feature(), label, data);
+    TreeItem* pChild = pNewChild.get();
+    appendChild(pChild); // transfer ownership
+    pNewChild.release(); // release ownership (afterwards)
     return pChild;
 }
 
@@ -77,19 +86,17 @@ void TreeItem::removeChild(int row) {
     delete m_children.takeAt(row);
 }
 
-void TreeItem::insertChildren(const QList<TreeItem*>& children, int row, int count) {
+void TreeItem::insertChildren(QList<TreeItem*>& children, int row, int count) {
     DEBUG_ASSERT(feature() != nullptr);
     DEBUG_ASSERT(count >= 0);
     DEBUG_ASSERT(count <= children.size());
     DEBUG_ASSERT(row >= 0);
     DEBUG_ASSERT(row <= m_children.size());
-    for (int offset = 0; offset < count; ++offset) {
-        TreeItem* pChild = children[offset];
-        DEBUG_ASSERT(pChild != nullptr);
-        DEBUG_ASSERT(pChild->feature() == feature());
-        DEBUG_ASSERT(!pChild->hasParent());
-        m_children.insert(row + offset, pChild);
-        pChild->m_pParent = this;
+    for (int counter = 0; counter < count; ++counter) {
+        DEBUG_ASSERT(!children.empty());
+        TreeItem* pChild = children.front();
+        appendChild(pChild);
+        children.pop_front();
     }
 }
 

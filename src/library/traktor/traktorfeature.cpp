@@ -410,14 +410,14 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                     current_path += name;
                     //qDebug() << "Folder: " +current_path << " has parent " << parent->getData().toString();
                     map.insert(current_path, "FOLDER");
-                    parent = parent->appendChild(new TreeItem(this, name, current_path));
+                    parent = parent->appendChild(name, current_path);
                } else if (type == "PLAYLIST") {
                     current_path += delimiter;
                     current_path += name;
                     //qDebug() << "Playlist: " +current_path << " has parent " << parent->getData().toString();
                     map.insert(current_path, "PLAYLIST");
 
-                    parent->appendChild(new TreeItem(this, name, current_path));
+                    parent->appendChild(name, current_path);
                     // process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml, current_path,
                                          query_insert_to_playlists,
@@ -598,9 +598,9 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 }
 
 void TraktorFeature::onTrackCollectionLoaded() {
-    TreeItem* root = m_future.result();
+    std::unique_ptr<TreeItem> root(m_future.result());
     if (root) {
-        m_childModel.setRootItem(root);
+        m_childModel.setRootItem(std::move(root));
         // Tell the traktor track source that it should re-build its index.
         m_trackSource->buildIndex();
 
