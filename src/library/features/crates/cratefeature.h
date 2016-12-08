@@ -51,11 +51,12 @@ class CrateFeature : public LibraryFeature {
     void analyzeTracks(QList<TrackId>);
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
+    void invalidateChild() override;
     void activateCrate(int crateId);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClick(const QPoint& globalPos) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
 
     void slotCreateCrate();
     void slotDeleteCrate();

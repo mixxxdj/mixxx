@@ -32,6 +32,7 @@
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
+#include "library/queryutil.h"
 #include "mixer/playermanager.h"
 #include "util/assert.h"
 #include "util/sandbox.h"
@@ -70,6 +71,7 @@ Library::Library(UserSettingsPointer pConfig,
     connect(&m_scanner, SIGNAL(scanFinished()),
             this, SLOT(slotRefreshLibraryModels()));
     
+    createTrackCache();
     createFeatures(pConfig, pPlayerManager);
 
     // On startup we need to check if all of the user's library folders are
@@ -175,7 +177,7 @@ void Library::destroyInterface() {
     }
     
     for (LibraryFeature* f : m_features) {
-        f->setFeaturePane(-1);
+        f->setFeaturePaneId(-1);
     }
     m_panes.clear();
 }
@@ -208,6 +210,15 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SIGNAL(enableCoverArtDisplay(bool)));
     connect(feature, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+
+    connect(feature, SIGNAL(hovered(LibraryFeature*)),
+            this, SLOT(slotSetHoveredFeature(LibraryFeature*)));
+    connect(feature, SIGNAL(leaved(LibraryFeature*)),
+            this, SLOT(slotResetHoveredFeature(LibraryFeature*)));
+    connect(feature, SIGNAL(focusIn(LibraryFeature*)),
+            this, SLOT(slotSetFocusedFeature(LibraryFeature*)));
+    connect(feature, SIGNAL(focusOut(LibraryFeature*)),
+            this, SLOT(slotResetFocusedFeature(LibraryFeature*)));
 }
 
 void Library::switchToFeature(LibraryFeature* pFeature) {
@@ -287,7 +298,7 @@ void Library::paneFocused(LibraryPaneManager* pPane) {
     
     if (pPane != m_pSidebarExpanded) {
         m_focusedPaneId = pPane->getPaneId();
-        pPane->getCurrentFeature()->setFeaturePane(m_focusedPaneId);
+        pPane->getCurrentFeature()->setFeaturePaneId(m_focusedPaneId);
         DEBUG_ASSERT_AND_HANDLE(m_focusedPaneId != -1) {
             return;
         }
@@ -346,15 +357,14 @@ void Library::onSkinLoadFinished() {
                 first = false;
                 // Set the first pane as saved pane to all features
                 for (LibraryFeature* pFeature : m_features) {
-                    pFeature->setSavedPane(m_preselectedPane);
+                    pFeature->setFeaturePaneId(m_preselectedPane);
                 }
             }
             
             m_savedFeatures[m_preselectedPane] = *itF;
             (*itP)->setCurrentFeature(*itF);
             
-            (*itF)->setFeaturePane(m_preselectedPane);
-            (*itF)->setSavedPane(m_preselectedPane);
+            (*itF)->setFeaturePaneId(m_preselectedPane);
             (*itF)->activate();
             
             ++itP;
@@ -364,7 +374,7 @@ void Library::onSkinLoadFinished() {
         // The first pane always shows the Mixxx Library feature on start
         m_preselectedPane = m_focusedPaneId = m_panes.begin().key();
         handleFocus();
-        (*m_features.begin())->setFeaturePane(m_preselectedPane);
+        (*m_features.begin())->setFeaturePaneId(m_preselectedPane);
         slotActivateFeature(*m_features.begin());
     }
     else {
@@ -484,14 +494,14 @@ void Library::paneUncollapsed(int paneId) {
     if (pFeature == nullptr) {
         return;
     }
-    pFeature->setFeaturePane(pPane->getPaneId());
+    pFeature->setFeaturePaneId(pPane->getPaneId());
     
     for (LibraryPaneManager* pPane : m_panes) {
         int auxId = pPane->getPaneId();
         if (auxId != paneId && pFeature == pPane->getCurrentFeature()) {
             LibraryFeature* pSaved = m_savedFeatures[auxId];
             pPane->switchToFeature(pSaved);
-            pSaved->setFeaturePane(auxId);
+            pSaved->setFeaturePaneId(auxId);
             pSaved->activate();
         }
     }    
@@ -501,14 +511,13 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
     int selectedPane = m_preselectedPane;
     if (selectedPane  < 0) {
         // No pane is preselected, use the saved pane instead
-        selectedPane  = pFeature->getSavedPane();
+        selectedPane  = pFeature->getFeaturePaneId();
     }
     
     bool featureActivated = false;
     LibraryPaneManager* pSelectedPane = m_panes.value(selectedPane);
     if (pSelectedPane) {
-        pFeature->setSavedPane(selectedPane);
-        pFeature->setFeaturePane(selectedPane);
+        pFeature->setFeaturePaneId(selectedPane);
 
         if (pSelectedPane->getCurrentFeature() != pFeature) {
             pSelectedPane->setCurrentFeature(pFeature);
@@ -547,14 +556,14 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
 
 void Library::slotSetHoveredFeature(LibraryFeature* pFeature) {
     m_hoveredFeature = pFeature;
-    m_previewPreselectedPane = pFeature->getSavedPane();
+    m_previewPreselectedPane = pFeature->getFeaturePaneId();
     handlePreselection();
 }
 
 void Library::slotResetHoveredFeature(LibraryFeature* pFeature) {
     if (pFeature == m_hoveredFeature) {
         if (m_focusedFeature) {
-            m_previewPreselectedPane = m_focusedFeature->getSavedPane();
+            m_previewPreselectedPane = m_focusedFeature->getFeaturePaneId();
         } else {
             m_previewPreselectedPane = -1;
         }
@@ -565,14 +574,14 @@ void Library::slotResetHoveredFeature(LibraryFeature* pFeature) {
 
 void Library::slotSetFocusedFeature(LibraryFeature* pFeature) {
     m_focusedFeature = pFeature;
-    m_previewPreselectedPane = pFeature->getSavedPane();
+    m_previewPreselectedPane = pFeature->getFeaturePaneId();
     handlePreselection();
 }
 
 void Library::slotResetFocusedFeature(LibraryFeature* pFeature) {
     if (pFeature == m_focusedFeature) {
         if (m_hoveredFeature) {
-            m_previewPreselectedPane = m_hoveredFeature->getSavedPane();
+            m_previewPreselectedPane = m_hoveredFeature->getFeaturePaneId();
         } else {
             m_previewPreselectedPane = -1;
         }
@@ -616,6 +625,73 @@ LibraryPaneManager* Library::getFocusedPane() {
 LibraryPaneManager* Library::getPreselectedPane() {
     return m_panes.value(m_preselectedPane);
 }
+
+void Library::createTrackCache() {
+    QStringList columns;
+    columns << "library." + LIBRARYTABLE_ID
+            << "library." + LIBRARYTABLE_PLAYED
+            << "library." + LIBRARYTABLE_TIMESPLAYED
+            //has to be up here otherwise Played and TimesPlayed are not show
+            << "library." + LIBRARYTABLE_ALBUMARTIST
+            << "library." + LIBRARYTABLE_ALBUM
+            << "library." + LIBRARYTABLE_ARTIST
+            << "library." + LIBRARYTABLE_TITLE
+            << "library." + LIBRARYTABLE_YEAR
+            << "library." + LIBRARYTABLE_RATING
+            << "library." + LIBRARYTABLE_GENRE
+            << "library." + LIBRARYTABLE_COMPOSER
+            << "library." + LIBRARYTABLE_GROUPING
+            << "library." + LIBRARYTABLE_TRACKNUMBER
+            << "library." + LIBRARYTABLE_KEY
+            << "library." + LIBRARYTABLE_KEY_ID
+            << "library." + LIBRARYTABLE_BPM
+            << "library." + LIBRARYTABLE_BPM_LOCK
+            << "library." + LIBRARYTABLE_DURATION
+            << "library." + LIBRARYTABLE_BITRATE
+            << "library." + LIBRARYTABLE_REPLAYGAIN
+            << "library." + LIBRARYTABLE_FILETYPE
+            << "library." + LIBRARYTABLE_DATETIMEADDED
+            << "track_locations.location"
+            << "track_locations.fs_deleted"
+            << "track_locations.directory"
+            << "library." + LIBRARYTABLE_COMMENT
+            << "library." + LIBRARYTABLE_MIXXXDELETED
+            << "library." + LIBRARYTABLE_COVERART_SOURCE
+            << "library." + LIBRARYTABLE_COVERART_TYPE
+            << "library." + LIBRARYTABLE_COVERART_LOCATION
+            << "library." + LIBRARYTABLE_COVERART_HASH;
+
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QString tableName = "library_cache_view";
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM library "
+        "INNER JOIN track_locations ON library.location = track_locations.id")
+            .arg(tableName, columns.join(","));
+    qDebug() << queryString;
+    query.prepare(queryString);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Strip out library. and track_locations.
+    for (QStringList::iterator it = columns.begin();
+         it != columns.end(); ++it) {
+        if (it->startsWith("library.")) {
+            *it = it->replace("library.", "");
+        } else if (it->startsWith("track_locations.")) {
+            *it = it->replace("track_locations.", "");
+        }
+    }
+
+    QSharedPointer<BaseTrackCache> pBaseTrackCache(
+            new BaseTrackCache(
+                    m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true));
+
+    m_pTrackCollection->setTrackSource(pBaseTrackCache);
+}
+
+
 
 void Library::createFeatures(UserSettingsPointer pConfig,
                              PlayerManagerInterface* pPlayerManager) {
@@ -698,13 +774,8 @@ void Library::handleFocus() {
 
 void Library::handlePreselection() {
     for (LibraryPaneManager* pPane : m_panes) {
-
-
         pPane->setPreselected(false);
         pPane->setPreviewed(false);
-
-
-
     }
     LibraryPaneManager* pSelectedPane = m_panes.value(m_preselectedPane);
     if (pSelectedPane) {

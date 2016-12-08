@@ -69,14 +69,11 @@ class LibraryFeature : public QObject {
     
     virtual TreeItemModel* getChildModel() = 0;
     
-    virtual void setFeaturePane(int paneId);
+    virtual void setFeaturePaneId(int paneId);
     int getFeaturePaneId();
     
-    void setSavedPane(int paneId);
-    int getSavedPane();
-    
     int getFocusedPane();
-    int getPreselectedPane();
+    void adoptPreselectedPane();
     
     virtual SavedSearchQuery saveQuery(SavedSearchQuery sQuery);
     virtual void restoreQuery(int id);
@@ -87,6 +84,8 @@ class LibraryFeature : public QObject {
     virtual void activate() = 0;
     // called when you single click on a child item, e.g., a concrete playlist or crate
     virtual void activateChild(const QModelIndex&) {}
+    // called when the QModelIndex passed by activateChild() becomes invalid.
+    virtual void invalidateChild() {}
     // called when you right click on the root item
     virtual void onRightClick(const QPoint&) {}
     // called when you right click on a child item, e.g., a concrete playlist or crate
@@ -98,6 +97,11 @@ class LibraryFeature : public QObject {
     
     virtual void onSearch(const QString&) {}
     
+    void slotSetHoveredSidebar() { emit hovered(this); };
+    void slotResetHoveredSidebar() { emit leaved(this); };
+    void slotSetFocusedSidebar() { emit focusIn(this); };
+    void slotResetFocusedSidebar() { emit focusOut(this); };
+
   signals:
     
     void loadTrack(TrackPointer);
@@ -115,6 +119,11 @@ class LibraryFeature : public QObject {
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer);
     
+    void hovered(LibraryFeature* pLibraryFeature);
+    void leaved(LibraryFeature* pLibraryFeature);
+    void focusIn(LibraryFeature* pLibraryFeature);
+    void focusOut(LibraryFeature* pLibraryFeature);
+
   protected slots:
     void restoreSaveButton();
     
@@ -157,7 +166,6 @@ class LibraryFeature : public QObject {
     SavedQueriesDAO& m_savedDAO;
     
     int m_featurePane;
-    int m_savedPane;
     
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode);
