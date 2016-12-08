@@ -11,7 +11,7 @@ class TreeItem;
 class TreeItemModel : public QAbstractItemModel {
     Q_OBJECT
   public:
-    static const int kDataPathRole = Qt::UserRole;
+    static const int kDataRole = Qt::UserRole;
     static const int kBoldRole = Qt::UserRole + 1;
 
     TreeItemModel(QObject *parent = 0);

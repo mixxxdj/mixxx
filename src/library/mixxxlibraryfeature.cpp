@@ -108,13 +108,9 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
 
-    TreeItem* pRootItem = new TreeItem();
-    TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
-                                               this, pRootItem);
-    TreeItem* phiddenChildItem = new TreeItem(kHiddenTitle, kHiddenTitle,
-                                              this, pRootItem);
-    pRootItem->appendChild(pmissingChildItem);
-    pRootItem->appendChild(phiddenChildItem);
+    TreeItem* pRootItem = new TreeItem(this);
+    pRootItem->appendChild(new TreeItem(this, kMissingTitle));
+    pRootItem->appendChild(new TreeItem(this, kHiddenTitle));
 
     m_childModel.setRootItem(pRootItem);
 }

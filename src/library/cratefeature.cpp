@@ -94,7 +94,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
             this, SLOT(slotCrateTableChanged(int)));
 
     // construct child model
-    TreeItem *rootItem = new TreeItem();
+    TreeItem *rootItem = new TreeItem(this);
     m_childModel.setRootItem(rootItem);
     constructChildModel(-1);
 
@@ -131,9 +131,8 @@ int CrateFeature::crateIdFromIndex(QModelIndex index) {
         return -1;
     }
 
-    QString dataPath = item->dataPath().toString();
     bool ok = false;
-    int playlistId = dataPath.toInt(&ok);
+    int playlistId = item->getData().toInt(&ok);
     if (!ok) {
         return -1;
     }
@@ -512,8 +511,6 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
     buildCrateList();
     QList<TreeItem*> data_list;
     int selected_row = -1;
-    // Access the invisible root item
-    TreeItem* root = m_childModel.getItem(QModelIndex());
 
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
@@ -528,8 +525,8 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(crate_name, QString::number(crate_id), this, root);
         bool locked = m_crateDao.isCrateLocked(crate_id);
+        TreeItem* item = new TreeItem(this, crate_name, crate_id);
         item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
         item->setBold(m_cratesSelectedTrackIsIn.contains(crate_id));
         data_list.append(item);
@@ -554,7 +551,8 @@ void CrateFeature::updateChildModel(int selected_id) {
 
         if (selected_id == crate_id) {
             TreeItem* item = m_childModel.getItem(indexFromCrateId(crate_id));
-            item->setData(crate_name, QString::number(crate_id));
+            item->setLabel(crate_name);
+            item->setData(crate_id);
             bool locked = m_crateDao.isCrateLocked(crate_id);
             item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
 

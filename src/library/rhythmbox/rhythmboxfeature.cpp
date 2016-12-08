@@ -220,7 +220,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
             "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
             "VALUES (:playlist_id, :track_id, :position)");
     //The tree structure holding the playlists
-    TreeItem* rootItem = new TreeItem();
+    TreeItem* rootItem = new TreeItem(this);
 
     QXmlStreamReader xml(&db);
     while (!xml.atEnd() && !m_cancelImport) {
@@ -233,8 +233,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
                 QString playlist_name = attr.value("name").toString();
 
                 //Construct the childmodel
-                TreeItem * item = new TreeItem(playlist_name, playlist_name, this, rootItem);
-                rootItem->appendChild(item);
+                rootItem->appendChild(new TreeItem(this, playlist_name));
 
                 //Execute SQL statement
                 query_insert_to_playlists.bindValue(":name", playlist_name);

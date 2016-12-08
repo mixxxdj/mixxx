@@ -27,7 +27,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
                                                    "mixxx.db.model.playlist");
 
     //construct child model
-    TreeItem *rootItem = new TreeItem();
+    TreeItem *rootItem = new TreeItem(this);
     m_childModel.setRootItem(rootItem);
     constructChildModel(-1);
 }

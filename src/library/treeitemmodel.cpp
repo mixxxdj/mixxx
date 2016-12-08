@@ -45,18 +45,22 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole && role != kDataPathRole && role != kBoldRole)
+    if (role != Qt::DisplayRole && role != kDataRole && role != kBoldRole)
         return QVariant();
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
-    // We use Qt::UserRole to ask for the datapath.
-    if (role == kDataPathRole) {
-        return item->dataPath();
-    } else if (role == kBoldRole) {
+    // We use Qt::UserRole to ask for the data.
+    switch (role) {
+    case Qt::DisplayRole:
+        return item->getLabel();
+    case kDataRole:
+        return item->getData();
+    case kBoldRole:
         return item->isBold();
+    default:
+        return QVariant();
     }
-    return item->data();
 }
 
 bool TreeItemModel::setData(const QModelIndex &a_rIndex,
@@ -70,10 +74,10 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
     // Set the relevant data.
     switch (a_iRole) {
     case Qt::DisplayRole:
-        pItem->setData(a_rValue, pItem->dataPath());
+        pItem->setLabel(a_rValue.toString());
         break;
-    case kDataPathRole:
-        pItem->setData(pItem->data(), a_rValue);
+    case kDataRole:
+        pItem->setData(a_rValue);
         break;
     case kBoldRole:
         pItem->setBold(a_rValue.toBool());
@@ -128,7 +132,7 @@ QModelIndex TreeItemModel::parent(const QModelIndex &index) const {
     if (parentItem == m_pRootItem)
         return QModelIndex();
 
-    return createIndex(parentItem->row(), 0, parentItem);
+    return createIndex(parentItem->parentRow(), 0, parentItem);
 }
 
 int TreeItemModel::rowCount(const QModelIndex &parent) const {
@@ -136,7 +140,7 @@ int TreeItemModel::rowCount(const QModelIndex &parent) const {
         return 0;
 
     TreeItem *parentItem = NULL;
-    //qDebug() << "parent data: " << parent.data();
+    //qDebug() << "parent data: " << parent.getData();
     if (!parent.isValid()) {
         parentItem = m_pRootItem;
     }
@@ -147,7 +151,7 @@ int TreeItemModel::rowCount(const QModelIndex &parent) const {
 
     //qDebug() << "TreeItem data: " << parent.internalPointer();
 
-    return parentItem->childCount();
+    return parentItem->childRows();
 }
 
 /**
@@ -155,8 +159,7 @@ int TreeItemModel::rowCount(const QModelIndex &parent) const {
  * Call this method first, before you do call any other methods.
  */
 void TreeItemModel::setRootItem(TreeItem *item) {
-    if(m_pRootItem) delete m_pRootItem;
-
+    delete m_pRootItem;
     m_pRootItem = item;
     reset();
 }
@@ -172,10 +175,10 @@ bool TreeItemModel::insertRows(QList<TreeItem*> &data, int position, int rows, c
     TreeItem *parentItem = getItem(parent);
 
     beginInsertRows(parent, position, position + rows - 1);
-    bool success = parentItem->insertChildren(data, position, rows);
+    parentItem->insertChildren(data, position, rows);
     endInsertRows();
 
-    return success;
+    return true;
 }
 
 bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent) {
@@ -185,10 +188,10 @@ bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent
     TreeItem *parentItem = getItem(parent);
 
     beginRemoveRows(parent, position, position + rows - 1);
-    bool success = parentItem->removeChildren(position, rows);
+    parentItem->removeChildren(position, rows);
     endRemoveRows();
 
-    return success;
+    return true;
 }
 
 TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {

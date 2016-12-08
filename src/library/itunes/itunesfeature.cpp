@@ -587,7 +587,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
 
 TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader &xml) {
     qDebug() << "Parse iTunes playlists";
-    TreeItem* rootItem = new TreeItem();
+    TreeItem* rootItem = new TreeItem(this);
     QSqlQuery query_insert_to_playlists(m_database);
     query_insert_to_playlists.prepare("INSERT INTO itunes_playlists (id, name) "
                                       "VALUES (:id, :name)");
@@ -684,9 +684,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                         return;
                     }
                     //append the playlist to the child model
-                    TreeItem *item = new TreeItem(playlistname, playlistname, this, root);
-                    root->appendChild(item);
-
+                    root->appendChild(new TreeItem(this, playlistname));
                 }
                 // When processing playlist entries, playlist name and id have
                 // already been processed and persisted
