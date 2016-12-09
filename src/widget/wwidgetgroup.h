@@ -42,7 +42,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     Qt::Alignment layoutAlignment() const;
     void setLayoutAlignment(int alignment);
 
-    void setup(const QDomNode& node, const SkinContext& context);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
     void addWidget(QWidget* pChild);
 
@@ -52,7 +52,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     bool event(QEvent* pEvent) override;
     void fillDebugTooltip(QStringList* debug) override;
 
-  private:
+  protected:
     // Associated background pixmap
     PaintablePointer m_pPixmapBack;
 };
