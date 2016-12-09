@@ -74,6 +74,7 @@ int WHighlightingGroup::getHighlightedId() const {
 
 void WHighlightingGroup::setHighlight(int highlight) {
     m_highlight = highlight;
+    update();
     emit highlightChanged(m_highlight);
 }
 

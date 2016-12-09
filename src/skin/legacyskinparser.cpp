@@ -70,6 +70,7 @@
 #include "widget/wwidgetstack.h"
 #include "widget/wsizeawarestack.h"
 #include "widget/wwidgetgroup.h"
+#include "widget/whighlightinggroup.h"
 #include "widget/wkey.h"
 #include "widget/wbattery.h"
 #include "widget/wcombobox.h"
@@ -612,17 +613,12 @@ QWidget* LegacySkinParser::parseSplitter(const QDomElement& node) {
     return pSplitter;
 }
 
-QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
-    WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
-    commonWidgetSetup(node, pGroup);
-    pGroup->setup(node, *m_pContext);
-    pGroup->Init();
-
+void LegacySkinParser::parseChildren(
+        const QDomElement& node,
+        WWidgetGroup* pGroup) {
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
-
     QWidget* pOldParent = m_pParent;
     m_pParent = pGroup;
-
     if (!childrenNode.isNull()) {
         // Descend children
         QDomNodeList children = childrenNode.childNodes();
@@ -630,7 +626,6 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
             QDomNode node = children.at(i);
             if (node.isElement()) {
                 QList<QWidget*> children = parseNode(node.toElement());
-
                 foreach (QWidget* pChild, children) {
                     if (pChild == NULL) {
                         continue;
@@ -641,11 +636,24 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
         }
     }
     m_pParent = pOldParent;
+}
+
+QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
+    WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
+    commonWidgetSetup(node, pGroup);
+    pGroup->setup(node, *m_pContext);
+    pGroup->Init();
+    parseChildren(node, pGroup);
     return pGroup;
 }
 
 QWidget* LegacySkinParser::parseHighlightingGroup(const QDomElement& node) {
-    return parseWidgetGroup(node);
+    WHighlightingGroup* pGroup = new WHighlightingGroup(m_pParent);
+    commonWidgetSetup(node, pGroup);
+    pGroup->setup(node, *m_pContext);
+    pGroup->Init();
+    parseChildren(node, pGroup);
+    return pGroup;
 }
 
 QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
