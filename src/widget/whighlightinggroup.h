@@ -7,6 +7,15 @@ class SkinContext;
 
 // The WHighlightingGroup can be used to highlight a group of widgets by
 // changing the background or any other css style option.
+// Example skin:
+// <HighlightingGroup>
+//  <Id>1</Id>
+//  <BackPathHighlighted>style/style_bg_effect1_high</BackPathHighlighted>
+//  <Connection>
+//   <ConfigKey>[EffectRack1_EffectUnit1],single_effect_focus</ConfigKey>
+//   <BindProperty>highlightedId</BindProperty>
+//  </Connection>
+// </HighlightingGroup>
 
 class WHighlightingGroup : public WWidgetGroup {
     Q_OBJECT
@@ -21,7 +30,7 @@ class WHighlightingGroup : public WWidgetGroup {
     Q_PROPERTY(int highlight READ getHighlight WRITE setHighlight NOTIFY highlightChanged)
 
     // The highlightedId property is used to select the highlighted widget
-    // group by it's Id
+    // group by it's Id, which can be set from skin by <Id>4</Id>
     Q_PROPERTY(int highlightedId READ getHighlight WRITE setHighlightedId NOTIFY highlightChanged)
 
     int getHighlight() const;
