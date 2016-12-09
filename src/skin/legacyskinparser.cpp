@@ -535,6 +535,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseWidgetGroup(node));
     } else if (nodeName == "WidgetStack") {
         result = wrapWidget(parseWidgetStack(node));
+    } else if (nodeName == "HighlightingGroup") {
+        result = wrapWidget(parseHighlightingGroup(node));
     } else if (nodeName == "SizeAwareStack") {
         result = wrapWidget(parseSizeAwareStack(node));
     } else if (nodeName == "EffectChainName") {
@@ -640,6 +642,10 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
     }
     m_pParent = pOldParent;
     return pGroup;
+}
+
+QWidget* LegacySkinParser::parseHighlightingGroup(const QDomElement& node) {
+    return parseWidgetGroup(node);
 }
 
 QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {

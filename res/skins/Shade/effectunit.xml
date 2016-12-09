@@ -15,7 +15,7 @@
 				</Style>
 				<BackPath>style/style_bg_effectunit</BackPath>
 				<Children>
-					<WidgetGroup>
+					<HighlightingGroup>
 						<Pos>5,5</Pos>
 						<Size>495,45</Size>
 						<Layout>horizontal</Layout>
@@ -32,8 +32,8 @@
 								<SetVariable name="effectnum">1</SetVariable>
 							</Template>
 						</Children>
-					</WidgetGroup>
-					<WidgetGroup>
+					</HighlightingGroup>
+					<HighlightingGroup>
 						<Pos>5,50</Pos>
 						<Size>495,45</Size>
 						<Layout>horizontal</Layout>
@@ -50,7 +50,7 @@
 								<SetVariable name="effectnum">2</SetVariable>
 							</Template>
 						</Children>
-					</WidgetGroup>	
+					</HighlightingGroup>	
 				</Children>		
 			</WidgetGroup>	
 		</Children>		
