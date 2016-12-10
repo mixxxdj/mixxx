@@ -13,7 +13,6 @@
 #include "library/crate/cratetablemodel.h"
 
 #include "library/libraryfeature.h"
-#include "library/library.h"
 #include "library/treeitemmodel.h"
 
 #include "track/track.h"
@@ -21,6 +20,7 @@
 #include "preferences/usersettings.h"
 
 // forward declaration(s)
+class Library;
 class TrackCollection;
 
 
@@ -30,30 +30,32 @@ class CrateFeature : public LibraryFeature {
     CrateFeature(Library* pLibrary,
                  TrackCollection* pTrackCollection,
                  UserSettingsPointer pConfig);
-    virtual ~CrateFeature();
+    ~CrateFeature() override;
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                         QObject* pSource);
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
+                         QObject* pSource) override;
+    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) override;
 
     void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+                    KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
+
+    CrateId createCrate();
 
   signals:
     void analyzeTracks(QList<TrackId>);
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
-    void activateCrate(CrateId crateId);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
+    void onRightClick(const QPoint& globalPos) override;
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
 
+  private slots:
     void slotCreateCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
@@ -70,13 +72,17 @@ class CrateFeature : public LibraryFeature {
     void slotCrateTableChanged(CrateId crateId);
     void slotCrateContentChanged(CrateId crateId);
     void htmlLinkClicked(const QUrl& link);
-
-  private slots:
     void slotTrackSelected(TrackPointer pTrack);
     void slotResetSelectedTrack();
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
 
   private:
+    void initActions();
+    void connectLibrary(Library* pLibrary);
+    void connectTrackCollection();
+
+    bool activateCrate(CrateId crateId);
+
     std::unique_ptr<TreeItem> newTreeItem(
             const CrateSummary& crateSummary,
             TrackId selectedTrackId);
@@ -87,35 +93,38 @@ class CrateFeature : public LibraryFeature {
             TreeItem* pTreeItem,
             TrackId selectedTrackId);
 
-    QString getRootViewHtml() const;
     QModelIndex rebuildChildModel(CrateId selectedCrateId = CrateId());
     void updateChildModel(const QSet<CrateId>& updatedCrateIds);
-    CrateId crateIdFromIndex(QModelIndex index);
-    // Get the QModelIndex of a crate based on its id.  Returns QModelIndex()
-    // on failure.
-    QModelIndex indexFromCrateId(CrateId crateId);
 
-    bool readLastRightClickedCrate(Crate* pCrate);
+    CrateId crateIdFromIndex(const QModelIndex& index) const;
+    QModelIndex indexFromCrateId(CrateId crateId) const;
+
+    bool readLastRightClickedCrate(Crate* pCrate) const;
+
+    QString formatRootViewHtml() const;
 
     const QIcon m_cratesIcon;
     const QIcon m_lockedCrateIcon;
 
     TrackCollection* m_pTrackCollection;
-    QAction *m_pCreateCrateAction;
-    QAction *m_pDeleteCrateAction;
-    QAction *m_pRenameCrateAction;
-    QAction *m_pLockCrateAction;
-    QAction *m_pDuplicateCrateAction;
-    QAction *m_pAutoDjTrackSource;
-    QAction *m_pImportPlaylistAction;
-    QAction *m_pCreateImportPlaylistAction;
-    QAction *m_pExportPlaylistAction;
-    QAction *m_pExportTrackFilesAction;
-    QAction *m_pAnalyzeCrateAction;
+
     CrateTableModel m_crateTableModel;
-    QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
+
+    QModelIndex m_lastRightClickedIndex;
     TrackPointer m_pSelectedTrack;
+
+    std::unique_ptr<QAction> m_pCreateCrateAction;
+    std::unique_ptr<QAction> m_pDeleteCrateAction;
+    std::unique_ptr<QAction> m_pRenameCrateAction;
+    std::unique_ptr<QAction> m_pLockCrateAction;
+    std::unique_ptr<QAction> m_pDuplicateCrateAction;
+    std::unique_ptr<QAction> m_pAutoDjTrackSourceAction;
+    std::unique_ptr<QAction> m_pImportPlaylistAction;
+    std::unique_ptr<QAction> m_pCreateImportPlaylistAction;
+    std::unique_ptr<QAction> m_pExportPlaylistAction;
+    std::unique_ptr<QAction> m_pExportTrackFilesAction;
+    std::unique_ptr<QAction> m_pAnalyzeCrateAction;
 };
 
 

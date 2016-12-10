@@ -7,18 +7,21 @@
 #include <QDesktopServices>
 
 #include "library/export/trackexportwizard.h"
+#include "library/library.h"
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
 #include "library/parsercsv.h"
-
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
-#include "widget/wlibrarytextbrowser.h"
-#include "widget/wlibrary.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+
 #include "sources/soundsourceproxy.h"
+
+#include "widget/wlibrary.h"
+#include "widget/wlibrarytextbrowser.h"
+
 #include "util/dnd.h"
+
 
 namespace {
 
@@ -41,51 +44,74 @@ CrateFeature::CrateFeature(Library* pLibrary,
           m_pTrackCollection(pTrackCollection),
           m_crateTableModel(this, pTrackCollection) {
 
-    m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
-    connect(m_pCreateCrateAction, SIGNAL(triggered()),
+    initActions();
+
+    // construct child model
+    m_childModel.setRootItem(std::make_unique<TreeItem>(this));
+    rebuildChildModel();
+
+    connectLibrary(pLibrary);
+    connectTrackCollection();
+}
+
+CrateFeature::~CrateFeature() {
+}
+
+void CrateFeature::initActions() {
+    m_pCreateCrateAction = std::make_unique<QAction>(tr("Create New Crate"),this);
+    connect(m_pCreateCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
 
-    m_pDeleteCrateAction = new QAction(tr("Remove"),this);
-    connect(m_pDeleteCrateAction, SIGNAL(triggered()),
+    m_pDeleteCrateAction = std::make_unique<QAction>(tr("Remove"),this);
+    connect(m_pDeleteCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotDeleteCrate()));
 
-    m_pRenameCrateAction = new QAction(tr("Rename"),this);
-    connect(m_pRenameCrateAction, SIGNAL(triggered()),
+    m_pRenameCrateAction = std::make_unique<QAction>(tr("Rename"),this);
+    connect(m_pRenameCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotRenameCrate()));
 
-    m_pLockCrateAction = new QAction(tr("Lock"),this);
-    connect(m_pLockCrateAction, SIGNAL(triggered()),
+    m_pLockCrateAction = std::make_unique<QAction>(tr("Lock"),this);
+    connect(m_pLockCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotToggleCrateLock()));
 
-    m_pImportPlaylistAction = new QAction(tr("Import Crate"),this);
-    connect(m_pImportPlaylistAction, SIGNAL(triggered()),
+    m_pImportPlaylistAction = std::make_unique<QAction>(tr("Import Crate"),this);
+    connect(m_pImportPlaylistAction.get(), SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
 
-    m_pCreateImportPlaylistAction = new QAction(tr("Import Crate"), this);
-    connect(m_pCreateImportPlaylistAction, SIGNAL(triggered()),
+    m_pCreateImportPlaylistAction = std::make_unique<QAction>(tr("Import Crate"), this);
+    connect(m_pCreateImportPlaylistAction.get(), SIGNAL(triggered()),
             this, SLOT(slotCreateImportCrate()));
 
-    m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
-    connect(m_pExportPlaylistAction, SIGNAL(triggered()),
+    m_pExportPlaylistAction = std::make_unique<QAction>(tr("Export Crate"), this);
+    connect(m_pExportPlaylistAction.get(), SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
 
-    m_pExportTrackFilesAction = new QAction(tr("Export Track Files"), this);
-    connect(m_pExportTrackFilesAction, SIGNAL(triggered()),
+    m_pExportTrackFilesAction = std::make_unique<QAction>(tr("Export Track Files"), this);
+    connect(m_pExportTrackFilesAction.get(), SIGNAL(triggered()),
             this, SLOT(slotExportTrackFiles()));
 
-    m_pDuplicateCrateAction = new QAction(tr("Duplicate"),this);
-    connect(m_pDuplicateCrateAction, SIGNAL(triggered()),
+    m_pDuplicateCrateAction = std::make_unique<QAction>(tr("Duplicate"),this);
+    connect(m_pDuplicateCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotDuplicateCrate()));
 
-    m_pAnalyzeCrateAction = new QAction(tr("Analyze entire Crate"),this);
-    connect(m_pAnalyzeCrateAction, SIGNAL(triggered()),
+    m_pAnalyzeCrateAction = std::make_unique<QAction>(tr("Analyze entire Crate"),this);
+    connect(m_pAnalyzeCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotAnalyzeCrate()));
 
-    m_pAutoDjTrackSource = new QAction(tr("Auto DJ Track Source"),this);
-    m_pAutoDjTrackSource->setCheckable(true);
-    connect(m_pAutoDjTrackSource, SIGNAL(changed()),
+    m_pAutoDjTrackSourceAction = std::make_unique<QAction>(tr("Auto DJ Track Source"),this);
+    m_pAutoDjTrackSourceAction->setCheckable(true);
+    connect(m_pAutoDjTrackSourceAction.get(), SIGNAL(changed()),
             this, SLOT(slotAutoDjTrackSourceChanged()));
+}
 
+void CrateFeature::connectLibrary(Library* pLibrary) {
+    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
+            this, SLOT(slotTrackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(switchToView(const QString&)),
+            this, SLOT(slotResetSelectedTrack()));
+}
+
+void CrateFeature::connectTrackCollection() {
     connect(m_pTrackCollection, SIGNAL(crateInserted(CrateId)),
             this, SLOT(slotCrateTableChanged(CrateId)));
     connect(m_pTrackCollection, SIGNAL(crateUpdated(CrateId)),
@@ -96,28 +122,6 @@ CrateFeature::CrateFeature(Library* pLibrary,
             this, SLOT(slotCrateContentChanged(CrateId)));
     connect(m_pTrackCollection, SIGNAL(crateSummaryChanged(QSet<CrateId>)),
             this, SLOT(slotUpdateCrateLabels(QSet<CrateId>)));
-
-    // construct child model
-    m_childModel.setRootItem(std::make_unique<TreeItem>(this));
-    rebuildChildModel();
-
-    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(slotTrackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotResetSelectedTrack()));
-}
-
-CrateFeature::~CrateFeature() {
-    //delete QActions
-    delete m_pExportTrackFilesAction;
-    delete m_pCreateCrateAction;
-    delete m_pDeleteCrateAction;
-    delete m_pRenameCrateAction;
-    delete m_pDuplicateCrateAction;
-    delete m_pLockCrateAction;
-    delete m_pImportPlaylistAction;
-    delete m_pAnalyzeCrateAction;
-    delete m_pAutoDjTrackSource;
 }
 
 QVariant CrateFeature::title() {
@@ -126,6 +130,28 @@ QVariant CrateFeature::title() {
 
 QIcon CrateFeature::getIcon() {
     return m_cratesIcon;
+}
+
+QString CrateFeature::formatRootViewHtml() const {
+    QString cratesTitle = tr("Crates");
+    QString cratesSummary = tr("Crates are a great way to help organize the music you want to DJ with.");
+    QString cratesSummary2 = tr("Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.");
+    QString cratesSummary3 = tr("Crates let you organize your music however you'd like!");
+
+    QString html;
+    QString createCrateLink = tr("Create New Crate");
+    html.append(QString("<h2>%1</h2>").arg(cratesTitle));
+    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
+    html.append(QString("<p>%1</p>").arg(cratesSummary));
+    html.append(QString("<p>%1</p>").arg(cratesSummary2));
+    html.append(QString("<p>%1</p>").arg(cratesSummary3));
+    html.append("</td><td rowspan=\"2\">");
+    html.append("<img src=\"qrc:/images/library/crates_art.png\">");
+    html.append("</td></tr>");
+    html.append(QString("<tr><td><a href=\"create\">%1</a>")
+                .arg(createCrateLink));
+    html.append("</td></tr></table>");
+    return html;
 }
 
 std::unique_ptr<TreeItem> CrateFeature::newTreeItem(
@@ -158,17 +184,6 @@ void CrateFeature::updateTreeItem(
                     CrateId(pTreeItem->getData()),
                     selectedTrackId);
     pTreeItem->setBold(crateContainsSelectedTrack);
-}
-
-CrateId CrateFeature::crateIdFromIndex(QModelIndex index) {
-    if (!index.isValid()) {
-        return CrateId();
-    }
-    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-    if (item == nullptr) {
-        return CrateId();
-    }
-    return CrateId(item->getData());
 }
 
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
@@ -215,7 +230,7 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
                               KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(getRootViewHtml());
+    edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
     connect(edit, SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
@@ -234,7 +249,7 @@ void CrateFeature::activate() {
 
 void CrateFeature::activateChild(const QModelIndex& index) {
     CrateId crateId(crateIdFromIndex(index));
-    if (!crateId.isValid()) {
+    DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
         return;
     }
     m_crateTableModel.selectCrate(crateId);
@@ -242,29 +257,42 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     emit(enableCoverArtDisplay(true));
 }
 
-void CrateFeature::activateCrate(CrateId crateId) {
+bool CrateFeature::activateCrate(CrateId crateId) {
     //qDebug() << "CrateFeature::activateCrate()" << crateId;
     DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
-        return;
+        return false;
     }
     QModelIndex index = indexFromCrateId(crateId);
-    if (index.isValid()) {
-        m_crateTableModel.selectCrate(crateId);
-        emit(showTrackModel(&m_crateTableModel));
-        emit(enableCoverArtDisplay(true));
-        // Update selection
-        emit(featureSelect(this, m_lastRightClickedIndex));
-        activateChild(m_lastRightClickedIndex);
+    DEBUG_ASSERT_AND_HANDLE(index.isValid()) {
+        return false;
     }
+    m_crateTableModel.selectCrate(crateId);
+    emit(showTrackModel(&m_crateTableModel));
+    emit(enableCoverArtDisplay(true));
+    // Update selection
+    emit(featureSelect(this, m_lastRightClickedIndex));
+    activateChild(m_lastRightClickedIndex);
+    return true;
+}
+
+bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
+    CrateId crateId(crateIdFromIndex(m_lastRightClickedIndex));
+    DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(m_pTrackCollection->crates().readCrateById(crateId, pCrate)) {
+        return false;
+    }
+    return true;
 }
 
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(NULL);
-    menu.addAction(m_pCreateCrateAction);
+    menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
-    menu.addAction(m_pCreateImportPlaylistAction);
+    menu.addAction(m_pCreateImportPlaylistAction.get());
     menu.exec(globalPos);
 }
 
@@ -284,26 +312,73 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     m_pDeleteCrateAction->setEnabled(!crate.isLocked());
     m_pRenameCrateAction->setEnabled(!crate.isLocked());
 
-    m_pAutoDjTrackSource->setChecked(crate.isAutoDjSource());
+    m_pAutoDjTrackSourceAction->setChecked(crate.isAutoDjSource());
 
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(NULL);
-    menu.addAction(m_pCreateCrateAction);
+    menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
-    menu.addAction(m_pRenameCrateAction);
-    menu.addAction(m_pDuplicateCrateAction);
-    menu.addAction(m_pDeleteCrateAction);
-    menu.addAction(m_pLockCrateAction);
+    menu.addAction(m_pRenameCrateAction.get());
+    menu.addAction(m_pDuplicateCrateAction.get());
+    menu.addAction(m_pDeleteCrateAction.get());
+    menu.addAction(m_pLockCrateAction.get());
     menu.addSeparator();
-    menu.addAction(m_pAutoDjTrackSource);
+    menu.addAction(m_pAutoDjTrackSourceAction.get());
     menu.addSeparator();
-    menu.addAction(m_pAnalyzeCrateAction);
+    menu.addAction(m_pAnalyzeCrateAction.get());
     menu.addSeparator();
-    menu.addAction(m_pImportPlaylistAction);
-    menu.addAction(m_pExportPlaylistAction);
-    menu.addAction(m_pExportTrackFilesAction);
+    menu.addAction(m_pImportPlaylistAction.get());
+    menu.addAction(m_pExportPlaylistAction.get());
+    menu.addAction(m_pExportTrackFilesAction.get());
     menu.exec(globalPos);
+}
+
+CrateId CrateFeature::createCrate() {
+    Crate crate;
+    while (!crate.hasName()) {
+        bool ok = false;
+        crate.parseName(
+                QInputDialog::getText(
+                        nullptr,
+                        tr("Create New Crate"),
+                        tr("Enter name for new crate:"),
+                        QLineEdit::Normal,
+                        tr("New Crate"),
+                        &ok));
+        if (!ok) {
+            return CrateId();
+        }
+        if (!crate.hasName()) {
+            QMessageBox::warning(
+                    nullptr,
+                    tr("Creating Crate Failed"),
+                    tr("A crate cannot have a blank name."));
+            continue;
+        }
+
+        if (m_pTrackCollection->crates().readCrateByName(crate.getName())) {
+            QMessageBox::warning(
+                    nullptr,
+                    tr("Creating Crate Failed"),
+                    tr("A crate by that name already exists."));
+            crate.resetName();
+            continue;
+        }
+    }
+
+    CrateId crateId;
+    if (m_pTrackCollection->insertCrate(crate, &crateId)) {
+        activateCrate(crateId);
+        return crateId;
+    } else {
+        qDebug() << "Error creating crate with name " << crate.getName();
+        QMessageBox::warning(
+                nullptr,
+                tr("Creating Crate Failed"),
+                tr("An unknown error occurred while creating crate: ") + crate.getName());
+        return CrateId();
+    }
 }
 
 void CrateFeature::slotCreateCrate() {
@@ -349,21 +424,6 @@ void CrateFeature::slotCreateCrate() {
                 tr("Creating Crate Failed"),
                 tr("An unknown error occurred while creating crate: ") + crate.getName());
     }
-}
-
-bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) {
-    CrateId crateId(crateIdFromIndex(m_lastRightClickedIndex));
-    DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
-        return false;
-    }
-
-    DEBUG_ASSERT_AND_HANDLE(m_pTrackCollection->crates().readCrateById(crateId, pCrate)) {
-        qDebug() << "Crates are out of sync -> enforcing refresh of child model";
-        rebuildChildModel();
-        return false;
-    }
-
-    return true;
 }
 
 void CrateFeature::slotDeleteCrate() {
@@ -503,8 +563,8 @@ void CrateFeature::slotToggleCrateLock() {
 void CrateFeature::slotAutoDjTrackSourceChanged() {
     Crate crate;
     if (readLastRightClickedCrate(&crate)) {
-        if (crate.isAutoDjSource() != m_pAutoDjTrackSource->isChecked()) {
-            crate.setAutoDjSource(m_pAutoDjTrackSource->isChecked());
+        if (crate.isAutoDjSource() != m_pAutoDjTrackSourceAction->isChecked()) {
+            crate.setAutoDjSource(m_pAutoDjTrackSourceAction->isChecked());
             m_pTrackCollection->updateCrate(crate);
         }
     }
@@ -561,6 +621,34 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
         updateTreeItem(m_childModel.getItem(index), crateSummary);
         m_childModel.triggerRepaint(index);
     }
+}
+
+CrateId CrateFeature::crateIdFromIndex(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return CrateId();
+    }
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+    if (item == nullptr) {
+        return CrateId();
+    }
+    return CrateId(item->getData());
+}
+
+QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) const {
+    DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
+        return QModelIndex();
+    }
+    for (int row = 0; row < m_childModel.rowCount(); ++row) {
+        QModelIndex index = m_childModel.index(row, 0);
+        TreeItem* pTreeItem = m_childModel.getItem(index);
+        DEBUG_ASSERT(pTreeItem != nullptr);
+        if (!pTreeItem->hasChildren() && // leaf node
+                (CrateId(pTreeItem->getData()) == crateId)) {
+            return index;
+        }
+    }
+    qDebug() << "Tree item for crate not found:" << crateId;
+    return QModelIndex();
 }
 
 void CrateFeature::slotImportPlaylist() {
@@ -799,28 +887,6 @@ void CrateFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-QString CrateFeature::getRootViewHtml() const {
-    QString cratesTitle = tr("Crates");
-    QString cratesSummary = tr("Crates are a great way to help organize the music you want to DJ with.");
-    QString cratesSummary2 = tr("Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.");
-    QString cratesSummary3 = tr("Crates let you organize your music however you'd like!");
-
-    QString html;
-    QString createCrateLink = tr("Create New Crate");
-    html.append(QString("<h2>%1</h2>").arg(cratesTitle));
-    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
-    html.append(QString("<p>%1</p>").arg(cratesSummary));
-    html.append(QString("<p>%1</p>").arg(cratesSummary2));
-    html.append(QString("<p>%1</p>").arg(cratesSummary3));
-    html.append("</td><td rowspan=\"2\">");
-    html.append("<img src=\"qrc:/images/library/crates_art.png\">");
-    html.append("</td></tr>");
-    html.append(QString("<tr><td><a href=\"create\">%1</a>")
-                .arg(createCrateLink));
-    html.append("</td></tr></table>");
-    return html;
-}
-
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
 
@@ -843,21 +909,4 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
 
 void CrateFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackPointer());
-}
-
-QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) {
-    DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
-        return QModelIndex();
-    }
-    for (int row = 0; row < m_childModel.rowCount(); ++row) {
-        QModelIndex index = m_childModel.index(row, 0);
-        TreeItem* pTreeItem = m_childModel.getItem(index);
-        DEBUG_ASSERT(pTreeItem != nullptr);
-        if (!pTreeItem->hasChildren() && // leaf node
-                (CrateId(pTreeItem->getData()) == crateId)) {
-            return index;
-        }
-    }
-    qDebug() << "Tree item for crate not found:" << crateId;
-    return QModelIndex();
 }

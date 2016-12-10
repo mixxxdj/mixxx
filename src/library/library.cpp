@@ -287,7 +287,7 @@ void Library::slotCreatePlaylist() {
 }
 
 void Library::slotCreateCrate() {
-    m_pCrateFeature->slotCreateCrate();
+    m_pCrateFeature->createCrate();
 }
 
 void Library::onSkinLoadFinished() {
