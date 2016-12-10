@@ -1,7 +1,6 @@
 #ifndef ANALYZER_ANALYZERWORKER_H
 #define ANALYZER_ANALYZERWORKER_H
 
-#include <QThread>
 #include <QList>
 #include <QWaitCondition>
 #include <QSemaphore>
@@ -17,37 +16,47 @@
 class Analyzer;
 class QThread;
 
+/* Worker class. 
+* It represents a job that runs on a thread, analyzing tracks until no more tracks need to be analyzed.
+*/
 class AnalyzerWorker : public QObject {
     Q_OBJECT
 
 public:
+    //Information of the analysis used with the updateProgress signal.
     struct progress_info {
+        //Worker identifier. This is used to differentiate between updateProgress signals, and it is
+        //what lets the DlgAnalysis class to differentiate and show the different percentages.
         int worker;
+        //Track being analyzed. This is currently used in the AnalyzerManager.
         TrackPointer current_track;
-        int track_progress; // in 0.1 %
+        //track progress in steps of 0.1 %
+        int track_progress;
+        //Semaphore to avoid exccesive signaling.
         QSemaphore sema;
     };
-    //Constructor. Qthread is passed only to connect several signals. It is not stored.
-    //pConfig is stored and batchJob indicates if this worker is a analysisfeature job (batch)
-    //or player job.
+
+    // Constructor. If it is a batch job, the analyzers might be configured differently.
     // Call Qthread->start() when you are ready for the worker to start.
     AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool batchJob);
     virtual ~AnalyzerWorker();
 
     //Called by the manager as a response to the waitingForNextTrack signal. and ONLY then.
     void nextTrack(TrackPointer newTrack);
-    //called to pause this worker (waits on a qwaitcondition)
+    //called to pause this worker (The call is not blocking. The worker will wait on a qwaitcondition)
     void pause();
-    //resumes from a previous call to pause
+    //resumes from a previous call to pause (The call is not blocking)
     void resume();
-    //Tells this worker to end. It will delete itself and the Qthread.
-    // An updateProgress signal with progress 0 will be emited and also the finished signal
+    //Tells this worker to end. (the call is not blocking. Sets a variable for the worker to end)
+    // An updateProgress signal with progress 0 will be emited and also the finished signal.
+    // The AnalyzerManager connects it so that it will delete itself and the Qthread.
     void endProcess();
     // Is this a batch worker?
     bool isBatch();
 
 public slots:
-    //Called automatically by the owning thread to start the process
+    //starts the analysis job.
+    //Called automatically by the owning thread to start the process (Configured to do so by AnalyzerManager)
     void slotProcess();
 
 signals:

@@ -53,14 +53,13 @@ AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool 
 
 // --- DESTRUCTOR ---
 AnalyzerWorker::~AnalyzerWorker() {
-    qDebug() << "Ending analyzer";
+    qDebug() << "Ending AnalyzerWorker";
     // free resources
     m_progressInfo.sema.release();
  
     QListIterator<Analyzer*> it(m_analyzelist);
     while (it.hasNext()) {
         Analyzer* an = it.next();
-        //qDebug() << "AnalyzerWorker: deleting " << typeid(an).name();
         delete an;
     }
 }
@@ -166,13 +165,11 @@ bool AnalyzerWorker::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAud
             progressUpdateInhibitTimer.start();
         }
 
-        // Since this is a background analysis queue, we should co-operatively
-        // yield every now and then to try and reduce CPU contention. The
-        // analyzer queue is CPU intensive so we want to get out of the way of
-        // the audio callback thread.
-        //QThread::yieldCurrentThread();
+        // This has proven to not be necessary, and if used, it should be done with care so as to 
+        // not make the analysis slower than what it should. Also note that the user has the option
+        // to reduce the number of threads that run the analysis.
 
-        // When a priority analysis comes in, we pause a working thread until a new prioritized
+        // When a priority analysis comes in, we pause this working thread until one prioritized
         // worker finishes. Once it finishes, this worker will get resumed.
         if (m_pauseRequested.fetchAndStoreAcquire(false)) {
             m_qm.lock();
@@ -195,6 +192,7 @@ bool AnalyzerWorker::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAud
     return !cancelled; //don't return !dieflag or we might reanalyze over and over
 }
 
+//Called automatically by the owning thread to start the process (Configured to do so by AnalyzerManager)
 void AnalyzerWorker::slotProcess() {
     QThread::currentThread()->setObjectName(QString("AnalyzerWorker %1").arg(m_workerIdx));
 
@@ -252,7 +250,6 @@ void AnalyzerWorker::slotProcess() {
             } else {
                 // 100% - FINALIZE_PERCENT finished
                 emitUpdateProgress(1000 - FINALIZE_PROMILLE);
-                // This takes around 3 sec on a Atom Netbook
                 QListIterator<Analyzer*> itf(m_analyzelist);
                 while (itf.hasNext()) {
                     itf.next()->finalize(m_currentTrack);
@@ -278,7 +275,7 @@ void AnalyzerWorker::emitUpdateProgress(int progress) {
         // until the UI has rendered the last update. As it is, it only prevents sending another
         // update if the analyzermanager slot hasn't read the update. (not the UI slot).
         // ---------
-        // First tryAcqire will have always success because sema is initialized with on
+        // First tryAcquire will have always success because sema is initialized with on
         // The following tries will success if the previous signal was processed in the GUI Thread
         // This prevent the AnalysisQueue from filling up the GUI Thread event Queue
         // 100 % is emitted in any case
