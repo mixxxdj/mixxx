@@ -52,6 +52,8 @@ public slots:
     void slotWorkerFinished(AnalyzerWorker*);
     // This slot is intended to receive textual messages. It us unused right now.
     void slotErrorString(QString);
+    // This slot is called from the preferences dialog to update the max value. It will stop extra threads if running.
+    void slotMaxThreadsChanged(int threads);
 
 signals:
     //This signal is emited to inform other UI elements about the analysis progress.

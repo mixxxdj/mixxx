@@ -25,13 +25,13 @@ AnalyzerManager& AnalyzerManager::getInstance(UserSettingsPointer pConfig) {
         m_pAnalyzerManager = new AnalyzerManager(pConfig);
     }
     int maxThreads = m_pAnalyzerManager->m_pConfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"));
-    if (maxThreads < 0 || maxThreads > 2 * QThread::idealThreadCount()) {
-        //Assume the value is incorrect, so fix it.
-        maxThreads = QThread::idealThreadCount();
-        m_pAnalyzerManager->m_pConfig->setValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"), maxThreads);
+    int ideal = QThread::idealThreadCount();
+    if (QThread::idealThreadCount() < 1) {
+        ideal = 1;
     }
-    if (maxThreads == 0) {
-        maxThreads = QThread::idealThreadCount();
+    if (maxThreads <= 0 || maxThreads > 32) {
+        //Assume the value is incorrect, so fix it.
+        maxThreads = ideal;
     }
     m_pAnalyzerManager->m_MaxThreads = maxThreads;
     return *m_pAnalyzerManager;
@@ -142,21 +142,31 @@ void AnalyzerManager::slotUpdateProgress(int workerIdx, struct AnalyzerWorker::p
 }
 
 void AnalyzerManager::slotNextTrack(AnalyzerWorker* worker) {
-    //The while loop is done in the event that the track which was added to the queue is no 
-    //longer available.
-
     //TODO: The old scan checked in isLoadedTrackWaiting for pTrack->getAnalyzerProgress()
     // and either tried to load a previuos scan, or discarded the track if it had already been
     // analyzed. I don't fully understand the scenario and I am not doing that right now.
+
+    //This is used when the maxThreads change. Extra workers are paused until active workers end.
+    //Then, those are terminated and the paused workers are resumed.
     TrackPointer track = TrackPointer();
-    if (worker->isBatch()) {
-        while (!track && !m_batchTrackQueue.isEmpty()) {
-            track = m_batchTrackQueue.dequeue();
-        }
+    AnalyzerWorker* forepaused=nullptr;
+    foreach(AnalyzerWorker* worker, m_pausedWorkers) {
+        if (!worker->isBatch()) { forepaused=worker; break; }
     }
-    else {
-        while (!track && !m_prioTrackQueue.isEmpty()) {
-            track = m_prioTrackQueue.dequeue();
+    if (!forepaused) {
+        if (worker->isBatch()) {
+            if (m_backgroundWorkers.size()  + m_pausedWorkers.size() <= m_MaxThreads) {
+                //The while loop is done in the event that the track which was added to the queue is no 
+                //longer available.
+                while (!track && !m_batchTrackQueue.isEmpty()) {
+                    track = m_batchTrackQueue.dequeue();
+                }
+            }
+        }
+        else {
+            while (!track && !m_prioTrackQueue.isEmpty()) {
+                track = m_prioTrackQueue.dequeue();
+            }
         }
     }
     if (track) {
@@ -169,10 +179,21 @@ void AnalyzerManager::slotNextTrack(AnalyzerWorker* worker) {
         m_foregroundWorkers.removeAll(worker);
         m_endingWorkers.append(worker);
 
-        if (!m_pausedWorkers.isEmpty()) {
+        if (forepaused) {
+            forepaused->resume();
+            m_pausedWorkers.removeOne(forepaused);
+            m_foregroundWorkers.append(forepaused);
+        }
+        else if (!m_pausedWorkers.isEmpty()) {
             AnalyzerWorker* otherworker = m_pausedWorkers.first();
             otherworker->resume();
             m_pausedWorkers.removeOne(otherworker);
+            if (otherworker->isBatch()) {
+                m_backgroundWorkers.append(otherworker);
+            }
+            else {
+                m_foregroundWorkers.append(otherworker);
+            }
         }
     }
     //Check if background workers are empty.
@@ -195,6 +216,57 @@ void AnalyzerManager::slotPaused(AnalyzerWorker* worker) {
 void AnalyzerManager::slotErrorString(QString errMsg) {
     //TODO: This is currently unused.
     qWarning() << "Testing with :" << errMsg;
+}
+
+
+void AnalyzerManager::slotMaxThreadsChanged(int threads) {
+    // If it is running, adapt the job count.
+    if (threads < m_MaxThreads) {
+        //Pause workers
+        while (!m_backgroundWorkers.isEmpty() 
+            && m_foregroundWorkers.size() + m_backgroundWorkers.size() > threads) {
+                AnalyzerWorker * backwork = m_backgroundWorkers.first();
+                backwork->pause();
+                //Ideally i would have done this on the slotPaused slot, but then i cannot 
+                //ensure i won't call pause twice for the same worker.
+                m_pausedWorkers.append(backwork);
+                m_backgroundWorkers.removeAll(backwork);
+        }
+        while (m_foregroundWorkers.size() > threads) {
+                AnalyzerWorker * backwork = m_foregroundWorkers.first();
+                backwork->pause();
+                //Ideally i would have done this on the slotPaused slot, but then i cannot 
+                //ensure i won't call pause twice for the same worker.
+                m_pausedWorkers.append(backwork);
+                m_foregroundWorkers.removeAll(backwork);
+        }
+    }
+    else {
+        //resume workers
+        int pendingworkers=threads-m_MaxThreads;
+        foreach(AnalyzerWorker* worker, m_pausedWorkers) {
+            if (!worker->isBatch() && pendingworkers > 0) {
+                worker->resume();
+                m_pausedWorkers.removeOne(worker);
+                m_foregroundWorkers.append(worker);
+                --pendingworkers;
+            }
+        }
+        foreach(AnalyzerWorker* worker, m_pausedWorkers) {
+            if (worker->isBatch() && pendingworkers > 0) {
+                worker->resume();
+                m_pausedWorkers.removeOne(worker);
+                m_backgroundWorkers.append(worker);
+                --pendingworkers;
+            }
+        }
+        //Create new workers, if tracks in queue.
+        pendingworkers = math_min(pendingworkers,m_batchTrackQueue.size());
+        for ( ;pendingworkers > 0; --pendingworkers) {
+            createNewWorker(true);
+        }
+    }
+    m_MaxThreads=threads;
 }
 
 AnalyzerWorker* AnalyzerManager::createNewWorker(bool batchJob) {

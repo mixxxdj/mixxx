@@ -67,13 +67,16 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void requestRelocateDir(QString currentDir, QString newDir);
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
+    void setMaxThreads(int threads);
 
   private slots:
     void slotRowHeightValueChanged(int);
+    void slotMaxThreadsChanged(int);
     void slotSelectFont();
 
   private:
     void initializeDirList();
+    void initializeThreadsCombo();
     void setLibraryFont(const QFont& font);
 
     QStandardItemModel m_dirListModel;
@@ -82,6 +85,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     bool m_baddedDirectory;
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
+    int m_iOriginalMaxThreads;
+
 };
 
 #endif
