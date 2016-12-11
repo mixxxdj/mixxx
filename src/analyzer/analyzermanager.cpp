@@ -133,12 +133,8 @@ void AnalyzerManager::slotUpdateProgress(int workerIdx, struct AnalyzerWorker::p
         //Report that a track analysis has finished, and how many are still remaining.
         emit(trackFinished(m_backgroundWorkers.size() + m_batchTrackQueue.size() - 1));
     }
-    //TODO: Which is the consequence of not calling clear?
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    progressInfo->current_track.clear();
-#else
+    //TODO: Which is the consequence of not calling reset?
     progressInfo->current_track.reset();
-#endif
     progressInfo->sema.release();
 }
 

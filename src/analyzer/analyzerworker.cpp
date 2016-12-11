@@ -66,11 +66,6 @@ AnalyzerWorker::~AnalyzerWorker() {
 
 void AnalyzerWorker::nextTrack(TrackPointer newTrack) {
     m_qm.lock();
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    m_currentTrack.clear();
-#else
-    m_currentTrack.reset();
-#endif
     m_currentTrack = newTrack;
     m_qwait.wakeAll();
     m_qm.unlock();

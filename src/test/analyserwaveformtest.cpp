@@ -16,7 +16,7 @@ namespace {
 class AnalyzerWaveformTest: public MixxxTest {
   protected:
     virtual void SetUp() {
-        aw = new AnalyzerWaveform(config());
+        aw = new AnalyzerWaveform(config(), false);
         tio = Track::newTemporary();
         tio->setSampleRate(44100);
 
