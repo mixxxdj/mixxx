@@ -6,7 +6,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/math.h"
-#include "util/time.h"
+#include "util/duration.h"
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
@@ -77,25 +77,26 @@ void WNumberPos::setValue(double dValue) {
 void WNumberPos::slotSetValue(double dValue) {
     m_dOldValue = dValue;
 
-    double valueMillis = 0.0;
+    double dPosSeconds = 0.0;
     if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0) {
-        double dDuration = m_dTrackSamples / m_dTrackSampleRate / 2.0;
-        valueMillis = dValue * 500.0 * m_dTrackSamples / m_dTrackSampleRate;
-        double durationMillis = dDuration * Time::kMillisPerSecond;
+        double dDurationSeconds = (m_dTrackSamples / 2.0) / m_dTrackSampleRate;
+        double dDurationMillis = dDurationSeconds * 1000.0;
+        double dPosMillis = dValue * dDurationMillis;
         if (m_bRemain) {
-            valueMillis = math_max(durationMillis - valueMillis, 0.0);
+            dPosMillis = math_max(dDurationMillis - dPosMillis, 0.0);
         }
+        dPosSeconds = dPosMillis / 1000.0;
     }
 
-    QString valueString;
-    if (valueMillis >= 0) {
-        valueString = m_skinText % Time::formatSeconds(
-                valueMillis / Time::kMillisPerSecond, Time::Precision::CENTISECONDS);
+    QString sPosText;
+    if (dPosSeconds >= 0.0) {
+        sPosText = m_skinText % mixxx::Duration::formatSeconds(
+                dPosSeconds, mixxx::Duration::Precision::CENTISECONDS);
     } else {
-        valueString = m_skinText % QLatin1String("-") % Time::formatSeconds(
-                -valueMillis / Time::kMillisPerSecond, Time::Precision::CENTISECONDS);
+        sPosText = m_skinText % QLatin1String("-") % mixxx::Duration::formatSeconds(
+                -dPosSeconds, mixxx::Duration::Precision::CENTISECONDS);
     }
-    setText(valueString);
+    setText(sPosText);
 }
 
 void WNumberPos::slotSetRemain(double remain) {

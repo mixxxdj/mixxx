@@ -3,7 +3,7 @@
 #include "util/math.h"
 #include "util/sample.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -62,10 +62,10 @@ const unsigned kBitsPerSampleDefault = 0;
 
 }
 
-SoundSourceFLAC::SoundSourceFLAC(QUrl url)
+SoundSourceFLAC::SoundSourceFLAC(const QUrl& url)
         : SoundSource(url, "flac"),
           m_file(getLocalFileName()),
-          m_decoder(NULL),
+          m_decoder(nullptr),
           m_maxBlocksize(0),
           m_bitsPerSample(kBitsPerSampleDefault),
           m_sampleScaleFactor(CSAMPLE_ZERO),
@@ -84,7 +84,7 @@ SoundSource::OpenResult SoundSourceFLAC::tryOpen(const AudioSourceConfig& /*audi
     }
 
     m_decoder = FLAC__stream_decoder_new();
-    if (m_decoder == NULL) {
+    if (m_decoder == nullptr) {
         qWarning() << "Failed to create FLAC decoder!";
         return OpenResult::FAILED;
     }
@@ -112,7 +112,7 @@ void SoundSourceFLAC::close() {
     if (m_decoder) {
         FLAC__stream_decoder_finish(m_decoder);
         FLAC__stream_decoder_delete(m_decoder); // frees memory
-        m_decoder = NULL;
+        m_decoder = nullptr;
     }
 
     m_file.close();
@@ -415,7 +415,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
     {
         const SINT channelCount = metadata->data.stream_info.channels;
         if (isValidChannelCount(channelCount)) {
-            if (hasChannelCount()) {
+            if (hasValidChannelCount()) {
                 // already set before -> check for consistency
                 if (getChannelCount() != channelCount) {
                     qWarning() << "Unexpected channel count:"
@@ -431,7 +431,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         }
         const SINT samplingRate = metadata->data.stream_info.sample_rate;
         if (isValidSamplingRate(samplingRate)) {
-            if (hasSamplingRate()) {
+            if (hasValidSamplingRate()) {
                 // already set before -> check for consistency
                 if (getSamplingRate() != samplingRate) {
                     qWarning() << "Unexpected sampling rate:"
@@ -521,4 +521,4 @@ QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

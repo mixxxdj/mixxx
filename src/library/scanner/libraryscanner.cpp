@@ -336,7 +336,7 @@ void LibraryScanner::cleanUpScan() {
 
     qDebug() << "Detecting cover art for unscanned files.";
     QSet<TrackId> coverArtTracksChanged;
-    m_trackDao.detectCoverArtForUnknownTracks(
+    m_trackDao.detectCoverArtForTracksWithoutCover(
             m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
 
     // Update BaseTrackCache via signals connected to the main TrackDAO.
@@ -511,17 +511,7 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     ScopedTimer timer("LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack(m_trackDao.addTracksAddFile(trackPath, false));
-    if (pTrack.isNull()) {
-        // Acknowledge failed track addition
-        // TODO(XXX): Is it really intended to acknowledge a failed
-        // track addition with a trackAdded() signal??
-        if (m_scannerGlobal) {
-            m_scannerGlobal->trackAdded(trackPath);
-        }
-        qWarning()
-                << "Failed to add track to library:"
-                << trackPath;
-    } else {
+    if (pTrack) {
         // The track's actual location might differ from the
         // given trackPath
         const QString trackLocation(pTrack->getLocation());
@@ -533,6 +523,16 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
         // a new track in the database.
         emit(trackAdded(pTrack));
         emit(progressLoading(trackLocation));
+    } else {
+        // Acknowledge failed track addition
+        // TODO(XXX): Is it really intended to acknowledge a failed
+        // track addition with a trackAdded() signal??
+        if (m_scannerGlobal) {
+            m_scannerGlobal->trackAdded(trackPath);
+        }
+        qWarning()
+                << "Failed to add track to library:"
+                << trackPath;
     }
 }
 

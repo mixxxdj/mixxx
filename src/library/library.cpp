@@ -53,6 +53,8 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_scanner(m_pTrackCollection, pConfig) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
+    m_pKeyNotation.reset(new ControlObject(ConfigKey("[Library]", "key_notation")));
+
     connect(&m_scanner, SIGNAL(scanStarted()),
             this, SIGNAL(scanStarted()));
     connect(&m_scanner, SIGNAL(scanFinished()),
@@ -263,7 +265,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
     TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
             .getOrAddTrack(location, true, NULL);
-    if (!pTrack.isNull()) {
+    if (pTrack) {
         emit(loadTrackToPlayer(pTrack, group));
     }
 }

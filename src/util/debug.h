@@ -12,6 +12,8 @@ QString toDebugString(const T& object) {
 #ifndef QT_NO_DEBUG_OUTPUT
     QDebug deb(&output);
     deb << object;
+#else
+    Q_UNUSED(object);
 #endif
     return output;
 }

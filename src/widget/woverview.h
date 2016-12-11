@@ -36,7 +36,7 @@ class WOverview : public WWidget {
     WOverview(const char* pGroup, UserSettingsPointer pConfig, QWidget* parent=nullptr);
     ~WOverview() override;
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
@@ -54,6 +54,14 @@ class WOverview : public WWidget {
     void resizeEvent(QResizeEvent * /*unused*/) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
+
+    inline int length() {
+        return m_orientation == Qt::Horizontal ? width() : height();
+    }
+
+    inline int breadth() {
+        return m_orientation == Qt::Horizontal ? height() : width();
+    }
 
     ConstWaveformPointer getWaveform() const {
         return m_pWaveform;
@@ -107,6 +115,8 @@ class WOverview : public WWidget {
     bool m_bDrag;
     // Internal storage of slider position in pixels
     int m_iPos;
+
+    Qt::Orientation m_orientation;
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;

@@ -86,12 +86,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlLoaded->setAndConfirm(1.0);
 
             m_pControlLinkType->set(m_pEffectParameter->getDefaultLinkType());
-
-            if (m_pEffectParameter->getNeutralPointOnScale() == 1.0) {
-                m_pControlLinkInverse->set(1);
-            } else {
-                m_pControlLinkInverse->set(0);
-            }
+            m_pControlLinkInverse->set(
+                static_cast<double>(m_pEffectParameter->getDefaultLinkInversion()));
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
                     this, SLOT(slotParameterValueChanged(double)));

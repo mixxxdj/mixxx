@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QVarLengthArray>
 
+#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/engineobject.h"

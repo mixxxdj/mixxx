@@ -10,6 +10,8 @@
 #define SETTINGSTABLE_LOCKED "locked"
 #define SETTINGSTABLE_HIDDEN "hidden"
 
+
+// All library-specific preferences go in the library settings table
 class SettingsDAO : public QObject {
   public:
     SettingsDAO(QSqlDatabase &db);

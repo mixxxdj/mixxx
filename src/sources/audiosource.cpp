@@ -2,7 +2,7 @@
 
 #include "util/sample.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 void AudioSource::clampFrameInterval(
         SINT* pMinFrameIndexOfInterval,
@@ -90,6 +90,25 @@ SINT AudioSource::readSampleFramesStereo(
             }
         }
     }
+}
+
+bool AudioSource::verifyReadable() const {
+    bool result = AudioSignal::verifyReadable();
+    if (hasBitrate()) {
+        DEBUG_ASSERT_AND_HANDLE(isValidBitrate(m_bitrate)) {
+            qWarning() << "Invalid bitrate [kbps]:"
+                    << getBitrate();
+            // Don't set the result to false, because bitrate is only
+            // an  informational property that does not effect the ability
+            // to decode audio data!
+        }
+    }
+    if (isEmpty()) {
+        qWarning() << "AudioSource is empty and does not provide any audio data!";
+        // Don't set the result to false, even if reading from an empty source
+        // is pointless!
+    }
+    return result;
 }
 
 }

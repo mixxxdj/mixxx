@@ -7,29 +7,55 @@
 #include "track/keyutils.h"
 #include "util/math.h"
 
+#define MUSIC_FLAT_UTF8  "\xe299ad"
+#define MUSIC_SHARP_UTF8 "\xe299af"
+
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
-static const char* s_openKeyPattern = "^\\s*(1[0-2]|[1-9])([dm])\\s*$";
+static const QString s_openKeyPattern("^\\s*(1[0-2]|[1-9])([dm])\\s*$");
 
 // Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
-static const char* s_lancelotKeyPattern = "^\\s*(1[0-2]|[1-9])([ab])\\s*$";
+static const QString s_lancelotKeyPattern("^\\s*(1[0-2]|[1-9])([ab])\\s*$");
 
 // a-g followed by any number of sharps or flats, optionally followed by
 // a scale spec (m = minor, min, maj)
 // anchor the pattern so we don't get accidental sub-string matches
 // (?:or)? allows unabbreviated major|minor without capturing
-static const char* s_keyPattern = "^\\s*([a-g])([#♯b♭]*)"
-    "(min(?:or)?|maj(?:or)?|m)?\\s*$";
+static const QString s_keyPattern = QString::fromUtf8(
+        "^\\s*([a-g])([#♯b♭]*)"
+        "(min(?:or)?|maj(?:or)?|m)?\\s*$");
 
 static const QString s_sharpSymbol = QString::fromUtf8("♯");
-static const QString s_flatSymbol = QString::fromUtf8("♭");
+//static const QString s_flatSymbol = QString::fromUtf8("♭");
 
-static const char *s_traditionalKeyNames[] = {
-    "INVALID",
-    "C", "D♭", "D", "E♭", "E", "F", "F♯/G♭", "G", "A♭", "A", "B♭", "B",
-    "Cm", "C♯m", "Dm", "D♯m/E♭m", "Em", "Fm", "F♯m", "Gm", "G♯m", "Am", "B♭m", "Bm"
+static const QString s_traditionalKeyNames[] = {
+    QString::fromUtf8("INVALID"),
+    QString::fromUtf8("C"),
+    QString::fromUtf8("D♭"),
+    QString::fromUtf8("D"),
+    QString::fromUtf8("E♭"),
+    QString::fromUtf8("E"),
+    QString::fromUtf8("F"),
+    QString::fromUtf8("F♯/G♭"),
+    QString::fromUtf8("G"),
+    QString::fromUtf8("A♭"),
+    QString::fromUtf8("A"),
+    QString::fromUtf8("B♭"),
+    QString::fromUtf8("B"),
+    QString::fromUtf8("Cm"),
+    QString::fromUtf8("C♯m"),
+    QString::fromUtf8("Dm"),
+    QString::fromUtf8("D♯m/E♭m"),
+    QString::fromUtf8("Em"),
+    QString::fromUtf8("Fm"),
+    QString::fromUtf8("F♯m"),
+    QString::fromUtf8("Gm"),
+    QString::fromUtf8("G♯m"),
+    QString::fromUtf8("Am"),
+    QString::fromUtf8("B♭m"),
+    QString::fromUtf8("Bm")
 };
 
 // Maps an OpenKey number to its major and minor key.
@@ -61,6 +87,62 @@ const ChromaticKey s_letterToMajorKey[] = {
     mixxx::track::io::key::E_MAJOR,
     mixxx::track::io::key::F_MAJOR,
     mixxx::track::io::key::G_MAJOR
+};
+
+static const int s_sortKeysCircleOfFifths[] = {
+    0, // INVALID
+    1, // C_MAJOR
+    15, // D_FLAT_MAJOR
+    5, // D_MAJOR
+    19, // E_FLAT_MAJOR
+    9, // E_MAJOR
+    23, // F_MAJOR
+    13, // F_SHARP_MAJOR
+    3, // G_MAJOR
+    17, // A_FLAT_MAJOR
+    7, // A_MAJOR
+    21, // B_FLAT_MAJOR
+    11, // B_MAJOR
+    20, // C_MINOR
+    10, // C_SHARP_MINOR
+    24, // D_MINOR
+    14, // E_FLAT_MINOR
+    4, // E_MINOR
+    18, // F_MINOR
+    8, // F_SHARP_MINOR
+    22, // G_MINOR
+    12, // G_SHARP_MINOR
+    2, // A_MINOR
+    16, // B_FLAT_MINOR
+    6, // B_MINOR
+};
+
+static const int s_sortKeysCircleOfFifthsLancelot[] = {
+    0, // INVALID
+    16, // C_MAJOR
+    6, // D_FLAT_MAJOR
+    20, // D_MAJOR
+    10, // E_FLAT_MAJOR
+    24, // E_MAJOR
+    14, // F_MAJOR
+    4, // F_SHARP_MAJOR
+    18, // G_MAJOR
+    8, // A_FLAT_MAJOR
+    22, // A_MAJOR
+    12, // B_FLAT_MAJOR
+    2, // B_MAJOR
+    9, // C_MINOR
+    23, // C_SHARP_MINOR
+    13, // D_MINOR
+    3, // E_FLAT_MINOR
+    17, // E_MINOR
+    7, // F_MINOR
+    21, // F_SHARP_MINOR
+    11, // G_MINOR
+    1, // G_SHARP_MINOR
+    15, // A_MINOR
+    5, // B_FLAT_MINOR
+    19, // B_MINOR
 };
 
 QMutex KeyUtils::s_notationMutex;
@@ -95,7 +177,7 @@ QString KeyUtils::keyDebugName(ChromaticKey key) {
     if (!ChromaticKey_IsValid(key)) {
         key = mixxx::track::io::key::INVALID;
     }
-    return QString::fromUtf8(s_traditionalKeyNames[static_cast<int>(key)]);
+    return s_traditionalKeyNames[static_cast<int>(key)];
 }
 
 // static
@@ -122,7 +204,9 @@ QString KeyUtils::keyToString(ChromaticKey key,
         return "INVALID";
     }
 
-    if (notation == DEFAULT) {
+    if (notation == CUSTOM) {
+        // The default value for notation is KeyUtils::CUSTOM, so this executes when the function is
+        // called without a notation specified after KeyUtils::setNotation has set up s_notation.
         QMutexLocker locker(&s_notationMutex);
         QMap<ChromaticKey, QString>::const_iterator it = s_notation.find(key);
         if (it != s_notation.end()) {
@@ -137,7 +221,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
         int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
         return QString::number(number) + (major ? "B" : "A");
     } else if (notation == TRADITIONAL) {
-        return QString::fromUtf8(s_traditionalKeyNames[static_cast<int>(key)]);
+        return s_traditionalKeyNames[static_cast<int>(key)];
     }
     return keyDebugName(key);
 }
@@ -251,6 +335,14 @@ ChromaticKey KeyUtils::keyFromNumericValue(double value) {
     }
 
     return static_cast<ChromaticKey>(value_floored);
+}
+
+KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
+    int value_floored = static_cast<int>(value);
+    if (value_floored < 0 || value_floored >= KEY_NOTATION_MAX) {
+        return INVALID;
+    }
+    return static_cast<KeyNotation>(value_floored);
 }
 
 // static
@@ -452,4 +544,17 @@ QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
     compatible << openKeyNumberToKey(
             openKeyNumber == 1 ? 12 : openKeyNumber - 1, major);
     return compatible;
+}
+
+int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
+                                       KeyNotation notation) {
+    if (!ChromaticKey_IsValid(key)) {
+        key = mixxx::track::io::key::INVALID;
+    }
+
+    if (notation != LANCELOT) {
+        return s_sortKeysCircleOfFifths[static_cast<int>(key)];
+    } else {
+        return s_sortKeysCircleOfFifthsLancelot[static_cast<int>(key)];
+    }
 }

@@ -5,25 +5,26 @@
 #include <QDrag>
 #include <QShortcut>
 
-#include "widget/wwidget.h"
+#include "widget/wtracktableview.h"
+
+#include "widget/wcoverartmenu.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableviewheader.h"
+#include "widget/wwidget.h"
 #include "library/coverartcache.h"
-#include "library/librarytablemodel.h"
-#include "control/controlobject.h"
-#include "library/trackcollection.h"
-#include "track/track.h"
-#include "control/controlproxy.h"
-#include "widget/wtracktableview.h"
 #include "library/dlgtrackinfo.h"
+#include "library/librarytablemodel.h"
+#include "library/trackcollection.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "track/track.h"
 #include "sources/soundsourceproxy.h"
 #include "mixer/playermanager.h"
-#include "util/dnd.h"
-#include "util/time.h"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "waveform/guitick.h"
+#include "util/dnd.h"
+#include "util/time.h"
 #include "util/assert.h"
-#include "widget/wcoverartmenu.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
@@ -33,7 +34,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_DlgTagFetcher(nullptr),
           m_sorting(sorting),
           m_iCoverSourceColumn(-1),
           m_iCoverTypeColumn(-1),
@@ -42,17 +42,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverColumn(-1),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
-    // Give a NULL parent because otherwise it inherits our style which can make
-    // it unreadable. Bug #673411
-    m_pTrackInfo = new DlgTrackInfo(nullptr, m_DlgTagFetcher);
-    connect(m_pTrackInfo, SIGNAL(next()),
-            this, SLOT(slotNextTrackInfo()));
-    connect(m_pTrackInfo, SIGNAL(previous()),
-            this, SLOT(slotPrevTrackInfo()));
-    connect(&m_DlgTagFetcher, SIGNAL(next()),
-            this, SLOT(slotNextDlgTagFetcher()));
-    connect(&m_DlgTagFetcher, SIGNAL(previous()),
-            this, SLOT(slotPrevDlgTagFetcher()));
+
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
@@ -83,8 +73,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pBPMMenu->setTitle(tr("BPM Options"));
     m_pCoverMenu = new WCoverArtMenu(this);
     m_pCoverMenu->setTitle(tr("Cover Art"));
-    connect(m_pCoverMenu, SIGNAL(coverArtSelected(const CoverArt&)),
-            this, SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 
@@ -123,7 +113,6 @@ WTrackTableView::~WTrackTableView() {
     if (pHeader) {
         pHeader->saveHeaderState();
     }
-    delete m_pTrackInfo;
 
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
@@ -158,7 +147,7 @@ void WTrackTableView::enableCachedOnly() {
         emit(onlyCachedCoverArt(true));
         m_loadCachedOnly = true;
     }
-    m_lastUserAction = Time::elapsed();
+    m_lastUserAction = mixxx::Time::elapsed();
 }
 
 void WTrackTableView::slotScrollValueChanged(int /*unused*/) {
@@ -175,7 +164,7 @@ void WTrackTableView::selectionChanged(const QItemSelection& selected,
 void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     // if the user is stopped in the same row for more than 0.1 s,
     // we load un-cached cover arts as well.
-    mixxx::Duration timeDelta = Time::elapsed() - m_lastUserAction;
+    mixxx::Duration timeDelta = mixxx::Time::elapsed() - m_lastUserAction;
     if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
 
         // Show the currently selected track in the large cover art view. Doing
@@ -584,6 +573,24 @@ void WTrackTableView::slotUnhide() {
     }
 }
 
+void WTrackTableView::slotTrackInfoClosed() {
+    DlgTrackInfo* pTrackInfo = m_pTrackInfo.take();
+    // We are in a slot directly invoked from DlgTrackInfo. Delete it
+    // later.
+    if (pTrackInfo != nullptr) {
+        pTrackInfo->deleteLater();
+    }
+}
+
+void WTrackTableView::slotTagFetcherClosed() {
+    DlgTagFetcher* pTagFetcher = m_pTagFetcher.take();
+    // We are in a slot directly invoked from DlgTagFetcher. Delete it
+    // later.
+    if (pTagFetcher != nullptr) {
+        pTagFetcher->deleteLater();
+    }
+}
+
 void WTrackTableView::slotShowTrackInfo() {
     QModelIndexList indices = selectionModel()->selectedRows();
 
@@ -597,7 +604,7 @@ void WTrackTableView::slotNextTrackInfo() {
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
     if (nextRow.isValid()) {
         showTrackInfo(nextRow);
-        if (m_DlgTagFetcher.isVisible()) {
+        if (!m_pTagFetcher.isNull()) {
             showDlgTagFetcher(nextRow);
         }
     }
@@ -608,7 +615,7 @@ void WTrackTableView::slotPrevTrackInfo() {
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
     if (prevRow.isValid()) {
         showTrackInfo(prevRow);
-        if (m_DlgTagFetcher.isVisible()) {
+        if (!m_pTagFetcher.isNull()) {
             showDlgTagFetcher(prevRow);
         }
     }
@@ -621,10 +628,23 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
         return;
     }
 
+    if (m_pTrackInfo.isNull()) {
+        // Give a NULL parent because otherwise it inherits our style which can
+        // make it unreadable. Bug #673411
+        m_pTrackInfo.reset(new DlgTrackInfo(nullptr));
+
+        connect(m_pTrackInfo.data(), SIGNAL(next()),
+                this, SLOT(slotNextTrackInfo()));
+        connect(m_pTrackInfo.data(), SIGNAL(previous()),
+                this, SLOT(slotPrevTrackInfo()));
+        connect(m_pTrackInfo.data(), SIGNAL(showTagFetcher(TrackPointer)),
+                this, SLOT(slotShowTrackInTagFetcher(TrackPointer)));
+        connect(m_pTrackInfo.data(), SIGNAL(finished(int)),
+                this, SLOT(slotTrackInfoClosed()));
+    }
     TrackPointer pTrack = trackModel->getTrack(index);
     m_pTrackInfo->loadTrack(pTrack); // NULL is fine.
     currentTrackInfoIndex = index;
-
     m_pTrackInfo->show();
 }
 
@@ -633,7 +653,7 @@ void WTrackTableView::slotNextDlgTagFetcher() {
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
     if (nextRow.isValid()) {
         showDlgTagFetcher(nextRow);
-        if (m_pTrackInfo->isVisible()) {
+        if (!m_pTrackInfo.isNull()) {
             showTrackInfo(nextRow);
         }
     }
@@ -644,7 +664,7 @@ void WTrackTableView::slotPrevDlgTagFetcher() {
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
     if (prevRow.isValid()) {
         showDlgTagFetcher(prevRow);
-        if (m_pTrackInfo->isVisible()) {
+        if (!m_pTrackInfo.isNull()) {
             showTrackInfo(prevRow);
         }
     }
@@ -658,10 +678,24 @@ void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
     }
 
     TrackPointer pTrack = trackModel->getTrack(index);
-    // NULL is fine
-    m_DlgTagFetcher.loadTrack(pTrack);
     currentTrackInfoIndex = index;
-    m_DlgTagFetcher.show();
+    slotShowTrackInTagFetcher(pTrack);
+}
+
+void WTrackTableView::slotShowTrackInTagFetcher(TrackPointer pTrack) {
+    if (m_pTagFetcher.isNull()) {
+        m_pTagFetcher.reset(new DlgTagFetcher(nullptr));
+        connect(m_pTagFetcher.data(), SIGNAL(next()),
+                this, SLOT(slotNextDlgTagFetcher()));
+        connect(m_pTagFetcher.data(), SIGNAL(previous()),
+                this, SLOT(slotPrevDlgTagFetcher()));
+        connect(m_pTagFetcher.data(), SIGNAL(finished(int)),
+                this, SLOT(slotTagFetcherClosed()));
+    }
+
+    // NULL is fine
+    m_pTagFetcher->loadTrack(pTrack);
+    m_pTagFetcher->show();
 }
 
 void WTrackTableView::slotShowDlgTagFetcher() {
@@ -898,7 +932,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             last.row(), m_iTrackLocationColumn).data().toString();
         info.coverLocation = last.sibling(
             last.row(), m_iCoverLocationColumn).data().toString();
-        m_pCoverMenu->setCoverArt(QString(), info);
+        m_pCoverMenu->setCoverArt(info);
         m_pMenu->addMenu(m_pCoverMenu);
     }
 
@@ -1264,10 +1298,6 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     }
 
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-    int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    if (iAutoDJPlaylistId == -1) {
-        return;
-    }
 
     QModelIndexList indices = selectionModel()->selectedRows();
     QList<TrackId> trackIds;
@@ -1288,17 +1318,10 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
         }
     }
 
-    if (bTop) {
-        // Load track to position two because position one is
-        // already loaded to the player
-        playlistDao.insertTracksIntoPlaylist(trackIds,
-                                             iAutoDJPlaylistId, 2);
-    } else {
-        // TODO(XXX): Care whether the append succeeded.
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
-        playlistDao.appendTracksToPlaylist(
-                trackIds, iAutoDJPlaylistId);
-    }
+    m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
+
+    // TODO(XXX): Care whether the append succeeded.
+    playlistDao.sendToAutoDJ(trackIds, bTop);
 }
 
 void WTrackTableView::slotReloadTrackMetadata() {
@@ -1598,12 +1621,12 @@ void WTrackTableView::slotReplayGainReset() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->setReplayGain(Mixxx::ReplayGain());
+            pTrack->setReplayGain(mixxx::ReplayGain());
         }
     }
 }
 
-void WTrackTableView::slotCoverArtSelected(const CoverArt& art) {
+void WTrackTableView::slotCoverInfoSelected(const CoverInfo& coverInfo) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel == nullptr) {
         return;
@@ -1612,7 +1635,7 @@ void WTrackTableView::slotCoverArtSelected(const CoverArt& art) {
     for (const QModelIndex& index : selection) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->setCoverArt(art);
+            pTrack->setCoverInfo(coverInfo);
         }
     }
 }

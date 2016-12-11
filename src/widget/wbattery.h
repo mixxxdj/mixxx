@@ -17,7 +17,7 @@ class WBattery : public WWidget {
   public:
     explicit WBattery(QWidget* parent=nullptr);
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   public slots:
     // gets information from battery and updates the Pixmap

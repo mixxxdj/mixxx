@@ -1,5 +1,5 @@
 <Template>
-	<!-- Vinylcontrol sub-widget -->
+	<!-- VinylControl sub-widget -->
 	<WidgetGroup>
 		<Pos>0,100</Pos>
 		<Size>84,21</Size>

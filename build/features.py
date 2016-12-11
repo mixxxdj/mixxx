@@ -390,6 +390,7 @@ class Vamp(Feature):
             return
 
         build.env.Append(CPPDEFINES='__VAMP__')
+        build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
 
         # If there is no system vamp-hostdk installed, then we'll directly link
         # the vamp-hostsdk.
@@ -668,7 +669,7 @@ class QDebug(Feature):
         return "Debugging message output"
 
     def enabled(self, build):
-        build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 0)
+        build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 1)
         if build.platform_is_windows:
             if build.build_is_debug:
                 # Turn general debugging flag on too if debug build is specified
@@ -725,7 +726,7 @@ class Verbose(Feature):
 
 class Profiling(Feature):
     def description(self):
-        return "gprof/Saturn profiling support"
+        return "profiling (e.g. gprof) support"
 
     def enabled(self, build):
         build.flags['profiling'] = util.get_flags(build.env, 'profiling', 0)
@@ -737,7 +738,7 @@ class Profiling(Feature):
     def add_options(self, build, vars):
         if not build.platform_is_windows:
             vars.Add('profiling',
-                     '(DEVELOPER) Set to 1 to enable profiling using gprof (Linux) or Saturn (OS X)', 0)
+                     '(DEVELOPER) Set to 1 to enable profiling using gprof (Linux). Disables -fomit-frame-pointer.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -745,9 +746,6 @@ class Profiling(Feature):
         if build.platform_is_linux or build.platform_is_bsd:
             build.env.Append(CCFLAGS='-pg')
             build.env.Append(LINKFLAGS='-pg')
-        elif build.platform_is_osx:
-            build.env.Append(CCFLAGS='-finstrument-functions')
-            build.env.Append(LINKFLAGS='-lSaturn')
 
 
 class TestSuite(Feature):
@@ -835,6 +833,7 @@ class LiveBroadcasting(Feature):
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
             conf.CheckLib('ws2_32')
+            conf.CheckLib('gdi32')
 
     def sources(self, build):
         depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')
@@ -1179,29 +1178,6 @@ class Optimize(Feature):
             # -O3 -fomit-frame-pointer -mtune=native -malign-double
             # -fstrict-aliasing -fno-schedule-insns -ffast-math
 
-
-class AutoDjCrates(Feature):
-    def description(self):
-        return "Auto-DJ crates (for random tracks)"
-
-    def enabled(self, build):
-        build.flags['autodjcrates'] = \
-            util.get_flags(build.env, 'autodjcrates', 1)
-        if int(build.flags['autodjcrates']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('autodjcrates',
-                 'Set to 1 to enable crates as a source for random Auto-DJ tracks.', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPDEFINES='__AUTODJCRATES__')
-
-    def sources(self, build):
-        return ['library/dao/autodjcratesdao.cpp']
 
 class MacAppStoreException(Feature):
     def description(self):

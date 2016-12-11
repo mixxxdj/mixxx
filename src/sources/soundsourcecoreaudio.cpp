@@ -3,7 +3,7 @@
 
 #include "util/math.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -46,7 +46,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
     CFStringRef urlStr = CFStringCreateWithCharacters(0,
             reinterpret_cast<const UniChar *>(fileName.unicode()),
             fileName.size());
-    CFURLRef urlRef = CFURLCreateWithFileSystemPath(NULL, urlStr,
+    CFURLRef urlRef = CFURLCreateWithFileSystemPath(nullptr, urlStr,
             kCFURLPOSIXPathStyle, false);
     err = ExtAudioFileOpenURL(urlRef, &m_audioFile);
     CFRelease(urlStr);
@@ -78,7 +78,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
 
     // create the output format
     const UInt32 numChannels =
-            audioSrcCfg.hasChannelCount() ? audioSrcCfg.getChannelCount() : 2;
+            audioSrcCfg.hasValidChannelCount() ? audioSrcCfg.getChannelCount() : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 
@@ -210,4 +210,4 @@ QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-}  // namespace Mixxx
+}  // namespace mixxx

@@ -92,7 +92,7 @@
     <Property Id="VCREDISTINSTALLED">
       <RegistrySearch Id="VCRedistInstalledSearch"
                       Root="HKLM"
-                      Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\$(var.Platform)"
+                      Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\$(var.Platform)"
                       Name="Installed"
                       Type="raw" />
     </Property>
@@ -134,8 +134,8 @@
     <CustomAction Id="SetARPINSTALLLOCATION" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
 
     <!-- Install VCRedist -->
-    <CustomAction Id='InstallVCRedist' BinaryKey='VCRedist' ExeCommand='/quiet /install' Return='check' />
-    
+    <CustomAction Id='InstallVCRedist' BinaryKey='VCRedist' ExeCommand='/quiet /install /norestart' Return='check' />
+
     <!-- License agreement -->
     <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
     

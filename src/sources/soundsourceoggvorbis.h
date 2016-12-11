@@ -9,12 +9,12 @@
 
 class QFile;
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourceOggVorbis: public SoundSource {
 public:
-    explicit SoundSourceOggVorbis(QUrl url);
-    ~SoundSourceOggVorbis();
+    explicit SoundSourceOggVorbis(const QUrl& url);
+    ~SoundSourceOggVorbis() override;
 
     void close() override;
 
@@ -53,10 +53,10 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceOggVorbis(url));
+        return newSoundSourceFromUrl<SoundSourceOggVorbis>(url);
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEOGGVORBIS_H

@@ -16,7 +16,7 @@ class WEffectPushButton : public WPushButton {
   public:
     WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager);
 
-    void setup(QDomNode node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;

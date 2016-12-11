@@ -624,6 +624,10 @@ Denon mode:
 - Play = set cue point
 Numark mode:
 - Same as Denon mode, but without a flashing play button
+CUP mode:
+- Cue button while pause at cue point = play after release
+- Cue button while pause not at cue point = set cue point and play after release
+- Cue button while playing = go to cue point and play after release
 </string>
        </property>
       </widget>

@@ -17,6 +17,7 @@
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"
 #include "track/beatfactory.h"
+#include "mixer/basetrackplayer.h"
 
 
 class EngineSyncTest : public MockedEngineBackendTest {
@@ -792,6 +793,121 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
                     ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 }
 
+TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
+    // Make sure playing decks with master sync enabled do not change tempo when
+    // the "Reset Speed/Tempo" preference is set and a track is loaded to another
+    // deck with master sync enabled.
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+                   ConfigValue(BaseTrackPlayer::RESET_SPEED));
+
+    // Enable sync on two stopped decks
+    m_pMixerDeck1->setupEqControls();
+    QScopedPointer<ControlProxy> pButtonSyncEnabled1(getControlProxy(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    pButtonSyncEnabled1->slotSet(1.0);
+
+    m_pMixerDeck2->setupEqControls();
+    QScopedPointer<ControlProxy> pButtonSyncEnabled2(getControlProxy(
+            ConfigKey(m_sGroup2, "sync_enabled")));
+    pButtonSyncEnabled2->slotSet(1.0);
+
+    // If sync is on and we load a track, that should initialize master.
+    TrackPointer track1 = m_pChannel1->getEngineBuffer()->loadFakeTrack(140.0);
+    m_pMixerDeck1->slotLoadTrack(track1, true);
+    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    // If sync is on two decks and we load a track while one is playing,
+    // that should not change the playing deck.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+
+    TrackPointer track2 = m_pChannel2->getEngineBuffer()->loadFakeTrack(128.0);
+    m_pMixerDeck2->slotLoadTrack(track2, false);
+    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Repeat with RESET_PITCH_AND_SPEED
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+                   ConfigValue(BaseTrackPlayer::RESET_PITCH_AND_SPEED));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    m_pMixerDeck1->slotLoadTrack(track1, true);
+    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    m_pMixerDeck2->slotLoadTrack(track2, false);
+    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Repeat with RESET_NONE
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+                   ConfigValue(BaseTrackPlayer::RESET_NONE));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
+    m_pMixerDeck1->slotLoadTrack(track1, true);
+    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    m_pMixerDeck2->slotLoadTrack(track2, false);
+    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Load two tracks with sync off and RESET_SPEED
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+                   ConfigValue(BaseTrackPlayer::RESET_SPEED));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.5));
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.5));
+    pButtonSyncEnabled1->slotSet(0.0);
+    pButtonSyncEnabled2->slotSet(0.0);
+    m_pMixerDeck1->slotLoadTrack(track1, true);
+    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    m_pMixerDeck2->slotLoadTrack(track2, false);
+    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Load two tracks with sync off and RESET_PITCH_AND_SPEED
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+                   ConfigValue(BaseTrackPlayer::RESET_PITCH_AND_SPEED));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.5));
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.5));
+    pButtonSyncEnabled1->slotSet(0.0);
+    pButtonSyncEnabled2->slotSet(0.0);
+    m_pMixerDeck1->slotLoadTrack(track1, true);
+    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    m_pMixerDeck2->slotLoadTrack(track2, false);
+    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+}
+
 TEST_F(EngineSyncTest, EnableOneDeckSliderUpdates) {
     // If we enable a deck to be master, the internal slider should immediately update.
     QScopedPointer<ControlProxy> pButtonSyncEnabled1(getControlProxy(
@@ -1089,9 +1205,9 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
         ConfigKey(m_sGroup2, "file_bpm")));
     pFileBpm1->set(128.0);
     pFileBpm2->set(128.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 128, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 128, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 128, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1124,12 +1240,12 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     QScopedPointer<ControlProxy> pFileBpm1(getControlProxy(
         ConfigKey(m_sGroup1, "file_bpm")));
     pFileBpm1->set(70);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 70, 0.0);
     m_pTrack1->setBeats(pBeats1);
     QScopedPointer<ControlProxy> pFileBpm2(getControlProxy(
         ConfigKey(m_sGroup2, "file_bpm")));
     pFileBpm2->set(140);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 140, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1193,9 +1309,9 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     QScopedPointer<ControlProxy> pFileBpm2(getControlProxy(
         ConfigKey(m_sGroup2, "file_bpm")));
     pFileBpm2->set(175.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 80, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 80, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 175, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 175, 0.0);
     m_pTrack2->setBeats(pBeats2);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
 
@@ -1252,9 +1368,9 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
     QScopedPointer<ControlProxy> pFileBpm2(getControlProxy(
         ConfigKey(m_sGroup2, "file_bpm")));
     pFileBpm2->set(140.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 70, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 140, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1283,7 +1399,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
         ConfigKey(m_sGroup1, "file_bpm")));
     ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
     pFileBpm1->set(130.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 130, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
     m_pTrack1->setBeats(pBeats1);
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
 
@@ -1293,7 +1409,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
         ConfigKey(m_sGroup2, "file_bpm")));
     ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.8);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 100, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 100, 0.0);
     m_pTrack2->setBeats(pBeats2);
     pFileBpm2->set(100.0);
 
@@ -1332,7 +1448,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
         ConfigKey(m_sGroup3, "file_bpm")));
     ControlObject::getControl(ConfigKey(m_sGroup3, "beat_distance"))->set(0.6);
     ControlObject::getControl(ConfigKey(m_sGroup3, "rate"))->set(getRateSliderValue(1.0));
-    BeatsPointer pBeats3 = BeatFactory::makeBeatGrid(m_pTrack3.data(), 140, 0.0);
+    BeatsPointer pBeats3 = BeatFactory::makeBeatGrid(*m_pTrack3, 140, 0.0);
     m_pTrack3->setBeats(pBeats3);
     pFileBpm3->set(140.0);
     pButtonSyncEnabled1->set(0.0);
@@ -1365,9 +1481,9 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     QScopedPointer<ControlProxy> pFileBpm2(getControlProxy(
         ConfigKey(m_sGroup2, "file_bpm")));
     pFileBpm2->set(128.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 128, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 128, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 128, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1426,7 +1542,7 @@ TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
         ConfigKey(m_sGroup1, "file_bpm")));
     pFileBpm1->set(0.0);
     // Maybe the beatgrid ended up at zero also.
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 0.0, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 0.0, 0.0);
     m_pTrack1->setBeats(pBeats1);
 
     QScopedPointer<ControlProxy> pButtonSyncEnabled1(getControlProxy(

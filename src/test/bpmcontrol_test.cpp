@@ -32,7 +32,7 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     TrackPointer pTrack = Track::newTemporary();
     pTrack->setSampleRate(sampleRate);
 
-    BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0);
+    BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0);
 
     // On a beat.
     double prevBeat, nextBeat, beatLength, beatPercentage;

@@ -63,6 +63,9 @@ class TrackCollection : public QObject {
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
     DirectoryDAO& getDirectoryDAO();
+    AnalysisDao& getAnalysisDAO() {
+        return m_analysisDao;
+    }
     QSharedPointer<BaseTrackCache> getTrackSource();
     void setTrackSource(QSharedPointer<BaseTrackCache> trackSource);
     void cancelLibraryScan();

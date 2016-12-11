@@ -54,7 +54,7 @@ class SoundSourceProxy {
 
     // Parse only the metadata from the file without modifying
     // the referenced track.
-    Result parseTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata) const;
+    Result parseTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const;
 
     // Parse only the cover image from the file without modifying
     // the referenced track.
@@ -72,13 +72,13 @@ class SoundSourceProxy {
     // Opening the audio data through the proxy will
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
-    Mixxx::AudioSourcePointer openAudioSource(
-            const Mixxx::AudioSourceConfig& audioSrcCfg = Mixxx::AudioSourceConfig());
+    mixxx::AudioSourcePointer openAudioSource(
+            const mixxx::AudioSourceConfig& audioSrcCfg = mixxx::AudioSourceConfig());
 
     void closeAudioSource();
 
   private:
-    static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
+    static mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
 
@@ -91,12 +91,12 @@ class SoundSourceProxy {
 
     const QUrl m_url;
 
-    static QList<Mixxx::SoundSourceProviderRegistration> findSoundSourceProviderRegistrations(const QUrl& url);
+    static QList<mixxx::SoundSourceProviderRegistration> findSoundSourceProviderRegistrations(const QUrl& url);
 
-    const QList<Mixxx::SoundSourceProviderRegistration> m_soundSourceProviderRegistrations;
+    const QList<mixxx::SoundSourceProviderRegistration> m_soundSourceProviderRegistrations;
     int m_soundSourceProviderRegistrationIndex;
 
-    Mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;
+    mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;
     void nextSoundSourceProvider();
 
     void initSoundSource();
@@ -105,13 +105,13 @@ class SoundSourceProxy {
 
     // This pointer must stay in this class together with
     // the corresponding track pointer. Don't pass it around!!
-    Mixxx::SoundSourcePointer m_pSoundSource;
+    mixxx::SoundSourcePointer m_pSoundSource;
 
     // Keeps track of opening and closing the corresponding
     // SoundSource. This pointer can safely be passed around,
     // because internally it contains a reference to the TIO
     // that keeps it alive.
-    Mixxx::AudioSourcePointer m_pAudioSource;
+    mixxx::AudioSourcePointer m_pAudioSource;
 };
 
 #endif // MIXXX_SOURCES_SOUNDSOURCEPROXY_H

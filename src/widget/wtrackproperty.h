@@ -15,7 +15,7 @@ class WTrackProperty : public WLabel {
   public:
     WTrackProperty(const char* group, UserSettingsPointer pConfig, QWidget* pParent);
 
-    void setup(QDomNode node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   signals:
     void trackDropped(QString filename, QString group);
