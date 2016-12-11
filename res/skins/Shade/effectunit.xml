@@ -2,8 +2,8 @@
 	<WidgetGroup>
 		<Pos>0,0</Pos>
 		<MinimumSize>508,104</MinimumSize>
-	 <MaximumSize>508,104</MaximumSize>
-  <SizePolicy>f,f</SizePolicy>
+		<MaximumSize>508,104</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
 		<Children>
 			<WidgetGroup>
 				<Pos>1,0</Pos>
@@ -16,8 +16,8 @@
 				<BackPath>style/style_bg_effectunit</BackPath>
 				<Children>
 					<HighlightingGroup>
-      <Id>1</Id>
-      <BackPathHighlighted>style/style_bg_effect1_high</BackPathHighlighted>
+					<Id>1</Id>
+						<BackPathHighlighted>style/style_bg_effect1_high</BackPathHighlighted>
 						<Pos>5,5</Pos>
 						<Size>495,45</Size>
 						<Layout>horizontal</Layout>
@@ -26,22 +26,22 @@
 						} 
 						</Style>
 						<Children>
-			    <Template src="skin:effect_selector_button.xml">
-        <SetVariable name="Effect">1</SetVariable>
-        <SetVariable name="effectnum">1</SetVariable>
-       </Template>
+							<Template src="skin:effect_selector_button.xml">
+								<SetVariable name="Effect">1</SetVariable>
+								<SetVariable name="effectnum">1</SetVariable>
+							</Template>
 							<Template src="skin:effect_parameters.xml">
 								<SetVariable name="effectnum">1</SetVariable>
 							</Template>
 						</Children>
-      <Connection>
-       <ConfigKey>[Microphone],show_microphone</ConfigKey>
-       <BindProperty>highlightedId</BindProperty>
-      </Connection>
+						<Connection>
+							<ConfigKey>[Microphone],show_microphone</ConfigKey>
+							<BindProperty>highlightedId</BindProperty>
+							</Connection>
 					</HighlightingGroup>
 					<HighlightingGroup>
-      <Id>2</Id>
-      <BackPathHighlighted>style/style_bg_effect2_high</BackPathHighlighted>
+						<Id>2</Id>
+						<BackPathHighlighted>style/style_bg_effect2_high</BackPathHighlighted>
 						<Pos>5,50</Pos>
 						<Size>495,45</Size>
 						<Layout>horizontal</Layout>
@@ -50,18 +50,18 @@
 						} 
 						</Style>
 						<Children>
-			    <Template src="skin:effect_selector_button.xml">
-        <SetVariable name="Effect">1</SetVariable>
-        <SetVariable name="effectnum">2</SetVariable>
-       </Template>
+							<Template src="skin:effect_selector_button.xml">
+								<SetVariable name="Effect">1</SetVariable>
+								<SetVariable name="effectnum">2</SetVariable>
+							</Template>
 							<Template src="skin:effect_parameters.xml">
 								<SetVariable name="effectnum">2</SetVariable>
 							</Template>
 						</Children>
-      <Connection>
-       <ConfigKey>[Microphone],show_microphone</ConfigKey>
-       <BindProperty>highlightedId</BindProperty>
-      </Connection>
+						<Connection>
+							<ConfigKey>[Microphone],show_microphone</ConfigKey>
+							<BindProperty>highlightedId</BindProperty>
+						</Connection>
 					</HighlightingGroup>	
 				</Children>		
 			</WidgetGroup>	
