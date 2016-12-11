@@ -20,12 +20,10 @@ class AnalyzerManager : public QObject {
     Q_OBJECT
 
 protected:
-    AnalyzerManager(UserSettingsPointer pConfig);
 
 public:
-    //Get the only instance of the manager: 
-    // TODO: maybe move it to an instance in MixxxMainWindow.
-    static AnalyzerManager& getInstance(UserSettingsPointer pConfig);
+    //There should exist only one AnalyzerManager in order to control the amount of threads executing.
+    AnalyzerManager(UserSettingsPointer pConfig);
     virtual ~AnalyzerManager();
 
     //Tell the background analysis to stop. If shutdown is true. stop also the foreground analysis.
@@ -34,9 +32,10 @@ public:
     void analyseTrackNow(TrackPointer tio);
     //Add a track to be analyzed by the background analyzer.
     void queueAnalyseTrack(TrackPointer tio);
+    //Check if there is any background or foreground worker active, paused or track in queue
+    bool isActive();
     //Check if there is any background worker active, paused or track in queue
-    //If includeForeground is true, it also checks the foreground workers.
-    bool isActive(bool includeForeground);
+    bool isBackgroundWorkerActive();
 
 
 public slots:
@@ -74,7 +73,6 @@ private:
     //the thread with low priority.
     AnalyzerWorker* createNewWorker(bool batchJob);
 
-    static AnalyzerManager* m_pAnalyzerManager;
     UserSettingsPointer m_pConfig;
     // Autoincremented ID to use as an identifier for each worker.
     int m_nextWorkerId;

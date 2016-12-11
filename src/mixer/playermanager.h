@@ -23,6 +23,7 @@ class Microphone;
 class PreviewDeck;
 class Sampler;
 class SoundManager;
+class AnalyzerManager;
 class TrackCollection;
 
 // For mocking PlayerManager.
@@ -56,6 +57,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
   public:
     PlayerManager(UserSettingsPointer pConfig,
                   SoundManager* pSoundManager,
+                  AnalyzerManager* pAnalyzerManager,
                   EffectsManager* pEffectsManager,
                   EngineMaster* pEngine);
     virtual ~PlayerManager();
@@ -225,6 +227,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;
+    AnalyzerManager* m_pAnalyzerManager;
     EffectsManager* m_pEffectsManager;
     EngineMaster* m_pEngine;
     ControlObject* m_pCONumDecks;

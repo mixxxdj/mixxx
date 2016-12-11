@@ -15,16 +15,18 @@
 #include "library/libraryfeature.h"
 #include "preferences/usersettings.h"
 #include "treeitemmodel.h"
-#include "library/dlganalysis.h"
 
+class AnalyzerManager;
 class TrackCollection;
+class DlgAnalysis;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AnalysisFeature(QObject* parent,
                     UserSettingsPointer pConfig,
-                    TrackCollection* pTrackCollection);
+                    TrackCollection* pTrackCollection,
+                    AnalyzerManager* pAnalyzerManager);
     virtual ~AnalysisFeature();
 
     QVariant title();
@@ -63,6 +65,7 @@ class AnalysisFeature : public LibraryFeature {
 
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
+    AnalyzerManager* m_pAnalyzerManager;
     // The title returned by title()
     QVariant m_Title;
     TreeItemModel m_childModel;

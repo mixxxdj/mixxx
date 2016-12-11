@@ -26,11 +26,13 @@
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
+                             AnalyzerManager* pAnalyzerManager,
                              EffectsManager* pEffectsManager,
                              EngineMaster* pEngine) :
         m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
+        m_pAnalyzerManager(pAnalyzerManager),
         m_pEffectsManager(pEffectsManager),
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
@@ -119,27 +121,25 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
-    AnalyzerManager& analyzerManager = AnalyzerManager::getInstance(m_pConfig);
-
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(Deck* pDeck, m_decks) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-            &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+            m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(Sampler* pSampler, m_samplers) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-            &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+            m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(PreviewDeck* pPreviewDeck, m_preview_decks) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-            &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+            m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 }
 
@@ -339,9 +339,8 @@ void PlayerManager::addDeckInner() {
     connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
             this, SIGNAL(noVinylControlInputConfigured()));
 
-    AnalyzerManager& analyzerManager = AnalyzerManager::getInstance(m_pConfig);
     connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-        &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+        m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
 
 
     m_players[group] = pDeck;
@@ -394,9 +393,8 @@ void PlayerManager::addSamplerInner() {
     Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
                                     m_pEffectsManager, orientation, group);
 
-    AnalyzerManager& analyzerManager = AnalyzerManager::getInstance(m_pConfig);
     connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
 
     m_players[group] = pSampler;
     m_samplers.append(pSampler);
@@ -422,9 +420,8 @@ void PlayerManager::addPreviewDeckInner() {
                                                 m_pEffectsManager, orientation,
                                                 group);
 
-    AnalyzerManager& analyzerManager = AnalyzerManager::getInstance(m_pConfig);
     connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                &analyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
 
     m_players[group] = pPreviewDeck;
     m_preview_decks.append(pPreviewDeck);

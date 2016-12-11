@@ -15,28 +15,6 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
-AnalyzerManager* AnalyzerManager::m_pAnalyzerManager = NULL;
-
-//static
-AnalyzerManager& AnalyzerManager::getInstance(UserSettingsPointer pConfig) {
-    if (!m_pAnalyzerManager) {
-        // There exists only one UserSettingsPointer in the app, so it doens't matter
-        // if we only assign it once.
-        m_pAnalyzerManager = new AnalyzerManager(pConfig);
-    }
-    int maxThreads = m_pAnalyzerManager->m_pConfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"));
-    int ideal = QThread::idealThreadCount();
-    if (QThread::idealThreadCount() < 1) {
-        ideal = 1;
-    }
-    if (maxThreads <= 0 || maxThreads > 32) {
-        //Assume the value is incorrect, so fix it.
-        maxThreads = ideal;
-    }
-    m_pAnalyzerManager->m_MaxThreads = maxThreads;
-    return *m_pAnalyzerManager;
-}
-
 AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig) :
     m_pConfig(pConfig),
     m_nextWorkerId(0),
@@ -45,15 +23,38 @@ AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig) :
     m_backgroundWorkers(),
     m_foregroundWorkers(),
     m_pausedWorkers() {
+
+    int maxThreads = m_pConfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"));
+    int ideal = QThread::idealThreadCount();
+    if (QThread::idealThreadCount() < 1) {
+        if (maxThreads > 0 && maxThreads <= 32) {
+            qDebug() << "Cannot detect idealThreadCount. maxThreads is: " << maxThreads;
+            ideal = maxThreads;
+        }
+        else {
+            qWarning() << "Cannot detect idealThreadCount. Using the sane value of 1";
+            ideal = 1;
+        }
+    }
+    if (maxThreads <= 0 || maxThreads > ideal) {
+        qWarning() << "maxThreads value is incorrect. Changing it to " << ideal;
+        //Assume the value is incorrect, so fix it.
+        maxThreads = ideal;
+    }
+    m_MaxThreads = maxThreads;
 }
 
 AnalyzerManager::~AnalyzerManager() {
     stop(true);
 }
 
-bool AnalyzerManager::isActive(bool includeForeground) {
-    int total = (includeForeground ? m_foregroundWorkers.size() : 0) +
+bool AnalyzerManager::isActive() {
+    int total = m_foregroundWorkers.size() +
         m_backgroundWorkers.size() + m_pausedWorkers.size();
+    return total > 0;
+}
+bool AnalyzerManager::isBackgroundWorkerActive() {
+    int total = m_backgroundWorkers.size() + m_pausedWorkers.size();
     return total > 0;
 }
 
@@ -197,7 +198,7 @@ void AnalyzerManager::slotNextTrack(AnalyzerWorker* worker) {
         }
     }
     //Check if background workers are empty.
-    if (!isActive(false)) {
+    if (!isBackgroundWorkerActive()) {
         emit(queueEmpty());
     }
 }
@@ -206,7 +207,7 @@ void AnalyzerManager::slotWorkerFinished(AnalyzerWorker* worker) {
     m_backgroundWorkers.removeAll(worker);
     m_foregroundWorkers.removeAll(worker);
     m_pausedWorkers.removeAll(worker);
-    if (!isActive(false)) {
+    if (!isBackgroundWorkerActive()) {
         emit(queueEmpty());
     }
 }
@@ -220,7 +221,7 @@ void AnalyzerManager::slotErrorString(QString errMsg) {
 
 
 void AnalyzerManager::slotMaxThreadsChanged(int threads) {
-    // If it is running, adapt the job count.
+    // If it is Active, adapt the amount of workers. If it is not active, it will just update the variable.
     if (threads < m_MaxThreads) {
         //Pause workers
         while (!m_backgroundWorkers.isEmpty() 

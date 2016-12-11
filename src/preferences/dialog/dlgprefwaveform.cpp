@@ -4,6 +4,7 @@
 #include "preferences/waveformsettings.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "library/trackcollection.h"
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
                                  UserSettingsPointer pConfig, Library* pLibrary)

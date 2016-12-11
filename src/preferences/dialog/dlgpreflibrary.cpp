@@ -82,9 +82,9 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
     connect(cmbMaxThreads, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotMaxThreadsChanged(int)));
 
-    AnalyzerManager& manager = AnalyzerManager::getInstance(config);
+    AnalyzerManager* analyzerManager = m_pLibrary->getAnalyzerManager();
     connect(cmbMaxThreads, SIGNAL(setMaxThreads(int)),
-            &manager, SLOT(slotMaxThreadsChanged(int)));
+            analyzerManager, SLOT(slotMaxThreadsChanged(int)));
 
     // TODO(XXX) this string should be extracted from the soundsources
     QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVe, AIFF";

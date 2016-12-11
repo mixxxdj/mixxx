@@ -34,6 +34,7 @@ class CrateFeature;
 class LibraryControl;
 class KeyboardEventFilter;
 class PlayerManagerInterface;
+class AnalyzerManager;
 
 class Library : public QObject {
     Q_OBJECT
@@ -41,7 +42,8 @@ public:
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
-            RecordingManager* pRecordingManager);
+            RecordingManager* pRecordingManager,
+            AnalyzerManager* pAnalyzerManager);
     virtual ~Library();
 
     void bindWidget(WLibrary* libraryWidget,
@@ -57,6 +59,10 @@ public:
     // signals directly.
     TrackCollection* getTrackCollection() {
         return m_pTrackCollection;
+    }
+    
+    AnalyzerManager* getAnalyzerManager() {
+        return m_pAnalyzerManager;
     }
 
     inline int getTrackTableRowHeight() const {
@@ -131,6 +137,7 @@ public:
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
+    AnalyzerManager* m_pAnalyzerManager;
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;

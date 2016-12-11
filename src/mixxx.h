@@ -42,6 +42,7 @@ class PlayerManager;
 class RecordingManager;
 class SettingsManager;
 class BroadcastManager;
+class AnalyzerManager;
 class SkinLoader;
 class SoundManager;
 class VinylControlManager;
@@ -144,6 +145,8 @@ class MixxxMainWindow : public QMainWindow {
     BroadcastManager* m_pBroadcastManager;
 #endif
     ControllerManager* m_pControllerManager;
+
+    AnalyzerManager* m_pAnalyzerManager;
 
     GuiTick* m_pGuiTick;
 

@@ -15,14 +15,17 @@
 #include "util/dnd.h"
 #include "util/debug.h"
 
+
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
 AnalysisFeature::AnalysisFeature(QObject* parent,
                                UserSettingsPointer pConfig,
-                               TrackCollection* pTrackCollection) :
+                               TrackCollection* pTrackCollection,
+                               AnalyzerManager* pAnalyzerManager) :
         LibraryFeature(parent),
         m_pConfig(pConfig),
         m_pTrackCollection(pTrackCollection),
+        m_pAnalyzerManager(pAnalyzerManager),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(NULL) {
     setTitleDefault();
@@ -81,7 +84,7 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
     m_pAnalysisView->installEventFilter(keyboard);
 
     // Let the DlgAnalysis know whether or not analysis is active.
-    bool bAnalysisActive = AnalyzerManager::getInstance(m_pConfig).isActive(false);
+    bool bAnalysisActive = m_pAnalyzerManager->isBackgroundWorkerActive();
     emit(analysisActive(bAnalysisActive));
 
     libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
@@ -107,16 +110,15 @@ void AnalysisFeature::activate() {
 }
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
-    AnalyzerManager& analyzerManager = AnalyzerManager::getInstance(m_pConfig);
 
-    connect(&analyzerManager, SIGNAL(trackProgress(int, int)),
+    connect(m_pAnalyzerManager, SIGNAL(trackProgress(int, int)),
             m_pAnalysisView, SLOT(trackAnalysisProgress(int, int)));
-    connect(&analyzerManager, SIGNAL(trackFinished(int)),
+    connect(m_pAnalyzerManager, SIGNAL(trackFinished(int)),
             this, SLOT(slotProgressUpdate(int)));
-    connect(&analyzerManager, SIGNAL(trackFinished(int)),
+    connect(m_pAnalyzerManager, SIGNAL(trackFinished(int)),
             m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
 
-    connect(&analyzerManager, SIGNAL(queueEmpty()),
+    connect(m_pAnalyzerManager, SIGNAL(queueEmpty()),
         this, SLOT(cleanupAnalyzer()));
 
     emit(analysisActive(true));
@@ -125,7 +127,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
         if (pTrack) {
             //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
-            analyzerManager.queueAnalyseTrack(pTrack);
+            m_pAnalyzerManager->queueAnalyseTrack(pTrack);
         }
     }
     if (trackIds.size() > 0) {
@@ -144,7 +146,7 @@ void AnalysisFeature::slotProgressUpdate(int num_left) {
 
 void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
-    AnalyzerManager::getInstance(m_pConfig).stop(false);
+    m_pAnalyzerManager->stop(false);
 }
 
 void AnalysisFeature::cleanupAnalyzer() {

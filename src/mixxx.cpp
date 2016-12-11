@@ -36,6 +36,7 @@
 #include "library/library_preferences.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "analyzer/analyzermanager.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
 #include "broadcast/broadcastmanager.h"
@@ -91,6 +92,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pBroadcastManager(nullptr),
 #endif
           m_pControllerManager(nullptr),
+          m_pAnalyzerManager(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __VINYLCONTROL__
           m_pVCManager(nullptr),
@@ -209,6 +211,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pBroadcastManager = new BroadcastManager(pConfig, m_pSoundManager);
 #endif
 
+    m_pAnalyzerManager = new AnalyzerManager(pConfig);
+    
     launchProgress(11);
 
     // Needs to be created before CueControl (decks) and WTrackTableView.
@@ -221,7 +225,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #endif
 
     // Create the player manager. (long)
-    m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager,
+    m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager, m_pAnalyzerManager,
                                          m_pEffectsManager, m_pEngine);
     connect(m_pPlayerManager, SIGNAL(noMicrophoneInputConfigured()),
             this, SLOT(slotNoMicrophoneInputConfigured()));
@@ -264,7 +268,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // (long)
     m_pLibrary = new Library(this, pConfig,
                              m_pPlayerManager,
-                             m_pRecordingManager);
+                             m_pRecordingManager,
+                             m_pAnalyzerManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
     launchProgress(35);

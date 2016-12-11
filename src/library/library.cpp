@@ -44,12 +44,14 @@ const int Library::kDefaultRowHeightPx = 20;
 
 Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  PlayerManagerInterface* pPlayerManager,
-                 RecordingManager* pRecordingManager) :
+                 RecordingManager* pRecordingManager,
+                 AnalyzerManager* pAnalyzerManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
+        m_pAnalyzerManager(m_pAnalyzerManager),
         m_scanner(m_pTrackCollection, pConfig) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
@@ -85,7 +87,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
+    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection, pAnalyzerManager);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
