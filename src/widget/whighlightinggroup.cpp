@@ -28,12 +28,12 @@ void WHighlightingGroup::setup(const QDomNode& node, const SkinContext& context)
     WWidgetGroup::setup(node, context);
 
     // Set background pixmap for the highlighted state
-    QDomElement backPathNodehighlighted =
+    QDomElement backPathNodeHighlighted =
             context.selectElement(node, "BackPathHighlighted");
-    if (!backPathNodehighlighted.isNull()) {
+    if (!backPathNodeHighlighted.isNull()) {
         setPixmapBackgroundHighlighted(
-                context.getPixmapSource(backPathNodehighlighted),
-                context.selectScaleMode(backPathNodehighlighted, Paintable::TILE));
+                context.getPixmapSource(backPathNodeHighlighted),
+                context.selectScaleMode(backPathNodeHighlighted, Paintable::TILE));
     }
 
     context.hasNodeSelectInt(node, "Id", &m_id);

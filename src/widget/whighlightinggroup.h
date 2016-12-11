@@ -30,7 +30,7 @@ class WHighlightingGroup : public WWidgetGroup {
     Q_PROPERTY(int highlight READ getHighlight WRITE setHighlight NOTIFY highlightChanged)
 
     // The highlightedId property is used to select the highlighted widget
-    // group by it's Id, which can be set from skin by <Id>4</Id>
+    // group by its Id, which can be set from skin by <Id>4</Id>
     Q_PROPERTY(int highlightedId READ getHighlight WRITE setHighlightedId NOTIFY highlightChanged)
 
     int getHighlight() const;
