@@ -36,9 +36,9 @@ public:
         QSemaphore sema;
     };
 
-    // Constructor. If it is a batch job, the analyzers might be configured differently.
+    // Constructor. If it is a priorized job, the analyzers are configured differently.
     // Call Qthread->start() when you are ready for the worker to start.
-    AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool batchJob);
+    AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool priorized);
     virtual ~AnalyzerWorker();
 
     //Called by the manager as a response to the waitingForNextTrack signal. and ONLY then.
@@ -51,8 +51,8 @@ public:
     // An updateProgress signal with progress 0 will be emited and also the finished signal.
     // The AnalyzerManager connects it so that it will delete itself and the Qthread.
     void endProcess();
-    // Is this a batch worker?
-    bool isBatch();
+    // Is this a priorized worker?
+    bool isPriorized();
 
 public slots:
     //starts the analysis job.
@@ -83,12 +83,12 @@ private:
 
     UserSettingsPointer m_pConfig;
     QList<Analyzer*> m_analyzelist;
-    bool m_batchJob;
+    bool m_priorizedJob;
     int m_workerIdx;
     SampleBuffer m_sampleBuffer;
     TrackPointer m_currentTrack;
 
-    bool m_exit;
+    QAtomicInt m_exit;
     QAtomicInt m_pauseRequested;
     QMutex m_qm;
     QWaitCondition m_qwait;
@@ -96,8 +96,8 @@ private:
 
 };
 
-inline bool AnalyzerWorker::isBatch() {
-    return m_batchJob;
+inline bool AnalyzerWorker::isPriorized() {
+    return m_priorizedJob;
 }
 
 #endif /* ANALYZER_ANALYZERWORKER_H */

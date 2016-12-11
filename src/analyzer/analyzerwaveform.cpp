@@ -10,9 +10,9 @@
 #include "track/track.h"
 #include "waveform/waveformfactory.h"
 
-AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig, bool batch) :
+AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig, bool forceAnalysis) :
         m_skipProcessing(false),
-        m_batch(batch),
+        m_forceAnalysis(forceAnalysis),
         m_pConfig(pConfig),
         m_waveformData(nullptr),
         m_waveformSummaryData(nullptr),
@@ -106,7 +106,7 @@ bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSam
 }
 
 bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    if (m_batch && !m_pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"))) {
+    if (!m_forceAnalysis && !m_pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"))) {
         return true;
     }
 
@@ -320,7 +320,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
     test_heatMap->save("heatMap.png");
 #endif
     //Ensure that the analyses get saved. This is also called from TrackDAO.updateTrack(), but it can
-    //happen that we batch analyze only the waveforms (i.e. if the setting was disabled in the previous scan)
+    //happen that we analyze only the waveforms (i.e. if the config setting was disabled in a previous scan)
     //and then it is not called. The other analyzers have signals which control the update of their data.
     m_pAnalysisDao->saveTrackAnalyses(*tio);
 

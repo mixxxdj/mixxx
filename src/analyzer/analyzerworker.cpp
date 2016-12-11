@@ -39,10 +39,10 @@ namespace {
 #define FINALIZE_PROMILLE 1
 
 // --- CONSTRUCTOR ---
-AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool batchJob) :
+AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool priorized) :
     m_pConfig(pConfig),
     m_analyzelist(),
-    m_batchJob(batchJob),
+    m_priorizedJob(priorized),
     m_workerIdx(workerIdx),
     m_sampleBuffer(kAnalysisSamplesPerBlock),
     m_exit(false),
@@ -65,25 +65,22 @@ AnalyzerWorker::~AnalyzerWorker() {
 }
 
 void AnalyzerWorker::nextTrack(TrackPointer newTrack) {
-    m_qm.lock();
+    QMutexLocker locker(&m_qm);
     m_currentTrack = newTrack;
     m_qwait.wakeAll();
-    m_qm.unlock();
 }
 void AnalyzerWorker::pause() {
     m_pauseRequested = true;
 }
 void AnalyzerWorker::resume() {
-    m_qm.lock();
+    QMutexLocker locker(&m_qm);
     m_qwait.wakeAll();
-    m_qm.unlock();
 }
 
 void AnalyzerWorker::endProcess() {
+    QMutexLocker locker(&m_qm);
     m_exit = true;
-    m_qm.lock();
     m_qwait.wakeAll();
-    m_qm.unlock();
 }
 
 // This is called from the AnalyzerWorker thread
@@ -167,10 +164,9 @@ bool AnalyzerWorker::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAud
         // When a priority analysis comes in, we pause this working thread until one prioritized
         // worker finishes. Once it finishes, this worker will get resumed.
         if (m_pauseRequested.fetchAndStoreAcquire(false)) {
-            m_qm.lock();
+            QMutexLocker locker(&m_qm);
             emit(paused(this));
             m_qwait.wait(&m_qm);
-            m_qm.unlock();
         }
 
         if (m_exit) {
@@ -198,10 +194,11 @@ void AnalyzerWorker::slotProcess() {
 
     while (!m_exit) {
         //We emit waitingForNextTrack to inform that we're done and we need a new track.
-        m_qm.lock();
-        emit(waitingForNextTrack(this));
-        m_qwait.wait(&m_qm);
-        m_qm.unlock();
+        {
+            QMutexLocker locker(&m_qm);
+            emit(waitingForNextTrack(this));
+            m_qwait.wait(&m_qm);
+        }
         // We recheck m_exit, since it's also the way that the manager indicates that there are no
         // more tracks to process.
         if (m_exit) {
@@ -289,12 +286,12 @@ void AnalyzerWorker::emitUpdateProgress(int progress) {
 }
 
 void AnalyzerWorker::createAnalyzers() {
-    m_analyzelist.append(new AnalyzerWaveform(m_pConfig, m_batchJob));
+    m_analyzelist.append(new AnalyzerWaveform(m_pConfig, m_priorizedJob));
     m_analyzelist.append(new AnalyzerGain(m_pConfig));
     m_analyzelist.append(new AnalyzerEbur128(m_pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
-    m_analyzelist.append(new AnalyzerBeats(m_pConfig, m_batchJob));
+    m_analyzelist.append(new AnalyzerBeats(m_pConfig, !m_priorizedJob));
     m_analyzelist.append(new AnalyzerKey(m_pConfig));
 #endif
 }

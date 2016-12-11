@@ -20,22 +20,27 @@ class AnalyzerManager : public QObject {
     Q_OBJECT
 
 protected:
+enum class WorkerType {
+    defaultWorker,
+    priorityWorker
+};
 
 public:
     //There should exist only one AnalyzerManager in order to control the amount of threads executing.
     AnalyzerManager(UserSettingsPointer pConfig);
     virtual ~AnalyzerManager();
 
-    //Tell the background analysis to stop. If shutdown is true. stop also the foreground analysis.
+    //Tell the analyzers of the default queue to stop. If shutdown is true. stop also the priority analyzers.
     void stop(bool shutdown);
-    //This method might need to be protected an called only via slot.
+    //Add a track to be analyzed with a priority worker. (Like those required by loading a track into a player).
+    //This method might need to be protected an called only via the slotAnalyzeTrack slot.
     void analyseTrackNow(TrackPointer tio);
-    //Add a track to be analyzed by the background analyzer.
+    //Add a track to be analyzed by the default queue.
     void queueAnalyseTrack(TrackPointer tio);
-    //Check if there is any background or foreground worker active, paused or track in queue
+    //Check if there is any default worker or priority worker active, paused or a track in queue
     bool isActive();
-    //Check if there is any background worker active, paused or track in queue
-    bool isBackgroundWorkerActive();
+    //Check if there is any default worker active, paused or track in queue
+    bool isDefaultQueueActive();
 
 
 public slots:
@@ -65,32 +70,32 @@ signals:
     //tracks remain to be scanned. It is currently used by the AnalysisFeature and DlgAnalisys
     //to show the track progression.
     void trackFinished(int size);
-    //Indicates that the background analysis job has finished (I.e. all background tracks have been
+    //Indicates that the default analysis job has finished (I.e. all tracks queued on the default queue have been
     // analyzed). It is used for the UI to refresh the text and buttons.
     void queueEmpty();
 private:
     //Method that creates a worker, assigns it to a new thread and the correct list, and starts
     //the thread with low priority.
-    AnalyzerWorker* createNewWorker(bool batchJob);
+    AnalyzerWorker* createNewWorker(WorkerType wtype);
 
     UserSettingsPointer m_pConfig;
     // Autoincremented ID to use as an identifier for each worker.
     int m_nextWorkerId;
-    // Max number of threads to be active analyzing at a time including both, background and foreground analysis
+    // Max number of threads to be active analyzing at a time including both, default and priority analysis
     int m_MaxThreads;
     // TODO: We do a "contains" over these queues before adding a new track to them.
     // The more tracks that we add to the queue, the slower this check is. 
     // No UI response is shown until all tracks are queued.
-    // The processing queue for batch analysis
-    QQueue<TrackPointer> m_batchTrackQueue;
-    // The processing queue for the player analysis.
+    // The processing queue for the analysis feature of the library.
+    QQueue<TrackPointer> m_defaultTrackQueue;
+    // The processing queue for the analysis of tracks loaded into players.
     QQueue<TrackPointer> m_prioTrackQueue;
 
-    //List of background workers (excluding the paused ones).
-    QList<AnalyzerWorker*> m_backgroundWorkers;
-    //List of foreground workers (foreground workers are not paused)
-    QList<AnalyzerWorker*> m_foregroundWorkers;
-    //List of background workers that are currently paused
+    //List of default workers (excluding the paused ones).
+    QList<AnalyzerWorker*> m_defaultWorkers;
+    //List of priority workers (excluding the paused ones).
+    QList<AnalyzerWorker*> m_priorityWorkers;
+    //List of workers that are currently paused (priority workers are only paused if it was required from reducing the maxThreads)
     QList<AnalyzerWorker*> m_pausedWorkers;
     //This list is used mostly so that isActive() can return the correct value
     QList<AnalyzerWorker*> m_endingWorkers;

@@ -18,15 +18,15 @@
 AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig) :
     m_pConfig(pConfig),
     m_nextWorkerId(0),
-    m_batchTrackQueue(),
+    m_defaultTrackQueue(),
     m_prioTrackQueue(),
-    m_backgroundWorkers(),
-    m_foregroundWorkers(),
+    m_defaultWorkers(),
+    m_priorityWorkers(),
     m_pausedWorkers() {
 
     int maxThreads = m_pConfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"));
     int ideal = QThread::idealThreadCount();
-    if (QThread::idealThreadCount() < 1) {
+    if (ideal < 1) {
         if (maxThreads > 0 && maxThreads <= 32) {
             qDebug() << "Cannot detect idealThreadCount. maxThreads is: " << maxThreads;
             ideal = maxThreads;
@@ -49,18 +49,18 @@ AnalyzerManager::~AnalyzerManager() {
 }
 
 bool AnalyzerManager::isActive() {
-    int total = m_foregroundWorkers.size() +
-        m_backgroundWorkers.size() + m_pausedWorkers.size();
+    int total = m_priorityWorkers.size() +
+        m_defaultWorkers.size() + m_pausedWorkers.size();
     return total > 0;
 }
-bool AnalyzerManager::isBackgroundWorkerActive() {
-    int total = m_backgroundWorkers.size() + m_pausedWorkers.size();
+bool AnalyzerManager::isDefaultQueueActive() {
+    int total = m_defaultWorkers.size() + m_pausedWorkers.size();
     return total > 0;
 }
 
 void AnalyzerManager::stop(bool shutdown) {
-    m_batchTrackQueue.clear();
-    QListIterator<AnalyzerWorker*> it(m_backgroundWorkers);
+    m_defaultTrackQueue.clear();
+    QListIterator<AnalyzerWorker*> it(m_defaultWorkers);
     while (it.hasNext()) {
         AnalyzerWorker* worker = it.next();
         worker->endProcess();
@@ -74,7 +74,7 @@ void AnalyzerManager::stop(bool shutdown) {
     }
     if (shutdown) {
         m_prioTrackQueue.clear();
-        QListIterator<AnalyzerWorker*> it2(m_foregroundWorkers);
+        QListIterator<AnalyzerWorker*> it2(m_priorityWorkers);
         while (it2.hasNext()) {
             AnalyzerWorker* worker = it2.next();
             worker->endProcess();
@@ -83,34 +83,34 @@ void AnalyzerManager::stop(bool shutdown) {
         //TODO: ensure that they are all forcibly stopped.
     }
 }
-// Analyze it with a foreground worker. (foreground as in interactive, i.e. not a batch worker).
+//Add a track to be analyzed with a priority worker. (Like those required by loading a track into a player).
 void AnalyzerManager::analyseTrackNow(TrackPointer tio) {
-    if (m_batchTrackQueue.contains(tio)) {
-        m_batchTrackQueue.removeAll(tio);
+    if (m_defaultTrackQueue.contains(tio)) {
+        m_defaultTrackQueue.removeAll(tio);
     }
     //TODO: There's one scenario that we still miss: load on a deck a track that is currently
     //being analyzed by the background worker. We cannot reuse the background worker, but we should discard its work.
     if (!m_prioTrackQueue.contains(tio)) {
         m_prioTrackQueue.append(tio);
-        if (m_foregroundWorkers.size() < m_MaxThreads) {
-            createNewWorker(false);
-            if (m_foregroundWorkers.size() + m_backgroundWorkers.size() > m_MaxThreads) {
-                AnalyzerWorker * backwork = m_backgroundWorkers.first();
+        if (m_priorityWorkers.size() < m_MaxThreads) {
+            createNewWorker(WorkerType::priorityWorker);
+            if (m_priorityWorkers.size() + m_defaultWorkers.size() > m_MaxThreads) {
+                AnalyzerWorker * backwork = m_defaultWorkers.first();
                 backwork->pause();
                 //Ideally i would have done this on the slotPaused slot, but then i cannot 
                 //ensure i won't call pause twice for the same worker.
                 m_pausedWorkers.append(backwork);
-                m_backgroundWorkers.removeAll(backwork);
+                m_defaultWorkers.removeAll(backwork);
             }
         }
     }
 }
-// This is called from the GUI for batch analysis.
+// This is called from the GUI for the analysis feature of the library.
 void AnalyzerManager::queueAnalyseTrack(TrackPointer tio) {
-    if (!m_batchTrackQueue.contains(tio)) {
-        m_batchTrackQueue.append(tio);
-        if (m_pausedWorkers.size() + m_backgroundWorkers.size() < m_MaxThreads) {
-            createNewWorker(true);
+    if (!m_defaultTrackQueue.contains(tio)) {
+        m_defaultTrackQueue.append(tio);
+        if (m_pausedWorkers.size() + m_defaultWorkers.size() < m_MaxThreads) {
+            createNewWorker(WorkerType::defaultWorker);
         }
     }
 }
@@ -131,7 +131,7 @@ void AnalyzerManager::slotUpdateProgress(int workerIdx, struct AnalyzerWorker::p
         //Right now no one is listening to trackDone, but it's here just in case.
         emit(trackDone(progressInfo->current_track));
         //Report that a track analysis has finished, and how many are still remaining.
-        emit(trackFinished(m_backgroundWorkers.size() + m_batchTrackQueue.size() - 1));
+        emit(trackFinished(m_defaultWorkers.size() + m_defaultTrackQueue.size() - 1));
     }
     //TODO: Which is the consequence of not calling reset?
     progressInfo->current_track.reset();
@@ -145,24 +145,24 @@ void AnalyzerManager::slotNextTrack(AnalyzerWorker* worker) {
 
     //This is used when the maxThreads change. Extra workers are paused until active workers end.
     //Then, those are terminated and the paused workers are resumed.
-    TrackPointer track = TrackPointer();
+    TrackPointer track;
     AnalyzerWorker* forepaused=nullptr;
     foreach(AnalyzerWorker* worker, m_pausedWorkers) {
-        if (!worker->isBatch()) { forepaused=worker; break; }
+        if (worker->isPriorized()) { forepaused=worker; break; }
     }
     if (!forepaused) {
-        if (worker->isBatch()) {
-            if (m_backgroundWorkers.size()  + m_pausedWorkers.size() <= m_MaxThreads) {
-                //The while loop is done in the event that the track which was added to the queue is no 
-                //longer available.
-                while (!track && !m_batchTrackQueue.isEmpty()) {
-                    track = m_batchTrackQueue.dequeue();
-                }
+        if (worker->isPriorized()) {
+            while (!track && !m_prioTrackQueue.isEmpty()) {
+                track = m_prioTrackQueue.dequeue();
             }
         }
         else {
-            while (!track && !m_prioTrackQueue.isEmpty()) {
-                track = m_prioTrackQueue.dequeue();
+            if (m_defaultWorkers.size()  + m_pausedWorkers.size() <= m_MaxThreads) {
+                //The while loop is done in the event that the track which was added to the queue is no 
+                //longer available.
+                while (!track && !m_defaultTrackQueue.isEmpty()) {
+                    track = m_defaultTrackQueue.dequeue();
+                }
             }
         }
     }
@@ -172,38 +172,38 @@ void AnalyzerManager::slotNextTrack(AnalyzerWorker* worker) {
     else {
         worker->endProcess();
         //Removing from active lists, so that "isActive" can return the correct value.
-        m_backgroundWorkers.removeAll(worker);
-        m_foregroundWorkers.removeAll(worker);
+        m_defaultWorkers.removeAll(worker);
+        m_priorityWorkers.removeAll(worker);
         m_endingWorkers.append(worker);
 
         if (forepaused) {
             forepaused->resume();
             m_pausedWorkers.removeOne(forepaused);
-            m_foregroundWorkers.append(forepaused);
+            m_priorityWorkers.append(forepaused);
         }
         else if (!m_pausedWorkers.isEmpty()) {
             AnalyzerWorker* otherworker = m_pausedWorkers.first();
             otherworker->resume();
             m_pausedWorkers.removeOne(otherworker);
-            if (otherworker->isBatch()) {
-                m_backgroundWorkers.append(otherworker);
+            if (otherworker->isPriorized()) {
+                m_priorityWorkers.append(otherworker);
             }
             else {
-                m_foregroundWorkers.append(otherworker);
+                m_defaultWorkers.append(otherworker);
             }
         }
     }
     //Check if background workers are empty.
-    if (!isBackgroundWorkerActive()) {
+    if (!isDefaultQueueActive()) {
         emit(queueEmpty());
     }
 }
 void AnalyzerManager::slotWorkerFinished(AnalyzerWorker* worker) {
     m_endingWorkers.removeAll(worker);
-    m_backgroundWorkers.removeAll(worker);
-    m_foregroundWorkers.removeAll(worker);
+    m_defaultWorkers.removeAll(worker);
+    m_priorityWorkers.removeAll(worker);
     m_pausedWorkers.removeAll(worker);
-    if (!isBackgroundWorkerActive()) {
+    if (!isDefaultQueueActive()) {
         emit(queueEmpty());
     }
 }
@@ -220,55 +220,56 @@ void AnalyzerManager::slotMaxThreadsChanged(int threads) {
     // If it is Active, adapt the amount of workers. If it is not active, it will just update the variable.
     if (threads < m_MaxThreads) {
         //Pause workers
-        while (!m_backgroundWorkers.isEmpty() 
-            && m_foregroundWorkers.size() + m_backgroundWorkers.size() > threads) {
-                AnalyzerWorker * backwork = m_backgroundWorkers.first();
+        while (!m_defaultWorkers.isEmpty() 
+            && m_priorityWorkers.size() + m_defaultWorkers.size() > threads) {
+                AnalyzerWorker * backwork = m_defaultWorkers.first();
                 backwork->pause();
                 //Ideally i would have done this on the slotPaused slot, but then i cannot 
                 //ensure i won't call pause twice for the same worker.
                 m_pausedWorkers.append(backwork);
-                m_backgroundWorkers.removeAll(backwork);
+                m_defaultWorkers.removeAll(backwork);
         }
-        while (m_foregroundWorkers.size() > threads) {
-                AnalyzerWorker * backwork = m_foregroundWorkers.first();
+        while (m_priorityWorkers.size() > threads) {
+                AnalyzerWorker * backwork = m_priorityWorkers.first();
                 backwork->pause();
                 //Ideally i would have done this on the slotPaused slot, but then i cannot 
                 //ensure i won't call pause twice for the same worker.
                 m_pausedWorkers.append(backwork);
-                m_foregroundWorkers.removeAll(backwork);
+                m_priorityWorkers.removeAll(backwork);
         }
     }
     else {
         //resume workers
         int pendingworkers=threads-m_MaxThreads;
         foreach(AnalyzerWorker* worker, m_pausedWorkers) {
-            if (!worker->isBatch() && pendingworkers > 0) {
+            if (worker->isPriorized() && pendingworkers > 0) {
                 worker->resume();
                 m_pausedWorkers.removeOne(worker);
-                m_foregroundWorkers.append(worker);
+                m_priorityWorkers.append(worker);
                 --pendingworkers;
             }
         }
         foreach(AnalyzerWorker* worker, m_pausedWorkers) {
-            if (worker->isBatch() && pendingworkers > 0) {
+            if (!worker->isPriorized() && pendingworkers > 0) {
                 worker->resume();
                 m_pausedWorkers.removeOne(worker);
-                m_backgroundWorkers.append(worker);
+                m_defaultWorkers.append(worker);
                 --pendingworkers;
             }
         }
         //Create new workers, if tracks in queue.
-        pendingworkers = math_min(pendingworkers,m_batchTrackQueue.size());
+        pendingworkers = math_min(pendingworkers,m_defaultTrackQueue.size());
         for ( ;pendingworkers > 0; --pendingworkers) {
-            createNewWorker(true);
+            createNewWorker(WorkerType::defaultWorker);
         }
     }
     m_MaxThreads=threads;
 }
 
-AnalyzerWorker* AnalyzerManager::createNewWorker(bool batchJob) {
+AnalyzerWorker* AnalyzerManager::createNewWorker(WorkerType wtype) {
+    bool priorized = (wtype == WorkerType::priorityWorker);
     QThread* thread = new QThread();
-    AnalyzerWorker* worker = new AnalyzerWorker(m_pConfig, ++m_nextWorkerId, batchJob);
+    AnalyzerWorker* worker = new AnalyzerWorker(m_pConfig, ++m_nextWorkerId, priorized);
     worker->moveToThread(thread);
     //Auto startup and auto cleanup of worker and thread.
     connect(thread, SIGNAL(started()), worker, SLOT(slotProcess()));
@@ -282,11 +283,11 @@ AnalyzerWorker* AnalyzerManager::createNewWorker(bool batchJob) {
     connect(worker, SIGNAL(workerFinished(AnalyzerWorker*)), this, SLOT(slotWorkerFinished(AnalyzerWorker*)));
     connect(worker, SIGNAL(error(QString)), this, SLOT(slotErrorString(QString)));
     thread->start(QThread::LowPriority);
-    if (batchJob) {
-        m_backgroundWorkers.append(worker);
+    if (priorized) {
+        m_priorityWorkers.append(worker);
     }
     else {
-        m_foregroundWorkers.append(worker);
+        m_defaultWorkers.append(worker);
     }
     return worker;
 }

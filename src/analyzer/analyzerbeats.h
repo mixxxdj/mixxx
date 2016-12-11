@@ -16,7 +16,7 @@
 
 class AnalyzerBeats: public Analyzer {
   public:
-    AnalyzerBeats(UserSettingsPointer pConfig, bool batch);
+    AnalyzerBeats(UserSettingsPointer pConfig, bool forceBeatDetection);
     virtual ~AnalyzerBeats();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
@@ -40,7 +40,7 @@ class AnalyzerBeats: public Analyzer {
 
     int m_iSampleRate, m_iTotalSamples;
     int m_iMinBpm, m_iMaxBpm;
-    bool m_batch;
+    bool m_forceBeatDetection;
 };
 
 #endif /* ANALYZER_ANALYZERBEATS_H */

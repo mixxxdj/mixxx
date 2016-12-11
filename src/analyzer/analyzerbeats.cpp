@@ -17,7 +17,7 @@
 #include "track/beatutils.h"
 #include "track/track.h"
 
-AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool batch)
+AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool forceBeatDetection)
         : m_pConfig(pConfig),
           m_pVamp(NULL),
           m_bPreferencesReanalyzeOldBpm(false),
@@ -28,7 +28,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool batch)
           m_iTotalSamples(0),
           m_iMinBpm(0),
           m_iMaxBpm(9999),
-          m_batch(batch) {
+          m_forceBeatDetection(forceBeatDetection) {
 }
 
 AnalyzerBeats::~AnalyzerBeats() {
@@ -39,10 +39,10 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    bool bPreferencesBeatDetectionEnabled = m_batch || static_cast<bool>(
+    bool beatDetectionEnabled = m_forceBeatDetection || static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED)).toInt());
-    if (!bPreferencesBeatDetectionEnabled) {
+    if (!beatDetectionEnabled) {
         qDebug() << "Beat calculation is deactivated";
         return false;
     }

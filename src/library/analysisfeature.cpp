@@ -84,7 +84,7 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
     m_pAnalysisView->installEventFilter(keyboard);
 
     // Let the DlgAnalysis know whether or not analysis is active.
-    bool bAnalysisActive = m_pAnalyzerManager->isBackgroundWorkerActive();
+    bool bAnalysisActive = m_pAnalyzerManager->isDefaultQueueActive();
     emit(analysisActive(bAnalysisActive));
 
     libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
