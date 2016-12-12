@@ -11,20 +11,25 @@
     <SizePolicy>me,me</SizePolicy>
     <Children>
 
-      <Template src="skin:left_2state_button.xml">
-        <SetVariable name="TooltipId">pfl</SetVariable>
-        <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
-        <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
-        <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
-        <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
-        <SetVariable name="state_0_text"></SetVariable>
-        <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="state_1_text"></SetVariable>
-        <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
-      </Template>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>Channel<Variable name="i"/>Volume</ObjectName>
