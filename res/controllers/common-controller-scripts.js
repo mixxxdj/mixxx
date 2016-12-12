@@ -265,9 +265,9 @@ script.loopMove = function (group,direction,numberOfBeats) {
     if (!numberOfBeats || numberOfBeats==0) numberOfBeats = 0.5;
 
     if (direction < 0) {
-        engine.setValue(group, "loop_move", -number_of_beats);
+        engine.setValue(group, "loop_move", -numberOfBeats);
     } else {
-        engine.setValue(group, "loop_move", number_of_beats);
+        engine.setValue(group, "loop_move", numberOfBeats);
     }
 }
 
