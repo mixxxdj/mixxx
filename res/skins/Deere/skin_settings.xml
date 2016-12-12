@@ -452,12 +452,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show Advanced Mode</Text>
+              <Text>&#9744; Show Effects</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show Advanced Mode</Text>
+              <Text>&#9745; Show Effects</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>

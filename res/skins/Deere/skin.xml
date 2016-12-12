@@ -77,7 +77,6 @@
       <Children>
         <Template src="skin:tool_bar.xml"/>
         <Template src="skin:main_decks.xml"/>
-        <Template src="skin:effect_rack.xml"/>
         <WidgetGroup>
           <Layout>horizontal</Layout>
           <Children>
@@ -85,6 +84,16 @@
           </Children>
           <Connection>
             <ConfigKey>[Samplers],show_samplers</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup>
+        <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Template src="skin:effect_rack.xml"/>
+          </Children>
+          <Connection>
+            <ConfigKey>[EffectRack1],show</ConfigKey>
             <BindProperty>visible</BindProperty>
           </Connection>
         </WidgetGroup>
