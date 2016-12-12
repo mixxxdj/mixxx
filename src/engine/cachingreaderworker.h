@@ -39,7 +39,7 @@ typedef struct ReaderStatusUpdate {
     ReaderStatusUpdate()
         : status(INVALID)
         , chunk(nullptr)
-        , maxReadableFrameIndex(Mixxx::AudioSource::getMinFrameIndex()) {
+        , maxReadableFrameIndex(mixxx::AudioSource::getMinFrameIndex()) {
     }
     ReaderStatusUpdate(
             ReaderStatus statusArg,
@@ -97,7 +97,7 @@ class CachingReaderWorker : public EngineWorker {
             const CachingReaderChunkReadRequest& request);
 
     // The current audio source of the track loaded
-    Mixxx::AudioSourcePointer m_pAudioSource;
+    mixxx::AudioSourcePointer m_pAudioSource;
 
     // The maximum readable frame index of the AudioSource. Might
     // be adjusted when decoding errors occur to prevent reading

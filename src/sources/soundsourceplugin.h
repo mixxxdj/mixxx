@@ -3,7 +3,7 @@
 
 #include "sources/soundsourcepluginapi.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // Common base class for SoundSource plugins
 class SoundSourcePlugin: public SoundSource {
@@ -16,14 +16,16 @@ protected:
     }
 };
 
-// Wraps the SoundSourcePlugin allocated with operator new
-// into a SoundSourcePointer that ensures that the managed
-// object will deleted from within the external library (DLL)
-// eventually.
-SoundSourcePointer exportSoundSourcePlugin(
-        SoundSourcePlugin* pSoundSourcePlugin);
+void deleteSoundSourcePlugin(SoundSource* pSoundSource);
 
-} // namespace Mixxx
+template<typename T>
+SoundSourcePointer newSoundSourcePluginFromUrl(const QUrl& url) {
+    // Ensures that the managed object will deleted from within the external
+    // library (DLL) eventually.
+    return SoundSourcePointer(new T(url), deleteSoundSourcePlugin);
+}
+
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion();
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int Mixxx_SoundSourcePluginAPI_getVersion();

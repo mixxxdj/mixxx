@@ -108,7 +108,7 @@ Function .onInit    ; Prevent multiple installer instances
 FunctionEnd
 
 ;-------------------------------
-; Install the VC 2010 redistributable DLLs if they're not already.
+; Install the VC redistributable DLLs if they're not already.
 Function InstallVCRedist
   Push $R0
   Call CheckVCRedist
@@ -123,8 +123,8 @@ Function InstallVCRedist
 
   ClearErrors
   ; Call it & wait for it to install
-  ExecWait 'vcredist_${ARCH}.exe /quiet /install'
-  Delete "$TEMP\vc_redist_${ARCH}.exe"
+  ExecWait "$TEMP\vcredist_${ARCH}.exe /quiet /install /norestart"
+  Delete "$TEMP\vcredist_${ARCH}.exe"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
@@ -160,17 +160,12 @@ Function InstallVCRedist
 FunctionEnd
 
 ;-------------------------------
-; Test if Visual C++ Redistributables 10.0 are installed
+; Test if Visual C++ Redistributables are installed
 ; Returns -1 if they're not
 Function CheckVCRedist
    Push $R0
    ClearErrors
-   ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\${ARCH}" "Installed"
-   ; Old way:
-   ;   x64
-   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}" "Version"
-   ;   x86
-   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}" "Version"
+   ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\${ARCH}" "Installed"
 
    IfErrors 0 VSRedistInstalled
    StrCpy $R0 "-1"
@@ -194,7 +189,15 @@ Section "Mixxx (required)" SecMixxx
 
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  
+  !ifdef STATICDEPS
+    ; The below is not fatal if Mixxx is built with static dependencies
+    ; since there may not be any DLLs to bundle
+    File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  !else
+    File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  !endif
+  
   ; If PDB files are present bundle them. For release builds we will not copy
   ; PDBs into the distXX folder so they won't get bundled.
   File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.pdb"
@@ -376,6 +379,8 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Denon-DN-HS5500-scripts.js"
   Delete "$INSTDIR\controllers\Denon-DN-SC2000.midi.js"
   Delete "$INSTDIR\controllers\Denon-MC3000-scripts.js"
+  Delete "$INSTDIR\controllers\Denon-MC4000-scripts.js"
+  Delete "$INSTDIR\controllers\Denon MC4000.midi.xml"
   Delete "$INSTDIR\controllers\Denon-MC6000MK2-scripts.js"
   Delete "$INSTDIR\controllers\Denon-MC6000MK2.midi.xml"
   Delete "$INSTDIR\controllers\DJ-Tech CDJ-101.midi.xml"
@@ -447,9 +452,11 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Korg nanoPAD2.midi.xml"
   Delete "$INSTDIR\controllers\Korg-nanoKONTROL-2-scripts.js"
   Delete "$INSTDIR\controllers\Korg-nanoPAD2-scripts.js"
-  Delete "$INSTDIR\controllers\M-Audio-Xponent-scripts.js"
-  Delete "$INSTDIR\controllers\M-Audio_Xponent.midi.xml"
+  Delete "$INSTDIR\controllers\korg_nanokontrol2.mixco.output.js"
+  Delete "$INSTDIR\controllers\korg_nanokontrol2.mixco.output.midi.xml"
   Delete "$INSTDIR\controllers\M-Audio_Xsession_pro.midi.xml"
+  Delete "$INSTDIR\controllers\maudio_xponent.mixco.output.js"
+  Delete "$INSTDIR\controllers\maudio_xponent.mixco.output.midi.xml"
   Delete "$INSTDIR\controllers\Midi-Keyboard.midi.xml"
   Delete "$INSTDIR\controllers\Midi_for_light.midi.xml"
   Delete "$INSTDIR\controllers\Midi_for_light-scripts.js"
@@ -470,6 +477,8 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Novation-Launchpad-Mini-scripts.js"
   Delete "$INSTDIR\controllers\Novation-Launchpad-Mini.midi.xml"
   Delete "$INSTDIR\controllers\Novation-Launchpad-scripts.js"
+  Delete "$INSTDIR\controllers\novation_twitch.mixco.output.js"
+  Delete "$INSTDIR\controllers\novation_twitch.mixco.output.midi.xml"
   Delete "$INSTDIR\controllers\Numark DJ2Go.midi.xml"
   Delete "$INSTDIR\controllers\Numark Mixtrack Pro.midi.xml"
   Delete "$INSTDIR\controllers\Numark MIXTRACK.midi.xml"
@@ -501,12 +510,16 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Pioneer-DDJ-SB-scripts.js"
   Delete "$INSTDIR\controllers\Pioneer-DDJ-SB2.midi.xml"
   Delete "$INSTDIR\controllers\Pioneer-DDJ-SB2-scripts.js"
+  Delete "$INSTDIR\controllers\Reloop Beatmix 2-4.midi.xml"
   Delete "$INSTDIR\controllers\Reloop Beatpad.midi.xml"
-  Delete "$INSTDIR\controllers\Reloop-Beatpad-scripts.js"
   Delete "$INSTDIR\controllers\Reloop Digital Jockey 2 Controller Edition.midi.xml"
   Delete "$INSTDIR\controllers\Reloop Terminal Mix 2-4.js"
   Delete "$INSTDIR\controllers\Reloop Terminal Mix 2-4.midi.xml"
+  Delete "$INSTDIR\controllers\Reloop-Beatmix-2-4-scripts.js"
+  Delete "$INSTDIR\controllers\Reloop-Beatpad-scripts.js"
+  Delete "$INSTDIR\controllers\Reloop Jockey 3 ME.midi.xml"
   Delete "$INSTDIR\controllers\Reloop-Digital-Jockey2-Controller-scripts.js"
+  Delete "$INSTDIR\controllers\Reloop-Jockey-3-ME-scripts.js"
   Delete "$INSTDIR\controllers\Sony SixxAxis.hid.xml"
   Delete "$INSTDIR\controllers\Sony-SixxAxis.js"
   Delete "$INSTDIR\controllers\Stanton SCS.1d.midi.xml"

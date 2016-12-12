@@ -9,7 +9,14 @@
 #define _USE_MATH_DEFINES
 #endif
 #endif
-#include <cmath>
+
+#include <math.h>
+#include <cmath> 
+// Note: Because of our fpclassify hack, we actualy need to inlude both, 
+// the c and the c++ version of the math header.  
+// From GCC 6.1.1 math.h depends on cmath, which failes to compile if included 
+// after our fpclassify hack 
+
 #include <algorithm>
 
 #include "util/assert.h"

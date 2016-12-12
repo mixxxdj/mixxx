@@ -19,7 +19,7 @@ void WKey::onConnectedControlChanged(double dParameter, double dValue) {
     setValue(dValue);
 }
 
-void WKey::setup(QDomNode node, const SkinContext& context) {
+void WKey::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     m_displayCents = context.selectBool(node, "DisplayCents", false);
 }

@@ -30,7 +30,7 @@ class MixxxTest : public testing::Test {
     // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
     class ApplicationScope {
     public:
-        ApplicationScope(int argc, char** argv);
+        ApplicationScope(int& argc, char** argv);
         ~ApplicationScope();
     };
     friend class ApplicationScope;
@@ -40,15 +40,15 @@ class MixxxTest : public testing::Test {
         return s_pApplication.data();
     }
 
-    UserSettingsPointer config() {
+    UserSettingsPointer config() const {
         return m_pConfig;
     }
 
-    ControlProxy* getControlProxy(const ConfigKey& key) {
+    ControlProxy* getControlProxy(const ConfigKey& key) const {
         return new ControlProxy(key);
     }
 
-    QTemporaryFile* makeTemporaryFile(const QString contents) {
+    QTemporaryFile* makeTemporaryFile(const QString& contents) const {
         QByteArray contentsBa = contents.toLocal8Bit();
         QTemporaryFile* file = new QTemporaryFile();
         file->open();
@@ -57,14 +57,17 @@ class MixxxTest : public testing::Test {
         return file;
     }
 
+    QDir getTestDataDir() const {
+        return m_testDataDir;
+    }
+
   private:
     static QScopedPointer<MixxxApplication> s_pApplication;
 
     const QDir m_testDataDir;
-    const QString m_testDataCfg;
 
   protected:
-    const UserSettingsPointer m_pConfig;
+    UserSettingsPointer m_pConfig;
 };
 
 

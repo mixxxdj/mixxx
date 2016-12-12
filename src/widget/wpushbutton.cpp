@@ -48,14 +48,15 @@ WPushButton::WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftBut
     setStates(0);
 }
 
-void WPushButton::setup(QDomNode node, const SkinContext& context) {
+void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
     // Number of states
     int iNumStates = context.selectInt(node, "NumberStates");
     setStates(iNumStates);
 
     // Set background pixmap if available
-    if (context.hasNode(node, "BackPath")) {
-        QDomElement backPathNode = context.selectElement(node, "BackPath");
+
+    QDomElement backPathNode = context.selectElement(node, "BackPath");
+    if (!backPathNode.isNull()) {
         PixmapSource backgroundSource = context.getPixmapSource(backPathNode);
         if (!backgroundSource.isEmpty()) {
             // The implicit default in <1.12.0 was FIXED so we keep it for
@@ -70,34 +71,45 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
             // support for variables in State elements
-            SkinContext stateContext(context);
-            stateContext.updateVariables(state);
 
-            int iState = stateContext.selectInt(state, "Number");
+            // Creating a SkinContext is expensive (nearly 20% of our CPU usage
+            // creating a typical skin from profiling). As an optimization, we
+            // look for "SetVariable" nodes to see if we need to create a
+            // context.
+            QScopedPointer<SkinContext> createdStateContext;
+            if (context.hasVariableUpdates(state)) {
+                createdStateContext.reset(new SkinContext(context));
+                createdStateContext->updateVariables(state);
+            }
+
+            const SkinContext* stateContext = !createdStateContext.isNull() ?
+                    createdStateContext.data() : &context;
+
+            int iState = stateContext->selectInt(state, "Number");
             if (iState < m_iNoStates) {
 
-                QDomElement unpressedNode = stateContext.selectElement(state, "Unpressed");
-                PixmapSource pixmapSource = stateContext.getPixmapSource(unpressedNode);
+                QDomElement unpressedNode = stateContext->selectElement(state, "Unpressed");
+                PixmapSource pixmapSource = stateContext->getPixmapSource(unpressedNode);
                 // The implicit default in <1.12.0 was FIXED so we keep it for
                 // backwards compatibility.
                 Paintable::DrawMode unpressedMode =
-                        stateContext.selectScaleMode(unpressedNode, Paintable::FIXED);
+                        stateContext->selectScaleMode(unpressedNode, Paintable::FIXED);
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, false, pixmapSource, unpressedMode);
                 }
 
-                QDomElement pressedNode = stateContext.selectElement(state, "Pressed");
-                pixmapSource = stateContext.getPixmapSource(pressedNode);
+                QDomElement pressedNode = stateContext->selectElement(state, "Pressed");
+                pixmapSource = stateContext->getPixmapSource(pressedNode);
                 // The implicit default in <1.12.0 was FIXED so we keep it for
                 // backwards compatibility.
                 Paintable::DrawMode pressedMode =
-                        stateContext.selectScaleMode(pressedNode, Paintable::FIXED);
+                        stateContext->selectScaleMode(pressedNode, Paintable::FIXED);
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, true, pixmapSource, pressedMode);
                 }
 
-                m_text.replace(iState, stateContext.selectString(state, "Text"));
-                QString alignment = stateContext.selectString(state, "Alignment").toLower();
+                m_text.replace(iState, stateContext->selectString(state, "Text"));
+                QString alignment = stateContext->selectString(state, "Alignment").toLower();
                 if (alignment == "left") {
                     m_align.replace(iState, Qt::AlignLeft);
                 } else if (alignment == "right") {

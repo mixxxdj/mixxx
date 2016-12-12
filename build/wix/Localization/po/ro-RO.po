@@ -1,11 +1,12 @@
-# 
+#
 # Translators:
 # Sébastien BLAISOT <sebastien@blaisot.org>, 2016
+# titus <titus0818@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-01-09 20:21+0000\n"
-"Last-Translator: Sébastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2016-01-30 19:20+0000\n"
+"Last-Translator: titus <titus0818@gmail.com>\n"
 "Language-Team: Romanian (Romania) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ro_RO/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,43 +17,43 @@ msgstr ""
 #.  Programm informations
 msgctxt "ApplicationName"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 msgctxt "ManufacturerName"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 msgctxt "ManufacturerFullName"
 msgid "The Mixxx Development Team"
-msgstr ""
+msgstr "Echipa de dezvoltare Mixxx"
 
 msgctxt "ProductDescription"
 msgid "Open-source Digital DJ software"
-msgstr ""
+msgstr "Aplicaţie DJ Digital Opesource"
 
 msgctxt "Comments"
 msgid "Installs Mixxx"
-msgstr ""
+msgstr "Instalare Mixxx"
 
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
 msgid "This product requires Windows XP or above."
-msgstr ""
+msgstr "Acest produs necesită Windows XP sau ulterior."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
-msgstr ""
+msgstr "Aceiaşi sau o versiune mai nouă a acestui produs este deja instalată."
 
 msgctxt "x64VersionRequired"
 msgid ""
 "You need to install the 64-bit version of this product on 64-bit Windows."
-msgstr ""
+msgstr "Trebuie să instalaţi versiunea produsului pe 64-biţi pentru Windows."
 
 msgctxt "x86VersionRequired"
 msgid ""
 "You need to install the 32-bit version of this product on 32-bit Windows."
-msgstr ""
+msgstr "Trebuie să instalaţi versiunea pe 32-biţi a acestui produs pentru Windows."
 
 msgctxt "x86VersionWarning"
 msgid ""
@@ -65,7 +66,7 @@ msgctxt "XPWarning"
 msgid ""
 "You are installing Mixxx on an outdated operating system. Some functions may"
 " not work well or at all. We recommend upgrading your operating system."
-msgstr ""
+msgstr "Instalaţi Mixxx pe un sistem de operare expirat. Unele funcţii este posibil să nu funcţioneze corect sau deloc. Vă recomandăm să actualizaţi sistemul de operare."
 
 msgctxt "bitWidthMismatch32"
 msgid ""
@@ -88,50 +89,50 @@ msgid ""
 "An older version of Mixxx has been detected. As we changed installer, we can"
 " not smoothly upgrade. Please uninstall older version before installing this"
 " one."
-msgstr ""
+msgstr "O versiune veche Mixxx a fost detectată. Deoarece am schimbat instalatorul, nu putem actualiza facil. Dezinstalaţi versiunea veche înaintea instalării acesteia."
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
-msgstr ""
+msgstr "{\\WixUI_Font_Title}Atenţie"
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
 msgid "The complete package."
-msgstr ""
+msgstr "Pachetul complet."
 
 msgctxt "FeatureMainProgramTitle"
 msgid "Core application"
-msgstr ""
+msgstr "Aplicaţia de bază"
 
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
-msgstr ""
+msgstr "Aplicaţia de bază Mixxx include preconfigurări controllere."
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"
-msgstr ""
+msgstr "Scurtătură birou"
 
 msgctxt "FeatureDesktopShortcutDescription"
 msgid "Add a shortcut to Mixxx on your desktop"
-msgstr ""
+msgstr "Adaugă o scurtătură pentru Mixxx pe birou"
 
 msgctxt "FeatureManualTitle"
 msgid "User Manual"
-msgstr ""
+msgstr "Manual utilizator"
 
 msgctxt "FeatureManualDescription"
 msgid ""
 "The Mixxx user manual in PDF form, also available at "
 "http://mixxx.org/manual/"
-msgstr ""
+msgstr "Manualul utilizatorului Mixxx în format PDF, este disponibil la "
 
 msgctxt "FeatureTranslationsTitle"
 msgid "Translations"
-msgstr ""
+msgstr "Traduceri"
 
 msgctxt "FeatureTranslationsDescription"
 msgid ""
 "Resource files that allow Mixxx to display in alternate languages, other "
 "than US english"
-msgstr ""
+msgstr "Fişierele resursă care permit Mixxx să afişeze în alte limbi, altele decât Engleza US"

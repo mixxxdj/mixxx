@@ -4,7 +4,7 @@
 #include "util/assert.h"
 #include "util/types.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // Common properties of audio signals in Mixxx.
 //
@@ -32,35 +32,43 @@ public:
     };
 
     static const SINT kChannelCountZero    = 0;
-    static const SINT kChannelCountMono    = 1;
-    static const SINT kChannelCountStereo  = 2;
     static const SINT kChannelCountDefault = kChannelCountZero;
+    static const SINT kChannelCountMono    = 1;
+    static const SINT kChannelCountMin     = kChannelCountMono; // lower bound
+    static const SINT kChannelCountStereo  = 2;
+    static const SINT kChannelCountMax     = 256; // upper bound (8-bit unsigned integer)
 
     static bool isValidChannelCount(SINT channelCount) {
-        return kChannelCountZero < channelCount;
+        return (kChannelCountMin <= channelCount) && (kChannelCountMax >= channelCount);
     }
 
     static const SINT kSamplingRateZero    = 0;
+    static const SINT kSamplingRateDefault = kSamplingRateZero;
+    static const SINT kSamplingRateMin     = 8000; // lower bound (= minimum MP3 sampling rate)
+    static const SINT kSamplingRate32kHz   = 32000;
     static const SINT kSamplingRateCD      = 44100;
     static const SINT kSamplingRate48kHz   = 48000;
     static const SINT kSamplingRate96kHz   = 96000;
-    static const SINT kSamplingRateDefault = kSamplingRateZero;
+    static const SINT kSamplingRate192kHz  = 192000;
+    static const SINT kSamplingRateMax     = kSamplingRate192kHz; // upper bound
 
     static bool isValidSamplingRate(SINT samplingRate) {
-        return kSamplingRateZero < samplingRate;
+        return (kSamplingRateMin <= samplingRate) && (kSamplingRateMax >= samplingRate);
     }
 
     explicit AudioSignal(SampleLayout sampleLayout)
         : m_sampleLayout(sampleLayout),
           m_channelCount(kChannelCountDefault),
           m_samplingRate(kSamplingRateDefault) {
+        DEBUG_ASSERT(!hasValidChannelCount());
+        DEBUG_ASSERT(!hasValidSamplingRate());
     }
     AudioSignal(SampleLayout sampleLayout, SINT channelCount, SINT samplingRate)
         : m_sampleLayout(sampleLayout),
           m_channelCount(channelCount),
           m_samplingRate(samplingRate) {
-        DEBUG_ASSERT(kChannelCountZero <= m_channelCount);
-        DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate);
+        DEBUG_ASSERT(kChannelCountZero <= m_channelCount); // unsigned value
+        DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate); // unsigned value
     }
     virtual ~AudioSignal() {}
 
@@ -73,7 +81,7 @@ public:
     SINT getChannelCount() const {
         return m_channelCount;
     }
-    bool hasChannelCount() const {
+    bool hasValidChannelCount() const {
         return isValidChannelCount(getChannelCount());
     }
 
@@ -87,22 +95,32 @@ public:
     SINT getSamplingRate() const {
         return m_samplingRate;
     }
-    bool hasSamplingRate() const {
+    bool hasValidSamplingRate() const {
         return isValidSamplingRate(getSamplingRate());
     }
 
-    // Check for valid properties. Subclasses may override this function
-    // to add more constraints. Derived functions should always call the
-    // implementation of the super class and concatenate the result with
-    // && (logical and).
-    virtual bool isValid() const {
-        return hasChannelCount() && hasSamplingRate();
-    }
+    // Verifies various properties to ensure that the audio data is
+    // actually readable. Warning messages are logged for properties
+    // with invalid values for diagnostic purposes.
+    //
+    // Subclasses may override this function for checking additional
+    // properties in derived classes. Derived functions should always
+    // call the implementation of the super class first:
+    //
+    // bool DerivedClass::verifyReadable() const {
+    //     bool result = BaseClass::validate();
+    //     if (my property is invalid) {
+    //         qWarning() << ...warning message...
+    //         result = false;
+    //     }
+    //     return result;
+    // }
+    virtual bool verifyReadable() const;
 
     // Conversion: #samples / sample offset -> #frames / frame offset
     template<typename T>
     inline T samples2frames(T samples) const {
-        DEBUG_ASSERT(hasChannelCount());
+        DEBUG_ASSERT(hasValidChannelCount());
         DEBUG_ASSERT(0 == (samples % getChannelCount()));
         return samples / getChannelCount();
     }
@@ -110,13 +128,13 @@ public:
     // Conversion: #frames / frame offset -> #samples / sample offset
     template<typename T>
     inline T frames2samples(T frames) const {
-        DEBUG_ASSERT(hasChannelCount());
+        DEBUG_ASSERT(hasValidChannelCount());
         return frames * getChannelCount();
     }
 
 protected:
     void setChannelCount(SINT channelCount) {
-        DEBUG_ASSERT(isValidChannelCount(channelCount));
+        DEBUG_ASSERT(kChannelCountZero <= m_channelCount); // unsigned value
         m_channelCount = channelCount;
     }
     void resetChannelCount() {
@@ -124,7 +142,7 @@ protected:
     }
 
     void setSamplingRate(SINT samplingRate) {
-        DEBUG_ASSERT(isValidSamplingRate(samplingRate));
+        DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate); // unsigned value
         m_samplingRate = samplingRate;
     }
     void resetSamplingRate() {

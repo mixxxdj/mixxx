@@ -167,8 +167,6 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 #endif
     }
 
-    m_pErrorDevice = NULL;
-
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
     // then the callback may be running when we call
     // onInputDisconnected/onOutputDisconnected.
@@ -216,6 +214,7 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
         SoundDevice* dev = m_devices.takeLast();
         delete dev;
     }
+    m_pErrorDevice = NULL;
 
 #ifdef __PORTAUDIO__
     if (m_paInitialized) {
@@ -621,7 +620,11 @@ void SoundManager::setJACKName() const {
             reinterpret_cast<SetJackClientName>(
                 portaudio.resolve("PaJack_SetClientName")));
         if (func) {
-            if (!func(Version::applicationName().toLocal8Bit().constData())) qDebug() << "JACK client name set";
+            // PortAudio does not make a copy of the string we provide it so we
+            // need to make sure it will last forever so we intentionally leak
+            // this string.
+            char* jackNameCopy = strdup(Version::applicationName().toLocal8Bit().constData());
+            if (!func(jackNameCopy)) qDebug() << "JACK client name set";
         } else {
             qWarning() << "failed to resolve JACK name method";
         }

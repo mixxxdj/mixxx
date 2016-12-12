@@ -16,7 +16,7 @@ class WTime: public WLabel {
     explicit WTime(QWidget *parent=nullptr);
     ~WTime() override;
 
-    void setup(QDomNode node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
     void refreshTime();

@@ -3,10 +3,11 @@
 #include <QSqlError>
 #include <QtDebug>
 
-#include "waveform/waveform.h"
 #include "library/dao/analysisdao.h"
 #include "library/queryutil.h"
+#include "preferences/waveformsettings.h"
 #include "util/performancetimer.h"
+#include "waveform/waveform.h"
 
 const QString AnalysisDao::s_analysisTableName = "track_analysis";
 
@@ -83,6 +84,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
     const int versionColumn = queryRecord.indexOf("version");
     const int dataChecksumColumn = queryRecord.indexOf("data_checksum");
 
+    QDir analysisPath(getAnalysisStoragePath());
     while (query->next()) {
         AnalysisDao::AnalysisInfo info;
         info.analysisId = query->value(idColumn).toInt();
@@ -91,7 +93,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
         info.description = query->value(descriptionColumn).toString();
         info.version = query->value(versionColumn).toString();
         int checksum = query->value(dataChecksumColumn).toInt();
-        QString dataPath = getAnalysisStoragePath().absoluteFilePath(
+        QString dataPath = analysisPath.absoluteFilePath(
             QString::number(info.analysisId));
         QByteArray compressedData = loadDataFromFile(dataPath);
         int file_checksum = qChecksum(compressedData.constData(),
@@ -216,11 +218,10 @@ void AnalysisDao::deleteAnalyses(const QList<TrackId>& trackIds) {
         LOG_FAILED_QUERY(query) << "couldn't delete analysis";
     }
     const int idColumn = query.record().indexOf("id");
+    QDir analysisPath(getAnalysisStoragePath());
     while (query.next()) {
         int id = query.value(idColumn).toInt();
-        QString dataPath = getAnalysisStoragePath().absoluteFilePath(
-                            QString::number(id));
-        qDebug() << dataPath;
+        QString dataPath = analysisPath.absoluteFilePath(QString::number(id));
         deleteFile(dataPath);
     }
     query.prepare(QString("DELETE FROM track_analysis "
@@ -315,13 +316,16 @@ bool AnalysisDao::saveDataToFile(const QString& fileName, const QByteArray& data
     return true;
 }
 
-void AnalysisDao::saveTrackAnalyses(Track* pTrack) {
-    if (!pTrack) {
+void AnalysisDao::saveTrackAnalyses(const Track& track) {
+    // The only analyses we have at the moment are waveform analyses so we have
+    // nothing to do if it is disabled.
+    WaveformSettings waveformSettings(m_pConfig);
+    if (!waveformSettings.waveformCachingEnabled()) {
         return;
     }
 
-    ConstWaveformPointer pWaveform = pTrack->getWaveform();
-    ConstWaveformPointer pWaveSummary = pTrack->getWaveformSummary();
+    ConstWaveformPointer pWaveform = track.getWaveform();
+    ConstWaveformPointer pWaveSummary = track.getWaveformSummary();
 
     // Don't try to save invalid or non-dirty waveforms.
     if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||
@@ -329,7 +333,7 @@ void AnalysisDao::saveTrackAnalyses(Track* pTrack) {
         return;
     }
 
-    TrackId trackId(pTrack->getId());
+    TrackId trackId(track.getId());
 
     AnalysisDao::AnalysisInfo analysis;
     analysis.trackId = trackId;
@@ -363,4 +367,45 @@ void AnalysisDao::saveTrackAnalyses(Track* pTrack) {
     qDebug() << (success ? "Saved" : "Failed to save")
              << "waveform summary analysis for trackId" << trackId
              << "analysisId" << analysis.analysisId;
+}
+
+size_t AnalysisDao::getDiskUsageInBytes(AnalysisType type) {
+    QDir analysisPath(getAnalysisStoragePath());
+
+    QSqlQuery query(m_db);
+    query.prepare(QString("SELECT id FROM %1 WHERE type=:type").arg(s_analysisTableName));
+    query.bindValue(":type", type);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't get analyses of type" << type;
+        return 0;
+    }
+
+    const int idColumn = query.record().indexOf("id");
+    size_t total = 0;
+    while (query.next()) {
+        total += QFileInfo(analysisPath.absoluteFilePath(
+                query.value(idColumn).toString())).size();
+    }
+    return total;
+}
+
+bool AnalysisDao::deleteAnalysesByType(AnalysisType type) {
+    QDir analysisPath(getAnalysisStoragePath());
+
+    QSqlQuery query(m_db);
+    query.prepare(QString("SELECT id FROM %1 WHERE type=:type").arg(s_analysisTableName));
+    query.bindValue(":type", type);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't get analyses of type" << type;
+        return false;
+    }
+
+    const int idColumn = query.record().indexOf("id");
+    while (query.next()) {
+        QString dataPath = analysisPath.absoluteFilePath(query.value(idColumn).toString());
+        deleteFile(dataPath);
+    }
+    return true;
 }

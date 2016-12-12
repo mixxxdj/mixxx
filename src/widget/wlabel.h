@@ -29,7 +29,7 @@ class WLabel : public QLabel, public WBaseWidget {
   public:
     explicit WLabel(QWidget* pParent=nullptr);
 
-    virtual void setup(QDomNode node, const SkinContext& context);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
 
     QString text() const;
     void setText(const QString& text);

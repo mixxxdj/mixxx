@@ -15,7 +15,7 @@ const SINT CachingReaderChunk::kInvalidIndex = -1;
 // easier memory alignment.
 // TODO(XXX): The optimum value of the "constant" kFrames depends
 // on the properties of the AudioSource as the remarks above suggest!
-const SINT CachingReaderChunk::kChannels = Mixxx::AudioSource::kChannelCountStereo;
+const SINT CachingReaderChunk::kChannels = mixxx::AudioSource::kChannelCountStereo;
 const SINT CachingReaderChunk::kFrames = 8192; // ~ 170 ms at 48 kHz
 const SINT CachingReaderChunk::kSamples =
         CachingReaderChunk::frames2samples(CachingReaderChunk::kFrames);
@@ -36,11 +36,11 @@ void CachingReaderChunk::init(SINT index) {
 }
 
 bool CachingReaderChunk::isReadable(
-        const Mixxx::AudioSourcePointer& pAudioSource,
+        const mixxx::AudioSourcePointer& pAudioSource,
         SINT maxReadableFrameIndex) const {
-    DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= maxReadableFrameIndex);
+    DEBUG_ASSERT(mixxx::AudioSource::getMinFrameIndex() <= maxReadableFrameIndex);
 
-    if (!isValid() || pAudioSource.isNull()) {
+    if (!isValid() || !pAudioSource) {
         return false;
     }
     const SINT frameIndex = frameForIndex(getIndex());
@@ -50,7 +50,7 @@ bool CachingReaderChunk::isReadable(
 }
 
 SINT CachingReaderChunk::readSampleFrames(
-        const Mixxx::AudioSourcePointer& pAudioSource,
+        const mixxx::AudioSourcePointer& pAudioSource,
         SINT* pMaxReadableFrameIndex) {
     DEBUG_ASSERT(pMaxReadableFrameIndex);
 
@@ -94,7 +94,7 @@ SINT CachingReaderChunk::readSampleFrames(
 
     DEBUG_ASSERT(frameIndex == seekFrameIndex);
     DEBUG_ASSERT(CachingReaderChunk::kChannels
-            == Mixxx::AudioSource::kChannelCountStereo);
+            == mixxx::AudioSource::kChannelCountStereo);
     m_frameCount = pAudioSource->readSampleFramesStereo(
             framesToRead, m_sampleBuffer, kSamples);
     if (m_frameCount < framesToRead) {

@@ -1,6 +1,6 @@
 #include "soundsourceproviderregistry.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 void SoundSourceProviderRegistry::registerProvider(
         const SoundSourceProviderPointer& pProvider) {
@@ -25,12 +25,8 @@ void SoundSourceProviderRegistry::registerProvider(
 void SoundSourceProviderRegistry::registerPluginLibrary(
         const SoundSourcePluginLibraryPointer& pPluginLibrary) {
     SoundSourceProviderPointer pProvider(
-            pPluginLibrary->createSoundSourceProvider());
-    if (!pProvider) {
-        qWarning() << "Failed to obtain SoundSource provider from plugin library"
-                << pPluginLibrary->getFilePath();
-        return; // abort registration
-    }
+            pPluginLibrary->getSoundSourceProvider());
+    DEBUG_ASSERT(pProvider);
     const QStringList supportedFileExtensions(
             pProvider->getSupportedFileExtensions());
     if (supportedFileExtensions.isEmpty()) {

@@ -37,8 +37,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     setupUi(this);
 
     // See RECORD_* #defines in defs_recording.h
-    m_pRecordControl = new ControlProxy(
-            RECORDING_PREF_KEY, "status", this);
 
     m_pRadioOgg = new QRadioButton("Ogg Vorbis");
     m_pRadioMp3 = new QRadioButton(ENCODING_MP3);
@@ -116,22 +114,27 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             this, SLOT(slotChangeSplitSize()));
 
     slotApply();
-    // Make sure a corrupt config file won't cause us to record constantly.
-    m_pRecordControl->set(RECORD_OFF);
 
     comboBoxSplitting->addItem(SPLIT_650MB);
     comboBoxSplitting->addItem(SPLIT_700MB);
     comboBoxSplitting->addItem(SPLIT_1024MB);
     comboBoxSplitting->addItem(SPLIT_2048MB);
     comboBoxSplitting->addItem(SPLIT_4096MB);
+    comboBoxSplitting->addItem(SPLIT_60MIN);
+    comboBoxSplitting->addItem(SPLIT_74MIN);
+    comboBoxSplitting->addItem(SPLIT_80MIN);
+    comboBoxSplitting->addItem(SPLIT_120MIN);
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
-    if (index > 0) {
+    if (index >= 0) {
         // Set file split size
         comboBoxSplitting->setCurrentIndex(index);
     }
-    // Otherwise 650 MB will be default file split size.
+    else {
+        //Use max RIFF size (4GB) as default index, since usually people don't want to split.
+        comboBoxSplitting->setCurrentIndex(4);
+    }
 
     // Read CUEfile info
     CheckBoxRecordCueFile->setChecked(
@@ -220,15 +223,15 @@ void DlgPrefRecord::slotRecordPathChange() {
 void DlgPrefRecord::slotResetToDefaults() {
     m_pRadioWav->setChecked(true);
     CheckBoxRecordCueFile->setChecked(false);
-    // 650MB splitting is the default
-    comboBoxSplitting->setCurrentIndex(0);
+    // 4GB splitting is the default
+    comboBoxSplitting->setCurrentIndex(4);
 
     LineEditTitle->setText("");
     LineEditAlbum->setText("");
     LineEditAuthor->setText("");
 
-    // 6 corresponds to 128kbps (only used by MP3 and Ogg though)
-    SliderQuality->setValue(6);
+    // 1 corresponds to 16 bits (WAVE/AIFF)
+    SliderQuality->setValue(1);
 }
 
 // This function updates/refreshes the contents of this dialog.

@@ -1,12 +1,10 @@
-// cue.h
-// Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef CUE_H
-#define CUE_H
+#ifndef MIXXX_CUE_H
+#define MIXXX_CUE_H
 
 #include <QObject>
 #include <QMutex>
 #include <QSharedPointer>
+#include <QColor>
 
 #include "track/trackid.h"
 
@@ -44,7 +42,10 @@ class Cue : public QObject {
     void setHotCue(int hotCue);
 
     QString getLabel() const;
-    void setLabel(const QString label);
+    void setLabel(QString label);
+
+    QColor getColor() const;
+    void setColor(QColor color);
 
   signals:
     void updated();
@@ -52,7 +53,7 @@ class Cue : public QObject {
   private:
     explicit Cue(TrackId trackId);
     Cue(int id, TrackId trackId, CueType type, int position, int length,
-        int hotCue, QString label);
+        int hotCue, QString label, QColor color);
     void setDirty(bool dirty);
     void setId(int id);
     void setTrackId(TrackId trackId);
@@ -67,11 +68,34 @@ class Cue : public QObject {
     int m_iLength;
     int m_iHotCue;
     QString m_label;
+    QColor m_color;
 
     friend class Track;
     friend class CueDAO;
 };
 
-typedef QSharedPointer<Cue> CuePointer;
+class CuePointer: public QSharedPointer<Cue> {
+  public:
+    CuePointer() {}
+    explicit CuePointer(Cue* pCue)
+          : QSharedPointer<Cue>(pCue, deleteLater) {
+    }
 
-#endif /* CUE_H */
+    // TODO(uklotzde): Remove these functions after migration
+    // from QSharedPointer to std::shared_ptr
+    Cue* get() const {
+        return data();
+    }
+    void reset() {
+        clear();
+    }
+
+  private:
+    static void deleteLater(Cue* pCue) {
+        if (pCue != nullptr) {
+            pCue->deleteLater();
+        }
+    }
+};
+
+#endif // MIXXX_CUE_H

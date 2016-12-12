@@ -16,7 +16,7 @@
 class EngineMaster;
 class EngineBuffer;
 
-const double kNoTrigger = -1;
+const int kNoTrigger = -1;
 
 /**
  * EngineControl is an abstract base class for objects which implement

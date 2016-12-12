@@ -39,6 +39,8 @@ class PortMIDI(Dependence):
         # Check for PortMidi
         libs = ['portmidi', 'libportmidi']
         headers = ['portmidi.h']
+        if build.platform_is_windows and build.static_dependencies:
+            conf.CheckLib('advapi32')
         if build.platform_is_windows:
             # We have this special branch here because on Windows we might want
             # to link PortMidi statically which we don't want to do on other
@@ -153,6 +155,10 @@ class SndFile(Dependence):
             raise Exception(
                 "Did not find libsndfile or it\'s development headers")
         build.env.Append(CPPDEFINES='__SNDFILE__')
+        
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES='FLAC__NO_DLL')
+            conf.CheckLib('g72x')
 
     def sources(self, build):
         return ['sources/soundsourcesndfile.cpp']
@@ -248,8 +254,13 @@ class Qt(Dependence):
 
         qt5 = Qt.qt5_enabled(build)
         # Emit various Qt defines
-        build.env.Append(CPPDEFINES=['QT_SHARED',
-                                     'QT_TABLET_SUPPORT'])
+        build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
+        
+        if build.static_qt:
+            build.env.Append(CPPDEFINES='QT_NODLL')
+        else:
+            build.env.Append(CPPDEFINES='QT_SHARED')
+        
         if qt5:
             # Enable qt4 support.
             build.env.Append(CPPDEFINES='QT_DISABLE_DEPRECATED_BEFORE')
@@ -257,6 +268,11 @@ class Qt(Dependence):
         # Set qt_sqlite_plugin flag if we should package the Qt SQLite plugin.
         build.flags['qt_sqlite_plugin'] = util.get_flags(
             build.env, 'qt_sqlite_plugin', 0)
+            
+        # Link in SQLite library if Qt is compiled statically
+        if build.platform_is_windows and build.static_dependencies \
+           and build.flags['qt_sqlite_plugin'] == 0 :
+            conf.CheckLib('sqlite3');
 
         # Enable Qt include paths
         if build.platform_is_linux:
@@ -338,31 +354,33 @@ class Qt(Dependence):
             # appropriate.
             if qt5:
                 build.env.EnableQt5Modules(qt_modules,
+                                           staticdeps=build.static_qt,
                                            debug=build.build_is_debug)
             else:
                 build.env.EnableQt4Modules(qt_modules,
+                                           staticdeps=build.static_qt,
                                            debug=build.build_is_debug)
 
-            # if build.static_dependencies:
-                # # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
-                # # QtCore
-                # build.env.Append(LIBS = 'kernel32')
-                # build.env.Append(LIBS = 'user32') # QtGui, QtOpenGL, libHSS1394
-                # build.env.Append(LIBS = 'shell32')
-                # build.env.Append(LIBS = 'uuid')
-                # build.env.Append(LIBS = 'ole32') # QtGui,
-                # build.env.Append(LIBS = 'advapi32') # QtGui, portaudio, portmidi
-                # build.env.Append(LIBS = 'ws2_32')   # QtGui, QtNetwork, libshout
-                # # QtGui
-                # build.env.Append(LIBS = 'gdi32') #QtOpenGL
-                # build.env.Append(LIBS = 'comdlg32')
-                # build.env.Append(LIBS = 'oleaut32')
-                # build.env.Append(LIBS = 'imm32')
-                # build.env.Append(LIBS = 'winmm')
-                # build.env.Append(LIBS = 'winspool')
-                # # QtOpenGL
-                # build.env.Append(LIBS = 'glu32')
-                # build.env.Append(LIBS = 'opengl32')
+            if build.static_qt:
+                # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
+                # QtCore
+                build.env.Append(LIBS = 'kernel32')
+                build.env.Append(LIBS = 'user32') # QtGui, QtOpenGL, libHSS1394
+                build.env.Append(LIBS = 'shell32')
+                build.env.Append(LIBS = 'uuid')
+                build.env.Append(LIBS = 'ole32') # QtGui,
+                build.env.Append(LIBS = 'advapi32') # QtGui, portaudio, portmidi
+                build.env.Append(LIBS = 'ws2_32')   # QtGui, QtNetwork, libshout
+                # QtGui
+                build.env.Append(LIBS = 'gdi32') #QtOpenGL, libshout
+                build.env.Append(LIBS = 'comdlg32')
+                build.env.Append(LIBS = 'oleaut32')
+                build.env.Append(LIBS = 'imm32')
+                build.env.Append(LIBS = 'winmm')
+                build.env.Append(LIBS = 'winspool')
+                # QtOpenGL
+                build.env.Append(LIBS = 'glu32')
+                build.env.Append(LIBS = 'opengl32')
 
         # Set the rpath for linux/bsd/osx.
         # This is not supported on OS X before the 10.5 SDK.
@@ -419,6 +437,7 @@ class ReplayGain(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
 
+
 class Ebur128Mit(Dependence):
     INTERNAL_PATH = '#lib/libebur128-1.1.0'
     INTERNAL_LINK = False
@@ -434,6 +453,8 @@ class Ebur128Mit(Dependence):
             self.INTERNAL_LINK = True;
             env.Append(CPPPATH=['%s/ebur128' % self.INTERNAL_PATH])
             #env.Append(CPPDEFINES='USE_SPEEX_RESAMPLER') # Required for unused EBUR128_MODE_TRUE_PEAK
+            if not conf.CheckHeader('sys/queue.h'):
+                env.Append(CPPPATH=['%s/ebur128/queue' % self.INTERNAL_PATH])
 
 
 class SoundTouch(Dependence):
@@ -527,7 +548,7 @@ class Chromaprint(Dependence):
             build.env.Append(CPPDEFINES='CHROMAPRINT_NODLL')
 
             # On Windows, we link chromaprint with FFTW3.
-            if not conf.CheckLib(['fftw', 'libfftw', 'fftw3', 'libfftw3']):
+            if not conf.CheckLib(['fftw', 'libfftw', 'fftw3', 'libfftw3', 'libfftw-3.3']):
                 raise Exception(
                     "Could not find fftw3 or its development headers.")
 
@@ -565,6 +586,12 @@ class QtScriptByteArray(Dependence):
         return ['#lib/qtscript-bytearray/bytearrayclass.cpp',
                 '#lib/qtscript-bytearray/bytearrayprototype.cpp']
 
+class PortAudioRingBuffer(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/portaudio')
+
+    def sources(self, build):
+        return ['#lib/portaudio/pa_ringbuffer.c']
 
 class Reverb(Dependence):
     def configure(self, build, conf):
@@ -896,6 +923,7 @@ class MixxxCore(Feature):
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
                    "library/dao/analysisdao.cpp",
+                   "library/dao/autodjcratesdao.cpp",
 
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
@@ -943,13 +971,14 @@ class MixxxCore(Feature):
 
                    "waveform/renderers/waveformrenderersignalbase.cpp",
                    "waveform/renderers/waveformmark.cpp",
+                   "waveform/renderers/waveformmarkproperties.cpp",
                    "waveform/renderers/waveformmarkset.cpp",
                    "waveform/renderers/waveformmarkrange.cpp",
-		   "waveform/renderers/glwaveformrenderersimplesignal.cpp",
-		   "waveform/renderers/glwaveformrendererrgb.cpp",
-		   "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
-		   "waveform/renderers/glslwaveformrenderersignal.cpp",
-		   "waveform/renderers/glvsynctestrenderer.cpp",
+                   "waveform/renderers/glwaveformrenderersimplesignal.cpp",
+                   "waveform/renderers/glwaveformrendererrgb.cpp",
+                   "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/glslwaveformrenderersignal.cpp",
+                   "waveform/renderers/glvsynctestrenderer.cpp",
 
                    "waveform/widgets/waveformwidgetabstract.cpp",
                    "waveform/widgets/emptywaveformwidget.cpp",
@@ -1015,11 +1044,11 @@ class MixxxCore(Feature):
                    "encoder/encodermp3.cpp",
                    "encoder/encodervorbis.cpp",
 
-                   "util/pa_ringbuffer.c",
                    "util/sleepableqthread.cpp",
                    "util/statsmanager.cpp",
                    "util/stat.cpp",
                    "util/statmodel.cpp",
+                   "util/duration.cpp",
                    "util/time.cpp",
                    "util/timer.cpp",
                    "util/performancetimer.cpp",
@@ -1045,6 +1074,7 @@ class MixxxCore(Feature):
                    "util/rotary.cpp",
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
+                   "util/audiosignal.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -1145,6 +1175,13 @@ class MixxxCore(Feature):
                 # Quiet down Clang warnings about inconsistent use of override
                 # keyword until Qt fixes qt_metacall.
                 build.env.Append(CCFLAGS='-Wno-inconsistent-missing-override')
+
+                # Do not warn about use of the deprecated 'register' keyword
+                # since it produces noise from libraries we depend on using it.
+                build.env.Append(CCFLAGS='-Wno-deprecated-register')
+
+                # Warn about implicit fallthrough.
+                build.env.Append(CCFLAGS='-Wimplicit-fallthrough')
 
                 # Enable thread-safety analysis.
                 # http://clang.llvm.org/docs/ThreadSafetyAnalysis.html
@@ -1314,7 +1351,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
-                QtScriptByteArray, Reverb, FpClassify]
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
