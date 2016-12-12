@@ -86,7 +86,7 @@
               <SliderComposed>
                 <TooltipId>channel_volume</TooltipId>
                 <SizePolicy>min,me</SizePolicy>
-                <MinimumSize>40,75</MinimumSize>
+                <MinimumSize>40,50</MinimumSize>
                 <MaximumSize>40,-1</MaximumSize>
                 <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
                 <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>

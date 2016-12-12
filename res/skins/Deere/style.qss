@@ -963,11 +963,11 @@ WWidget, WLabel {
   background-color: #333333;
 }
 
-#DeckMixer1_Column2, #DeckMixer2_Column2, #DeckMixer3_Column2,
-#DeckMixer4_Column2 {
-  qproperty-layoutSpacing: 7;
-  padding: 5;
   qproperty-layoutAlignment: 'AlignHCenter';
+}
+
+#DeckMixer1_Column2, #DeckMixer2_Column2, #DeckMixer3_Column2, #DeckMixer4_Column2 {
+  qproperty-layoutSpacing: 5;
 }
 
 #DeckMixer1_ColumnCondensed, #DeckMixer2_ColumnCondensed, #DeckMixer3_ColumnCondensed,
@@ -1008,7 +1008,8 @@ WWidget, WLabel {
 }
 
 #MasterVumeter {
-  qproperty-layoutSpacing: 2;
+  qproperty-layoutSpacing: 3;
+  qproperty-layoutAlignment: 'AlignHCenter';
   padding-left: 10px;
   padding-right: 10px;
 }
