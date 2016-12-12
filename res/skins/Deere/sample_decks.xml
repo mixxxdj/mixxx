@@ -33,7 +33,7 @@
                     <Children>
                       <Template src="skin:hide_show_button.xml">
                         <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                        <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                        <SetVariable name="control">[Samplers],show_expanded</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -60,7 +60,7 @@
                 <Children>
                   <Template src="skin:hide_show_button.xml">
                     <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                    <SetVariable name="control">[Samplers],show_expanded</SetVariable>
                   </Template>
                   <Template src="skin:sampler_simple.xml">
                     <SetVariable name="i">5</SetVariable>
@@ -85,7 +85,7 @@
                 <Children>
                   <Template src="skin:hide_show_button.xml">
                     <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                    <SetVariable name="control">[Samplers],show_expanded</SetVariable>
                   </Template>
                   <Template src="skin:sampler_simple.xml">
                     <SetVariable name="i">9</SetVariable>
@@ -110,7 +110,7 @@
                 <Children>
                   <Template src="skin:hide_show_button.xml">
                     <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                    <SetVariable name="control">[Samplers],show_expanded</SetVariable>
                   </Template>
                   <Template src="skin:sampler_simple.xml">
                     <SetVariable name="i">13</SetVariable>
@@ -131,7 +131,7 @@
           </WidgetStack>
 
           <!-- Expanded SampleDecks -->
-          <WidgetStack trigger="[Samplers],show_samplers" currentpage="[Deere],sampler_bank_current" persist="true">
+          <WidgetStack trigger="[Samplers],show_expanded" currentpage="[Deere],sampler_bank_current" persist="true">
             <NextControl>[Deere],sampler_bank_next</NextControl>
             <PrevControl>[Deere],sampler_bank_prev</PrevControl>
             <Children>
@@ -146,7 +146,7 @@
                     <Children>
                       <Template src="skin:hide_show_button.xml">
                         <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                        <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                        <SetVariable name="control">[Samplers],show_expanded</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -173,7 +173,7 @@
                 <Children>
                   <Template src="skin:hide_show_button.xml">
                     <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                    <SetVariable name="control">[Samplers],show_expanded</SetVariable>
                   </Template>
                   <Template src="skin:sampler.xml">
                     <SetVariable name="i">5</SetVariable>
@@ -198,7 +198,7 @@
                 <Children>
                   <Template src="skin:hide_show_button.xml">
                     <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                    <SetVariable name="control">[Samplers],show_expanded</SetVariable>
                   </Template>
                   <Template src="skin:sampler.xml">
                     <SetVariable name="i">9</SetVariable>
@@ -223,7 +223,7 @@
                 <Children>
                   <Template src="skin:hide_show_button.xml">
                     <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                    <SetVariable name="control">[Samplers],show_expanded</SetVariable>
                   </Template>
                   <Template src="skin:sampler.xml">
                     <SetVariable name="i">13</SetVariable>

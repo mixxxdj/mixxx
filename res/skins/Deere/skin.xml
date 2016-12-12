@@ -16,13 +16,14 @@
       <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
+      <attribute persist="true" config_key="[Samplers],show_expanded">0</attribute>
     </attributes>
   </manifest>
 
@@ -76,8 +77,17 @@
       <Children>
         <Template src="skin:tool_bar.xml"/>
         <Template src="skin:main_decks.xml"/>
-        <Template src="skin:sample_decks.xml"/>
         <Template src="skin:effect_rack.xml"/>
+        <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Template src="skin:sample_decks.xml"/>
+          </Children>
+          <Connection>
+            <ConfigKey>[Samplers],show_samplers</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup>
         <Template src="skin:microphone_rack.xml"/>
         <Template src="skin:library.xml"/>
       </Children>
