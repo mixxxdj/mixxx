@@ -11,19 +11,36 @@
       <attribute config_key="[Master],num_decks">4</attribute>
       <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
-      <!--Optionally, make elements visible on skin load-->
+      <attribute config_key="[Library],show_library">1</attribute>
+
       <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
+
+      <!--Skin settings-->
+      <attribute persist="true" config_key="[Deere],show_stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
-      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <attribute config_key="[Library],show_library">1</attribute>
-      <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">0</attribute> <!-- in library -->
+
+      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Deere],show_coverart">1</attribute> <!-- in decks -->
+      <attribute persist="true" config_key="[Deere],show_starrating">0</attribute>
+      <attribute persist="true" config_key="[Deere],show_no_track_info">0</attribute>
+      <attribute persist="true" config_key="[Deere],show_no_bpm_info">0</attribute>
+      <attribute persist="true" config_key="[Deere],show_more_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Deere],show_minimal_deck_controls">0</attribute>
+
+      <attribute persist="true" config_key="[Master],hide_mixer">0</attribute>
+      <attribute persist="true" config_key="[Deere],hide_crossfader">0</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
+      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+
       <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
       <attribute persist="true" config_key="[Samplers],show_expanded">0</attribute>
+
+      <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
     </attributes>
   </manifest>
 
