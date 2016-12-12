@@ -403,6 +403,24 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
+              <Text>&#9744; Show Samplers</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show Samplers</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
               <Text>&#9744; Show Advanced Mode</Text>
               <Alignment>left</Alignment>
             </State>
@@ -412,7 +430,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+              <ConfigKey persist="true">[Samplers],show_expanded</ConfigKey>
             </Connection>
           </PushButton>
         </Children>
