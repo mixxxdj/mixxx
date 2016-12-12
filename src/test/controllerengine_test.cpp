@@ -6,12 +6,16 @@
 #include "preferences/usersettings.h"
 #include "controllers/controllerengine.h"
 #include "controllers/controllerdebug.h"
+#include "controllers/softtakeover.h"
 #include "test/mixxxtest.h"
 #include "util/memory.h"
+#include "util/time.h"
 
 class ControllerEngineTest : public MixxxTest {
   protected:
     virtual void SetUp() {
+        mixxx::Time::setTestMode(true);
+        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
         QThread::currentThread()->setObjectName("Main");
         cEngine = new ControllerEngine(nullptr);
         ControllerDebug::setEnabled(true);
@@ -21,6 +25,7 @@ class ControllerEngineTest : public MixxxTest {
     virtual void TearDown() {
         cEngine->gracefulShutdown();
         delete cEngine;
+        mixxx::Time::setTestMode(false);
     }
 
     bool execute(const QString& functionName) {
@@ -100,6 +105,90 @@ TEST_F(ControllerEngineTest, getSetParameter) {
     EXPECT_TRUE(execute("function() { engine.setParameter('[Test]', 'co', "
                         "  engine.getParameter('[Test]', 'co') + 0.1); }"));
     EXPECT_DOUBLE_EQ(2.0, co->get());
+}
+
+TEST_F(ControllerEngineTest, softTakeover_setValue) {
+    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
+                                                -10.0, 10.0);
+    co->setParameter(0.0);
+    EXPECT_TRUE(execute("function() {"
+                        "  engine.softTakeover('[Test]', 'co', true);"
+                        "  engine.setValue('[Test]', 'co', 0.0); }"));
+    // The first set after enabling is always ignored.
+    EXPECT_DOUBLE_EQ(-10.0, co->get());
+
+    // Change the control internally (putting it out of sync with the
+    // ControllerEngine).
+    co->setParameter(0.5);
+
+    // Time elapsed is not greater than the threshold, so we do not ignore this
+    // set.
+    EXPECT_TRUE(execute("function() { engine.setValue('[Test]', 'co', -10.0); }"));
+    EXPECT_DOUBLE_EQ(-10.0, co->get());
+
+    // Advance time to 2x the threshold.
+    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+
+    // Change the control internally (putting it out of sync with the
+    // ControllerEngine).
+    co->setParameter(0.5);
+
+    // Ignore the change since it occurred after the threshold and is too large.
+    EXPECT_TRUE(execute("function() { engine.setValue('[Test]', 'co', -10.0); }"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+}
+
+TEST_F(ControllerEngineTest, softTakeover_setParameter) {
+    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
+                                                -10.0, 10.0);
+    co->setParameter(0.0);
+    EXPECT_TRUE(execute("function() {"
+                        "  engine.softTakeover('[Test]', 'co', true);"
+                        "  engine.setParameter('[Test]', 'co', 1.0); }"));
+    // The first set after enabling is always ignored.
+    EXPECT_DOUBLE_EQ(-10.0, co->get());
+
+    // Change the control internally (putting it out of sync with the
+    // ControllerEngine).
+    co->setParameter(0.5);
+
+    // Time elapsed is not greater than the threshold, so we do not ignore this
+    // set.
+    EXPECT_TRUE(execute("function() { engine.setParameter('[Test]', 'co', 0.0); }"));
+    EXPECT_DOUBLE_EQ(-10.0, co->get());
+
+    // Advance time to 2x the threshold.
+    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+
+    // Change the control internally (putting it out of sync with the
+    // ControllerEngine).
+    co->setParameter(0.5);
+
+    // Ignore the change since it occurred after the threshold and is too large.
+    EXPECT_TRUE(execute("function() { engine.setParameter('[Test]', 'co', 0.0); }"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+}
+
+TEST_F(ControllerEngineTest, softTakeover_ignoreNextValue) {
+    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
+                                                -10.0, 10.0);
+    co->setParameter(0.0);
+    EXPECT_TRUE(execute("function() {"
+                        "  engine.softTakeover('[Test]', 'co', true);"
+                        "  engine.setParameter('[Test]', 'co', 1.0); }"));
+    // The first set after enabling is always ignored.
+    EXPECT_DOUBLE_EQ(-10.0, co->get());
+
+    // Change the control internally (putting it out of sync with the
+    // ControllerEngine).
+    co->setParameter(0.5);
+
+    EXPECT_TRUE(execute("function() { engine.softTakeoverIgnoreNextValue('[Test]', 'co'); }"));
+
+    // We would normally allow this set since it is below the time threshold,
+    // but we are ignoring the next value.
+    EXPECT_TRUE(execute("function() { engine.setParameter('[Test]', 'co', 0.0); }"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
 }
 
 TEST_F(ControllerEngineTest, reset) {
