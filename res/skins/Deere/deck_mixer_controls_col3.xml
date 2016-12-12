@@ -67,7 +67,7 @@
           <WidgetGroup>
             <ObjectName>channel_VuMeter_Group</ObjectName>
             <Layout>horizontal</Layout>
-            <MaximumSize>22,141</MaximumSize>
+            <MaximumSize>22,-1</MaximumSize>
             <Children>
               <Template src="skin:vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>

@@ -8,7 +8,7 @@
   <WidgetGroup>
     <ObjectName>DeckMixer<Variable name="i"/>_Column2</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
 
       <Template src="skin:left_2state_button.xml">
@@ -33,8 +33,7 @@
           <SliderComposed>
             <TooltipId>channel_volume</TooltipId>
             <SizePolicy>min,me</SizePolicy>
-            <MinimumSize>40,100</MinimumSize>
-            <MaximumSize>40,-1</MaximumSize>
+            <MinimumSize>40,80</MinimumSize>
             <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
             <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
             <Horizontal>false</Horizontal>
