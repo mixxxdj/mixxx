@@ -963,6 +963,10 @@ WWidget, WLabel {
   background-color: #333333;
 }
 
+WNumberRate {
+  font-size: 12px;
+}
+#RateDisplay1, #RateDisplay2, #RateDisplay3, #RateDisplay4 {
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 

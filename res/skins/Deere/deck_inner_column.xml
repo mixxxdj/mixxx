@@ -67,6 +67,21 @@
         </Connection>
       </SliderComposed>
 
+
+      <WidgetGroup>
+        <ObjectName>RateDisplay<Variable name="i"/></ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <NumberRate>
+            <TooltipId>rate_display</TooltipId>
+            <Channel>
+                <Variable name="i"/>
+            </Channel>
+            <NumberOfDigits>2</NumberOfDigits>
+          </NumberRate>
+        </Children>
+      </WidgetGroup>
+
       <WidgetGroup>
         <ObjectName>RateTempButtons</ObjectName>
         <Layout>horizontal</Layout>
@@ -98,7 +113,7 @@
           </Template>
         </Children>
       </WidgetGroup>
-      
+
       <WidgetGroup>
         <Layout>vertical</Layout>
         <Children>
