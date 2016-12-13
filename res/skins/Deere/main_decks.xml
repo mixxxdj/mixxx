@@ -7,7 +7,7 @@
   <WidgetGroup>
     <ObjectName>MainDeckContainer</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,f</SizePolicy>
+    <SizePolicy>me,m</SizePolicy>
     <Children>
 
       <!-- Is displayed if the stacked waveforms option is activated in the skin settings -->
@@ -95,12 +95,14 @@
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
+        <Size>-1me,190max</Size>
         <Children>
           <Template src="skin:left_gutter.xml"/>
           <Template src="skin:mixer.xml"/>
           <Template src="skin:right_gutter.xml"/>
         </Children>
       </WidgetGroup>
+
     </Children>
     <Connection>
       <ConfigKey>[Master],maximize_library</ConfigKey>

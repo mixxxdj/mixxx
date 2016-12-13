@@ -9,10 +9,10 @@
   <WidgetGroup>
     <ObjectName>VisualRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,max</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <!-- Because the spinny hides itself and throws off the size
          calculation we set our minimum size to the spinny size. -->
-    <MinimumSize>-1,91</MinimumSize>
+    <MinimumSize>-1,76</MinimumSize>
     <Children>
       <Visual>
         <TooltipId>waveform_display</TooltipId>
@@ -166,7 +166,7 @@
         <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,max</SizePolicy>
-        <MinimumSize>-1,90</MinimumSize>
+        <MinimumSize>-1,75</MinimumSize>
         <NextControl>[Deere],show_coverart</NextControl>
         <PrevControl></PrevControl>
         <Children>

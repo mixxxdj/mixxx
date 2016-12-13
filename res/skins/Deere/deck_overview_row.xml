@@ -9,9 +9,9 @@
   <WidgetGroup>
     <ObjectName>OverviewRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,max</SizePolicy>
-    <MinimumSize>-1,60</MinimumSize>
-    <MaximumSize>-1,80</MaximumSize>
+    <SizePolicy>me,me</SizePolicy>
+    <MinimumSize>-1,50</MinimumSize>
+    <MaximumSize>-1,70</MaximumSize>
     <Children>
       <Overview>
         <TooltipId>waveform_overview</TooltipId>
