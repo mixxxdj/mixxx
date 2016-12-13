@@ -16,7 +16,8 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
     QString msg;
     bool ok = false;
 
-    // Default orientation is horizontal.
+    // Default orientation is horizontal. For vertical splitters, the orientation must be set
+    // before calling setSizes() for reloading the saved state to work.
     QString layout;
     if (context.hasNodeSelectString(node, "Orientation", &layout)) {
         if (layout == "vertical") {
