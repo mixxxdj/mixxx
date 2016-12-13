@@ -133,12 +133,5 @@
         </Connection>
       </WidgetStack>
     </Children>
-    <Connection>
-      <ConfigKey>[Master],maximize_library</ConfigKey>
-      <BindProperty>visible</BindProperty>
-      <Transform>
-        <Not/>
-      </Transform>
-    </Connection>
   </WidgetGroup>
 </Template>

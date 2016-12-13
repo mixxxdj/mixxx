@@ -12,7 +12,7 @@
     <ObjectName>Deck<Variable name="i"/></ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
-    <MinimumSize>-1,170</MinimumSize>
+    <MinimumSize>-1,150</MinimumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>DeckInnerColumn</ObjectName>

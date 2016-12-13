@@ -12,7 +12,7 @@
     <SizePolicy>me,me</SizePolicy>
     <!-- Because the spinny hides itself and throws off the size
          calculation we set our minimum size to the spinny size. -->
-    <MinimumSize>-1,76</MinimumSize>
+    <MinimumSize>-1,31</MinimumSize>
     <Children>
       <Visual>
         <TooltipId>waveform_display</TooltipId>
@@ -162,11 +162,11 @@
            : Show cover on spinning vinyl images
            : Show cover in text row of decks
       -->
-      <WidgetStack>
+      <WidgetStack persis="true">
         <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,max</SizePolicy>
-        <MinimumSize>-1,75</MinimumSize>
+        <MinimumSize>-1,30</MinimumSize>
         <NextControl>[Deere],show_coverart</NextControl>
         <PrevControl></PrevControl>
         <Children>
