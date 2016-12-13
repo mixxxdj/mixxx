@@ -44,6 +44,7 @@ TerminalMix.init = function (id,debug) {
         engine.softTakeover("[Channel"+i+"]","filterHigh",true);
         engine.softTakeover("[Channel"+i+"]","filterMid",true);
         engine.softTakeover("[Channel"+i+"]","filterLow",true);
+        engine.softTakeover("[Channel"+i+"]","rate",true);
     }
 
     engine.softTakeover("[Master]","crossfader",true);
