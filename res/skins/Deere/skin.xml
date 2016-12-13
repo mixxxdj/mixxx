@@ -41,6 +41,9 @@
       <attribute persist="true" config_key="[Samplers],show_expanded">0</attribute>
 
       <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
+
+<!--      <attribute persist="true" config_key="[Deere],stacked_waveform_height">140</attribute>
+      <attribute persist="true" config_key="[Deere],above_library_height">370</attribute>-->
     </attributes>
   </manifest>
 
@@ -93,29 +96,55 @@
       <Layout>vertical</Layout>
       <Children>
         <Template src="skin:tool_bar.xml"/>
-        <Template src="skin:main_decks.xml"/>
-        <WidgetGroup>
-          <Layout>horizontal</Layout>
+
+        <Splitter>
+          <ObjectName>LibraryVerticalSplitter</ObjectName>
+          <Orientation>vertical</Orientation>
+          <Size>-1me,-1me</Size>
+          <SplitSizesConfigKey>[Deere],DecksLibrarySplit</SplitSizesConfigKey>
           <Children>
-            <Template src="skin:sample_decks.xml"/>
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Children>
+
+                <Template src="skin:main_decks.xml"/>
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <Template src="skin:sample_decks.xml"/>
+                  </Children>
+                  <Connection>
+                    <ConfigKey>[Samplers],show_samplers</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                </WidgetGroup>
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <Template src="skin:effect_rack.xml"/>
+                  </Children>
+                  <Connection>
+                    <ConfigKey>[EffectRack1],show</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                </WidgetGroup>
+                <Template src="skin:microphone_rack.xml"/>
+
+              </Children>
+              <Connection>
+                <ConfigKey>[Master],maximize_library</ConfigKey>
+                <BindProperty>visible</BindProperty>
+                <Transform>
+                  <Not/>
+                </Transform>
+              </Connection>
+            </WidgetGroup>
+
+            <Template src="skin:library.xml"/>
+
           </Children>
-          <Connection>
-            <ConfigKey>[Samplers],show_samplers</ConfigKey>
-            <BindProperty>visible</BindProperty>
-          </Connection>
-        </WidgetGroup>
-        <WidgetGroup>
-          <Layout>horizontal</Layout>
-          <Children>
-            <Template src="skin:effect_rack.xml"/>
-          </Children>
-          <Connection>
-            <ConfigKey>[EffectRack1],show</ConfigKey>
-            <BindProperty>visible</BindProperty>
-          </Connection>
-        </WidgetGroup>
-        <Template src="skin:microphone_rack.xml"/>
-        <Template src="skin:library.xml"/>
+        </Splitter>
+
       </Children>
     </WidgetGroup>
     <Template src="skin:skin_settings.xml"/>
