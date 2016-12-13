@@ -28,6 +28,7 @@ addons:
       - libportmidi-dev
       - libprotobuf-dev
       - libqt4-dev
+      - libqt4-opengl-dev
       - libqt4-sql-sqlite
       - librubberband-dev
       - libshout3-dev
