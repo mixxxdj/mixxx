@@ -38,10 +38,10 @@
         </Children>
       </WidgetGroup>
 
-      <!-- Global Skin Settings -->
+      <!-- Deck Settings -->
       <Label>
-        <ObjectName>h2</ObjectName>
-        <Text>View</Text>
+      <ObjectName>h2</ObjectName>
+      <Text>Main Decks</Text>
       </Label>
 
       <WidgetGroup>
@@ -68,96 +68,6 @@
             </Connection>
           </PushButton>
 
-          <PushButton>
-            <TooltipId>show_microphone</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Microphone</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Microphone</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>show_previewdeck</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Preview Deck</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Preview Deck</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>show_coverart</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Cover Art in Library</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Cover Art in Library</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>maximize_library</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Maximize Library</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Maximize Library</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-            </Connection>
-          </PushButton>
-        </Children>
-      </WidgetGroup>
-
-      <!-- Deck Settings -->
-      <Label>
-      <ObjectName>h2</ObjectName>
-      <Text>Main Decks</Text>
-      </Label>
-
-      <WidgetGroup>
-        <ObjectName>h3</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
           <PushButton>
             <TooltipId>toggle_4decks</TooltipId>
             <Size>80me,20f</Size>
@@ -462,6 +372,109 @@
             </State>
             <Connection>
               <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+
+      <!-- Microphone Settings -->
+      <Label>
+        <ObjectName>h2</ObjectName>
+        <Text>Microphone</Text>
+      </Label>
+
+      <WidgetGroup>
+        <ObjectName>h3</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <PushButton>
+            <TooltipId>show_microphone</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9744; Show Microphone</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show Microphone</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+
+      <!-- Library Settings -->
+      <Label>
+        <ObjectName>h2</ObjectName>
+        <Text>Library</Text>
+      </Label>
+
+      <WidgetGroup>
+        <ObjectName>h3</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <PushButton>
+            <TooltipId>show_previewdeck</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9744; Show Preview Deck</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show Preview Deck</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId>show_coverart</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9744; Show Cover Art in Library</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show Cover Art in Library</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId>maximize_library</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9744; Maximize Library</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Maximize Library</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
             </Connection>
           </PushButton>
         </Children>
