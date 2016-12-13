@@ -3,7 +3,7 @@
  *          Copyright (C) 2012-2013, Sean M. Pappalardo         *
  *      but feel free to tweak this to your heart's content!    *
  *      For Mixxx version 1.11.x                                *
-****************************************************************/
+ ****************************************************************/
 
 function TerminalMix() {}
 
@@ -44,6 +44,7 @@ TerminalMix.init = function (id,debug) {
         engine.softTakeover("[Channel"+i+"]","filterHigh",true);
         engine.softTakeover("[Channel"+i+"]","filterMid",true);
         engine.softTakeover("[Channel"+i+"]","filterLow",true);
+        engine.softTakeover("[Channel"+i+"]","rate",true);
     }
 
     engine.softTakeover("[Master]","crossfader",true);
