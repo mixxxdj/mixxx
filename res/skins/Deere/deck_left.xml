@@ -11,12 +11,13 @@
   <WidgetGroup>
     <ObjectName>Deck<Variable name="i"/></ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
+    <MinimumSize>-1,170</MinimumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>DeckRows</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
         <Children>
           <Template src="skin:deck_text_row.xml"/>
           <!--Hides if the stacked waveforms option is activated in the skin settings -->

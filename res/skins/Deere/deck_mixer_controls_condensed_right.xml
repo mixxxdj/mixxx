@@ -13,7 +13,7 @@
       <WidgetGroup>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:knob_with_button_right.xml">
+          <Template src="skin:knob_with_button_right_no_label.xml">
             <SetVariable name="TooltipId">pregain</SetVariable>
             <SetVariable name="control">pregain</SetVariable>
             <SetVariable name="color">red</SetVariable>
@@ -21,7 +21,7 @@
             <SetVariable name="button_control">mute</SetVariable>
           </Template>
 
-          <Template src="skin:knob_with_button_right.xml">
+          <Template src="skin:knob_with_button_right_no_label.xml">
             <SetVariable name="TooltipId">EqualizerRack_effect_parameter</SetVariable>
             <SetVariable name="button_TooltipId">EqualizerRack_effect_button_parameter</SetVariable>
             <SetVariable name="group">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
@@ -30,7 +30,7 @@
             <SetVariable name="color">yellow</SetVariable>
           </Template>
 
-          <Template src="skin:knob_with_button_right.xml">
+          <Template src="skin:knob_with_button_right_no_label.xml">
             <SetVariable name="TooltipId">EqualizerRack_effect_parameter</SetVariable>
             <SetVariable name="button_TooltipId">EqualizerRack_effect_button_parameter</SetVariable>
             <SetVariable name="group">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
@@ -39,7 +39,7 @@
             <SetVariable name="color">yellow</SetVariable>
           </Template>
 
-          <Template src="skin:knob_with_button_right.xml">
+          <Template src="skin:knob_with_button_right_no_label.xml">
             <SetVariable name="TooltipId">EqualizerRack_effect_parameter</SetVariable>
             <SetVariable name="button_TooltipId">EqualizerRack_effect_button_parameter</SetVariable>
             <SetVariable name="group">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
@@ -59,8 +59,9 @@
         <Children>
 
           <WidgetGroup>
-            <Layout>vertical</Layout>
-            <ObjectName>4DecksMixerCol2ContainerRight</ObjectName>
+            <ObjectName>CondensedButtonContainerRight</ObjectName>
+            <Size>-1me,25f</Size>
+            <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
@@ -80,6 +81,7 @@
           </WidgetGroup>
 
           <WidgetGroup>
+            <GroupName>CondensedVolumeAndMonoMeter</GroupName>
             <Layout>horizontal</Layout>
             <MaximumSize>60,141</MaximumSize>
             <Children>
@@ -114,8 +116,9 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <Layout>vertical</Layout>
-            <ObjectName>4DecksMixerCol2ContainerRight</ObjectName>
+            <ObjectName>CondensedButtonContainerRight</ObjectName>
+            <Size>-1me,25f</Size>
+            <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:left_3state_button.xml">
                 <SetVariable name="TooltipId">orientation</SetVariable>

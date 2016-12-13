@@ -7,9 +7,9 @@
   <WidgetGroup>
     <ObjectName>LeftGutter</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
+<!--     <MinimumSize>-1,200</SizePolicy> -->
     <Children>
-      <Template src="skin:spacer.xml"/>
       <Template src="skin:deck_left.xml">
         <SetVariable name="i">1</SetVariable>
         <!-- Traditional Blue -->
@@ -32,7 +32,6 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-      <Template src="skin:spacer.xml"/>
     </Children>
   </WidgetGroup>
 </Template>

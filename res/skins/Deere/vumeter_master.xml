@@ -4,7 +4,7 @@
   <WidgetGroup>
     <ObjectName>master_VuMeter_Group</ObjectName>
     <Size>22min,-1me</Size>
-    <MaximumSize>-1,200</MaximumSize>
+    <MaximumSize>-1,120</MaximumSize>
     <Layout>horizontal</Layout>
     <Children>
       <Template src="skin:vumeter_v.xml">

@@ -9,7 +9,6 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-      <Template src="skin:spacer.xml"/>
       <Template src="skin:deck_right.xml">
         <SetVariable name="i">2</SetVariable>
         <!-- Traditional Orange -->
@@ -32,7 +31,6 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-      <Template src="skin:spacer.xml"/>
     </Children>
   </WidgetGroup>
 </Template>

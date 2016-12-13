@@ -38,35 +38,16 @@
         </Connection>
       </WidgetGroup>
 
-      <!-- Disabled because Master Sync is not fully supported yet, see lp:1403232
-      <Template src="skin:left_2state_button.xml">
-        <SetVariable name="TooltipId">sync_master</SetVariable>
-        <SetVariable name="ObjectName">DeckSyncMaster</SetVariable>
-        <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
-        <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
-        <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
-        <SetVariable name="state_0_text">Master</SetVariable>
-        <SetVariable name="state_0_pressed"></SetVariable>
-        <SetVariable name="state_0_unpressed"></SetVariable>
-        <SetVariable name="state_1_text">Master</SetVariable>
-        <SetVariable name="state_1_pressed"></SetVariable>
-        <SetVariable name="state_1_unpressed"></SetVariable>
-        <SetVariable name="left_connection_control"><Variable name="group"/>,sync_master</SetVariable>
-      </Template>
-      -->
-
       <SliderComposed>
         <TooltipId>rate</TooltipId>
-        <MinimumSize>40,50</MinimumSize>
-        <MaximumSize>40,-1</MaximumSize>
-        <SizePolicy>,me</SizePolicy>
+        <Size>40f,-1me</Size>
+        <MaximumSize>40,200</MaximumSize>
         <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
         <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
         <Connection>
           <ConfigKey><Variable name="group"/>,rate</ConfigKey>
         </Connection>
       </SliderComposed>
-
 
       <WidgetGroup>
         <ObjectName>RateDisplay<Variable name="i"/></ObjectName>
