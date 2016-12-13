@@ -10,6 +10,16 @@
 #include "util/samplebuffer.h"
 #include "util/performancetimer.h"
 
+// Types of fprint/encoded pointers take into account Chromaprint API version
+// (void* -> uint32_t*) and (void* -> char*) changed in v1.4.0 -- alyptik 12/2016
+#if (CHROMAPRINT_VERSION_MINOR > 3)
+	typedef uint32_t* uint32_p;
+	typedef char* char_p;
+#else
+	typedef void* uint32_p;
+	typedef void* char_p;
+#endif
+
 namespace
 {
     // this is worth 2min of audio
@@ -67,12 +77,12 @@ namespace
             return QString();
         }
 
-        void* fprint = NULL;
+	uint32_p fprint = NULL;
         int size = 0;
         int ret = chromaprint_get_raw_fingerprint(ctx, &fprint, &size);
         QByteArray fingerprint;
         if (ret == 1) {
-            void* encoded = NULL;
+	    char_p encoded = NULL;
             int encoded_size = 0;
             chromaprint_encode_fingerprint(fprint, size,
                                            CHROMAPRINT_ALGORITHM_DEFAULT,
