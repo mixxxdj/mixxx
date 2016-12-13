@@ -26,15 +26,14 @@
   border-color: #222;
   border-style: solid;
   border-width: 3px 1.5px 3px 1.5px;
-  padding: 5px;
 }
 
 #DeckControls {
-  padding: 2px 2px 5px 2px;
+  padding: 7.5px;
 }
 
-#Crossfader {
-  padding-bottom: 5px;
+#CrossfaderContainer {
+  padding: 0px 7.5px 7.5px 7.5px;
 }
 
 #DeckTextRow {

@@ -7,7 +7,7 @@
   <WidgetGroup>
     <ObjectName>MainDeckContainer</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,m</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <!-- Is displayed if the stacked waveforms option is activated in the skin settings -->
