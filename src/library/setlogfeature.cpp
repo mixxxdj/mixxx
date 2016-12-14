@@ -19,6 +19,12 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks
+
+    //construct child model
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_childModel.setRootItem(std::move(pRootItem));
+    constructChildModel(-1);
+
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
@@ -28,11 +34,6 @@ SetlogFeature::SetlogFeature(QObject* parent,
 
     // initialized in a new generic slot(get new history playlist purpose)
     emit(slotGetNewPlaylist());
-
-    //construct child model
-    TreeItem *rootItem = new TreeItem();
-    m_childModel.setRootItem(rootItem);
-    constructChildModel(-1);
 }
 
 SetlogFeature::~SetlogFeature() {

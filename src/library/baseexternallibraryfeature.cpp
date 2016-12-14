@@ -101,8 +101,8 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<TrackId
         return;
     }
 
-    // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
-    // use the dataPath because models with nested playlists need to use the
+    // Qt::UserRole asks TreeItemModel for the TreeItem's data. We need to
+    // use the data because models with nested playlists need to use the
     // full path/name of the playlist.
     *pPlaylist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
     QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(

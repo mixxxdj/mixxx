@@ -27,8 +27,8 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
                                                    "mixxx.db.model.playlist");
 
     //construct child model
-    TreeItem *rootItem = new TreeItem();
-    m_childModel.setRootItem(rootItem);
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_childModel.setRootItem(std::move(pRootItem));
     constructChildModel(-1);
 }
 
