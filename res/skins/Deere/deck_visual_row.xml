@@ -157,19 +157,13 @@
         </Connection>
       </WidgetGroup>
 
-      <!-- We allow for the following options in the skin settings:
-           : Show no cover
-           : Show cover on spinning vinyl images
-           : Show cover in text row of decks
-      -->
-      <WidgetStack persis="true">
+      <WidgetGroup persist="true">
         <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,max</SizePolicy>
         <MinimumSize>-1,30</MinimumSize>
-        <NextControl>[Deere],show_coverart</NextControl>
-        <PrevControl></PrevControl>
         <Children>
+
           <WidgetGroup>
             <ObjectName>SpinnyHolder</ObjectName>
             <Layout>horizontal</Layout>
@@ -185,6 +179,13 @@
                 <ShowCover>false</ShowCover>
               </Spinny>
             </Children>
+            <Connection>
+              <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
           </WidgetGroup>
 
           <WidgetGroup>
@@ -206,13 +207,18 @@
                 <ShowCover>true</ShowCover>
               </Spinny>
             </Children>
+            <Connection>
+              <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
+
         </Children>
         <Connection>
           <ConfigKey persist="true"><Variable name="control_show_spinny"/></ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetStack>
+      </WidgetGroup> <!--SpinnyContainer-->
 
       <Template src="skin:vinylcontrol.xml"/>
 
