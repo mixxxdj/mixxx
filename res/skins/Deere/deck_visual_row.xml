@@ -157,7 +157,7 @@
         </Connection>
       </WidgetGroup>
 
-      <WidgetGroup persist="true">
+      <WidgetGroup>
         <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,max</SizePolicy>
