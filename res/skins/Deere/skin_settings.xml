@@ -90,7 +90,7 @@
 
           <PushButton>
             <Size>80me,20f</Size>
-            <NumberStates>3</NumberStates>
+            <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
               <Text>&#9744; Show Cover Art</Text>
@@ -98,12 +98,7 @@
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show Cover Art &#9679; &#9675;</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>2</Number>
-              <Text>&#9745; Show Cover Art &#9675; &#9679;</Text>
+              <Text>&#9745; Show Cover Art</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
