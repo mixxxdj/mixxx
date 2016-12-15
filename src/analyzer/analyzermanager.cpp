@@ -32,12 +32,12 @@ AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig) :
             ideal = maxThreads;
         }
         else {
-            qWarning() << "Cannot detect idealThreadCount. Using the sane value of 1";
+            qWarning() << "Cannot detect idealThreadCount and maxThreads is incorrect: " << maxTrheads" <<. Using the sane value of 1";
             ideal = 1;
         }
     }
     if (maxThreads <= 0 || maxThreads > ideal) {
-        qWarning() << "maxThreads value is incorrect. Changing it to " << ideal;
+        qWarning() << "maxThreads value is incorrect: " << maxTrheads << ". Changing it to " << ideal;
         //Assume the value is incorrect, so fix it.
         maxThreads = ideal;
     }
@@ -147,8 +147,8 @@ void AnalyzerManager::slotNextTrack(AnalyzerWorker* worker) {
     //Then, those are terminated and the paused workers are resumed.
     TrackPointer track;
     AnalyzerWorker* forepaused=nullptr;
-    foreach(AnalyzerWorker* worker, m_pausedWorkers) {
-        if (worker->isPriorized()) { forepaused=worker; break; }
+    foreach(AnalyzerWorker* theworker, m_pausedWorkers) {
+        if (theworker->isPriorized()) { forepaused=theworker; break; }
     }
     if (!forepaused) {
         if (worker->isPriorized()) {

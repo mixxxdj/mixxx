@@ -83,7 +83,7 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
             this, SLOT(slotMaxThreadsChanged(int)));
 
     AnalyzerManager* analyzerManager = m_pLibrary->getAnalyzerManager();
-    connect(cmbMaxThreads, SIGNAL(setMaxThreads(int)),
+    connect(this, SIGNAL(setMaxThreads(int)),
             analyzerManager, SLOT(slotMaxThreadsChanged(int)));
 
     // TODO(XXX) this string should be extracted from the soundsources
