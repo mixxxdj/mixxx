@@ -18,7 +18,6 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
                             const SkinContext& context,
                             const WaveformSignalColors& signalColors) {
 
-    clear();
 
 #if QT_VERSION >= 0x040700
     m_marks.reserve(NUM_HOT_CUES);
@@ -30,11 +29,10 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.nodeName() == "DefaultMark") {
-            m_defaultMark.setup(group, child, context, signalColors);
+            m_pdefaultMark = std::make_unique<WaveformMark>(group, child, context, signalColors);
             hasDefaultMark = true;
         } else if (child.nodeName() == "Mark") {
-            WaveformMarkPointer pMark(new WaveformMark());
-            pMark->setup(group, child, context, signalColors);
+            WaveformMarkPointer pMark(new WaveformMark(group, child, context, signalColors));
 
             bool uniqueMark = true;
             if (pMark->m_pPointCos) {
@@ -70,7 +68,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             if (controlItemSet.insert(hotCueControlItem).second) {
                 //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
                 WaveformMarkPointer pMark(new WaveformMark(i));
-                WaveformMarkProperties defaultProperties = m_defaultMark.getProperties();
+                WaveformMarkProperties defaultProperties = m_pdefaultMark->getProperties();
                 defaultProperties.setHotCueNumber(i);
                 pMark->setProperties(defaultProperties);
                 pMark->m_pPointCos = std::make_unique<ControlProxy>(pHotcue->getKey());
@@ -78,11 +76,6 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             }
         }
     }
-}
-
-void WaveformMarkSet::clear() {
-    m_defaultMark.reset();
-    m_marks.clear();
 }
 
 WaveformMarkPointer WaveformMarkSet::getHotCueMark(int hotCue) const {

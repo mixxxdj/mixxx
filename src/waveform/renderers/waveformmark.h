@@ -15,6 +15,11 @@ class WaveformSignalColors;
 class WaveformMark {
   public:
     static const int kDefaultHotCue = -1;
+    WaveformMark(const QString& group,
+                               const QDomNode& node,
+                               const SkinContext& context,
+                               const WaveformSignalColors& signalColors,
+                               int hotCue = kDefaultHotCue);
 
     explicit WaveformMark(int hotCue = kDefaultHotCue);
 
@@ -23,22 +28,8 @@ class WaveformMark {
     WaveformMark& operator=(const WaveformMark&) = delete;
 
     // Enable swapping
-    void swap(WaveformMark& that) {
-        std::swap(m_pPointCos, that.m_pPointCos);
-        std::swap(m_properties, that.m_properties);
-        std::swap(m_iHotCue, that.m_iHotCue);
-        std::swap(m_image, that.m_image);
-    }
-    friend void swap(WaveformMark& lhs, WaveformMark& rhs) {
-        lhs.swap(rhs);
-    }
-
-    void reset(int hotCue = kDefaultHotCue);
-
-    void setup(const QString& group, const QDomNode& node,
-               const SkinContext& context,
-               const WaveformSignalColors& signalColors);
-
+    // Swapping is done in the destructor
+    
     std::unique_ptr<ControlProxy> m_pPointCos;
 
     const WaveformMarkProperties& getProperties() const { return m_properties; };
@@ -46,6 +37,8 @@ class WaveformMark {
 
     int getHotCue() const { return m_iHotCue; };
     void setHotCue(int hotCue) { m_iHotCue = hotCue; };
+
+    ~WaveformMark(); //set the destructor which will use the reset functionallity and do the same thing
 
   private:
     WaveformMarkProperties m_properties;
