@@ -24,20 +24,20 @@ AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig) :
     m_priorityWorkers(),
     m_pausedWorkers() {
 
-    int maxThreads = m_pConfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"));
     int ideal = QThread::idealThreadCount();
+    int maxThreads = m_pConfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"), ideal);
     if (ideal < 1) {
         if (maxThreads > 0 && maxThreads <= 32) {
             qDebug() << "Cannot detect idealThreadCount. maxThreads is: " << maxThreads;
             ideal = maxThreads;
         }
         else {
-            qWarning() << "Cannot detect idealThreadCount and maxThreads is incorrect: " << maxTrheads" <<. Using the sane value of 1";
+            qWarning() << "Cannot detect idealThreadCount and maxThreads is incorrect: " << maxThreads <<". Using the sane value of 1";
             ideal = 1;
         }
     }
     if (maxThreads <= 0 || maxThreads > ideal) {
-        qWarning() << "maxThreads value is incorrect: " << maxTrheads << ". Changing it to " << ideal;
+        qWarning() << "maxThreads value is incorrect: " << maxThreads << ". Changing it to " << ideal;
         //Assume the value is incorrect, so fix it.
         maxThreads = ideal;
     }
@@ -209,6 +209,7 @@ void AnalyzerManager::slotWorkerFinished(AnalyzerWorker* worker) {
 }
 void AnalyzerManager::slotPaused(AnalyzerWorker* worker) {
     //No useful code to execute right now.
+    Q_UNUSED(worker);
 }
 void AnalyzerManager::slotErrorString(QString errMsg) {
     //TODO: This is currently unused.
