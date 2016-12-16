@@ -380,7 +380,13 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
 
 QSet<QString> SoundManagerConfig::getDevices() const {
     QSet<QString> devices;
-    devices = m_outputs.keys().toSet().unite(m_inputs.keys().toSet());
+    devices.reserve(m_outputs.size() + m_inputs.size());
+    for (auto it = m_outputs.constBegin(); it != m_outputs.constEnd(); ++it) {
+        devices.insert(it.key());
+    }
+    for (auto it = m_inputs.constBegin(); it != m_inputs.constEnd(); ++it) {
+        devices.insert(it.key());
+    }
     return devices;
 }
 
