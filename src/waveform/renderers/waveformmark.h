@@ -8,9 +8,12 @@
 #include "util/memory.h"
 
 #include "waveform/renderers/waveformmarkproperties.h"
+#include "control/controlobject.h"
 
 class SkinContext;
 class WaveformSignalColors;
+
+class WOverview;
 
 class WaveformMark {
   public:
@@ -30,7 +33,6 @@ class WaveformMark {
     // Enable swapping
     // Swapping is done in the destructor
     
-    std::unique_ptr<ControlProxy> m_pPointCos;
 
     const WaveformMarkProperties& getProperties() const { return m_properties; };
     void setProperties(const WaveformMarkProperties& properties) { m_properties = properties; };
@@ -38,9 +40,18 @@ class WaveformMark {
     int getHotCue() const { return m_iHotCue; };
     void setHotCue(int hotCue) { m_iHotCue = hotCue; };
 
+    //The m_pPointCos related function
+    bool is_m_pPointCos_Null() const{ return m_pPointCos == nullptr; }
+    ConfigKey getConfigKey(){ return m_pPointCos->getKey(); }
+    void changeKeyPosition(ControlObject *pObj) { m_pPointCos = std::make_unique<ControlProxy> (pObj->getKey()); }
+    void connectPlayPosChanged(const QObject *, const char *);
+    double getPlayPosition(){ return m_pPointCos->get(); }
+    
+
     ~WaveformMark(); //set the destructor which will use the reset functionallity and do the same thing
 
   private:
+    std::unique_ptr<ControlProxy> m_pPointCos;
     WaveformMarkProperties m_properties;
     int m_iHotCue;
     QImage m_image;

@@ -35,9 +35,9 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             WaveformMarkPointer pMark(new WaveformMark(group, child, context, signalColors));
 
             bool uniqueMark = true;
-            if (pMark->m_pPointCos) {
+            if (!pMark->is_m_pPointCos_Null()) {
                 // guarantee uniqueness even if there is a misdesigned skin
-                QString item = pMark->m_pPointCos->getKey().item;
+                QString item = pMark->getConfigKey().item;
                 if (!controlItemSet.insert(item).second) {
                     qWarning() << "WaveformRenderMark::setup - redefinition of" << item;
                     uniqueMark = false;
@@ -70,7 +70,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
                 WaveformMarkPointer pMark(new WaveformMark(i));
                 WaveformMarkProperties defaultProperties = m_pdefaultMark->getProperties();
                 pMark->setProperties(defaultProperties);
-                pMark->m_pPointCos = std::make_unique<ControlProxy>(pHotcue->getKey());
+                pMark->changeKeyPosition(pHotcue);
                 m_marks.push_back(pMark);
             }
         }
