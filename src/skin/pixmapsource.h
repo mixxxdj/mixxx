@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QByteArray>
+#include <QPixmap>
 
 // A class representing an image source for a pixmap
 // A bundle of a file path, raw data or inline svg
@@ -20,6 +21,7 @@ class PixmapSource {
     QString getPath() const;
     QByteArray getData() const;
     QString getId() const;
+    QPixmap toPixmap(const QSize& size);
 
   private:
     enum Type {

@@ -1,4 +1,6 @@
 #include <QtDebug>
+#include <QPainter>
+#include <QSvgRenderer>
 
 #include "skin/pixmapsource.h"
 
@@ -46,6 +48,31 @@ bool PixmapSource::isBitmap() const {
 void PixmapSource::setSVG(const QByteArray& content) {
     m_baData = content;
     m_eType = SVG;
+}
+
+QPixmap PixmapSource::toPixmap(const QSize& size) {
+    QPixmap pixmap = QPixmap(size);
+    if (pixmap.isNull()) {
+        qWarning() << "PixmapSource::toPixmap size is null";
+        return pixmap;
+    }
+    pixmap.fill(Qt::transparent);
+
+    if (isSVG()) {
+        QSvgRenderer renderer;
+        if (!m_baData.isEmpty()) {
+            renderer.load(m_baData);
+        } else {
+            renderer.load(m_path);
+        }
+        QPainter painter(&pixmap);
+        renderer.render(&painter);
+    } else if (isBitmap()) {
+        pixmap = QPixmap(m_path).scaled(
+                     size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
+
+    return pixmap;
 }
 
 QString PixmapSource::getId() const {

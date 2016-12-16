@@ -60,6 +60,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void showEvent(QShowEvent* event) override;
     void hideEvent(QHideEvent* event) override;
     bool event(QEvent* pEvent) override;
+    QSize sizeHint() const override;
 
     double calculateAngle(double playpos);
     int calculateFullRotations(double playpos);
@@ -69,12 +70,16 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
   private:
     QString m_group;
     UserSettingsPointer m_pConfig;
-    QImage* m_pBgImage;
-    QImage* m_pMaskImage;
-    QImage* m_pFgImage;
-    QImage m_fgImageScaled;
-    QImage* m_pGhostImage;
-    QImage m_ghostImageScaled;
+
+    QPixmap m_bgPixmap;
+    QPixmap m_fgPixmap;
+    QPixmap m_maskPixmap;
+    QPixmap m_ghostPixmap;
+    PixmapSource m_bgSource;
+    PixmapSource m_fgSource;
+    PixmapSource m_maskSource;
+    PixmapSource m_ghostSource;
+
     ControlProxy* m_pPlay;
     ControlProxy* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
