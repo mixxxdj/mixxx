@@ -61,6 +61,7 @@ public:
     unsigned int getDeckCount() const;
     void setDeckCount(unsigned int deckCount);
     void setCorrectDeckCount(int configuredDeckCount);
+    QSet<QString> getDevices() const;
 
     unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;

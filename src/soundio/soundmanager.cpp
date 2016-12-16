@@ -349,9 +349,14 @@ SoundDeviceError SoundManager::setupDevices() {
     // compute the new one then atomically hand off below.
     SoundDevice* pNewMasterClockRef = NULL;
 
+    // load with all configured devices. 
+    // all found devices are removed below 
+    QSet<QString> devicesNotFound = m_config.getDevices();
+
     // pair is isInput, isOutput
     QList<DeviceMode> toOpen;
     bool haveOutput = false;
+    // loop over all available devices
     foreach (SoundDevice* device, m_devices) {
         DeviceMode mode = {device, false, false};
         device->clearInputs();
@@ -373,9 +378,9 @@ SoundDeviceError SoundManager::setupDevices() {
 
             // Check if any AudioDestination is registered for this AudioInput
             // and call the onInputConnected method.
-            for (QHash<AudioInput, AudioDestination*>::const_iterator it =
-                         m_registeredDestinations.find(in);
-                 it != m_registeredDestinations.end() && it.key() == in; ++it) {
+            for (auto it = m_registeredDestinations.find(in);
+                    it != m_registeredDestinations.end() && it.key() == in;
+                    ++it) {
                 it.value()->onInputConfigured(in);
             }
         }
@@ -414,9 +419,9 @@ SoundDeviceError SoundManager::setupDevices() {
 
             // Check if any AudioSource is registered for this AudioOutput and
             // call the onOutputConnected method.
-            for (QHash<AudioOutput, AudioSource*>::const_iterator it =
-                         m_registeredSources.find(out);
-                 it != m_registeredSources.end() && it.key() == out; ++it) {
+            for (auto it = m_registeredSources.find(out);
+                    it != m_registeredSources.end() && it.key() == out;
+                    ++it) {
                 it.value()->onOutputConnected(out);
             }
         }
@@ -425,6 +430,7 @@ SoundDeviceError SoundManager::setupDevices() {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
             toOpen.append(mode);
+            devicesNotFound.remove(device->getInternalName());
         }
     }
 
@@ -468,6 +474,9 @@ SoundDeviceError SoundManager::setupDevices() {
 
     qDebug() << outputDevicesOpened << "output sound devices opened";
     qDebug() << inputDevicesOpened << "input  sound devices opened";
+    for (const auto& deviceName: devicesNotFound) {
+        qDebug() << deviceName << "not found";
+    }
 
     m_pControlObjectSoundStatusCO->set(
             outputDevicesOpened > 0 ?

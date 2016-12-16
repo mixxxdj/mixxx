@@ -129,7 +129,7 @@ bool SoundManagerConfig::writeToDisk() const {
     docElement.setAttribute("deck_count", m_deckCount);
     doc.appendChild(docElement);
 
-    foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
+    for (const auto& device: getDevices()) {
         QDomElement devElement(doc.createElement("SoundDevice"));
         devElement.setAttribute("name", device);
         foreach (AudioInput in, m_inputs.values(device)) {
@@ -220,7 +220,7 @@ void SoundManagerConfig::setDeckCount(unsigned int deckCount) {
 void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
     int minimum_deck_count = 0;
 
-    foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
+    for (const auto& device: getDevices()) {
         foreach (AudioInput in, m_inputs.values(device)) {
             if ((in.getType() == AudioInput::DECK ||
                  in.getType() == AudioInput::VINYLCONTROL ||
@@ -377,3 +377,10 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
 
     m_syncBuffers = kDefaultSyncBuffers;
 }
+
+QSet<QString> SoundManagerConfig::getDevices() const {
+    QSet<QString> devices;
+    devices = m_outputs.keys().toSet().unite(m_inputs.keys().toSet());
+    return devices;
+}
+
