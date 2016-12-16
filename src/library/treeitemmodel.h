@@ -44,6 +44,7 @@ class TreeItemModel : public QAbstractItemModel {
     TreeItem* getItem(const QModelIndex &index) const;
 
     void triggerRepaint();
+    void triggerRepaint(const QModelIndex& index);
 
   private:
     std::unique_ptr<TreeItem> m_pRootItem;

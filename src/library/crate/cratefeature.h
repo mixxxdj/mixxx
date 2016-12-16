@@ -4,7 +4,6 @@
 
 #include <QModelIndex>
 #include <QList>
-#include <QPair>
 #include <QAction>
 #include <QVariant>
 #include <QUrl>
@@ -75,20 +74,31 @@ class CrateFeature : public LibraryFeature {
   private slots:
     void slotTrackSelected(TrackPointer pTrack);
     void slotResetSelectedTrack();
-    void slotUpdateCrateLabels();
+    void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
 
   private:
+    std::unique_ptr<TreeItem> newTreeItem(
+            const CrateSummary& crateSummary,
+            TrackId selectedTrackId);
+    void updateTreeItem(
+            TreeItem* pTreeItem,
+            const CrateSummary& crateSummary);
+    void updateTreeItem(
+            TreeItem* pTreeItem,
+            TrackId selectedTrackId);
+
     QString getRootViewHtml() const;
-    QModelIndex constructChildModel(CrateId selected_id = CrateId());
-    void updateChildModel(CrateId selected_id);
-    void clearChildModel();
-    QVector<CrateSummary> buildCrateList();
+    QModelIndex rebuildChildModel(CrateId selectedCrateId = CrateId());
+    void updateChildModel(const QSet<CrateId>& updatedCrateIds);
     CrateId crateIdFromIndex(QModelIndex index);
     // Get the QModelIndex of a crate based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromCrateId(CrateId crateId);
 
     bool readLastRightClickedCrate(Crate* pCrate);
+
+    const QIcon m_cratesIcon;
+    const QIcon m_lockedCrateIcon;
 
     TrackCollection* m_pTrackCollection;
     QAction *m_pCreateCrateAction;
@@ -102,7 +112,6 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pExportPlaylistAction;
     QAction *m_pExportTrackFilesAction;
     QAction *m_pAnalyzeCrateAction;
-    QList<QPair<CrateId, QString> > m_crateList;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;

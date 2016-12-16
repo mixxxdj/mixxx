@@ -275,7 +275,6 @@ uint CrateStorage::countCrates() const {
 
 
 bool CrateStorage::readCrateById(CrateId id, Crate* pCrate) const {
-    DEBUG_ASSERT(pCrate != nullptr);
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 WHERE %2=:id").arg(
                     CRATE_TABLE,
@@ -359,6 +358,26 @@ CrateSummarySelectIterator CrateStorage::selectCrateSummaries() const {
     } else {
         return CrateSummarySelectIterator();
     }
+}
+
+bool CrateStorage::readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary) const {
+    FwdSqlQuery query(m_database, QString(
+            "SELECT * FROM %1 WHERE %2=:id").arg(
+                    CRATE_SUMMARY_VIEW,
+                    CRATETABLE_ID));
+    query.bindValue(":id", id);
+    if (query.execPrepared()) {
+        CrateSummarySelectIterator crateSummaries(query);
+        if ((pCrateSummary != nullptr) ? crateSummaries.readNext(pCrateSummary) : crateSummaries.next()) {
+            DEBUG_ASSERT_AND_HANDLE(!crateSummaries.next()) {
+                qWarning() << "Ambiguous crate id:" << id;
+            }
+            return true;
+        } else {
+            qWarning() << "Crate summary not found by id:" << id;
+        }
+    }
+    return false;
 }
 
 

@@ -200,6 +200,10 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
     return getRootItem();
 }
 
+void TreeItemModel::triggerRepaint(const QModelIndex& index) {
+    emit(dataChanged(index, index));
+}
+
 void TreeItemModel::triggerRepaint() {
     QModelIndex left = index(0, 0);
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
