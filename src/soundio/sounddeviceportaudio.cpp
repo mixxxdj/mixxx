@@ -681,7 +681,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
     // sound card overtakes the other. This always happens, if they are driven form
     // two crystals. In a test case every 30 s @ 23 ms. After they are consumed,
     // the drift correction takes place and fills or clears the reserve buffers.
-    // If this is finished before an other overtake happens, we do not face any
+    // If this is finished before another overtake happens, we do not face any
     // dropouts or clicks.
     // So thats why we need a Fifo of 3 chunks.
     //

@@ -1120,7 +1120,7 @@ void EngineBuffer::processSyncRequests() {
 void EngineBuffer::processSeek(bool paused) {
     // We need to read position just after reading seekType, to ensure that we
     // read the matching position to seek_typ or a position from a new (second)
-    // seek just queued from an other thread
+    // seek just queued from another thread
     // The later case is ok, because we will process the new seek in the next
     // call anyway again.
 

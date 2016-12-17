@@ -723,7 +723,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBusyDlg(bool* retryClicked) {
             tr("Mixxx was unable to open all the configured sound devices.") +
             "</p> <p>" %
             m_pSoundManager->getErrorDeviceName() %
-            " is used by an other application or not plugged in."
+            " is used by another application or not plugged in."
             "</p><ul>"
                 "<li>" %
                     tr("<b>Retry</b> after closing the other application "

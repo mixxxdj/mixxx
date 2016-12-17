@@ -70,7 +70,7 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setId("smoothing");
     smoothing->setName(QObject::tr("Smoothing"));
     smoothing->setDescription(
-            QObject::tr("How fast the signal goes from a channel to an other"));
+            QObject::tr("How fast the signal goes from a channel to another"));
     smoothing->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     smoothing->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
