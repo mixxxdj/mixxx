@@ -70,7 +70,6 @@
 #include "widget/wwidgetstack.h"
 #include "widget/wsizeawarestack.h"
 #include "widget/wwidgetgroup.h"
-#include "widget/whighlightinggroup.h"
 #include "widget/wkey.h"
 #include "widget/wbattery.h"
 #include "widget/wcombobox.h"
@@ -536,8 +535,6 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseWidgetGroup(node));
     } else if (nodeName == "WidgetStack") {
         result = wrapWidget(parseWidgetStack(node));
-    } else if (nodeName == "HighlightingGroup") {
-        result = wrapWidget(parseHighlightingGroup(node));
     } else if (nodeName == "SizeAwareStack") {
         result = wrapWidget(parseSizeAwareStack(node));
     } else if (nodeName == "EffectChainName") {
@@ -640,15 +637,6 @@ void LegacySkinParser::parseChildren(
 
 QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
-    commonWidgetSetup(node, pGroup);
-    pGroup->setup(node, *m_pContext);
-    pGroup->Init();
-    parseChildren(node, pGroup);
-    return pGroup;
-}
-
-QWidget* LegacySkinParser::parseHighlightingGroup(const QDomElement& node) {
-    WHighlightingGroup* pGroup = new WHighlightingGroup(m_pParent);
     commonWidgetSetup(node, pGroup);
     pGroup->setup(node, *m_pContext);
     pGroup->Init();

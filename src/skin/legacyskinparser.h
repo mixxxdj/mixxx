@@ -85,7 +85,6 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     // Grouping / layout.
     QWidget* parseWidgetGroup(const QDomElement& node);
-    QWidget* parseHighlightingGroup(const QDomElement& node);
     QWidget* parseWidgetStack(const QDomElement& node);
     QWidget* parseSizeAwareStack(const QDomElement& node);
     QWidget* parseSplitter(const QDomElement& node);
