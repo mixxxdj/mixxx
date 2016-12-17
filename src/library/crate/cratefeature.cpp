@@ -671,31 +671,21 @@ void CrateFeature::slotImportPlaylistFile(const QString &playlist_file) {
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
-
-    Parser* playlist_parser = NULL;
-
+    // TODO(XXX): Parsing a list of track locations from a playlist file
+    // is a general task and should be implemented separately.
+    QList<QString> entries;
     if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
         playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
         // .m3u8 is Utf8 representation of an m3u playlist
-        playlist_parser = new ParserM3u();
+        entries = ParserM3u().parse(playlist_file);
     } else if (playlist_file.endsWith(".pls", Qt::CaseInsensitive)) {
-        playlist_parser = new ParserPls();
+        entries = ParserPls().parse(playlist_file);
     } else if (playlist_file.endsWith(".csv", Qt::CaseInsensitive)) {
-        playlist_parser = new ParserCsv();
+        entries = ParserCsv().parse(playlist_file);
     } else {
         return;
     }
-
-    if (playlist_parser) {
-      QList<QString> entries = playlist_parser->parse(playlist_file);
-      //qDebug() << "Size of Imported Playlist: " << entries.size();
-
-      //Iterate over the List that holds URLs of playlist entires
-      m_crateTableModel.addTracks(QModelIndex(), entries);
-
-      //delete the parser object
-      delete playlist_parser;
-    }
+    m_crateTableModel.addTracks(QModelIndex(), entries);
 }
 
 void CrateFeature::slotCreateImportCrate() {
