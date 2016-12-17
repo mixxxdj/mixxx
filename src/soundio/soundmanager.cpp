@@ -30,6 +30,7 @@
 #include "engine/sidechain/enginenetworkstream.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"
+#include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
@@ -327,8 +328,6 @@ SoundDeviceError SoundManager::setupDevices() {
     // latencies) when changing devices.
     //m_pClkRefDevice = NULL;
     m_pErrorDevice = NULL;
-    int devicesAttempted = 0;
-    int devicesOpened = 0;
     int outputDevicesOpened = 0;
     int inputDevicesOpened = 0;
 
@@ -430,12 +429,10 @@ SoundDeviceError SoundManager::setupDevices() {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
             toOpen.append(mode);
-            devicesNotFound.remove(device->getInternalName());
         }
     }
 
     for (const auto& mode: toOpen) {
-        ++devicesAttempted;
         SoundDevice* device = mode.device;
         m_pErrorDevice = device;
         // If we have not yet set a clock source then we use the first
@@ -456,7 +453,7 @@ SoundDeviceError SoundManager::setupDevices() {
         }
         err = device->open(pNewMasterClockRef == device, syncBuffers);
         if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
-        ++devicesOpened;
+        devicesNotFound.remove(device->getInternalName());
         if (mode.isOutput) {
             ++outputDevicesOpened;
         }
@@ -483,11 +480,13 @@ SoundDeviceError SoundManager::setupDevices() {
                     SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
 
     // returns OK if we were able to open all the devices the user wanted
-    if (devicesAttempted == devicesOpened) {
+    if (devicesNotFound.isEmpty()) {
         emit(devicesSetup());
         return SOUNDDEVICE_ERROR_OK;
     }
-    m_pErrorDevice = NULL;
+    m_soundDeviceNotFound.reset(
+            new SoundDeviceNotFound(*devicesNotFound.constBegin()));
+    m_pErrorDevice = m_soundDeviceNotFound.get();
     return SOUNDDEVICE_ERROR_DEVICE_COUNT;
 
 closeAndError:

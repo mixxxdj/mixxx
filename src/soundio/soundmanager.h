@@ -17,6 +17,8 @@
 #ifndef SOUNDMANAGER_H
 #define SOUNDMANAGER_H
 
+#include <memory>
+
 #include <QObject>
 #include <QString>
 #include <QList>
@@ -35,6 +37,7 @@ class AudioInput;
 class AudioSource;
 class AudioDestination;
 class ControlObject;
+class SoundDeviceNotFound;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
@@ -144,6 +147,8 @@ class SoundManager : public QObject {
     ControlObject* m_pControlObjectVinylControlGainCO;
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
+
+    std::unique_ptr<SoundDeviceNotFound> m_soundDeviceNotFound;
 };
 
 #endif
