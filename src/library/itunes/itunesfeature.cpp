@@ -636,6 +636,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
     int track_reference = -1;
     //indicates that we haven't found the <
     bool isSystemPlaylist = false;
+    bool isPlaylistItemsStarted = false;
 
     QString key;
 
@@ -672,6 +673,8 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                 }
 
                 if (key == "Playlist Items") {
+                    isPlaylistItemsStarted = true;
+                    
                     //if the playlist is prebuild don't hit the database
                     if (isSystemPlaylist) continue;
                     query_insert_to_playlists.bindValue(":id", playlist_id);
@@ -711,6 +714,10 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
         if (xml.isEndElement()) {
             if (xml.name() == "array") {
                 //qDebug() << "exit playlist";
+                break;
+            }
+            if (xml.name() == "dict" && !isPlaylistItemsStarted){
+                // Some playlists can be empty, so we need to exit.
                 break;
             }
         }
