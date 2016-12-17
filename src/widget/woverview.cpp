@@ -95,10 +95,10 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     for (int i = 0; i < m_marks.size(); ++i) {
         const WaveformMarkPointer& mark = m_marks[i];
-        if (!(mark->is_m_pPointCos_Null())) {
+        if (mark->hasValidControlProxy()) {
             //mark->m_pPointCos->connectValueChanged(this,
                     //SLOT(onMarkChanged(double)));
-            mark->connectPlayPosChanged(this,
+            mark->connectSamplePositionChanged(this,
                     SLOT(onMarkChanged(double)));
         }
     }
@@ -427,10 +427,10 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             for (int i = 0; i < m_marks.size(); ++i) {
                 const WaveformMarkPointer currentMark = m_marks[i];
                 const WaveformMarkProperties& markProperties = currentMark->getProperties();
-                if (!currentMark->is_m_pPointCos_Null() && currentMark->getPlayPosition() >= 0.0) {
+                if (currentMark->hasValidControlProxy() && currentMark->getSamplePosition() >= 0.0) {
                     //const float markPosition = 1.0 +
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-                    const float markPosition = offset + currentMark->getPlayPosition() * gain;
+                    const float markPosition = offset + currentMark->getSamplePosition() * gain;
 
                     QLineF line;
                     if (m_orientation == Qt::Horizontal) {
