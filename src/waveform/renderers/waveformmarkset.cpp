@@ -35,7 +35,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             WaveformMarkPointer pMark(new WaveformMark(group, child, context, signalColors));
 
             bool uniqueMark = true;
-            if (!pMark->is_m_pPointCos_Null()) {
+            if (pMark->hasValidControlProxy()) {
                 // guarantee uniqueness even if there is a misdesigned skin
                 QString item = pMark->getConfigKey().item;
                 if (!controlItemSet.insert(item).second) {

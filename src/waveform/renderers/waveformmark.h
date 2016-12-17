@@ -30,10 +30,6 @@ class WaveformMark {
     WaveformMark(const WaveformMark&) = delete;
     WaveformMark& operator=(const WaveformMark&) = delete;
 
-    // Enable swapping
-    // Swapping is done in the destructor
-    
-
     const WaveformMarkProperties& getProperties() const { return m_properties; };
     void setProperties(const WaveformMarkProperties& properties) { m_properties = properties; };
 
@@ -41,14 +37,12 @@ class WaveformMark {
     void setHotCue(int hotCue) { m_iHotCue = hotCue; };
 
     //The m_pPointCos related function
-    bool is_m_pPointCos_Null() const{ return m_pPointCos == nullptr; }
+    bool hasValidControlProxy() const{ return !(m_pPointCos == nullptr); }
     ConfigKey getConfigKey(){ return m_pPointCos->getKey(); }
     void changeKeyPosition(ControlObject *pObj) { m_pPointCos = std::make_unique<ControlProxy> (pObj->getKey()); }
     void connectPlayPosChanged(const QObject *, const char *);
-    double getPlayPosition(){ return m_pPointCos->get(); }
+    double getSamplePosition(){ return m_pPointCos->get(); }
     
-
-    ~WaveformMark(); //set the destructor which will use the reset functionallity and do the same thing
 
   private:
     std::unique_ptr<ControlProxy> m_pPointCos;
