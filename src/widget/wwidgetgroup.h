@@ -35,7 +35,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     Q_PROPERTY(QRect layoutContentsMargins READ layoutContentsMargins WRITE setLayoutContentsMargins DESIGNABLE true);
     Q_PROPERTY(Qt::Alignment layoutAlignment READ layoutAlignment WRITE setLayoutAlignment DESIGNABLE true);
 
-    // A WWidgetGroup can be also used to highlight a group of widgets by
+    // A WWidgetGroup can also be used to highlight a group of widgets by
     // changing the background or any other css style option.
     // Example skin:
     // <WidgetGroup>

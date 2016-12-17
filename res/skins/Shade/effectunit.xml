@@ -34,7 +34,6 @@
 							</Template>
 						</Children>
 						<Connection>
-							<ConfigKey>[Microphone],show_microphone</ConfigKey>
 							<BindProperty>highlight</BindProperty>
 							<Transform>
 								<IsEqual>1</IsEqual>
@@ -60,7 +59,6 @@
 							</Template>
 						</Children>
 						<Connection>
-							<ConfigKey>[Microphone],show_microphone</ConfigKey>
 							<BindProperty>highlight</BindProperty>
 							<Transform>
 								<IsEqual>2</IsEqual>
