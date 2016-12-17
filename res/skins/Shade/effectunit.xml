@@ -15,8 +15,7 @@
 				</Style>
 				<BackPath>style/style_bg_effectunit</BackPath>
 				<Children>
-					<HighlightingGroup>
-					<Id>1</Id>
+					<WidgetGroup>
 						<BackPathHighlighted>style/style_bg_effect1_high</BackPathHighlighted>
 						<Pos>5,5</Pos>
 						<Size>495,45</Size>
@@ -36,11 +35,13 @@
 						</Children>
 						<Connection>
 							<ConfigKey>[Microphone],show_microphone</ConfigKey>
-							<BindProperty>highlightedId</BindProperty>
+							<BindProperty>highlight</BindProperty>
+							<Transform>
+								<IsEqual>1</IsEqual>
+							</Transform>
 							</Connection>
-					</HighlightingGroup>
-					<HighlightingGroup>
-						<Id>2</Id>
+					</WidgetGroup>
+					<WidgetGroup>
 						<BackPathHighlighted>style/style_bg_effect2_high</BackPathHighlighted>
 						<Pos>5,50</Pos>
 						<Size>495,45</Size>
@@ -60,9 +61,12 @@
 						</Children>
 						<Connection>
 							<ConfigKey>[Microphone],show_microphone</ConfigKey>
-							<BindProperty>highlightedId</BindProperty>
+							<BindProperty>highlight</BindProperty>
+							<Transform>
+								<IsEqual>2</IsEqual>
+							</Transform>
 						</Connection>
-					</HighlightingGroup>	
+					</WidgetGroup>	
 				</Children>		
 			</WidgetGroup>	
 		</Children>		
