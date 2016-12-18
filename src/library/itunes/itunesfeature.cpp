@@ -365,7 +365,7 @@ TreeItem* ITunesFeature::importLibrary() {
             if (xml.name() == "key") {
                 QString key = xml.readElementText();
                 if (key == "Music Folder") {
-                    if (isTracksParsed) isMusicFolderLocatedAfterTracks=true;
+                    if (isTracksParsed) isMusicFolderLocatedAfterTracks = true;
                     if (readNextStartElement(xml)) {
                         guessMusicLibraryMountpoint(xml);
                     }
@@ -383,17 +383,17 @@ TreeItem* ITunesFeature::importLibrary() {
     itunes_file.close();
     
     if (isMusicFolderLocatedAfterTracks) {
-      qDebug() << "Updating iTunes real path from " << m_dbItunesRoot << " to " << m_mixxxItunesRoot;
-      // In some iTunes files "Music Folder" XML node is located at the end of file. So, we need to 
-      QSqlQuery query(m_database);
-      query.prepare("UPDATE itunes_library SET location = replace( location, :itunes_path, :mixxx_path )");
-      query.bindValue(":itunes_path", m_dbItunesRoot.replace(localhost_token(), ""));
-      query.bindValue(":mixxx_path", m_mixxxItunesRoot);
-      bool success = query.exec();
+        qDebug() << "Updating iTunes real path from " << m_dbItunesRoot << " to " << m_mixxxItunesRoot;
+        // In some iTunes files "Music Folder" XML node is located at the end of file. So, we need to 
+        QSqlQuery query(m_database);
+        query.prepare("UPDATE itunes_library SET location = replace( location, :itunes_path, :mixxx_path )");
+        query.bindValue(":itunes_path", m_dbItunesRoot.replace(localhost_token(), ""));
+        query.bindValue(":mixxx_path", m_mixxxItunesRoot);
+        bool success = query.exec();
 
-      if (!success) {
-          LOG_FAILED_QUERY(query);
-      }
+        if (!success) {
+            LOG_FAILED_QUERY(query);
+        }
     }
 
     // Even if an error occurred, commit the transaction. The file may have been
