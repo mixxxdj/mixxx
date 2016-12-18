@@ -70,9 +70,7 @@ HercDJCompact.jog_wheel = function (group, control, value, status) {
         }
     } else {
         if (value !== 0) {
-            if (!engine.getValue(input.group, "play")) {
-                engine.setValue(input.group, "jog", value);
-            }
+            engine.setValue(input.group, "jog", value);
         }
     }
 };

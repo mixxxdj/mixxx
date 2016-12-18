@@ -132,7 +132,7 @@ setting.</description>
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
+                <group>[Sampler7]</group>
                 <key>cue_gotoandplay</key>
                 <description>MIDI Learned from 12 messages.</description>
                 <status>0x90</status>
@@ -192,6 +192,24 @@ setting.</description>
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>start_stop</key>
+                <status>0x90</status>
+                <midino>0x24</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>start_stop</key>
+                <status>0x90</status>
+                <midino>0x54</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel2]</group>
                 <key>sync_enabled</key>
                 <description>MIDI Learned from 26 messages.</description>
@@ -211,7 +229,7 @@ setting.</description>
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
+                <group>[Sampler6]</group>
                 <key>cue_gotoandplay</key>
                 <description>MIDI Learned from 8 messages.</description>
                 <status>0x90</status>
@@ -319,7 +337,7 @@ setting.</description>
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
+                <group>[Sampler5]</group>
                 <key>cue_gotoandplay</key>
                 <description>MIDI Learned from 4 messages.</description>
                 <status>0x90</status>
@@ -664,7 +682,7 @@ setting.</description>
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
+                <group>[Sampler8]</group>
                 <key>cue_gotoandplay</key>
                 <description>MIDI Learned from 16 messages.</description>
                 <status>0x90</status>
@@ -710,7 +728,7 @@ setting.</description>
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
+                <group>[Sampler5]</group>
                 <key>cue_gotoandstop</key>
                 <status>0x90</status>
                 <midino>0x45</midino>
@@ -719,7 +737,7 @@ setting.</description>
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
+                <group>[Sampler6]</group>
                 <key>cue_gotoandstop</key>
                 <status>0x90</status>
                 <midino>0x46</midino>
@@ -728,7 +746,7 @@ setting.</description>
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
+                <group>[Sampler7]</group>
                 <key>cue_gotoandstop</key>
                 <status>0x90</status>
                 <midino>0x47</midino>
@@ -737,7 +755,7 @@ setting.</description>
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
+                <group>[Sampler8]</group>
                 <key>cue_gotoandstop</key>
                 <status>0x90</status>
                 <midino>0x48</midino>
@@ -755,7 +773,7 @@ setting.</description>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler4]</group>
+                <group>[Sampler8]</group>
                 <key>play_indicator</key>
                 <status>0x90</status>
                 <midino>0x44</midino>
@@ -769,7 +787,7 @@ setting.</description>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler4]</group>
+                <group>[Sampler8]</group>
                 <key>play_indicator</key>
                 <status>0x90</status>
                 <midino>0x48</midino>
@@ -853,7 +871,7 @@ setting.</description>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler1]</group>
+                <group>[Sampler5]</group>
                 <key>play_indicator</key>
                 <status>0x90</status>
                 <midino>0x41</midino>
@@ -867,7 +885,7 @@ setting.</description>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler1]</group>
+                <group>[Sampler5]</group>
                 <key>play_indicator</key>
                 <status>0x90</status>
                 <midino>0x45</midino>
@@ -937,7 +955,7 @@ setting.</description>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler2]</group>
+                <group>[Sampler6]</group>
                 <key>play_indicator</key>
                 <status>0x90</status>
                 <midino>0x42</midino>
@@ -951,7 +969,7 @@ setting.</description>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler2]</group>
+                <group>[Sampler6]</group>
                 <key>play_indicator</key>
                 <status>0x90</status>
                 <midino>0x46</midino>
@@ -1196,7 +1214,7 @@ setting.</description>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler3]</group>
+                <group>[Sampler7]</group>
                 <key>play_indicator</key>
                 <status>0x90</status>
                 <midino>0x43</midino>
@@ -1210,7 +1228,7 @@ setting.</description>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler3]</group>
+                <group>[Sampler7]</group>
                 <key>play_indicator</key>
                 <status>0x90</status>
                 <midino>0x47</midino>
