@@ -147,7 +147,7 @@ class EngineBroadcast
     double m_reconnectFirstDelay;
     double m_reconnectPeriod;
     bool m_noDelayFirstReconnect;
-    bool m_limitRreconnects;
+    bool m_limitReconnects;
     int m_maximumRetries;
 
     QMutex m_enabledMutex;

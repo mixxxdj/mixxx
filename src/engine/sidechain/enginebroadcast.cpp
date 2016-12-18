@@ -54,7 +54,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_reconnectFirstDelay(0.0),
           m_reconnectPeriod(5.0),
           m_noDelayFirstReconnect(true),
-          m_limitRreconnects(true),
+          m_limitReconnects(true),
           m_maximumRetries(10) {
     const bool persist = true;
     m_pBroadcastEnabled = new ControlPushButton(
@@ -261,12 +261,12 @@ void EngineBroadcast::updateFromPreferences() {
                 ConfigKey(BROADCAST_PREF_KEY, "reconnect_period"), 5.0);
         m_noDelayFirstReconnect = m_pConfig->getValue(
                 ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"), 1);
-        m_limitRreconnects = m_pConfig->getValue(
+        m_limitReconnects = m_pConfig->getValue(
                 ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), true);
         m_maximumRetries = m_pConfig->getValue(
                 ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), 10);
     } else {
-        m_limitRreconnects = true;
+        m_limitReconnects = true;
         m_maximumRetries = 0;
     }
 
@@ -945,7 +945,7 @@ void EngineBroadcast::slotEnableCO(double v) {
 }
 
 bool EngineBroadcast::waitForRetry() {
-    if (m_limitRreconnects &&
+    if (m_limitReconnects &&
             m_retryCount >= m_maximumRetries) {
         return false;
     }
