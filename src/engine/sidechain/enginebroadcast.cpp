@@ -279,12 +279,6 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    // WTF? Why SHOUT_PROTOCOL_HTTP and not.. the chosen protocol?
-    if (shout_set_protocol(m_pShout, SHOUT_PROTOCOL_HTTP) != SHOUTERR_SUCCESS) {
-        errorDialog(tr("Error setting protocol!"), shout_get_error(m_pShout));
-        return;
-    }
-
     if (shout_set_port(m_pShout,
             static_cast<unsigned short>(serverUrl.port(BROADCAST_DEFAULT_PORT)))
             != SHOUTERR_SUCCESS) {
