@@ -166,7 +166,7 @@ void EngineBroadcast::updateFromPreferences() {
     // Convert a bunch of QStrings to QByteArrays so we can get regular C char*
     // strings to pass to libshout.
 
-    QString codec = m_pConfig->getValueString(
+    QString codec = m_pConfig->getValue(
             ConfigKey(BROADCAST_PREF_KEY, "metadata_charset"));
     QByteArray baCodec = codec.toLatin1();
     m_pTextCodec = QTextCodec::codecForName(baCodec);
@@ -178,10 +178,10 @@ void EngineBroadcast::updateFromPreferences() {
     // Indicates our metadata is in the provided charset.
     shout_metadata_add(m_pShoutMetaData, "charset",  baCodec.constData());
 
-    QString serverType = m_pConfig->getValueString(
+    QString serverType = m_pConfig->getValue(
             ConfigKey(BROADCAST_PREF_KEY, "servertype"));
 
-    QString host = m_pConfig->getValueString(
+    QString host = m_pConfig->getValue(
                 ConfigKey(BROADCAST_PREF_KEY, "host"));
     int start = host.indexOf(QLatin1String("//"));
     if (start == -1) {
@@ -208,7 +208,7 @@ void EngineBroadcast::updateFromPreferences() {
         serverUrl.setPath(mountPoint);
     }
 
-    QString login = m_pConfig->getValueString(
+    QString login = m_pConfig->getValue(
             ConfigKey(BROADCAST_PREF_KEY, "login"));
     if (!login.isEmpty()) {
         serverUrl.setUserName(login);
@@ -235,36 +235,36 @@ void EngineBroadcast::updateFromPreferences() {
             ConfigKey(BROADCAST_PREF_KEY, "stream_genre")));
 
     // Whether the stream is public.
-    bool streamPublic = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_public")).toInt() > 0;
+    bool streamPublic = m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY, "stream_public"), false);
 
     // Dynamic Ogg metadata update
-    m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
+    m_ogg_dynamic_update = m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate"), false);
 
-    m_custom_metadata = (bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "enable_metadata")).toInt();
-    m_customTitle = m_pConfig->getValueString(
+    m_custom_metadata = m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY, "enable_metadata"), false);
+    m_customTitle = m_pConfig->getValue(
             ConfigKey(BROADCAST_PREF_KEY, "custom_title"));
-    m_customArtist = m_pConfig->getValueString(
+    m_customArtist = m_pConfig->getValue(
             ConfigKey(BROADCAST_PREF_KEY, "custom_artist"));
 
-    m_metadataFormat = m_pConfig->getValueString(
+    m_metadataFormat = m_pConfig->getValue(
             ConfigKey(BROADCAST_PREF_KEY, "metadata_format"));
 
-    bool enableReconnect = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "enable_reconnect"), "1").toInt();
+    bool enableReconnect = m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY, "enable_reconnect"), true);
     if (enableReconnect) {
-        m_reconnectFirstDelay = m_pConfig->getValueString(
-                ConfigKey(BROADCAST_PREF_KEY, "reconnect_first_delay"), "5").toDouble();
-        m_reconnectPeriod = m_pConfig->getValueString(
-                ConfigKey(BROADCAST_PREF_KEY, "reconnect_period"), "5").toDouble();
-        m_noDelayFirstReconnect = m_pConfig->getValueString(
-                ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"), "1").toInt();
-        m_limitRreconnects = m_pConfig->getValueString(
-                ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), "1").toInt();
-        m_maximumRetries = m_pConfig->getValueString(
-                ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt();
+        m_reconnectFirstDelay = m_pConfig->getValue(
+                ConfigKey(BROADCAST_PREF_KEY, "reconnect_first_delay"), 5.0);
+        m_reconnectPeriod = m_pConfig->getValue(
+                ConfigKey(BROADCAST_PREF_KEY, "reconnect_period"), 5.0);
+        m_noDelayFirstReconnect = m_pConfig->getValue(
+                ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"), 1);
+        m_limitRreconnects = m_pConfig->getValue(
+                ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), true);
+        m_maximumRetries = m_pConfig->getValue(
+                ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), 10);
     } else {
         m_limitRreconnects = true;
         m_maximumRetries = 0;

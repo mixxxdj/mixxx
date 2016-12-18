@@ -57,8 +57,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
 
 
     // Enable automatic reconnect
-    bool enableReconnect = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "enable_reconnect"), "1").toInt();
+    bool enableReconnect = m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY, "enable_reconnect"), true);
     checkBoxEnableReconnect->setChecked(enableReconnect);
     widgetReconnectControls->setEnabled(enableReconnect);
     connect(checkBoxEnableReconnect, SIGNAL(stateChanged(int)),
@@ -66,16 +66,16 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
 
 
     // Wait until first attempt
-    spinBoxFirstDelay->setValue(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "reconnect_first_delay"), "0").toDouble());
+    spinBoxFirstDelay->setValue(m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY, "reconnect_first_delay"), 0.0));
 
     // Retry Delay
-    spinBoxReconnectPeriod->setValue(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "reconnect_period"), "5.0").toDouble());
+    spinBoxReconnectPeriod->setValue(m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY, "reconnect_period"), 5.0));
 
     // Use Maximum Retries
-    bool limitConnects = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), "1").toInt();
+    bool limitConnects = m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), true);
     checkBoxLimitReconnects->setChecked(
             limitConnects);
     spinBoxMaximumRetries->setEnabled(limitConnects);
@@ -83,13 +83,13 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
             this, SLOT(checkBoxLimitReconnectsChanged(int)));
 
     // Maximum Retries
-    spinBoxMaximumRetries->setValue(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), "10").toInt());
+    spinBoxMaximumRetries->setValue(m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), 10));
 
 
     // Stream "public" checkbox
-    stream_public->setChecked((bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_public")).toInt());
+    stream_public->setChecked(m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY, "stream_public"), false));
 
     // Stream name
     stream_name->setText(m_pConfig->getValueString(
@@ -185,8 +185,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
             ConfigKey(BROADCAST_PREF_KEY,"custom_title")));
 
     // "Enable static artist and title" checkbox
-    bool enableMetadata = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"enable_metadata")).toInt();
+    bool enableMetadata = m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY,"enable_metadata"), false);
     enableCustomMetadata->setChecked(enableMetadata);
     custom_artist->setEnabled(enableMetadata);
     custom_title->setEnabled(enableMetadata);
@@ -200,8 +200,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     enableUtf8Metadata->setChecked(charset == "UTF-8");
 
     // OGG "dynamicupdate" checkbox
-    ogg_dynamicupdate->setChecked((bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate")).toInt());
+    ogg_dynamicupdate->setChecked(m_pConfig->getValue(
+            ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate"), false));
 
     slotApply();
 }

@@ -108,8 +108,6 @@ template <class ValueType> class ConfigObject {
     void set(const ConfigKey& k, const ValueType& v);
     ValueType get(const ConfigKey& k) const;
     bool exists(const ConfigKey& key) const;
-    QString getValueString(const ConfigKey& k) const;
-    QString getValueString(const ConfigKey& k, const QString& default_string) const;
 
     template <class ResultType>
     void setValue(const ConfigKey& key, const ResultType& value);
@@ -118,9 +116,21 @@ template <class ValueType> class ConfigObject {
     ResultType getValue(const ConfigKey& key) const {
         return getValue<ResultType>(key, ResultType());
     }
+    QString getValue(const ConfigKey& key) const {
+        return getValueString(key);
+    }
 
     template <class ResultType>
     ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
+    QString getValue(const ConfigKey& key, const char* default_value) const;
+
+    QString getValueString(const ConfigKey& key) const;
+    QString getValueString(const ConfigKey& key, const QString& default_value) const{
+        return getValue(key, default_value);
+    }
+    QString getValueString(const ConfigKey& key, const char* default_value) const {
+        return getValue(key, default_value);
+    }
 
     QMultiHash<ValueType, ConfigKey> transpose() const;
 
