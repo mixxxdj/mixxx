@@ -619,7 +619,7 @@ bool EngineBroadcast::writeSingle(const unsigned char* data, size_t len) {
         // in case of busy, frames are queued
         // try to flush queue after a short sleep
         qDebug() << "EngineBroadcast::writeSingle() SHOUTERR_BUSY, trying again";
-        QThread::msleep(10);
+        QThread::msleep(10); // wait 10 ms until "busy" is over. TODO() tweak for an optimum.
         // if this fails, the queue is transmitted later
         (void)shout_send_raw(m_pShout, nullptr, 0);
     } else if (ret < SHOUTERR_SUCCESS) {
