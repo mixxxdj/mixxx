@@ -185,7 +185,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
 
-    m_pTrackLoaded = new ControlPushButton(ConfigKey(m_group, "loaded"));
+    m_pTrackLoaded = new ControlPushButton(ConfigKey(m_group, "track_loaded"));
 
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
