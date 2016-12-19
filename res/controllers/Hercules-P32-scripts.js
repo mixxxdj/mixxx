@@ -810,22 +810,17 @@ EffectUnit = function (unitNumber) {
                 }
             },
             expand: function () {
+                this.outCo = 'focused';
                 this.unshift = function () {
                     this.isShifted = false;
+                    this.inCo = 'focused';
                     this.input = function (channel, control, value, status, group) {
                         if (value > 0) {
+                            this.toggle();
                             eu.activeEffect = this.number;
                             eu.knobs.forEachControl(function (c) {
                                 if (typeof c.expand === 'function') {
                                     c.expand(); // to set new group property
-                                }
-                            });
-                            eu.buttons.forEachControl(function (c) {
-                                c.disconnect();
-                                if (c.number === eu.activeEffect) {
-                                    c.send(c.on);
-                                } else {
-                                    c.send(c.off);
                                 }
                             });
                         }
@@ -841,7 +836,6 @@ EffectUnit = function (unitNumber) {
                     this.shift();
                 } else {
                     this.unshift();
-                    this.input(null, null, this.number === eu.activeEffect, null, null);
                 }
             },
             outConnect: false
