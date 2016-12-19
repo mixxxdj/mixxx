@@ -786,17 +786,14 @@ EffectUnit = function (unitNumber) {
         });
         this.buttons[d] = new Button({
             number: d,
+            group: '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + d + ']',
             collapse: function () {
-                this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.number + ']';
                 this.input = Button.prototype.input;
+                this.outCo = 'enabled';
                 this.unshift = function () {
                     this.isShifted = false;
-                    this.disconnect();
                     this.inCo = 'enabled';
-                    this.outCo = 'enabled';
                     this.onlyOnPress = true;
-                    this.connect();
-                    this.trigger();
                 };
                 this.shift = function () {
                     this.isShifted = true;
@@ -818,7 +815,7 @@ EffectUnit = function (unitNumber) {
                         if (value > 0) {
                             this.toggle();
                             eu.activeEffect = this.number;
-                            eu.knobs.forEachControl(function (c) {
+                            eu.knobs.reconnectControls(function (c) {
                                 if (typeof c.expand === 'function') {
                                     c.expand(); // to set new group property
                                 }
@@ -848,15 +845,23 @@ EffectUnit = function (unitNumber) {
         output: function (value, group, control) {
             this.send((value > 0) ? this.on : this.off);
             if (value === 0) {
+                // NOTE: calling eu.reconnectControls() here would cause an infinite loop when
+                // calling EffectUnit.reconnectControls().
                 eu.forEachControl(function (c) {
                     if (typeof c.collapse === 'function') {
+                        c.disconnect();
                         c.collapse();
+                        c.connect();
+                        c.trigger();
                     }
                 });
             } else {
                 eu.forEachControl(function (c) {
                     if (typeof c.expand === 'function') {
+                        c.disconnect();
                         c.expand();
+                        c.connect();
+                        c.trigger();
                     }
                 });
             }
