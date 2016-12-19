@@ -257,6 +257,8 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
             this, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)));
     connect(pEffectSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
             this, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pEffectSlot, SIGNAL(focusChanged(unsigned int)),
+            this, SLOT(slotEffectFocusChanged(unsigned int)));
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
@@ -290,6 +292,14 @@ void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotN
 void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {
     if (m_pEffectChain) {
         m_pEffectChain->removeEffect(iEffectSlotNumber);
+    }
+}
+
+void EffectChainSlot::slotEffectFocusChanged(unsigned int newSlotNumber) {
+    if (m_focusedEffectNumber != newSlotNumber) {
+        EffectSlotPointer previouslyFocusedEffect = m_slots[m_focusedEffectNumber];
+        previouslyFocusedEffect->setFocused(0.);
+        m_focusedEffectNumber = newSlotNumber;
     }
 }
 

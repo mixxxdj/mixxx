@@ -105,6 +105,8 @@ class EffectChainSlot : public QObject {
     // Clears the effect in the given position in the loaded EffectChain.
     void slotClearEffect(unsigned int iEffectSlotNumber);
 
+    void slotEffectFocusChanged(unsigned int newSlotNumber);
+
     void slotControlClear(double v);
     void slotControlNumEffects(double v);
     void slotControlNumEffectSlots(double v);
@@ -126,6 +128,8 @@ class EffectChainSlot : public QObject {
     const unsigned int m_iChainSlotNumber;
     const QString m_group;
     EffectRack* m_pEffectRack;
+
+    unsigned int m_focusedEffectNumber;
 
     EffectChainPointer m_pEffectChain;
 
