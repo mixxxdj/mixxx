@@ -18,9 +18,6 @@ WaveformMark::WaveformMark( const QString& group,
     m_properties = WaveformMarkProperties(node, context, signalColors);
 }
 
-WaveformMark::WaveformMark(int hotCue)
-    : m_iHotCue(hotCue){
-}
 
 void WaveformMark::connectSamplePositionChanged(const QObject *obj, const char *slt) {
     m_pPointCos->connectValueChanged(obj, slt, Qt::AutoConnection);

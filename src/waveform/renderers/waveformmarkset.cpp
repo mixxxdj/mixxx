@@ -67,7 +67,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 
             if (controlItemSet.insert(hotCueControlItem).second) {
                 //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
-                WaveformMarkPointer pMark(new WaveformMark(i));
+                WaveformMarkPointer pMark(new WaveformMark(group, node, context, signalColors, i));
                 WaveformMarkProperties defaultProperties = m_pdefaultMark->getProperties();
                 defaultProperties.setHotCueNumber(i);
                 pMark->setProperties(defaultProperties);
