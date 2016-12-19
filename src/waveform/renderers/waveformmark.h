@@ -24,8 +24,6 @@ class WaveformMark {
                                const WaveformSignalColors& signalColors,
                                int hotCue = kDefaultHotCue);
 
-    explicit WaveformMark(int hotCue = kDefaultHotCue)
-        : m_iHotCue(hotCue){}
 
     // Disable copying
     WaveformMark(const WaveformMark&) = delete;
