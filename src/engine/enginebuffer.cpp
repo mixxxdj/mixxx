@@ -485,7 +485,6 @@ void EngineBuffer::slotTrackLoading() {
     // Set play here, to signal the user that the play command is adopted
     m_playButton->set((double)m_bPlayAfterLoading);
     m_pTrackSamples->set(0); // Stop renderer
-    m_pTrackLoaded->set(1);
 }
 
 TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
@@ -512,6 +511,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     TrackPointer pOldTrack = m_pCurrentTrack;
 
     m_pause.lock();
+    m_pTrackLoaded->set(1);
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
     m_trackSampleRateOld = iTrackSampleRate;
