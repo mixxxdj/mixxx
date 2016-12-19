@@ -11,7 +11,6 @@ WaveformMark::WaveformMark( const QString& group,
                             const WaveformSignalColors& signalColors,
                             int hotCue)
     : m_iHotCue(hotCue) {
-    m_pPointCos = nullptr;
     QString item = context.selectString(node, "Control");
     if (!item.isEmpty()) {
         m_pPointCos = std::make_unique<ControlProxy>(group, item);
