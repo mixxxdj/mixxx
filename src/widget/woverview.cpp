@@ -98,7 +98,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         if (mark->hasValidControlProxy()) {
             //mark->m_pPointCos->connectValueChanged(this,
                     //SLOT(onMarkChanged(double)));
-            mark->connectPlayPosChanged(this,
+            mark->connectSamplePositionChanged(this,
                     SLOT(onMarkChanged(double)));
         }
     }

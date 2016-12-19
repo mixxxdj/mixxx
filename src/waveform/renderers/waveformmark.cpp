@@ -23,7 +23,7 @@ WaveformMark::WaveformMark(int hotCue)
     : m_iHotCue(hotCue){
 }
 
-void WaveformMark::connectPlayPosChanged(const QObject *obj, const char *slt) {
+void WaveformMark::connectSamplePositionChanged(const QObject *obj, const char *slt) {
     m_pPointCos->connectValueChanged(obj, slt, Qt::AutoConnection);
 }
 
