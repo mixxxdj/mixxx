@@ -75,10 +75,10 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QPixmap m_fgPixmap;
     QPixmap m_maskPixmap;
     QPixmap m_ghostPixmap;
-    PixmapSource m_bgSource;
-    PixmapSource m_fgSource;
-    PixmapSource m_maskSource;
-    PixmapSource m_ghostSource;
+    PaintablePointer m_pBgPaintable;
+    PaintablePointer m_pFgPaintable;
+    PaintablePointer m_pMaskPaintable;
+    PaintablePointer m_pGhostPaintable;
 
     ControlProxy* m_pPlay;
     ControlProxy* m_pPlayPos;

@@ -300,6 +300,14 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
     }
 }
 
+QPixmap Paintable::renderToPixmap(const QSize& size) {
+    QPixmap pixmap = QPixmap(size);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    draw(QRect(QPoint(0,0), size), &painter);
+    return pixmap;
+}
+
 // static
 PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
                                             Paintable::DrawMode mode) {

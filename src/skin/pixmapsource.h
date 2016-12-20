@@ -21,7 +21,6 @@ class PixmapSource {
     QString getPath() const;
     QByteArray getData() const;
     QString getId() const;
-    QPixmap toPixmap(const QSize& size);
 
   private:
     enum Type {

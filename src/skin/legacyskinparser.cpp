@@ -1112,8 +1112,6 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         return dummy;
     }
     commonWidgetSetup(node, spinny);
-    // Pixmaps are rendered from SVGs upon resizing, so initialize the pixmaps
-    spinny->resize(spinny->size());
 
     WaveformWidgetFactory::instance()->addTimerListener(spinny);
     connect(spinny, SIGNAL(trackDropped(QString, QString)),

@@ -117,14 +117,33 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 }
 
 void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
-    m_bgSource = context.getPixmapSource(
-                       context.selectElement(node, "PathBackground"));
-    m_maskSource = context.getPixmapSource(
-                       context.selectNode(node, "PathMask"));
-    m_fgSource = context.getPixmapSource(
-                       context.selectNode(node,"PathForeground"));
-    m_ghostSource = context.getPixmapSource(
-                       context.selectNode(node,"PathGhost"));
+    QDomElement bgElement = context.selectElement(node, "PathBackground");
+    PixmapSource bgSource = context.getPixmapSource(bgElement);
+    m_pBgPaintable = WPixmapStore::getPaintable(bgSource,
+                        context.selectScaleMode(bgElement,
+                                                Paintable::STRETCH_ASPECT));
+    //TODO: legacy behavior
+
+    QDomElement fgElement = context.selectElement(node, "PathForeground");
+    PixmapSource fgSource = context.getPixmapSource(fgElement);
+    m_pFgPaintable = WPixmapStore::getPaintable(fgSource,
+                        context.selectScaleMode(fgElement,
+                                                Paintable::STRETCH_ASPECT));
+
+    QDomElement maskElement = context.selectElement(node, "PathMask");
+    PixmapSource maskSource = context.getPixmapSource(maskElement);
+    m_pMaskPaintable = WPixmapStore::getPaintable(maskSource,
+                        context.selectScaleMode(maskElement,
+                                                Paintable::STRETCH_ASPECT));
+
+    QDomElement ghostElement = context.selectElement(node, "PathGhost");
+    PixmapSource ghostSource = context.getPixmapSource(ghostElement);
+    m_pGhostPaintable = WPixmapStore::getPaintable(ghostSource,
+                        context.selectScaleMode(ghostElement,
+                                                Paintable::STRETCH_ASPECT));
+
+    // Pixmaps are rendered from SVGs upon resizing, so initialize the pixmaps
+    resize(width(), height());
 
     m_bShowCover = context.selectBool(node, "ShowCover", false);
 
@@ -298,7 +317,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     // and draw the image at the corner.
     p.translate(width() / 2, height() / 2);
 
-    bool paintGhost = m_bGhostPlayback && !m_ghostSource.isEmpty();
+    bool paintGhost = m_bGhostPlayback && !m_ghostPixmap.isNull();
     if (paintGhost) {
         p.save();
     }
@@ -347,11 +366,9 @@ void WSpinny::resizeEvent(QResizeEvent* re) {
     // Keep it square
     if (height() < width()) {
         resize(height(), height());
-        updateGeometry();
         return;
     } else if (height() > width()) {
         resize(width(), width());
-        updateGeometry();
         return;
     }
 
@@ -359,10 +376,10 @@ void WSpinny::resizeEvent(QResizeEvent* re) {
     // specify deck color in QSS
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
 
-    m_bgPixmap = m_bgSource.toPixmap(size());
-    m_fgPixmap = m_fgSource.toPixmap(size());
-    m_maskPixmap = m_maskSource.toPixmap(size());
-    m_ghostPixmap = m_ghostSource.toPixmap(size());
+    m_bgPixmap = m_pBgPaintable->renderToPixmap(size());
+    m_fgPixmap = m_pFgPaintable->renderToPixmap(size());
+    m_maskPixmap = m_pMaskPaintable->renderToPixmap(size());
+    m_ghostPixmap = m_pGhostPaintable->renderToPixmap(size());
 }
 
 QSize WSpinny::sizeHint() const {
