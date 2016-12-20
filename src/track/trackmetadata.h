@@ -140,6 +140,14 @@ public:
         m_bpm.resetValue();
     }
 
+	// rating
+    int getRating() const {
+        return m_rating;
+    }
+    void setRating(int rating) {
+        m_rating = rating;
+    }
+
     const ReplayGain& getReplayGain() const {
         return m_replayGain;
     }
@@ -195,6 +203,7 @@ private:
     // Integer fields (in alphabetical order)
     int m_bitrate; // kbit/s
     int m_channels;
+	int m_rating;
     int m_sampleRate; // Hz
 };
 
