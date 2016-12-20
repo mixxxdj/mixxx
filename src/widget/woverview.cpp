@@ -95,9 +95,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     for (int i = 0; i < m_marks.size(); ++i) {
         const WaveformMarkPointer& mark = m_marks[i];
-        if (mark->hasValidControlProxy()) {
-            //mark->m_pPointCos->connectValueChanged(this,
-                    //SLOT(onMarkChanged(double)));
+        if (mark->isValid()) {
             mark->connectSamplePositionChanged(this,
                     SLOT(onMarkChanged(double)));
         }
@@ -427,7 +425,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             for (int i = 0; i < m_marks.size(); ++i) {
                 const WaveformMarkPointer currentMark = m_marks[i];
                 const WaveformMarkProperties& markProperties = currentMark->getProperties();
-                if (currentMark->hasValidControlProxy() && currentMark->getSamplePosition() >= 0.0) {
+                if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0) {
                     //const float markPosition = 1.0 +
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                     const float markPosition = offset + currentMark->getSamplePosition() * gain;

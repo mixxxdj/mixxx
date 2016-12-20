@@ -27,17 +27,19 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     bool hasDefaultMark = false;
 
     QDomNode child = node.firstChild();
+    QDomNode defaultChild;
     while (!child.isNull()) {
         if (child.nodeName() == "DefaultMark") {
-            m_pdefaultMark = std::make_unique<WaveformMark>(group, child, context, signalColors);
+            m_pDefaultMark = std::make_unique<WaveformMark>(group, child, context, signalColors);
             hasDefaultMark = true;
+            defaultChild = child;
         } else if (child.nodeName() == "Mark") {
             WaveformMarkPointer pMark(new WaveformMark(group, child, context, signalColors));
 
             bool uniqueMark = true;
-            if (pMark->hasValidControlProxy()) {
+            if (pMark->isValid()) {
                 // guarantee uniqueness even if there is a misdesigned skin
-                QString item = pMark->getConfigKey().item;
+                QString item = context.selectString(child, "Control");
                 if (!controlItemSet.insert(item).second) {
                     qWarning() << "WaveformRenderMark::setup - redefinition of" << item;
                     uniqueMark = false;
@@ -59,19 +61,14 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     if (hasDefaultMark) {
         for (int i = 1; i <= NUM_HOT_CUES; ++i) {
             QString hotCueControlItem = "hotcue_" + QString::number(i) + "_position";
-            ControlObject* pHotcue = ControlObject::getControl(
-                    ConfigKey(group, hotCueControlItem));
-            if (pHotcue == NULL) {
+            WaveformMarkPointer pMark(new WaveformMark(group, defaultChild, context, signalColors, i, hotCueControlItem));
+            if (!pMark->isValid()) {
                 continue;
             }
 
             if (controlItemSet.insert(hotCueControlItem).second) {
                 //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
-                WaveformMarkPointer pMark(new WaveformMark(group, node, context, signalColors, i));
-                WaveformMarkProperties defaultProperties = m_pdefaultMark->getProperties();
-                defaultProperties.setHotCueNumber(i);
-                pMark->setProperties(defaultProperties);
-                pMark->changeKeyPosition(pHotcue);
+                pMark->setHotcueNumber(i);                
                 m_marks.push_back(pMark);
             }
         }

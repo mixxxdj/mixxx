@@ -9,9 +9,11 @@ WaveformMark::WaveformMark( const QString& group,
                             const QDomNode& node,
                             const SkinContext& context,
                             const WaveformSignalColors& signalColors,
-                            int hotCue)
+                            int hotCue,
+                            QString item)
     : m_iHotCue(hotCue) {
-    QString item = context.selectString(node, "Control");
+    if(item.isEmpty())
+        item = context.selectString(node, "Control");
     if (!item.isEmpty()) {
         m_pPointCos = std::make_unique<ControlProxy>(group, item);
     }
@@ -19,7 +21,7 @@ WaveformMark::WaveformMark( const QString& group,
 }
 
 
-void WaveformMark::connectSamplePositionChanged(const QObject *obj, const char *slt) {
+void WaveformMark::connectSamplePositionChanged(const QObject *obj, const char *slt) const {
     m_pPointCos->connectValueChanged(obj, slt, Qt::AutoConnection);
 }
 

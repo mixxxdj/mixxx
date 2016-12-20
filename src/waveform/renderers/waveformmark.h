@@ -22,7 +22,8 @@ class WaveformMark {
                                const QDomNode& node,
                                const SkinContext& context,
                                const WaveformSignalColors& signalColors,
-                               int hotCue = kDefaultHotCue);
+                               int hotCue = kDefaultHotCue, 
+                               QString item = "");
 
 
     // Disable copying
@@ -36,11 +37,9 @@ class WaveformMark {
     void setHotCue(int hotCue) { m_iHotCue = hotCue; };
 
     //The m_pPointCos related function
-    bool hasValidControlProxy() const{ return !(m_pPointCos == nullptr); }
-    ConfigKey getConfigKey(){ return m_pPointCos->getKey(); }
-    void changeKeyPosition(ControlObject *pObj) { m_pPointCos = std::make_unique<ControlProxy> (pObj->getKey()); }
-    void connectSamplePositionChanged(const QObject *, const char *);
-    double getSamplePosition(){ return m_pPointCos->get(); }
+    bool isValid() const { return m_pPointCos && m_pPointCos->valid(); }
+    void connectSamplePositionChanged(const QObject *, const char *) const;
+    double getSamplePosition() const { return m_pPointCos->get(); }
     
 
   private:
