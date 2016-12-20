@@ -315,6 +315,10 @@ script.spinback = function(channel, control, value, status, group) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.brake = function(channel, control, value, status, group, factor) {
+    // set default factor
+    if (!factor) {
+        factor = 1;
+    }
     // calculate current playback speed
     var currentRate = engine.getValue(group,"bpm") / engine.getValue(group,"file_bpm");
     // disable on note-off or zero value note/cc, use default decay rate '1', consider playback speed
