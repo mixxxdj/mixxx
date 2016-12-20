@@ -57,8 +57,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
             this, SLOT(slotEnableCO(double)));
 
     m_pStatusCO = new ControlObject(ConfigKey(BROADCAST_PREF_KEY, "status"));
-    m_pStatusCO->connectValueChangeRequest(
-            this, SLOT(slotStatusCO(double)));
+    m_pStatusCO->setReadOnly();
     m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
 
     setState(NETWORKSTREAMWORKER_STATE_INIT);
@@ -897,12 +896,6 @@ void EngineBroadcast::ignoreSigpipe() {
 }
 #endif
 
-void EngineBroadcast::slotStatusCO(double v) {
-    // Ignore external sets "status"
-    Q_UNUSED(v);
-    qWarning() << "WARNING:"
-            << BROADCAST_PREF_KEY << "\"status\" is a read-only control, ignoring";
-}
 
 void EngineBroadcast::slotEnableCO(double v) {
     if (v > 1.0) {

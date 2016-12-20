@@ -144,6 +144,9 @@ class ControlObject : public QObject {
     bool connectValueChangeRequest(const QObject* receiver,
                                    const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
+    // Installs a value-change request handler that ignores all sets.
+    void setReadOnly();
+
   signals:
     void valueChanged(double);
     void valueChangedFromEngine(double);
@@ -161,6 +164,7 @@ class ControlObject : public QObject {
 
   private slots:
     void privateValueChanged(double value, QObject* pSetter);
+    void readOnlyHandler(double v);
 
   private:
     void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,

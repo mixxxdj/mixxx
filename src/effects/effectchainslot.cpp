@@ -17,16 +17,13 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
             this, SLOT(slotControlClear(double)));
 
     m_pControlNumEffects = new ControlObject(ConfigKey(m_group, "num_effects"));
-    m_pControlNumEffects->connectValueChangeRequest(
-        this, SLOT(slotControlNumEffects(double)));
+    m_pControlNumEffects->setReadOnly();
 
     m_pControlNumEffectSlots = new ControlObject(ConfigKey(m_group, "num_effectslots"));
-    m_pControlNumEffectSlots->connectValueChangeRequest(
-        this, SLOT(slotControlNumEffectSlots(double)));
+    m_pControlNumEffectSlots->setReadOnly();
 
     m_pControlChainLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
-    m_pControlChainLoaded->connectValueChangeRequest(
-        this, SLOT(slotControlChainLoaded(double)));
+    m_pControlChainLoaded->setReadOnly();
 
     m_pControlChainEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlChainEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -306,27 +303,6 @@ void EffectChainSlot::slotControlClear(double v) {
     if (v > 0) {
         clear();
     }
-}
-
-void EffectChainSlot::slotControlNumEffects(double v) {
-    // Ignore sets to num_effects.
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotControlNumEffects" << v;
-    qWarning() << "WARNING: num_effects is a read-only control.";
-}
-
-void EffectChainSlot::slotControlNumEffectSlots(double v) {
-    // Ignore sets to num_effectslots.
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotControlNumEffectSlots" << v;
-    qWarning() << "WARNING: num_effectslots is a read-only control.";
-}
-
-void EffectChainSlot::slotControlChainLoaded(double v) {
-    // Ignore sets to loaded.
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotControlChainLoaded" << v;
-    qWarning() << "WARNING: loaded is a read-only control.";
 }
 
 void EffectChainSlot::slotControlChainEnabled(double v) {

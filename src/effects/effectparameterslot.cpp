@@ -31,11 +31,8 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
             this, SLOT(slotValueChanged(double)));
 
     // Read-only controls.
-    m_pControlType->connectValueChangeRequest(
-            this, SLOT(slotValueType(double)));
-    m_pControlLoaded->connectValueChangeRequest(
-            this, SLOT(slotLoaded(double)));
-
+    m_pControlType->setReadOnly();
+    m_pControlLoaded->setReadOnly();
 
     m_pSoftTakeover = new SoftTakeover();
 

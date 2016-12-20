@@ -15,24 +15,19 @@ EffectSlot::EffectSlot(const QString& group,
           m_iEffectNumber(iEffectnumber),
           m_group(group) {
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
-    m_pControlLoaded->connectValueChangeRequest(
-        this, SLOT(slotLoaded(double)));
+    m_pControlLoaded->setReadOnly();
 
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
-    m_pControlNumParameters->connectValueChangeRequest(
-        this, SLOT(slotNumParameters(double)));
+    m_pControlNumParameters->setReadOnly();
 
     m_pControlNumParameterSlots = new ControlObject(ConfigKey(m_group, "num_parameterslots"));
-    m_pControlNumParameterSlots->connectValueChangeRequest(
-        this, SLOT(slotNumParameterSlots(double)));
+    m_pControlNumParameterSlots->setReadOnly();
 
     m_pControlNumButtonParameters = new ControlObject(ConfigKey(m_group, "num_button_parameters"));
-    m_pControlNumButtonParameters->connectValueChangeRequest(
-        this, SLOT(slotNumParameters(double)));
+    m_pControlNumButtonParameters->setReadOnly();
 
     m_pControlNumButtonParameterSlots = new ControlObject(ConfigKey(m_group, "num_button_parameterslots"));
-    m_pControlNumButtonParameterSlots->connectValueChangeRequest(
-        this, SLOT(slotNumParameterSlots(double)));
+    m_pControlNumButtonParameterSlots->setReadOnly();
 
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -111,24 +106,6 @@ unsigned int EffectSlot::numParameterSlots() const {
 
 unsigned int EffectSlot::numButtonParameterSlots() const {
     return m_buttonParameters.size();
-}
-
-void EffectSlot::slotLoaded(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotLoaded" << v;
-    qWarning() << "WARNING: loaded is a read-only control.";
-}
-
-void EffectSlot::slotNumParameters(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotNumParameters" << v;
-    qWarning() << "WARNING: num_parameters is a read-only control.";
-}
-
-void EffectSlot::slotNumParameterSlots(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotNumParameterSlots" << v;
-    qWarning() << "WARNING: num_parameterslots is a read-only control.";
 }
 
 void EffectSlot::slotEnabled(double v) {

@@ -186,7 +186,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
             Qt::DirectConnection);
 
     m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"));
-    m_pTrackLoaded->connectValueChangeRequest(this, SLOT(slotTrackLoadedCO(double)));
+    m_pTrackLoaded->setReadOnly();
 
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
@@ -487,12 +487,6 @@ void EngineBuffer::slotTrackLoading() {
     // Set play here, to signal the user that the play command is adopted
     m_playButton->set((double)m_bPlayAfterLoading);
     m_pTrackSamples->set(0); // Stop renderer
-}
-
-void EngineBuffer::slotTrackLoadedCO(double v) {
-    Q_UNUSED(v);
-    qWarning() << "WARNING:" << m_group << "\"track_loaded\""
-               << "is a read-only control, ignoring.";
 }
 
 TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {

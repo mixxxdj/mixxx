@@ -23,10 +23,8 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
             this, SLOT(slotValueChanged(double)));
 
     // Read-only controls.
-    m_pControlType->connectValueChangeRequest(
-            this, SLOT(slotValueType(double)));
-    m_pControlLoaded->connectValueChangeRequest(
-            this, SLOT(slotLoaded(double)));
+    m_pControlType->setReadOnly();
+    m_pControlLoaded->setReadOnly();
 
     clear();
 }
