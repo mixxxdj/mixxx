@@ -1376,10 +1376,16 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
             pScratch2->slotSet(rate);
         }
 
-        // setup the filter using the default values of alpha and beta
+        // setup the filter with 'factor' affecting beta (default for alpha)
+        alphaBrake = 1.0/512;
+        // avoid decimals for fine adjusting
+        if (factor>1) {
+            factor = ((factor-1)/10)+1;
+        }
+        betaBrake = ((1.0/512)/1024)*factor; // default: (1.0/512)/1024
         AlphaBetaFilter* filter = m_scratchFilters[deck];
         if (filter != nullptr) {
-            filter->init(kAlphaBetaDt, rate);
+            filter->init(kAlphaBetaDt, rate, alphaBrake, betaBrake);
         }
 
         // activate the ramping in scratchProcess()
