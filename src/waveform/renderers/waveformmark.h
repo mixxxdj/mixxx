@@ -37,8 +37,7 @@ class WaveformMark {
     void setHotCue(int hotCue) { m_iHotCue = hotCue; };
 
     //The m_pPointCos related function
-    bool hasValidControlProxy() const{ return !(m_pPointCos == nullptr) && m_pPointCos->valid(); }
-    void changeKeyPosition(ControlObject *pObj) { m_pPointCos = std::make_unique<ControlProxy> (pObj->getKey()); }
+    bool isValid() const{ return !(m_pPointCos == nullptr) && m_pPointCos->valid(); }
     void connectSamplePositionChanged(const QObject *, const char *);
     double getSamplePosition(){ return m_pPointCos->get(); }
     

@@ -41,7 +41,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     for (int i = 0; i < m_marks.size(); i++) {
         WaveformMarkPointer mark = m_marks[i];
 
-        if (!mark->hasValidControlProxy())
+        if (!mark->isValid())
             continue;
 
         // Generate image on first paint can't be done in setup since we need

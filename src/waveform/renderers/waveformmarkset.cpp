@@ -37,7 +37,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             WaveformMarkPointer pMark(new WaveformMark(group, child, context, signalColors));
 
             bool uniqueMark = true;
-            if (pMark->hasValidControlProxy()) {
+            if (pMark->isValid()) {
                 // guarantee uniqueness even if there is a misdesigned skin
                 QString item = context.selectString(child, "Control");
                 if (!controlItemSet.insert(item).second) {
@@ -62,7 +62,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
         for (int i = 1; i <= NUM_HOT_CUES; ++i) {
             QString hotCueControlItem = "hotcue_" + QString::number(i) + "_position";
             WaveformMarkPointer pMark(new WaveformMark(group, defaultChild, context, signalColors, i, hotCueControlItem));
-            if (!pMark->hasValidControlProxy()) {
+            if (!pMark->isValid()) {
                 continue;
             }
 
