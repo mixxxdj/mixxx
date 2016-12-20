@@ -525,7 +525,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_bSlipEnabledProcessing = false;
     m_dSlipPosition = 0.;
     m_dSlipRate = 0;
-    m_pTrackLoaded->setAndConfirm(1);
+    m_pTrackLoaded->forceSet(1);
     // Reset the pitch value for the new track.
     m_pause.unlock();
 
@@ -555,7 +555,7 @@ void EngineBuffer::ejectTrack() {
     //qDebug() << "EngineBuffer::ejectTrack()";
     m_pause.lock();
     m_iTrackLoading = 0;
-    m_pTrackLoaded->setAndConfirm(0);
+    m_pTrackLoaded->forceSet(0);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;

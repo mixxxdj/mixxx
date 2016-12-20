@@ -82,7 +82,7 @@ EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
     EffectParameterSlotPointer pParameter = EffectParameterSlotPointer(
             new EffectParameterSlot(m_group, m_parameters.size()));
     m_parameters.append(pParameter);
-    m_pControlNumParameterSlots->setAndConfirm(
+    m_pControlNumParameterSlots->forceSet(
             m_pControlNumParameterSlots->get() + 1);
     return pParameter;
 }
@@ -91,7 +91,7 @@ EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
     EffectButtonParameterSlotPointer pParameter = EffectButtonParameterSlotPointer(
             new EffectButtonParameterSlot(m_group, m_buttonParameters.size()));
     m_buttonParameters.append(pParameter);
-    m_pControlNumButtonParameterSlots->setAndConfirm(
+    m_pControlNumButtonParameterSlots->forceSet(
             m_pControlNumButtonParameterSlots->get() + 1);
     return pParameter;
 }
@@ -142,9 +142,9 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
     //         << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
         m_pEffect = pEffect;
-        m_pControlLoaded->setAndConfirm(1.0);
-        m_pControlNumParameters->setAndConfirm(pEffect->numKnobParameters());
-        m_pControlNumButtonParameters->setAndConfirm(pEffect->numButtonParameters());
+        m_pControlLoaded->forceSet(1.0);
+        m_pControlNumParameters->forceSet(pEffect->numKnobParameters());
+        m_pControlNumButtonParameters->forceSet(pEffect->numButtonParameters());
 
         // Enabled is a persistent property of the effect slot, not of the
         // effect. Propagate the current setting to the effect.
@@ -182,9 +182,9 @@ void EffectSlot::clear() {
     if (m_pEffect) {
         m_pEffect->disconnect(this);
     }
-    m_pControlLoaded->setAndConfirm(0.0);
-    m_pControlNumParameters->setAndConfirm(0.0);
-    m_pControlNumButtonParameters->setAndConfirm(0.0);
+    m_pControlLoaded->forceSet(0.0);
+    m_pControlNumParameters->forceSet(0.0);
+    m_pControlNumButtonParameters->forceSet(0.0);
     foreach (EffectParameterSlotPointer pParameter, m_parameters) {
         pParameter->clear();
     }

@@ -78,9 +78,9 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->set(dValue);
             // TODO(rryan) expose this from EffectParameter
-            m_pControlType->setAndConfirm(static_cast<double>(type));
+            m_pControlType->forceSet(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
-            m_pControlLoaded->setAndConfirm(1.0);
+            m_pControlLoaded->forceSet(1.0);
 
             m_pControlLinkType->set(m_pEffectParameter->getDefaultLinkType());
             m_pControlLinkInverse->set(
@@ -100,10 +100,10 @@ void EffectParameterSlot::clear() {
         m_pEffectParameter = NULL;
     }
 
-    m_pControlLoaded->setAndConfirm(0.0);
+    m_pControlLoaded->forceSet(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
-    m_pControlType->setAndConfirm(0.0);
+    m_pControlType->forceSet(0.0);
     m_pControlLinkType->setAndConfirm(EffectManifestParameter::LINK_NONE);
     m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);

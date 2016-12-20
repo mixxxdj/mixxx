@@ -94,12 +94,20 @@ class ControlObject : public QObject {
             m_pControl->set(value, this);
         }
     }
+
     // Sets the ControlObject value and confirms it.
     inline void setAndConfirm(double value) {
         if (m_pControl) {
             m_pControl->setAndConfirm(value, this);
         }
     }
+
+    // Forces the control to 'value', regardless of whether it has a change
+    // request handler attached (identical to setAndConfirm).
+    inline void forceSet(double value) {
+        setAndConfirm(value);
+    }
+
     // Instantly sets the value of the ControlObject
     static void set(const ConfigKey& key, const double& value);
 

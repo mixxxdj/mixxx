@@ -71,9 +71,9 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlValue->setDefaultValue(dDefault);
             EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
             // TODO(rryan) expose this from EffectParameter
-            m_pControlType->setAndConfirm(static_cast<double>(type));
+            m_pControlType->forceSet(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
-            m_pControlLoaded->setAndConfirm(1.0);
+            m_pControlLoaded->forceSet(1.0);
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
                     this, SLOT(slotParameterValueChanged(double)));
@@ -90,10 +90,10 @@ void EffectButtonParameterSlot::clear() {
     }
 
     m_pEffect.clear();
-    m_pControlLoaded->setAndConfirm(0.0);
+    m_pControlLoaded->forceSet(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
-    m_pControlType->setAndConfirm(0.0);
+    m_pControlType->forceSet(0.0);
     emit(updated());
 }
 

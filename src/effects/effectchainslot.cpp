@@ -159,7 +159,7 @@ void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
             if (pSlot)
                 pSlot->loadEffect(pEffect);
         }
-        m_pControlNumEffects->setAndConfirm(math_min(
+        m_pControlNumEffects->forceSet(math_min(
             static_cast<unsigned int>(m_slots.size()),
             m_pEffectChain->numEffects()));
         if (shouldEmit) {
@@ -191,7 +191,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         connect(m_pEffectChain.data(), SIGNAL(channelStatusChanged(const QString&, bool)),
                 this, SLOT(slotChainChannelStatusChanged(const QString&, bool)));
 
-        m_pControlChainLoaded->setAndConfirm(true);
+        m_pControlChainLoaded->forceSet(true);
         m_pControlChainInsertionType->set(m_pEffectChain->insertionType());
 
         // Mix and enabled channels are persistent properties of the chain slot,
@@ -229,8 +229,8 @@ void EffectChainSlot::clear() {
         m_pEffectChain->disconnect(this);
         m_pEffectChain.clear();
     }
-    m_pControlNumEffects->setAndConfirm(0.0);
-    m_pControlChainLoaded->setAndConfirm(0.0);
+    m_pControlNumEffects->forceSet(0.0);
+    m_pControlChainLoaded->forceSet(0.0);
     m_pControlChainInsertionType->set(EffectChain::INSERT);
     emit(updated());
 }
@@ -257,7 +257,7 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
-    m_pControlNumEffectSlots->setAndConfirm(m_pControlNumEffectSlots->get() + 1);
+    m_pControlNumEffectSlots->forceSet(m_pControlNumEffectSlots->get() + 1);
     return pSlot;
 }
 

@@ -94,7 +94,7 @@ int EffectRack::numEffectChainSlots() const {
 
 void EffectRack::addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot) {
     m_effectChainSlots.append(pChainSlot);
-    m_controlNumEffectChainSlots.setAndConfirm(
+    m_controlNumEffectChainSlots.forceSet(
         m_controlNumEffectChainSlots.get() + 1);
 }
 
