@@ -19,7 +19,6 @@
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
-#include "util/duration.h"
 
 class MidiController : public Controller {
     Q_OBJECT
@@ -61,20 +60,12 @@ class MidiController : public Controller {
                                           unsigned char byte1, unsigned char byte2) = 0;
 
     // Alias for send()
+    // The length parameter is here for backwards compatibility for when scripts
+    // were required to specify it.
     Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length = 0) {
         Q_UNUSED(length);
         send(data);
     }
-
-    QString formatMidiMessage(const QString& controllerName,
-                              unsigned char status, unsigned char control,
-                              unsigned char value, unsigned char channel,
-                              unsigned char opCode,
-                              mixxx::Duration timestamp = mixxx::Duration::fromMillis(0));
-    QString formatSysexMessage(const QString& controllerName,
-                               const QByteArray& data,
-                               mixxx::Duration timestamp = mixxx::Duration::fromMillis(0));
-
 
   protected slots:
     virtual void receive(unsigned char status, unsigned char control,

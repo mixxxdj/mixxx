@@ -174,10 +174,10 @@ void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
     unsigned char data[3] = { status, byte1, byte2 };
 
     int bytesSent = m_pChannel->SendChannelBytes(data, 3);
-    controllerDebug(formatMidiMessage(getName(),
-                                      status, byte1, byte2,
-                                      MidiUtils::channelFromStatus(status),
-                                      MidiUtils::opCodeFromStatus(status)));
+    controllerDebug(MidiUtils::formatMidiMessage(getName(),
+                                                 status, byte1, byte2,
+                                                 MidiUtils::channelFromStatus(status),
+                                                 MidiUtils::opCodeFromStatus(status)));
 
     //if (bytesSent != 3) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of 3 bytes:" << message;
@@ -189,7 +189,7 @@ void Hss1394Controller::send(QByteArray data) {
     int bytesSent = m_pChannel->SendChannelBytes(
         (unsigned char*)data.constData(), data.size());
 
-    controllerDebug(formatSysexMessage(getName(), data));
+    controllerDebug(MidiUtils::formatSysexMessage(getName(), data));
     //if (bytesSent != length) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of" << length << "bytes (SysEx)";
     //    //m_pChannel->Flush();
