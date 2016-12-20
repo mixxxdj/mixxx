@@ -300,12 +300,12 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
     }
 }
 
-QPixmap Paintable::renderToPixmap(const QSize& size) {
-    QPixmap pixmap = QPixmap(size);
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
+QImage Paintable::renderToImage(const QSize& size) {
+    QImage image = QImage(size, QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+    QPainter painter(&image);
     draw(QRect(QPoint(0,0), size), &painter);
-    return pixmap;
+    return image;
 }
 
 // static

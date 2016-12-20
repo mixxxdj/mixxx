@@ -287,8 +287,8 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     p.setRenderHint(QPainter::SmoothPixmapTransform);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
-    if (!m_bgPixmap.isNull()) {
-        p.drawPixmap(rect(), m_bgPixmap);
+    if (!m_bgImage.isNull()) {
+        p.drawImage(rect(), m_bgImage);
     }
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
@@ -298,8 +298,8 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         p.drawPixmap(x, y, m_loadedCoverScaled);
     }
 
-    if (!m_maskPixmap.isNull()) {
-        p.drawPixmap(rect(), m_maskPixmap);
+    if (!m_maskImage.isNull()) {
+        p.drawImage(rect(), m_maskImage);
     }
 
 #ifdef __VINYLCONTROL__
@@ -317,7 +317,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     // and draw the image at the corner.
     p.translate(width() / 2, height() / 2);
 
-    bool paintGhost = m_bGhostPlayback && !m_ghostPixmap.isNull();
+    bool paintGhost = m_bGhostPlayback && !m_ghostImage.isNull();
     if (paintGhost) {
         p.save();
     }
@@ -332,19 +332,19 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
     }
 
-    if (!m_fgPixmap.isNull()) {
+    if (!m_fgImage.isNull()) {
         // Now rotate the image and draw it on the screen.
         p.rotate(m_fAngle);
-        p.drawPixmap(-(m_fgPixmap.width() / 2),
-                    -(m_fgPixmap.height() / 2), m_fgPixmap);
+        p.drawImage(-(m_fgImage.width() / 2),
+                    -(m_fgImage.height() / 2), m_fgImage);
     }
 
     if (paintGhost) {
         p.restore();
         p.save();
         p.rotate(m_fGhostAngle);
-        p.drawPixmap(-(m_ghostPixmap.width() / 2),
-                    -(m_ghostPixmap.height() / 2), m_ghostPixmap);
+        p.drawImage(-(m_ghostImage.width() / 2),
+                    -(m_ghostImage.height() / 2), m_ghostImage);
 
         //Rotate back to the playback position (not the ghost positon),
         //and draw the beat marks from there.
@@ -376,10 +376,10 @@ void WSpinny::resizeEvent(QResizeEvent* re) {
     // specify deck color in QSS
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
 
-    m_bgPixmap = m_pBgPaintable->renderToPixmap(size());
-    m_fgPixmap = m_pFgPaintable->renderToPixmap(size());
-    m_maskPixmap = m_pMaskPaintable->renderToPixmap(size());
-    m_ghostPixmap = m_pGhostPaintable->renderToPixmap(size());
+    m_bgImage = m_pBgPaintable->renderToImage(size());
+    m_fgImage = m_pFgPaintable->renderToImage(size());
+    m_maskImage = m_pMaskPaintable->renderToImage(size());
+    m_ghostImage = m_pGhostPaintable->renderToImage(size());
 }
 
 QSize WSpinny::sizeHint() const {
