@@ -185,7 +185,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
 
-    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), 0, 1);
+    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"));
     m_pTrackLoaded->connectValueChangeRequest(this, SLOT(slotTrackLoadedCO(double)));
 
     // Quantization Controller for enabling and disabling the
@@ -531,9 +531,9 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_bSlipEnabledProcessing = false;
     m_dSlipPosition = 0.;
     m_dSlipRate = 0;
+    m_pTrackLoaded->setAndConfirm(1);
     // Reset the pitch value for the new track.
     m_pause.unlock();
-    m_pTrackLoaded->setAndConfirm(1);
 
     // All EngineControls are connected directly
     emit(trackLoaded(pTrack, pOldTrack));
