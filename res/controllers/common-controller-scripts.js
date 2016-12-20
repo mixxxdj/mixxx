@@ -314,11 +314,11 @@ script.spinback = function(channel, control, value, status, group) {
    Input:   channel, control, value, status, group
    Output:  none
    -------- ------------------------------------------------------ */
-script.brake = function(channel, control, value, status, group) {
+script.brake = function(channel, control, value, status, group, factor) {
     // calculate current playback speed
     var currentRate = engine.getValue(group,"bpm") / engine.getValue(group,"file_bpm");
     // disable on note-off or zero value note/cc, use default decay rate '1', consider playback speed
-    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0), 1, currentRate);
+    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0), factor, currentRate);
 }
 
 // bpm - Used for tapping the desired BPM for a deck
