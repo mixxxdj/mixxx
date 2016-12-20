@@ -316,7 +316,7 @@ script.spinback = function(channel, control, value, status, group) {
    -------- ------------------------------------------------------ */
 script.brake = function(channel, control, value, status, group, factor) {
     // set default factor
-    if (!factor) {
+    if (factor === undefined) {
         factor = 1;
     }
     // calculate current playback speed
