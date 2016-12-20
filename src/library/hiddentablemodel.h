@@ -7,14 +7,15 @@ class HiddenTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     HiddenTableModel(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~HiddenTableModel();
+    ~HiddenTableModel() final;
 
     void setTableModel(int id = -1);
-    bool isColumnInternal(int column);
-    void purgeTracks(const QModelIndexList& indices);
-    void unhideTracks(const QModelIndexList& indices);
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    TrackModel::CapabilitiesFlags getCapabilities() const;
+
+    bool isColumnInternal(int column) final;
+    void purgeTracks(const QModelIndexList& indices) final;
+    void unhideTracks(const QModelIndexList& indices) final;
+    Qt::ItemFlags flags(const QModelIndex &index) const final;
+    CapabilitiesFlags getCapabilities() const final;
 };
 
 #endif

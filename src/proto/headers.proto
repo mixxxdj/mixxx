@@ -2,6 +2,8 @@
 // It is used in place of QHeaderView's built-in save and restore state functions
 // because those break across library schema changes.
 
+syntax = "proto2";
+
 package mixxx.library;
 
 option optimize_for = LITE_RUNTIME;

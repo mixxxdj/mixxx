@@ -314,7 +314,7 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
         // If we change or remove a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
-    if (!pNewTrack.isNull()) {
+    if (pNewTrack) {
         m_masterBpmAdjustFactor = kBpmUnity;
         if (getSyncMode() != SYNC_NONE) {
             // Because of the order signals get processed, the file/local_bpm COs and

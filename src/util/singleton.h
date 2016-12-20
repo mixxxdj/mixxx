@@ -32,8 +32,8 @@ class Singleton {
 
   private:
     // hide copy constructor and assign operator
-    Singleton(const Singleton&) {}
-    const Singleton& operator= (const Singleton&) {}
+    Singleton(const Singleton&) = delete;
+    const Singleton& operator= (const Singleton&) = delete;
 
     static T* m_instance;
 };

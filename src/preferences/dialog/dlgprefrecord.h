@@ -61,7 +61,6 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
-    ControlProxy* m_pRecordControl;
     bool m_bConfirmOverwrite;
     QString fileTypeExtension;
     QRadioButton* m_pRadioOgg;

@@ -15,35 +15,33 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection);
-    virtual ~BansheePlaylistModel();
+    ~BansheePlaylistModel() final;
 
     void setTableModel(int playlistId);
 
-    virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual QString getTrackLocation(const QModelIndex& index) const;
-    virtual bool isColumnInternal(int column);
+    TrackPointer getTrack(const QModelIndex& index) const final;
+    QString getTrackLocation(const QModelIndex& index) const final;
+    bool isColumnInternal(int column) final;
 
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
-    TrackModel::CapabilitiesFlags getCapabilities() const;
+    Qt::ItemFlags flags(const QModelIndex &index) const final;
+    CapabilitiesFlags getCapabilities() const final;
 
-    virtual bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
-
+    bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole) final;
 
   protected:
     // Use this if you want a model that is read-only.
-    virtual Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
+    Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const final;
     // Use this if you want a model that can be changed
-    virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
+    Qt::ItemFlags readWriteFlags(const QModelIndex &index) const final;
 
   private slots:
-    virtual void tracksChanged(QSet<TrackId> trackIds);
-    virtual void trackLoaded(QString group, TrackPointer pTrack);
+    void tracksChanged(QSet<TrackId> trackIds);
+    void trackLoaded(QString group, TrackPointer pTrack);
 
   private:
     QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
     QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
 
-    TrackCollection* m_pTrackCollection;
     BansheeDbConnection* m_pConnection;
     int m_playlistId;
 };
