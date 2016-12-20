@@ -186,6 +186,7 @@ class EngineBuffer : public EngineObject {
 
   private slots:
     void slotTrackLoading();
+    void slotTrackLoadedCO(double v);
     void slotTrackLoaded(TrackPointer pTrack,
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
@@ -332,7 +333,7 @@ class EngineBuffer : public EngineObject {
     ControlProxy* m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
-    ControlPushButton* m_pTrackLoaded;
+    ControlObject* m_pTrackLoaded;
 
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
