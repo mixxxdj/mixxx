@@ -39,7 +39,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             bool uniqueMark = true;
             if (pMark->hasValidControlProxy()) {
                 // guarantee uniqueness even if there is a misdesigned skin
-                QString item = pMark->getConfigKey().item;
+                QString item = context.selectString(child, "Control");
                 if (!controlItemSet.insert(item).second) {
                     qWarning() << "WaveformRenderMark::setup - redefinition of" << item;
                     uniqueMark = false;

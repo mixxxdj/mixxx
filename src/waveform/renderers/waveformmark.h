@@ -39,7 +39,6 @@ class WaveformMark {
     //The m_pPointCos related function
     bool hasValidControlProxy() const{ return !(m_pPointCos == nullptr) && m_pPointCos->valid(); }
     void changeKeyPosition(ControlObject *pObj) { m_pPointCos = std::make_unique<ControlProxy> (pObj->getKey()); }
-    ConfigKey getConfigKey(){ return m_pPointCos->getKey(); }
     void connectSamplePositionChanged(const QObject *, const char *);
     double getSamplePosition(){ return m_pPointCos->get(); }
     
