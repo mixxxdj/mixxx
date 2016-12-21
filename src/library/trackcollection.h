@@ -22,6 +22,7 @@
 #include <QList>
 #include <QSharedPointer>
 #include <QSqlDatabase>
+#include <QFileInfo>
 
 #include "preferences/usersettings.h"
 #include "library/basetrackcache.h"
@@ -99,6 +100,7 @@ class TrackCollection : public QObject {
 #endif // __SQLITE3__
 
   private:
+    enum permission{rwx, rwX, rWx, rWX, Rwx, RwX, RWx, RWX};
     UserSettingsPointer m_pConfig;
     QSqlDatabase m_db;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;
@@ -110,6 +112,7 @@ class TrackCollection : public QObject {
     LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
     bool settingsPathStatus();
+    unsigned int maskPermissions(QFileInfo &);
 };
 
 #endif // TRACKCOLLECTION_H

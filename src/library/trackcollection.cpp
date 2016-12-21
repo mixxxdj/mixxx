@@ -6,8 +6,6 @@
 #ifdef __SQLITE3__
 #include <sqlite3.h>
 #endif
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
@@ -519,65 +517,85 @@ StorageUnicodeFunctions::likeFunction(sqlite3_context *p,
 //Private function
 
 bool TrackCollection::settingsPathStatus(){
-    struct stat sb; //this struct will hold the access info of the dir using struct here as below it has function of same name
-    stat(m_pConfig->getSettingsPath().toStdString().c_str(), &sb);  //give the status, m_pConfig->getSettingsPath() will give the
-                                                                   //directory in QString which is conver. to C style string
-    int n = sb.st_mode; //This is the file access number and in octal form represents the file access its of form 40777
-    n = n % 512; //As we need last 3 digits in the octal form so moding it with 8^3
-    //Now in octal form, first digit will represent the owner permission and we only need it so 
-    n = n / 64;
+    QFileInfo fle(m_pConfig->getSettingsPath());
+    unsigned int n = maskPermissions(fle);
     switch(n)
     {
-        case 0:
+        case rwx:
             QMessageBox::critical(0, tr("Cannot Reach the path"),
-                                     tr("The Settings Path that you have provided "
-                                         "seems not to accessible, because "
-                                         "read, write and execute permissions to the path are not given\n"
+                                     tr("The Settings Path that you have "
+                                         "provided seems not to accessible, "
+                                         "because read, write and execute " 
+                                         "permissions to the path not given\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case 1:
+        case rwX:
             QMessageBox::critical(0, tr("Cannot read and write to the given Path"),
-                                     tr("The Settings Path that you have provided "
-                                         "does not have the permission to read and "
-                                         "write the files in it, so essential files "
-                                         "can't be read and log files can't be written\n"
+                                     tr("The Settings Path that you have "
+                                         "provided does not have the "
+                                         "permission to read and write the "
+                                         "files in it, so essential files "
+                                         "can't be read and log files can't "
+                                         "be written\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case 2:
+        case rWx:
             QMessageBox::critical(0, tr("Cannot read and access the directory"),
-                                     tr("The Settings Path that you have provided "
-                                         "does not have the permission to access in it, so can't process further.\n"
+                                     tr("The Settings Path that you have "
+                                         "provided does not have the "
+                                         "permission to access in it, so "
+                                         "can't process further.\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case 3:
+        case rWX:
             QMessageBox::critical(0, tr("Cannot read in the directory"),
-                                     tr("The Settings Path that you have provided "
-                                         "does not have the permission to read, so "
-                                         "can't read the necessary files in it\n"
+                                     tr("The Settings Path that you have "
+                                         "provided does not have the "
+                                         "permission to read, so can't read "
+                                         "the necessary files in it\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case 4:
+        case Rwx:
             QMessageBox::critical(0, tr("Cannot write and access the path"), 
-                                     tr("The Settings Path that you have provided "
-                                         "does not have the perimission to access the "
-                                         "files and write the log files in the path\n"
+                                     tr("The Settings Path that you have "
+                                         "provided does not have the "
+                                         "perimission to access the files and "
+                                         "write the log files in the path\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case 5:
+        case RwX:
             QMessageBox::critical(0, tr("Cannot write the files in this path"),
-                                     tr("The Settings Path that you have provided "
-                                         "does not have the permission to write the "
-                                         "log files in it\n"
+                                     tr("The Settings Path that you have "
+                                         "provided does not have the "
+                                         "permission to write the log files in it\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case 6:
+        case RWx:
             QMessageBox::critical(0, tr("Cannot access this path"),
-                                     tr("The Settings Path that you have provided\n"
-                                         "does not have the permission to access its \n"
+                                     tr("The Settings Path that you have "
+                                         "provided does not have the "
+                                         "permission to access its "
                                          "files, so unable to perform further\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
         default: return true;
     }
 }
+
+unsigned int TrackCollection::maskPermissions(QFileInfo &fl){
+    //maskPermissions function creates the integer n, which is bit masked,
+    //showing the permission status, it has 3 bits, 
+    //bit 1(from right): shows executable status
+    //bit 2(from right): shows writable status
+    //bit 3(from right): shows readable status
+    unsigned int n = 0;
+    if(fl.isExecutable()) 
+        n = n | 1;
+    if(fl.isWritable())
+        n = n | (1 << 1);
+    if(fl.isReadable())
+        n = n | (1 << 2);
+    return n;
+}
+
 #endif
