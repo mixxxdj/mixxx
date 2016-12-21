@@ -19,7 +19,6 @@
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
-#include "util/duration.h"
 
 class MidiController : public Controller {
     Q_OBJECT
@@ -57,11 +56,15 @@ class MidiController : public Controller {
                          unsigned char value);
 
   protected:
-    Q_INVOKABLE void sendShortMsg(
-            unsigned char status, unsigned char byte1, unsigned char byte2);
+    Q_INVOKABLE virtual void sendShortMsg(unsigned char status,
+                                          unsigned char byte1, unsigned char byte2) = 0;
+
     // Alias for send()
-    Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length) {
-        send(data, length);
+    // The length parameter is here for backwards compatibility for when scripts
+    // were required to specify it.
+    Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length = 0) {
+        Q_UNUSED(length);
+        send(data);
     }
 
   protected slots:
@@ -89,7 +92,6 @@ class MidiController : public Controller {
                              const QByteArray& data,
                              mixxx::Duration timestamp);
 
-    virtual void sendWord(unsigned int word) = 0;
     double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
     void createOutputHandlers();
     void updateAllOutputs();
