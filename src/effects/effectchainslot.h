@@ -105,8 +105,6 @@ class EffectChainSlot : public QObject {
     // Clears the effect in the given position in the loaded EffectChain.
     void slotClearEffect(unsigned int iEffectSlotNumber);
 
-    void slotEffectFocusChanged(unsigned int newSlotNumber);
-
     void slotControlClear(double v);
     void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
@@ -141,6 +139,18 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;
     ControlPushButton* m_pControlChainPrevPreset;
+
+    /**
+      These COs do not affect how the effects are processed;
+      they are defined here for skins and controller mappings to communicate
+      with each other. They cannot be defined in skins because they must be present
+      when both skins and mappings are loaded, otherwise the skin will
+      create a new CO with the same ConfigKey but actually be interacting with a different
+      object than the mapping.
+    **/
+    ControlPushButton* m_pControlChainShowFocus;
+    ControlPushButton*m_pControlChainShowParameters;
+    ControlObject* m_pControlChainFocusedEffect;
 
     struct ChannelInfo {
         // Takes ownership of pEnabled.

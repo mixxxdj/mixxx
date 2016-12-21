@@ -65,6 +65,22 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
 
     connect(&m_channelStatusMapper, SIGNAL(mapped(const QString&)),
             this, SLOT(slotChannelStatusChanged(const QString&)));
+
+    // ControlObjects for skin <-> controller mapping interaction.
+    // Refer to comment in header for full explanation.
+    m_pControlChainShowFocus = new ControlPushButton(
+                                   ConfigKey(m_group, "show_focus"),
+                                   true);
+    m_pControlChainShowFocus->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_pControlChainShowParameters = new ControlPushButton(
+                                        ConfigKey(m_group, "show_parameters"),
+                                        true);
+    m_pControlChainShowParameters->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_pControlChainFocusedEffect = new ControlObject(
+                                       ConfigKey(m_group, "focused_effect"),
+                                       true, false, true);
 }
 
 EffectChainSlot::~EffectChainSlot() {
@@ -289,14 +305,6 @@ void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotN
 void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {
     if (m_pEffectChain) {
         m_pEffectChain->removeEffect(iEffectSlotNumber);
-    }
-}
-
-void EffectChainSlot::slotEffectFocusChanged(unsigned int newSlotNumber) {
-    if (m_focusedEffectNumber != newSlotNumber) {
-        EffectSlotPointer previouslyFocusedEffect = m_slots[m_focusedEffectNumber];
-        previouslyFocusedEffect->setFocused(0.);
-        m_focusedEffectNumber = newSlotNumber;
     }
 }
 

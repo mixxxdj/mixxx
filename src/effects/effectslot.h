@@ -50,8 +50,6 @@ class EffectSlot : public QObject {
         return m_group;
     }
 
-    void setFocused(double focused);
-
   public slots:
     // Request that this EffectSlot load the given Effect
     void loadEffect(EffectPointer pEffect);
@@ -64,7 +62,6 @@ class EffectSlot : public QObject {
     void slotEffectSelector(double v);
     void slotEffectEnabledChanged(bool enabled);
     void slotEffectMetaParameter(double v);
-    void slotEffectFocused(double v);
 
   signals:
     // Indicates that the effect pEffect has been loaded into this
@@ -86,8 +83,6 @@ class EffectSlot : public QObject {
     // Signal that whoever is in charge of this EffectSlot should clear this
     // EffectSlot (by deleting the effect from the underlying chain).
     void clearEffect(unsigned int iEffectNumber);
-
-    void focusChanged(unsigned int effectSlotNumber);
 
     void updated();
 
@@ -112,7 +107,6 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlEffectSelector;
     ControlObject* m_pControlClear;
     ControlPotmeter* m_pControlMetaParameter;
-    ControlPushButton* m_pControlEffectFocused;
     QList<EffectParameterSlotPointer> m_parameters;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 

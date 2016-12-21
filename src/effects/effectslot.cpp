@@ -65,13 +65,6 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlMetaParameter->set(0.0);
     m_pControlMetaParameter->setDefaultValue(0.0);
 
-    // This CO does not affect how the effect is processed;
-    // it is for skins and controller mappings to change the controls they expose.
-    m_pControlEffectFocused = new ControlPushButton(ConfigKey(m_group, "focused"));
-    m_pControlEffectFocused->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pControlEffectFocused, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEffectFocused(double)));
-
     clear();
 }
 
@@ -227,16 +220,6 @@ void EffectSlot::slotEffectSelector(double v) {
         emit(nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
     } else if (v < 0) {
         emit(prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
-    }
-}
-
-void EffectSlot::setFocused(double focused) {
-    m_pControlEffectFocused->set(focused);
-}
-
-void EffectSlot::slotEffectFocused(double v) {
-    if (v > 0) {
-        emit(focusChanged(m_iEffectNumber));
     }
 }
 
