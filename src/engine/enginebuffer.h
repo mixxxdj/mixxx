@@ -186,7 +186,6 @@ class EngineBuffer : public EngineObject {
 
   private slots:
     void slotTrackLoading();
-    void slotTrackLoadedCO(double v);
     void slotTrackLoaded(TrackPointer pTrack,
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
