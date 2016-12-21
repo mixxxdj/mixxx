@@ -520,9 +520,16 @@ bool TrackCollection::settingsPathStatus(){
     QFileInfo fle(m_pConfig->getSettingsPath());
     QFile::Permissions permit = fle.permissions();
     permit = permit & MASK;
+    const short int NONE = QFile::NoOptions;
+    const short int EXE = QFile::ExeOwner;
+    const short int WRITE = QFile::WriteOwner;
+    const short int WRITE_EXE = QFile::WriteOwner | QFile::ExeOwner;
+    const short int READ = QFile::ReadOwner;
+    const short int READ_EXE = QFile::ReadOwner | QFile::ExeOwner;
+    const short int READ_WRITE = QFile::ReadOwner | QFile::WriteOwner;
     switch(permit)
     {
-        case QFile::NoOptions:
+        case NONE:
             QMessageBox::critical(0, tr("Cannot Reach the path"),
                                      tr("The Settings Path that you have "
                                          "provided seems not to accessible, "
@@ -530,7 +537,7 @@ bool TrackCollection::settingsPathStatus(){
                                          "permissions to the path not given\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case QFile::ExeOwner:
+        case EXE:
             QMessageBox::critical(0, tr("Cannot read and write to the given Path"),
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
@@ -540,7 +547,7 @@ bool TrackCollection::settingsPathStatus(){
                                          "be written\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case QFile::WriteOwner:
+        case WRITE:
             QMessageBox::critical(0, tr("Cannot read and access the directory"),
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
@@ -548,7 +555,7 @@ bool TrackCollection::settingsPathStatus(){
                                          "can't process further.\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case QFile::WriteOwner | QFile::ExeOwner:
+        case WRITE_EXE:
             QMessageBox::critical(0, tr("Cannot read in the directory"),
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
@@ -556,7 +563,7 @@ bool TrackCollection::settingsPathStatus(){
                                          "the necessary files in it\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case QFile::ReadOwner:
+        case READ:
             QMessageBox::critical(0, tr("Cannot write and access the path"), 
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
@@ -564,14 +571,14 @@ bool TrackCollection::settingsPathStatus(){
                                          "write the log files in the path\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case QFile::ReadOwner | QFile::ExeOwner:
+        case READ_EXE:
             QMessageBox::critical(0, tr("Cannot write the files in this path"),
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
                                          "permission to write the log files in it\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case QFile::ReadOwner | QFile::WriteOwner:
+        case READ_WRITE:
             QMessageBox::critical(0, tr("Cannot access this path"),
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
