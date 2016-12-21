@@ -109,6 +109,7 @@ class TrackCollection : public QObject {
     AnalysisDao m_analysisDao;
     LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
+    bool settingsPathStatus();
 };
 
 #endif // TRACKCOLLECTION_H
