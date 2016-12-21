@@ -100,7 +100,7 @@ class TrackCollection : public QObject {
 #endif // __SQLITE3__
 
   private:
-    enum permission{rwx, rwX, rWx, rWX, Rwx, RwX, RWx, RWX};
+    const static unsigned short int MASK = 0xF000;
     UserSettingsPointer m_pConfig;
     QSqlDatabase m_db;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;
@@ -112,7 +112,6 @@ class TrackCollection : public QObject {
     LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
     bool settingsPathStatus();
-    unsigned int maskPermissions(QFileInfo &);
 };
 
 #endif // TRACKCOLLECTION_H

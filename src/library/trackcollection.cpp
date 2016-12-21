@@ -518,10 +518,11 @@ StorageUnicodeFunctions::likeFunction(sqlite3_context *p,
 
 bool TrackCollection::settingsPathStatus(){
     QFileInfo fle(m_pConfig->getSettingsPath());
-    unsigned int n = maskPermissions(fle);
-    switch(n)
+    QFile::Permissions permit = fle.permissions();
+    permit = permit & MASK;
+    switch(permit)
     {
-        case rwx:
+        case QFile::NoOptions:
             QMessageBox::critical(0, tr("Cannot Reach the path"),
                                      tr("The Settings Path that you have "
                                          "provided seems not to accessible, "
@@ -529,7 +530,7 @@ bool TrackCollection::settingsPathStatus(){
                                          "permissions to the path not given\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case rwX:
+        case QFile::ExeOwner:
             QMessageBox::critical(0, tr("Cannot read and write to the given Path"),
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
@@ -539,7 +540,7 @@ bool TrackCollection::settingsPathStatus(){
                                          "be written\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case rWx:
+        case QFile::WriteOwner:
             QMessageBox::critical(0, tr("Cannot read and access the directory"),
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
@@ -547,7 +548,7 @@ bool TrackCollection::settingsPathStatus(){
                                          "can't process further.\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case rWX:
+        case QFile::WriteOwner | QFile::ExeOwner:
             QMessageBox::critical(0, tr("Cannot read in the directory"),
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
@@ -555,7 +556,7 @@ bool TrackCollection::settingsPathStatus(){
                                          "the necessary files in it\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case Rwx:
+        case QFile::ReadOwner:
             QMessageBox::critical(0, tr("Cannot write and access the path"), 
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
@@ -563,14 +564,14 @@ bool TrackCollection::settingsPathStatus(){
                                          "write the log files in the path\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case RwX:
+        case QFile::ReadOwner | QFile::ExeOwner:
             QMessageBox::critical(0, tr("Cannot write the files in this path"),
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
                                          "permission to write the log files in it\n"
                                          "Click OK to exit."), QMessageBox::Ok);
                                 return false;
-        case RWx:
+        case QFile::ReadOwner | QFile::WriteOwner:
             QMessageBox::critical(0, tr("Cannot access this path"),
                                      tr("The Settings Path that you have "
                                          "provided does not have the "
@@ -580,22 +581,6 @@ bool TrackCollection::settingsPathStatus(){
                                 return false;
         default: return true;
     }
-}
-
-unsigned int TrackCollection::maskPermissions(QFileInfo &fl){
-    //maskPermissions function creates the integer n, which is bit masked,
-    //showing the permission status, it has 3 bits, 
-    //bit 1(from right): shows executable status
-    //bit 2(from right): shows writable status
-    //bit 3(from right): shows readable status
-    unsigned int n = 0;
-    if(fl.isExecutable()) 
-        n = n | 1;
-    if(fl.isWritable())
-        n = n | (1 << 1);
-    if(fl.isReadable())
-        n = n | (1 << 2);
-    return n;
 }
 
 #endif
