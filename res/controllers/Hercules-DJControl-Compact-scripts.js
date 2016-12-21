@@ -6,6 +6,8 @@ HercDJCompact = function() {
 };
 
 HercDJCompact.init = function(id) {
+    engine.setValue("[Master]", "num_samplers", 8);
+
     scratch = false;
     scratch_timer = [];
     scratch_timer_on = [];
