@@ -1330,7 +1330,7 @@ void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString 
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional),
-             delay (optional), rate (optional)
+             rate (optional)
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::spinback(int deck, bool activate, double factor, double rate) {
@@ -1341,7 +1341,7 @@ void ControllerEngine::spinback(int deck, bool activate, double factor, double r
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables brake/spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional),
-             delay (optional), rate (optional)
+             rate (optional)
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::brake(int deck, bool activate, double factor, double rate) {
