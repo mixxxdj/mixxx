@@ -92,7 +92,7 @@ class ControlValueAtomicBase {
             index = (unsigned int)m_writeIndex.fetchAndAddAcquire(1)
                     % (cRingSize);
             // This will be repeated if the value is locked
-            // 1) by an other writer writing at the same time or
+            // 1) by another writer writing at the same time or
             // 2) a delayed reader is still blocking the formerly current value
             // In both cases writing to the next value will fix it.
         } while (!m_ring[index].trySet(value));

@@ -22,55 +22,55 @@ EffectManifest EchoEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Simple Echo with pingpong"));
 
-    EffectManifestParameter* time = manifest.addParameter();
-    time->setId("send_amount");
-    time->setName(QObject::tr("Send"));
-    time->setDescription(
+    EffectManifestParameter* send = manifest.addParameter();
+    send->setId("send_amount");
+    send->setName(QObject::tr("Send"));
+    send->setDescription(
             QObject::tr("How much of the signal to send into the delay buffer"));
-    time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    time->setMinimum(0.0);
-    time->setDefault(1.0);
-    time->setMaximum(1.0);
+    send->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    send->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    send->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    send->setMinimum(0.0);
+    send->setDefault(1.0);
+    send->setMaximum(1.0);
 
-    time = manifest.addParameter();
-    time->setId("delay_time");
-    time->setName(QObject::tr("Delay"));
-    time->setDescription(QObject::tr("Delay time (seconds)"));
-    time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    time->setUnitsHint(EffectManifestParameter::UNITS_TIME);
-    time->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
-    time->setMinimum(0.1);
-    time->setDefault(0.25);
-    time->setMaximum(2.0);
+    EffectManifestParameter* delay = manifest.addParameter();
+    delay->setId("delay_time");
+    delay->setName(QObject::tr("Delay"));
+    delay->setDescription(QObject::tr("Delay time (seconds)"));
+    delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    delay->setUnitsHint(EffectManifestParameter::UNITS_TIME);
+    delay->setMinimum(0.1);
+    delay->setDefault(0.5);
+    delay->setMaximum(2.0);
 
-    time = manifest.addParameter();
-    time->setId("feedback_amount");
-    time->setName(QObject::tr("Feedback"));
-    time->setDescription(
+    EffectManifestParameter* feedback = manifest.addParameter();
+    feedback->setId("feedback_amount");
+    feedback->setName(QObject::tr("Feedback"));
+    feedback->setDescription(
             QObject::tr("Amount the echo fades each time it loops"));
-    time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    time->setMinimum(0.00);
-    time->setDefault(0.40);
-    time->setMaximum(1.0);
+    feedback->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
+    feedback->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    feedback->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    feedback->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    feedback->setMinimum(0.00);
+    feedback->setDefault(0.40);
+    feedback->setMaximum(1.0);
 
-    time = manifest.addParameter();
-    time->setId("pingpong_amount");
-    time->setName(QObject::tr("PingPong"));
-    time->setDescription(
+    EffectManifestParameter* pingpong = manifest.addParameter();
+    pingpong->setId("pingpong_amount");
+    pingpong->setName(QObject::tr("PingPong"));
+    pingpong->setDescription(
             QObject::tr("As the ping-pong amount increases, increasing amounts "
                         "of the echoed signal is bounced between the left and "
                         "right speakers."));
-    time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    time->setMinimum(0.0);
-    time->setDefault(0.0);
-    time->setMaximum(1.0);
+    pingpong->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    pingpong->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    pingpong->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    pingpong->setMinimum(0.0);
+    pingpong->setDefault(0.0);
+    pingpong->setMaximum(1.0);
 
     return manifest;
 }

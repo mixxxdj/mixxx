@@ -4,6 +4,7 @@
 #include <QMutexLocker>
 #include <QStringBuilder>
 
+#include "engine/enginebuffer.h"
 #include "engine/cuecontrol.h"
 
 #include "control/controlobject.h"
@@ -705,13 +706,13 @@ void CueControl::cuePreview(double v)
 
 void CueControl::cueCDJ(double v) {
     // This is how Pioneer cue buttons work:
-    // If pressed while playing, stop playback and go to cue.
+    // If pressed while freely playing (i.e. playing and platter NOT being touched), stop playback and go to cue.
+    // If pressed while NOT freely playing (i.e. stopped or playing but platter IS being touched), set new cue point.
     // If pressed while stopped and at cue, play while pressed.
-    // If pressed while stopped and not at cue, set new cue point.
     // If play is pressed while holding cue, the deck is now playing. (Handled in playFromCuePreview().)
 
     QMutexLocker lock(&m_mutex);
-    bool playing = m_pPlay->toBool();
+    const auto freely_playing = m_pPlay->toBool() && !getEngineBuffer()->getScratching();
 
     if (v) {
         if (m_iCurrentlyPreviewingHotcues) {
@@ -720,7 +721,7 @@ void CueControl::cueCDJ(double v) {
             m_bPreviewing = true;
             lock.unlock();
             seekAbs(m_pCuePoint->get());
-        } else if (playing || atEndPosition()) {
+        } else if (freely_playing || atEndPosition()) {
             // Jump to cue when playing or when at end position
 
             // Just in case.
@@ -740,6 +741,7 @@ void CueControl::cueCDJ(double v) {
             cueSet(v);
             // Just in case.
             m_bPreviewing = false;
+            m_pPlay->set(0.0);
 
             // If quantize is enabled, jump to the cue point since it's not
             // necessarily where we currently are
@@ -762,7 +764,7 @@ void CueControl::cueCDJ(double v) {
     }
     // indicator may flash because the delayed adoption of seekAbs
     // Correct the Indicator set via play
-    if (m_pLoadedTrack && !playing) {
+    if (m_pLoadedTrack && !freely_playing) {
         m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
     } else {
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
@@ -814,17 +816,17 @@ void CueControl::cueDenon(double v) {
 
 void CueControl::cuePlay(double v) {
     // This is how CUP button works:
-    // If playing, press to go to cue and stop.
-    // If stopped, press to set as cue point.
+    // If freely playing (i.e. playing and platter NOT being touched), press to go to cue and stop.
+    // If not freely playing (i.e. stopped or platter IS being touched), press to go to cue and stop.
     // On release, start playing from cue point.
 
 
     QMutexLocker lock(&m_mutex);
-    bool playing = (m_pPlay->toBool());
+    const auto freely_playing = m_pPlay->toBool() && !getEngineBuffer()->getScratching();
 
     // pressed
     if (v) {
-        if (playing) {
+        if (freely_playing) {
             m_bPreviewing = false;
             m_pPlay->set(0.0);
 
@@ -837,6 +839,7 @@ void CueControl::cuePlay(double v) {
             cueSet(v);
             // Just in case.
             m_bPreviewing = false;
+            m_pPlay->set(0.0);
             // If quantize is enabled, jump to the cue point since it's not
             // necessarily where we currently are
             if (m_pQuantizeEnabled->get() > 0.0) {
@@ -999,8 +1002,8 @@ void CueControl::updateIndicators() {
         // Here we have CUE_MODE_PIONEER or CUE_MODE_MIXXX
         // default to Pioneer mode
         if (!m_bPreviewing) {
-            bool playing = m_pPlay->toBool();
-            if (!playing) {
+            const auto freely_playing = m_pPlay->toBool() && !getEngineBuffer()->getScratching();
+            if (!freely_playing) {
                 if (!isTrackAtCue()) {
                     if (!atEndPosition()) {
                         if (cueMode == CUE_MODE_MIXXX) {
@@ -1020,6 +1023,9 @@ void CueControl::updateIndicators() {
                     // Next Press is preview
                     m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
                 }
+            } else {
+                // Cue indicator should be off when freely playing
+                m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
             }
         }
     }
