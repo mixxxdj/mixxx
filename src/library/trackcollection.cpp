@@ -8,7 +8,7 @@
 #endif
 
 #include <QTemporaryFile>
-#include <QTextStream>
+#include <QFileInfo>
 
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
@@ -519,107 +519,30 @@ StorageUnicodeFunctions::likeFunction(sqlite3_context *p,
 */
 //Private function
 
-bool TrackCollection::settingsPathStatus(){
-    const static unsigned short int MASK = 0xF000;
-    QFileInfo fle(m_pConfig->getSettingsPath());
-    QFile::Permissions permit = fle.permissions();
+bool TrackCollection::settingsPathStatus()
+{
     QString path = m_pConfig->getSettingsPath();
-    permit = permit & MASK;
-    const short int kNone = QFile::NoOptions;
-    const short int kExe = QFile::ExeOwner;
-    const short int kWrite = QFile::WriteOwner;
-    const short int kWrite_Exe = QFile::WriteOwner | QFile::ExeOwner;
-    const short int kRead = QFile::ReadOwner;
-    const short int kRead_Exe = QFile::ReadOwner | QFile::ExeOwner;
-    const short int kRead_Write = QFile::ReadOwner | QFile::WriteOwner;
-    if(permit == kNone){
-            QMessageBox::critical(0, tr("Cannot Reach the path"),
-                                     tr("The Settings Path:%1 , that is "
-                                         "provided seems not to accessible, "
-                                         "because read, write and execute " 
-                                         "permissions to the path not given\n"
-                                         "Click OK to exit.").arg(path), QMessageBox::Ok);
-                                return false;
-    }
-    else if(permit == kExe){
-            QMessageBox::critical(0, tr("Cannot read and write to the given Path"),
-                                     tr("The Settings Path: %1 that is "
-                                         "provided does not have the "
-                                         "permission to read and write the "
-                                         "files in it, so essential files "
-                                         "can't be read and log files can't "
-                                         "be written\n"
-                                         "Click OK to exit.").arg(path), QMessageBox::Ok);
-                                return false;
-    }
-    else if(permit == kWrite){
-            QMessageBox::critical(0, tr("Cannot read and access the directory"),
-                                     tr("The Settings Path:%1 that is "
-                                         "provided does not have the "
-                                         "permission to access in it, so "
-                                         "can't process further.\n"
-                                         "Click OK to exit.").arg(path), QMessageBox::Ok);
-                                return false;
-    }
-    else if(permit == kWrite_Exe){
-            QMessageBox::critical(0, tr("Cannot read in the directory"),
-                                     tr("The Settings Path: %1 that is "
-                                         "provided does not have the "
-                                         "permission to read, so can't read "
-                                         "the necessary files in it\n"
-                                         "Click OK to exit.").arg(path), QMessageBox::Ok);
-                                return false;
-    }
-    else if(permit == kRead)
-    {
-            QMessageBox::critical(0, tr("Cannot write and access the path"), 
-                                     tr("The Settings Path: %1 that is "
-                                         "provided does not have the "
-                                         "perimission to access the files and "
-                                         "write the log files in the path\n"
-                                         "Click OK to exit.").arg(path), QMessageBox::Ok);
-                                return false;
-    }
-    else if(permit == kRead_Exe)
-    {
-            QMessageBox::critical(0, tr("Cannot write the files in this path"),
-                                     tr("The Settings Path: %1 that is "
-                                         "provided does not have the "
-                                         "permission to write the log files in it\n"
-                                         "Click OK to exit.").arg(path), QMessageBox::Ok);
-                                return false;
-    }
-    else if(permit == kRead_Write){
-            QMessageBox::critical(0, tr("Cannot access this path"),
-                                     tr("The Settings Path: %1 that is "
-                                         "provided does not have the "
-                                         "permission to access its "
-                                         "files, so unable to perform further\n"
-                                         "Click OK to exit.").arg(path), QMessageBox::Ok);
-                                return false;
+    //info is neccessary as, only making of file doesn't tell about readablilty
+    QFileInfo info(path); 
+    bool status = true;
+    QTemporaryFile fle(path + "/temp_file");
+    if(fle.open()) {
+        fle.close();
     }
     else
-        return true;
+        status = false;
+    if(!info.isReadable())
+        status = false;
+    if(status == false) {
+        QMessageBox::critical(0, tr("Cannot access this path"),
+                                 tr("The Settings Path: %1 that is "
+                                     "provided does not have the "
+                                     "proper permission to access its "
+                                     "files, so unable to perform further\n"
+                                     "Click OK to exit.").arg(path), QMessageBox::Ok);
+    }
+    
+    return status;
 }
-
-//bool TrackCollection::settingsPathStatus()
-//{
-    //QString path = m_pConfig->getSettingsPath();
-    //QFileInfo info(path);
-    //path = path + "/temp_file";
-    //qDebug() << "Poseidon: Hello path " << path;
-    //QTemporaryFile fle(path);
-    //if(fle.open()) {
-        //qDebug() << "Poseidon: " << fle.fileName();
-        //qDebug() << "Poseidon: " << "File Was Opened successfully";
-        //fle.close();
-    //}
-    //else
-        //qDebug() << "Poseidon: " << "not opened";
-    //QFile fil(fle.fileName());
-    //if(!info.isReadable())
-        //qDebug() << "Poseidon: Not readable";
-    //return true;
-//}
 
 #endif

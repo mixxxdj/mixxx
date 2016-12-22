@@ -22,7 +22,6 @@
 #include <QList>
 #include <QSharedPointer>
 #include <QSqlDatabase>
-#include <QFileInfo>
 
 #include "preferences/usersettings.h"
 #include "library/basetrackcache.h"
