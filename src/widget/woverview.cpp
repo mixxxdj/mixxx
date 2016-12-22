@@ -96,8 +96,6 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     for (int i = 0; i < m_marks.size(); ++i) {
         const WaveformMarkPointer& mark = m_marks[i];
         if (mark->isValid()) {
-            //mark->m_pPointCos->connectValueChanged(this,
-                    //SLOT(onMarkChanged(double)));
             mark->connectSamplePositionChanged(this,
                     SLOT(onMarkChanged(double)));
         }

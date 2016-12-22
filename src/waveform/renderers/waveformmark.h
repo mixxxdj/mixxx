@@ -37,9 +37,9 @@ class WaveformMark {
     void setHotCue(int hotCue) { m_iHotCue = hotCue; };
 
     //The m_pPointCos related function
-    bool isValid() const{ return !(m_pPointCos == nullptr) && m_pPointCos->valid(); }
-    void connectSamplePositionChanged(const QObject *, const char *);
-    double getSamplePosition(){ return m_pPointCos->get(); }
+    bool isValid() const { return m_pPointCos && m_pPointCos->valid(); }
+    void connectSamplePositionChanged(const QObject *, const char *) const;
+    double getSamplePosition() const { return m_pPointCos->get(); }
     
 
   private:

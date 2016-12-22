@@ -21,7 +21,7 @@ WaveformMark::WaveformMark( const QString& group,
 }
 
 
-void WaveformMark::connectSamplePositionChanged(const QObject *obj, const char *slt) {
+void WaveformMark::connectSamplePositionChanged(const QObject *obj, const char *slt) const {
     m_pPointCos->connectValueChanged(obj, slt, Qt::AutoConnection);
 }
 
