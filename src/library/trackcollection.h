@@ -100,7 +100,6 @@ class TrackCollection : public QObject {
 #endif // __SQLITE3__
 
   private:
-    const static unsigned short int MASK = 0xF000;
     UserSettingsPointer m_pConfig;
     QSqlDatabase m_db;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;
