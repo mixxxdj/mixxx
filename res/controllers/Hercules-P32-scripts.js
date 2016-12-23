@@ -183,6 +183,9 @@ Control.prototype = {
     setValue: function (value) {
         engine.setValue(this.group, this.inCo, value);
     },
+    setParameter: function (value) {
+        engine.setParameter(this.group, this.inCo, value);
+    },
     // outCo value generally shouldn't be set directly,
     // only by the output() callback when its value changes,
     // or by calling trigger()
@@ -192,6 +195,12 @@ Control.prototype = {
     },
     getValueOut: function () {
         return engine.getValue(this.group, this.outCo);
+    },
+    getParameterIn: function () {
+        return engine.getParameter(this.group, this.inCo);
+    },
+    getParameterOut: function () {
+        return engine.getParameter(this.group, this.outCo);
     },
     toggle: function () {
         this.setValue( ! this.getValueIn());
@@ -219,7 +228,7 @@ Control.prototype = {
     shiftChannel: false,
     shiftControl: false,
     send: function (value) {
-        if (this.midi === undefined) {
+        if (this.midi === undefined || this.midi[0] === undefined || this.midi[1] === undefined) {
             return;
         }
         midi.sendShortMsg(this.midi[0], this.midi[1], value);
@@ -511,7 +520,6 @@ var ControlContainer = function (initialLayer) {
     }
 };
 ControlContainer.prototype = {
-    forEachControl: function (operation, recursive) {
     /**
     operation, function that takes 1 argument:
     the function to call for each Control. Takes each Control as its first argument.
@@ -520,6 +528,7 @@ ControlContainer.prototype = {
     whether to call forEachControl recursively for each ControlContainer within this
     ControlContainer. Defaults to true if ommitted.
     **/
+    forEachControl: function (operation, recursive) {
         if (typeof operation !== 'function') {
             print('ERROR: ControlContainer.forEachContainer requires a function argument');
             return;
@@ -545,12 +554,12 @@ ControlContainer.prototype = {
             }
         }
     },
-    reconnectControls: function (operation, recursive) {
     /**
     Disconnect and reconnect output callbacks for each Control. Optionally perform an operation
     on each Control between disconnecting and reconnecting the output callbacks. Arguments are
     the same as forEachControl().
     **/
+    reconnectControls: function (operation, recursive) {
         this.forEachControl(function (control) {
             control.disconnect();
             if (typeof operation === 'function') {
@@ -579,7 +588,6 @@ ControlContainer.prototype = {
         this.isShifted = false;
     },
     isShifted: false,
-    applyLayer: function (newLayer, reconnectControls) {
     /**
     Activate a new layer of functionality. Layers are merely objects with properties to overwrite
     the of the Controls within this ControlContainer. Layers objects are deeply merged. If a new
@@ -599,6 +607,7 @@ ControlContainer.prototype = {
     callbacks are connected. To avoid this behavior, which would be desirable if you are not
     changing any output functionality, pass false as the second argument to applyLayer().
     **/
+    applyLayer: function (newLayer, reconnectControls) {
         if (reconnectControls !== false) {
             reconnectControls = true;
         }
