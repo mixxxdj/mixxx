@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+#include <QFileInfo>
+#include <QTemporaryFile>
+
 #include "util/cmdlineargs.h"
 #include "util/version.h"
 
@@ -132,4 +135,24 @@ void CmdlineArgs::printUsage() {
 -h, --help              Display this help message and exit", stdout);
 
     fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
+}
+
+bool CmdlineArgs::getSettingsPathStatus() const {
+
+    QString path = getSettingsPath();
+    //info is neccessary as, only making of file doesn't tell about readablilty
+    QFileInfo info(path); 
+    bool status = true;
+    QTemporaryFile fle(path + "/temp_file");
+    if(fle.open()) {
+        fle.close();
+    }
+    else {
+        status = false;
+    }
+    if(!info.isReadable()) {
+        status = false;
+    }
+
+    return status;
 }

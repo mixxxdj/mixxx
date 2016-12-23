@@ -7,9 +7,6 @@
 #include <sqlite3.h>
 #endif
 
-#include <QTemporaryFile>
-#include <QFileInfo>
-
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
 #include "track/track.h"
@@ -38,9 +35,6 @@ TrackCollection::TrackCollection(UserSettingsPointer pConfig)
     m_db.setPassword("mixxx");
     bool ok = m_db.open();
     qDebug() << "DB status:" << m_db.databaseName() << "=" << ok;
-    if(!settingsPathStatus()){
-        exit(-1);
-    }
     
     if (m_db.lastError().isValid()) {
         qDebug() << "Error loading database:" << m_db.lastError();
@@ -519,30 +513,5 @@ StorageUnicodeFunctions::likeFunction(sqlite3_context *p,
 */
 //Private function
 
-bool TrackCollection::settingsPathStatus()
-{
-    QString path = m_pConfig->getSettingsPath();
-    //info is neccessary as, only making of file doesn't tell about readablilty
-    QFileInfo info(path); 
-    bool status = true;
-    QTemporaryFile fle(path + "/temp_file");
-    if(fle.open()) {
-        fle.close();
-    }
-    else
-        status = false;
-    if(!info.isReadable())
-        status = false;
-    if(status == false) {
-        QMessageBox::critical(0, tr("Cannot access this path"),
-                                 tr("The Settings Path: %1 that is "
-                                     "provided does not have the "
-                                     "proper permission to access its "
-                                     "files, so unable to perform further\n"
-                                     "Click OK to exit.").arg(path), QMessageBox::Ok);
-    }
-    
-    return status;
-}
 
 #endif

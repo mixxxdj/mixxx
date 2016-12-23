@@ -23,6 +23,7 @@ class CmdlineArgs final {
     bool getDeveloper() const { return m_developer; }
     bool getSafeMode() const { return m_safeMode; }
     bool getSettingsPathSet() const { return m_settingsPathSet; }
+    bool getSettingsPathStatus() const;
     int getDebugLevel() const { return m_debugLevel; }
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
     const QString& getLocale() const { return m_locale; }
