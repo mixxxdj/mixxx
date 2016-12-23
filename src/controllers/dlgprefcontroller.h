@@ -103,6 +103,7 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerOutputMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
     bool m_bDirty;
+    static bool presetInfoLessThan(const PresetInfo &, const PresetInfo &);
 };
 
 #endif /*DLGPREFCONTROLLER_H*/

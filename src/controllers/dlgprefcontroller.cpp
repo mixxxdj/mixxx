@@ -248,7 +248,6 @@ void DlgPrefController::enumeratePresets() {
     // user has their controller plugged in)
     m_ui.comboBoxPreset->addItem("...");
 
-    m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
     // Ask the controller manager for a list of applicable presets
     QSharedPointer<PresetInfoEnumerator> pie =
             m_pControllerManager->getMainThreadPresetEnumerator();
@@ -259,8 +258,10 @@ void DlgPrefController::enumeratePresets() {
         return;
     }
 
-    const QList<PresetInfo> presets = pie->getPresetsByExtension(
+    //Making the list of presets in the alphabetical order
+    QList<PresetInfo> presets = pie->getPresetsByExtension(
         m_pController->presetExtension());
+    qSort(presets.begin(), presets.end(), DlgPrefController::presetInfoLessThan);
 
     PresetInfo match;
     for (const PresetInfo& preset : presets) {
@@ -748,4 +749,12 @@ void DlgPrefController::openScript() {
             QDesktopServices::openUrl(QUrl::fromLocalFile(scriptPath));
         }
     }
+}
+
+
+bool DlgPrefController::presetInfoLessThan(const PresetInfo &a, const PresetInfo &b) {
+    //the compartion function for PresetInfo objects
+    //this function is used to sort the list of 
+    //presets in the combo box
+    return nameForPreset(a) < nameForPreset(b);
 }
