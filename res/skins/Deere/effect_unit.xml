@@ -3,7 +3,8 @@
   Description:
     An effect chain widget.
   Variables:
-    group: The group for the controls.
+    EffectRack: number of the effect rack (1)
+    EffectUnit: number of this effect unit
 -->
 <Template>
   <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
@@ -12,7 +13,7 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <MinimumSize>-1,50</MinimumSize>
-    <MaximumSize>-1,166</MaximumSize>
+    <MaximumSize>-1,185</MaximumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitGroupControls</ObjectName>
@@ -26,7 +27,7 @@
             <Children>
               <Template src="skin:hide_show_button.xml">
                 <SetVariable name="object_name">EffectUnitToggle</SetVariable>
-                <SetVariable name="control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],expanded</SetVariable>
+                <SetVariable name="control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</SetVariable>
               </Template>
 
               <Template src="skin:left_2state_button.xml">
@@ -44,41 +45,6 @@
                 <SetVariable name="left_connection_control"><Variable name="group"/>,enabled</SetVariable>
               </Template>
 
-              <!--<Template src="skin:left_1state_button.xml">
-                <SetVariable name="TooltipId">EffectUnit_clear</SetVariable>
-                <SetVariable name="ObjectName"></SetVariable>
-                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text"></SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,clear</SetVariable>
-              </Template>
-
-              <Template src="skin:left_1state_button.xml">
-                <SetVariable name="TooltipId">EffectUnit_prev_chain</SetVariable>
-                <SetVariable name="ObjectName"></SetVariable>
-                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text"></SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_chevron_left_48px.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_chevron_left_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,prev_chain</SetVariable>
-              </Template>
-
-              <Template src="skin:left_1state_button.xml">
-                <SetVariable name="TooltipId">EffectUnit_next_chain</SetVariable>
-                <SetVariable name="ObjectName"></SetVariable>
-                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text"></SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_chevron_right_48px.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_chevron_right_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,next_chain</SetVariable>
-              </Template>-->
             </Children>
           </WidgetGroup>
 
@@ -87,32 +53,32 @@
             <Layout>horizontal</Layout>
             <Children>
 
-              <Template src="skin:effect_chain_group_control_button.xml">
+              <Template src="skin:effect_unit_group_control_button.xml">
                 <SetVariable name="group_name">Head</SetVariable>
                 <SetVariable name="group_group">[Headphone]</SetVariable>
               </Template>
 
-              <Template src="skin:effect_chain_group_control_button.xml">
+              <Template src="skin:effect_unit_group_control_button.xml">
                 <SetVariable name="group_name">Master</SetVariable>
                 <SetVariable name="group_group">[Master]</SetVariable>
               </Template>
 
-              <Template src="skin:effect_chain_group_control_button.xml">
+              <Template src="skin:effect_unit_group_control_button.xml">
                 <SetVariable name="group_name">CH1</SetVariable>
                 <SetVariable name="group_group">[Channel1]</SetVariable>
               </Template>
 
-              <Template src="skin:effect_chain_group_control_button.xml">
+              <Template src="skin:effect_unit_group_control_button.xml">
                 <SetVariable name="group_name">CH2</SetVariable>
                 <SetVariable name="group_group">[Channel2]</SetVariable>
               </Template>
 
-              <Template src="skin:effect_chain_group_control_button.xml">
+              <Template src="skin:effect_unit_group_control_button.xml">
                 <SetVariable name="group_name">CH3</SetVariable>
                 <SetVariable name="group_group">[Channel3]</SetVariable>
               </Template>
 
-              <Template src="skin:effect_chain_group_control_button.xml">
+              <Template src="skin:effect_unit_group_control_button.xml">
                 <SetVariable name="group_name">CH4</SetVariable>
                 <SetVariable name="group_group">[Channel4]</SetVariable>
               </Template>
@@ -129,7 +95,7 @@
                   <WidgetGroup>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:effect_chain_group_control_button.xml">
+                      <Template src="skin:effect_unit_group_control_button.xml">
                         <SetVariable name="group_name">MIC1</SetVariable>
                         <SetVariable name="group_group">[Microphone]</SetVariable>
                       </Template>
@@ -143,7 +109,7 @@
                   <WidgetGroup>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:effect_chain_group_control_button.xml">
+                      <Template src="skin:effect_unit_group_control_button.xml">
                         <SetVariable name="group_name">MIC2</SetVariable>
                         <SetVariable name="group_group">[Microphone2]</SetVariable>
                       </Template>
@@ -157,7 +123,7 @@
                   <WidgetGroup>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:effect_chain_group_control_button.xml">
+                      <Template src="skin:effect_unit_group_control_button.xml">
                         <SetVariable name="group_name">MIC3</SetVariable>
                         <SetVariable name="group_group">[Microphone3]</SetVariable>
                       </Template>
@@ -171,7 +137,7 @@
                   <WidgetGroup>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:effect_chain_group_control_button.xml">
+                      <Template src="skin:effect_unit_group_control_button.xml">
                         <SetVariable name="group_name">MIC4</SetVariable>
                         <SetVariable name="group_group">[Microphone4]</SetVariable>
                       </Template>
@@ -185,7 +151,7 @@
                   <WidgetGroup>
                     <Layout>vertical</Layout>
                       <Children>
-                      <Template src="skin:effect_chain_group_control_button.xml">
+                      <Template src="skin:effect_unit_group_control_button.xml">
                         <SetVariable name="group_name">Aux1</SetVariable>
                         <SetVariable name="group_group">[Auxiliary1]</SetVariable>
                       </Template>
@@ -199,7 +165,7 @@
                   <WidgetGroup>
                     <Layout>vertical</Layout>
                       <Children>
-                      <Template src="skin:effect_chain_group_control_button.xml">
+                      <Template src="skin:effect_unit_group_control_button.xml">
                         <SetVariable name="group_name">Aux2</SetVariable>
                         <SetVariable name="group_group">[Auxiliary2]</SetVariable>
                       </Template>
@@ -213,7 +179,7 @@
                   <WidgetGroup>
                     <Layout>vertical</Layout>
                       <Children>
-                      <Template src="skin:effect_chain_group_control_button.xml">
+                      <Template src="skin:effect_unit_group_control_button.xml">
                         <SetVariable name="group_name">Aux3</SetVariable>
                         <SetVariable name="group_group">[Auxiliary3]</SetVariable>
                       </Template>
@@ -227,7 +193,7 @@
                   <WidgetGroup>
                     <Layout>vertical</Layout>
                       <Children>
-                      <Template src="skin:effect_chain_group_control_button.xml">
+                      <Template src="skin:effect_unit_group_control_button.xml">
                         <SetVariable name="group_name">Aux4</SetVariable>
                         <SetVariable name="group_group">[Auxiliary4]</SetVariable>
                       </Template>
@@ -250,13 +216,11 @@
       <WidgetGroup>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:effect_chain_collapsed.xml">
-              <SetVariable name="EffectRack"><Variable name="EffectRack"/></SetVariable>
-              <SetVariable name="EffectUnit"><Variable name="EffectUnit"/></SetVariable>
+          <Template src="skin:effect_unit_no_parameters.xml">
           </Template>
         </Children>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],expanded</ConfigKey>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>
@@ -265,13 +229,11 @@
       <WidgetGroup>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:effect_chain_expanded.xml">
-              <SetVariable name="EffectRack"><Variable name="EffectRack"/></SetVariable>
-              <SetVariable name="EffectUnit"><Variable name="EffectUnit"/></SetVariable>
+          <Template src="skin:effect_unit_with_parameters.xml">
           </Template>
         </Children>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],expanded</ConfigKey>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
