@@ -434,6 +434,8 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-RMX-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-RMX-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-AIR-scripts.js"
+  Delete "$INSTDIR\controllers\Hercules DJControl Compact.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules-DJControl-Compact-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-Instinct-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-MP3-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-MP3-scripts.js"
@@ -562,7 +564,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Xone K2.midi.xml"
   Delete "$INSTDIR\controllers\Xone-K2-scripts.js"
 
-	
+
   ;Delete $INSTDIR\controllers\*.* ; Avoid this since it will delete customized files too
   RMDir "$INSTDIR\controllers"
 
