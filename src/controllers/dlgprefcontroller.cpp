@@ -22,7 +22,16 @@
 #include "util/version.h"
 
 namespace {
-QString nameForPreset(const PresetInfo& preset);
+
+QString nameForPreset(const PresetInfo& preset) {
+    QString name = preset.getName();
+    if (name.length() == 0) {
+        QFileInfo file(preset.getPath());
+        name = file.baseName();
+    }
+    return name;
+}
+
 bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
     // the comparison function for PresetInfo objects
     // this function is used to sort the list of
@@ -238,15 +247,6 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
 
 void DlgPrefController::slotDirty() {
     m_bDirty = true;
-}
-
-QString nameForPreset(const PresetInfo& preset) {
-    QString name = preset.getName();
-    if (name.length() == 0) {
-        QFileInfo file(preset.getPath());
-        name = file.baseName();
-    }
-    return name;
 }
 
 void DlgPrefController::enumeratePresets() {
