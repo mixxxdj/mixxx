@@ -711,41 +711,43 @@ additional button to toggle the effect unit between collapsed and expanded modes
 dry/wet knob with shift controls the superknob for the whole effect unit. The Controls provided are:
 
 dryWetKnob (CC)
-expandButton (Button)
-toggleButton[1-4] (Button)
+showParametersButton (Button)
+enableEffectOnGroupButton[1-4] (Button)
 buttons[1-3] (Buttons)
 knobs[1-3] (CCs)
 
-When the effect unit is collapsed, the knobs control the metaknob of each effect in the unit.
-The buttons control whether each effect is enabled. Pressing a button with shift switches to the
-next available effect.
+When the effect unit is not showing the individual parameters for each effect, the knobs control
+the metaknob of each effect in the unit. The buttons control whether each effect is enabled.
+Pressing a button with shift switches to the next available effect.
 
-When the effect unit is expanded, the knobs control the first 3 parameters of one effect in the
-effect unit. The effect that the knobs manipulate is selected by pressing one of the buttons.
-Pressing a button with shift toggles whether the corresponding effect is enabled.
+When the effect unit is showing all the parameters, the knobs control the first 3 parameters of one
+effect in the effect unit. The effect that the knobs manipulate is selected by pressing one of the
+buttons with shift. Pressing a button without shift toggles whether the corresponding effect is
+enabled.
 
 This EffectUnit provides Buttons to toggle whether the effect unit is enabled for a deck,
 but not many controllers have buttons for that. If yours does not, you should probably enable
 effect units for specific decks in your script's init() function.
 
 To map an EffectUnit for your controller, call the constructor with the unit number of the effect
-unit as the only argument. Then, set the midi attributes for the expandButton, buttons[1-3], and
-optionally toggleButton[1-3] (setting the midi attributes for the CCs is not necessary because
-they do not send any output). After the midi attributes are set up, call
-EffectUnit.expandButton.trigger() then EffectUnit.reconnectControls(). For example:
+unit as the only argument. Then, set the midi attributes for the showParametersButton, buttons[1-3],
+and optionally enableEffectOnGroupButton[1-3] (setting the midi attributes for the CCs is not
+necessary because they do not send any output). After the midi attributes are set up, call
+EffectUnit.init() to set up the output callbacks (do not call reconnectControls() yourself upon
+initialization, as this will activate soft takeover immediately and prevent knobs from being set to
+their initial values when Mixxx starts). For example:
 
 MyController.effectUnit = new EffectUnit(1);
 MyController.effectUnit.buttons[1].midi = [0x90, 0x01];
 MyController.effectUnit.buttons[2].midi = [0x90, 0x02];
 MyController.effectUnit.buttons[3].midi = [0x90, 0x03];
-MyController.effectUnit.expandButton.midi = [0x90, 0x04];
-MyController.effectUnit.expandButton.trigger();
-MyController.effectUnit.reconnectControls();
+MyController.effectUnit.showParametersButton.midi = [0x90, 0x04];
+MyController.effectUnit.init();
 
 Controllers designed for Serato and Rekordbox often have an encoder instead of a dry/wet knob
 (labeled "Beats" for Serato or "Release FX" for Rekordbox) and a button labeled "Tap". It is
-recommended to map the "Tap" button to the EffectUnit's expandButton. To use the dryWetKnob Control
-with an encoder, replace its inValueScale() function with a function that can appropriately
+recommended to map the "Tap" button to the EffectUnit's showParametersButton. To use the dryWetKnob
+Control with an encoder, replace its inValueScale() function with a function that can appropriately
 handle the signals sent by your controller.
 **/
 EffectUnit = function (unitNumber) {
@@ -768,9 +770,9 @@ EffectUnit = function (unitNumber) {
         outConnect: false,
     });
 
-    this.toggleButton = new ControlContainer();
+    this.enableEffectOnGroupButton = new ControlContainer();
     for (var d = 1; d <= 4; d++) {
-      this.toggleButton[d] = new Button({
+      this.enableEffectOnGroupButton[d] = new Button({
           group: this.group,
           co: 'group_[Channel' + d + ']_enable',
           outConnect: false,
@@ -778,26 +780,27 @@ EffectUnit = function (unitNumber) {
     }
 
     var eu = this;
-    this.activeEffect = 1;
     this.buttons = new ControlContainer();
     this.knobs = new ControlContainer();
     for (var d = 1; d <= 3; d++) {
         this.knobs[d] = new CC({
             number: d,
-            collapse: function () {
+            onParametersHide: function () {
                 this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.number + ']';
                 this.inCo = 'meta';
             },
-            expand: function () {
-                this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + eu.activeEffect + ']';
+            onParametersShow: function () {
+                this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' +
+                              engine.getValue(eu.group, "focused_effect") + ']';
                 this.inCo = 'parameter' + this.number;
             },
             outConnect: false,
+            skipInitConnect: true
         });
         this.buttons[d] = new Button({
             number: d,
             group: '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + d + ']',
-            collapse: function () {
+            onParametersHide: function () {
                 this.input = Button.prototype.input;
                 this.outCo = 'enabled';
                 this.unshift = function () {
@@ -816,28 +819,36 @@ EffectUnit = function (unitNumber) {
                     this.unshift();
                 }
             },
-            expand: function () {
-                this.outCo = 'focused';
+            onParametersShow: function () {
+                this.inCo = 'enabled';
+                this.outCo = 'enabled';
                 this.unshift = function () {
                     this.isShifted = false;
-                    this.inCo = 'focused';
-                    this.input = function (channel, control, value, status, group) {
-                        if (value > 0) {
-                            this.toggle();
-                            eu.activeEffect = this.number;
-                            eu.knobs.reconnectControls(function (c) {
-                                if (typeof c.expand === 'function') {
-                                    c.expand(); // to set new group property
-                                }
-                            });
-                        }
-                    };
+                    this.input = Button.prototype.input;
+                    this.onlyOnPress = true;
                 };
                 this.shift = function () {
                     this.isShifted = true;
-                    this.input = Button.prototype.input;
-                    this.inCo = 'enabled';
-                    this.onlyOnPress = true;
+                    this.input = function (channel, control, value, status, group) {
+                        if (value > 0) {
+                            engine.setValue(eu.group, "focused_effect", this.number);
+                        }
+                    };
+                };
+                this.connect = function () {
+                    this.connections[0] = engine.connectControl(this.group, "enabled", Button.prototype.output);
+                    this.connections[1] = engine.connectControl(eu.group, "focused_effect", this.onFocusChanged);
+                };
+                this.onFocusChanged = function (value, group, control) {
+                    if (value === this.number) {
+                        eu.knobs.reconnectControls(function (knob) {
+                            if (typeof knob.onParametersShow === 'function') {
+                                knob.onParametersShow(); // to set new group property
+                            }
+                        });
+                    } else if (value === 0) {
+                        engine.setValue(eu.group, "show_parameters", 0);
+                    }
                 };
                 if (this.isShifted) {
                     this.shift();
@@ -849,35 +860,71 @@ EffectUnit = function (unitNumber) {
         });
     }
 
-    this.expandButton = new Button({
+    this.showParametersButton = new Button({
         group: this.group,
-        co: 'expanded',
+        co: 'show_parameters',
         output: function (value, group, control) {
             this.send((value > 0) ? this.on : this.off);
             if (value === 0) {
+                engine.setValue(this.group, "show_focus", 0);
                 // NOTE: calling eu.reconnectControls() here would cause an infinite loop when
                 // calling EffectUnit.reconnectControls().
                 eu.forEachControl(function (c) {
-                    if (typeof c.collapse === 'function') {
+                    if (typeof c.onParametersHide === 'function') {
                         c.disconnect();
-                        c.collapse();
+                        c.onParametersHide();
                         c.connect();
                         c.trigger();
                     }
                 });
             } else {
+                engine.setValue(this.group, "show_focus", 1);
+                if (engine.getValue(this.group, "focused_effect") === 0) {
+                    engine.setValue(this.group, "focused_effect", 1);
+                }
                 eu.forEachControl(function (c) {
-                    if (typeof c.expand === 'function') {
+                    if (typeof c.onParametersShow === 'function') {
                         c.disconnect();
-                        c.expand();
+                        c.onParametersShow();
                         c.connect();
                         c.trigger();
                     }
                 });
             }
         },
-        outConnect: false
+        outConnect: false,
+        skipInitTrigger: true
     });
+
+    this.init = function () {
+        if (engine.getValue(this.group, "focused_effect") === 0) {
+            engine.setValue(this.group, "focused_effect", 1);
+        }
+        engine.setValue(this.group, "show_focus", engine.getValue(this.group, "show_parameters"));
+        this.knobs.isKnob = true;
+        this.forEachControl(function (c) {
+          if (engine.getValue(this.group, "show_parameters") === 0) {
+              if (typeof c.onParametersHide === 'function') {
+                  c.onParametersHide();
+              }
+          } else {
+              if (typeof c.onParametersShow === 'function') {
+                  c.onParametersShow();
+              }
+          }
+          if (c.group === undefined) {
+              c.group = this.group;
+          }
+          // Avoid calling connect() on knobs to not have soft takeover prevent setting initial values
+          if (c.softTakeoverInit === undefined || c.softTakeoverInit === true) {
+              c.connect();
+              // Avoid calling trigger() on showParametersButton because that calls connect() on knobs
+              if (c.skipInitTrigger === undefined) {
+                  c.trigger();
+              }
+          }
+        });
+    };
 };
 EffectUnit.prototype = new ControlContainer();
 
@@ -1236,8 +1283,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.effectUnit.buttons[1].midi = [0x90 + channel, 0x03];
     this.effectUnit.buttons[2].midi = [0x90 + channel, 0x04];
     this.effectUnit.buttons[3].midi = [0x90 + channel, 0x05];
-    this.effectUnit.expandButton.midi = [0x90 + channel, 0x06];
-    this.effectUnit.expandButton.trigger();
+    this.effectUnit.showParametersButton.midi = [0x90 + channel, 0x06];
     this.effectUnit.toggleHeadphones = new Button({
         midi: [0x90 + channel, 0x34],
         co: 'group_[Headphone]_enable',
@@ -1262,10 +1308,6 @@ P32.Deck = function (deckNumbers, channel) {
         on: P32.padColors.red,
         off: P32.padColors.blue
     });
-    this.effectUnit.reconnectControls(function (c) {
-        if (c.group === undefined) {
-            c.group = this.group;
-        }
-    });
+    this.effectUnit.init();
 };
 P32.Deck.prototype = new Deck();
