@@ -3,7 +3,9 @@
   Description:
     An effect meta knob.
   Variables:
-    control: The control to connect to.
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
 -->
 <Template>
   <WidgetGroup>
