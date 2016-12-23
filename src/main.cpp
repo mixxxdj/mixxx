@@ -61,23 +61,23 @@ int main(int argc, char * argv[]) {
         args.printUsage();
         return 0;
     }
-    if(args.getSettingsPathSet()) {
+    if(!args.isSettingsPathValid()) {
         QDir settingsPath(args.getSettingsPath());
-        qDebug() << "Settings Path Provided: " << settingsPath.absolutePath();
-        if(!args.getSettingsPathStatus()) {
-            qDebug() << "The provided settings path does not have the proper permissions";
-            QApplication app(argc, argv);
-            QMessageBox::critical(0, QObject::tr("Cannot access this path"),
-                                     QObject::tr("The Settings Path: %1 that is "
-                                        "provided does not have the "
-                                        "proper permission to access its "
-                                        "files, so unable to perform further\n"
-                                        "Click OK to exit.").arg(settingsPath.absolutePath()),
-                                        QMessageBox::Ok);
-            exit(EXIT_FAILURE);
-            return app.exec();
-        }
+        QApplication app(argc, argv);
+        QMessageBox::critical(0, QObject::tr("Cannot access settings folder"),
+                                 QObject::tr("Mixxx cannot access the settings"
+                                             " folder at %1 because you do not"
+                                             " have permission to edit files in"
+                                             " that folder. Change permissions for"
+                                             " the settings folder or specify a" 
+                                             " different folder by running Mixxx"
+                                             " with the --settingsPath"
+                                             " option.").arg(settingsPath.absolutePath()),
+                                             "&Quit");
+        exit(EXIT_FAILURE);
+        return app.exec();
     }
+    
     // If you change this here, you also need to change it in
     // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
     QThread::currentThread()->setObjectName("Main");

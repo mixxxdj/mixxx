@@ -137,22 +137,27 @@ void CmdlineArgs::printUsage() {
     fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
 }
 
-bool CmdlineArgs::getSettingsPathStatus() const {
-
+bool CmdlineArgs::isSettingsPathValid() const {
+    /*
+     * This function checks whether the settingsPath
+     * is valid, i.e. is it accessible, does it has the
+     * permissions to read or write the files there.
+     *
+     * For this we make the temporary file in the settingsPath
+     * the temp_file, by fle.open(), if the making of file
+     * is unsuccessful then status is changed, after fle.close()
+     * the file is made, then we check is the file path is readable
+     * as we can make the file there even without the readable permission
+     */
     QString path = getSettingsPath();
-    //info is neccessary as, only making of file doesn't tell about readablilty
     QFileInfo info(path); 
     bool status = true;
     QTemporaryFile fle(path + "/temp_file");
-    if(fle.open()) {
-        fle.close();
-    }
-    else {
-        status = false;
-    }
-    if(!info.isReadable()) {
-        status = false;
-    }
+
+    if(fle.open()) { fle.close(); }
+    else { status = false; }
+
+    if(!info.isReadable()) { status = false; }
 
     return status;
 }

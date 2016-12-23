@@ -35,7 +35,6 @@ TrackCollection::TrackCollection(UserSettingsPointer pConfig)
     m_db.setPassword("mixxx");
     bool ok = m_db.open();
     qDebug() << "DB status:" << m_db.databaseName() << "=" << ok;
-    
     if (m_db.lastError().isValid()) {
         qDebug() << "Error loading database:" << m_db.lastError();
     }
@@ -511,7 +510,4 @@ StorageUnicodeFunctions::likeFunction(sqlite3_context *p,
                                     itrString, endString, E));
 }
 */
-//Private function
-
-
 #endif
