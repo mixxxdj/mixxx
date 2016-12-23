@@ -21,6 +21,17 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
+QString nameForPreset(const PresetInfo& preset);
+namespace {
+    bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
+        // the comparison function for PresetInfo objects
+        // this function is used to sort the list of
+        // presets in the combo box
+        return nameForPreset(a) < nameForPreset(b);
+    }
+
+}
+
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
                                      UserSettingsPointer pConfig)
@@ -258,10 +269,10 @@ void DlgPrefController::enumeratePresets() {
         return;
     }
 
-    //Making the list of presets in the alphabetical order
+    // Making the list of presets in the alphabetical order
     QList<PresetInfo> presets = pie->getPresetsByExtension(
         m_pController->presetExtension());
-    qSort(presets.begin(), presets.end(), DlgPrefController::presetInfoLessThan);
+    qSort(presets.begin(), presets.end(), presetInfoNameComparator);
 
     PresetInfo match;
     for (const PresetInfo& preset : presets) {
@@ -752,9 +763,3 @@ void DlgPrefController::openScript() {
 }
 
 
-bool DlgPrefController::presetInfoLessThan(const PresetInfo &a, const PresetInfo &b) {
-    //the compartion function for PresetInfo objects
-    //this function is used to sort the list of 
-    //presets in the combo box
-    return nameForPreset(a) < nameForPreset(b);
-}
