@@ -23,14 +23,14 @@
 
 QString nameForPreset(const PresetInfo& preset);
 namespace {
-    bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
-        // the comparison function for PresetInfo objects
-        // this function is used to sort the list of
-        // presets in the combo box
-        return nameForPreset(a) < nameForPreset(b);
-    }
-
+bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
+    // the comparison function for PresetInfo objects
+    // this function is used to sort the list of
+    // presets in the combo box
+    return nameForPreset(a) < nameForPreset(b);
 }
+
+} // The anonymous namespace
 
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
