@@ -751,6 +751,7 @@ Control with an encoder, replace its inValueScale() function with a function tha
 handle the signals sent by your controller.
 **/
 EffectUnit = function (unitNumber) {
+    var eu = this;
     this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
 
     this.dryWetKnob = new CC({
@@ -766,6 +767,7 @@ EffectUnit = function (unitNumber) {
             // for soft takeover
             this.disconnect();
             this.connect();
+            eu.knobs.reconnectControls();
         },
         outConnect: false,
     });
@@ -779,7 +781,6 @@ EffectUnit = function (unitNumber) {
       });
     }
 
-    var eu = this;
     this.buttons = new ControlContainer();
     this.knobs = new ControlContainer();
     for (var d = 1; d <= 3; d++) {
@@ -901,7 +902,6 @@ EffectUnit = function (unitNumber) {
             engine.setValue(this.group, "focused_effect", 1);
         }
         engine.setValue(this.group, "show_focus", engine.getValue(this.group, "show_parameters"));
-        this.knobs.isKnob = true;
         this.forEachControl(function (c) {
           if (engine.getValue(this.group, "show_parameters") === 0) {
               if (typeof c.onParametersHide === 'function') {
