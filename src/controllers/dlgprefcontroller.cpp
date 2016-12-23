@@ -21,8 +21,8 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
-QString nameForPreset(const PresetInfo& preset);
 namespace {
+QString nameForPreset(const PresetInfo& preset);
 bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
     // the comparison function for PresetInfo objects
     // this function is used to sort the list of
