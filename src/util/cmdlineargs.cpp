@@ -154,10 +154,15 @@ bool CmdlineArgs::isSettingsPathValid() const {
     bool status = true;
     QTemporaryFile fle(path + "/temp_file");
 
-    if(fle.open()) { fle.close(); }
-    else { status = false; }
-
-    if(!info.isReadable()) { status = false; }
+    if(fle.open()) {
+        fle.close();
+    } else {
+        status = false;
+    }
+    
+    if(!info.isReadable()) {
+        status = false;
+    }
 
     return status;
 }
