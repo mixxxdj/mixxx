@@ -71,12 +71,13 @@ Control when it is created, making it easy to customize the functionality of the
 Controls will need at least their midi, group, inCo, and outCo attributes specified.
 
 The midi attribute is a two member array corresponding to the first two MIDI bytes that the
-controller sends/receives when the physical component changes state. The group property specifies
-the group that both the inCo and outCo manipulate, for example '[Channel1]' for deck 1. The inCo
-property is the name of the Mixxx Control Object (see http://mixxx.org/wiki/doku.php/mixxxcontrols
-for a list of them) that this JavaScript Control manipulates when it receives a MIDI input signal.
-When the Mixxx CO specified by outCo changes, this JavaScript Control sends MIDI signals back out to
-the controller. For example:
+controller sends/receives when the physical component changes state. Currently, this is only used
+to send out MIDI messages and is not relevant for receiving input because that is handled by
+the XML file. The group property specifies the group that both the inCo and outCo manipulate, for
+example '[Channel1]' for deck 1. The inCo property is the name of the Mixxx Control Object (see
+http://mixxx.org/wiki/doku.php/mixxxcontrols for a list of them) that this JavaScript Control
+manipulates when it receives a MIDI input signal. When the Mixxx CO specified by outCo changes, this
+JavaScript Control sends MIDI signals back out to the controller. For example:
 
 var quantizeButton = new Button({
     midi: [0x91, 0x01],
