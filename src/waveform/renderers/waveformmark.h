@@ -40,6 +40,7 @@ class WaveformMark {
     bool isValid() const { return m_pPointCos && m_pPointCos->valid(); }
     void connectSamplePositionChanged(const QObject *, const char *) const;
     double getSamplePosition() const { return m_pPointCos->get(); }
+    void setHotcueNumber(int i) { m_properties.m_text = m_properties.m_text.arg(i); }
     
 
   private:
