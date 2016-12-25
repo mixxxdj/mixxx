@@ -196,6 +196,9 @@ void EffectChain::setInsertionType(InsertionType insertionType) {
 void EffectChain::addEffect(EffectPointer pEffect) {
     //qDebug() << debugString() << "addEffect";
     if (!pEffect) {
+        // Insert empty effects to preserve chain order
+        // when loading chains with empty effects
+        m_effects.append(pEffect);
         return;
     }
 
@@ -214,14 +217,13 @@ void EffectChain::addEffect(EffectPointer pEffect) {
 
 void EffectChain::replaceEffect(unsigned int effectSlotNumber,
                                 EffectPointer pEffect) {
-    //qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
+    //qDebug() << debugString() << "replaceEffect" << effectSlotNumber << pEffect;
     while (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
         if (pEffect.isNull()) {
             return;
         }
         m_effects.append(EffectPointer());
     }
-
 
     EffectPointer pOldEffect = m_effects[effectSlotNumber];
     if (!pOldEffect.isNull()) {
@@ -280,10 +282,15 @@ QDomElement EffectChain::toXML(QDomDocument* doc) const {
 
     QDomElement effectsNode = doc->createElement("Effects");
     foreach (EffectPointer pEffect, m_effects) {
+        QDomElement effectNode;
         if (pEffect) {
-            QDomElement effectNode = pEffect->toXML(doc);
-            effectsNode.appendChild(effectNode);
+            effectNode = pEffect->toXML(doc);
+        } else {
+            // Create empty element to ensure effects stay in order
+            // if there are empty slots before loaded slots.
+            effectNode = doc->createElement("Effect");
         }
+        effectsNode.appendChild(effectNode);
     }
     element.appendChild(effectsNode);
 
@@ -317,9 +324,7 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
         if (effect.isElement()) {
             EffectPointer pEffect = Effect::fromXML(
                 pEffectsManager, effect.toElement());
-            if (pEffect) {
-                pChain->addEffect(pEffect);
-            }
+            pChain->addEffect(pEffect);
         }
     }
 

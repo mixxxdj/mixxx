@@ -128,7 +128,6 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
 }
 
 bool EffectChainManager::saveEffectChains() {
-    //qDebug() << debugString() << "saveEffectChains";
     QDomDocument doc("MixxxEffects");
 
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -137,13 +136,13 @@ bool EffectChainManager::saveEffectChains() {
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();
-
-    QDomElement chains = doc.createElement("EffectChains");
-    foreach (EffectChainPointer pChain, m_effectChains) {
-        QDomElement chain = pChain->toXML(&doc);
-        chains.appendChild(chain);
+    foreach(EffectRackPointer pRack, m_standardEffectRacks) {
+        rootNode.appendChild(pRack->toXML(&doc));
     }
-    rootNode.appendChild(chains);
+    // TODO? Save QuickEffects in effects.xml too, or keep stored in ConfigObjects?
+//     foreach(EffectRackPointer pRack, m_quickEffectRacks) {
+//         rootNode.appendChild(pRack->toXML(&doc));
+//     }
 
     QDir settingsPath(m_pConfig->getSettingsPath());
 
@@ -164,37 +163,52 @@ bool EffectChainManager::saveEffectChains() {
     return true;
 }
 
-bool EffectChainManager::loadEffectChains() {
-    //qDebug() << debugString() << "loadEffectChains";
+QList<EffectChainPointer> EffectChainManager::loadEffectChains() {
+    QList<EffectChainPointer> loadedChains;
 
     QDir settingsPath(m_pConfig->getSettingsPath());
     QFile file(settingsPath.absoluteFilePath("effects.xml"));
 
     if (!file.open(QIODevice::ReadOnly)) {
-        return false;
+        EffectChainPointer pEmptyChain;
+        for (int i = 0; i < 4; ++i) {
+            pEmptyChain = EffectChainPointer(new EffectChain(m_pEffectsManager,
+                                                            QString(),
+                                                            EffectChainPointer()));
+            loadedChains.append(pEmptyChain);
+        }
+        return loadedChains;
     }
 
     QDomDocument doc;
     if (!doc.setContent(&file)) {
         file.close();
-        return false;
+        EffectChainPointer pEmptyChain;
+        for (int i = 0; i < 4; ++i) {
+            pEmptyChain = EffectChainPointer(new EffectChain(m_pEffectsManager,
+                                                            QString(),
+                                                            EffectChainPointer()));
+            loadedChains.append(pEmptyChain);
+        }
+        return loadedChains;
     }
     file.close();
 
     QDomElement root = doc.documentElement();
+    QDomElement rackElement = XmlParse::selectElement(root, "Rack");
+    QDomElement chainsElement = XmlParse::selectElement(rackElement, "Chains");
+    QDomNodeList chainsList = chainsElement.elementsByTagName("EffectChain");
 
-    QDomElement effectChains = XmlParse::selectElement(root, "EffectChains");
-    QDomNodeList chains = effectChains.childNodes();
-
-    for (int i = 0; i < chains.count(); ++i) {
-        QDomNode chainNode = chains.at(i);
+    for (int i = 0; i < chainsList.count(); ++i) {
+        QDomNode chainNode = chainsList.at(i);
 
         if (chainNode.isElement()) {
             EffectChainPointer pChain = EffectChain::fromXML(
                 m_pEffectsManager, chainNode.toElement());
 
+            loadedChains.append(pChain);
             m_effectChains.append(pChain);
         }
     }
-    return true;
+    return loadedChains;
 }

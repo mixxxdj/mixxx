@@ -196,6 +196,11 @@ QDomElement Effect::toXML(QDomDocument* doc) const {
 // static
 EffectPointer Effect::fromXML(EffectsManager* pEffectsManager,
                               const QDomElement& element) {
+    // Empty <Effect/> elements are used to preserve chain order
+    // when there are empty slots at the beginning of the chain.
+    if (element.text().isEmpty()) {
+        return EffectPointer();
+    }
     QString effectId = XmlParse::selectNodeQString(element, "Id");
     EffectPointer pEffect = pEffectsManager->instantiateEffect(effectId);
     // TODO(rryan): Load parameter values / etc. from element.

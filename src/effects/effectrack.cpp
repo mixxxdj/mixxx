@@ -175,6 +175,22 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
     pChain->replaceEffect(iEffectSlotNumber, pPrevEffect);
 }
 
+QDomElement EffectRack::toXML(QDomDocument* doc) const {
+    QDomElement rackElement = doc->createElement("Rack");
+    QDomElement groupElement = doc->createElement("Group");
+    QDomText groupText = doc->createTextNode(m_group);
+    groupElement.appendChild(groupText);
+    rackElement.appendChild(groupElement);
+
+    QDomElement chainsElement = doc->createElement("Chains");
+    foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
+        QDomElement chain = pChainSlot->getEffectChain()->toXML(doc);
+        chainsElement.appendChild(chain);
+    }
+    rackElement.appendChild(chainsElement);
+    return rackElement;
+}
+
 StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                                        EffectChainManager* pChainManager,
                                        const unsigned int iRackNumber)
@@ -182,7 +198,7 @@ StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                      formatGroupString(iRackNumber)) {
 }
 
-EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
+EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer pChain) {
     int iChainSlotNumber = numEffectChainSlots();
 
     QString group = formatEffectChainSlotGroupString(getRackNumber(),
@@ -219,9 +235,6 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
     addEffectChainSlotInternal(pChainSlotPointer);
 
-    // Now load an empty effect chain into the slot so that users can edit
-    // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain = makeEmptyChain();
     pChainSlotPointer->loadEffectChain(pChain);
 
     return pChainSlotPointer;

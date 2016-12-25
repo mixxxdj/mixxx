@@ -50,7 +50,7 @@ class EffectChainManager : public QObject {
     EffectChainPointer getPrevEffectChain(EffectChainPointer pEffectChain);
 
     bool saveEffectChains();
-    bool loadEffectChains();
+    QList<EffectChainPointer> loadEffectChains();
 
   private:
     QString debugString() const {

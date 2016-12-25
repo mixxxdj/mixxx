@@ -48,6 +48,8 @@ class EffectRack : public QObject {
         return m_group;
     }
 
+    QDomElement toXML(QDomDocument* doc) const;
+
   public slots:
     void slotClearRack(double v);
 
@@ -110,7 +112,7 @@ class StandardEffectRack : public EffectRack {
                 .arg(QString::number(iEffectSlotNumber + 1));
     }
 
-    EffectChainSlotPointer addEffectChainSlot();
+    EffectChainSlotPointer addEffectChainSlot(EffectChainPointer pChain);
 };
 
 class PerGroupRack : public EffectRack {

@@ -30,7 +30,7 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig)
 
 EffectsManager::~EffectsManager() {
     m_underDestruction = true;
-    //m_pEffectChainManager->saveEffectChains();
+    m_pEffectChainManager->saveEffectChains();
     delete m_pEffectChainManager;
     // This must be done here, since the engineRacks are deleted via
     // the queue
@@ -203,14 +203,12 @@ EffectRackPointer EffectsManager::getEffectRack(const QString& group) {
 }
 
 void EffectsManager::setupDefaults() {
-    //m_pEffectChainManager->loadEffectChains();
-
     // Add a general purpose rack
+    QList<EffectChainPointer> savedChains = m_pEffectChainManager->loadEffectChains();
     StandardEffectRackPointer pStandardRack = addStandardEffectRack();
-    pStandardRack->addEffectChainSlot();
-    pStandardRack->addEffectChainSlot();
-    pStandardRack->addEffectChainSlot();
-    pStandardRack->addEffectChainSlot();
+    foreach (EffectChainPointer pSavedChain, savedChains) {
+        pStandardRack->addEffectChainSlot(pSavedChain);
+    }
 
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
            this, "org.mixxx.effectchain.flanger"));
