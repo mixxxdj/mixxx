@@ -202,12 +202,14 @@ EffectRackPointer EffectsManager::getEffectRack(const QString& group) {
     return m_pEffectChainManager->getEffectRack(group);
 }
 
-void EffectsManager::setupDefaults() {
+void EffectsManager::setup() {
     // Add a general purpose rack
-    QList<EffectChainPointer> savedChains = m_pEffectChainManager->loadEffectChains();
+    QList<std::pair<EffectChainPointer, QDomElement>> savedChains;
+    savedChains = m_pEffectChainManager->loadEffectChains();
+
     StandardEffectRackPointer pStandardRack = addStandardEffectRack();
-    foreach (EffectChainPointer pSavedChain, savedChains) {
-        pStandardRack->addEffectChainSlot(pSavedChain);
+    for (auto chain : savedChains) {
+        pStandardRack->addEffectChainSlot(chain.first, chain.second);
     }
 
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(

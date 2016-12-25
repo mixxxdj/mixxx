@@ -271,34 +271,8 @@ void EffectChain::sendParameterUpdate() {
     m_pEffectsManager->writeRequest(pRequest);
 }
 
-QDomElement EffectChain::toXML(QDomDocument* doc) const {
-    QDomElement element = doc->createElement("EffectChain");
-
-    XmlParse::addElement(*doc, element, "Id", m_id);
-    XmlParse::addElement(*doc, element, "Name", m_name);
-    XmlParse::addElement(*doc, element, "Description", m_description);
-    XmlParse::addElement(*doc, element, "InsertionType",
-                         insertionTypeToString(m_insertionType));
-
-    QDomElement effectsNode = doc->createElement("Effects");
-    foreach (EffectPointer pEffect, m_effects) {
-        QDomElement effectNode;
-        if (pEffect) {
-            effectNode = pEffect->toXML(doc);
-        } else {
-            // Create empty element to ensure effects stay in order
-            // if there are empty slots before loaded slots.
-            effectNode = doc->createElement("Effect");
-        }
-        effectsNode.appendChild(effectNode);
-    }
-    element.appendChild(effectsNode);
-
-    return element;
-}
-
 // static
-EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
+EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
                                         const QDomElement& element) {
     QString id = XmlParse::selectNodeQString(element, "Id");
     QString name = XmlParse::selectNodeQString(element, "Name");
@@ -322,7 +296,7 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
     for (int i = 0; i < effectChildren.count(); ++i) {
         QDomNode effect = effectChildren.at(i);
         if (effect.isElement()) {
-            EffectPointer pEffect = Effect::fromXML(
+            EffectPointer pEffect = Effect::createFromXml(
                 pEffectsManager, effect.toElement());
             pChain->addEffect(pEffect);
         }

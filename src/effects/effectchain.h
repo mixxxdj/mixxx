@@ -93,8 +93,7 @@ class EffectChain : public QObject {
 
     EngineEffectChain* getEngineEffectChain();
 
-    QDomElement toXML(QDomDocument* doc) const;
-    static EffectChainPointer fromXML(EffectsManager* pEffectsManager,
+    static EffectChainPointer createFromXml(EffectsManager* pEffectsManager,
                                       const QDomElement& element);
     static EffectChainPointer clone(EffectChainPointer pChain);
 

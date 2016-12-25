@@ -184,8 +184,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
 
-    // Sets up the default EffectChains and EffectRacks (long)
-    m_pEffectsManager->setupDefaults();
+    // Sets up the EffectChains and EffectRacks (long)
+    m_pEffectsManager->setup();
 
     launchProgress(8);
 

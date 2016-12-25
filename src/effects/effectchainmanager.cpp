@@ -6,7 +6,6 @@
 #include <QDir>
 
 #include "effects/effectsmanager.h"
-#include "util/xml.h"
 
 EffectChainManager::EffectChainManager(UserSettingsPointer pConfig,
                                        EffectsManager* pEffectsManager)
@@ -163,32 +162,37 @@ bool EffectChainManager::saveEffectChains() {
     return true;
 }
 
-QList<EffectChainPointer> EffectChainManager::loadEffectChains() {
-    QList<EffectChainPointer> loadedChains;
+QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffectChains() {
+    // StandardEffectRack::addEffectChainSlot uses both the EffectChainPointer
+    // and the saved state from the XML to initialize the respective
+    // EffectChain/Effect/EffectParameter/EffectButtonParameter Slots
+    QList<std::pair<EffectChainPointer, QDomElement>> loadedChains;
 
     QDir settingsPath(m_pConfig->getSettingsPath());
     QFile file(settingsPath.absoluteFilePath("effects.xml"));
+    QDomDocument doc;
 
     if (!file.open(QIODevice::ReadOnly)) {
         EffectChainPointer pEmptyChain;
+        QDomElement emptyChainElement = doc.createElement("EffectChain");
         for (int i = 0; i < 4; ++i) {
             pEmptyChain = EffectChainPointer(new EffectChain(m_pEffectsManager,
                                                             QString(),
                                                             EffectChainPointer()));
-            loadedChains.append(pEmptyChain);
+            loadedChains.append(std::make_pair(pEmptyChain, emptyChainElement));
         }
         return loadedChains;
     }
 
-    QDomDocument doc;
     if (!doc.setContent(&file)) {
         file.close();
         EffectChainPointer pEmptyChain;
+        QDomElement emptyChainElement = doc.createElement("EffectChain");
         for (int i = 0; i < 4; ++i) {
             pEmptyChain = EffectChainPointer(new EffectChain(m_pEffectsManager,
                                                             QString(),
                                                             EffectChainPointer()));
-            loadedChains.append(pEmptyChain);
+            loadedChains.append(std::make_pair(pEmptyChain, emptyChainElement));
         }
         return loadedChains;
     }
@@ -203,10 +207,11 @@ QList<EffectChainPointer> EffectChainManager::loadEffectChains() {
         QDomNode chainNode = chainsList.at(i);
 
         if (chainNode.isElement()) {
-            EffectChainPointer pChain = EffectChain::fromXML(
-                m_pEffectsManager, chainNode.toElement());
+            QDomElement chainElement = chainNode.toElement();
+            EffectChainPointer pChain = EffectChain::createFromXml(
+                m_pEffectsManager, chainElement);
 
-            loadedChains.append(pChain);
+            loadedChains.append(std::make_pair(pChain, chainElement));
             m_effectChains.append(pChain);
         }
     }

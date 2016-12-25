@@ -10,6 +10,7 @@
 #include "effects/effectrack.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
+#include "util/xml.h"
 
 class EffectsManager;
 
@@ -50,7 +51,7 @@ class EffectChainManager : public QObject {
     EffectChainPointer getPrevEffectChain(EffectChainPointer pEffectChain);
 
     bool saveEffectChains();
-    QList<EffectChainPointer> loadEffectChains();
+    QList<std::pair<EffectChainPointer, QDomElement>> loadEffectChains();
 
   private:
     QString debugString() const {

@@ -71,7 +71,7 @@ class EffectsManager : public QObject {
     EffectPointer instantiateEffect(const QString& effectId);
 
     // Temporary, but for setting up all the default EffectChains and EffectRacks
-    void setupDefaults();
+    void setup();
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.

@@ -112,7 +112,8 @@ class StandardEffectRack : public EffectRack {
                 .arg(QString::number(iEffectSlotNumber + 1));
     }
 
-    EffectChainSlotPointer addEffectChainSlot(EffectChainPointer pChain);
+    EffectChainSlotPointer addEffectChainSlot(EffectChainPointer pChain,
+                                              const QDomElement& effectChainElement);
 };
 
 class PerGroupRack : public EffectRack {

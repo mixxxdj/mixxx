@@ -13,6 +13,11 @@ float XmlParse::selectNodeFloat(const QDomNode& nodeHeader,
     return selectNode(nodeHeader, sNode).toElement().text().toFloat();
 }
 
+double XmlParse::selectNodeDouble(const QDomNode& nodeHeader,
+                                 const QString& sNode) {
+    return selectNode(nodeHeader, sNode).toElement().text().toDouble();
+}
+
 QDomNode XmlParse::selectNode(const QDomNode& nodeHeader,
                               const QString& sNode) {
     QDomNode node = nodeHeader.firstChild();

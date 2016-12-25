@@ -43,6 +43,9 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     // Clear the currently loaded effect
     void clear();
 
+    QDomElement toXML(QDomDocument* doc) const;
+    void loadValuesFromXml(const QDomElement& knobParameterElement);
+
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(double value);

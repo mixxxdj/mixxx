@@ -55,8 +55,7 @@ class Effect : public QObject {
     void removeFromEngine(EngineEffectChain* pChain, int iIndex);
     void updateEngineState();
 
-    QDomElement toXML(QDomDocument* doc) const;
-    static EffectPointer fromXML(EffectsManager* pEffectsManager,
+    static EffectPointer createFromXml(EffectsManager* pEffectsManager,
                                  const QDomElement& element);
 
   signals:

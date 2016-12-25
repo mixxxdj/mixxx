@@ -5,6 +5,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
+#include "util/xml.h"
 
 EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(group, iParameterSlotNumber) {
@@ -240,5 +241,43 @@ double EffectParameterSlot::getValueParameter() const {
 void EffectParameterSlot::slotValueChanged(double v) {
     if (m_pEffectParameter) {
         m_pEffectParameter->setValue(v);
+    }
+}
+
+QDomElement EffectParameterSlot::toXML(QDomDocument* doc) const {
+    QDomElement knobParameterElement;
+    if (m_pEffectParameter != nullptr) {
+        knobParameterElement = doc->createElement("KnobParameter");
+        XmlParse::addElement(*doc, knobParameterElement, "Id",
+                             m_pEffectParameter->id());
+        // TODO(rryan): Do smarter QVariant formatting?
+        XmlParse::addElement(*doc, knobParameterElement, "Value",
+                            QString::number(m_pControlValue->getParameter()));
+        XmlParse::addElement(*doc, knobParameterElement, "LinkType",
+                            QString::number(m_pControlLinkType->get()));
+        XmlParse::addElement(*doc, knobParameterElement, "LinkInversion",
+                            QString::number(m_pControlLinkInverse->get()));
+    }
+
+    return knobParameterElement;
+}
+
+void EffectParameterSlot::loadValuesFromXml(const QDomElement& knobParameterElement) {
+    if (m_pEffectParameter == nullptr) {
+        return;
+    }
+    if (knobParameterElement.text().isEmpty()) {
+        m_pControlValue->reset();
+        m_pControlLinkType->set(
+            static_cast<double>(m_pEffectParameter->getDefaultLinkType()));
+        m_pControlLinkInverse->set(
+            static_cast<double>(m_pEffectParameter->getDefaultLinkInversion()));
+    } else {
+        m_pControlValue->setParameter(
+            XmlParse::selectNodeDouble(knobParameterElement, "Value"));
+        m_pControlLinkType->set(
+            XmlParse::selectNodeDouble(knobParameterElement, "LinkType"));
+        m_pControlLinkInverse->set(
+            XmlParse::selectNodeDouble(knobParameterElement, "LinkInversion"));
     }
 }

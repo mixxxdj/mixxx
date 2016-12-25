@@ -172,29 +172,8 @@ EffectParameter* Effect::getButtonParameterForSlot(unsigned int slotNumber) {
     return getFilteredParameterForSlot(isButtonParameter, slotNumber);
 }
 
-QDomElement Effect::toXML(QDomDocument* doc) const {
-    QDomElement element = doc->createElement("Effect");
-    XmlParse::addElement(*doc, element, "Id", m_manifest.id());
-    XmlParse::addElement(*doc, element, "Version", m_manifest.version());
-
-    QDomElement parameters = doc->createElement("Parameters");
-    foreach (EffectParameter* pParameter, m_parameters) {
-        const EffectManifestParameter& parameterManifest =
-                pParameter->manifest();
-        QDomElement parameter = doc->createElement("Parameter");
-        XmlParse::addElement(*doc, parameter, "Id", parameterManifest.id());
-        // TODO(rryan): Do smarter QVariant formatting?
-        XmlParse::addElement(*doc, parameter, "Value", QString::number(pParameter->getValue()));
-        // TODO(rryan): Output link state, etc.
-        parameters.appendChild(parameter);
-    }
-    element.appendChild(parameters);
-
-    return element;
-}
-
 // static
-EffectPointer Effect::fromXML(EffectsManager* pEffectsManager,
+EffectPointer Effect::createFromXml(EffectsManager* pEffectsManager,
                               const QDomElement& element) {
     // Empty <Effect/> elements are used to preserve chain order
     // when there are empty slots at the beginning of the chain.
@@ -203,6 +182,5 @@ EffectPointer Effect::fromXML(EffectsManager* pEffectsManager,
     }
     QString effectId = XmlParse::selectNodeQString(element, "Id");
     EffectPointer pEffect = pEffectsManager->instantiateEffect(effectId);
-    // TODO(rryan): Load parameter values / etc. from element.
     return pEffect;
 }

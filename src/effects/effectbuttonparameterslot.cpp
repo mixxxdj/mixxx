@@ -5,6 +5,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "util/math.h"
+#include "util/xml.h"
 
 EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
                                                      const unsigned int iParameterSlotNumber)
@@ -105,5 +106,32 @@ void EffectButtonParameterSlot::slotParameterValueChanged(double value) {
 void EffectButtonParameterSlot::slotValueChanged(double v) {
     if (m_pEffectParameter) {
         m_pEffectParameter->setValue(v);
+    }
+}
+
+QDomElement EffectButtonParameterSlot::toXML(QDomDocument* doc) const {
+    QDomElement buttonParameterElement;
+    if (m_pEffectParameter != nullptr) {
+        buttonParameterElement = doc->createElement("ButtonParameter");
+        XmlParse::addElement(*doc, buttonParameterElement, "Id",
+                             m_pEffectParameter->id());
+        // TODO(rryan): Do smarter QVariant formatting?
+        XmlParse::addElement(*doc, buttonParameterElement, "Value",
+                            QString::number(m_pControlValue->get()));
+    }
+
+    return buttonParameterElement;
+}
+
+void EffectButtonParameterSlot::loadValuesFromXml(const QDomElement&
+                                                  buttonParameterElement) {
+    if (m_pEffectParameter == nullptr) {
+        return;
+    }
+    if (buttonParameterElement.text().isEmpty()) {
+        m_pControlValue->reset();
+    } else {
+        m_pControlValue->set(
+            XmlParse::selectNodeDouble(buttonParameterElement, "Value"));
     }
 }

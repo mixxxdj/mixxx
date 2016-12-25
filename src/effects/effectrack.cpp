@@ -184,7 +184,8 @@ QDomElement EffectRack::toXML(QDomDocument* doc) const {
 
     QDomElement chainsElement = doc->createElement("Chains");
     foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
-        QDomElement chain = pChainSlot->getEffectChain()->toXML(doc);
+//         QDomElement chain = pChainSlot->getEffectChain()->toXML(doc);
+        QDomElement chain = pChainSlot->toXML(doc);
         chainsElement.appendChild(chain);
     }
     rackElement.appendChild(chainsElement);
@@ -198,7 +199,8 @@ StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                      formatGroupString(iRackNumber)) {
 }
 
-EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer pChain) {
+EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer pChain,
+                                                              const QDomElement& effectChainElement) {
     int iChainSlotNumber = numEffectChainSlots();
 
     QString group = formatEffectChainSlotGroupString(getRackNumber(),
@@ -228,7 +230,7 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer
     // Register all the existing channels with the new EffectChain.
     const QSet<ChannelHandleAndGroup>& registeredChannels =
             m_pEffectChainManager->registeredChannels();
-    foreach (const ChannelHandleAndGroup& handle_group, registeredChannels) {
+    for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
         pChainSlot->registerChannel(handle_group);
     }
 
@@ -236,6 +238,8 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer
     addEffectChainSlotInternal(pChainSlotPointer);
 
     pChainSlotPointer->loadEffectChain(pChain);
+
+    pChainSlot->loadValuesFromXml(effectChainElement);
 
     return pChainSlotPointer;
 }
