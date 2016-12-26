@@ -65,8 +65,14 @@ private:
     ControlProxy* m_pScratchPositionEnable;
     ControlProxy* m_pScratchPosition;
     ControlProxy* m_pWheel;
-    bool m_bScratching;
-    bool m_bBending;
+
+    enum InteractionMode {
+        NONE,
+        BENDING,
+        SCRATCHING,
+    };
+
+    InteractionMode m_interactionMode;
     QPoint m_mouseAnchor;
 
     WaveformWidgetAbstract* m_waveformWidget;
