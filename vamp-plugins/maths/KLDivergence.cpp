@@ -17,21 +17,21 @@
 
 #include <cmath>
 
-double KLDivergence::distanceGaussian(const vector<double> &m1,
-                                      const vector<double> &v1,
-                                      const vector<double> &m2,
-                                      const vector<double> &v2)
+fl_t KLDivergence::distanceGaussian(const vector<fl_t> &m1,
+                                      const vector<fl_t> &v1,
+                                      const vector<fl_t> &m2,
+                                      const vector<fl_t> &v2)
 {
     int sz = m1.size();
 
-    double d = -2.0 * sz;
-    double small = 1e-20;
+    fl_t d = -2.0 * sz;
+    fl_t small = 1e-20;
 
     for (int k = 0; k < sz; ++k) {
 
-        double kv1 = v1[k] + small;
-        double kv2 = v2[k] + small;
-        double km = (m1[k] - m2[k]) + small;
+        fl_t kv1 = v1[k] + small;
+        fl_t kv2 = v2[k] + small;
+        fl_t km = (m1[k] - m2[k]) + small;
 
         d += kv1 / kv2 + kv2 / kv1;
         d += km * (1.0 / kv1 + 1.0 / kv2) * km;
@@ -42,14 +42,14 @@ double KLDivergence::distanceGaussian(const vector<double> &m1,
     return d;
 }
 
-double KLDivergence::distanceDistribution(const vector<double> &d1,
-                                          const vector<double> &d2,
+fl_t KLDivergence::distanceDistribution(const vector<fl_t> &d1,
+                                          const vector<fl_t> &d2,
                                           bool symmetrised)
 {
     int sz = d1.size();
 
-    double d = 0;
-    double small = 1e-20;
+    fl_t d = 0;
+    fl_t small = 1e-20;
     
     for (int i = 0; i < sz; ++i) {
         d += d1[i] * log10((d1[i] + small) / (d2[i] + small));

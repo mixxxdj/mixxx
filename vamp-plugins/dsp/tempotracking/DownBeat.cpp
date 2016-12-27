@@ -48,9 +48,9 @@ DownBeat::DownBeat(float originalSampleRate,
         m_beatframesize = 2;
     }
 //    std::cerr << "rate = " << m_rate << ", dec = " << decimationFactor << ", bfs = " << m_beatframesize << std::endl;
-    m_beatframe = new double[m_beatframesize];
-    m_fftRealOut = new double[m_beatframesize];
-    m_fftImagOut = new double[m_beatframesize];
+    m_beatframe = new fl_t[m_beatframesize];
+    m_fftRealOut = new fl_t[m_beatframesize];
+    m_fftImagOut = new fl_t[m_beatframesize];
     m_fft = new FFTReal(m_beatframesize);
 }
 
@@ -183,7 +183,7 @@ DownBeat::findDownBeats(const float *audio,
 
 //        float rms = 0;
         for (size_t j = 0; j < beatlen && j < m_beatframesize; ++j) {
-            double mul = 0.5 * (1.0 - cos(TWO_PI * (double(j) / double(beatlen))));
+            fl_t mul = 0.5 * (1.0 - cos(TWO_PI * (fl_t(j) / fl_t(beatlen))));
             m_beatframe[j] = audio[beatstart + j] * mul;
 //            rms += m_beatframe[j] * m_beatframe[j];
         }
@@ -255,7 +255,7 @@ DownBeat::findDownBeats(const float *audio,
     }
 }
 
-double
+fl_t
 DownBeat::measureSpecDiff(d_vec_t oldspec, d_vec_t newspec)
 {
     // JENSEN-SHANNON DIVERGENCE BETWEEN SPECTRAL FRAMES
@@ -264,11 +264,11 @@ DownBeat::measureSpecDiff(d_vec_t oldspec, d_vec_t newspec)
     if (SPECSIZE > oldspec.size()/4) {
         SPECSIZE = oldspec.size()/4;
     }
-    double SD = 0.;
-    double sd1 = 0.;
+    fl_t SD = 0.;
+    fl_t sd1 = 0.;
 
-    double sumnew = 0.;
-    double sumold = 0.;
+    fl_t sumnew = 0.;
+    fl_t sumold = 0.;
   
     for (unsigned int i = 0;i < SPECSIZE;i++)
     {
@@ -304,7 +304,7 @@ DownBeat::measureSpecDiff(d_vec_t oldspec, d_vec_t newspec)
 }
 
 void
-DownBeat::getBeatSD(vector<double> &beatsd) const
+DownBeat::getBeatSD(vector<fl_t> &beatsd) const
 {
     for (int i = 0; i < (int)m_beatsd.size(); ++i) beatsd.push_back(m_beatsd[i]);
 }

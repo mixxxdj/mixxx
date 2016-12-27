@@ -47,7 +47,7 @@ public:
 
     DFConfig dfConfig;
     DetectionFunction *df;
-    vector<double> dfOutput;
+    vector<fl_t> dfOutput;
     Vamp::RealTime origin;
 };
 
@@ -369,8 +369,8 @@ BeatTracker::process(const float *const *inputBuffers,
 
     size_t len = m_d->dfConfig.frameLength / 2 + 1;
 
-    double *reals = new double[len];
-    double *imags = new double[len];
+    fl_t *reals = new fl_t[len];
+    fl_t *imags = new fl_t[len];
 
     // We only support a single input channel
 
@@ -379,7 +379,7 @@ BeatTracker::process(const float *const *inputBuffers,
         imags[i] = inputBuffers[0][i*2+1];
     }
 
-    double output = m_d->df->processFrequencyDomain(reals, imags);
+    fl_t output = m_d->df->processFrequencyDomain(reals, imags);
 
     delete[] reals;
     delete[] imags;
@@ -415,8 +415,8 @@ BeatTracker::getRemainingFeatures()
 BeatTracker::FeatureSet
 BeatTracker::beatTrackOld()
 {
-    double aCoeffs[] = { 1.0000, -0.5949, 0.2348 };
-    double bCoeffs[] = { 0.1600,  0.3200, 0.1600 };
+    fl_t aCoeffs[] = { 1.0000, -0.5949, 0.2348 };
+    fl_t bCoeffs[] = { 0.1600,  0.3200, 0.1600 };
 
     TTParams ttParams;
     ttParams.winLength = 512;
@@ -430,7 +430,7 @@ BeatTracker::beatTrackOld()
 
     TempoTrack tempoTracker(ttParams);
 
-    vector<double> tempi;
+    vector<fl_t> tempi;
     vector<int> beats = tempoTracker.process(m_d->dfOutput, &tempi);
 
     FeatureSet returnFeatures;
@@ -468,7 +468,7 @@ BeatTracker::beatTrackOld()
     returnFeatures[0].push_back(feature); // beats are output 0
     }
 
-    double prevTempo = 0.0;
+    fl_t prevTempo = 0.0;
 
     for (size_t i = 0; i < tempi.size(); ++i) {
 
@@ -495,9 +495,9 @@ BeatTracker::beatTrackOld()
 BeatTracker::FeatureSet
 BeatTracker::beatTrackNew()
 {
-    vector<double> df;
-    vector<double> beatPeriod;
-    vector<double> tempi;
+    vector<fl_t> df;
+    vector<fl_t> beatPeriod;
+    vector<fl_t> tempi;
 
     size_t nonZeroCount = m_d->dfOutput.size();
     while (nonZeroCount > 0) {
@@ -521,7 +521,7 @@ BeatTracker::beatTrackNew()
     // MEPD - note this function is now passed 2 new parameters, m_inputtempo and m_constraintempo
     tt.calculateBeatPeriod(df, beatPeriod, tempi, m_inputtempo, m_constraintempo);
 
-    vector<double> beats;
+    vector<fl_t> beats;
 
     // MEPD - note this function is now passed 2 new parameters, m_alpha and m_tightness
     tt.calculateBeats(df, beatPeriod, beats, m_alpha, m_tightness);
@@ -561,7 +561,7 @@ BeatTracker::beatTrackNew()
     returnFeatures[0].push_back(feature); // beats are output 0
     }
 
-    double prevTempo = 0.0;
+    fl_t prevTempo = 0.0;
 
     for (size_t i = 0; i < tempi.size(); ++i) {
 

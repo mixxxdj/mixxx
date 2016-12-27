@@ -22,33 +22,33 @@
 
 struct CQConfig{
     unsigned int FS;   // samplerate
-    double min;        // minimum frequency
-    double max;        // maximum frequency
+    fl_t min;        // minimum frequency
+    fl_t max;        // maximum frequency
     unsigned int BPO;  // bins per octave
-    double CQThresh;   // threshold
+    fl_t CQThresh;   // threshold
 };
 
 class ConstantQ {
 	
 //public functions incl. sparsekernel so can keep out of loop in main
 public:
-    void process( const double* FFTRe, const double* FFTIm,
-                  double* CQRe, double* CQIm );
+    void process( const fl_t* FFTRe, const fl_t* FFTIm,
+                  fl_t* CQRe, fl_t* CQIm );
 
     ConstantQ( CQConfig Config );
     ~ConstantQ();
 
-    double* process( const double* FFTData );
+    fl_t* process( const fl_t* FFTData );
 
     void sparsekernel();
 
-    double hamming(int len, int n) {
-	double out = 0.54 - 0.46*cos(2*PI*n/len);
+    fl_t hamming(int len, int n) {
+	fl_t out = 0.54 - 0.46*cos(2*PI*n/len);
 	return(out);
     }
 	
     int getnumwin() { return m_numWin;}
-    double getQ() { return m_dQ;}
+    fl_t getQ() { return m_dQ;}
     int getK() {return m_uK ;}
     int getfftlength() { return m_FFTLength;}
     int gethop() { return m_hop;}
@@ -57,12 +57,12 @@ private:
     void initialise( CQConfig Config );
     void deInitialise();
 	
-    double* m_CQdata;
+    fl_t* m_CQdata;
     unsigned int m_FS;
-    double m_FMin;
-    double m_FMax;
-    double m_dQ;
-    double m_CQThresh;
+    fl_t m_FMin;
+    fl_t m_FMax;
+    fl_t m_dQ;
+    fl_t m_CQThresh;
     unsigned int m_numWin;
     unsigned int m_hop;
     unsigned int m_BPO;
@@ -72,8 +72,8 @@ private:
     struct SparseKernel {
         std::vector<unsigned> is;
         std::vector<unsigned> js;
-        std::vector<double> imag;
-        std::vector<double> real;
+        std::vector<fl_t> imag;
+        std::vector<fl_t> real;
     };
 
     SparseKernel *m_sparseKernel;

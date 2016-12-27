@@ -16,6 +16,8 @@
 #ifndef PHASEVOCODER_H
 #define PHASEVOCODER_H
 
+#include "maths/MathAliases.h"
+
 class FFTReal;
 
 class PhaseVocoder  
@@ -36,8 +38,8 @@ public:
      * enough space for size/2 + 1 values. The redundant conjugate
      * half of the output is not returned.
      */
-    void processTimeDomain(const double *src,
-                           double *mag, double *phase, double *unwrapped);
+    void processTimeDomain(const fl_t *src,
+                           fl_t *mag, fl_t *phase, fl_t *unwrapped);
 
     /**
      * Given one frame of frequency-domain samples, return the
@@ -50,8 +52,8 @@ public:
      * mag, phase, and unwrapped must each be non-NULL and point to
      * enough space for size/2+1 values.
      */
-    void processFrequencyDomain(const double *reals, const double *imags,
-                                double *mag, double *phase, double *unwrapped);
+    void processFrequencyDomain(const fl_t *reals, const fl_t *imags,
+                                fl_t *mag, fl_t *phase, fl_t *unwrapped);
 
     /**
      * Reset the stored phases to zero. Note that this may be
@@ -62,19 +64,19 @@ public:
     void reset();
 
 protected:
-    void FFTShift(double *src);
-    void getMagnitudes(double *mag);
-    void getPhases(double *theta);
-    void unwrapPhases(double *theta, double *unwrapped);
+    void FFTShift(fl_t *src);
+    void getMagnitudes(fl_t *mag);
+    void getPhases(fl_t *theta);
+    void unwrapPhases(fl_t *theta, fl_t *unwrapped);
 
     int m_n;
     int m_hop;
     FFTReal *m_fft;
-    double *m_time;
-    double *m_imag;
-    double *m_real;
-    double *m_phase;
-    double *m_unwrapped;
+    fl_t *m_time;
+    fl_t *m_imag;
+    fl_t *m_real;
+    fl_t *m_phase;
+    fl_t *m_unwrapped;
 };
 
 #endif

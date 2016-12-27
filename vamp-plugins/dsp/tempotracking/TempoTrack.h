@@ -22,6 +22,7 @@
 
 #include "dsp/signalconditioning/DFProcess.h"
 #include "maths/Correlation.h"
+#include "maths/MathAliases.h"
 #include "dsp/signalconditioning/Framer.h"
 
 
@@ -40,8 +41,8 @@ struct TTParams
     unsigned int lagLength; //Lag & Stride size
     unsigned int alpha; //alpha-norm parameter
     unsigned int LPOrd; // low-pass Filter order
-    double* LPACoeffs; //low pass Filter den coefficients
-    double* LPBCoeffs; //low pass Filter num coefficients
+    fl_t* LPACoeffs; //low pass Filter den coefficients
+    fl_t* LPBCoeffs; //low pass Filter num coefficients
     WinThresh WinT;//window size in frames for adaptive thresholding [pre post]:
 };
 
@@ -52,45 +53,45 @@ public:
     TempoTrack( TTParams Params );
     virtual ~TempoTrack();
 
-    vector<int> process( vector <double> DF, vector <double> *tempoReturn = 0);
+    vector<int> process( vector <fl_t> DF, vector <fl_t> *tempoReturn = 0);
 
 	
 private:
     void initialise( TTParams Params );
     void deInitialise();
 
-    int beatPredict( unsigned int FSP, double alignment, double period, unsigned int step);
-    int phaseMM( double* DF, double* weighting, unsigned int winLength, double period );
-    void createPhaseExtractor( double* Filter, unsigned int winLength,  double period,  unsigned int fsp, unsigned int lastBeat );
-    int findMeter( double* ACF,  unsigned int len, double period );
-    void constDetect( double* periodP, int currentIdx, int* flag );
-    void stepDetect( double* periodP, double* periodG, int currentIdx, int* flag );
-    void createCombFilter( double* Filter, unsigned int winLength, unsigned int TSig, double beatLag );
-    double tempoMM( double* ACF, double* weight, int sig );
+    int beatPredict( unsigned int FSP, fl_t alignment, fl_t period, unsigned int step);
+    int phaseMM( fl_t* DF, fl_t* weighting, unsigned int winLength, fl_t period );
+    void createPhaseExtractor( fl_t* Filter, unsigned int winLength,  fl_t period,  unsigned int fsp, unsigned int lastBeat );
+    int findMeter( fl_t* ACF,  unsigned int len, fl_t period );
+    void constDetect( fl_t* periodP, int currentIdx, int* flag );
+    void stepDetect( fl_t* periodP, fl_t* periodG, int currentIdx, int* flag );
+    void createCombFilter( fl_t* Filter, unsigned int winLength, unsigned int TSig, fl_t beatLag );
+    fl_t tempoMM( fl_t* ACF, fl_t* weight, int sig );
 	
     unsigned int m_dataLength;
     unsigned int m_winLength;
     unsigned int m_lagLength;
 
-    double		 m_rayparam;
-    double		 m_sigma;
-    double		 m_DFWVNnorm;
+    fl_t		 m_rayparam;
+    fl_t		 m_sigma;
+    fl_t		 m_DFWVNnorm;
 
     vector<int>	 m_beats; // Vector of detected beats
 
-    double m_lockedTempo;
+    fl_t m_lockedTempo;
 
-    double* m_tempoScratch;
-    double* m_smoothRCF; // Smoothed Output of Comb Filterbank (m_tempoScratch)
+    fl_t* m_tempoScratch;
+    fl_t* m_smoothRCF; // Smoothed Output of Comb Filterbank (m_tempoScratch)
 	
     // Processing Buffers 
-    double* m_rawDFFrame; // Original Detection Function Analysis Frame
-    double* m_smoothDFFrame; // Smoothed Detection Function Analysis Frame
-    double* m_frameACF; // AutoCorrelation of Smoothed Detection Function 
+    fl_t* m_rawDFFrame; // Original Detection Function Analysis Frame
+    fl_t* m_smoothDFFrame; // Smoothed Detection Function Analysis Frame
+    fl_t* m_frameACF; // AutoCorrelation of Smoothed Detection Function 
 
     //Low Pass Coefficients for DF Smoothing
-    double* m_ACoeffs;
-    double* m_BCoeffs;
+    fl_t* m_ACoeffs;
+    fl_t* m_BCoeffs;
 	
     // Objetcs/operators declaration
     Framer m_DFFramer;

@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "nan-inf.h"
+#include "MathAliases.h"
 
 /**
  * Static helper functions for simple mathematical calculations.
@@ -29,57 +30,57 @@ public:
     /**
      * Round x to the nearest integer.
      */
-    static double round( double x );
+    static fl_t round( fl_t x );
 
     /**
      * Return through min and max pointers the highest and lowest
      * values in the given array of the given length.
      */
-    static void	  getFrameMinMax( const double* data, unsigned int len,  double* min, double* max );
+    static void	  getFrameMinMax( const fl_t* data, unsigned int len,  fl_t* min, fl_t* max );
 
     /**
      * Return the mean of the given array of the given length.
      */
-    static double mean( const double* src, unsigned int len );
+    static fl_t mean( const fl_t* src, unsigned int len );
 
     /**
      * Return the mean of the subset of the given vector identified by
      * start and count.
      */
-    static double mean( const std::vector<double> &data,
+    static fl_t mean( const std::vector<fl_t> &data,
                         unsigned int start, unsigned int count );
     
     /**
      * Return the sum of the values in the given array of the given
      * length.
      */
-    static double sum( const double* src, unsigned int len );
+    static fl_t sum( const fl_t* src, unsigned int len );
 
     /**
      * Return the median of the values in the given array of the given
      * length. If the array is even in length, the returned value will
      * be half-way between the two values adjacent to median.
      */
-    static double median( const double* src, unsigned int len );
+    static fl_t median( const fl_t* src, unsigned int len );
 
     /**
      * The principle argument function. Map the phase angle ang into
      * the range [-pi,pi).
      */
-    static double princarg( double ang );
+    static fl_t princarg( fl_t ang );
 
     /**
      * Floating-point division modulus: return x % y.
      */
-    static double mod( double x, double y);
+    static fl_t mod( fl_t x, fl_t y);
 
-    static void	  getAlphaNorm(const double *data, unsigned int len, unsigned int alpha, double* ANorm);
-    static double getAlphaNorm(const std::vector <double> &data, unsigned int alpha );
+    static void	  getAlphaNorm(const fl_t *data, unsigned int len, unsigned int alpha, fl_t* ANorm);
+    static fl_t getAlphaNorm(const std::vector <fl_t> &data, unsigned int alpha );
 
-    static void   circShift( double* data, int length, int shift);
+    static void   circShift( fl_t* data, int length, int shift);
 
-    static int	  getMax( double* data, unsigned int length, double* max = 0 );
-    static int	  getMax( const std::vector<double> &data, double* max = 0 );
+    static int	  getMax( fl_t* data, unsigned int length, fl_t* max = 0 );
+    static int	  getMax( const std::vector<fl_t> &data, fl_t* max = 0 );
     static int    compareInt(const void * a, const void * b);
 
     enum NormaliseType {
@@ -88,17 +89,17 @@ public:
         NormaliseUnitMax
     };
 
-    static void normalise(double *data, int length,
+    static void normalise(fl_t *data, int length,
                           NormaliseType n = NormaliseUnitMax);
 
-    static void normalise(std::vector<double> &data,
+    static void normalise(std::vector<fl_t> &data,
                           NormaliseType n = NormaliseUnitMax);
 
     /**
      * Threshold the input/output vector data against a moving-mean
      * average filter.
      */
-    static void adaptiveThreshold(std::vector<double> &data);
+    static void adaptiveThreshold(std::vector<fl_t> &data);
 
     /** 
      * Return true if x is 2^n for some integer n >= 0.
@@ -126,7 +127,7 @@ public:
     /**
      * Return x!
      */
-    static double factorial(int x); // returns double in case it is large
+    static fl_t factorial(int x); // returns fl_t in case it is large
 
     /**
      * Return the greatest common divisor of natural numbers a and b.

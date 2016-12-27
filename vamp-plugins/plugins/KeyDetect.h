@@ -17,6 +17,7 @@
 
 #include <vamp-sdk/Plugin.h>
 
+#include "maths/MathAliases.h"
 #include <dsp/keydetection/GetKeyMode.h>
 
 class KeyDetector : public Vamp::Plugin
@@ -60,7 +61,7 @@ protected:
     std::string getKeyName(int index, bool minor, bool includeMajMin) const;
 
     GetKeyMode* m_getKeyMode;
-    double* m_inputFrame;
+    fl_t* m_inputFrame;
     int m_prevKey;
     bool m_first;
 };

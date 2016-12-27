@@ -39,8 +39,8 @@ void Filter::initialise( FilterConfig Config )
     m_ACoeffs = Config.ACoeffs;
     m_BCoeffs = Config.BCoeffs;
 
-    m_inBuffer = new double[ m_ord + 1 ];
-    m_outBuffer = new double[ m_ord + 1 ];
+    m_inBuffer = new fl_t[ m_ord + 1 ];
+    m_outBuffer = new fl_t[ m_ord + 1 ];
 
     reset();
 }
@@ -57,11 +57,11 @@ void Filter::reset()
     for(unsigned int  i = 0; i < m_ord+1; i++ ){ m_outBuffer[ i ] = 0.0; }
 }
 
-void Filter::process( double *src, double *dst, unsigned int length )
+void Filter::process( fl_t *src, fl_t *dst, unsigned int length )
 {
     unsigned int SP,i,j;
 
-    double xin,xout;
+    fl_t xin,xout;
 
     for (SP=0;SP<length;SP++)
     {

@@ -63,8 +63,9 @@ available_features = [features.Mad,
                       features.IPod,
                       features.FFMPEG,
 
-		     # Experimental features
-		     features.OpenGLES
+                      # Experimental features
+                      features.OpenGLES,
+                      features.VampFloat
                       ]
 
 build = mixxx.MixxxBuild(target, machine, build_type,

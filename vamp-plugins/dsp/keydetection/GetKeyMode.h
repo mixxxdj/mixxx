@@ -13,6 +13,7 @@
 #define GETKEYMODE_H
 
 
+#include "maths/MathAliases.h"
 #include "dsp/rateconversion/Decimator.h"
 #include "dsp/chromagram/Chromagram.h"
 
@@ -21,30 +22,30 @@ class GetKeyMode
 {
 public:
 	GetKeyMode( int sampleRate, float tuningFrequency,
-		    double hpcpAverage, double medianAverage );
+		    fl_t hpcpAverage, fl_t medianAverage );
 
 	virtual ~GetKeyMode();
 
-	int process( double* PCMData );
+	int process( fl_t* PCMData );
 
-	double krumCorr( double* pData1, double* pData2, unsigned int length );
+	fl_t krumCorr( fl_t* pData1, fl_t* pData2, unsigned int length );
 
 	unsigned int getBlockSize() { return m_ChromaFrameSize*m_DecimationFactor; }
 	unsigned int getHopSize() { return m_ChromaHopSize*m_DecimationFactor; }
 
-	double* getChroma() { return m_ChrPointer; }
+	fl_t* getChroma() { return m_ChrPointer; }
 	unsigned int getChromaSize() { return m_BPO; }
 
-	double* getMeanHPCP() { return m_MeanHPCP; }
+	fl_t* getMeanHPCP() { return m_MeanHPCP; }
 
-	double *getKeyStrengths() { return m_keyStrengths; }
+	fl_t *getKeyStrengths() { return m_keyStrengths; }
 
 	bool isModeMinor( int key ); 
 
 protected:
 
-	double m_hpcpAverage;
-	double m_medianAverage;
+	fl_t m_hpcpAverage;
+	fl_t m_medianAverage;
 	unsigned int m_DecimationFactor;
 
 	//Decimator (fixed)
@@ -57,7 +58,7 @@ protected:
 	Chromagram* m_Chroma;
 
 	//Chromagram output pointer
-	double* m_ChrPointer;
+	fl_t* m_ChrPointer;
 
 	//Framesize
 	unsigned int m_ChromaFrameSize;
@@ -75,17 +76,17 @@ protected:
 	unsigned int m_MedianBufferFilling;
 	
 
-	double* m_DecimatedBuffer;
-	double* m_ChromaBuffer;
-	double* m_MeanHPCP;
+	fl_t* m_DecimatedBuffer;
+	fl_t* m_ChromaBuffer;
+	fl_t* m_MeanHPCP;
 
-	double* m_MajCorr;
-	double* m_MinCorr;
-	double* m_Keys;
+	fl_t* m_MajCorr;
+	fl_t* m_MinCorr;
+	fl_t* m_Keys;
 	int* m_MedianFilterBuffer;
 	int* m_SortedBuffer;
 
-	double *m_keyStrengths;
+	fl_t *m_keyStrengths;
 };
 
 #endif // !defined GETKEYMODE_H

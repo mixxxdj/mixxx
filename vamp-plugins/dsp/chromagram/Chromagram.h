@@ -19,13 +19,15 @@
 #include "dsp/transforms/FFT.h"
 #include "base/Window.h"
 #include "ConstantQ.h"
+#include "maths/MathAliases.h"
+
 
 struct ChromaConfig{
     unsigned int FS;
-    double min;
-    double max;
+    fl_t min;
+    fl_t max;
     unsigned int BPO;
-    double CQThresh;
+    fl_t CQThresh;
     MathUtilities::NormaliseType normalise;
 };
 
@@ -36,12 +38,12 @@ public:
     Chromagram( ChromaConfig Config );
     ~Chromagram();
 	
-    double* process( const double *data ); // time domain
-    double* process( const double *real, const double *imag ); // frequency domain
-    void unityNormalise( double* src );
+    fl_t* process( const fl_t *data ); // time domain
+    fl_t* process( const fl_t *real, const fl_t *imag ); // frequency domain
+    void unityNormalise( fl_t* src );
 
     // Complex arithmetic
-    double kabs( double real, double imag );
+    fl_t kabs( fl_t real, fl_t imag );
 	
     // Results
     unsigned int getK() { return m_uK;}
@@ -52,12 +54,12 @@ private:
     int initialise( ChromaConfig Config );
     int deInitialise();
 
-    Window<double> *m_window;
-    double *m_windowbuf;
+    Window<fl_t> *m_window;
+    fl_t *m_windowbuf;
 	
-    double* m_chromadata;
-    double m_FMin;
-    double m_FMax;
+    fl_t* m_chromadata;
+    fl_t m_FMin;
+    fl_t m_FMax;
     unsigned int m_BPO;
     unsigned int m_uK;
 
@@ -69,10 +71,10 @@ private:
     FFTReal* m_FFT;
     ConstantQ* m_ConstantQ;
 
-    double* m_FFTRe;
-    double* m_FFTIm;
-    double* m_CQRe;
-    double* m_CQIm;
+    fl_t* m_FFTRe;
+    fl_t* m_FFTIm;
+    fl_t* m_CQRe;
+    fl_t* m_CQIm;
 
     bool m_skGenerated;
 };

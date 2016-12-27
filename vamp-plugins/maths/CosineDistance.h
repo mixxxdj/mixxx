@@ -18,6 +18,7 @@
 
 #include <vector>
 #include <math.h>
+#include "MathAliases.h"
 
 using std::vector;
 
@@ -27,10 +28,10 @@ public:
     CosineDistance() { }
     ~CosineDistance() { }
 
-    double distance(const vector<double> &v1, const vector<double> &v2);
+    fl_t distance(const vector<fl_t> &v1, const vector<fl_t> &v2);
 
 protected:
-    double dist, dDenTot, dDen1, dDen2, dSum1;
+    fl_t dist, dDenTot, dDen1, dDen2, dSum1;
 };
 
 #endif

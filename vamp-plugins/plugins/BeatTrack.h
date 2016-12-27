@@ -16,6 +16,7 @@
 #define _BEAT_TRACK_PLUGIN_H_
 
 #include <vamp-sdk/Plugin.h>
+#include "maths/MathAliases.h"
 
 class BeatTrackerData;
 
@@ -57,9 +58,9 @@ protected:
     int m_dfType;
 
     // MEPD new protected parameters to allow the user to control these advanced parameters of the beat tracker
-    double m_alpha;
-    double m_tightness;
-    double m_inputtempo;
+    fl_t m_alpha;
+    fl_t m_tightness;
+    fl_t m_inputtempo;
     bool m_constraintempo;
 
     bool m_whiten;

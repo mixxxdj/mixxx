@@ -16,6 +16,7 @@
 #define _BAR_BEAT_TRACK_PLUGIN_H_
 
 #include <vamp-sdk/Plugin.h>
+#include "maths/MathAliases.h"
 
 class BarBeatTrackerData;
 
@@ -59,10 +60,10 @@ protected:
 
     // MEPD new protected parameters to allow the user to control these advanced parameters of the beat tracker
     // changes are as per the BeatTrack.h
-    double m_alpha;
-    double m_tightness;
-    double m_inputtempo;
-    bool m_constraintempo;
+    fl_t m_alpha;
+    fl_t m_tightness;
+    fl_t m_inputtempo;
+    fl_t m_constraintempo;
 };
 
 

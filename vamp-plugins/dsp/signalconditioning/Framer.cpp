@@ -47,17 +47,17 @@ void Framer::configure( unsigned int frameLength, unsigned int hop )
 	delete [] m_dataFrame;	
 	m_dataFrame = NULL;
     }
-    m_dataFrame = new double[ m_frameLength ];
+    m_dataFrame = new fl_t[ m_frameLength ];
 
     if( m_strideFrame != NULL )
     {
 	delete [] m_strideFrame;	
 	m_strideFrame = NULL;
     }
-    m_strideFrame = new double[ m_stepSize ];
+    m_strideFrame = new fl_t[ m_stepSize ];
 }
 
-void Framer::getFrame(double *dst)
+void Framer::getFrame(fl_t *dst)
 {
 
     if( (m_ulSrcIndex + ( m_frameLength) ) < m_ulSampleLen )
@@ -100,10 +100,10 @@ unsigned int Framer::getMaxNoFrames()
     return m_maxFrames;
 }
 
-void Framer::setSource(double *src, unsigned int length)
+void Framer::setSource(fl_t *src, unsigned int length)
 {
     m_srcBuffer = src;
     m_ulSampleLen = length;
 
-    m_maxFrames = (unsigned int)ceil( (double)m_ulSampleLen/(double)m_stepSize ) ;
+    m_maxFrames = (unsigned int)ceil( (fl_t)m_ulSampleLen/(fl_t)m_stepSize ) ;
 }
