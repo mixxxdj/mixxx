@@ -480,34 +480,33 @@ SamplerButton.prototype = new Button({
 A CC is a Control for potentiometers (faders and knobs) with finite ranges. The name CC comes
 from MIDI Control Change signals. Using a CC is helpful because CC.connect() and CC.disconnect()
 take care of soft takeover when switching layers with ControlContainer.reconnectControls() and
-ControlContainer.applyLayer().
-
-If you send your controller a MIDI message in your init function to make the controller send back
-signals indicating the state of all its potentiometers, set CC.prototype.softTakeoverInit to
-false before sending that MIDI signal. Otherwise, soft takeover will be activated before
-the first signals are received and the initial state of Mixxx won't reflect the controller.
+ControlContainer.applyLayer(). Soft takeover is not activated until the first input is received so
+it does not interfere with setting initial values for controllers that can report that information.
 **/
 var CC = function (options) {
     Control.call(this, options);
 
-    if (this.softTakeoverInit) {
-        this.connect();
-    }
+    this.firstValueReceived = false;
 };
 CC.prototype = new Control({
     inValueScale: function (value) { return value / this.max; },
     input: function (channel, control, value, status, group) {
         engine.setParameter(this.group, this.inCo, this.inValueScale(value));
+        if (! this.firstValueReceived) {
+            this.firstValueReceived = true;
+            this.connect();
+        }
     },
     connect: function () {
-        engine.softTakeover(this.group, this.inCo, true);
+        if (this.firstValueReceived) {
+            engine.softTakeover(this.group, this.inCo, true);
+        }
     },
     disconnect: function () {
         engine.softTakeoverIgnoreNextValue(this.group, this.inCo);
     },
     trigger: function () {},
     max: 127,
-    softTakeoverInit: true
 });
 
 /**
@@ -898,32 +897,8 @@ EffectUnit = function (unitNumber) {
     });
 
     this.init = function () {
-        if (engine.getValue(this.group, "focused_effect") === 0) {
-            engine.setValue(this.group, "focused_effect", 1);
-        }
-        engine.setValue(this.group, "show_focus", engine.getValue(this.group, "show_parameters"));
-        this.forEachControl(function (c) {
-          if (engine.getValue(this.group, "show_parameters") === 0) {
-              if (typeof c.onParametersHide === 'function') {
-                  c.onParametersHide();
-              }
-          } else {
-              if (typeof c.onParametersShow === 'function') {
-                  c.onParametersShow();
-              }
-          }
-          if (c.group === undefined) {
-              c.group = this.group;
-          }
-          // Avoid calling connect() on knobs to not have soft takeover prevent setting initial values
-          if (c.softTakeoverInit === undefined || c.softTakeoverInit === true) {
-              c.connect();
-              // Avoid calling trigger() on showParametersButton because that calls connect() on knobs
-              if (c.skipInitTrigger === undefined) {
-                  c.trigger();
-              }
-          }
-        });
+        this.showParametersButton.connect();
+        this.showParametersButton.trigger();
     };
 };
 EffectUnit.prototype = new ControlContainer();
@@ -934,7 +909,6 @@ P32.init = function () {
     Control.prototype.shiftOffset = 3;
     Control.prototype.shiftChannel = true;
     Button.prototype.sendShifted = true;
-    CC.prototype.softTakeoverInit = false;
 
     P32.leftDeck = new P32.Deck([1,3], 1);
     P32.rightDeck = new P32.Deck([2,4], 2);
