@@ -114,6 +114,26 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         v = math_clamp(v, 0.0, 1.0);
         m_pWheel->setParameter(v);
     }
+
+    // Wrap cursor if outside of this window's bounds
+    QPoint cursorDelta(0, 0);
+    if (orientation == Qt::Horizontal) {
+        if (event->x() < 0) {
+            cursorDelta.setX(width());
+        } else if (event->x() > width()) {
+            cursorDelta.setX(-width());
+        }
+    } else if (orientation == Qt::Vertical) {
+        if (event->y() < 0) {
+            cursorDelta.setY(height());
+        } else if (event->y() > height()) {
+            cursorDelta.setY(-height());
+        }
+    }
+    if (!cursorDelta.isNull()) {
+        m_mouseAnchor += cursorDelta;
+        QCursor::setPos(event->globalPos() + cursorDelta);
+    }
 }
 
 void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
