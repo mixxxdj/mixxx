@@ -447,7 +447,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
     setCentralWidget(m_pWidgetParent);
-    // The old central widget is automatically disposed.
+    // The launch image widget is automatically disposed, but we still have a
+    // pointer to it.
+    m_pLaunchImage = nullptr;
 }
 
 void MixxxMainWindow::finalize() {
@@ -1277,6 +1279,8 @@ bool MixxxMainWindow::confirmExit() {
 }
 
 void MixxxMainWindow::launchProgress(int progress) {
-    m_pLaunchImage->progress(progress);
+    if (m_pLaunchImage) {
+        m_pLaunchImage->progress(progress);
+    }
     qApp->processEvents();
 }
