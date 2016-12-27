@@ -435,6 +435,9 @@ unsigned int EffectChainSlot::getChainSlotNumber() const {
 
 QDomElement EffectChainSlot::toXML(QDomDocument* doc) const {
     QDomElement chainElement = doc->createElement("EffectChain");
+    if (m_slots.size() == 0) {
+        return chainElement;
+    }
 
     XmlParse::addElement(*doc, chainElement, "Name",
                          m_pEffectChain->name());

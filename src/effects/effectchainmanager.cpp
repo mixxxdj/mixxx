@@ -1,11 +1,12 @@
+#include "defs_version.h"
 #include "effects/effectchainmanager.h"
+#include "effects/effectsmanager.h"
 
 #include <QtDebug>
 #include <QDomDocument>
 #include <QFile>
 #include <QDir>
 
-#include "effects/effectsmanager.h"
 
 EffectChainManager::EffectChainManager(UserSettingsPointer pConfig,
                                        EffectsManager* pEffectsManager)
@@ -135,7 +136,12 @@ bool EffectChainManager::saveEffectChains() {
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();
-    foreach(EffectRackPointer pRack, m_standardEffectRacks) {
+    QDomElement mixxxVersionElement = doc.createElement("MixxxVersion");
+    QDomText version = doc.createTextNode(MIXXX_VERSION);
+    mixxxVersionElement.appendChild(version);
+    rootNode.appendChild(mixxxVersionElement);
+
+    for (EffectRackPointer pRack : m_standardEffectRacks) {
         rootNode.appendChild(pRack->toXML(&doc));
     }
     // TODO? Save QuickEffects in effects.xml too, or keep stored in ConfigObjects?
