@@ -273,8 +273,11 @@ void EffectParameterSlot::loadValuesFromXml(const QDomElement& knobParameterElem
         m_pControlLinkInverse->set(
             static_cast<double>(m_pEffectParameter->getDefaultLinkInversion()));
     } else {
-        m_pControlValue->setParameter(
-            XmlParse::selectNodeDouble(knobParameterElement, "Value"));
+        // Need to use setParameterFrom(..., nullptr) here to
+        // trigger valueChanged() signal emission and execute slotValueChanged()
+        m_pControlValue->setParameterFrom(
+            XmlParse::selectNodeDouble(knobParameterElement, "Value"),
+            nullptr);
         m_pControlLinkType->set(
             XmlParse::selectNodeDouble(knobParameterElement, "LinkType"));
         m_pControlLinkInverse->set(
