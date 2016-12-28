@@ -183,8 +183,7 @@ QDomElement EffectRack::toXML(QDomDocument* doc) const {
     rackElement.appendChild(groupElement);
 
     QDomElement chainsElement = doc->createElement("Chains");
-    foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
-//         QDomElement chain = pChainSlot->getEffectChain()->toXML(doc);
+    for (EffectChainSlotPointer pChainSlot : m_effectChainSlots) {
         QDomElement chain = pChainSlot->toXML(doc);
         chainsElement.appendChild(chain);
     }
