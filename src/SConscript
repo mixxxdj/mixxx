@@ -710,6 +710,8 @@ def BuildRelease(target, source, env):
         # The langIds contained in the installer. starting with LangId of the default language
         langIds="1033"
 
+        winArch = "x64" if build.machine_is_64bit else "x86"
+
         # Auto-create wxs file for each subdir and compile them
         print "*** Building intermediate files"
         for subdir in next(os.walk(dist_dir))[1]:
@@ -723,7 +725,6 @@ def BuildRelease(target, source, env):
                  'sub': subdir}
             print "Using Command: " + command
             subprocess.check_call(command)
-            winArch = "x64" if build.machine_is_64bit else "x86"
             command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
                 {'wix': wix_path,
                  'winlibpath': mixxx_winlib_path,
@@ -735,7 +736,6 @@ def BuildRelease(target, source, env):
 
         # Handle promo tracks if any
         promo = "no"
-        winArch = "x64" if build.machine_is_64bit else "x86"
         if os.path.exists(os.path.join(dist_dir,"promo")):
             promo = "yes"
             command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
@@ -751,6 +751,26 @@ def BuildRelease(target, source, env):
                  'arch': winArch,
                  'distdir': dist_dir,
                  'sub': "promo"}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+        # Handle QT's imageformats helper DLLs if dynamic QT
+        imageformats = "no"
+        if os.path.exists(os.path.join(dist_dir,"imageformats")):
+            imageformats = "yes"
+            command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
+                {'wix': wix_path,
+                 'distdir': dist_dir,
+                 'sub': "imageformats"}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+            command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
+                {'wix': wix_path,
+                 'winlibpath': mixxx_winlib_path,
+                 'arch': winArch,
+                 'distdir': dist_dir,
+                 'sub': "imageformats"}
             print "Using Command: " + command
             subprocess.check_call(command)
 
@@ -794,10 +814,11 @@ def BuildRelease(target, source, env):
              'arch': winArch}
         print "Using Command: " + command
         subprocess.check_call(command)
-        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dPromo=%(ispromo)s -dPDB=%(isPDB)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
+        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dPromo=%(ispromo)s -dImageformats=%(isimageformats)s -dPDB=%(isPDB)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
             {'wix': wix_path,
              'winlibpath': mixxx_winlib_path,
              'ispromo': promo,
+             'isimageformats': imageformats,
              'isPDB': isPdb,
              'arch': winArch}
         print "Using Command: " + command
