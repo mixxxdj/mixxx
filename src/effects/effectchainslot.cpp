@@ -270,8 +270,6 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
             this, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)));
     connect(pEffectSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
             this, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)));
-    connect(pEffectSlot, SIGNAL(focusChanged(unsigned int)),
-            this, SLOT(slotEffectFocusChanged(unsigned int)));
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
