@@ -947,10 +947,16 @@ void EngineBroadcast::tryReconnect() {
     if (m_pStatusCO->get() == STATUSCO_FAILURE) {
         m_pBroadcastEnabled->set(0);
         m_readSema.release();
-        errorDialog(tr("Lost connection to streaming server and %1 attempts to reconnect have failed.")
-                    .arg(m_retryCount),
+        QString errorText;
+        if (m_retryCount > 0) {
+            errorText = tr("Lost connection to streaming server and %1 attempts to reconnect have failed.")
+                    .arg(m_retryCount);
+        } else {
+            errorText = tr("Lost connection to streaming server.");
+        }
+        errorDialog(errorText,
                     originalErrorStr + "\n" +
                     m_lastErrorStr + "\n" +
-                    tr("Please check your connection to the Internet"));
+                    tr("Please check your connection to the Internet."));
     }
 }
