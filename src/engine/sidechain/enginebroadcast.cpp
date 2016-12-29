@@ -148,13 +148,12 @@ void EngineBroadcast::updateFromPreferences() {
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
-    if (m_encoder) {
-        qDebug() << "delete m_encoder";
-        // delete m_encoder if it has been initialized (with maybe) different
-        // bitrate
-        delete m_encoder;
-        m_encoder = nullptr;
-    }
+    // delete m_encoder if it has been initialized (with maybe) different
+    // bitrate
+    // delete m_encoder calls write() check if it will be exit early
+    DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
+    delete m_encoder;
+    m_encoder = nullptr;
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
@@ -381,6 +380,8 @@ void EngineBroadcast::updateFromPreferences() {
         // e.g., if lame is not found
         // init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
+        // delete m_encoder calls write() make sure it will be exit early
+        DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
         delete m_encoder;
         m_encoder = nullptr;
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
@@ -516,6 +517,8 @@ bool EngineBroadcast::processConnect() {
 
     // no connection, clean up
     shout_close(m_pShout);
+    // delete m_encoder calls write() check if it will be exit early
+    DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
     delete m_encoder;
     m_encoder = nullptr;
     if (m_pBroadcastEnabled->toBool()) {
@@ -538,6 +541,8 @@ bool EngineBroadcast::processDisconnect() {
         emit(broadcastDisconnected());
         disconnected = true;
     }
+    // delete m_encoder calls write() check if it will be exit early
+    DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
     delete m_encoder;
     m_encoder = nullptr;
     return disconnected;
@@ -546,30 +551,30 @@ bool EngineBroadcast::processDisconnect() {
 void EngineBroadcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
     setFunctionCode(7);
-    if (!m_pShout) {
+    if (!m_pShout || m_iShoutStatus != SHOUTERR_CONNECTED) {
+        // This happens when the decoder calls flush() and the connection is
+        // already down
         return;
     }
 
-    if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-        // Send header if there is one
-        if (headerLen > 0) {
-            if(!writeSingle(header, headerLen)) {
-                return;
-            }
-        }
-
-        if(!writeSingle(body, bodyLen)) {
+    // Send header if there is one
+    if (headerLen > 0) {
+        if(!writeSingle(header, headerLen)) {
             return;
         }
+    }
 
-        ssize_t queuelen = shout_queuelen(m_pShout);
-        if (queuelen > 0) {
-            qDebug() << "shout_queuelen" << queuelen;
-            NetworkStreamWorker::debugState();
-            if (queuelen > kMaxNetworkCache) {
-                m_lastErrorStr = tr("Network cache overflow");
-                tryReconnect();
-            }
+    if(!writeSingle(body, bodyLen)) {
+        return;
+    }
+
+    ssize_t queuelen = shout_queuelen(m_pShout);
+    if (queuelen > 0) {
+        qDebug() << "shout_queuelen" << queuelen;
+        NetworkStreamWorker::debugState();
+        if (queuelen > kMaxNetworkCache) {
+            m_lastErrorStr = tr("Network cache overflow");
+            tryReconnect();
         }
     }
 }
