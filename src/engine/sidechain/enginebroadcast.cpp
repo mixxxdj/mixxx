@@ -512,16 +512,12 @@ bool EngineBroadcast::processConnect() {
             qDebug() << "EngineBroadcast::processConnect() error:"
                      << m_iShoutStatus << m_lastErrorStr;
         }
-    } else {
-        // no connection
+    }
 
-    }
+    // no connection, clean up
     shout_close(m_pShout);
-    if (m_encoder) {
-        m_encoder->flush();
-        delete m_encoder;
-        m_encoder = nullptr;
-    }
+    delete m_encoder;
+    m_encoder = nullptr;
     if (m_pBroadcastEnabled->toBool()) {
         m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
     } else {
@@ -542,12 +538,8 @@ bool EngineBroadcast::processDisconnect() {
         emit(broadcastDisconnected());
         disconnected = true;
     }
-
-    if (m_encoder) {
-        m_encoder->flush();
-        delete m_encoder;
-        m_encoder = nullptr;
-    }
+    delete m_encoder;
+    m_encoder = nullptr;
     return disconnected;
 }
 
