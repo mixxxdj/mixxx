@@ -45,9 +45,9 @@ class SoundDevicePortAudio : public SoundDevice {
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();
 
-    virtual Result open(bool isClkRefDevice, int syncBuffers);
+    virtual SoundDeviceError open(bool isClkRefDevice, int syncBuffers);
     virtual bool isOpen() const;
-    virtual Result close();
+    virtual SoundDeviceError close();
     virtual void readProcess();
     virtual void writeProcess();
     virtual QString getError() const;

@@ -45,6 +45,7 @@ WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* p
         m_endOfTrack(false),
         m_bDrag(false),
         m_iPos(0),
+        m_orientation(Qt::Horizontal),
         m_a(1.0),
         m_b(0.0),
         m_dAnalyzerProgress(1.0),

@@ -68,7 +68,6 @@ class EngineBroadcast
     virtual void run();
 
   private slots:
-    void slotStatusCO(double v);
     void slotEnableCO(double v);
 
   signals:

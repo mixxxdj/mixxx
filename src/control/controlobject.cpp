@@ -135,3 +135,12 @@ bool ControlObject::connectValueChangeRequest(const QObject* receiver,
     }
     return ret;
 }
+
+void ControlObject::setReadOnly() {
+    connectValueChangeRequest(this, SLOT(readOnlyHandler(double)),
+                              Qt::DirectConnection);
+}
+
+void ControlObject::readOnlyHandler(double v) {
+    qWarning() << m_key << "is read-only. Ignoring set of value:" << v;
+}
