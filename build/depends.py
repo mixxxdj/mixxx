@@ -381,6 +381,11 @@ class Qt(Dependence):
                 # QtOpenGL
                 build.env.Append(LIBS = 'glu32')
                 build.env.Append(LIBS = 'opengl32')
+                # imageformats - Add this libs to support additional image formats
+                build.env.Append(LIBPATH=[os.path.join(build.env['QTDIR'],'plugins/imageformats')])
+                build.env.Append(LIBS = 'qsvg')
+                build.env.Append(LIBS = 'qico')
+                build.env.Append(LIBS = 'qtga')
 
         # Set the rpath for linux/bsd/osx.
         # This is not supported on OS X before the 10.5 SDK.
