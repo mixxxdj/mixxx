@@ -37,7 +37,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
           m_iShoutFailures(0),
-          m_pConfig(pConfig),
+          m_settings(pConfig),
           m_encoder(nullptr),
           m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
           m_custom_metadata(false),
@@ -166,8 +166,7 @@ void EngineBroadcast::updateFromPreferences() {
     // Convert a bunch of QStrings to QByteArrays so we can get regular C char*
     // strings to pass to libshout.
 
-    QString codec = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY, "metadata_charset"));
+    QString codec = m_settings.getMetadataCharset();
     QByteArray baCodec = codec.toLatin1();
     m_pTextCodec = QTextCodec::codecForName(baCodec);
     if (!m_pTextCodec) {
@@ -178,11 +177,9 @@ void EngineBroadcast::updateFromPreferences() {
     // Indicates our metadata is in the provided charset.
     shout_metadata_add(m_pShoutMetaData, "charset",  baCodec.constData());
 
-    QString serverType = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY, "servertype"));
+    QString serverType = m_settings.getServertype();
 
-    QString host = m_pConfig->getValue(
-                ConfigKey(BROADCAST_PREF_KEY, "host"));
+    QString host = m_settings.getHost();
     int start = host.indexOf(QLatin1String("//"));
     if (start == -1) {
         // the host part requires preceding //.
@@ -192,15 +189,10 @@ void EngineBroadcast::updateFromPreferences() {
     }
     QUrl serverUrl = host;
 
-    bool ok = false;
-    unsigned int port = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "port")).toUInt(&ok);
-    if (ok) {
-        serverUrl.setPort(port);
-    }
+    int port = m_settings.getPort();
+    serverUrl.setPort(port);
 
-    QString mountPoint = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "mountpoint")).toLatin1();
+    QString mountPoint = m_settings.getMountpoint();
     if (!mountPoint.isEmpty()) {
         if (!mountPoint.startsWith('/')) {
             mountPoint.prepend('/');
@@ -208,63 +200,43 @@ void EngineBroadcast::updateFromPreferences() {
         serverUrl.setPath(mountPoint);
     }
 
-    QString login = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY, "login"));
+    QString login = m_settings.getLogin();
     if (!login.isEmpty()) {
         serverUrl.setUserName(login);
     }
 
     qDebug() << "Using server URL:" << serverUrl;
 
-    QByteArray baPassword = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "password")).toLatin1();
-    QByteArray baFormat = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "format")).toLatin1();
-    QByteArray baBitrate = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "bitrate")).toLatin1();
+    QByteArray baPassword = m_settings.getPassword().toLatin1();
+    QByteArray baFormat = m_settings.getFormat().toLatin1();
+    int iBitrate = m_settings.getBitrate();
 
     // Encode metadata like stream name, website, desc, genre, title/author with
     // the chosen TextCodec.
-    QByteArray baStreamName = encodeString(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_name")));
-    QByteArray baStreamWebsite = encodeString(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_website")));
-    QByteArray baStreamDesc = encodeString(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_desc")));
-    QByteArray baStreamGenre = encodeString(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_genre")));
+    QByteArray baStreamName = encodeString(m_settings.getStreamName());
+    QByteArray baStreamWebsite = encodeString(m_settings.getStreamWebsite());
+    QByteArray baStreamDesc = encodeString(m_settings.getStreamDesc());
+    QByteArray baStreamGenre = encodeString(m_settings.getStreamGenre());
 
     // Whether the stream is public.
-    bool streamPublic = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_public"), false);
+    bool streamPublic = m_settings.getStreamPublic();
 
     // Dynamic Ogg metadata update
-    m_ogg_dynamic_update = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate"), false);
+    m_ogg_dynamic_update = m_settings.getOggDynamicUpdate();
 
-    m_custom_metadata = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY, "enable_metadata"), false);
-    m_customTitle = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY, "custom_title"));
-    m_customArtist = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY, "custom_artist"));
+    m_custom_metadata = m_settings.getEnableMetadata();
+    m_customTitle = m_settings.getCustomTitle();
+    m_customArtist = m_settings.getCustomArtist();
 
-    m_metadataFormat = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY, "metadata_format"));
+    m_metadataFormat = m_settings.getMetadataFormat();
 
-    bool enableReconnect = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY, "enable_reconnect"), true);
+    bool enableReconnect = m_settings.getEnableReconnect();
     if (enableReconnect) {
-        m_reconnectFirstDelay = m_pConfig->getValue(
-                ConfigKey(BROADCAST_PREF_KEY, "reconnect_first_delay"), 5.0);
-        m_reconnectPeriod = m_pConfig->getValue(
-                ConfigKey(BROADCAST_PREF_KEY, "reconnect_period"), 5.0);
-        m_noDelayFirstReconnect = m_pConfig->getValue(
-                ConfigKey(BROADCAST_PREF_KEY, "no_delay_first_reconnect"), 1);
-        m_limitReconnects = m_pConfig->getValue(
-                ConfigKey(BROADCAST_PREF_KEY, "limit_reconnects"), true);
-        m_maximumRetries = m_pConfig->getValue(
-                ConfigKey(BROADCAST_PREF_KEY, "maximum_retries"), 10);
+        m_reconnectFirstDelay = m_settings.getReconnectFirstDelay();
+        m_reconnectPeriod = m_settings.getReconnectPeriod();
+        m_noDelayFirstReconnect = m_settings.getNoDelayFirstReconnect();
+        m_limitReconnects = m_settings.getLimitReconnects();
+        m_maximumRetries = m_settings.getMaximumRetries();
     } else {
         m_limitReconnects = true;
         m_maximumRetries = 0;
@@ -345,11 +317,8 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    bool bitrate_is_int = false;
-    int iBitrate = baBitrate.toInt(&bitrate_is_int);
-
-    if (!bitrate_is_int) {
-        qWarning() << "Error: unknown bitrate:" << baBitrate.constData();
+    if (iBitrate < 0) {
+        qWarning() << "Error: unknown bit rate:" << iBitrate;
     }
 
     int iMasterSamplerate = m_pMasterSamplerate->get();
@@ -362,7 +331,9 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE, baBitrate.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_audio_info(
+            m_pShout, SHOUT_AI_BITRATE,
+            QByteArray::number(iBitrate).constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting bitrate"), shout_get_error(m_pShout));
         return;
     }
@@ -620,7 +591,7 @@ bool EngineBroadcast::writeSingle(const unsigned char* data, size_t len) {
         // try to flush queue after a short sleep
         qDebug() << "EngineBroadcast::writeSingle() SHOUTERR_BUSY, trying again";
         QThread::msleep(10); // wait 10 ms until "busy" is over. TODO() tweak for an optimum.
-        // if this fails, the queue is transmitted later
+        // if this fails, the queue is transmitted after the next regular shout_send_raw()
         (void)shout_send_raw(m_pShout, nullptr, 0);
     } else if (ret < SHOUTERR_SUCCESS) {
         m_lastErrorStr = shout_get_error(m_pShout);

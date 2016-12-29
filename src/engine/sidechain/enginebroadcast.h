@@ -18,6 +18,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/fifo.h"
+#include "preferences/broadcastsettings.h"
 
 class Encoder;
 class ControlPushButton;
@@ -116,7 +117,7 @@ class EngineBroadcast
     int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
-    UserSettingsPointer m_pConfig;
+    BroadcastSettings m_settings;
     Encoder* m_encoder;
     ControlPushButton* m_pBroadcastEnabled;
     ControlProxy* m_pMasterSamplerate;
@@ -152,7 +153,6 @@ class EngineBroadcast
 
     QMutex m_enabledMutex;
     QWaitCondition m_waitEnabled;
-
 };
 
 #endif // ENGINE_SIDECHAIN_ENGINEBROADCAST_H

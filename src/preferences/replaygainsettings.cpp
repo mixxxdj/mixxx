@@ -1,10 +1,3 @@
-/*
- * replaygainsettings.cpp
- *
- *  Created on: 09.03.2016
- *      Author: daniel
- */
-
 #include "preferences/replaygainsettings.h"
 
 namespace {

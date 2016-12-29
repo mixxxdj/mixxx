@@ -303,6 +303,12 @@ void ConfigObject<ConfigValue>::setValue(
 }
 
 template <> template <>
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const double& value) {
+    set(key, ConfigValue(QString::number(value)));
+}
+
+template <> template <>
 bool ConfigObject<ConfigValue>::getValue(
         const ConfigKey& key, const bool& default_value) const {
     const ConfigValue value = get(key);

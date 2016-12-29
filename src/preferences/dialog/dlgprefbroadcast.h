@@ -8,6 +8,7 @@
 #include "preferences/usersettings.h"
 #include "broadcast/defs_broadcast.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/broadcastsettings.h"
 
 class ControlProxy;
 
@@ -31,7 +32,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void apply(const QString &);
 
   private:
-    UserSettingsPointer m_pConfig;
+    BroadcastSettings m_settings;
     ControlProxy* m_pBroadcastEnabled;
 };
 

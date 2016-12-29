@@ -647,6 +647,7 @@ class MixxxCore(Feature):
                    "preferences/dialog/dlgprefwaveform.cpp",
                    "preferences/settingsmanager.cpp",
                    "preferences/replaygainsettings.cpp",
+                   "preferences/broadcastsettings.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
 
