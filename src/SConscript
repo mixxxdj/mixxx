@@ -690,7 +690,6 @@ def BuildRelease(target, source, env):
         elif build.crosscompile and build.platform_is_windows:
             # TODO(XXX) How to handle that ? what does this exactly means ?
             raise Exception('Unimplemented...')
-            #nsis_path = 'makensis'
 
         if not wix_directory:
             raise Exception ('Cannot find WIX Toolkit. Do you have it installed?')
@@ -716,8 +715,8 @@ def BuildRelease(target, source, env):
         print "*** Building intermediate files"
         for subdir in next(os.walk(dist_dir))[1]:
             print "    " + dist_dir + "\\" + subdir
-            # Exclude doc and promo tracks, they are bundled elsewhere
-            if subdir in ["doc", "promo"]:
+            # Exclude doc, promo tracks and imageformats helper DLLs, they are bundled elsewhere
+            if subdir in ["doc", "promo", 'imageformats']:
                 continue
             command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
                 {'wix': wix_path,
@@ -756,7 +755,7 @@ def BuildRelease(target, source, env):
 
         # Handle QT's imageformats helper DLLs if dynamic QT
         imageformats = "no"
-        if os.path.exists(os.path.join(dist_dir,"imageformats")):
+        if os.path.exists(os.path.join(dist_dir,"imageformats")) and not build.static_qt:
             imageformats = "yes"
             command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
                 {'wix': wix_path,
