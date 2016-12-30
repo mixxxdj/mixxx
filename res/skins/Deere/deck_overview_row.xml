@@ -28,7 +28,7 @@
         <PlayPosColor>#00FF00</PlayPosColor>
         <DefaultMark>
           <Align>bottom|right</Align>
-          <Color>#00FF00</Color>
+          <Color>#619dea</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
         </DefaultMark>
