@@ -261,6 +261,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
         // load tracks and have the needle-drop be maintained.
         seekExact(0.0);
     }
+
+    trackCuesUpdated();
 }
 
 void CueControl::cueUpdated() {
