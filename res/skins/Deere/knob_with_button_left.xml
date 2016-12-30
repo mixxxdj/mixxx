@@ -12,12 +12,22 @@
     <ObjectName>KnobWithButtonHorizontal</ObjectName>
     <Layout>horizontal</Layout>
     <Children>
+
+      <!--Wrap the PushButton in a vertical WidgetGroup with spacers to ensure it stays in the
+      correct position when the knobs get further apart and closer together.-->
       <WidgetGroup>
-        <Size>15f,21f</Size>
+        <Layout>vertical</Layout>
         <Children>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>15f,12f</Size>
+            <Children/>
+          </WidgetGroup>
+
           <PushButton>
             <TooltipId><Variable name="button_TooltipId"/></TooltipId>
-            <ObjectName>MixerButton</ObjectName>
+            <ObjectName>KnobButton</ObjectName>
             <Size>15f,15f</Size>
             <NumberStates>2</NumberStates>
             <State>
@@ -37,19 +47,18 @@
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>15f,-1me</Size>
+            <Children/>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
-      <WidgetGroup>
-        <Layout>vertical</Layout>
-        <Children>
-          <Template src="skin:knob.xml"/>
-          <Label>
-            <Size>40f,10f</Size>
-            <ObjectName>KnobLabel</ObjectName>
-            <Text><Variable name="label"/></Text>
-          </Label>
-        </Children>
-      </WidgetGroup>
+
+      <Template src="skin:knob_with_label.xml"/>
+
     </Children>
   </WidgetGroup>
 </Template>

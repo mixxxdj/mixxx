@@ -68,21 +68,59 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>Channel<Variable name="i"/>Volume</ObjectName>
+        <ObjectName>VolumeSlider</ObjectName>
         <Layout>vertical</Layout>
         <Children>
-          <SliderComposed>
-            <TooltipId>channel_volume</TooltipId>
-            <SizePolicy>min,me</SizePolicy>
-            <MinimumSize>40,80</MinimumSize>
-            <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-            <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
-            <Horizontal>false</Horizontal>
+
+          <WidgetGroup>
+            <ObjectName>Channel<Variable name="i"/>Volume</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <SliderComposed>
+                <TooltipId>channel_volume</TooltipId>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>40,50</MinimumSize>
+                <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                  <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+              </SliderComposed>
+            </Children>
             <Connection>
-              <ConfigKey><Variable name="group"/>,volume</ConfigKey>
-              <EmitOnDownPress>false</EmitOnDownPress>
+              <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
             </Connection>
-          </SliderComposed>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>Channel<Variable name="i"/>Volume</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <SliderComposed>
+                <TooltipId>channel_volume</TooltipId>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>40,110</MinimumSize>
+                <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                  <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+              </SliderComposed>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
 

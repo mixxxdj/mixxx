@@ -11,7 +11,7 @@
     <SizePolicy>min,me</SizePolicy>
     <Children>
 
-      <!-- In 2 deck mode, we show a 2-column mixer section -->
+      <!-- In 2 deck mode, we show a 3-column mixer section -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
@@ -37,7 +37,7 @@
         </Connection>
       </WidgetGroup>
 
-      <!-- In 4 deck mode, we show a 2-column mixer section -->
+      <!-- In 4 deck mode, we show all controls in one column per deck. -->
       <WidgetGroup>
         <Layout>vertical</Layout>
         <Children>
