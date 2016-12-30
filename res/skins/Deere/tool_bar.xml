@@ -264,7 +264,7 @@
 
           <!-- TODO: center this logo -->
           <WidgetGroup>
-            <Size>145f,34f</Size>
+            <Size>119f,28f</Size>
             <BackPath>image/mixxx_logo.svg</BackPath>
           </WidgetGroup>
 
