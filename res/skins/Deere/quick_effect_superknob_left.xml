@@ -31,10 +31,10 @@
             <TooltipId><Variable name="button_TooltipId"/></TooltipId>
             <Size>15f,15f</Size>
             <ObjectName>KnobButton</ObjectName>
-            <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
-            <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
-            <Effect><Variable name="EffectNumber"/></Effect>
-            <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
+            <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
+            <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="QuickEffect"/></Effect>
+            <EffectButtonParameter><Variable name="QuickEffect"/></EffectButtonParameter>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
@@ -49,7 +49,7 @@
               <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
             </State>
             <Connection>
-              <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+              <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </EffectPushButton>
