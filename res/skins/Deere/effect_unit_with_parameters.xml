@@ -43,7 +43,7 @@ Variables:
           <WidgetGroup>
             <ObjectName>EffectUnitControls</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>me,max</SizePolicy>
+            <SizePolicy>max,max</SizePolicy>
             <Children>
 
               <Template src="skin:knob_with_label.xml">

@@ -1048,6 +1048,14 @@ WStarRating {
                                     stop: 1.0 #333333);
 }
 
+#EffectUnitNoParameters {
+  padding-left: 5px;
+}
+
+#EffectUnitEffectsNoParameters {
+  qproperty-layoutSpacing: 40;
+}
+
 #EffectUnitEffects, #EffectUnitParameters {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
