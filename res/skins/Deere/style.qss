@@ -949,6 +949,11 @@ WNumberRate {
   qproperty-layoutSpacing: 5;
 }
 
+#KnobButton {
+  border: 3px solid #333333;
+  border-radius: 2px;
+}
+
 #DeckControlsSplitWaveforms4Decks #channel_VuMeter_Group,
 #DeckControlsStackedWaveforms4Decks #channel_VuMeter_Group {
   padding-bottom: 5px;

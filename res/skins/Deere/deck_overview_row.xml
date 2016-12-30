@@ -11,7 +11,7 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <MinimumSize>-1,50</MinimumSize>
-    <MaximumSize>-1,100</MaximumSize>
+    <MaximumSize>-1,85</MaximumSize>
     <Children>
       <Overview>
         <TooltipId>waveform_overview</TooltipId>

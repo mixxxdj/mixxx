@@ -41,7 +41,10 @@
 
       <!--In 2 deck mode, show the gain knob above the channel level meters.-->
       <WidgetGroup>
-        <Layout>horizontal</Layout>
+        <Layout>vertical</Layout>
+        <Size>40f,-1</Size>
+        <MinimumSize>40,34</MinimumSize>
+        <MaximumSize>40,46</MaximumSize>
         <Children>
           <Template src="skin:knob_with_label.xml">
             <SetVariable name="TooltipId">pregain</SetVariable>
@@ -59,15 +62,28 @@
         </Connection>
       </WidgetGroup>
 
+<!--      <WidgetGroup>
+        <Size>-1,-1me</Size>
+        <MaximumSize>-1,25</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>-->
+
       <WidgetGroup>
         <Size>22min,-1me</Size>
-        <MaximumSize>-1,me</MaximumSize>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
             <ObjectName>channel_VuMeter_Group</ObjectName>
             <Layout>horizontal</Layout>
-            <MaximumSize>22,-1</MaximumSize>
+            <MaximumSize>22,130</MaximumSize>
             <Children>
               <Template src="skin:vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
