@@ -660,6 +660,10 @@ WWidget, QLabel {
   background-color: #111111;
 }
 
+#ToolBarLeft, #ToolBarRight {
+  qproperty-layoutSpacing: 5;
+}
+
 #NotificationsContainer {
   qproperty-layoutSpacing: 4;
 }
