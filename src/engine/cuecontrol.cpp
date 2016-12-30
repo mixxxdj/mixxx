@@ -204,45 +204,22 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
             detachCue(i);
         }
 
-        // Store the cue point in a load cue.
-        double cuePoint = m_pCuePoint->get();
-
-        if (cuePoint > 0) {
-            CuePointer loadCue;
-            const QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
-            QListIterator<CuePointer> it(cuePoints);
-            while (it.hasNext()) {
-                CuePointer pCue(it.next());
-                if (pCue->getType() == Cue::LOAD) {
-                    loadCue = pCue;
-                    break;
-                }
-            }
-            if (!loadCue) {
-                loadCue = m_pLoadedTrack->addCue();
-                loadCue->setType(Cue::LOAD);
-                loadCue->setLength(0);
-            }
-            loadCue->setPosition(cuePoint);
-        }
-
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
         m_pCuePoint->set(-1.0);
         m_pLoadedTrack.reset();
     }
 
-
     if (!pNewTrack) {
         return;
     }
-
     m_pLoadedTrack = pNewTrack;
-    connect(pNewTrack.get(), SIGNAL(cuesUpdated()),
+
+    connect(m_pLoadedTrack.get(), SIGNAL(cuesUpdated()),
             this, SLOT(trackCuesUpdated()),
             Qt::DirectConnection);
 
     CuePointer pLoadCue;
-    for (const CuePointer& pCue: pNewTrack->getCuePoints()) {
+    for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
         if (pCue->getType() == Cue::CUE) {
             continue; // skip
         }
@@ -266,6 +243,10 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
+
+    // Use pNewTrack here, because m_pLoadedTrack might have been reset
+    // immediately after leaving the locking scope!
+    pNewTrack->setCuePoint(cuePoint);
 
     // If cue recall is ON in the prefs, then we're supposed to seek to the cue
     // point on song load. Note that [Controls],cueRecall == 0 corresponds to "ON", not OFF.
@@ -608,12 +589,6 @@ void CueControl::hintReader(HintVector* pHintList) {
     }
 }
 
-void CueControl::saveCuePoint(double cuePoint) {
-    if (m_pLoadedTrack) {
-        m_pLoadedTrack->setCuePoint(cuePoint);
-    }
-}
-
 // Moves the cue point to current position or to closest beat in case
 // quantize is enabled
 void CueControl::cueSet(double v) {
@@ -623,10 +598,17 @@ void CueControl::cueSet(double v) {
     QMutexLocker lock(&m_mutex);
     double cue = (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
             floor(m_pClosestBeat->get()) : floor(getCurrentSample());
-    if (!even(static_cast<int>(cue)))
+    if (!even(static_cast<int>(cue))) {
         cue--;
+    }
     m_pCuePoint->set(cue);
-    saveCuePoint(cue);
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    lock.unlock();
+
+    // Store cue point in loaded track
+    if (pLoadedTrack) {
+        pLoadedTrack->setCuePoint(cue);
+    }
 }
 
 void CueControl::cueGoto(double v)
