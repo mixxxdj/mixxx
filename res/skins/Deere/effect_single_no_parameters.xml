@@ -16,7 +16,7 @@ Variables:
       <WidgetGroup>
         <ObjectName>EffectHighlightable</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,f</SizePolicy>
+        <SizePolicy>max,f</SizePolicy>
         <MinimumSize>-1,55</MinimumSize>
         <MaximumSize>-1,55</MaximumSize>
         <Children>
