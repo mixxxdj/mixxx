@@ -38,11 +38,13 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     // libraries where this is the case.
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT %2 FROM %3 "
-                                  "WHERE (%4) AND %5=0")
+                                  "WHERE %4 IN (%5) "
+                                  "AND %6=0")
                           .arg(tableName,
                                columns.join(","),
                                LIBRARY_TABLE,
-                               m_pTrackCollection->crates().formatSubselectQueryForCrateTracks(crateId, LIBRARYTABLE_ID),
+                               LIBRARYTABLE_ID,
+                               CrateStorage::formatSubselectQueryForCrateTrackIds(crateId),
                                LIBRARYTABLE_MIXXXDELETED);
     FwdSqlQuery(m_database, queryString).execPrepared();
 

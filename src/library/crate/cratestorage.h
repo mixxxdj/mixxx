@@ -293,9 +293,8 @@ class CrateStorage: public SqlStorage {
     bool isCrateTrack(CrateId crateId, TrackId trackId) const; // cached, no db access
 
     // Format a subselect query for the tracks contained in crate.
-    QString formatSubselectQueryForCrateTracks(
-            CrateId crateId,
-            const QString& trackIdColumn) const; // no db access
+    static QString formatSubselectQueryForCrateTrackIds(
+            CrateId crateId); // no db access
 
     CrateTrackSelectIterator selectCrateTracks(CrateId crateId) const;
 
