@@ -168,6 +168,7 @@ class AutoDJProcessor : public QObject {
     void controlFadeNow(double value);
     void controlShuffle(double value);
     void controlSkipNext(double value);
+    void controlNumDecks(double dNumDecks);
 
   private:
     // Gets or sets the crossfader position while normalizing it so that -1 is
@@ -202,13 +203,14 @@ class AutoDJProcessor : public QObject {
 
     QList<DeckAttributes*> m_decks;
 
-    ControlProxy* m_pCOCrossfader;
-    ControlProxy* m_pCOCrossfaderReverse;
+    std::unique_ptr<ControlProxy> m_pCOCrossfader;
+    std::unique_ptr<ControlProxy> m_pCOCrossfaderReverse;
+    std::unique_ptr<ControlProxy> m_pNumDecks;
 
-    ControlPushButton* m_pSkipNext;
-    ControlPushButton* m_pFadeNow;
-    ControlPushButton* m_pShufflePlaylist;
-    ControlPushButton* m_pEnabledAutoDJ;
+    std::unique_ptr<ControlPushButton> m_pSkipNext;
+    std::unique_ptr<ControlPushButton> m_pFadeNow;
+    std::unique_ptr<ControlPushButton> m_pShufflePlaylist;
+    std::unique_ptr<ControlPushButton> m_pEnabledAutoDJ;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };

@@ -4,6 +4,7 @@
 #include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
 #include "util/math.h"
+#include "util/memory.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
 
@@ -78,46 +79,33 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
                                                                "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
 
-    m_pShufflePlaylist = new ControlPushButton(
+    m_pShufflePlaylist = std::make_unique<ControlPushButton>(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
-    connect(m_pShufflePlaylist, SIGNAL(valueChanged(double)),
+    connect(m_pShufflePlaylist.get(), SIGNAL(valueChanged(double)),
             this, SLOT(controlShuffle(double)));
 
-    m_pSkipNext = new ControlPushButton(
+    m_pSkipNext = std::make_unique<ControlPushButton>(
             ConfigKey("[AutoDJ]", "skip_next"));
-    connect(m_pSkipNext, SIGNAL(valueChanged(double)),
+    connect(m_pSkipNext.get(), SIGNAL(valueChanged(double)),
             this, SLOT(controlSkipNext(double)));
 
-    m_pFadeNow = new ControlPushButton(
+    m_pFadeNow = std::make_unique<ControlPushButton>(
             ConfigKey("[AutoDJ]", "fade_now"));
-    connect(m_pFadeNow, SIGNAL(valueChanged(double)),
+    connect(m_pFadeNow.get(), SIGNAL(valueChanged(double)),
             this, SLOT(controlFadeNow(double)));
 
-    m_pEnabledAutoDJ = new ControlPushButton(
+    m_pEnabledAutoDJ = std::make_unique<ControlPushButton>(
             ConfigKey("[AutoDJ]", "enabled"));
     m_pEnabledAutoDJ->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pEnabledAutoDJ, SIGNAL(valueChanged(double)),
+    connect(m_pEnabledAutoDJ.get(), SIGNAL(valueChanged(double)),
             this, SLOT(controlEnable(double)));
 
-    // TODO(rryan) listen to signals from PlayerManager and add/remove as decks
-    // are created.
-    for (unsigned int i = 0; i < pPlayerManager->numberOfDecks(); ++i) {
-        QString group = PlayerManager::groupForDeck(i);
-        BaseTrackPlayer* pPlayer = pPlayerManager->getPlayer(group);
-        // Shouldn't be possible.
-        if (pPlayer == NULL) {
-            qWarning() << "PROGRAMMING ERROR deck does not exist" << i;
-            continue;
-        }
-        EngineChannel::ChannelOrientation orientation =
-                (i % 2 == 0) ? EngineChannel::LEFT : EngineChannel::RIGHT;
-        m_decks.append(new DeckAttributes(i, pPlayer, orientation));
-    }
-    // Auto-DJ needs at least two decks
-    DEBUG_ASSERT(m_decks.length() > 1);
+    m_pNumDecks = std::make_unique<ControlProxy>("[Master]", "num_decks");
+    m_pNumDecks->connectValueChanged(this, SLOT(controlNumDecks(double)));
+    controlNumDecks(m_pNumDecks->get());
 
-    m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
-    m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
+    m_pCOCrossfader = std::make_unique<ControlProxy>("[Master]", "crossfader");
+    m_pCOCrossfaderReverse = std::make_unique<ControlProxy>("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
             ConfigKey(kConfigKey, kTransitionPreferenceName));
@@ -130,13 +118,6 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
 AutoDJProcessor::~AutoDJProcessor() {
     qDeleteAll(m_decks);
     m_decks.clear();
-    delete m_pCOCrossfader;
-    delete m_pCOCrossfaderReverse;
-
-    delete m_pSkipNext;
-    delete m_pShufflePlaylist;
-    delete m_pEnabledAutoDJ;
-    delete m_pFadeNow;
 }
 
 double AutoDJProcessor::getCrossfader() const {
@@ -236,6 +217,11 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
+    // Auto-DJ needs at least two decks
+    VERIFY_OR_DEBUG_ASSERT(m_decks.length() > 1) {
+        return ADJ_NOT_TWO_DECKS;
+    }
+
     DeckAttributes& deck1 = *m_decks[0];
     DeckAttributes& deck2 = *m_decks[1];
     bool deck1Playing = deck1.isPlaying();
@@ -854,7 +840,7 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
     DeckAttributes* pOtherDeck = NULL;
     if (pThisDeck->isLeft()) {
         // find first right deck
-        foreach(DeckAttributes* pDeck, m_decks) {
+        for (DeckAttributes* pDeck : m_decks) {
             if (pDeck->isRight()) {
                 if (!playing || pDeck->isPlaying()) {
                     pOtherDeck = pDeck;
@@ -864,7 +850,7 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
         }
     } else if (pThisDeck->isRight()) {
         // find first left deck
-        foreach(DeckAttributes* pDeck, m_decks) {
+        for (DeckAttributes* pDeck : m_decks) {
             if (pDeck->isLeft()) {
                 if (!playing || pDeck->isPlaying()) {
                     pOtherDeck = pDeck;
@@ -879,6 +865,11 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
 bool AutoDJProcessor::nextTrackLoaded() {
     if (m_eState == ADJ_DISABLED) {
         // AutoDJ always loads the top track (again) if enabled
+        return false;
+    }
+
+    // Auto-DJ needs at least two decks
+    VERIFY_OR_DEBUG_ASSERT(m_decks.length() > 1) {
         return false;
     }
 
@@ -901,4 +892,23 @@ bool AutoDJProcessor::nextTrackLoaded() {
     }
 
     return loadedTrack == getNextTrackFromQueue();
+}
+
+void AutoDJProcessor::controlNumDecks(double dNumDecks) {
+    int numDecks = static_cast<int>(dNumDecks);
+    DEBUG_ASSERT(numDecks >= 0);
+    VERIFY_OR_DEBUG_ASSERT(numDecks >= m_decks.length()) {
+        return;
+    }
+
+    for (int i = m_decks.length(); i < numDecks; ++i) {
+        QString group = PlayerManager::groupForDeck(i);
+        BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+        VERIFY_OR_DEBUG_ASSERT(pPlayer) {
+            continue;
+        }
+        EngineChannel::ChannelOrientation orientation =
+                (i % 2 == 0) ? EngineChannel::LEFT : EngineChannel::RIGHT;
+        m_decks.append(new DeckAttributes(i, pPlayer, orientation));
+    }
 }
