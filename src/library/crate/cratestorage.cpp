@@ -331,6 +331,46 @@ CrateSelectIterator CrateStorage::selectCrates() const {
 }
 
 
+CrateSelectIterator CrateStorage::selectCratesByIds(
+        const QString& subselectForCrateIds,
+        SqlSubselectMode subselectMode) const {
+    QString subselectPrefix;
+    switch (subselectMode) {
+    case SQL_SUBSELECT_IN:
+        if (subselectForCrateIds.isEmpty()) {
+            // edge case: no crates
+            return CrateSelectIterator();
+        }
+        subselectPrefix = "IN";
+        break;
+    case SQL_SUBSELECT_NOT_IN:
+        if (subselectForCrateIds.isEmpty()) {
+            // edge case: all crates
+            return selectCrates();
+        }
+        subselectPrefix = "NOT IN";
+        break;
+    }
+    DEBUG_ASSERT(!subselectPrefix.isEmpty());
+    DEBUG_ASSERT(!subselectForCrateIds.isEmpty());
+
+    FwdSqlQuery query(m_database, QString(
+            "SELECT * FROM %1 WHERE %2 %3 (%4) ORDER BY %5 COLLATE %6").arg(
+            CRATE_TABLE,
+            CRATETABLE_ID,
+            subselectPrefix,
+            subselectForCrateIds,
+            CRATETABLE_NAME,
+            DbConnection::kStringCollationFunc));
+
+    if (query.execPrepared()) {
+        return CrateSelectIterator(query);
+    } else {
+        return CrateSelectIterator();
+    }
+}
+
+
 CrateSelectIterator CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 WHERE %2=:autoDjSource ORDER BY %3 COLLATE %4").arg(

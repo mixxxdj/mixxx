@@ -13,6 +13,7 @@
 
 #include "util/db/sqlstorage.h"
 #include "util/db/sqlselectiterator.h"
+#include "util/db/sqlsubselectmode.h"
 
 
 // forward declaration(s)
@@ -277,6 +278,14 @@ class CrateStorage: public SqlStorage {
     //  - case-insensitive
     //  - locale-aware
     CrateSelectIterator selectCrates() const; // all crates
+    CrateSelectIterator selectCratesByIds( // subset of crates
+            const QString& subselectForCrateIds,
+            SqlSubselectMode subselectMode) const;
+
+    // TODO(XXX): Move this function into the Auto DJ component after
+    // fixing the database design flaw (see also: crateschema.h).
+    // Auto DJ needs to use the function selectCratesByIds() from
+    // this class for the actual implementation.
     CrateSelectIterator selectAutoDjCrates(bool autoDjSource = true) const;
 
     // Crate content, i.e. the crate's tracks referenced by id
