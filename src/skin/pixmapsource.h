@@ -10,7 +10,6 @@ class PixmapSource {
   public:
     PixmapSource();
     PixmapSource(const QString& filepath);
-    virtual ~PixmapSource();
 
     bool isEmpty() const;
     bool isSVG() const;

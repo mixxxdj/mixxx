@@ -27,9 +27,6 @@ class EffectManifest {
           m_isForFilterKnob(false),
           m_effectRampsFromDry(false) {
     }
-    virtual ~EffectManifest() {
-        //qDebug() << debugString() << "deleted";
-    }
 
     virtual const QString& id() const {
         return m_id;

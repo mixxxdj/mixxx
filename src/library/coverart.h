@@ -30,7 +30,6 @@ class CoverInfoRelative {
     };
 
     CoverInfoRelative();
-    virtual ~CoverInfoRelative() {};
 
     Source source;
     Type type;
@@ -51,8 +50,6 @@ class CoverInfo : public CoverInfoRelative {
           trackLocation(tl) {
     }
 
-    virtual ~CoverInfo() {};
-
     QString trackLocation;
 };
 
@@ -71,8 +68,6 @@ class CoverArt : public CoverInfo {
           image(img),
           resizedToWidth(rtw) {
     }
-
-    virtual ~CoverArt() {};
 
     // it is not a QPixmap, because it is not safe to use pixmaps 
     // outside the GUI thread
