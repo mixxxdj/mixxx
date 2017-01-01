@@ -63,8 +63,9 @@ MC4000.init = function () {
         engine.setValue("[Sampler3]", "pregain", script.absoluteNonLin(value, 0, 1.0, 4.0));
         engine.setValue("[Sampler4]", "pregain", script.absoluteNonLin(value, 0, 1.0, 4.0));
     }
-    // TODO: Figure out the message Serato sends to the controller to get it to tell us current states
-    // midi.sendShortMsg(0xB0, 0x7F, 0x7F);
+    // Get the controller to send its current status (Sniffed from Serato with Snoize Midi Monitor spy function)
+    var byteArray = [ 0xF0, 0x00, 0x02, 0x0B, 0x7F, 0x01, 0x60, 0x00, 0x04, 0x04, 0x01, 0x00, 0x00, 0xF7 ];
+    midi.sendSysexMsg(byteArray,byteArray.length);
 };
 
 MC4000.shutdown = function () {};
