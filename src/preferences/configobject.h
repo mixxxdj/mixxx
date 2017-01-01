@@ -125,12 +125,6 @@ template <class ValueType> class ConfigObject {
     QString getValue(const ConfigKey& key, const char* default_value) const;
 
     QString getValueString(const ConfigKey& key) const;
-    QString getValueString(const ConfigKey& key, const QString& default_value) const{
-        return getValue(key, default_value);
-    }
-    QString getValueString(const ConfigKey& key, const char* default_value) const {
-        return getValue(key, default_value);
-    }
 
     QMultiHash<ValueType, ConfigKey> transpose() const;
 

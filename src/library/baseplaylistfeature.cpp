@@ -451,7 +451,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     QString playlistName = m_playlistDao.getPlaylistName(playlistId);
     qDebug() << "Export playlist" << playlistName;
 
-    QString lastPlaylistDirectory = m_pConfig->getValueString(
+    QString lastPlaylistDirectory = m_pConfig->getValue(
                 ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
                 QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 

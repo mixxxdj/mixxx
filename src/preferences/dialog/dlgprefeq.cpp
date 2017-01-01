@@ -144,7 +144,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         // Set the configured effect for box and simpleBox or Bessel8 LV-Mix EQ
         // if none is configured
         QString group = PlayerManager::groupForDeck(i);
-        QString configuredEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
+        QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
                 "EffectForGroup_" + group), kDefaultEqId);
         int selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(configuredEffect);
         if (selectedEffectIndex < 0) {
@@ -157,7 +157,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
                 m_filterWaveformEffectLoaded[i] &&
                 !CheckBoxBypass->checkState());
 
-        QString configuredQuickEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
+        QString configuredQuickEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
                 "QuickEffectForGroup_" + group), kDefaultQuickEffectId);
         int selectedQuickEffectIndex =
                 m_deckQuickEffectSelectors[i]->findData(configuredQuickEffect);
@@ -297,11 +297,11 @@ void DlgPrefEQ::loadSettings() {
     m_bEqAutoReset = static_cast<bool>(m_pConfig->getValueString(
             ConfigKey(kConfigKey, "EqAutoReset")).toInt());
     CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
-    CheckBoxBypass->setChecked(m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kEnableEqs), QString("yes")) == QString("no"));
-    CheckBoxEqOnly->setChecked(m_pConfig->getValueString(
+    CheckBoxBypass->setChecked(m_pConfig->getValue(
+            ConfigKey(kConfigKey, kEnableEqs), QString("yes")) == "no");
+    CheckBoxEqOnly->setChecked(m_pConfig->getValue(
             ConfigKey(kConfigKey, kEqsOnly), "yes") == "yes");
-    CheckBoxSingleEqEffect->setChecked(m_pConfig->getValueString(
+    CheckBoxSingleEqEffect->setChecked(m_pConfig->getValue(
             ConfigKey(kConfigKey, kSingleEq), "yes") == "yes");
     slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 
@@ -329,8 +329,8 @@ void DlgPrefEQ::loadSettings() {
                           SliderLoEQ->minimum(),
                           SliderLoEQ->maximum()));
 
-    if (m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kEnableEqs), "yes") == QString("yes")) {
+    if (m_pConfig->getValue(
+            ConfigKey(kConfigKey, kEnableEqs), "yes") == "yes") {
         CheckBoxBypass->setChecked(false);
     }
 }
@@ -621,7 +621,7 @@ void DlgPrefEQ::setUpMasterEQ() {
     connect(comboBoxMasterEq, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotMasterEqEffectChanged(int)));
 
-    QString configuredEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
+    QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
             "EffectForGroup_[Master]"), kDefaultMasterEqId);
 
     QList<QPair<QString, QString> > availableMasterEQEffectNames;

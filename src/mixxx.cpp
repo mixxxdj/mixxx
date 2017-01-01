@@ -175,7 +175,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
-        pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt());
+        pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
+                static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
 
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));

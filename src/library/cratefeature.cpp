@@ -687,7 +687,7 @@ void CrateFeature::slotExportPlaylist() {
     QString crateName = m_crateDao.crateName(crateId);
     qDebug() << "Export crate" << crateId << crateName;
 
-    QString lastCrateDirectory = m_pConfig->getValueString(
+    QString lastCrateDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 

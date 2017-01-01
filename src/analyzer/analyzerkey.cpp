@@ -40,11 +40,11 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     m_bPreferencesFastAnalysisEnabled = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
-    QString library = m_pConfig->getValueString(
+    QString library = m_pConfig->getValue(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY),
         // TODO(rryan) this default really doesn't belong here.
         "libmixxxminimal");
-    QString pluginID = m_pConfig->getValueString(
+    QString pluginID = m_pConfig->getValue(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID),
         // TODO(rryan) this default really doesn't belong here.
         VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID);
