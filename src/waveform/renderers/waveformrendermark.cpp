@@ -50,9 +50,10 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             generateMarkImage(mark.data());
         }
 
-        int samplePosition = mark->getSamplePosition();
-        if (samplePosition > 0.0) {
-            double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
+        double samplePosition = mark->getSamplePosition();
+        if (samplePosition > -1.0) {
+            double currentMarkPoint =
+                    m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
 
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // NOTE: vRince I guess image width is odd to display the center on the exact line !
