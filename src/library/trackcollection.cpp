@@ -159,7 +159,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
     m_trackDao.afterHidingTracks(trackIds);
     QSet<CrateId> modifiedCrateSummaries(
-            m_crates.afterHidingOrUnhidingTracks(trackIds));
+            m_crates.collectCrateIdsOfTracks(trackIds));
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
@@ -185,7 +185,7 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
     m_trackDao.afterUnhidingTracks(trackIds);
     QSet<CrateId> modifiedCrateSummaries(
-            m_crates.afterHidingOrUnhidingTracks(trackIds));
+            m_crates.collectCrateIdsOfTracks(trackIds));
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
 
     // Emit signal(s)
@@ -217,7 +217,6 @@ bool TrackCollection::purgeTracks(
     m_analysisDao.deleteAnalyses(trackIds);
 
     // Post-processing
-    m_crates.afterPurgingTracks(trackIds);
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
     m_trackDao.afterPurgingTracks(trackIds);
 
@@ -249,9 +248,6 @@ bool TrackCollection::insertCrate(
         return false;
     }
 
-    // Post-processing
-    m_crates.afterInsertingCrate(crateId);
-
     // Emit signals
     emit(crateInserted(crateId));
 
@@ -275,9 +271,6 @@ bool TrackCollection::updateCrate(
         return false;
     }
 
-    // Post-processing
-    m_crates.afterUpdatingCrate(crate.getId());
-
     // Emit signals
     emit(crateUpdated(crate.getId()));
 
@@ -297,9 +290,6 @@ bool TrackCollection::deleteCrate(
     DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
         return false;
     }
-
-    // Post-processing
-    m_crates.afterDeletingCrate(crateId);
 
     // Emit signals
     emit(crateDeleted(crateId));
@@ -322,9 +312,6 @@ bool TrackCollection::addCrateTracks(
         return false;
     }
 
-    // Post-processing
-    m_crates.afterAddingCrateTracks(crateId, trackIds);
-
     // Emit signals
     emit(crateTracksChanged(crateId, trackIds, QList<TrackId>()));
 
@@ -345,9 +332,6 @@ bool TrackCollection::removeCrateTracks(
     DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
         return false;
     }
-
-    // Post-processing
-    m_crates.afterRemovingCrateTracks(crateId, trackIds);
 
     // Emit signals
     emit(crateTracksChanged(crateId, QList<TrackId>(), trackIds));

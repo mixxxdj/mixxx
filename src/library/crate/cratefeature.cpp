@@ -6,6 +6,8 @@
 #include <QMenu>
 #include <QDesktopServices>
 
+#include <algorithm>
+
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/parser.h"
@@ -161,7 +163,9 @@ std::unique_ptr<TreeItem> CrateFeature::newTreeItem(
             this, formatLabel(crateSummary), crateSummary.getId().toVariant());
     pTreeItem->setIcon(
             crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
-    updateTreeItem(pTreeItem.get(), selectedTrackId);
+
+    updateTreeItem(pTreeItem.get(), selectedTrackId, std::vector<CrateId>());
+
     return pTreeItem;
 }
 
@@ -176,13 +180,15 @@ void CrateFeature::updateTreeItem(
 
 void CrateFeature::updateTreeItem(
         TreeItem* pTreeItem,
-        TrackId selectedTrackId) {
+        TrackId selectedTrackId,
+        const std::vector<CrateId>& sortedTrackCrates) {
     DEBUG_ASSERT(pTreeItem != nullptr);
     bool crateContainsSelectedTrack =
             selectedTrackId.isValid() &&
-            m_pTrackCollection->crates().isCrateTrack(
-                    CrateId(pTreeItem->getData()),
-                    selectedTrackId);
+            std::binary_search(
+                    sortedTrackCrates.begin(),
+                    sortedTrackCrates.end(),
+                    CrateId(pTreeItem->getData()));
     pTreeItem->setBold(crateContainsSelectedTrack);
 }
 
@@ -529,7 +535,7 @@ void CrateFeature::slotDuplicateCrate() {
                     m_pTrackCollection->crates().countCrateTracks(oldCrate.getId()));
             {
                 CrateTrackSelectIterator crateTracks(
-                        m_pTrackCollection->crates().selectCrateTracks(oldCrate.getId()));
+                        m_pTrackCollection->crates().selectCrateTracksSorted(oldCrate.getId()));
                 while (crateTracks.next()) {
                     trackIds.append(crateTracks.trackId());
                 }
@@ -751,7 +757,7 @@ void CrateFeature::slotAnalyzeCrate() {
                     m_pTrackCollection->crates().countCrateTracks(crateId));
             {
                 CrateTrackSelectIterator crateTracks(
-                        m_pTrackCollection->crates().selectCrateTracks(crateId));
+                        m_pTrackCollection->crates().selectCrateTracksSorted(crateId));
                 while (crateTracks.next()) {
                     trackIds.append(crateTracks.trackId());
                 }
@@ -888,10 +894,17 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     TrackId selectedTrackId =
             pTrack ? pTrack->getId() : TrackId();
 
+    std::vector<CrateId> sortedTrackCrates;
+    CrateTrackSelectIterator trackCratesIter(
+            m_pTrackCollection->crates().selectTrackCratesSorted(selectedTrackId));
+    while (trackCratesIter.next()) {
+        sortedTrackCrates.push_back(trackCratesIter.crateId());
+    }
+
     // Set all crates the track is in bold (or if there is no track selected,
     // clear all the bolding).
     for (TreeItem* pTreeItem: pRootItem->children()) {
-        updateTreeItem(pTreeItem, selectedTrackId);
+        updateTreeItem(pTreeItem, selectedTrackId, sortedTrackCrates);
     }
 
     m_childModel.triggerRepaint();

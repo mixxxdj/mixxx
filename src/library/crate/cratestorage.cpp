@@ -210,48 +210,10 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
 void CrateStorage::attachDatabase(QSqlDatabase database) {
     m_database = database;
     createViews();
-    refreshCaches();
 }
 
 
 void CrateStorage::detachDatabase() {
-    clearCaches();
-}
-
-
-void CrateStorage::clearCaches() {
-    m_deletedCratesCache.clear();
-    m_trackCratesCache.clear();
-}
-
-
-void CrateStorage::refreshCaches() {
-    clearCaches();
-    {
-        // Minor optimization: Reserve space in cache before populating
-        FwdSqlQuery query(m_database, QString(
-                "SELECT COUNT(*) FROM %1").arg(
-                        CRATE_TRACKS_TABLE));
-        if (query.execPrepared() && query.next()) {
-            m_trackCratesCache.reserve(query.fieldValue(0).toUInt());
-            DEBUG_ASSERT(!query.next());
-        }
-    }
-    {
-        FwdSqlQuery query(m_database, QString(
-                "SELECT %1,%2 FROM %3").arg(
-                        CRATETRACKSTABLE_TRACKID,
-                        CRATETRACKSTABLE_CRATEID,
-                        CRATE_TRACKS_TABLE));
-        if (query.execPrepared()) {
-            CrateTrackSelectIterator crateTracks(query);
-            while (crateTracks.next()) {
-                m_trackCratesCache.insert(
-                        crateTracks.trackId(),
-                        crateTracks.crateId());
-            }
-        }
-    }
 }
 
 
@@ -448,27 +410,48 @@ QString CrateStorage::formatSubselectQueryForCrateTrackIds(
 }
 
 
-bool CrateStorage::isCrateTrack(CrateId crateId, TrackId trackId) const {
-    return m_trackCratesCache.contains(trackId, crateId) &&
-            !m_deletedCratesCache.contains(crateId);
-}
-
-
-CrateTrackSelectIterator CrateStorage::selectCrateTracks(CrateId crateId) const {
-    // NOTE(uklotzde): The ORDER BY clause ensures a stable ordering,
-    // because we are returning the result as a list for efficiency
-    // reasons. Conceptually the result is an unordered set.
+CrateTrackSelectIterator CrateStorage::selectCrateTracksSorted(CrateId crateId) const {
     FwdSqlQuery query(m_database, QString(
-            "SELECT %1 FROM %2 WHERE %3=:crateId ORDER BY %1").arg(
-                    CRATETRACKSTABLE_TRACKID,
+            "SELECT * FROM %1 WHERE %2=:crateId ORDER BY %3").arg(
                     CRATE_TRACKS_TABLE,
-                    CRATETRACKSTABLE_CRATEID));
+                    CRATETRACKSTABLE_CRATEID,
+                    CRATETRACKSTABLE_TRACKID));
     query.bindValue(":crateId", crateId);
     if (query.execPrepared()) {
         return CrateTrackSelectIterator(query);
     } else {
         return CrateTrackSelectIterator();
     }
+}
+
+
+CrateTrackSelectIterator CrateStorage::selectTrackCratesSorted(TrackId trackId) const {
+    FwdSqlQuery query(m_database, QString(
+            "SELECT * FROM %1 WHERE %2=:trackId ORDER BY %3").arg(
+                    CRATE_TRACKS_TABLE,
+                    CRATETRACKSTABLE_TRACKID,
+                    CRATETRACKSTABLE_CRATEID));
+    query.bindValue(":trackId", trackId);
+    if (query.execPrepared()) {
+        return CrateTrackSelectIterator(query);
+    } else {
+        return CrateTrackSelectIterator();
+    }
+}
+
+
+QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackIds) const {
+    // NOTE(uklotzde): One query per track id. This could be optimized
+    // by querying for chunks of track ids and collecting the results.
+    QSet<CrateId> trackCrates;
+    for (const auto& trackId: trackIds) {
+        CrateTrackSelectIterator iter(selectTrackCratesSorted(trackId));
+        while (iter.next()) {
+            DEBUG_ASSERT(iter.trackId() == trackId);
+            trackCrates.insert(iter.crateId());
+        }
+    }
+    return trackCrates;
 }
 
 
@@ -510,15 +493,6 @@ bool CrateStorage::onInsertingCrate(
 }
 
 
-void CrateStorage::afterInsertingCrate(
-        CrateId crateId) {
-    DEBUG_ASSERT(crateId.isValid());
-    DEBUG_ASSERT_AND_HANDLE(!m_deletedCratesCache.contains(crateId)) {
-        m_deletedCratesCache.remove(crateId);
-    }
-}
-
-
 bool CrateStorage::onUpdatingCrate(
         SqlTransaction& transaction,
         const Crate& crate) {
@@ -553,15 +527,6 @@ bool CrateStorage::onUpdatingCrate(
     } else {
         qWarning() << "Cannot update non-existent crate with id" << crate.getId();
         return false;
-    }
-}
-
-
-void CrateStorage::afterUpdatingCrate(
-        CrateId crateId) {
-    DEBUG_ASSERT(crateId.isValid());
-    DEBUG_ASSERT_AND_HANDLE(!m_deletedCratesCache.contains(crateId)) {
-        m_deletedCratesCache.remove(crateId);
     }
 }
 
@@ -617,18 +582,6 @@ bool CrateStorage::onDeletingCrate(
 }
 
 
-void CrateStorage::afterDeletingCrate(
-        CrateId crateId) {
-    DEBUG_ASSERT(crateId.isValid());
-    // NOTE (uklotzde): Updating the in-memory crates per track cache
-    // would be inefficient and is not necessary. The cache is rebuilt
-    // upon startup and the deleted crate id will never be reused.
-    // Instead we keep track of the deleted crates and perform some
-    // post-filtering if required.
-    m_deletedCratesCache.insert(crateId);
-}
-
-
 bool CrateStorage::onAddingCrateTracks(
         SqlTransaction& transaction,
         CrateId crateId,
@@ -658,15 +611,6 @@ bool CrateStorage::onAddingCrateTracks(
         }
     }
     return true;
-}
-
-
-void CrateStorage::afterAddingCrateTracks(
-        CrateId crateId,
-        const QList<TrackId>& trackIds) {
-    for (const auto& trackId: trackIds) {
-        m_trackCratesCache.insert(trackId, crateId);
-    }
 }
 
 
@@ -704,35 +648,14 @@ bool CrateStorage::onRemovingCrateTracks(
 }
 
 
-void CrateStorage::afterRemovingCrateTracks(
-        CrateId crateId,
-        const QList<TrackId>& trackIds) {
-    for (const auto& trackId: trackIds) {
-        m_trackCratesCache.remove(trackId, crateId);
-    }
-}
-
-
-QSet<CrateId> CrateStorage::afterHidingOrUnhidingTracks(const QList<TrackId>& trackIds) {
-    // Collect all crates from which contains tracks
-    QSet<CrateId> trackCrates;
-    for (const auto& trackId: trackIds) {
-        QList<CrateId> crateIds = m_trackCratesCache.values(trackId);
-        for (const auto& crateId: crateIds) {
-            trackCrates.insert(crateId);
-        }
-    }
-    return trackCrates;
-}
-
-
 bool CrateStorage::onPurgingTracks(
         SqlTransaction& transaction,
         const QList<TrackId>& trackIds) {
-    // NOTE(uklotzde): We remove tracks in a transaction and loop
-    // analogously to removing tracks from crates (see above).
     DEBUG_ASSERT(transaction);
 
+    // NOTE(uklotzde): Remove tracks from crates one-by-one.
+    // This might be optimized by deleting multiple track ids
+    // at once in chunks with a maximum size.
     FwdSqlQuery query(m_database, QString(
             "DELETE FROM %1 WHERE %2=:trackId").arg(
                     CRATE_TRACKS_TABLE,
@@ -747,28 +670,4 @@ bool CrateStorage::onPurgingTracks(
         }
     }
     return true;
-}
-
-
-QMap<CrateId, QList<TrackId>> CrateStorage::afterPurgingTracks(
-        const QList<TrackId>& trackIds) {
-    // Update the cache and collect all crates from which tracks
-    // have been purged
-    typedef QMap<CrateId, QList<TrackId>> CrateTracks;
-    CrateTracks purgedCrateTracks;
-    for (const auto& trackId: trackIds) {
-        QList<CrateId> crateIds = m_trackCratesCache.values(trackId);
-        for (const auto& crateId: crateIds) {
-            if (!m_deletedCratesCache.contains(crateId)) {
-                auto it = purgedCrateTracks.find(crateId);
-                if (it == purgedCrateTracks.end()) {
-                    it = purgedCrateTracks.insert(crateId, QList<TrackId>());
-                }
-                DEBUG_ASSERT(it != purgedCrateTracks.end());
-                it.value().append(trackId);
-            }
-        }
-        m_trackCratesCache.remove(trackId);
-    }
-    return purgedCrateTracks;
 }

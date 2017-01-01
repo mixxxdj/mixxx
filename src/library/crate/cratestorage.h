@@ -3,10 +3,8 @@
 
 
 #include <QObject>
-#include <QVector>
 #include <QList>
 #include <QSet>
-#include <QMultiHash>
 
 #include "library/crate/cratesummary.h"
 #include "track/trackid.h"
@@ -217,26 +215,17 @@ class CrateStorage: public SqlStorage {
             SqlTransaction& transaction,
             const Crate& crate,
             CrateId* pCrateId = nullptr);
-    void afterInsertingCrate(
-            CrateId crateId);
 
     bool onUpdatingCrate(
             SqlTransaction& transaction,
             const Crate& crate);
-    void afterUpdatingCrate(
-            CrateId crateId);
 
     bool onDeletingCrate(
             SqlTransaction& transaction,
             CrateId crateId);
-    void afterDeletingCrate(
-            CrateId crateId);
 
     bool onAddingCrateTracks(
             SqlTransaction& transaction,
-            CrateId crateId,
-            const QList<TrackId>& trackIds);
-    void afterAddingCrateTracks(
             CrateId crateId,
             const QList<TrackId>& trackIds);
 
@@ -244,19 +233,9 @@ class CrateStorage: public SqlStorage {
             SqlTransaction& transaction,
             CrateId crateId,
             const QList<TrackId>& trackIds);
-    void afterRemovingCrateTracks(
-            CrateId crateId,
-            const QList<TrackId>& trackIds);
-
-    // Returns the set of crate ids for which the crate
-    // summaries might have changed.
-    QSet<CrateId> afterHidingOrUnhidingTracks(
-            const QList<TrackId>& trackIds);
 
     bool onPurgingTracks(
             SqlTransaction& transaction,
-            const QList<TrackId>& trackIds);
-    QMap<CrateId, QList<TrackId>> afterPurgingTracks(
             const QList<TrackId>& trackIds);
 
 
@@ -290,13 +269,24 @@ class CrateStorage: public SqlStorage {
 
     // Crate content, i.e. the crate's tracks referenced by id
     uint countCrateTracks(CrateId crateId) const;
-    bool isCrateTrack(CrateId crateId, TrackId trackId) const; // cached, no db access
 
     // Format a subselect query for the tracks contained in crate.
     static QString formatSubselectQueryForCrateTrackIds(
             CrateId crateId); // no db access
 
-    CrateTrackSelectIterator selectCrateTracks(CrateId crateId) const;
+    // Select the track ids of a crate or the crate ids of a track respectively.
+    // The results are sorted (ascending) by the target id, i.e. the id that is
+    // not provided for filtering. This enables the caller to perform efficient
+    // binary searches on the result set after storing it in a list or vector.
+    CrateTrackSelectIterator selectCrateTracksSorted(
+            CrateId crateId) const;
+    CrateTrackSelectIterator selectTrackCratesSorted(
+            TrackId trackId) const;
+
+    // Returns the set of crate ids for crates that contain one ore more
+    // of the provided track ids.
+    QSet<CrateId> collectCrateIdsOfTracks(
+            const QList<TrackId>& trackIds) const;
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -316,13 +306,7 @@ class CrateStorage: public SqlStorage {
   private:
     void createViews();
 
-    void clearCaches();
-    void refreshCaches();
-
     QSqlDatabase m_database;
-
-    QSet<CrateId> m_deletedCratesCache;
-    QMultiHash<TrackId, CrateId> m_trackCratesCache;
 };
 
 
