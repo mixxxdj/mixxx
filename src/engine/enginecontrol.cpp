@@ -104,9 +104,9 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
-void EngineControl::seekAbs(double playPosition) {
+void EngineControl::seekAbs(double samplePosition) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekAbs(playPosition);
+        m_pEngineBuffer->slotControlSeekAbs(samplePosition);
     }
 }
 

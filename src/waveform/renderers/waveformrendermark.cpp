@@ -51,7 +51,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
         }
 
         double samplePosition = mark->getSamplePosition();
-        if (samplePosition > -1.0) {
+        if (samplePosition != -1.0) {
             double currentMarkPoint =
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
 
@@ -62,7 +62,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
                 // Check if the current point need to be displayed
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
-                    painter->drawImage(QPoint(currentMarkPoint - markHalfWidth,0), mark->m_image);
+                    painter->drawImage(QPoint(currentMarkPoint - markHalfWidth, 0), mark->m_image);
                 }
             } else {
                 const int markHalfHeight = mark->m_image.height() / 2.0;

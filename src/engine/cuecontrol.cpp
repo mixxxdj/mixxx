@@ -346,11 +346,10 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     hotcueClear(pControl, v);
 
     CuePointer pCue(m_pLoadedTrack->createAndAddCue());
+    double closestBeate = m_pClosestBeat->get();
     double cuePosition =
-            (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
-            floor(m_pClosestBeat->get()) : floor(getCurrentSample());
-    if (!even(static_cast<int>(cuePosition)))
-        cuePosition--;
+            (m_pQuantizeEnabled->toBool() && closestBeate != -1.0) ?
+                    closestBeate : getCurrentSample();
     pCue->setPosition(cuePosition);
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
@@ -557,12 +556,7 @@ void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPositi
             pCue->setHotCue(-1);
             detachCue(pControl->getHotcueNumber());
         } else if (newPosition > 0 && newPosition < m_pTrackSamples->get()) {
-            int position = newPosition;
-            // People writing from MIDI land, elsewhere might be careless.
-            if (position % 2 != 0) {
-                position--;
-            }
-            pCue->setPosition(position);
+            pCue->setPosition(newPosition);
         }
     }
 }
