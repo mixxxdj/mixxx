@@ -18,32 +18,32 @@ QString SqlStringFormatter::format(
     return pDriver->formatValue(stringField);
 }
 
+namespace {
+    template<typename T> // forward-iterable container type with values of type QString
+    QString formatListValues(
+            const QSqlDatabase& database,
+            const T& values) {
+        QString result;
+        QString previousString;
+        for (const QString& value: values) {
+            if (!previousString.isEmpty()) {
+                result.append(',');
+            }
+            previousString = SqlStringFormatter::format(database, value);
+            result += previousString;
+        }
+        return result;
+    }
+}
+
 QString SqlStringFormatter::formatList(
         const QSqlDatabase& database,
         const QStringList& values) {
-    QString result;
-    QString previousString;
-    for (const QString& value: values) {
-        if (!previousString.isEmpty()) {
-            result.append(',');
-        }
-        previousString = format(database, value);
-        result += previousString;
-    }
-    return result;
+    return formatListValues(database, values);
 }
 
 QString SqlStringFormatter::formatList(
         const QSqlDatabase& database,
         const QSet<QString>& values) {
-    QString result;
-    QString previousString;
-    for (const QString& value: values) {
-        if (!previousString.isEmpty()) {
-            result.append(',');
-        }
-        previousString = format(database, value);
-        result += previousString;
-    }
-    return result;
+    return formatListValues(database, values);
 }
