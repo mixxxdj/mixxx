@@ -147,10 +147,6 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         m_pControlNumParameters->forceSet(pEffect->numKnobParameters());
         m_pControlNumButtonParameters->forceSet(pEffect->numButtonParameters());
 
-        // Enabled is a persistent property of the effect slot, not of the
-        // effect. Propagate the current setting to the effect.
-        pEffect->setEnabled(m_pControlEnabled->get() > 0.0);
-
         connect(pEffect.data(), SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));
 
@@ -162,11 +158,11 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             addEffectButtonParameterSlot();
         }
 
-        foreach (EffectParameterSlotPointer pParameter, m_parameters) {
+        for (EffectParameterSlotPointer pParameter : m_parameters) {
             pParameter->loadEffect(pEffect);
         }
 
-        foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
+        for (EffectButtonParameterSlotPointer pParameter : m_buttonParameters) {
             pParameter->loadEffect(pEffect);
         }
 
