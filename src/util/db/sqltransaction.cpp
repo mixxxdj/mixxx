@@ -28,12 +28,12 @@ namespace {
 } // anonymous namespace
 
 SqlTransaction::SqlTransaction(QSqlDatabase database)
-    : m_database(database),
+    : m_database(database), // implicitly shared (not copied)
       m_active(beginTransaction(m_database)) {
 }
 
 SqlTransaction::SqlTransaction(SqlTransaction&& other)
-    : m_database(std::move(other.m_database)),
+    : m_database(std::move(other.m_database)), // implicitly shared (not moved)
       m_active(other.m_active) {
     other.release();
 }

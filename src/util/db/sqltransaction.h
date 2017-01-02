@@ -30,7 +30,7 @@ class SqlTransaction final {
     SqlTransaction& operator=(SqlTransaction&&) = delete;
 
   private:
-    QSqlDatabase m_database; // implicitly shared
+    QSqlDatabase m_database;
     bool m_active;
 };
 
