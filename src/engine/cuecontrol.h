@@ -26,9 +26,10 @@ class HotcueControl : public QObject {
 
     inline int getHotcueNumber() { return m_iHotcueNumber; }
     inline CuePointer getCue() { return m_pCue; }
-    inline void setCue(CuePointer pCue) { m_pCue = pCue; }
-    inline ControlObject* getPosition() { return m_hotcuePosition; }
-    inline ControlObject* getEnabled() { return m_hotcueEnabled; }
+    double getPosition() const;
+    void setCue(CuePointer pCue);
+    void resetCue();
+    void setPosition(double position);
 
     // Used for caching the preview state of this hotcue control.
     inline bool isPreviewing() { return m_bPreviewing; }

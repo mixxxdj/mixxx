@@ -170,10 +170,6 @@ void CueControl::attachCue(CuePointer pCue, int hotCue) {
             this, SLOT(cueUpdated()),
             Qt::DirectConnection);
 
-    pControl->getPosition()->set(pCue->getPosition());
-    pControl->getEnabled()->set(pCue->getPosition() == -1 ? 0.0 : 1.0);
-    // set pCue only if all other data is in place
-    // because we have a null check for valid data else where in the code
     pControl->setCue(pCue);
 
 }
@@ -187,11 +183,7 @@ void CueControl::detachCue(int hotCue) {
     if (!pCue)
         return;
     disconnect(pCue.get(), 0, this, 0);
-    // clear pCue first because we have a null check for valid data else where
-    // in the code
-    pControl->setCue(CuePointer());
-    pControl->getPosition()->set(-1); // invalidate position for hintReader()
-    pControl->getEnabled()->set(0);
+    pControl->resetCue();
 }
 
 void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -305,16 +297,7 @@ void CueControl::trackCuesUpdated() {
                 attachCue(pCue, hotcue);
             } else {
                 // If the old hotcue is the same, then we only need to update
-                double dOldPosition = pControl->getPosition()->get();
-                double dOldEnabled = pControl->getEnabled()->get();
-                double dPosition = pCue->getPosition();
-                double dEnabled = dPosition == -1 ? 0.0 : 1.0;
-                if (dEnabled != dOldEnabled) {
-                    pControl->getEnabled()->set(dEnabled);
-                }
-                if (dPosition != dOldPosition) {
-                    pControl->getPosition()->set(dPosition);
-                }
+                pControl->setPosition(pCue->getPosition());
             }
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
@@ -577,8 +560,8 @@ void CueControl::hintReader(HintVector* pHintList) {
     for (QList<HotcueControl*>::const_iterator it = m_hotcueControls.constBegin();
          it != m_hotcueControls.constEnd(); ++it) {
         HotcueControl* pControl = *it;
-        double position = pControl->getPosition()->get();
-        if (position != -1) {
+        double position = pControl->getPosition();
+        if (position != -1.0) {
             cue_hint.sample = position;
             if (cue_hint.sample % 2 != 0)
                 cue_hint.sample--;
@@ -1040,7 +1023,7 @@ HotcueControl::HotcueControl(QString group, int i)
     m_hotcuePosition->set(-1);
 
     m_hotcueEnabled = new ControlObject(keyForControl(i, "enabled"));
-    m_hotcueEnabled->set(0);
+    m_hotcueEnabled->setReadOnly();
 
     m_hotcueSet = new ControlPushButton(keyForControl(i, "set"));
     connect(m_hotcueSet, SIGNAL(valueChanged(double)),
@@ -1119,5 +1102,29 @@ void HotcueControl::slotHotcueClear(double v) {
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
+    m_hotcueEnabled->forceSet(newPosition == -1 ? 0.0 : 1.0);
     emit(hotcuePositionChanged(this, newPosition));
+}
+
+double HotcueControl::getPosition() const {
+    return m_hotcuePosition->get();
+}
+
+void HotcueControl::setCue(CuePointer pCue) {
+    setPosition(pCue->getPosition());
+    // set pCue only if all other data is in place
+    // because we have a null check for valid data else where in the code
+    m_pCue = pCue;
+}
+
+void HotcueControl::resetCue() {
+    // clear pCue first because we have a null check for valid data else where
+    // in the code
+    m_pCue.reset();
+    setPosition(-1.0);
+}
+
+void HotcueControl::setPosition(double position) {
+    m_hotcuePosition->set(position);
+    m_hotcueEnabled->forceSet(position == -1 ? 0.0 : 1.0);
 }
