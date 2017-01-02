@@ -1102,7 +1102,7 @@ class MixxxCore(Feature):
                    "util/db/dbconnection.cpp",
                    "util/db/dbid.cpp",
                    "util/db/fwdsqlquery.cpp",
-                   "util/db/sqllikeescaper.cpp",
+                   "util/db/sqllikewildcardescaper.cpp",
                    "util/db/sqlqueryfinisher.cpp",
                    "util/db/sqlselectiterator.cpp",
                    "util/db/sqlstringformatter.cpp",

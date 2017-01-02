@@ -1,12 +1,12 @@
-#ifndef MIXXX_SQLLIKEESCAPER_H
-#define MIXXX_SQLLIKEESCAPER_H
+#ifndef MIXXX_SQLLIKEWILDCARDESCAPER_H
+#define MIXXX_SQLLIKEWILDCARDESCAPER_H
 
 
 #include <QString>
 
 
 // Utility class for escaping like statements.
-class SqlLikeEscaper final {
+class SqlLikeWildcardEscaper final {
   public:
     // Escapes a string for use in a LIKE operation by prefixing instances of
     // LIKE wildcard characters (% and _) with escapeCharacter. This allows the
@@ -15,8 +15,8 @@ class SqlLikeEscaper final {
     static QString apply(const QString& escapeString, QChar escapeCharacter);
 
   private:
-    SqlLikeEscaper() = delete; // utility class
+    SqlLikeWildcardEscaper() = delete; // utility class
 };
 
 
-#endif // MIXXX_SQLLIKEESCAPER_H
+#endif // MIXXX_SQLLIKEWILDCARDESCAPER_H

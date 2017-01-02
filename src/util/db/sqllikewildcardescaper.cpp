@@ -1,7 +1,7 @@
-#include "util/db/sqllikeescaper.h"
+#include "util/db/sqllikewildcardescaper.h"
 
 
-QString SqlLikeEscaper::apply(const QString& escapeString, QChar escapeCharacter) {
+QString SqlLikeWildcardEscaper::apply(const QString& escapeString, QChar escapeCharacter) {
     QString escapeCharacterStr(escapeCharacter);
     QString result = escapeString;
     // Replace instances of escapeCharacter with two escapeCharacters.

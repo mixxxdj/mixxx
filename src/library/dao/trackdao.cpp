@@ -14,7 +14,7 @@
 #include "track/track.h"
 #include "library/queryutil.h"
 #include "util/db/sqlstringformatter.h"
-#include "util/db/sqllikeescaper.h"
+#include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqltransaction.h"
 #include "library/coverart.h"
 #include "library/coverartutils.h"
@@ -888,7 +888,7 @@ QList<TrackId> TrackDAO::getTrackIds(const QDir& dir) {
     // dir needs to end in a slash otherwise we might match other
     // directories.
     const QString dirPath = dir.absolutePath();
-    QString likeClause = SqlLikeEscaper::apply(dirPath + "/", '%') + "%";
+    QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", '%') + "%";
 
     QSqlQuery query(m_database);
     query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
@@ -1844,7 +1844,7 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
-    QString likeClause = SqlLikeEscaper::apply(dir + "/", '%') + "%";
+    QString likeClause = SqlLikeWildcardEscaper::apply(dir + "/", '%') + "%";
 
     QSqlQuery query(m_database);
     query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
