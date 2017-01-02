@@ -31,6 +31,13 @@ class CoverInfoRelative {
 
     CoverInfoRelative();
 
+    // all-default memory management
+    CoverInfoRelative(const CoverInfoRelative&) = default;
+    CoverInfoRelative(CoverInfoRelative&&) = default;
+    CoverInfoRelative& operator=(const CoverInfoRelative&) = default;
+    CoverInfoRelative& operator=(CoverInfoRelative&&) = default;
+    virtual ~CoverInfoRelative() = default;
+
     Source source;
     Type type;
     QString coverLocation; // relative path, from track location
@@ -50,6 +57,13 @@ class CoverInfo : public CoverInfoRelative {
           trackLocation(tl) {
     }
 
+    // all-default memory management
+    CoverInfo(const CoverInfo&) = default;
+    CoverInfo(CoverInfo&&) = default;
+    CoverInfo& operator=(const CoverInfo&) = default;
+    CoverInfo& operator=(CoverInfo&&) = default;
+    virtual ~CoverInfo() override = default;
+
     QString trackLocation;
 };
 
@@ -68,6 +82,13 @@ class CoverArt : public CoverInfo {
           image(img),
           resizedToWidth(rtw) {
     }
+
+    // all-default memory management
+    CoverArt(const CoverArt&) = default;
+    CoverArt(CoverArt&&) = default;
+    CoverArt& operator=(const CoverArt&) = default;
+    CoverArt& operator=(CoverArt&&) = default;
+    virtual ~CoverArt() override = default;
 
     // it is not a QPixmap, because it is not safe to use pixmaps 
     // outside the GUI thread

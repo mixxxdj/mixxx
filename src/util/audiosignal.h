@@ -71,6 +71,13 @@ public:
         DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate); // unsigned value
     }
 
+    // all-default memory management
+    AudioSignal(const AudioSignal&) = default;
+    AudioSignal(AudioSignal&&) = default;
+    AudioSignal& operator=(const AudioSignal&) = default;
+    AudioSignal& operator=(AudioSignal&&) = default;
+    virtual ~AudioSignal() = default;
+
     // Returns the ordering of samples in contiguous buffers
     SampleLayout getSampleLayout() const {
         return m_sampleLayout;

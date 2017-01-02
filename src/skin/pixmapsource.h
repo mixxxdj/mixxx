@@ -6,7 +6,7 @@
 
 // A class representing an image source for a pixmap
 // A bundle of a file path, raw data or inline svg
-class PixmapSource {
+class PixmapSource final {
   public:
     PixmapSource();
     PixmapSource(const QString& filepath);
