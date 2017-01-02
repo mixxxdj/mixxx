@@ -243,10 +243,10 @@ class Track : public QObject {
     void setAnalyzerProgress(int progress);
     int getAnalyzerProgress() const;
 
-    /** Save the cue point (in samples... I think) */
-    void setCuePoint(float cue);
+    // Save the cue point in samples
+    void setCuePoint(double cue);
     // Get saved the cue point
-    float getCuePoint() const;
+    double getCuePoint() const;
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue();
@@ -382,8 +382,9 @@ class Track : public QObject {
     // Track rating
     int m_iRating;
 
-    // Cue point in samples or something
-    float m_fCuePoint;
+    // Cue point in samples
+    double m_cuePoint;
+
     // Date the track was added to the library
     QDateTime m_dateAdded;
 

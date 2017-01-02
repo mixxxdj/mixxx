@@ -49,7 +49,7 @@ Track::Track(
           m_id(trackId),
           m_bDirty(false),
           m_iRating(0),
-          m_fCuePoint(0.0f),
+          m_cuePoint(0.0f),
           m_dateAdded(QDateTime::currentDateTime()),
           m_bHeaderParsed(false),
           m_bBpmLocked(false),
@@ -697,9 +697,9 @@ int Track::getAnalyzerProgress() const {
     return load_atomic(m_analyzerProgress);
 }
 
-void Track::setCuePoint(float cue) {
+void Track::setCuePoint(double cue) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_fCuePoint, cue)) {
+    if (compareAndSet(&m_cuePoint, cue)) {
         // Store the cue point in a load cue
         CuePointer pLoadCue;
         for (const CuePointer& pCue: m_cuePoints) {
@@ -726,9 +726,9 @@ void Track::setCuePoint(float cue) {
     }
 }
 
-float Track::getCuePoint() const {
+double Track::getCuePoint() const {
     QMutexLocker lock(&m_qMutex);
-    return m_fCuePoint;
+    return m_cuePoint;
 }
 
 void Track::slotCueUpdated() {

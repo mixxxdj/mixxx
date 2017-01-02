@@ -579,11 +579,9 @@ void CueControl::cueSet(double v) {
         return;
 
     QMutexLocker lock(&m_mutex);
-    double cue = (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
-            floor(m_pClosestBeat->get()) : floor(getCurrentSample());
-    if (!even(static_cast<int>(cue))) {
-        cue--;
-    }
+    double closestBeat = m_pClosestBeat->get();
+    double cue = (m_pQuantizeEnabled->get() > 0.0 && closestBeat != -1) ?
+            closestBeat : getCurrentSample();
     m_pCuePoint->set(cue);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
