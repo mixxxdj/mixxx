@@ -31,9 +31,10 @@ EffectSlot::EffectSlot(const QString& group,
 
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
-    // Default to enabled. The skin might not show these buttons.
-    m_pControlEnabled->setDefaultValue(true);
-    m_pControlEnabled->set(true);
+    // Default to disabled to prevent accidental activation of effects
+    // at the beginning of a set.
+    m_pControlEnabled->setDefaultValue(false);
+    m_pControlEnabled->set(false);
     connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotEnabled(double)));
 
