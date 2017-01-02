@@ -9,15 +9,15 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Set up BeatGrids for decks 1 and 2.
     const double bpm = 60.0;
     const double firstBeat = 0.0;
-    BeatGrid grid1(*m_pTrack1, m_pTrack1->getSampleRate());
-    grid1.setGrid(bpm, firstBeat);
-    m_pTrack1->setBeats(QSharedPointer<Beats>(&grid1));
-    ASSERT_DOUBLE_EQ(firstBeat, grid1.findClosestBeat(0));
+    auto grid1 = new BeatGrid(*m_pTrack1, m_pTrack1->getSampleRate());
+    grid1->setGrid(bpm, firstBeat);
+    m_pTrack1->setBeats(BeatsPointer(grid1));
+    ASSERT_DOUBLE_EQ(firstBeat, grid1->findClosestBeat(0));
 
-    BeatGrid grid2(*m_pTrack2, m_pTrack2->getSampleRate());
-    grid2.setGrid(bpm, firstBeat);
-    m_pTrack2->setBeats(QSharedPointer<Beats>(&grid2));
-    ASSERT_DOUBLE_EQ(firstBeat, grid2.findClosestBeat(0));
+    auto grid2 = new BeatGrid(*m_pTrack2, m_pTrack2->getSampleRate());
+    grid2->setGrid(bpm, firstBeat);
+    m_pTrack2->setBeats(BeatsPointer(grid2));
+    ASSERT_DOUBLE_EQ(firstBeat, grid2->findClosestBeat(0));
 
     // Seek deck 1 forward a bit.
     const double delta = 2222.0;
@@ -40,12 +40,13 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     ProcessBuffer();
 
     // Push the button on deck 2.
-    QScopedPointer<ControlProxy> (getControlProxy(
-            ConfigKey(m_sGroup2, "beats_translate_match_alignment")))->set(1.0);
+    QScopedPointer<ControlProxy> pTranslateMatchAlignment(getControlProxy(
+        ConfigKey(m_sGroup2, "beats_translate_match_alignment")));
+    pTranslateMatchAlignment->set(1.0);
     ProcessBuffer();
 
     // Deck 1 is +delta away from its closest beat (which is at 0).
     // Deck 2 was left at 0. We translated grid 2 so that it is also +delta
     // away from its closest beat, so that beat should be at -delta.
-    ASSERT_DOUBLE_EQ(-delta, grid2.findClosestBeat(0));
+    ASSERT_DOUBLE_EQ(-delta, grid2->findClosestBeat(0));
 }
