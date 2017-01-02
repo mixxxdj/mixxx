@@ -728,11 +728,9 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
                    ConfigValue(BaseTrackPlayer::RESET_SPEED));
 
     // Enable sync on two stopped decks
-    m_pMixerDeck1->setupEqControls();
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     pButtonSyncEnabled1->slotSet(1.0);
 
-    m_pMixerDeck2->setupEqControls();
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->slotSet(1.0);
 
