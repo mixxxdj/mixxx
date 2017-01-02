@@ -3,7 +3,6 @@
 
 extern "C" {
 
-#include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 
 #ifndef __FFMPEGOLDAPI__
@@ -61,10 +60,82 @@ class SoundSourceFFmpeg : public SoundSource {
 
     unsigned int read(unsigned long size, SAMPLE*);
 
-    AVFormatContext *m_pFormatCtx;
-    int m_iAudioStream;
-    AVCodecContext *m_pCodecCtx;
-    AVCodec *m_pCodec;
+    static AVFormatContext* openInputFile(const QString& fileName);
+
+    // Takes ownership of an input format context and ensures that
+    // the corresponding AVFormatContext is closed, either explicitly
+    // or implicitly by the destructor. The wrapper can only be
+    // moved, copying is disabled.
+    class ClosableInputAVFormatContextPtr final {
+    public:
+        explicit ClosableInputAVFormatContextPtr(AVFormatContext* pClosableInputFormatContext = nullptr)
+            : m_pClosableInputFormatContext(pClosableInputFormatContext) {
+        }
+        explicit ClosableInputAVFormatContextPtr(const ClosableInputAVFormatContextPtr&) = delete;
+        explicit ClosableInputAVFormatContextPtr(ClosableInputAVFormatContextPtr&& that)
+            : m_pClosableInputFormatContext(that.m_pClosableInputFormatContext) {
+            that.m_pClosableInputFormatContext = nullptr;
+        }
+        ~ClosableInputAVFormatContextPtr() {
+            close();
+        }
+
+        void take(AVFormatContext** ppClosableInputFormatContext);
+
+        void close();
+
+        friend void swap(ClosableInputAVFormatContextPtr& lhs, ClosableInputAVFormatContextPtr& rhs) {
+            std::swap(lhs.m_pClosableInputFormatContext, rhs.m_pClosableInputFormatContext);
+        }
+
+        ClosableInputAVFormatContextPtr& operator=(const ClosableInputAVFormatContextPtr&) = delete;
+        ClosableInputAVFormatContextPtr& operator=(ClosableInputAVFormatContextPtr&& that) = delete;
+
+        AVFormatContext* operator->() { return m_pClosableInputFormatContext; }
+        operator AVFormatContext*() { return m_pClosableInputFormatContext; }
+
+    private:
+        AVFormatContext* m_pClosableInputFormatContext;
+    };
+    ClosableInputAVFormatContextPtr m_pInputFormatContext;
+
+    static OpenResult openAudioStream(AVStream* pAudioStream);
+
+    // Takes ownership of an opened (audio) stream and ensures that
+    // the corresponding AVStream is closed, either explicitly or
+    // implicitly by the destructor. The wrapper can only be moved,
+    // copying is disabled.
+    class ClosableAVStreamPtr final {
+    public:
+        explicit ClosableAVStreamPtr(AVStream* pClosableStream = nullptr)
+            : m_pClosableStream(pClosableStream) {
+        }
+        explicit ClosableAVStreamPtr(const ClosableAVStreamPtr&) = delete;
+        explicit ClosableAVStreamPtr(ClosableAVStreamPtr&& that)
+            : m_pClosableStream(that.m_pClosableStream) {
+            that.m_pClosableStream = nullptr;
+        }
+        ~ClosableAVStreamPtr() {
+            close();
+        }
+
+        void take(AVStream** ppClosableStream);
+        void close();
+
+        friend void swap(ClosableAVStreamPtr& lhs, ClosableAVStreamPtr& rhs) {
+            std::swap(lhs.m_pClosableStream, rhs.m_pClosableStream);
+        }
+
+        ClosableAVStreamPtr& operator=(const ClosableAVStreamPtr&) = delete;
+        ClosableAVStreamPtr& operator=(ClosableAVStreamPtr&& that) = delete;
+
+        AVStream* operator->() { return m_pClosableStream; }
+        operator AVStream*() { return m_pClosableStream; }
+
+    private:
+        AVStream* m_pClosableStream;
+    };
+    ClosableAVStreamPtr m_pAudioStream;
 
     std::unique_ptr<EncoderFfmpegResample> m_pResample;
 
@@ -102,7 +173,7 @@ class SoundSourceProviderFFmpeg: public SoundSourceProvider {
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceFFmpeg(url));
+        return newSoundSourceFromUrl<SoundSourceFFmpeg>(url);
     }
 };
 

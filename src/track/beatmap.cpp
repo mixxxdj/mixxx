@@ -58,50 +58,39 @@ class BeatMapIterator : public BeatIterator {
     BeatList::const_iterator m_endBeat;
 };
 
-BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
-                 const QByteArray* pByteArray)
-        : QObject(),
-          m_mutex(QMutex::Recursive) {
-    initialize(pTrack, iSampleRate);
-    if (nullptr != pByteArray) {
-        readByteArray(*pByteArray);
-    }
+BeatMap::BeatMap(const Track& track, SINT iSampleRate)
+        : m_mutex(QMutex::Recursive),
+          m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
+          m_dCachedBpm(0),
+          m_dLastFrame(0) {
+    // BeatMap should live in the same thread as the track it is associated
+    // with.
+    moveToThread(track.thread());
 }
 
-BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
+BeatMap::BeatMap(const Track& track, SINT iSampleRate,
+                 const QByteArray& byteArray)
+    : BeatMap(track, iSampleRate) {
+    readByteArray(byteArray);
+}
+
+BeatMap::BeatMap(const Track& track, SINT iSampleRate,
                  const QVector<double>& beats)
-        : QObject(),
-          m_mutex(QMutex::Recursive) {
-    initialize(pTrack, iSampleRate);
+        : BeatMap(track, iSampleRate) {
     if (beats.size() > 0) {
         createFromBeatVector(beats);
     }
 }
 
-void BeatMap::initialize(TrackPointer pTrack, int iSampleRate) {
-    m_iSampleRate = iSampleRate > 0 ? iSampleRate : pTrack->getSampleRate();
-    m_dCachedBpm = 0;
-    m_dLastFrame = 0;
-
-    if (!pTrack.isNull()) {
-        // BeatMap should live in the same thread as the track it is associated
-        // with.
-        moveToThread(pTrack->thread());
-    }
-}
-
 BeatMap::BeatMap (const BeatMap& other)
         : QObject(),
-          m_mutex(QMutex::Recursive) {
-    m_iSampleRate = other.m_iSampleRate;
-    m_dCachedBpm = other.m_dCachedBpm;
-    m_dLastFrame = other.m_dLastFrame;
+          m_mutex(QMutex::Recursive),
+          m_subVersion(other.m_subVersion),
+          m_iSampleRate(other.m_iSampleRate),
+          m_dCachedBpm(other.m_dCachedBpm),
+          m_dLastFrame(other.m_dLastFrame),
+          m_beats(other.m_beats) {
     moveToThread(other.thread());
-    m_subVersion = other.m_subVersion;
-    m_beats = other.m_beats;
-}
-
-BeatMap::~BeatMap() {
 }
 
 QByteArray BeatMap::toByteArray() const {

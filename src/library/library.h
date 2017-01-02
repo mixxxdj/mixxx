@@ -134,6 +134,7 @@ public:
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
+    QScopedPointer<ControlObject> m_pKeyNotation;
 };
 
 #endif /* LIBRARY_H */

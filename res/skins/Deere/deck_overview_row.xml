@@ -27,7 +27,7 @@
         <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
         <PlayPosColor>#00FF00</PlayPosColor>
         <DefaultMark>
-          <Align>bottom</Align>
+          <Align>bottom|right</Align>
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
@@ -41,7 +41,7 @@
         </MarkRange>
         <Mark>
           <Control>cue_point</Control>
-          <Align>top</Align>
+          <Align>top|right</Align>
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text>C</Text>

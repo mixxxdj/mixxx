@@ -125,15 +125,25 @@ void EngineRecord::updateFromPreferences() {
 
 bool EngineRecord::metaDataHasChanged()
 {
+    //Originally, m_iMetaDataLife was used so that getCurrentPlayingTrack was called
+    //less often, because it was calculating it.
+    //Nowadays (since Mixxx 1.11), it just accesses a map on a thread safe method.
+    TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
+    if (!pTrack) {
+        m_iMetaDataLife = kMetaDataLifeTimeout;
+        return false;
+    }
+
+    //The counter is kept so that changes back and forth with the faders/crossfader
+    //(like in scratching or other effects) are not counted as multiple track changes
+    //in the cue file. A better solution could consist of a signal from PlayerInfo and
+    //a slot that decides if the changes received are valid or are to be ignored once
+    //the next process call comes. This could also help improve the time written in the CUE.
     if (m_iMetaDataLife < kMetaDataLifeTimeout) {
         m_iMetaDataLife++;
         return false;
     }
     m_iMetaDataLife = 0;
-
-    TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    if (!pTrack)
-        return false;
 
     if (m_pCurrentTrack) {
         if (!pTrack->getId().isValid() || !m_pCurrentTrack->getId().isValid()) {
@@ -160,6 +170,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (fileOpen()) {
             Event::end("EngineRecord recording");
             closeFile();  // Close file and free encoder.
+            if (m_bCueIsEnabled) {
+                closeCueFile();
+            }
             emit(isRecording(false, false));
         }
     } else if (recordingStatus == RECORD_READY) {
@@ -174,7 +187,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
             // Since we just started recording, timeout and clear the metadata.
             m_iMetaDataLife = kMetaDataLifeTimeout;
-            m_pCurrentTrack = TrackPointer();
+            m_pCurrentTrack.reset();
 
             // clean frames couting and get current sample rate.
             m_frames = 0;
@@ -191,7 +204,43 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // An error occurred.
             emit(isRecording(false, true));
         }
-    } else if (recordingStatus == RECORD_ON) {
+    } else if (recordingStatus == RECORD_SPLIT_CONTINUE) {
+        if (fileOpen()) {
+            closeFile();  // Close file and free encoder.
+            if (m_bCueIsEnabled) {
+                closeCueFile();
+            }
+        }
+        updateFromPreferences();  // Update file location from preferences.
+        if (openFile()) {
+            qDebug() << "Splitting to a new file: "<< m_fileName;
+            m_pRecReady->set(RECORD_ON);
+            emit(isRecording(true, false));  // will notify the RecordingManager
+
+            // Since we just started recording, timeout and clear the metadata.
+            m_iMetaDataLife = kMetaDataLifeTimeout;
+            m_pCurrentTrack.reset();
+
+            // clean frames counting and get current sample rate.
+            m_frames = 0;
+            m_sampleRate = m_pSamplerate->get();
+            m_recordedDuration = 0;
+
+            if (m_bCueIsEnabled) {
+                openCueFile();
+                m_cueTrack = 0;
+            }
+        } else {  // Maybe the encoder could not be initialized
+            qDebug() << "Could not open" << m_fileName << "for writing.";
+            Event::end("EngineRecord recording");
+            qDebug("Setting record flag to: OFF");
+            m_pRecReady->slotSet(RECORD_OFF);
+            // An error occurred.
+            emit(isRecording(false, true));
+        }
+    }
+
+    if (recordingStatus == RECORD_ON || recordingStatus == RECORD_SPLIT_CONTINUE) {
         // If recording is enabled process audio to compressed or uncompressed data.
         if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF) {
             if (m_pSndfile != NULL) {
@@ -205,6 +254,16 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
                 m_pEncoder->encodeBuffer(pBuffer, iBufferSize);
             }
         }
+        
+        //Writing cueLine before updating the time counter since we preffer to be ahead
+        //rather than late.
+        if (m_bCueIsEnabled) {
+            if (metaDataHasChanged()) {
+                m_cueTrack++;
+                writeCueLine();
+                m_cueFile.flush();
+            }
+        }
 
         // update frames counting and recorded duration (seconds)
         m_frames += iBufferSize / 2;
@@ -214,15 +273,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // gets recorded duration and emit signal that will be used
         // by RecordingManager to update the label besides start/stop button
         if (lastDuration != m_recordedDuration) {
-            emit(durationRecorded(getRecordedDurationStr()));
-        }
-
-        if (m_bCueIsEnabled) {
-            if (metaDataHasChanged()) {
-                m_cueTrack++;
-                writeCueLine();
-                m_cueFile.flush();
-            }
+            emit(durationRecorded(m_recordedDuration));
         }
     }
 }
@@ -308,6 +359,10 @@ bool EngineRecord::openFile() {
 #endif
         if (m_pSndfile) {
             sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_TRUE);
+            // Warning! Depending on how libsndfile is compiled autoclip may not work.
+            // Ensure CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE is setup properly in the build.
+            sf_command(m_pSndfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
+
             // Set meta data
             int ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_baTitle.constData());
             if (ret != 0) {
@@ -370,7 +425,8 @@ bool EngineRecord::openCueFile() {
     }
 
     m_cueFile.write(QString("FILE \"%1\" %2%3\n").arg(
-        QString(m_fileName).replace(QString("\""), QString("\\\"")),
+        QFileInfo(m_fileName).fileName() //strip path
+            .replace(QString("\""), QString("\\\"")), // escape doublequote
         QString(m_encoding).toUpper(),
         m_encoding == ENCODING_WAVE ? "E" : " ").toLatin1());
     return true;

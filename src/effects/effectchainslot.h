@@ -106,9 +106,6 @@ class EffectChainSlot : public QObject {
     void slotClearEffect(unsigned int iEffectSlotNumber);
 
     void slotControlClear(double v);
-    void slotControlNumEffects(double v);
-    void slotControlNumEffectSlots(double v);
-    void slotControlChainLoaded(double v);
     void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
     void slotControlChainSuperParameter(double v);

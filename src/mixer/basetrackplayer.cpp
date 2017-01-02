@@ -17,6 +17,7 @@
 #include "util/sandbox.h"
 #include "effects/effectsmanager.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#include "engine/sync/enginesync.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
         : BasePlayer(pParent, group) {
@@ -32,6 +33,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                                          bool defaultHeadphones)
         : BaseTrackPlayer(pParent, group),
           m_pConfig(pConfig),
+          m_pEngineMaster(pMixingEngine),
           m_pLoadedTrack(),
           m_pLowFilter(NULL),
           m_pMidFilter(NULL),
@@ -106,10 +108,10 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     if (m_pLoadedTrack) {
         emit(loadingTrack(TrackPointer(), m_pLoadedTrack));
-        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
-        disconnect(m_pLoadedTrack.data(), 0, this, 0);
-        disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
-        m_pLoadedTrack.clear();
+        disconnect(m_pLoadedTrack.get(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.get(), 0, this, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pKey, 0);
+        m_pLoadedTrack.reset();
     }
 
     delete m_pDuration;
@@ -121,7 +123,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     qDebug() << "BaseTrackPlayerImpl::slotLoadTrack";
     // Before loading the track, ensure we have access. This uses lazy
     // evaluation to make sure track isn't NULL before we dereference it.
-    if (!pNewTrack.isNull() && !Sandbox::askForAccess(pNewTrack->getCanonicalLocation())) {
+    if (pNewTrack && !Sandbox::askForAccess(pNewTrack->getCanonicalLocation())) {
         // We don't have access.
         return;
     }
@@ -156,9 +158,9 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
         // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
         // relies on signals and slots to get tons of things done. Don't
         // randomly disconnect things.
-        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
-        disconnect(m_pLoadedTrack.data(), 0, this, 0);
-        disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.get(), 0, this, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pKey, 0);
 
         // Do not reset m_pReplayGain here, because the track might be still
         // playing and the last buffer will be processed.
@@ -169,14 +171,14 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     m_pLoadedTrack = pNewTrack;
     if (m_pLoadedTrack) {
         // Listen for updates to the file's BPM
-        connect(m_pLoadedTrack.data(), SIGNAL(bpmUpdated(double)),
+        connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
                 m_pBPM, SLOT(set(double)));
 
-        connect(m_pLoadedTrack.data(), SIGNAL(keyUpdated(double)),
+        connect(m_pLoadedTrack.get(), SIGNAL(keyUpdated(double)),
                 m_pKey, SLOT(set(double)));
 
         // Listen for updates to the file's Replay Gain
-        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
+        connect(m_pLoadedTrack.get(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
                 this, SLOT(slotSetReplayGain(mixxx::ReplayGain)));
     }
 
@@ -189,17 +191,17 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     emit(loadingTrack(pNewTrack, pOldTrack));
 }
 
-void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer track, QString reason) {
+void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, QString reason) {
     // Note: This slot can be a load failure from the current track or a
     // a delayed signal from a previous load.
     // We have probably received a slotTrackLoaded signal, of an old track that
     // was loaded before. Here we must unload the
     // We must unload the track m_pLoadedTrack as well
-    if (track == m_pLoadedTrack) {
-        qDebug() << "Failed to load track" << track->getLocation() << reason;
-        slotTrackLoaded(TrackPointer(), track);
-    } else if (!track.isNull()) {
-        qDebug() << "Stray failed to load track" << track->getLocation() << reason;
+    if (pTrack == m_pLoadedTrack) {
+        qDebug() << "Failed to load track" << pTrack->getLocation() << reason;
+        slotTrackLoaded(TrackPointer(), pTrack);
+    } else if (pTrack) {
+        qDebug() << "Stray failed to load track" << pTrack->getLocation() << reason;
     } else {
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }
@@ -210,17 +212,17 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer track, QString reason) {
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                                           TrackPointer pOldTrack) {
     qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded";
-    if (pNewTrack.isNull() &&
-            !pOldTrack.isNull() &&
+    if (!pNewTrack &&
+            pOldTrack &&
             pOldTrack == m_pLoadedTrack) {
         // eject Track
         // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
         // relies on signals and slots to get tons of things done. Don't
         // randomly disconnect things.
         // m_pLoadedTrack->disconnect();
-        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
-        disconnect(m_pLoadedTrack.data(), 0, this, 0);
-        disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.get(), 0, this, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pKey, 0);
 
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to change the track and update themselves.
@@ -231,9 +233,9 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         setReplayGain(0);
         m_pLoopInPoint->set(-1);
         m_pLoopOutPoint->set(-1);
-        m_pLoadedTrack.clear();
+        m_pLoadedTrack.reset();
         emit(playerEmpty());
-    } else if (!pNewTrack.isNull() && pNewTrack == m_pLoadedTrack) {
+    } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
         // Successful loaded a new track
         // Reload metadata from file, but only if required
         SoundSourceProxy(m_pLoadedTrack).loadTrackMetadata();
@@ -289,24 +291,19 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         int reset = m_pConfig->getValueString(ConfigKey(
                 "[Controls]", "SpeedAutoReset"),
                 QString("%1").arg(RESET_PITCH)).toInt();
-        switch (reset) {
-          case RESET_PITCH_AND_SPEED:
-            // Note: speed may affect pitch
-            if (m_pRateSlider != NULL) {
-                m_pRateSlider->set(0.0);
+        if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
+            // Avoid reseting speed if master sync is enabled and other decks with sync enabled
+            // are playing, as this would change the speed of already playing decks.
+            if (! m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
+                if (m_pRateSlider != NULL) {
+                    m_pRateSlider->set(0.0);
+                }
             }
-            M_FALLTHROUGH_INTENDED;
-          case RESET_PITCH:
+        }
+        if (reset == RESET_PITCH || reset == RESET_PITCH_AND_SPEED) {
             if (m_pPitchAdjust != NULL) {
                 m_pPitchAdjust->set(0.0);
             }
-            break;
-          case RESET_SPEED:
-            // Note: speed may affect pitch
-            if (m_pRateSlider != NULL) {
-                m_pRateSlider->set(0.0);
-            }
-            break;
         }
         emit(newTrackLoaded(m_pLoadedTrack));
     } else {

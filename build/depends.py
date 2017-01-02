@@ -971,6 +971,7 @@ class MixxxCore(Feature):
 
                    "waveform/renderers/waveformrenderersignalbase.cpp",
                    "waveform/renderers/waveformmark.cpp",
+                   "waveform/renderers/waveformmarkproperties.cpp",
                    "waveform/renderers/waveformmarkset.cpp",
                    "waveform/renderers/waveformmarkrange.cpp",
                    "waveform/renderers/glwaveformrenderersimplesignal.cpp",
@@ -1073,6 +1074,7 @@ class MixxxCore(Feature):
                    "util/rotary.cpp",
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
+                   "util/audiosignal.cpp",
 
                    '#res/mixxx.qrc'
                    ]

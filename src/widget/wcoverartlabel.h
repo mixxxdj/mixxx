@@ -16,10 +16,10 @@ class WCoverArtLabel : public QLabel {
     explicit WCoverArtLabel(QWidget* parent = nullptr);
     ~WCoverArtLabel() override;
 
-    void setCoverArt(const QString& trackLocation, const CoverInfo& coverInfo, QPixmap px);
+    void setCoverArt(const CoverInfo& coverInfo, QPixmap px);
 
   signals:
-    void coverArtSelected(const CoverArt& art);
+    void coverInfoSelected(const CoverInfo& coverInfo);
     void reloadCoverArt();
 
   protected:
@@ -30,7 +30,7 @@ class WCoverArtLabel : public QLabel {
       void slotCoverMenu(const QPoint& pos);
 
   private:
-    CoverInfo m_coverInfo;
+    QPixmap m_loadedCover;
     WCoverArtMenu* m_pCoverMenu;
     DlgCoverArtFullSize* m_pDlgFullSize;
     QPixmap m_defaultCover;

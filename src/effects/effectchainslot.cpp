@@ -17,16 +17,13 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
             this, SLOT(slotControlClear(double)));
 
     m_pControlNumEffects = new ControlObject(ConfigKey(m_group, "num_effects"));
-    m_pControlNumEffects->connectValueChangeRequest(
-        this, SLOT(slotControlNumEffects(double)));
+    m_pControlNumEffects->setReadOnly();
 
     m_pControlNumEffectSlots = new ControlObject(ConfigKey(m_group, "num_effectslots"));
-    m_pControlNumEffectSlots->connectValueChangeRequest(
-        this, SLOT(slotControlNumEffectSlots(double)));
+    m_pControlNumEffectSlots->setReadOnly();
 
     m_pControlChainLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
-    m_pControlChainLoaded->connectValueChangeRequest(
-        this, SLOT(slotControlChainLoaded(double)));
+    m_pControlChainLoaded->setReadOnly();
 
     m_pControlChainEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlChainEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -162,7 +159,7 @@ void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
             if (pSlot)
                 pSlot->loadEffect(pEffect);
         }
-        m_pControlNumEffects->setAndConfirm(math_min(
+        m_pControlNumEffects->forceSet(math_min(
             static_cast<unsigned int>(m_slots.size()),
             m_pEffectChain->numEffects()));
         if (shouldEmit) {
@@ -194,7 +191,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         connect(m_pEffectChain.data(), SIGNAL(channelStatusChanged(const QString&, bool)),
                 this, SLOT(slotChainChannelStatusChanged(const QString&, bool)));
 
-        m_pControlChainLoaded->setAndConfirm(true);
+        m_pControlChainLoaded->forceSet(true);
         m_pControlChainInsertionType->set(m_pEffectChain->insertionType());
 
         // Mix and enabled channels are persistent properties of the chain slot,
@@ -232,8 +229,8 @@ void EffectChainSlot::clear() {
         m_pEffectChain->disconnect(this);
         m_pEffectChain.clear();
     }
-    m_pControlNumEffects->setAndConfirm(0.0);
-    m_pControlChainLoaded->setAndConfirm(0.0);
+    m_pControlNumEffects->forceSet(0.0);
+    m_pControlChainLoaded->forceSet(0.0);
     m_pControlChainInsertionType->set(EffectChain::INSERT);
     emit(updated());
 }
@@ -260,7 +257,7 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
-    m_pControlNumEffectSlots->setAndConfirm(m_pControlNumEffectSlots->get() + 1);
+    m_pControlNumEffectSlots->forceSet(m_pControlNumEffectSlots->get() + 1);
     return pSlot;
 }
 
@@ -306,27 +303,6 @@ void EffectChainSlot::slotControlClear(double v) {
     if (v > 0) {
         clear();
     }
-}
-
-void EffectChainSlot::slotControlNumEffects(double v) {
-    // Ignore sets to num_effects.
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotControlNumEffects" << v;
-    qWarning() << "WARNING: num_effects is a read-only control.";
-}
-
-void EffectChainSlot::slotControlNumEffectSlots(double v) {
-    // Ignore sets to num_effectslots.
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotControlNumEffectSlots" << v;
-    qWarning() << "WARNING: num_effectslots is a read-only control.";
-}
-
-void EffectChainSlot::slotControlChainLoaded(double v) {
-    // Ignore sets to loaded.
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotControlChainLoaded" << v;
-    qWarning() << "WARNING: loaded is a read-only control.";
 }
 
 void EffectChainSlot::slotControlChainEnabled(double v) {

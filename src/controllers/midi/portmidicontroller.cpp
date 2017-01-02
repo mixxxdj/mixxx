@@ -7,6 +7,7 @@
  *
  */
 
+#include "controllers/midi/midiutils.h"
 #include "controllers/midi/portmidicontroller.h"
 #include "controllers/controllerdebug.h"
 
@@ -203,14 +204,29 @@ bool PortMidiController::poll() {
     return numEvents > 0;
 }
 
-void PortMidiController::sendWord(unsigned int word) {
+void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
+                                      unsigned char byte2) {
     if (m_pOutputDevice.isNull() || !m_pOutputDevice->isOpen()) {
         return;
     }
 
+    unsigned int word = (((unsigned int)byte2) << 16) |
+                         (((unsigned int)byte1) << 8) | status;
+
     PmError err = m_pOutputDevice->writeShort(word);
-    if (err != pmNoError) {
-        qWarning() << "PortMidi sendShortMsg error:" << Pm_GetErrorText(err);
+    if (err == pmNoError) {
+        controllerDebug(MidiUtils::formatMidiMessage(getName(),
+                                                     status, byte1, byte2,
+                                                     MidiUtils::channelFromStatus(status),
+                                                     MidiUtils::opCodeFromStatus(status)));
+    } else {
+        // Use two qWarnings() to ensure line break works on all operating systems
+        qWarning() << "Error sending short message"
+                      << MidiUtils::formatMidiMessage(getName(),
+                                                      status, byte1, byte2,
+                                                      MidiUtils::channelFromStatus(status),
+                                                      MidiUtils::opCodeFromStatus(status));
+        qWarning()    << "PortMidi error:" << Pm_GetErrorText(err);
     }
 }
 
@@ -229,8 +245,12 @@ void PortMidiController::send(QByteArray data) {
     }
 
     PmError err = m_pOutputDevice->writeSysEx((unsigned char*)data.constData());
-    if (err != pmNoError) {
-        qWarning() << "PortMidi sendSysexMsg error:"
-                   << Pm_GetErrorText(err);
+    if (err == pmNoError) {
+        controllerDebug(MidiUtils::formatSysexMessage(getName(), data));
+    } else {
+        // Use two qWarnings() to ensure line break works on all operating systems
+        qWarning() << "Error sending SysEx message:"
+                   << MidiUtils::formatSysexMessage(getName(), data);
+        qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
     }
 }

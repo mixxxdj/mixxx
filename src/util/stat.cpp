@@ -41,10 +41,10 @@ void Stat::processReport(const StatReport& report) {
     if (m_compute & (Stat::SUM | Stat::AVERAGE)) {
         m_sum += report.value;
     }
-    if (m_compute & Stat::MAX && report.value > m_max) {
+    if ((m_compute & Stat::MAX)&& report.value > m_max) {
         m_max = report.value;
     }
-    if (m_compute & Stat::MIN && report.value < m_min) {
+    if ((m_compute & Stat::MIN) && report.value < m_min) {
         m_min = report.value;
     }
 
