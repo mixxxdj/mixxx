@@ -22,8 +22,10 @@
 #include "mixer/sampler.h"
 #include "test/mixxxtest.h"
 #include "util/defs.h"
+#include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
+#include "waveform/guitick.h"
 
 using ::testing::Return;
 using ::testing::_;
@@ -50,6 +52,7 @@ class TestEngineMaster : public EngineMaster {
 class SignalPathTest : public MixxxTest {
   protected:
     void SetUp() override {
+        m_pGuiTick = std::make_unique<GuiTick>();
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config());
         m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
@@ -193,7 +196,7 @@ class SignalPathTest : public MixxxTest {
     }
 
     ControlObject* m_pNumDecks;
-
+    std::unique_ptr<GuiTick> m_pGuiTick;
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
