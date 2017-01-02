@@ -736,8 +736,6 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
 
     // If sync is on and we load a track, that should initialize master.
     TrackPointer track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
-    m_pMixerDeck1->slotLoadTrack(track1, true);
-    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
 
     EXPECT_FLOAT_EQ(140.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
@@ -749,8 +747,6 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
     TrackPointer track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
-    m_pMixerDeck2->slotLoadTrack(track2, false);
-    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
 
     EXPECT_FLOAT_EQ(140.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
