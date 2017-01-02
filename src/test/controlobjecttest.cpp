@@ -2,41 +2,22 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
+#include "util/memory.h"
 
 namespace {
 
 class ControlObjectTest : public testing::Test {
   protected:
-
-    ControlObjectTest() {
-        qDebug() << "ControlObjectTest()";
-    }
-
-    virtual void SetUp() {
-        qDebug() << "SetUp";
+    void SetUp() override {
         ck1 = ConfigKey("[Channel1]", "co1");
         ck2 = ConfigKey("[Channel1]", "co2");
-        co1 = new ControlObject(ck1);
-        co2 = new ControlObject(ck2);
-    }
-
-    virtual void TearDown() {
-        qDebug() << "TearDown";
-        if(co1) {
-            qDebug() << "Deleting " << co1;
-            delete co1;
-            co1 = NULL;
-        }
-        if(co2) {
-            qDebug() << "Deleting " << co2;
-            delete co2;
-            co2 = NULL;
-        }
+        co1 = std::make_unique<ControlObject>(ck1);
+        co2 = std::make_unique<ControlObject>(ck2);
     }
 
     ConfigKey ck1, ck2;
-    ControlObject *co1, *co2;
-
+    std::unique_ptr<ControlObject> co1;
+    std::unique_ptr<ControlObject> co2;
 };
 
 TEST_F(ControlObjectTest, setGet) {
@@ -47,11 +28,10 @@ TEST_F(ControlObjectTest, setGet) {
 }
 
 TEST_F(ControlObjectTest, getControl) {
-    EXPECT_EQ(ControlObject::getControl(ck1), co1);
-    EXPECT_EQ(ControlObject::getControl(ck2), co2);
-    delete co2;
-    co2 = NULL;
-    EXPECT_EQ(ControlObject::getControl(ck2), (ControlObject*)NULL);
+    EXPECT_EQ(ControlObject::getControl(ck1), co1.get());
+    EXPECT_EQ(ControlObject::getControl(ck2), co2.get());
+    co2.reset();
+    EXPECT_EQ(ControlObject::getControl(ck2), (ControlObject*)nullptr);
 }
 
 TEST_F(ControlObjectTest, aliasRetrieval) {
@@ -59,13 +39,13 @@ TEST_F(ControlObjectTest, aliasRetrieval) {
     ConfigKey ckAlias("[Microphone]", "volume");
 
     // Create the Control Object
-    ControlObject* co = new ControlObject(ck);
+    auto co = std::make_unique<ControlObject>(ck);
 
     // Insert the alias before it is going to be used
     ControlDoublePrivate::insertAlias(ckAlias, ck);
 
     // Check if getControl on alias returns us the original ControlObject
-    EXPECT_EQ(ControlObject::getControl(ckAlias), co);
+    EXPECT_EQ(ControlObject::getControl(ckAlias), co.get());
 }
 
 }

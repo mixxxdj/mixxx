@@ -3,14 +3,7 @@
 
 #include "controllers/midi/portmidienumerator.h"
 
-class PortMidiEnumeratorTest : public testing::Test {
-  protected:
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-};
+class PortMidiEnumeratorTest : public testing::Test {};
 
 TEST_F(PortMidiEnumeratorTest, InputOutputPortsLinked) {
     // Identical device names should link.
