@@ -1,11 +1,11 @@
 #include "test/mockedenginebackendtest.h"
 #include "track/beatgrid.h"
+#include "util/memory.h"
 
 class BeatsTranslateTest : public MockedEngineBackendTest {
 };
 
 TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
-
     // Set up BeatGrids for decks 1 and 2.
     const double bpm = 60.0;
     const double firstBeat = 0.0;
@@ -31,17 +31,15 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     ProcessBuffer();
     // Manually set the "bpm" control... I would like to figure out why this
     // doesn't get set naturally, but this will do for now.
-    QScopedPointer<ControlProxy> pBpm1(getControlProxy(
-            ConfigKey(m_sGroup1, "bpm")));
-    QScopedPointer<ControlProxy> pBpm2(getControlProxy(
-            ConfigKey(m_sGroup1, "bpm")));
+    auto pBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "bpm");
+    auto pBpm2 = std::make_unique<ControlProxy>(m_sGroup1, "bpm");
     pBpm1->set(bpm);
     pBpm2->set(bpm);
     ProcessBuffer();
 
     // Push the button on deck 2.
-    QScopedPointer<ControlProxy> pTranslateMatchAlignment(getControlProxy(
-        ConfigKey(m_sGroup2, "beats_translate_match_alignment")));
+    auto pTranslateMatchAlignment = std::make_unique<ControlProxy>(
+        m_sGroup2, "beats_translate_match_alignment");
     pTranslateMatchAlignment->set(1.0);
     ProcessBuffer();
 
