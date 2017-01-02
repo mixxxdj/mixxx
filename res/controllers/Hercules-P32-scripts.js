@@ -706,12 +706,13 @@ Deck.prototype = new ControlContainer({
 /**
 This EffectUnit ControlContainer provides Controls designed to be mapped to the common arrangement
 of 3 knobs with 3 buttons for controlling effects, plus a knob or encoder for dry/wet and an
-additional button to toggle the effect unit between collapsed and expanded modes. Turning the
-dry/wet knob with shift controls the superknob for the whole effect unit. The Controls provided are:
+additional button to toggle the effect unit between hiding and showing effect parameters. Turning
+the dry/wet knob with shift controls the superknob for the whole effect unit. The Controls provided
+are:
 
 dryWetKnob (CC)
 showParametersButton (Button)
-enableEffectOnGroupButton[1-4] (Button)
+enableEffectUnitOnDeckButton[1-4] (Button)
 buttons[1-3] (Buttons)
 knobs[1-3] (CCs)
 
@@ -730,11 +731,9 @@ effect units for specific decks in your script's init() function.
 
 To map an EffectUnit for your controller, call the constructor with the unit number of the effect
 unit as the only argument. Then, set the midi attributes for the showParametersButton, buttons[1-3],
-and optionally enableEffectOnGroupButton[1-3] (setting the midi attributes for the CCs is not
+and optionally enableEffectUnitOnDeckButton[1-3] (setting the midi attributes for the CCs is not
 necessary because they do not send any output). After the midi attributes are set up, call
-EffectUnit.init() to set up the output callbacks (do not call reconnectControls() yourself upon
-initialization, as this will activate soft takeover immediately and prevent knobs from being set to
-their initial values when Mixxx starts). For example:
+EffectUnit.init() to set up the output callbacks. For example:
 
 MyController.effectUnit = new EffectUnit(1);
 MyController.effectUnit.buttons[1].midi = [0x90, 0x01];
@@ -747,7 +746,9 @@ Controllers designed for Serato and Rekordbox often have an encoder instead of a
 (labeled "Beats" for Serato or "Release FX" for Rekordbox) and a button labeled "Tap". It is
 recommended to map the "Tap" button to the EffectUnit's showParametersButton. To use the dryWetKnob
 Control with an encoder, replace its inValueScale() function with a function that can appropriately
-handle the signals sent by your controller.
+handle the signals sent by your controller. In that inValueScale() function, call
+this.getParameterIn() and return the new parameter value depending on the direction the encoder
+turns.
 **/
 EffectUnit = function (unitNumber) {
     var eu = this;
@@ -771,9 +772,9 @@ EffectUnit = function (unitNumber) {
         outConnect: false,
     });
 
-    this.enableEffectOnGroupButton = new ControlContainer();
+    this.enableEffectUnitOnDeckButton = new ControlContainer();
     for (var d = 1; d <= 4; d++) {
-      this.enableEffectOnGroupButton[d] = new Button({
+      this.enableEffectUnitOnDeckButton[d] = new Button({
           group: this.group,
           co: 'group_[Channel' + d + ']_enable',
           outConnect: false,
