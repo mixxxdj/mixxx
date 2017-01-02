@@ -690,7 +690,7 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     pButtonSyncEnabled1->slotSet(1.0);
 
-    m_pChannel1->getEngineBuffer()->loadFakeTrack(140.0);
+    m_pMixerDeck1->loadFakeTrack(false, 140.0);
 
     EXPECT_FLOAT_EQ(140.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
@@ -703,7 +703,7 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->slotSet(1.0);
 
-    m_pChannel1->getEngineBuffer()->loadFakeTrack(128.0);
+    m_pMixerDeck1->loadFakeTrack(false, 128.0);
     EXPECT_FLOAT_EQ(128.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     EXPECT_FLOAT_EQ(128.0,
@@ -711,7 +711,7 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
 
     // If sync is on two decks and one deck is loaded but not playing, we should
     // still initialize to that deck.
-    m_pChannel2->getEngineBuffer()->loadFakeTrack(110.0);
+    m_pMixerDeck2->loadFakeTrack(false, 110.0);
     EXPECT_FLOAT_EQ(128.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     EXPECT_FLOAT_EQ(128.0,
@@ -735,7 +735,7 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     pButtonSyncEnabled2->slotSet(1.0);
 
     // If sync is on and we load a track, that should initialize master.
-    TrackPointer track1 = m_pChannel1->getEngineBuffer()->loadFakeTrack(140.0);
+    TrackPointer track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
     m_pMixerDeck1->slotLoadTrack(track1, true);
     m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
 
@@ -748,7 +748,7 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     // that should not change the playing deck.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
-    TrackPointer track2 = m_pChannel2->getEngineBuffer()->loadFakeTrack(128.0);
+    TrackPointer track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
     m_pMixerDeck2->slotLoadTrack(track2, false);
     m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
 

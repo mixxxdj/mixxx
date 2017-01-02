@@ -113,9 +113,9 @@ class MockedEngineBackendTest : public MixxxTest {
                                                          m_pMockScaleKeylock2);
         m_pChannel3->getEngineBuffer()->setScalerForTest(m_pMockScaleVinyl3,
                                                          m_pMockScaleKeylock3);
-        m_pTrack1 = m_pChannel1->getEngineBuffer()->loadFakeTrack();
-        m_pTrack2 = m_pChannel2->getEngineBuffer()->loadFakeTrack();
-        m_pTrack3 = m_pChannel3->getEngineBuffer()->loadFakeTrack();
+        m_pTrack1 = m_pMixerDeck1->loadFakeTrack(false, 0.0);
+        m_pTrack2 = m_pMixerDeck2->loadFakeTrack(false, 0.0);
+        m_pTrack3 = m_pMixerDeck3->loadFakeTrack(false, 0.0);
     }
 
     void addDeck(EngineDeck* pDeck) {

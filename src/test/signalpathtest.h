@@ -86,9 +86,9 @@ class SignalPathTest : public MixxxTest {
         const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
         TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
 
-        loadTrack(m_pChannel1, pTrack);
-        loadTrack(m_pChannel2, pTrack);
-        loadTrack(m_pChannel3, pTrack);
+        loadTrack(m_pMixerDeck1, pTrack);
+        loadTrack(m_pMixerDeck2, pTrack);
+        loadTrack(m_pMixerDeck3, pTrack);
 
         ControlObject::set(ConfigKey("[Master]", "enabled"), 1.0);
     }
@@ -103,17 +103,15 @@ class SignalPathTest : public MixxxTest {
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
-    void loadTrack(EngineDeck* pDeck, TrackPointer pTrack) {
-        pDeck->getEngineBuffer()->loadTrack(pTrack, true);
+    void loadTrack(Deck* pDeck, TrackPointer pTrack) {
+        pDeck->slotLoadTrack(pTrack, false);
 
         // Wait for the track to load.
         ProcessBuffer();
-        while (!pDeck->getEngineBuffer()->isTrackLoaded()) {
+        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+        while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
             QTest::qSleep(1); // millis
         }
-        ASSERT_TRUE(pDeck->getEngineBuffer()->isTrackLoaded());
-        // For some reason the tracks play by default.  Turn them off.
-        ControlObject::set(ConfigKey(pDeck->getGroup(), "play"), 0.0);
     }
 
     // Asserts that the contents of the output buffer matches a golden example
