@@ -9,7 +9,7 @@
 template<typename T> // where T is derived from DbId
 class DbNamedEntity: public DbEntity<T> {
   public:
-    ~DbNamedEntity() override {}
+    ~DbNamedEntity() override = default;
 
     static QString normalizeName(const QString& name) {
         return name.trimmed();
@@ -41,7 +41,7 @@ class DbNamedEntity: public DbEntity<T> {
     }
 
   protected:
-    DbNamedEntity() {}
+    DbNamedEntity() = default;
     explicit DbNamedEntity(T id)
         : DbEntity<T>(std::forward<T>(id)) {
     }

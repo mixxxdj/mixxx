@@ -10,7 +10,7 @@
 template<typename T> // where T is derived from DbId
 class DbEntity {
   public:
-    virtual ~DbEntity() {}
+    virtual ~DbEntity() = default;
 
     T getId() const {
         return m_id;
@@ -23,7 +23,7 @@ class DbEntity {
     }
 
   protected:
-    DbEntity() {}
+    DbEntity() = default;
     explicit DbEntity(T id)
         : m_id(id) {
     }

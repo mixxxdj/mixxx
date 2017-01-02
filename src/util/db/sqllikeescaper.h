@@ -15,7 +15,7 @@ class SqlLikeEscaper final {
     static QString apply(const QString& escapeString, QChar escapeCharacter);
 
   private:
-    SqlLikeEscaper(); // utility class
+    SqlLikeEscaper() = delete; // utility class
 };
 
 

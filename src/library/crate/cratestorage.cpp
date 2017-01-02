@@ -60,7 +60,7 @@ class CrateQueryBinder {
     explicit CrateQueryBinder(FwdSqlQuery& query)
         : m_query(query) {
     }
-    virtual ~CrateQueryBinder() {}
+    virtual ~CrateQueryBinder() = default;
 
     void bindId(const QString& placeholder, const Crate& crate) const {
         m_query.bindValue(placeholder, crate.getId());
@@ -85,7 +85,7 @@ class CrateSummaryQueryBinder: public CrateQueryBinder {
     explicit CrateSummaryQueryBinder(FwdSqlQuery& query)
         : CrateQueryBinder(query) {
     }
-    ~CrateSummaryQueryBinder() override {}
+    ~CrateSummaryQueryBinder() override = default;
 
     void bindTrackCount(const QString& placeholder, const CrateSummary& crateSummary) const {
         m_query.bindValue(placeholder, crateSummary.getTrackCount());
@@ -132,14 +132,6 @@ void CrateSummaryQueryFields::readValues(
     CrateQueryFields::readValues(query, pCrateSummary);
     pCrateSummary->setTrackCount(getTrackCount(query));
     pCrateSummary->setTrackDuration(getTrackDuration(query));
-}
-
-
-CrateStorage::CrateStorage() {
-}
-
-
-CrateStorage::~CrateStorage() {
 }
 
 

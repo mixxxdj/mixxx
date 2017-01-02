@@ -26,7 +26,7 @@ class SqlStringFormatter final {
             const QSet<QString>& values);
 
   private:
-    SqlStringFormatter(); // utility class
+    SqlStringFormatter() = delete; // utility class
 };
 
 

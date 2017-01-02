@@ -118,7 +118,7 @@ class FwdSqlQuery: protected QSqlQuery {
     bool fieldValueBoolean(DbFieldIndex fieldIndex) const;
 
   private:
-    FwdSqlQuery() {}
+    FwdSqlQuery() = default;
 
     bool m_prepared;
 };

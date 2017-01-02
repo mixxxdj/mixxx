@@ -26,9 +26,6 @@ SqlSelectIterator::SqlSelectIterator(SqlSelectIterator&& other)
     other.release();
 }
 
-SqlSelectIterator::~SqlSelectIterator() {
-}
-
 void SqlSelectIterator::release() {
     m_queryFinisher.release();
     m_query = FwdSqlQuery();

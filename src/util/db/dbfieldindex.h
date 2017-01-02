@@ -8,10 +8,12 @@ class DbFieldIndex {
 public:
     static const int INVALID_INDEX = -1;
 
+    // Implicit conversion from int
     DbFieldIndex(int index = INVALID_INDEX)
         : m_index(index) {
     }
 
+    // Implicit conversion to int
     operator int() const {
         return m_index;
     }

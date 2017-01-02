@@ -12,7 +12,7 @@
 class SqlSelectIterator {
 public:
     SqlSelectIterator(SqlSelectIterator&& other);
-    virtual ~SqlSelectIterator();
+    virtual ~SqlSelectIterator() = default;
 
     operator bool() const {
         return m_query.isActive();

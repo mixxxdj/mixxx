@@ -9,8 +9,7 @@
 // SQL database.
 class SqlStorage {
   public:
-    virtual ~SqlStorage() {}
-    SqlStorage(const SqlStorage&) = delete; // disable copying
+    virtual ~SqlStorage() = default;
 
     // A self-healing function that repairs the managed tables
     // by validating all stored data, both values and relations.
@@ -39,7 +38,13 @@ class SqlStorage {
     virtual void detachDatabase() = 0;
 
   protected:
-    SqlStorage() {}
+    SqlStorage() = default;
+
+  private:
+    // Disable copying
+    SqlStorage(const SqlStorage&) = delete;
+    SqlStorage& operator=(const SqlStorage&) = delete;
+
 };
 
 

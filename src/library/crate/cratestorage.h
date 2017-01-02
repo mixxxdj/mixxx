@@ -21,7 +21,7 @@ class CrateQueryFields {
   public:
     CrateQueryFields() {}
     explicit CrateQueryFields(const FwdSqlQuery& query);
-    virtual ~CrateQueryFields() {}
+    virtual ~CrateQueryFields() = default;
 
     CrateId getId(const FwdSqlQuery& query) const {
         return CrateId(query.fieldValue(m_iId));
@@ -51,7 +51,7 @@ public:
         : SqlSelectIterator(std::move(other)),
           m_queryFields(std::move(other.m_queryFields)) {
     }
-    ~CrateSelectIterator() override {}
+    ~CrateSelectIterator() override = default;
 
     bool readNext(Crate* pCrate) {
         if (next()) {
@@ -64,7 +64,7 @@ public:
 
 private:
     friend class CrateStorage;
-    CrateSelectIterator() {}
+    CrateSelectIterator() = default;
     explicit CrateSelectIterator(FwdSqlQuery query)
         : SqlSelectIterator(query),
           m_queryFields(SqlSelectIterator::query()) {
@@ -75,9 +75,9 @@ private:
 
 class CrateSummaryQueryFields: public CrateQueryFields {
   public:
-    CrateSummaryQueryFields() {}
+    CrateSummaryQueryFields() = default;
     explicit CrateSummaryQueryFields(const FwdSqlQuery& query);
-    ~CrateSummaryQueryFields() override {}
+    ~CrateSummaryQueryFields() override = default;
 
     uint getTrackCount(const FwdSqlQuery& query) const {
         QVariant varTrackCount = query.fieldValue(m_iTrackCount);
@@ -111,7 +111,7 @@ public:
         : SqlSelectIterator(std::move(other)),
           m_queryFields(std::move(other.m_queryFields)) {
     }
-    ~CrateSummarySelectIterator() override {}
+    ~CrateSummarySelectIterator() override = default;
 
     bool readNext(CrateSummary* pCrateSummary) {
         if (next()) {
@@ -124,7 +124,7 @@ public:
 
 private:
     friend class CrateStorage;
-    CrateSummarySelectIterator() {}
+    CrateSummarySelectIterator() = default;
     explicit CrateSummarySelectIterator(FwdSqlQuery query)
         : SqlSelectIterator(query),
           m_queryFields(SqlSelectIterator::query()) {
@@ -135,9 +135,9 @@ private:
 
 class CrateTrackQueryFields {
   public:
-    CrateTrackQueryFields() {}
+    CrateTrackQueryFields() = default;
     explicit CrateTrackQueryFields(const FwdSqlQuery& query);
-    virtual ~CrateTrackQueryFields() {}
+    virtual ~CrateTrackQueryFields() = default;
 
     CrateId crateId(const FwdSqlQuery& query) const {
         return CrateId(query.fieldValue(m_iCrateId));
@@ -157,7 +157,7 @@ public:
         : SqlSelectIterator(std::move(other)),
           m_queryFields(std::move(other.m_queryFields)) {
     }
-    ~CrateTrackSelectIterator() override {}
+    ~CrateTrackSelectIterator() override = default;
 
     CrateId crateId() const {
         return m_queryFields.crateId(query());
@@ -168,7 +168,7 @@ public:
 
 private:
     friend class CrateStorage;
-    CrateTrackSelectIterator() {}
+    CrateTrackSelectIterator() = default;
     explicit CrateTrackSelectIterator(FwdSqlQuery query)
         : SqlSelectIterator(query),
           m_queryFields(SqlSelectIterator::query()) {
@@ -179,8 +179,7 @@ private:
 
 class CrateStorage: public SqlStorage {
   public:
-    CrateStorage();
-    ~CrateStorage() final;
+    ~CrateStorage() final = default;
 
 
     /////////////////////////////////////////////////////////////////////////
