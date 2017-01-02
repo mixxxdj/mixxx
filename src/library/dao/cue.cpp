@@ -13,7 +13,7 @@ namespace {
 }
 
 Cue::~Cue() {
-    qDebug() << "~Cue()" << m_iId;
+    //qDebug() << "~Cue()" << m_iId;
 }
 
 Cue::Cue(TrackId trackId)
