@@ -278,6 +278,7 @@ void EffectChainSlot::registerChannel(const ChannelHandleAndGroup& handle_group)
     m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
     connect(pEnableControl, SIGNAL(valueChanged(double)),
             &m_channelStatusMapper, SLOT(map()));
+    slotChannelStatusChanged(handle_group.name());
 }
 
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
