@@ -73,6 +73,13 @@ DbFieldIndex FwdSqlQuery::fieldIndex(const QString& fieldName) const {
 }
 
 namespace {
+    // NOTE(uklotzde): This conversion has been wrapped into a separate
+    // function, because the conversion is completely independent of the
+    // query, the current record and how values for individual fields are
+    // retrieved. For separation of concerns and to improve readability.
+    // Please do not try to unwrap the code! It is already declared "inline" ;)
+    //
+    // Recommended reading: "Refactoring" by Martin Fowler
     inline
     bool toBoolean(const QVariant& variant) {
         bool ok = false;
