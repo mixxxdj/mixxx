@@ -66,6 +66,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     void setupEqControls();
 
+    // For testing, loads a fake track.
+    TrackPointer loadFakeTrack(bool bPlay, double filebpm);
+
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) override;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
