@@ -49,27 +49,24 @@ class TestEngineMaster : public EngineMaster {
 // both could be refactored to share code.
 class SignalPathTest : public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config());
         m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
                                                m_pEffectsManager, false, false);
 
-        m_pChannel1 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup1),
-                m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
-        m_pChannel2 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup2),
-                m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
-        m_pChannel3 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup3),
-                m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
+        m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
+                                 EngineChannel::CENTER, m_sGroup1);
+        m_pMixerDeck2 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
+                                 EngineChannel::CENTER, m_sGroup2);
+        m_pMixerDeck3 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
+                                 EngineChannel::CENTER, m_sGroup3);
+        m_pChannel1 = m_pMixerDeck1->getEngineDeck();
+        m_pChannel2 = m_pMixerDeck2->getEngineDeck();
+        m_pChannel3 = m_pMixerDeck3->getEngineDeck();
         m_pPreview1 = new PreviewDeck(NULL, m_pConfig,
-                                     m_pEngineMaster, m_pEffectsManager,
-                                     EngineChannel::CENTER, m_sPreviewGroup);
+                                      m_pEngineMaster, m_pEffectsManager,
+                                      EngineChannel::CENTER, m_sPreviewGroup);
         ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
 
         addDeck(m_pChannel1);
@@ -89,7 +86,6 @@ class SignalPathTest : public MixxxTest {
     }
 
     void addDeck(EngineDeck* pDeck) {
-        m_pEngineMaster->addChannel(pDeck);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "master"))
                 ->set(1.0);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "rate_dir"))
@@ -172,11 +168,15 @@ class SignalPathTest : public MixxxTest {
         f.close();
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
+        delete m_pMixerDeck1;
+        delete m_pMixerDeck2;
+        delete m_pMixerDeck3;
         m_pChannel1 = NULL;
         m_pChannel2 = NULL;
         m_pChannel3 = NULL;
         m_pEngineSync = NULL;
+        delete m_pPreview1;
 
         // Deletes all EngineChannels added to it.
         delete m_pEngineMaster;
@@ -197,6 +197,7 @@ class SignalPathTest : public MixxxTest {
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
+    Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
     PreviewDeck *m_pPreview1;

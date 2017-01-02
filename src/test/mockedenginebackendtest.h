@@ -62,25 +62,25 @@ class MockScaler : public EngineBufferScale {
 
 class MockedEngineBackendTest : public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config());
         m_pEngineMaster = new EngineMaster(m_pConfig, "[Master]",
                                            m_pEffectsManager, false, false);
 
         m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER, m_sGroup1);
+                                 EngineChannel::CENTER, m_sGroup1);
         m_pMixerDeck2 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER, m_sGroup2);
+                                 EngineChannel::CENTER, m_sGroup2);
         m_pMixerDeck3 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER, m_sGroup3);
+                                 EngineChannel::CENTER, m_sGroup3);
         m_pChannel1 = m_pMixerDeck1->getEngineDeck();
         m_pChannel2 = m_pMixerDeck2->getEngineDeck();
         m_pChannel3 = m_pMixerDeck3->getEngineDeck();
 
         m_pPreview1 = new PreviewDeck(NULL, m_pConfig,
-                                     m_pEngineMaster, m_pEffectsManager,
-                                     EngineChannel::CENTER, m_sPreviewGroup);
+                                      m_pEngineMaster, m_pEffectsManager,
+                                      EngineChannel::CENTER, m_sPreviewGroup);
         ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
         // to this sampler.  FIX IT!
@@ -122,7 +122,7 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
         delete m_pMixerDeck1;
         delete m_pMixerDeck2;
         delete m_pMixerDeck3;
@@ -130,6 +130,7 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pChannel2 = NULL;
         m_pChannel3 = NULL;
         m_pEngineSync = NULL;
+        delete m_pPreview1;
 
         // Deletes all EngineChannels added to it.
         delete m_pEngineMaster;
