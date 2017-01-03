@@ -7,9 +7,7 @@
   <WidgetGroup>
     <ObjectName>SkinSettings</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>min,min</SizePolicy>
-    <MinimumSize>180,-1</MinimumSize>
-    <MaximumSize>300,-1</MaximumSize>
+    <Size>225f,-1min</Size>
     <Children>
       <WidgetGroup>
         <ObjectName>SkinSettingsTop</ObjectName>
