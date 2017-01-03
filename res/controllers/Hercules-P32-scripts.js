@@ -720,10 +720,12 @@ When the effect unit is not showing the individual parameters for each effect, t
 the metaknob of each effect in the unit. The buttons control whether each effect is enabled.
 Pressing a button with shift switches to the next available effect.
 
-When the effect unit is showing all the parameters, the knobs control the first 3 parameters of one
-effect in the effect unit. The effect that the knobs manipulate is selected by pressing one of the
-buttons with shift. Pressing a button without shift toggles whether the corresponding effect is
-enabled.
+When the effect unit is showing all the parameters, the knobs behave differently depending on
+whether an effect is focused. An effect can be focused by clicking the focus button on screen or
+pressing shift + an effect enable button. Pressing shift + the enable button for the focused effect
+unfocuses the effect. When there is no focused effect, the knobs control the effect metaknobs like
+they do when parameters are not showing. When an effect is focused, the knobs control the first 3
+parameters of the focused effect.
 
 This EffectUnit provides Buttons to toggle whether the effect unit is enabled for a deck,
 but not many controllers have buttons for that. If yours does not, you should probably enable
@@ -791,9 +793,15 @@ EffectUnit = function (unitNumber) {
                 this.inCo = 'meta';
             },
             onParametersShow: function () {
-                this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' +
-                              engine.getValue(eu.group, "focused_effect") + ']';
-                this.inCo = 'parameter' + this.number;
+                var focused_effect = engine.getValue(eu.group, "focused_effect");
+                if (focused_effect === 0) {
+                    // manipulate metaknobs
+                    this.onParametersHide();
+                } else {
+                    this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' +
+                                  focused_effect + ']';
+                    this.inCo = 'parameter' + this.number;
+                }
             },
             outConnect: false,
         });
@@ -831,7 +839,13 @@ EffectUnit = function (unitNumber) {
                     this.isShifted = true;
                     this.input = function (channel, control, value, status, group) {
                         if (value > 0) {
-                            engine.setValue(eu.group, "focused_effect", this.number);
+                            if (engine.getValue(eu.group, "focused_effect") === this.number) {
+                                // focus this effect
+                                engine.setValue(eu.group, "focused_effect", 0);
+                            } else {
+                                // unfocus and make knobs control metaknobs
+                                engine.setValue(eu.group, "focused_effect", this.number);
+                            }
                         }
                     };
                 };
@@ -841,13 +855,19 @@ EffectUnit = function (unitNumber) {
                 };
                 this.onFocusChanged = function (value, group, control) {
                     if (value === this.number) {
+                        // make knobs control first 3 parameters of the focused effect
                         eu.knobs.reconnectControls(function (knob) {
                             if (typeof knob.onParametersShow === 'function') {
                                 knob.onParametersShow(); // to set new group property
                             }
                         });
                     } else if (value === 0) {
-                        engine.setValue(eu.group, "show_parameters", 0);
+                        // make knobs control metaknobs
+                        eu.knobs.reconnectControls(function (knob) {
+                            if (typeof knob.onParametersShow === 'function') {
+                                knob.onParametersHide(); // to set new group property
+                            }
+                        });
                     }
                 };
                 if (this.isShifted) {
@@ -879,9 +899,6 @@ EffectUnit = function (unitNumber) {
                 });
             } else {
                 engine.setValue(this.group, "show_focus", 1);
-                if (engine.getValue(this.group, "focused_effect") === 0) {
-                    engine.setValue(this.group, "focused_effect", 1);
-                }
                 eu.forEachControl(function (c) {
                     if (typeof c.onParametersShow === 'function') {
                         c.disconnect();
@@ -898,7 +915,10 @@ EffectUnit = function (unitNumber) {
     this.init = function () {
         this.showParametersButton.connect();
         this.showParametersButton.trigger();
-        if (engine.getValue(this.group, "show_parameters") === 0) {
+
+        var show_parameters = engine.getValue(this.group, "show_parameters");
+        var focused_effect = engine.getValue(this.group, "focused_effect");
+        if (show_parameters === 0 || (show_parameters === 1 && focused_effect === 0)) {
             for (var i = 1; i <= 3; i++) {
                 engine.setValue('[EffectRack1_EffectUnit' + unitNumber +
                                 '_Effect' + i + ']',
