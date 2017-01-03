@@ -914,12 +914,6 @@ P32.init = function () {
     P32.leftDeck = new P32.Deck([1,3], 1);
     P32.rightDeck = new P32.Deck([2,4], 2);
 
-    engine.setValue('[EffectRack1_EffectUnit1]', 'group_[Channel1]_enable', 1);
-    engine.setValue('[EffectRack1_EffectUnit1]', 'group_[Channel3]_enable', 1);
-
-    engine.setValue('[EffectRack1_EffectUnit2]', 'group_[Channel2]_enable', 1);
-    engine.setValue('[EffectRack1_EffectUnit2]', 'group_[Channel4]_enable', 1);
-
     if (engine.getValue('[Master]', 'num_samplers') < 32) {
         engine.setValue('[Master]', 'num_samplers', 32);
     }
