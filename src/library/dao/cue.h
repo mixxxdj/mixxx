@@ -16,14 +16,14 @@ class Cue : public QObject {
   public:
     enum CueType {
         INVALID = 0,
-        CUE,
-        LOAD,
-        BEAT,
-        LOOP,
-        JUMP,
+        CUE     = 1,
+        LOAD    = 2,
+        BEAT    = 3,
+        LOOP    = 4,
+        JUMP    = 5,
     };
 
-    virtual ~Cue();
+    ~Cue() override;
 
     bool isDirty() const;
     int getId() const;

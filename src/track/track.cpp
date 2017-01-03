@@ -700,7 +700,29 @@ int Track::getAnalyzerProgress() const {
 void Track::setCuePoint(float cue) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(&m_fCuePoint, cue)) {
+        // Store the cue point in a load cue
+        CuePointer pLoadCue;
+        for (const CuePointer& pCue: m_cuePoints) {
+            if (pCue->getType() == Cue::LOAD) {
+                pLoadCue = pCue;
+                break;
+            }
+        }
+        if (cue > 0) {
+            if (!pLoadCue) {
+                pLoadCue = CuePointer(new Cue(m_id));
+                pLoadCue->setType(Cue::LOAD);
+                connect(pLoadCue.get(), SIGNAL(updated()),
+                        this, SLOT(slotCueUpdated()));
+                m_cuePoints.push_back(pLoadCue);
+            }
+            pLoadCue->setPosition(cue);
+        } else {
+            disconnect(pLoadCue.get(), 0, this, 0);
+            m_cuePoints.removeOne(pLoadCue);
+        }
         markDirtyAndUnlock(&lock);
+        emit(cuesUpdated());
     }
 }
 
