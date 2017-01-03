@@ -311,7 +311,7 @@ script.spinback = function(channel, control, value, status, group) {
    Purpose: wrapper around engine.brake() that can be directly mapped
             from xml for a brake effect
             e.g: <key>script.brake</key>
-   Input:   channel, control, value, status, group
+   Input:   channel, control, value, status, group, factor (optional)
    Output:  none
    -------- ------------------------------------------------------ */
 script.brake = function(channel, control, value, status, group, factor) {
@@ -319,10 +319,24 @@ script.brake = function(channel, control, value, status, group, factor) {
     if (factor === undefined) {
         factor = 1;
     }
-    // calculate current playback speed
-    var currentRate = engine.getValue(group,"bpm") / engine.getValue(group,"file_bpm");
-    // disable on note-off or zero value note/cc, use default decay rate '1', consider playback speed
-    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0), factor, currentRate);
+    // disable on note-off or zero value note/cc, use default decay rate '1'
+    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0), factor);
+}
+
+/* -------- ------------------------------------------------------
+     script.softStart
+   Purpose: wrapper around engine.brake() that can be directly mapped
+            from xml for a brake effect
+            e.g: <key>script.brake</key>
+   Input:   channel, control, value, status, group, acceleration factor (optional)
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.softStart = function(channel, control, value, status, group, factor) {
+	if (factor == undefined) {
+		factor = 1;
+	}
+    // disable on note-off or zero value note/cc, use default increase rate '1'
+    engine.softStart(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0), 1);
 }
 
 // bpm - Used for tapping the desired BPM for a deck
