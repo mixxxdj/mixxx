@@ -796,7 +796,6 @@ EffectUnit = function (unitNumber) {
                 this.inCo = 'parameter' + this.number;
             },
             outConnect: false,
-            skipInitConnect: true
         });
         this.buttons[d] = new Button({
             number: d,
@@ -894,12 +893,18 @@ EffectUnit = function (unitNumber) {
             }
         },
         outConnect: false,
-        skipInitTrigger: true
     });
 
     this.init = function () {
         this.showParametersButton.connect();
         this.showParametersButton.trigger();
+        if (engine.getValue(this.group, "show_parameters") === 0) {
+            for (var i = 1; i <= 3; i++) {
+                engine.setValue('[EffectRack1_EffectUnit' + unitNumber +
+                                '_Effect' + i + ']',
+                                'meta_force_next_update', 1);
+            }
+        }
     };
 };
 EffectUnit.prototype = new ControlContainer();
