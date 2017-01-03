@@ -207,10 +207,7 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, group, iChainSlotNumber);
 
-    // TODO(rryan) How many should we make default? They create controls that
-    // the GUI may rely on, so the choice is important to communicate to skin
-    // designers.
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < EffectChainManager::kNumEffectsPerUnit; ++i) {
         pChainSlot->addEffectSlot(
             StandardEffectRack::formatEffectSlotGroupString(
                 getRackNumber(), iChainSlotNumber, i));

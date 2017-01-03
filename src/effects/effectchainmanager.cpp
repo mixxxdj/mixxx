@@ -181,7 +181,7 @@ QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffect
     if (!file.open(QIODevice::ReadOnly)) {
         EffectChainPointer pEmptyChain;
         QDomElement emptyChainElement = doc.createElement("EffectChain");
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < kNumEffectsPerUnit; ++i) {
             pEmptyChain = EffectChainPointer(new EffectChain(m_pEffectsManager,
                                                             QString(),
                                                             EffectChainPointer()));
@@ -194,7 +194,7 @@ QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffect
         file.close();
         EffectChainPointer pEmptyChain;
         QDomElement emptyChainElement = doc.createElement("EffectChain");
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < kNumEffectsPerUnit; ++i) {
             pEmptyChain = EffectChainPointer(new EffectChain(m_pEffectsManager,
                                                             QString(),
                                                             EffectChainPointer()));
