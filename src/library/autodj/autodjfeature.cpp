@@ -209,55 +209,44 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
     }
 }
 
-// Adds a random track : this will be faster when there are sufficiently large
-// tracks in the crates
 void AutoDJFeature::slotAddRandomTrack() {
-    int failedRetrieveAttempts = 0;
-    // Get access to the auto-DJ playlist
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     if (m_iAutoDJPlaylistId >= 0) {
-        while (failedRetrieveAttempts < kMaxRetrieveAttempts) {
-            // Get the ID of a randomly-selected track.
-            TrackId trackId = m_autoDjCratesDao.getRandomTrackId();
-            if (trackId.isValid()) {
-                // Get Track Information
-                TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(trackId);
-                if(addedTrack->exists()) {
-                    playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
-                    m_pAutoDJView->onShow();
-                    return;
-                } else {
-                    qDebug() << "Track does not exist:"
-                            << addedTrack->getInfo()
-                            << addedTrack->getLocation();
+        TrackPointer pRandomTrack;
+        for (int failedRetrieveAttempts = 0;
+                !pRandomTrack &&
+                (failedRetrieveAttempts < 2 * kMaxRetrieveAttempts); // 2 rounds
+                ++failedRetrieveAttempts) {
+            TrackId randomTrackId;
+            if (failedRetrieveAttempts < kMaxRetrieveAttempts) {
+                // 1st round: from crates
+                randomTrackId = m_autoDjCratesDao.getRandomTrackId();
+            } else {
+                // 2nd round: from whole library
+                randomTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId);
+            }
+            if (randomTrackId.isValid()) {
+                pRandomTrack = m_pTrackCollection->getTrackDAO().getTrack(randomTrackId);
+                DEBUG_ASSERT_AND_HANDLE(pRandomTrack) {
+                    qWarning() << "Track does not exist:"
+                            << randomTrackId;
+                    continue;
+                }
+                if (!pRandomTrack->exists()) {
+                    qWarning() << "Track does not exist:"
+                            << pRandomTrack->getInfo()
+                            << pRandomTrack->getLocation();
+                    pRandomTrack.reset();
                 }
             }
-            failedRetrieveAttempts += 1;
         }
-        // If we couldn't get a track from the crates , get one from the library
-        qDebug () << "Could not load tracks from crates, attempting to load from library.";
-        failedRetrieveAttempts = 0;
-        while ( failedRetrieveAttempts < kMaxRetrieveAttempts ) {
-            TrackId trackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId);
-            if (trackId.isValid()) {
-                TrackPointer addedTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
-                if(addedTrack->exists()) {
-                    if(!addedTrack->getPlayCounter().isPlayed()) {
-                        playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
-                        m_pAutoDJView->onShow();
-                        return;
-                    }
-                } else {
-                    qDebug() << "Track does not exist:"
-                            << addedTrack->getInfo()
-                            << addedTrack->getLocation();
-                }
-            }
-            failedRetrieveAttempts += 1;
+        if (pRandomTrack) {
+            m_pTrackCollection->getPlaylistDAO().appendTrackToPlaylist(
+                    pRandomTrack->getId(), m_iAutoDJPlaylistId);
+            m_pAutoDJView->onShow();
+            return; // success
         }
     }
-    // If control reaches here it implies that we couldn't load track
-    qDebug() << "Could not load random track.";
+    qWarning() << "Could not load random track.";
 }
 
 void AutoDJFeature::constructCrateChildModel() {
@@ -302,9 +291,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
 }
 
 void AutoDJFeature::slotRandomQueue(int numTracksToAdd) {
-    while (numTracksToAdd > 0) {
-        //Will attempt to add tracks
+    for (int addCount = 0; addCount < numTracksToAdd; ++addCount) {
         slotAddRandomTrack();
-        numTracksToAdd -= 1;
     }
 }
