@@ -187,13 +187,11 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
         }
         // No child item for crate found
         // -> Create and append a new child item for this crate
-        auto pItem = std::make_unique<TreeItem>(
-                this, crate.getName(), crate.getId().toVariant());
         QList<TreeItem*> rows;
-        rows.append(pItem.get());
+        rows.append(new TreeItem(this, crate.getName(), crate.getId().toVariant()));
         QModelIndex parentIndex = m_childModel.index(0, 0);
         m_childModel.insertRows(rows, m_crateList.length(), rows.length(), parentIndex);
-        pItem.release();
+        DEBUG_ASSERT(rows.isEmpty()); // ownership passed to m_childModel
         m_crateList.append(crate);
     } else {
         // Crate does not exist or is not a source for AutoDJ
