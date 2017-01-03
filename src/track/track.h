@@ -249,7 +249,7 @@ class Track : public QObject {
     float getCuePoint() const;
 
     // Calls for managing the track's cue points
-    CuePointer addCue();
+    CuePointer createAndAddCue();
     void removeCue(const CuePointer& pCue);
     QList<CuePointer> getCuePoints() const;
     void setCuePoints(const QList<CuePointer>& cuePoints);

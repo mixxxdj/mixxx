@@ -122,7 +122,7 @@ CueControl::~CueControl() {
     delete m_pPlayIndicator;
     delete m_pVinylControlEnabled;
     delete m_pVinylControlMode;
-    qDeleteAll(m_hotcueControl);
+    qDeleteAll(m_hotcueControls);
 }
 
 void CueControl::createControls() {
@@ -154,12 +154,12 @@ void CueControl::createControls() {
                 this, SLOT(hotcueClear(HotcueControl*, double)),
                 Qt::DirectConnection);
 
-        m_hotcueControl.append(pControl);
+        m_hotcueControls.append(pControl);
     }
 }
 
 void CueControl::attachCue(CuePointer pCue, int hotCue) {
-    HotcueControl* pControl = m_hotcueControl.value(hotCue, NULL);
+    HotcueControl* pControl = m_hotcueControls.value(hotCue, NULL);
     if (pControl == NULL) {
         return;
     }
@@ -179,7 +179,7 @@ void CueControl::attachCue(CuePointer pCue, int hotCue) {
 }
 
 void CueControl::detachCue(int hotCue) {
-    HotcueControl* pControl = m_hotcueControl.value(hotCue, NULL);
+    HotcueControl* pControl = m_hotcueControls.value(hotCue, NULL);
     if (pControl == NULL) {
         return;
     }
@@ -287,7 +287,7 @@ void CueControl::trackCuesUpdated() {
 
         int hotcue = pCue->getHotCue();
         if (hotcue != -1) {
-            HotcueControl* pControl = m_hotcueControl.value(hotcue, NULL);
+            HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
 
             // Cue's hotcue doesn't have a hotcue control.
             if (pControl == NULL) {
@@ -340,8 +340,12 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
         return;
 
     int hotcue = pControl->getHotcueNumber();
+    // Note: the cue is just detached from the hotcue control
+    // It remains in the database for later use
+    // TODO: find a rule, that allows us to delete the cue as well
     hotcueClear(pControl, v);
-    CuePointer pCue(m_pLoadedTrack->addCue());
+
+    CuePointer pCue(m_pLoadedTrack->createAndAddCue());
     double cuePosition =
             (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
             floor(m_pClosestBeat->get()) : floor(getCurrentSample());
@@ -576,8 +580,8 @@ void CueControl::hintReader(HintVector* pHintList) {
     // this is called from the engine thread
     // it is no locking required, because m_hotcueControl is filled during the
     // constructor and getPosition()->get() is a ControlObject
-    for (QList<HotcueControl*>::const_iterator it = m_hotcueControl.constBegin();
-         it != m_hotcueControl.constEnd(); ++it) {
+    for (QList<HotcueControl*>::const_iterator it = m_hotcueControls.constBegin();
+         it != m_hotcueControls.constEnd(); ++it) {
         HotcueControl* pControl = *it;
         double position = pControl->getPosition()->get();
         if (position != -1) {

@@ -736,7 +736,7 @@ void Track::slotCueUpdated() {
     emit(cuesUpdated());
 }
 
-CuePointer Track::addCue() {
+CuePointer Track::createAndAddCue() {
     QMutexLocker lock(&m_qMutex);
     CuePointer pCue(new Cue(m_id));
     connect(pCue.get(), SIGNAL(updated()),

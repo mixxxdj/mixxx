@@ -137,7 +137,7 @@ class CueControl : public EngineControl {
     bool m_bypassCueSetByPlay;
 
     const int m_iNumHotCues;
-    QList<HotcueControl*> m_hotcueControl;
+    QList<HotcueControl*> m_hotcueControls;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
