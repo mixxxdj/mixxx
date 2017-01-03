@@ -73,10 +73,13 @@ public:
 
     // all-default memory management
     AudioSignal(const AudioSignal&) = default;
-    AudioSignal(AudioSignal&&) = default;
     AudioSignal& operator=(const AudioSignal&) = default;
-    AudioSignal& operator=(AudioSignal&&) = default;
     virtual ~AudioSignal() = default;
+// Visual Studio does not support default generated move constructors
+#if !defined(_MSC_VER)
+    AudioSignal(AudioSignal&&) = default;
+    AudioSignal& operator=(AudioSignal&&) = default;
+#endif
 
     // Returns the ordering of samples in contiguous buffers
     SampleLayout getSampleLayout() const {
