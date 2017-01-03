@@ -151,6 +151,8 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;
     QAction *m_pBpmThreeFourthsAction;
+    QAction *m_pBpmFourThirdsAction;
+    QAction *m_pBpmThreeHalvesAction;
 
     // Clear track beats
     QAction* m_pClearBeatsAction;

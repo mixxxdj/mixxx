@@ -574,6 +574,20 @@ void BeatMap::scale(enum BPMScale scale) {
         // remove every second third and forth beat
         scaleFourth();
         break;
+    case FOURTHIRDS:
+        // introduce two beats into every gap
+        scaleDouble();
+        // and again, to get four beats from one
+        scaleDouble();
+        // remove every second third and forth beat
+        scaleThird();
+        break;
+    case THREEHALVES:
+        // introduce two beats into every gap
+        scaleTriple();
+        // remove every second beat
+        scaleHalve();
+        break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
         return;
