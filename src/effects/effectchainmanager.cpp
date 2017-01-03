@@ -1,4 +1,3 @@
-#include "defs_version.h"
 #include "effects/effectchainmanager.h"
 #include "effects/effectsmanager.h"
 
@@ -136,8 +135,8 @@ bool EffectChainManager::saveEffectChains() {
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();
-    QDomElement mixxxVersionElement = doc.createElement("MixxxVersion");
-    QDomText version = doc.createTextNode(MIXXX_VERSION);
+    QDomElement mixxxVersionElement = doc.createElement("SchemaVersion");
+    QDomText version = doc.createTextNode(QString::number(EFFECT_XML_VERSION));
     mixxxVersionElement.appendChild(version);
     rootNode.appendChild(mixxxVersionElement);
 
