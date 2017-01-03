@@ -338,3 +338,17 @@ bool TrackCollection::removeCrateTracks(
 
     return true;
 }
+
+bool TrackCollection::updateAutoDjCrate(
+        CrateId crateId,
+        bool isAutoDjSource) {
+    Crate crate;
+    DEBUG_ASSERT_AND_HANDLE(crates().readCrateById(crateId, &crate)) {
+        return false; // inexistent or failure
+    }
+    if (crate.isAutoDjSource() == isAutoDjSource) {
+        return false; // nothing to do
+    }
+    crate.setAutoDjSource(isAutoDjSource);
+    return updateCrate(crate);
+}

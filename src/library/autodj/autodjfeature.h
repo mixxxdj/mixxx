@@ -80,10 +80,6 @@ class AutoDJFeature : public LibraryFeature {
     // How we access the auto-DJ-crates database.
     AutoDJCratesDAO m_autoDjCratesDao;
 
-    // The model-index of the last tree-item that was right-clicked on.
-    // Only stored for tree-items contained by the "Crates" tree-item.
-    QModelIndex m_lastRightClickedIndex;
-
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
     QAction *m_pRemoveCrateFromAutoDj;

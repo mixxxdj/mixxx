@@ -75,6 +75,8 @@ class TrackCollection : public QObject {
     bool addCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
     bool removeCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
 
+    bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
+
   signals:
     void crateInserted(CrateId id);
     void crateUpdated(CrateId id);
