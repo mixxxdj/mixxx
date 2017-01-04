@@ -326,6 +326,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     // Note: the cue is just detached from the hotcue control
     // It remains in the database for later use
     // TODO: find a rule, that allows us to delete the cue as well
+    // https://bugs.launchpad.net/mixxx/+bug/1653276
     hotcueClear(pControl, v);
 
     CuePointer pCue(m_pLoadedTrack->createAndAddCue());
