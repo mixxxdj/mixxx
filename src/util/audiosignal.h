@@ -72,6 +72,7 @@ public:
     }
 
     // all-default memory management
+    AudioSignal(const AudioSignal&) = default;
     virtual ~AudioSignal() = default;
 // Visual Studio does not support default generated move constructors yet
 #if !defined(_MSC_VER) || _MSC_VER > 1900
