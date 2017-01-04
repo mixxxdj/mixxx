@@ -925,6 +925,12 @@ EffectUnit = function (unitNumber) {
                                 'meta_force_next_update', 1);
             }
         }
+
+        this.forEachControl(function (control) {
+            if (control.group === undefined) {
+                control.group = eu.group;
+            }
+        });
     };
 };
 EffectUnit.prototype = new ControlContainer();
@@ -1278,30 +1284,30 @@ P32.Deck = function (deckNumbers, channel) {
     this.effectUnit.buttons[2].midi = [0x90 + channel, 0x04];
     this.effectUnit.buttons[3].midi = [0x90 + channel, 0x05];
     this.effectUnit.showParametersButton.midi = [0x90 + channel, 0x06];
-    this.effectUnit.toggleHeadphones = new Button({
+    this.effectUnit.enableEffectUnitOnDeckButton[1].midi = [0x90 + channel, 0x40];
+    this.effectUnit.enableEffectUnitOnDeckButton[2].midi = [0x90 + channel, 0x41];
+    this.effectUnit.enableEffectUnitOnDeckButton[3].midi = [0x90 + channel, 0x42];
+    this.effectUnit.enableEffectUnitOnDeckButton[4].midi = [0x90 + channel, 0x43];
+    this.effectUnit.enableEffectUnitOnDeckButton.headphones = new Button({
         midi: [0x90 + channel, 0x34],
         co: 'group_[Headphone]_enable',
-        on: P32.padColors.red,
-        off: P32.padColors.blue
     });
-    this.effectUnit.toggleMaster = new Button({
+    this.effectUnit.enableEffectUnitOnDeckButton.master = new Button({
         midi: [0x90 + channel, 0x35],
         co: 'group_[Master]_enable',
-        on: P32.padColors.red,
-        off: P32.padColors.blue
     });
-    this.effectUnit.toggleMicrophone = new Button({
+    this.effectUnit.enableEffectUnitOnDeckButton.microphone = new Button({
         midi: [0x90 + channel, 0x36],
         co: 'group_[Microphone]_enable',
-        on: P32.padColors.red,
-        off: P32.padColors.blue
     });
-    this.effectUnit.toggleAuxiliary = new Button({
+    this.effectUnit.enableEffectUnitOnDeckButton.auxiliary = new Button({
         midi: [0x90 + channel, 0x37],
         co: 'group_[Auxiliary1]_enable',
-        on: P32.padColors.red,
-        off: P32.padColors.blue
     });
     this.effectUnit.init();
+    this.effectUnit.enableEffectUnitOnDeckButton.reconnectControls(function (button) {
+        button.on = P32.padColors.red;
+        button.off = P32.padColors.blue;
+    });
 };
 P32.Deck.prototype = new Deck();

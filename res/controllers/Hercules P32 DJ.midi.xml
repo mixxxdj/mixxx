@@ -528,7 +528,79 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.toggleHeadphones.input</key>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton[1].input</key>
+                <status>0x91</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton[1].input</key>
+                <status>0x94</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton[2].input</key>
+                <status>0x91</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton[2].input</key>
+                <status>0x94</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton[3].input</key>
+                <status>0x91</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton[3].input</key>
+                <status>0x94</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton[4].input</key>
+                <status>0x91</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton[4].input</key>
+                <status>0x94</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton.headphones.input</key>
                 <status>0x91</status>
                 <midino>0x34</midino>
                 <options>
@@ -537,7 +609,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.toggleMaster.input</key>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton.master.input</key>
                 <status>0x91</status>
                 <midino>0x35</midino>
                 <options>
@@ -546,7 +618,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.toggleMicrophone.input</key>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton.microphone.input</key>
                 <status>0x91</status>
                 <midino>0x36</midino>
                 <options>
@@ -555,7 +627,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.toggleAuxiliary.input</key>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton.auxiliary.input</key>
                 <status>0x91</status>
                 <midino>0x37</midino>
                 <options>
@@ -564,7 +636,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.toggleHeadphones.input</key>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton.headphones.input</key>
                 <status>0x94</status>
                 <midino>0x34</midino>
                 <options>
@@ -573,7 +645,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.toggleMaster.input</key>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton.master.input</key>
                 <status>0x94</status>
                 <midino>0x35</midino>
                 <options>
@@ -582,7 +654,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.toggleMicrophone.input</key>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton.microphone.input</key>
                 <status>0x94</status>
                 <midino>0x36</midino>
                 <options>
@@ -591,7 +663,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.toggleAuxiliary.input</key>
+                <key>P32.leftDeck.effectUnit.enableEffectUnitOnDeckButton.auxiliary.input</key>
                 <status>0x94</status>
                 <midino>0x37</midino>
                 <options>
@@ -1618,7 +1690,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.toggleHeadphones.input</key>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton.headphones.input</key>
                 <status>0x92</status>
                 <midino>0x34</midino>
                 <options>
@@ -1627,7 +1699,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.toggleMaster.input</key>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton.master.input</key>
                 <status>0x92</status>
                 <midino>0x35</midino>
                 <options>
@@ -1636,7 +1708,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.toggleMicrophone.input</key>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton.microphone.input</key>
                 <status>0x92</status>
                 <midino>0x36</midino>
                 <options>
@@ -1645,7 +1717,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.toggleAuxiliary.input</key>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton.auxiliary.input</key>
                 <status>0x92</status>
                 <midino>0x37</midino>
                 <options>
@@ -1654,7 +1726,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.toggleHeadphones.input</key>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton.headphones.input</key>
                 <status>0x95</status>
                 <midino>0x34</midino>
                 <options>
@@ -1663,7 +1735,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.toggleMaster.input</key>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton.master.input</key>
                 <status>0x95</status>
                 <midino>0x35</midino>
                 <options>
@@ -1672,7 +1744,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.toggleMicrophone.input</key>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton.microphone.input</key>
                 <status>0x95</status>
                 <midino>0x36</midino>
                 <options>
@@ -1681,9 +1753,81 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.toggleAuxiliary.input</key>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton.auxiliary.input</key>
                 <status>0x95</status>
                 <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton[1].input</key>
+                <status>0x92</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton[1].input</key>
+                <status>0x95</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton[2].input</key>
+                <status>0x92</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton[2].input</key>
+                <status>0x95</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton[3].input</key>
+                <status>0x92</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton[3].input</key>
+                <status>0x95</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton[4].input</key>
+                <status>0x92</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.effectUnit.enableEffectUnitOnDeckButton[4].input</key>
+                <status>0x95</status>
+                <midino>0x43</midino>
                 <options>
                     <script-binding/>
                 </options>
