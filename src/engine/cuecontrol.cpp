@@ -557,9 +557,7 @@ void CueControl::hintReader(HintVector* pHintList) {
     // this is called from the engine thread
     // it is no locking required, because m_hotcueControl is filled during the
     // constructor and getPosition()->get() is a ControlObject
-    for (QList<HotcueControl*>::const_iterator it = m_hotcueControls.constBegin();
-         it != m_hotcueControls.constEnd(); ++it) {
-        HotcueControl* pControl = *it;
+    for (const auto& pControl: m_hotcueControls) {
         double position = pControl->getPosition();
         if (position != -1.0) {
             cue_hint.sample = position;
