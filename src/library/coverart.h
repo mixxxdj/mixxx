@@ -32,8 +32,6 @@ class CoverInfoRelative {
     CoverInfoRelative();
 
     // all-default memory management
-    CoverInfoRelative(const CoverInfoRelative&) = default;
-    CoverInfoRelative& operator=(const CoverInfoRelative&) = default;
     virtual ~CoverInfoRelative() = default;
 // Visual Studio does not support default generated move constructors yet
 #if !defined(_MSC_VER) || _MSC_VER > 1900
@@ -61,8 +59,6 @@ class CoverInfo : public CoverInfoRelative {
     }
 
     // all-default memory management
-    CoverInfo(const CoverInfo&) = default;
-    CoverInfo& operator=(const CoverInfo&) = default;
     virtual ~CoverInfo() override = default;
 // Visual Studio does not support default generated move constructors yet
 #if !defined(_MSC_VER) || _MSC_VER > 1900
@@ -90,8 +86,6 @@ class CoverArt : public CoverInfo {
     }
 
     // all-default memory management
-    CoverArt(const CoverArt&) = default;
-    CoverArt& operator=(const CoverArt&) = default;
     virtual ~CoverArt() override = default;
 // Visual Studio does not support default generated move constructors yet
 #if !defined(_MSC_VER) || _MSC_VER > 1900
