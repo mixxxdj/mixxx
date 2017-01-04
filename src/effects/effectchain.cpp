@@ -96,8 +96,14 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
     // Do not set the state of the chain because that information belongs
     // to the EffectChainSlot. Leave that to EffectChainSlot::loadEffectChain.
     for (const auto& pEffect : pChain->effects()) {
-        EffectPointer pClonedEffect = pChain->m_pEffectsManager
-                ->instantiateEffect(pEffect->getManifest().id());
+        EffectPointer pClonedEffect;
+        if (pEffect == nullptr) {
+            // Insert empty effect to preserve chain order
+            pClonedEffect = EffectPointer();
+        } else {
+            pClonedEffect = pChain->m_pEffectsManager
+                    ->instantiateEffect(pEffect->getManifest().id());
+        }
         pClone->addEffect(pClonedEffect);
     }
     return EffectChainPointer(pClone);
