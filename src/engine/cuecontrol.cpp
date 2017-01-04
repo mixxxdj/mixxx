@@ -331,7 +331,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     CuePointer pCue(m_pLoadedTrack->createAndAddCue());
     double closestBeate = m_pClosestBeat->get();
     double cuePosition =
-            (m_pQuantizeEnabled->toBool() && closestBeate != -1.0) ?
+            (m_pQuantizeEnabled->toBool() && closestBeate != -1) ?
                     closestBeate : getCurrentSample();
     pCue->setPosition(cuePosition);
     pCue->setHotCue(hotcue);
@@ -559,7 +559,7 @@ void CueControl::hintReader(HintVector* pHintList) {
     // constructor and getPosition()->get() is a ControlObject
     for (const auto& pControl: m_hotcueControls) {
         double position = pControl->getPosition();
-        if (position != -1.0) {
+        if (position != -1) {
             cue_hint.sample = position;
             if (cue_hint.sample % 2 != 0)
                 cue_hint.sample--;
@@ -831,7 +831,7 @@ void CueControl::cueDefault(double v) {
 void CueControl::pause(double v) {
     QMutexLocker lock(&m_mutex);
     //qDebug() << "CueControl::pause()" << v;
-    if (v != 0.0) {
+    if (v != 0) {
         m_pPlay->set(0.0);
     }
 }
@@ -839,7 +839,7 @@ void CueControl::pause(double v) {
 void CueControl::playStutter(double v) {
     QMutexLocker lock(&m_mutex);
     //qDebug() << "playStutter" << v;
-    if (v != 0.0) {
+    if (v != 0) {
         if (isPlayingByPlayButton()) {
             cueGoto(1.0);
         } else {
@@ -907,7 +907,7 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
 
     if (cueMode != CUE_MODE_DENON && cueMode != CUE_MODE_NUMARK) {
         if (m_pCuePoint->get() != -1) {
-            if (newPlay == 0.0 && !isTrackAtCue() &&
+            if (newPlay == 0 && !isTrackAtCue() &&
                     !atEndPosition()) {
                 if (cueMode == CUE_MODE_MIXXX) {
                     // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
