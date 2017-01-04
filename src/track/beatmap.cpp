@@ -575,14 +575,18 @@ void BeatMap::scale(enum BPMScale scale) {
         scaleFourth();
         break;
     case FOURTHIRDS:
-        // introduce two beats into every gap
-        scaleDouble();
-        // and again, to get four beats from one
-        scaleDouble();
+        if (getBpm() * 4 / 3 > getMaxBpm()) {
+            return;
+        }
+        // introduce three beats into every gap
+        scaleQuadruple();
         // remove every second third and forth beat
         scaleThird();
         break;
     case THREEHALVES:
+        if (getBpm() * 3 / 2 > getMaxBpm()) {
+            return;
+        }
         // introduce two beats into every gap
         scaleTriple();
         // remove every second beat
