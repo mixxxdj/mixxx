@@ -97,6 +97,9 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
     delete m_pControlChainSelector;
+    delete m_pControlChainShowFocus;
+    delete m_pControlChainShowParameters;
+    delete m_pControlChainFocusedEffect;
 
     for (QMap<QString, ChannelInfo*>::iterator it = m_channelInfoByName.begin();
          it != m_channelInfoByName.end();) {
