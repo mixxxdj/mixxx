@@ -21,8 +21,8 @@ Cue::Cue(TrackId trackId)
           m_iId(-1),
           m_trackId(trackId),
           m_type(INVALID),
-          m_samplePosition(-1),
-          m_iLength(0),
+          m_samplePosition(-1.0),
+          m_length(0.0),
           m_iHotCue(-1),
           m_label(kDefaultLabel),
           m_color(kDefaultColor) {
@@ -30,14 +30,14 @@ Cue::Cue(TrackId trackId)
 }
 
 
-Cue::Cue(int id, TrackId trackId, Cue::CueType type, double position, int length,
+Cue::Cue(int id, TrackId trackId, Cue::CueType type, double position, double length,
          int hotCue, QString label, QColor color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
           m_type(type),
           m_samplePosition(position),
-          m_iLength(length),
+          m_length(length),
           m_iHotCue(hotCue),
           m_label(label),
           m_color(color) {
@@ -96,17 +96,14 @@ void Cue::setPosition(double samplePosition) {
     emit(updated());
 }
 
-int Cue::getLength() const {
+double Cue::getLength() const {
     QMutexLocker lock(&m_mutex);
-    return m_iLength;
+    return m_length;
 }
 
-void Cue::setLength(int length) {
-    DEBUG_ASSERT_AND_HANDLE(length % 2 == 0) {
-        return;
-    }
+void Cue::setLength(double length) {
     QMutexLocker lock(&m_mutex);
-    m_iLength = length;
+    m_length = length;
     m_bDirty = true;
     lock.unlock();
     emit(updated());
