@@ -174,7 +174,7 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             pParameter->loadEffect(pEffect);
         }
 
-        onEffectMetaParameterChanged(m_pControlMetaParameter->get(), true);
+        slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
 
         emit(effectLoaded(pEffect, m_iEffectNumber));
     } else {
@@ -228,12 +228,6 @@ void EffectSlot::slotClear(double v) {
     }
 }
 
-void EffectSlot::onEffectMetaParameterChanged(double parameter, bool force) {
-    for (const auto& pParameterSlot : m_parameters) {
-        pParameterSlot->onEffectMetaParameterChanged(parameter, force);
-    }
-}
-
 void EffectSlot::syncSofttakeover() {
     for (const auto& pParameterSlot : m_parameters) {
         pParameterSlot->syncSofttakeover();
@@ -247,7 +241,7 @@ void EffectSlot::setMetaParameter(double v) {
     slotEffectMetaParameter(v);
 }
 
-void EffectSlot::slotEffectMetaParameter(double v) {
+void EffectSlot::slotEffectMetaParameter(double v, bool force) {
     // Clamp to [0.0, 1.0]
     if (v < 0.0 || v > 1.0) {
         qWarning() << debugString() << "value out of limits";
@@ -255,6 +249,6 @@ void EffectSlot::slotEffectMetaParameter(double v) {
         m_pControlMetaParameter->set(v);
     }
     for (const auto& pParameterSlot : m_parameters) {
-        pParameterSlot->onEffectMetaParameterChanged(v);
+        pParameterSlot->onEffectMetaParameterChanged(v, force);
     }
 }

@@ -37,8 +37,6 @@ class EffectSlot : public QObject {
     EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
     EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
 
-    void onEffectMetaParameterChanged(double parameter, bool force=false);
-
     // ensures that Softtakover is bypassed for the following
     // ChainParameterChange. Uses for testing only
     void syncSofttakeover();
@@ -61,7 +59,7 @@ class EffectSlot : public QObject {
     void slotClear(double v);
     void slotEffectSelector(double v);
     void slotEffectEnabledChanged(bool enabled);
-    void slotEffectMetaParameter(double v);
+    void slotEffectMetaParameter(double v, bool force = false);
 
   signals:
     // Indicates that the effect pEffect has been loaded into this

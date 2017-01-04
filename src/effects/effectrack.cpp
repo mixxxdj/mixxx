@@ -330,7 +330,7 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
     // Force update the new effect to match the current superknob position.
     EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
     if (pEffectSlot) {
-        pEffectSlot->onEffectMetaParameterChanged(
+        pEffectSlot->slotEffectMetaParameter(
                 pChainSlot->getSuperParameter(), true);
     }
     return true;
