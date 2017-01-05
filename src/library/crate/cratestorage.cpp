@@ -124,6 +124,19 @@ void CrateSummaryQueryFields::populateFromQuery(
 void CrateStorage::repairDatabase(QSqlDatabase database) {
     DEBUG_ASSERT(!m_database.isOpen());
 
+    // NOTE(uklotzde): No transactions
+    // All queries are independent so there is no need to enclose some
+    // or all of them in a transaction. Grouping into transactions would
+    // improve the overall performance at the cost of increased resource
+    // utilization. Since performance is not an issue for a maintenance
+    // operation the decision was not to use any transactions.
+
+    // NOTE(uklotzde): Nested scopes
+    // Each of the following queries is enclosed in a nested scope.
+    // When leaving this scope all resources allocated while executing
+    // the query are released implicitly and before executing the next
+    // query.
+
     // Crates
     {
         FwdSqlQuery query(database, QString(
