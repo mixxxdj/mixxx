@@ -137,9 +137,9 @@ void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) 
         // preview state will update.
         if (m_previewDeckTrackId.isValid()) {
             const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
+            QVector<int> rows = getTrackRows(m_previewDeckTrackId);
             m_previewDeckTrackId = TrackId(); // invalidate
-            foreach (int row, rows) {
+            for (int row: rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
                 emit(dataChanged(left, right));
