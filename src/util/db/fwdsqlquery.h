@@ -97,16 +97,6 @@ class FwdSqlQuery: protected QSqlQuery {
         return QSqlQuery::next();
     }
 
-    // TODO: Remove deprecated function!
-    QString executedQuery() const {
-        return QSqlQuery::executedQuery();
-    }
-
-    // TODO: Remove deprecated function!
-    QSqlError lastError() const {
-        return QSqlQuery::lastError();
-    }
-
     DbFieldIndex fieldIndex(const QString& fieldName) const;
 
     QVariant fieldValue(DbFieldIndex fieldIndex) const {
@@ -118,7 +108,7 @@ class FwdSqlQuery: protected QSqlQuery {
     bool fieldValueBoolean(DbFieldIndex fieldIndex) const;
 
   private:
-    FwdSqlQuery() = default;
+    FwdSqlQuery() = default; // hidden
 
     bool m_prepared;
 };
