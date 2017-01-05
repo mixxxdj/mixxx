@@ -60,14 +60,14 @@ TEST_F(BeatMapTest, Scale) {
     pMap->scale(Beats::TWOTHIRDS);
     EXPECT_DOUBLE_EQ(bpm * 2 / 3, pMap->getBpm());
 
+    pMap->scale(Beats::THREEHALVES);
+    EXPECT_DOUBLE_EQ(bpm * 3 / 2, pMap->getBpm());
+
     pMap->scale(Beats::THREEFOURTHS);
     EXPECT_DOUBLE_EQ(bpm / 2, pMap->getBpm());
 
     pMap->scale(Beats::FOURTHIRDS);
     EXPECT_DOUBLE_EQ(bpm * 4 / 3, pMap->getBpm());
-
-    pMap->scale(Beats::THREEHALVES);
-    EXPECT_DOUBLE_EQ(bpm * 3 / 2, pMap->getBpm());
 }
 
 TEST_F(BeatMapTest, TestNthBeat) {
