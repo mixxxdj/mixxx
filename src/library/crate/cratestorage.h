@@ -260,10 +260,14 @@ class CrateStorage: public SqlStorage {
             const QString& subselectForCrateIds,
             SqlSubselectMode subselectMode) const;
 
-    // TODO(XXX): Move this function into the Auto DJ component after
-    // fixing the database design flaw (see also: crateschema.h).
-    // Auto DJ needs to use the function selectCratesByIds() from
-    // this class for the actual implementation.
+    // TODO(XXX): Move this function into the AutoDJ component after
+    // fixing various database design flaws in AutoDJ itself (see also:
+    // crateschema.h). AutoDJ should use the function selectCratesByIds()
+    // from this class for the actual implementation.
+    // This refactoring should be deferred until consensus on the
+    // redesign of the AutoDJ feature has been reached. The main
+    // ideas of the new design should be documented for verification
+    // before starting to code.
     CrateSelectIterator selectAutoDjCrates(bool autoDjSource = true) const;
 
     // Crate content, i.e. the crate's tracks referenced by id
