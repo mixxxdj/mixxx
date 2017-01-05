@@ -79,22 +79,6 @@ class CrateQueryBinder {
     FwdSqlQuery& m_query;
 };
 
-
-class CrateSummaryQueryBinder: public CrateQueryBinder {
-  public:
-    explicit CrateSummaryQueryBinder(FwdSqlQuery& query)
-        : CrateQueryBinder(query) {
-    }
-    ~CrateSummaryQueryBinder() override = default;
-
-    void bindTrackCount(const QString& placeholder, const CrateSummary& crateSummary) const {
-        m_query.bindValue(placeholder, crateSummary.getTrackCount());
-    }
-    void bindTrackDuration(const QString& placeholder, const CrateSummary& crateSummary) const {
-        m_query.bindValue(placeholder, crateSummary.getTrackDuration());
-    }
-};
-
 } // anonymous namespace
 
 
