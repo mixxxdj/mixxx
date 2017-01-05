@@ -7,6 +7,7 @@
 
 #include "util/fifo.h"
 #include "effects/effectchain.h"
+#include "engine/channelhandle.h"
 
 const bool kEffectDebugOutput = false;
 
