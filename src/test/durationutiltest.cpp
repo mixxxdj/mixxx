@@ -8,16 +8,6 @@ namespace {
 
 class DurationUtilTest : public testing::Test {
   protected:
-
-    DurationUtilTest() {
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-    
     static QString adjustPrecision(
         QString withMilliseconds,
         mixxx::Duration::Precision precision) {
@@ -34,7 +24,7 @@ class DurationUtilTest : public testing::Test {
             return withMilliseconds;
         }
     }
-    
+
     void formatSeconds(QString expectedMilliseconds, double dSeconds) {
         ASSERT_LE(4, expectedMilliseconds.length()); // 3 digits + 1 decimal point
         const QString actualSeconds =

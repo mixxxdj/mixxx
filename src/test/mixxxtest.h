@@ -43,10 +43,6 @@ class MixxxTest : public testing::Test {
         return m_pConfig;
     }
 
-    ControlProxy* getControlProxy(const ConfigKey& key) const {
-        return new ControlProxy(key);
-    }
-
     QTemporaryFile* makeTemporaryFile(const QString& contents) const {
         QByteArray contentsBa = contents.toLocal8Bit();
         QTemporaryFile* file = new QTemporaryFile();

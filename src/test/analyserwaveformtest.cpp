@@ -15,7 +15,7 @@ namespace {
 
 class AnalyzerWaveformTest: public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         aw = new AnalyzerWaveform(config());
         tio = Track::newTemporary();
         tio->setSampleRate(44100);
@@ -36,7 +36,7 @@ class AnalyzerWaveformTest: public MixxxTest {
             canaryBigBuf[i] = CANARY_FLOAT;
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
         delete aw;
         delete [] bigbuf;
         delete [] canaryBigBuf;
