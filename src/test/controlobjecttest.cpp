@@ -3,10 +3,11 @@
 
 #include "control/controlobject.h"
 #include "util/memory.h"
+#include "test/mixxxtest.h"
 
 namespace {
 
-class ControlObjectTest : public testing::Test {
+class ControlObjectTest : public MixxxTest {
   protected:
     void SetUp() override {
         ck1 = ConfigKey("[Channel1]", "co1");
