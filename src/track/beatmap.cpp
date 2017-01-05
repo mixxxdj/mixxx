@@ -634,8 +634,9 @@ void BeatMap::scaleQuadruple() {
         for (int i = 1; i <= 3; i++) {
             beat.set_frame_position(prevBeat.frame_position() + distance * i / 4);
             it = m_beats.insert(it, beat);
+            ++it;
         }
-        prevBeat = (++it)[0];
+        prevBeat = it[0];
     }
 }
 
