@@ -330,10 +330,10 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     hotcueClear(pControl, v);
 
     CuePointer pCue(m_pLoadedTrack->createAndAddCue());
-    double closestBeate = m_pClosestBeat->get();
+    double closestBeat = m_pClosestBeat->get();
     double cuePosition =
-            (m_pQuantizeEnabled->toBool() && closestBeate != -1) ?
-                    closestBeate : getCurrentSample();
+            (m_pQuantizeEnabled->toBool() && closestBeat != -1) ?
+                    closestBeat : getCurrentSample();
     pCue->setPosition(cuePosition);
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
