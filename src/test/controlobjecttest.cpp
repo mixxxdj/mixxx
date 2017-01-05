@@ -49,4 +49,16 @@ TEST_F(ControlObjectTest, aliasRetrieval) {
     EXPECT_EQ(ControlObject::getControl(ckAlias), co.get());
 }
 
+TEST_F(ControlObjectTest, persistence) {
+    ConfigKey ck("[Test]", "key");
+    ControlObject* testCo1 = new ControlObject(ck, true, false, true, 3.0);
+    // Should be initialized to default value with no valid value in config
+    EXPECT_DOUBLE_EQ(3.0, testCo1->get());
+
+    testCo1->set(5.0);
+    delete testCo1;
+    ControlObject* testCo2 = new ControlObject(ck, true, false, true, 3.0);
+    EXPECT_DOUBLE_EQ(5.0, testCo2->get());
+}
+
 }
