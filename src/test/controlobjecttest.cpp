@@ -56,9 +56,29 @@ TEST_F(ControlObjectTest, persistence) {
     EXPECT_DOUBLE_EQ(3.0, testCo1->get());
 
     testCo1->set(5.0);
+
+    // simulate restarting Mixxx
     delete testCo1;
+    m_pConfig->save();
+    m_pConfig.clear();
+    m_pConfig = UserSettingsPointer(
+                    new UserSettings(getTestDataDir().filePath("test.cfg")));
+    ControlDoublePrivate::setUserConfig(m_pConfig);
+
     ControlObject* testCo2 = new ControlObject(ck, true, false, true, 3.0);
     EXPECT_DOUBLE_EQ(5.0, testCo2->get());
+
+    // simulate restarting Mixxx and
+    // a user editing the stored CO value to an invalid value
+    delete testCo2;
+    m_pConfig->set(ck, QString("NotANumber"));
+    m_pConfig->save();
+    m_pConfig.clear();
+    m_pConfig = UserSettingsPointer(
+                    new UserSettings(getTestDataDir().filePath("test.cfg")));
+    ControlDoublePrivate::setUserConfig(m_pConfig);
+    ControlObject* testCo3 = new ControlObject(ck, true, false, true, 3.0);
+    EXPECT_DOUBLE_EQ(3.0, testCo3->get());
 }
 
 }
