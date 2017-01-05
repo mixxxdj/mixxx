@@ -631,7 +631,7 @@ void BeatMap::scaleQuadruple() {
         // Need to not accrue fractional frames.
         int distance = it->frame_position() - prevBeat.frame_position();
         Beat beat;
-        for (int i=1; i<=3, i++;) {
+        for (int i=1; i<=3, i++) {
             beat.set_frame_position(prevBeat.frame_position() + distance * i / 4);
             it = m_beats.insert(it, beat);
         }
