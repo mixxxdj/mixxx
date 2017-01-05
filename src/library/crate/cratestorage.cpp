@@ -106,7 +106,9 @@ CrateQueryFields::CrateQueryFields(const FwdSqlQuery& query)
 }
 
 
-void CrateQueryFields::readValues(const FwdSqlQuery& query, Crate* pCrate) const {
+void CrateQueryFields::populateFromQuery(
+        const FwdSqlQuery& query,
+        Crate* pCrate) const {
     pCrate->setId(getId(query));
     pCrate->setName(getName(query));
     pCrate->setLocked(isLocked(query));
@@ -126,10 +128,10 @@ CrateSummaryQueryFields::CrateSummaryQueryFields(const FwdSqlQuery& query)
       m_iTrackDuration(query.fieldIndex(CRATESUMMARY_TRACK_DURATION)) {
 }
 
-void CrateSummaryQueryFields::readValues(
+void CrateSummaryQueryFields::populateFromQuery(
         const FwdSqlQuery& query,
         CrateSummary* pCrateSummary) const {
-    CrateQueryFields::readValues(query, pCrateSummary);
+    CrateQueryFields::populateFromQuery(query, pCrateSummary);
     pCrateSummary->setTrackCount(getTrackCount(query));
     pCrateSummary->setTrackDuration(getTrackDuration(query));
 }

@@ -36,7 +36,9 @@ class CrateQueryFields {
         return query.fieldValueBoolean(m_iAutoDjSource);
     }
 
-    void readValues(const FwdSqlQuery& query, Crate* pCrate) const;
+    void populateFromQuery(
+            const FwdSqlQuery& query,
+            Crate* pCrate) const;
 
   private:
     DbFieldIndex m_iId;
@@ -55,7 +57,7 @@ public:
 
     bool readNext(Crate* pCrate) {
         if (next()) {
-            m_queryFields.readValues(query(), pCrate);
+            m_queryFields.populateFromQuery(query(), pCrate);
             return true;
         } else {
             return false;
@@ -96,7 +98,7 @@ class CrateSummaryQueryFields: public CrateQueryFields {
         }
     }
 
-    void readValues(
+    void populateFromQuery(
             const FwdSqlQuery& query,
             CrateSummary* pCrateSummary) const;
 
@@ -115,7 +117,7 @@ public:
 
     bool readNext(CrateSummary* pCrateSummary) {
         if (next()) {
-            m_queryFields.readValues(query(), pCrateSummary);
+            m_queryFields.populateFromQuery(query(), pCrateSummary);
             return true;
         } else {
             return false;
