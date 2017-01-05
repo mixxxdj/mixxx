@@ -124,11 +124,6 @@ void EffectChainSlot::slotChainMixChanged(double mix) {
     emit(updated());
 }
 
-void EffectChainSlot::slotChainSuperParameterChanged(double parameter) {
-    m_pControlChainSuperParameter->set(parameter);
-    emit(updated());
-}
-
 void EffectChainSlot::slotChainInsertionTypeChanged(EffectChain::InsertionType type) {
     m_pControlChainInsertionType->set(static_cast<double>(type));
     emit(updated());
