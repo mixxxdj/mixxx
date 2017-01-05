@@ -171,10 +171,10 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     mountpoint->setText(m_settings.getDefaultMountpoint());
     host->setText(m_settings.getDefaultHost());
     int iPort = m_settings.getDefaultPort();
-    if (iPort != 0 && iPort <= 0xffff) {
-        port->setText(QString::number(m_settings.getDefaultPort()));
-    } else {
+    DEBUG_ASSERT_AND_HANDLE(iPort != 0 && iPort <= 0xffff) {
         port->setText(QString());
+    } else {
+        port->setText(QString::number(iPort));
     }
     login->setText(m_settings.getDefaultLogin());
     password->setText(m_settings.getDefaultPassword());
@@ -187,7 +187,7 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     spinBoxMaximumRetries->setValue(m_settings.getDefaultMaximumRetries());
     spinBoxMaximumRetries->setEnabled(true);
     stream_name->setText(m_settings.getDefaultStreamName());
-    stream_website->setText(m_settings.getDefaultStreamName());
+    stream_website->setText(m_settings.getDefaultStreamWebsite());
     stream_desc->setText(m_settings.getDefaultStreamDesc());
     stream_genre->setText(m_settings.getDefaultStreamGenre());
     stream_public->setChecked(m_settings.getDefaultStreamPublic());

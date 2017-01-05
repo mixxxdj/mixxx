@@ -1,4 +1,5 @@
 #include "preferences/broadcastsettings.h"
+#include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
 
 namespace {
@@ -222,9 +223,7 @@ QString BroadcastSettings::getDefaultMetadataCharset() const {
 
 QString BroadcastSettings::getMetadataFormat() const {
     return m_pConfig->getValue(
-                ConfigKey(kConfigKey, kMetadataFormat),
-                // No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
-                getDefaultMetadataFormat());
+            ConfigKey(kConfigKey, kMetadataFormat), getDefaultMetadataFormat());
 }
 
 void BroadcastSettings::setMetadataFormat(const QString& value) {
@@ -264,7 +263,8 @@ bool BroadcastSettings::getDefaultNoDelayFirstReconnect() const {
 
 bool BroadcastSettings::getOggDynamicUpdate() const {
     return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kOggDynamicUpdate), false);
+            ConfigKey(kConfigKey, kOggDynamicUpdate),
+            getDefaultOggDynamicUpdate());
 }
 
 void BroadcastSettings::setOggDynamicUpdate(bool value) {
@@ -293,7 +293,7 @@ int BroadcastSettings::getPort() const {
     int port =  m_pConfig->getValue(
             ConfigKey(kConfigKey, kPort), getDefaultPort());
     if (port < 0 || port > 0xFFFF) {
-        return -1;
+        return getDefaultPort();
     }
     return port;
 }
@@ -303,7 +303,7 @@ void BroadcastSettings::setPort(int value) {
 }
 
 int BroadcastSettings::getDefaultPort() const {
-    return -1;
+    return BROADCAST_DEFAULT_PORT;
 }
 
 double BroadcastSettings::getReconnectFirstDelay() const {
@@ -392,7 +392,7 @@ QString BroadcastSettings::getDefaultStreamName() const {
 
 bool BroadcastSettings::getStreamPublic() const {
     return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kStreamPublic), false);
+            ConfigKey(kConfigKey, kStreamPublic), getDefaultStreamPublic());
 }
 
 void BroadcastSettings::setStreamPublic(bool value) {
