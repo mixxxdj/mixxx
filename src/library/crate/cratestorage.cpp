@@ -209,7 +209,9 @@ void CrateStorage::detachDatabase() {
 
 
 void CrateStorage::createViews() {
-    FwdSqlQuery(m_database, kCrateSummaryViewQuery).execPrepared();
+    DEBUG_ASSERT_AND_HANDLE(FwdSqlQuery(m_database, kCrateSummaryViewQuery).execPrepared()) {
+        qCritical() << "Failed to create database view for crate summaries!";
+    }
 }
 
 
