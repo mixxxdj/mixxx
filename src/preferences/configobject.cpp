@@ -330,6 +330,18 @@ int ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
 }
 
 template <> template <>
+double ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
+                                           const double& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    bool ok;
+    auto result = value.value.toDouble(&ok);
+    return ok ? result : default_value;
+}
+
+template <> template <>
 QString ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
                                             const QString& default_value) const {
     const ConfigValue value = get(key);
