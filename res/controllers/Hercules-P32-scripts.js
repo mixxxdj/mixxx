@@ -213,7 +213,12 @@ Control.prototype = {
         different color depending on the state of different Mixxx COs. See SamplerButton.connect()
         and SamplerButton.output() for an example.
         **/
-        this.connections[0] = engine.connectControl(this.group, this.outCo, this.output);
+        if (undefined !== this.group &&
+            undefined !== this.outCo &&
+            undefined !== this.output &&
+            typeof this.output === 'function') {
+            this.connections[0] = engine.connectControl(this.group, this.outCo, this.output);
+        }
     },
     disconnect: function () {
         if (this.connections[0] !== undefined) {
@@ -520,6 +525,8 @@ var ControlContainer = function (initialLayer) {
 };
 ControlContainer.prototype = {
     /**
+    Iterate over all Controls in this ControlContainer and perform an operation on them.
+
     operation, function that takes 1 argument:
     the function to call for each Control. Takes each Control as its first argument.
     "this" in the context of the function refers to the ControlContainer.
@@ -568,33 +575,40 @@ ControlContainer.prototype = {
             control.trigger();
         }, recursive);
     },
-    // Call each Control's shift() function if it exists.
+    // Call each Control's shift() function if it exists. This iterates recursively on any
+    // Controls in ControlContainers that are properties of this, so there is no need to call
+    // shift() on each child ControlContainer.
     shift: function () {
         this.forEachControl(function (control) {
             if (typeof control.shift === 'function') {
                 control.shift();
             }
+            // Set isShifted for child ControlContainers forEachControl is iterating through recursively
+            this.isShifted = true;
         });
-        this.isShifted = true;
     },
-    // Call each Control's unshift() function if it exists.
+    // Call each Control's unshift() function if it exists. This iterates recursively on any
+    // Controls in ControlContainers that are properties of this, so there is no need to call
+    // unshift() on each child ControlContainer.
     unshift: function () {
         this.forEachControl(function (control) {
             if (typeof control.unshift === 'function') {
                 control.unshift();
             }
+            // Set isShifted for child ControlContainers forEachControl is iterating through recursively
+            this.isShifted = false;
         });
-        this.isShifted = false;
     },
     isShifted: false,
     /**
     Activate a new layer of functionality. Layers are merely objects with properties to overwrite
-    the of the Controls within this ControlContainer. Layers objects are deeply merged. If a new
-    layer does not define a property for a Control, the Control's old property will be retained.
+    the properties of the Controls within this ControlContainer. Layer objects are deeply merged.
+    If a new layer does not define a property for a Control, the Control's old property will be
+    retained.
 
     In the most common case, for providing alternate functionality when a shift button is pressed,
     using applyLayer() is likely overcomplicated and may be slow. Use shift()/unshift() instead.
-    Use applyLayer() if you need to cycle through more than two alternate layers.
+    applyLayer() may be useful for cycling through more than two alternate layers.
 
     For example:
     someControlContainer.applyLayer({
@@ -620,9 +634,6 @@ ControlContainer.prototype = {
 
         if (reconnectControls === true) {
             this.forEachControl(function (control) {
-                if (typeof operation === 'function') {
-                    operation.call(this, control);
-                }
                 control.connect();
                 control.trigger();
             });
@@ -712,45 +723,64 @@ are:
 
 dryWetKnob (CC)
 showParametersButton (Button)
-enableEffectUnitOnDeckButton[1-4] (Button)
-buttons[1-3] (Buttons)
-knobs[1-3] (CCs)
+enableButtons[1-3] (ControlContainer of Buttons)
+knobs[1-3] (ControlContainer of CCs)
+enableOnChannelButtons (ControlContainer of Buttons)
 
-When the effect unit is not showing the individual parameters for each effect, the knobs control
-the metaknob of each effect in the unit. The buttons control whether each effect is enabled.
-Pressing a button with shift switches to the next available effect.
+When the effect unit is showing the metaknobs of the effects but not each parameter, the knobs
+control the metaknobs. The enableButtons control whether each effect is enabled. Pressing an
+enableButton with shift switches to the next available effect.
 
 When the effect unit is showing all the parameters, the knobs behave differently depending on
-whether an effect is focused. An effect can be focused by clicking the focus button on screen or
-pressing shift + an effect enable button. Pressing shift + the enable button for the focused effect
-unfocuses the effect. When there is no focused effect, the knobs control the effect metaknobs like
-they do when parameters are not showing. When an effect is focused, the knobs control the first 3
-parameters of the focused effect.
+whether an effect is focused. When there is no focused effect (the default state), the knobs control
+the effect metaknobs like they do when parameters are not showing. When an effect is focused, the
+knobs control the first 3 parameters of the focused effect. An effect can be focused by pressing
+shift + its enableButton or clicking the focus button on screen. Pressing shift + the enableButton
+for the focused effect again unfocuses the effect.
 
-This EffectUnit provides Buttons to toggle whether the effect unit is enabled for a deck,
-but not many controllers have buttons for that. If yours does not, you should probably enable
-effect units for specific decks in your script's init() function.
+The enableOnChannelButtons allow assigning the effect unit to different channels and are named after
+the Mixxx channel they affect. The following Buttons are provided by default:
+Channel1
+Channel2
+Channel3
+Channel4
+Headphones
+Master
+Microphone
+Auxiliary1
+You can easily add more, for example for additional microphones, auxiliary inputs, or samplers by
+calling enableOnChannelButtons.addButton('CHANNEL_NAME') (do not put brackets around the
+CHANNEL_NAME).
 
 To map an EffectUnit for your controller, call the constructor with the unit number of the effect
-unit as the only argument. Then, set the midi attributes for the showParametersButton, buttons[1-3],
-and optionally enableEffectUnitOnDeckButton[1-3] (setting the midi attributes for the CCs is not
-necessary because they do not send any output). After the midi attributes are set up, call
+unit as the only argument. Then, set the midi attributes for the showParametersButton,
+enableButtons[1-3], and optionally enableOnChannelButtons (setting the midi attributes for the CCs
+is not necessary because they do not send any output). After the midi attributes are set up, call
 EffectUnit.init() to set up the output callbacks. For example:
 
 MyController.effectUnit = new EffectUnit(1);
-MyController.effectUnit.buttons[1].midi = [0x90, 0x01];
-MyController.effectUnit.buttons[2].midi = [0x90, 0x02];
-MyController.effectUnit.buttons[3].midi = [0x90, 0x03];
+MyController.effectUnit.enableButtons[1].midi = [0x90, 0x01];
+MyController.effectUnit.enableButtons[2].midi = [0x90, 0x02];
+MyController.effectUnit.enableButtons[3].midi = [0x90, 0x03];
 MyController.effectUnit.showParametersButton.midi = [0x90, 0x04];
+MyController.effectUnit.enableOnChannelButtons.Channel1 = [0x90, 0x05];
+MyController.effectUnit.enableOnChannelButtons.Channel2 = [0x90, 0x06];
 MyController.effectUnit.init();
 
 Controllers designed for Serato and Rekordbox often have an encoder instead of a dry/wet knob
-(labeled "Beats" for Serato or "Release FX" for Rekordbox) and a button labeled "Tap". It is
-recommended to map the "Tap" button to the EffectUnit's showParametersButton. To use the dryWetKnob
+(labeled "Beats" for Serato or "Release FX" for Rekordbox) and a button labeled "Tap". If the
+encoder sends a MIDI signal when pushed, it is recommended to map the encoder push to the
+EffectUnit's showParametersButton, otherwise map that to the "Tap" button. To use the dryWetKnob
 Control with an encoder, replace its inValueScale() function with a function that can appropriately
 handle the signals sent by your controller. In that inValueScale() function, call
 this.getParameterIn() and return the new parameter value depending on the direction the encoder
 turns.
+
+For the shift functionality to work, the shift button of your controller must be mapped to a
+function that calls the shift()/unshift() functions of the EffectUnit on button press/release. If
+the EffectUnit is a property of another ControlContainer (for example a Deck), calling shift()
+and unshift() on the parent ControlContainer will recursively call it on the EffectUnit too (just
+like it will for any other ControlContainer).
 **/
 EffectUnit = function (unitNumber) {
     var eu = this;
@@ -774,111 +804,126 @@ EffectUnit = function (unitNumber) {
         outConnect: false,
     });
 
-    this.enableEffectUnitOnDeckButton = new ControlContainer();
-    for (var d = 1; d <= 4; d++) {
-      this.enableEffectUnitOnDeckButton[d] = new Button({
-          group: this.group,
-          co: 'group_[Channel' + d + ']_enable',
-          outConnect: false,
-      });
-    }
-
-    this.buttons = new ControlContainer();
-    this.knobs = new ControlContainer();
-    for (var d = 1; d <= 3; d++) {
-        this.knobs[d] = new CC({
-            number: d,
-            onParametersHide: function () {
-                this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.number + ']';
-                this.inCo = 'meta';
-            },
-            onParametersShow: function () {
-                var focused_effect = engine.getValue(eu.group, "focused_effect");
-                if (focused_effect === 0) {
-                    // manipulate metaknobs
-                    this.onParametersHide();
-                } else {
-                    this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' +
-                                  focused_effect + ']';
-                    this.inCo = 'parameter' + this.number;
-                }
-            },
+    this.enableOnChannelButtons = new ControlContainer();
+    this.enableOnChannelButtons.addButton = function (channel) {
+        this[channel] = new Button({
+            group: eu.group,
+            co: 'group_[' + channel + ']_enable',
             outConnect: false,
-            skipInitConnect: true
         });
-        this.buttons[d] = new Button({
-            number: d,
-            group: '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + d + ']',
-            onParametersHide: function () {
-                this.input = Button.prototype.input;
-                this.outCo = 'enabled';
-                this.unshift = function () {
-                    this.isShifted = false;
-                    this.inCo = 'enabled';
-                    this.onlyOnPress = true;
-                };
-                this.shift = function () {
-                    this.isShifted = true;
-                    this.inCo = 'next_effect';
-                    this.onlyOnPress = false;
-                };
-                if (this.isShifted) {
-                    this.shift();
-                } else {
-                    this.unshift();
-                }
-            },
-            onParametersShow: function () {
+    };
+    this.enableOnChannelButtons.addButton('Channel1');
+    this.enableOnChannelButtons.addButton('Channel2');
+    this.enableOnChannelButtons.addButton('Channel3');
+    this.enableOnChannelButtons.addButton('Channel4');
+    this.enableOnChannelButtons.addButton('Headphone');
+    this.enableOnChannelButtons.addButton('Master');
+    this.enableOnChannelButtons.addButton('Microphone');
+    this.enableOnChannelButtons.addButton('Auxiliary1');
+
+    this.EffectUnitKnob = function (number) {
+        this.number = number;
+        CC.call(this);
+    };
+    this.EffectUnitKnob.prototype = new CC({
+        onParametersHide: function () {
+            this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.number + ']';
+            this.inCo = 'meta';
+        },
+        onParametersShow: function () {
+            var focused_effect = engine.getValue(eu.group, "focused_effect");
+            if (focused_effect === 0) {
+                // manipulate metaknobs
+                this.onParametersHide();
+            } else {
+                this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' +
+                              focused_effect + ']';
+                this.inCo = 'parameter' + this.number;
+            }
+        },
+    });
+
+    this.EffectEnableButton = function (number) {
+        this.number = number;
+        this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + number + ']';
+        Button.call(this);
+    };
+    this.EffectEnableButton.prototype = new Button({
+        onParametersHide: function () {
+            this.input = Button.prototype.input;
+            this.outCo = 'enabled';
+            this.unshift = function () {
+                this.isShifted = false;
                 this.inCo = 'enabled';
-                this.outCo = 'enabled';
-                this.unshift = function () {
-                    this.isShifted = false;
-                    this.input = Button.prototype.input;
-                    this.onlyOnPress = true;
-                };
-                this.shift = function () {
-                    this.isShifted = true;
-                    this.input = function (channel, control, value, status, group) {
-                        if (value > 0) {
-                            if (engine.getValue(eu.group, "focused_effect") === this.number) {
-                                // focus this effect
-                                engine.setValue(eu.group, "focused_effect", 0);
-                            } else {
-                                // unfocus and make knobs control metaknobs
-                                engine.setValue(eu.group, "focused_effect", this.number);
-                            }
+                this.onlyOnPress = true;
+            };
+            this.shift = function () {
+                this.isShifted = true;
+                this.inCo = 'next_effect';
+                this.onlyOnPress = false;
+            };
+            if (this.isShifted) {
+                this.shift();
+            } else {
+                this.unshift();
+            }
+        },
+        onParametersShow: function () {
+            this.inCo = 'enabled';
+            this.outCo = 'enabled';
+            this.unshift = function () {
+                this.isShifted = false;
+                this.input = Button.prototype.input;
+                this.onlyOnPress = true;
+            };
+            this.shift = function () {
+                this.isShifted = true;
+                this.input = function (channel, control, value, status, group) {
+                    if (value > 0) {
+                        if (engine.getValue(eu.group, "focused_effect") === this.number) {
+                            // focus this effect
+                            engine.setValue(eu.group, "focused_effect", 0);
+                        } else {
+                            // unfocus and make knobs control metaknobs
+                            engine.setValue(eu.group, "focused_effect", this.number);
                         }
-                    };
-                };
-                this.connect = function () {
-                    this.connections[0] = engine.connectControl(this.group, "enabled", Button.prototype.output);
-                    this.connections[1] = engine.connectControl(eu.group, "focused_effect", this.onFocusChanged);
-                };
-                this.onFocusChanged = function (value, group, control) {
-                    if (value === this.number) {
-                        // make knobs control first 3 parameters of the focused effect
-                        eu.knobs.reconnectControls(function (knob) {
-                            if (typeof knob.onParametersShow === 'function') {
-                                knob.onParametersShow(); // to set new group property
-                            }
-                        });
-                    } else if (value === 0) {
-                        // make knobs control metaknobs
-                        eu.knobs.reconnectControls(function (knob) {
-                            if (typeof knob.onParametersShow === 'function') {
-                                knob.onParametersHide(); // to set new group property
-                            }
-                        });
                     }
                 };
-                if (this.isShifted) {
-                    this.shift();
-                } else {
-                    this.unshift();
+            };
+            this.connect = function () {
+                this.connections[0] = engine.connectControl(this.group, "enabled", Button.prototype.output);
+                this.connections[1] = engine.connectControl(eu.group, "focused_effect", this.onFocusChanged);
+            };
+            this.onFocusChanged = function (value, group, control) {
+                if (value === this.number) {
+                    // make knobs control first 3 parameters of the focused effect
+                    eu.knobs.reconnectControls(function (knob) {
+                        if (typeof knob.onParametersShow === 'function') {
+                            knob.onParametersShow(); // to set new group property
+                        }
+                    });
+                } else if (value === 0) {
+                    // make knobs control metaknobs
+                    eu.knobs.reconnectControls(function (knob) {
+                        if (typeof knob.onParametersShow === 'function') {
+                            knob.onParametersHide(); // to set new group property
+                        }
+                    });
                 }
-            },
-            outConnect: false
-        });
+            };
+            if (this.isShifted) {
+                this.shift();
+            } else {
+                this.unshift();
+            }
+        },
+    });
+
+    this.knobs = new ControlContainer();
+    this.enableButtons = new ControlContainer();
+    for (var n = 1; n <= 3; n++) {
+        this.knobs[n] = new this.EffectUnitKnob(n);
+        this.enableButtons[n] = new this.EffectEnableButton(n);
     }
 
     this.showParametersButton = new Button({
@@ -917,6 +962,14 @@ EffectUnit = function (unitNumber) {
     this.init = function () {
         this.showParametersButton.connect();
         this.showParametersButton.trigger();
+
+        this.enableOnChannelButtons.forEachControl(function (button) {
+            if (button.midi !== undefined) {
+                button.disconnect();
+                button.connect();
+                button.trigger();
+            }
+        });
 
         this.forEachControl(function (control) {
             if (control.group === undefined) {
@@ -994,15 +1047,13 @@ P32.recordButton = new Button({
 P32.slipButton = new Button({
     midi: [0x90, 0x03],
     input: function (channel, control, value, status, group) {
-        if (value === 127) {
-            if (P32.leftDeck.isShifted) {
-                P32.leftDeck.toggle();
-            } else if (P32.rightDeck.isShifted) {
-                P32.rightDeck.toggle();
-            } else {
-                for (var i = 1; i <= 4; i++) {
-                    script.toggleControl('[Channel' + i + ']', 'slip_enabled');
-                }
+        if (P32.leftDeck.isShifted) {
+            P32.leftDeck.toggle();
+        } else if (P32.rightDeck.isShifted) {
+            P32.rightDeck.toggle();
+        } else {
+            for (var i = 1; i <= 4; i++) {
+                script.toggleControl('[Channel' + i + ']', 'slip_enabled');
             }
         }
     },
@@ -1068,7 +1119,7 @@ P32.Deck = function (deckNumbers, channel) {
     });
 
     // ==================================== PAD GRID ============================================
-    // Slicer layer set up in P32.EffectUnit()
+    // Slicer layer is handled by this.effectUnit.enableOnChannelButtons, set up below
 
     this.hotcueButton = [];
     this.samplerButton = [];
@@ -1272,34 +1323,22 @@ P32.Deck = function (deckNumbers, channel) {
     });
 
     this.effectUnit = new EffectUnit(deckNumbers[0]);
-    this.effectUnit.buttons[1].midi = [0x90 + channel, 0x03];
-    this.effectUnit.buttons[2].midi = [0x90 + channel, 0x04];
-    this.effectUnit.buttons[3].midi = [0x90 + channel, 0x05];
+    this.effectUnit.enableButtons[1].midi = [0x90 + channel, 0x03];
+    this.effectUnit.enableButtons[2].midi = [0x90 + channel, 0x04];
+    this.effectUnit.enableButtons[3].midi = [0x90 + channel, 0x05];
     this.effectUnit.showParametersButton.midi = [0x90 + channel, 0x06];
-    this.effectUnit.enableEffectUnitOnDeckButton[1].midi = [0x90 + channel, 0x40];
-    this.effectUnit.enableEffectUnitOnDeckButton[2].midi = [0x90 + channel, 0x41];
-    this.effectUnit.enableEffectUnitOnDeckButton[3].midi = [0x90 + channel, 0x42];
-    this.effectUnit.enableEffectUnitOnDeckButton[4].midi = [0x90 + channel, 0x43];
-    this.effectUnit.enableEffectUnitOnDeckButton.headphones = new Button({
-        midi: [0x90 + channel, 0x34],
-        co: 'group_[Headphone]_enable',
-    });
-    this.effectUnit.enableEffectUnitOnDeckButton.master = new Button({
-        midi: [0x90 + channel, 0x35],
-        co: 'group_[Master]_enable',
-    });
-    this.effectUnit.enableEffectUnitOnDeckButton.microphone = new Button({
-        midi: [0x90 + channel, 0x36],
-        co: 'group_[Microphone]_enable',
-    });
-    this.effectUnit.enableEffectUnitOnDeckButton.auxiliary = new Button({
-        midi: [0x90 + channel, 0x37],
-        co: 'group_[Auxiliary1]_enable',
-    });
-    this.effectUnit.init();
-    this.effectUnit.enableEffectUnitOnDeckButton.reconnectControls(function (button) {
+    this.effectUnit.enableOnChannelButtons.Channel1.midi = [0x90 + channel, 0x40];
+    this.effectUnit.enableOnChannelButtons.Channel2.midi = [0x90 + channel, 0x41];
+    this.effectUnit.enableOnChannelButtons.Channel3.midi = [0x90 + channel, 0x42];
+    this.effectUnit.enableOnChannelButtons.Channel4.midi = [0x90 + channel, 0x43];
+    this.effectUnit.enableOnChannelButtons.Headphone.midi = [0x90 + channel, 0x34];
+    this.effectUnit.enableOnChannelButtons.Master.midi = [0x90 + channel, 0x35];
+    this.effectUnit.enableOnChannelButtons.Microphone.midi = [0x90 + channel, 0x36];
+    this.effectUnit.enableOnChannelButtons.Auxiliary1.midi = [0x90 + channel, 0x37];
+    this.effectUnit.enableOnChannelButtons.forEachControl(function (button) {
         button.on = P32.padColors.red;
         button.off = P32.padColors.blue;
     });
+    this.effectUnit.init();
 };
 P32.Deck.prototype = new Deck();
