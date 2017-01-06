@@ -11,18 +11,7 @@ namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
-class TagLibTest : public testing::Test {
-  protected:
-
-    TagLibTest() {
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-};
+class TagLibTest : public testing::Test {};
 
 class FileRemover final {
 public:
