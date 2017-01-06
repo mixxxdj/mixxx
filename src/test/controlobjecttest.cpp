@@ -16,12 +16,20 @@ class ControlObjectTest : public MixxxTest {
         co2 = std::make_unique<ControlObject>(ck2);
     }
 
+    // Simulate restarting Mixxx by saving and reloading the UserSettings.
+    void saveAndReloadConfig() {
+        m_pConfig->save();
+        m_pConfig = UserSettingsPointer(
+            new UserSettings(getTestDataDir().filePath("test.cfg")));
+        ControlDoublePrivate::setUserConfig(m_pConfig);
+    }
+
     ConfigKey ck1, ck2;
     std::unique_ptr<ControlObject> co1;
     std::unique_ptr<ControlObject> co2;
 };
 
-TEST_F(ControlObjectTest, setGet) {
+TEST_F(ControlObjectTest, SetGet) {
     co1->set(1.0);
     EXPECT_DOUBLE_EQ(1.0, co1->get());
     co2->set(2.0);
@@ -35,7 +43,7 @@ TEST_F(ControlObjectTest, getControl) {
     EXPECT_EQ(ControlObject::getControl(ck2), (ControlObject*)nullptr);
 }
 
-TEST_F(ControlObjectTest, aliasRetrieval) {
+TEST_F(ControlObjectTest, AliasRetrieval) {
     ConfigKey ck("[Microphone1]", "volume");
     ConfigKey ckAlias("[Microphone]", "volume");
 
@@ -49,37 +57,39 @@ TEST_F(ControlObjectTest, aliasRetrieval) {
     EXPECT_EQ(ControlObject::getControl(ckAlias), co.get());
 }
 
-TEST_F(ControlObjectTest, persistence) {
-    ConfigKey ck("[Test]", "key");
-    ControlObject* testCo1 = new ControlObject(ck, true, false, true, 3.0);
+TEST_F(ControlObjectTest, Persistence_NotPresent) {
+    ConfigKey ck("[Test]", "persist");
+    ASSERT_FALSE(m_pConfig->exists(ck));
+    ControlObject co(ck, true, false, true, 3.0);
     // Should be initialized to default value with no valid value in config
-    EXPECT_DOUBLE_EQ(3.0, testCo1->get());
+    EXPECT_DOUBLE_EQ(3.0, co.get());
+}
 
-    testCo1->set(5.0);
-
-    // simulate restarting Mixxx
-    delete testCo1;
-    m_pConfig->save();
-    m_pConfig.clear();
-    m_pConfig = UserSettingsPointer(
-                    new UserSettings(getTestDataDir().filePath("test.cfg")));
-    ControlDoublePrivate::setUserConfig(m_pConfig);
-
-    ControlObject* testCo2 = new ControlObject(ck, true, false, true, 3.0);
-    EXPECT_DOUBLE_EQ(5.0, testCo2->get());
-
-    // simulate restarting Mixxx and
-    // a user editing the stored CO value to an invalid value
-    delete testCo2;
+TEST_F(ControlObjectTest, Persistence_InvalidValue) {
+    ConfigKey ck("[Test]", "persist");
     m_pConfig->set(ck, QString("NotANumber"));
-    m_pConfig->save();
-    m_pConfig.clear();
-    m_pConfig = UserSettingsPointer(
-                    new UserSettings(getTestDataDir().filePath("test.cfg")));
-    ControlDoublePrivate::setUserConfig(m_pConfig);
-    ControlObject* testCo3 = new ControlObject(ck, true, false, true, 3.0);
-    EXPECT_DOUBLE_EQ(3.0, testCo3->get());
-    delete testCo3;
+    saveAndReloadConfig();
+
+    ControlObject co(ck, true, false, true, 3.0);
+    EXPECT_DOUBLE_EQ(3.0, co.get());
+}
+
+TEST_F(ControlObjectTest, Persistence_EmptyValue) {
+    ConfigKey ck("[Test]", "persist");
+    m_pConfig->set(ck, QString(""));
+    saveAndReloadConfig();
+
+    ControlObject co(ck, true, false, true, 3.0);
+    EXPECT_DOUBLE_EQ(3.0, co.get());
+}
+
+TEST_F(ControlObjectTest, Persistence_ValidValue) {
+    ConfigKey ck("[Test]", "persist");
+    m_pConfig->set(ck, QString("5"));
+    saveAndReloadConfig();
+
+    ControlObject co(ck, true, false, true, 3.0);
+    EXPECT_DOUBLE_EQ(5.0, co.get());
 }
 
 }
