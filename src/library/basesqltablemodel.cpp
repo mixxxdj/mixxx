@@ -254,8 +254,10 @@ void BaseSqlTableModel::select() {
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
     // won't allocate a giant in-memory table that we won't use at all.
     query.setForwardOnly(true);
-    query.prepare(queryString);
-
+    if (!query.prepare(queryString)) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;
