@@ -534,7 +534,7 @@ void CrateFeature::slotDuplicateCrate() {
             trackIds.reserve(
                     m_pTrackCollection->crates().countCrateTracks(oldCrate.getId()));
             {
-                CrateTrackSelectIterator crateTracks(
+                CrateTrackSelectResult crateTracks(
                         m_pTrackCollection->crates().selectCrateTracksSorted(oldCrate.getId()));
                 while (crateTracks.next()) {
                     trackIds.append(crateTracks.trackId());
@@ -590,7 +590,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     modelRows.reserve(m_pTrackCollection->crates().countCrates());
 
     int selectedRow = -1;
-    CrateSummarySelectIterator crateSummaries(
+    CrateSummarySelectResult crateSummaries(
             m_pTrackCollection->crates().selectCrateSummaries());
     CrateSummary crateSummary;
     while (crateSummaries.populateNext(&crateSummary)) {
@@ -756,7 +756,7 @@ void CrateFeature::slotAnalyzeCrate() {
             trackIds.reserve(
                     m_pTrackCollection->crates().countCrateTracks(crateId));
             {
-                CrateTrackSelectIterator crateTracks(
+                CrateTrackSelectResult crateTracks(
                         m_pTrackCollection->crates().selectCrateTracksSorted(crateId));
                 while (crateTracks.next()) {
                     trackIds.append(crateTracks.trackId());
@@ -895,7 +895,7 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
             pTrack ? pTrack->getId() : TrackId();
 
     std::vector<CrateId> sortedTrackCrates;
-    CrateTrackSelectIterator trackCratesIter(
+    CrateTrackSelectResult trackCratesIter(
             m_pTrackCollection->crates().selectTrackCratesSorted(selectedTrackId));
     while (trackCratesIter.next()) {
         sortedTrackCrates.push_back(trackCratesIter.crateId());

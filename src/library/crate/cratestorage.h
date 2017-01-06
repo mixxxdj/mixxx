@@ -10,7 +10,7 @@
 #include "track/trackid.h"
 
 #include "util/db/sqlstorage.h"
-#include "util/db/sqlselectiterator.h"
+#include "util/db/fwdsqlqueryselectresult.h"
 #include "util/db/sqlsubselectmode.h"
 
 
@@ -47,13 +47,13 @@ class CrateQueryFields {
     DbFieldIndex m_iAutoDjSource;
 };
 
-class CrateSelectIterator: public SqlSelectIterator {
+class CrateSelectResult: public FwdSqlQuerySelectResult {
 public:
-    CrateSelectIterator(CrateSelectIterator&& other)
-        : SqlSelectIterator(std::move(other)),
+    CrateSelectResult(CrateSelectResult&& other)
+        : FwdSqlQuerySelectResult(std::move(other)),
           m_queryFields(std::move(other.m_queryFields)) {
     }
-    ~CrateSelectIterator() override = default;
+    ~CrateSelectResult() override = default;
 
     bool populateNext(Crate* pCrate) {
         if (next()) {
@@ -66,10 +66,10 @@ public:
 
 private:
     friend class CrateStorage;
-    CrateSelectIterator() = default;
-    explicit CrateSelectIterator(FwdSqlQuery query)
-        : SqlSelectIterator(query),
-          m_queryFields(SqlSelectIterator::query()) {
+    CrateSelectResult() = default;
+    explicit CrateSelectResult(FwdSqlQuery&& query)
+        : FwdSqlQuerySelectResult(std::move(query)),
+          m_queryFields(FwdSqlQuerySelectResult::query()) {
     }
 
     CrateQueryFields m_queryFields;
@@ -107,13 +107,13 @@ class CrateSummaryQueryFields: public CrateQueryFields {
     DbFieldIndex m_iTrackDuration;
 };
 
-class CrateSummarySelectIterator: public SqlSelectIterator {
+class CrateSummarySelectResult: public FwdSqlQuerySelectResult {
 public:
-    CrateSummarySelectIterator(CrateSummarySelectIterator&& other)
-        : SqlSelectIterator(std::move(other)),
+    CrateSummarySelectResult(CrateSummarySelectResult&& other)
+        : FwdSqlQuerySelectResult(std::move(other)),
           m_queryFields(std::move(other.m_queryFields)) {
     }
-    ~CrateSummarySelectIterator() override = default;
+    ~CrateSummarySelectResult() override = default;
 
     bool populateNext(CrateSummary* pCrateSummary) {
         if (next()) {
@@ -126,10 +126,10 @@ public:
 
 private:
     friend class CrateStorage;
-    CrateSummarySelectIterator() = default;
-    explicit CrateSummarySelectIterator(FwdSqlQuery query)
-        : SqlSelectIterator(query),
-          m_queryFields(SqlSelectIterator::query()) {
+    CrateSummarySelectResult() = default;
+    explicit CrateSummarySelectResult(FwdSqlQuery&& query)
+        : FwdSqlQuerySelectResult(std::move(query)),
+          m_queryFields(FwdSqlQuerySelectResult::query()) {
     }
 
     CrateSummaryQueryFields m_queryFields;
@@ -153,13 +153,13 @@ class CrateTrackQueryFields {
     DbFieldIndex m_iTrackId;
 };
 
-class CrateTrackSelectIterator: public SqlSelectIterator {
+class CrateTrackSelectResult: public FwdSqlQuerySelectResult {
 public:
-    CrateTrackSelectIterator(CrateTrackSelectIterator&& other)
-        : SqlSelectIterator(std::move(other)),
+    CrateTrackSelectResult(CrateTrackSelectResult&& other)
+        : FwdSqlQuerySelectResult(std::move(other)),
           m_queryFields(std::move(other.m_queryFields)) {
     }
-    ~CrateTrackSelectIterator() override = default;
+    ~CrateTrackSelectResult() override = default;
 
     CrateId crateId() const {
         return m_queryFields.crateId(query());
@@ -170,10 +170,10 @@ public:
 
 private:
     friend class CrateStorage;
-    CrateTrackSelectIterator() = default;
-    explicit CrateTrackSelectIterator(FwdSqlQuery query)
-        : SqlSelectIterator(query),
-          m_queryFields(SqlSelectIterator::query()) {
+    CrateTrackSelectResult() = default;
+    explicit CrateTrackSelectResult(FwdSqlQuery&& query)
+        : FwdSqlQuerySelectResult(std::move(query)),
+          m_queryFields(FwdSqlQuerySelectResult::query()) {
     }
 
     CrateTrackQueryFields m_queryFields;
@@ -257,8 +257,8 @@ class CrateStorage: public SqlStorage {
     // The following list results are ordered by crate name:
     //  - case-insensitive
     //  - locale-aware
-    CrateSelectIterator selectCrates() const; // all crates
-    CrateSelectIterator selectCratesByIds( // subset of crates
+    CrateSelectResult selectCrates() const; // all crates
+    CrateSelectResult selectCratesByIds( // subset of crates
             const QString& subselectForCrateIds,
             SqlSubselectMode subselectMode) const;
 
@@ -270,7 +270,7 @@ class CrateStorage: public SqlStorage {
     // redesign of the AutoDJ feature has been reached. The main
     // ideas of the new design should be documented for verification
     // before starting to code.
-    CrateSelectIterator selectAutoDjCrates(bool autoDjSource = true) const;
+    CrateSelectResult selectAutoDjCrates(bool autoDjSource = true) const;
 
     // Crate content, i.e. the crate's tracks referenced by id
     uint countCrateTracks(CrateId crateId) const;
@@ -283,9 +283,9 @@ class CrateStorage: public SqlStorage {
     // The results are sorted (ascending) by the target id, i.e. the id that is
     // not provided for filtering. This enables the caller to perform efficient
     // binary searches on the result set after storing it in a list or vector.
-    CrateTrackSelectIterator selectCrateTracksSorted(
+    CrateTrackSelectResult selectCrateTracksSorted(
             CrateId crateId) const;
-    CrateTrackSelectIterator selectTrackCratesSorted(
+    CrateTrackSelectResult selectTrackCratesSorted(
             TrackId trackId) const;
 
     // Returns the set of crate ids for crates that contain one ore more
@@ -303,7 +303,7 @@ class CrateStorage: public SqlStorage {
     //  - The result list is ordered by crate name:
     //     - case-insensitive
     //     - locale-aware
-    CrateSummarySelectIterator selectCrateSummaries() const; // all crates
+    CrateSummarySelectResult selectCrateSummaries() const; // all crates
 
     // Omit the pCrate parameter for checking if the corresponding crate exists.
     bool readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary = nullptr) const;

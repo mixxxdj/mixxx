@@ -813,9 +813,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
         m_pCrateMenu->clear();
-        CrateSelectIterator allCratesIterator(m_pTrackCollection->crates().selectCrates());
+        CrateSelectResult allCrates(m_pTrackCollection->crates().selectCrates());
         Crate crate;
-        while (allCratesIterator.populateNext(&crate)) {
+        while (allCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), m_pCrateMenu);
             pAction->setEnabled(!crate.isLocked());
             m_crateMapper.setMapping(pAction.get(), crate.getId().toInt());

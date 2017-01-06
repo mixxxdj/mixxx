@@ -236,7 +236,7 @@ bool CrateStorage::readCrateById(CrateId id, Crate* pCrate) const {
                     CRATETABLE_ID));
     query.bindValue(":id", id);
     if (query.execPrepared()) {
-        CrateSelectIterator crates(query);
+        CrateSelectResult crates(std::move(query));
         if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
             DEBUG_ASSERT_AND_HANDLE(!crates.next()) {
                 qWarning() << "Ambiguous crate id:" << id;
@@ -257,7 +257,7 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
                     CRATETABLE_NAME));
     query.bindValue(":name", name);
     if (query.execPrepared()) {
-        CrateSelectIterator crates(query);
+        CrateSelectResult crates(std::move(query));
         if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
             DEBUG_ASSERT_AND_HANDLE(!crates.next()) {
                 qWarning() << "Ambiguous crate name:" << name;
@@ -271,7 +271,7 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
 }
 
 
-CrateSelectIterator CrateStorage::selectCrates() const {
+CrateSelectResult CrateStorage::selectCrates() const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 ORDER BY %2 COLLATE %3").arg(
             CRATE_TABLE,
@@ -279,14 +279,14 @@ CrateSelectIterator CrateStorage::selectCrates() const {
             DbConnection::kStringCollationFunc));
 
     if (query.execPrepared()) {
-        return CrateSelectIterator(query);
+        return CrateSelectResult(std::move(query));
     } else {
-        return CrateSelectIterator();
+        return CrateSelectResult();
     }
 }
 
 
-CrateSelectIterator CrateStorage::selectCratesByIds(
+CrateSelectResult CrateStorage::selectCratesByIds(
         const QString& subselectForCrateIds,
         SqlSubselectMode subselectMode) const {
     QString subselectPrefix;
@@ -294,7 +294,7 @@ CrateSelectIterator CrateStorage::selectCratesByIds(
     case SQL_SUBSELECT_IN:
         if (subselectForCrateIds.isEmpty()) {
             // edge case: no crates
-            return CrateSelectIterator();
+            return CrateSelectResult();
         }
         subselectPrefix = "IN";
         break;
@@ -319,14 +319,14 @@ CrateSelectIterator CrateStorage::selectCratesByIds(
             DbConnection::kStringCollationFunc));
 
     if (query.execPrepared()) {
-        return CrateSelectIterator(query);
+        return CrateSelectResult(std::move(query));
     } else {
-        return CrateSelectIterator();
+        return CrateSelectResult();
     }
 }
 
 
-CrateSelectIterator CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
+CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 WHERE %2=:autoDjSource ORDER BY %3 COLLATE %4").arg(
             CRATE_TABLE,
@@ -335,23 +335,23 @@ CrateSelectIterator CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
             DbConnection::kStringCollationFunc));
     query.bindValue(":autoDjSource", autoDjSource);
     if (query.execPrepared()) {
-        return CrateSelectIterator(query);
+        return CrateSelectResult(std::move(query));
     } else {
-        return CrateSelectIterator();
+        return CrateSelectResult();
     }
 }
 
 
-CrateSummarySelectIterator CrateStorage::selectCrateSummaries() const {
+CrateSummarySelectResult CrateStorage::selectCrateSummaries() const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 ORDER BY %2 COLLATE %3").arg(
             CRATE_SUMMARY_VIEW,
             CRATETABLE_NAME,
             DbConnection::kStringCollationFunc));
     if (query.execPrepared()) {
-        return CrateSummarySelectIterator(query);
+        return CrateSummarySelectResult(std::move(query));
     } else {
-        return CrateSummarySelectIterator();
+        return CrateSummarySelectResult();
     }
 }
 
@@ -362,7 +362,7 @@ bool CrateStorage::readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary)
                     CRATETABLE_ID));
     query.bindValue(":id", id);
     if (query.execPrepared()) {
-        CrateSummarySelectIterator crateSummaries(query);
+        CrateSummarySelectResult crateSummaries(std::move(query));
         if ((pCrateSummary != nullptr) ? crateSummaries.populateNext(pCrateSummary) : crateSummaries.next()) {
             DEBUG_ASSERT_AND_HANDLE(!crateSummaries.next()) {
                 qWarning() << "Ambiguous crate id:" << id;
@@ -403,7 +403,7 @@ QString CrateStorage::formatSubselectQueryForCrateTrackIds(
 }
 
 
-CrateTrackSelectIterator CrateStorage::selectCrateTracksSorted(CrateId crateId) const {
+CrateTrackSelectResult CrateStorage::selectCrateTracksSorted(CrateId crateId) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 WHERE %2=:crateId ORDER BY %3").arg(
                     CRATE_TRACKS_TABLE,
@@ -411,14 +411,14 @@ CrateTrackSelectIterator CrateStorage::selectCrateTracksSorted(CrateId crateId) 
                     CRATETRACKSTABLE_TRACKID));
     query.bindValue(":crateId", crateId);
     if (query.execPrepared()) {
-        return CrateTrackSelectIterator(query);
+        return CrateTrackSelectResult(std::move(query));
     } else {
-        return CrateTrackSelectIterator();
+        return CrateTrackSelectResult();
     }
 }
 
 
-CrateTrackSelectIterator CrateStorage::selectTrackCratesSorted(TrackId trackId) const {
+CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(TrackId trackId) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 WHERE %2=:trackId ORDER BY %3").arg(
                     CRATE_TRACKS_TABLE,
@@ -426,9 +426,9 @@ CrateTrackSelectIterator CrateStorage::selectTrackCratesSorted(TrackId trackId) 
                     CRATETRACKSTABLE_CRATEID));
     query.bindValue(":trackId", trackId);
     if (query.execPrepared()) {
-        return CrateTrackSelectIterator(query);
+        return CrateTrackSelectResult(std::move(query));
     } else {
-        return CrateTrackSelectIterator();
+        return CrateTrackSelectResult();
     }
 }
 
@@ -438,10 +438,10 @@ QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackI
     // by querying for chunks of track ids and collecting the results.
     QSet<CrateId> trackCrates;
     for (const auto& trackId: trackIds) {
-        CrateTrackSelectIterator iter(selectTrackCratesSorted(trackId));
-        while (iter.next()) {
-            DEBUG_ASSERT(iter.trackId() == trackId);
-            trackCrates.insert(iter.crateId());
+        CrateTrackSelectResult crateTracks(selectTrackCratesSorted(trackId));
+        while (crateTracks.next()) {
+            DEBUG_ASSERT(crateTracks.trackId() == trackId);
+            trackCrates.insert(crateTracks.crateId());
         }
     }
     return trackCrates;

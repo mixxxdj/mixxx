@@ -249,7 +249,7 @@ void AutoDJFeature::slotAddRandomTrack() {
 
 void AutoDJFeature::constructCrateChildModel() {
     m_crateList.clear();
-    CrateSelectIterator autoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(true));
+    CrateSelectResult autoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(true));
     Crate crate;
     while (autoDjCrates.populateNext(&crate)) {
         // Create the TreeItem for this crate.
@@ -266,7 +266,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         // Bring up the context menu.
         QMenu crateMenu;
         crateMenu.setTitle(tr("Add Crate as Track Source"));
-        CrateSelectIterator nonAutoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(false));
+        CrateSelectResult nonAutoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(false));
         Crate crate;
         while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);

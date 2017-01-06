@@ -13,7 +13,7 @@
 
 // forward declarations
 class SqlQueryFinisher;
-class SqlSelectIterator;
+class FwdSqlQuerySelectResult;
 
 
 // A forward-only QSqlQuery that is prepared immediately
@@ -33,7 +33,7 @@ class SqlSelectIterator;
 // about the size of the result set!
 class FwdSqlQuery: protected QSqlQuery {
     friend class SqlQueryFinisher;
-    friend class SqlSelectIterator;
+    friend class FwdSqlQuerySelectResult;
 
   public:
     FwdSqlQuery(

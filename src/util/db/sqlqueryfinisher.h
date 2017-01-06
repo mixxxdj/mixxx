@@ -25,12 +25,12 @@ public:
 
     void release();
 
+private:
     // Disable copy construction and copy/move assignment
     SqlQueryFinisher(const SqlQueryFinisher&) = delete;
     SqlQueryFinisher& operator=(const SqlQueryFinisher&) = delete;
     SqlQueryFinisher& operator=(SqlQueryFinisher&&) = delete;
 
-private:
     QSqlQuery m_query; // implicitly shared
 };
 
