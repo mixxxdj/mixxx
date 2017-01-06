@@ -138,6 +138,13 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
         }
     };
 
+    typedef QHash<TrackId, QLinkedList<int>> TrackId2Rows;
+
+    void clearRows();
+    void replaceRows(
+            QVector<RowInfo>&& rows,
+            TrackId2Rows&& trackIdToRows);
+
     QVector<RowInfo> m_rowInfo;
 
     QString m_tableName;
@@ -150,7 +157,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool m_bInitialized;
     QSqlRecord m_queryRecord;
     QHash<TrackId, int> m_trackSortOrder;
-    QHash<TrackId, QLinkedList<int> > m_trackIdToRows;
+    TrackId2Rows m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant> > m_headerInfo;
