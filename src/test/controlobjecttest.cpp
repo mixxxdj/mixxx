@@ -79,6 +79,7 @@ TEST_F(ControlObjectTest, persistence) {
     ControlDoublePrivate::setUserConfig(m_pConfig);
     ControlObject* testCo3 = new ControlObject(ck, true, false, true, 3.0);
     EXPECT_DOUBLE_EQ(3.0, testCo3->get());
+    delete testCo3;
 }
 
 }
