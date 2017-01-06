@@ -322,7 +322,9 @@ bool ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
     if (value.isNull()) {
         return default_value;
     }
-    return static_cast<bool>(value.value.toInt());
+    bool ok;
+    auto result = value.value.toInt(&ok);
+    return ok ? result != 0 : default_value;
 }
 
 template <> template <>
@@ -332,7 +334,9 @@ int ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
     if (value.isNull()) {
         return default_value;
     }
-    return value.value.toInt();
+    bool ok;
+    auto result = value.value.toInt(&ok);
+    return ok ? result : default_value;
 }
 
 template <> template <>
