@@ -1549,8 +1549,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         // the TrackModel. This will allow the playlist table model to use the
         // table index as the unique id instead of this code stupidly using
         // trackid.
-        QLinkedList<int> rows = trackModel->getTrackRows(trackId);
-        for (int row : rows) {
+        QVector<int> rows = trackModel->getTrackRows(trackId);
+        for (int row: rows) {
             // Restore sort order by rows, so the following commands will act as expected
             selectedRows.insert(row,0);
         }
