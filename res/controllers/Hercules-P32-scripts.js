@@ -804,6 +804,7 @@ EffectUnit = function (unitNumber) {
                 }
             },
             outConnect: false,
+            skipInitConnect: true
         });
         this.buttons[d] = new Button({
             number: d,
@@ -910,21 +911,12 @@ EffectUnit = function (unitNumber) {
             }
         },
         outConnect: false,
+        skipInitTrigger: true
     });
 
     this.init = function () {
         this.showParametersButton.connect();
         this.showParametersButton.trigger();
-
-        var show_parameters = engine.getValue(this.group, "show_parameters");
-        var focused_effect = engine.getValue(this.group, "focused_effect");
-        if (show_parameters === 0 || (show_parameters === 1 && focused_effect === 0)) {
-            for (var i = 1; i <= 3; i++) {
-                engine.setValue('[EffectRack1_EffectUnit' + unitNumber +
-                                '_Effect' + i + ']',
-                                'meta_force_next_update', 1);
-            }
-        }
 
         this.forEachControl(function (control) {
             if (control.group === undefined) {
