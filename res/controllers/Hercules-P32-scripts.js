@@ -40,12 +40,12 @@ A Control is a JavaScript object that represents a physical component on a contr
 button, knob, encoder, or fader. It encapsulates all the information needed to receive MIDI input
 from that component and send MIDI signals out to the controller to activate its LED(s). It provides
 generic functions that can be made to work for most use cases just by changing some attributes
-of the Control, without having to write much or any custom code.
+of the Control, without having to write many or any custom functions.
 
 Controls should generally be properties of a ControlContainer object, which provides functions for
-conveniently doing batch operations on a collection of related Controls. Most Controls should be
-properties of a custom Deck object, which is a derivative of ControlContainer. Refer to the Deck
-documentation for more details and an example.
+conveniently iterating over a collection of related Controls. Most Controls should be properties of
+a custom Deck object, which is a derivative of ControlContainer. Refer to the Deck documentation for
+more details and an example.
 
 The input function needs to be mapped to the incoming MIDI signals in the XML file. For example:
 <control>
@@ -58,7 +58,7 @@ The input function needs to be mapped to the incoming MIDI signals in the XML fi
         <script-binding/>
     </options>
 </control>
-The output function does not need to be mapped in XML.
+The output does not need to be mapped in XML. It is handled by the library in JavaScript.
 
 A handful of derivative Control objects are available that are more convenient for common use cases.
 These derivative objects will cover most use cases. In practice, most Controls are derivatives
@@ -74,7 +74,7 @@ The midi attribute is a two member array corresponding to the first two MIDI byt
 controller sends/receives when the physical component changes state. Currently, this is only used
 to send out MIDI messages and is not relevant for receiving input because that is handled by
 the XML file. The group property specifies the group that both the inCo and outCo manipulate, for
-example '[Channel1]' for deck 1. The inCo property is the name of the Mixxx Control Object (see
+example '[Channel1]' for deck 1. The inCo property is the name of the Mixxx ControlObject (see
 http://mixxx.org/wiki/doku.php/mixxxcontrols for a list of them) that this JavaScript Control
 manipulates when it receives a MIDI input signal. When the Mixxx CO specified by outCo changes, this
 JavaScript Control sends MIDI signals back out to the controller. For example:
@@ -86,33 +86,34 @@ var quantizeButton = new Button({
     outCo: 'quantize'
 });
 
-The output callback is automatically connected by the constructor function if the outCo and group
-properties are specified to the constructor (unless the outConnect property is set to false to
-intentionally avoid that). This makes it easy to map the controller so its LEDs stay synchronized
+The output callback is automatically connected by the constructor function if the outCo, group,
+and midi properties are specified to the constructor (unless the outConnect property is set to false
+to intentionally avoid that). This makes it easy to map the controller so its LEDs stay synchronized
 with the status of Mixxx, whether the outCo changes because of the Control receiving MIDI input or
 the user changing it with the keyboard, mouse, or another controller. The output callback can be
-easily connected and disconnected by calling the Control's connect and disconnect functions. The
+easily connected and disconnected by calling the Control's connect() and disconnect() functions. The
 output callback can also be manually run with the appropriate arguments simply by calling the
-Control's trigger function. The connect, disconnect, and trigger functions are automatically called
-by ControlContainer's reconnectControls and applyLayer functions to make activating different layers
-of functionality easy.
+Control's trigger() function. The connect(), disconnect(), and trigger() functions are automatically
+called by ControlContainer's reconnectControls and applyLayer functions to make activating different
+layers of functionality easy.
 
 Controls can be used to manage alternate behaviors in different conditions. The most common use case
 for this is for shift buttons. For that case, assign functions to the shift and unshift properties
 that manipulate the Control appropriately. In some cases, using the shift/unshift functions to
-change the Control's inCo, outCo, or group properties will be sufficient. See HotcueButton for an
-example. If you want to use custom input or output functions when shifting and unshifting, define
-each alternate function as a different property of the Control and use the shift/unshift functions
-to assign the Control's input/output properties to the appropriate function. See SamplerButton for
-an example. To avoid redundancy (like typing the name of the inCo both as the inCo property and in
-the unshift function), the Control constructor will automatically call the unshift function if it
-exists. The shift and unshift functions of ControlContainer will call the appropriate function of
-all the Controls within it that have that function defined.
+change the Control's inCo, outCo, or group properties will be sufficient. Refer to HotcueButton for
+an example. In more complex cases, changing input() and output() may be required. Refer to
+SamplerButton and EffectUnit for examples. To avoid redundancy (like typing the name of the inCo
+both as the inCo property and in the unshift function), the Control constructor will automatically
+call the unshift function if it exists. The shift() and unshift() functions of ControlContainer will
+call the appropriate function of all the Controls within it that have that function defined
+and will recursively decend into ControlContainers that are properties of the parent
+ControlContainer.
+
 
 Control and its derivative objects use constructor functions with a minimal amount of logic. Most of
 the functionality of Controls comes from their prototype objects. In JavaScript, making a change to
 an object's prototype immediately changes all existing and future objects that have it in their
-prototype change (regardless of the context in which the derivative objects were created). This
+prototype chain (regardless of the context in which the derivative objects were created). This
 makes it easy to change the behavior for all (of a subtype) of Control to accomodate the MIDI
 signals used by a particular controller. For example, the Hercules P32 controller sends and receives
 two sets of MIDI signals for most physical components, one for when the shift button is pressed and
@@ -127,21 +128,38 @@ Control.prototype.shiftOffset = 3;
 Control.prototype.shiftChannel = true;
 Button.prototype.sendShifted = true;
 This causes the Control.prototype.send function to send both the shifted and unshifted MIDI
-signals when the Control's outCo changes.
-If your controller uses the same MIDI channel but different control numbers when a shift button
-is pressed, set Control.prototype.shiftControl to true instead of Control.prototype.shiftChannel.
+signals when the Control's outCo changes. If your controller uses the same MIDI channel but
+different MIDI control numbers when a shift button is pressed, set Control.prototype.shiftControl to
+true instead of Control.prototype.shiftChannel.
 
-To avoid typing out the group every time, Controls that share a group can be part of a
-ControlContainer and the ControlContainer's reconnectControls method can assign the group to all
-of them. For convenience, if a Control only needs its midi property specified for its constructor,
-this can be provided simply as an array without wrapping it in an object. For example,
+
+This library provides more convenient shortcuts for common situations. If inCo and outCo are the
+same, you can specify 'co' in the options object for the constructor to set both inCo and outCo.
+For example:
+
+var quantizeButton = new Button({
+    midi: [0x91, 0x01],
+    group: '[Channel1]'
+    co: 'quantize'
+});
+
+Setting the co property after calling the constructor will not automatically set inCo and outCo;
+you would need to do that manually if necessary.
+
+Also, if a Control only needs its midi property specified for its constructor, this can be provided
+simply as an array without wrapping it in an object. For example:
 
 var playButton = new PlayButton([0x90 + channel, 0x0A]);
 instead of
 var playButton = new PlayButton({
     midi: [0x90 + channel, 0x0A]
 });
+
+To avoid typing out the group for the constructor of each Control, Controls that share a group can
+be part of a ControlContainer and the ControlContainer's reconnectControls method can assign the
+group to all of them. Refer to the Deck ControlContainer documentation for an example.
 **/
+//
 var Control = function (options) {
     if (Array.isArray(options) && typeof options[0] === 'number') {
         this.midi = options;
@@ -156,6 +174,11 @@ var Control = function (options) {
     this.isShifted = false;
     this.connections = [];
 
+    if (options !== undefined && typeof options.co === 'string') {
+        this.inCo = options.co;
+        this.outCo = options.co;
+    }
+
     if (this.outConnect && this.group !== undefined && this.outCo !== undefined) {
         this.connect();
         if (this.outTrigger) {
@@ -166,15 +189,18 @@ var Control = function (options) {
 Control.prototype = {
     // default attributes
     // You should probably overwrite at least some of these.
-    inValueScale: function (value) {return value;},
+    inValueScale: function (value) {
+        return value / this.max;
+    },
     // map input in the XML file, not inValueScale
     input: function (channel, control, value, status, group) {
-               this.setValue(this.inValueScale(value));
-            },
-    outValueScale: function (value) {return value;},
+        this.setParameter(this.inValueScale(value));
+    },
+    max: 127, // for MIDI. When adapting for HID this may change.
+    outValueScale: function (value) {return value * this.max;},
     output: function (value, group, control) {
-                this.send(this.outValueScale(value));
-            },
+        this.send(this.outValueScale(value));
+    },
     outConnect: true,
     outTrigger: true,
 
@@ -184,6 +210,7 @@ Control.prototype = {
         engine.setValue(this.group, this.inCo, value);
     },
     setParameter: function (value) {
+        print (this.inCo);
         engine.setParameter(this.group, this.inCo, value);
     },
     // outCo value generally shouldn't be set directly,
@@ -227,7 +254,9 @@ Control.prototype = {
             });
         }
     },
-    trigger: function() { engine.trigger(this.group, this.outCo); },
+    trigger: function() {
+        engine.trigger(this.group, this.outCo);
+    },
     shiftOffset: 0,
     sendShifted: false,
     shiftChannel: false,
@@ -248,15 +277,38 @@ Control.prototype = {
 };
 
 /**
-A Button is a Control derivative for buttons/pads. If the inCo and outCo are the same, you can
-specify just a "co" property for the constructor. If the inCo and outCo are different, specify
-each of them.
+A Button is a Control derivative for buttons/pads.
 
 For example:
-var quantize = new Control({
+var quantize = new Button({
     midi: [0x91, 0x01],
-    group: '[Channel1]'
-    co: 'quantize'
+    group: '[Channel1]',
+    co: 'quantize',
+});
+
+By default, the inCo is toggled only when the button is pressed. For buttons that activate an inCo
+only while they are held down, set the onlyOnPress property to false. For example:
+var tempSlow = new Button({
+    midi: [0x91, 0x44],
+    inCo: 'rate_temp_down',
+    onlyOnPress: false,
+});
+
+The button's LED is sent the value of the "on" property when outCo > 0 and "off" when outCo <= 0.
+By default, on is 127 and off is 0. For buttons/pads with multicolor LEDs, you can change the color
+of the LED by defining the on and off properties to be the MIDI value to send for that state. For
+example, if the LED turns red when sent a MIDI value of 127 and blue when sent a value of 126:
+
+MyController.padColors = {
+    red: 127,
+    blue: 126
+};
+MyController.quantize = new Button({
+    midi: [0x91, 0x01],
+    group: '[Channel1]',
+    co: 'quantize',
+    on: MyController.padColors.red,
+    off: MyController.padColors.blue,
 });
 
 Derivative Buttons are provided for many common use cases, including:
@@ -271,22 +323,15 @@ of Mixxx's ControlObjects that can make mapping them not so straightforward. The
 SyncButton, HotcueButton, and SamplerButton objects also provide alternate functionality for when a
 shift button is pressed.
 
-By default, the inCo is toggled only when the button is pressed. For buttons that activate an inCo
-only while they are held down, set the onlyOnPress property to false.
-
 By default, this works for controllers that send MIDI messages with a different 3rd byte of the
 MIDI message (value) to indicate the button being pressed/released, with the first two bytes
 (status and control) remaining the same for both press and release. If your controller sends
 separate MIDI note on/off messages with on indicated by the first nybble (hexadecimal digit) of
 the first (status) byte being 9 and note off with the first nybble being 8, in your script's init
 function, set Button.prototype.separateNoteOnOff to true and map both the note on and off messages
-to the Button object's input property.
+in XML to the Button object's input property.
 **/
 var Button = function (options) {
-    if (options !== undefined && typeof options.co === 'string') {
-        this.inCo = options.co;
-        this.outCo = options.co;
-    }
     Control.call(this, options);
 };
 Button.prototype = new Control({
@@ -296,26 +341,29 @@ Button.prototype = new Control({
     inValueScale: function () { return ! this.getValueIn(); },
     separateNoteOnOff: false,
     input: function (channel, control, value, status, group) {
-               if (this.onlyOnPress) {
-                   var pressed;
-                   if (this.separateNoteOnOff) {
-                       // Does the first nybble of the first MIDI byte indicate a
-                       // note on or note off message?
-                       pressed = (status & 0xF0) === 0x90;
-                   } else {
-                       pressed = value > 0;
-                   }
-                   if (pressed) {
-                       this.setValue(this.inValueScale(value));
-                   }
-                } else {
-                       this.setValue(this.inValueScale(value));
-                }
+        if (this.onlyOnPress) {
+            var pressed;
+            if (this.separateNoteOnOff) {
+                // Does the first nybble of the first MIDI byte indicate a
+                // note on or note off message?
+                pressed = (status & 0xF0) === 0x90;
+            } else {
+                pressed = value > 0;
+            }
+            if (pressed) {
+                this.setValue(this.inValueScale(value));
+            }
+        } else {
+            this.setValue(this.inValueScale(value));
+        }
     },
-    outValueScale: function() { return (this.getValueOut()) ? this.on : this.off; }
+    outValueScale: function() {
+        return (this.getValueOut()) ? this.on : this.off;
+    },
 });
 
 /**
+PlayButton
 Default behavior: play/pause
 Shift behavior: go to start of track and stop
 
@@ -326,12 +374,17 @@ var PlayButton = function (options) {
     Button.call(this, options);
 };
 PlayButton.prototype = new Button({
-    unshift: function () { this.inCo = 'play'; },
-    shift: function () { this.inCo = 'start_stop'; },
+    unshift: function () {
+        this.inCo = 'play';
+    },
+    shift: function () {
+        this.inCo = 'start_stop';
+    },
     outCo: 'play_indicator'
 });
 
 /**
+CueButton
 Behavior depends on cue mode configured by the user in the preferences
 Refer to http://mixxx.org/manual/latest/chapters/user_interface.html#interface-cue-modes
 **/
@@ -345,15 +398,20 @@ CueButton.prototype = new Button({
 });
 
 /**
-Default behavior: toggle sync lock (master sync)
-Shift behavior: momentary sync without toggling sync lock
+SyncButton
+Default behavior: momentary sync without toggling sync lock
+Shift behavior: toggle sync lock (master sync)
 **/
 var SyncButton = function (options) {
     Button.call(this, options);
 };
 SyncButton.prototype = new Button({
-    unshift: function () { this.inCo = 'sync_enabled'; },
-    shift: function () { this.inCo = 'beatsync'; },
+    unshift: function () {
+        this.inCo = 'beatsync';
+    },
+    shift: function () {
+        this.inCo = 'sync_enabled';
+    },
     outCo: 'sync_enabled'
 });
 
@@ -363,16 +421,34 @@ var LoopToggleButton = function (options) {
 };
 LoopToggleButton.prototype = new Button({
     inCo: 'reloop_exit',
-    inValueScale: function() { return 1; },
+    inValueScale: function () {
+        return 1;
+    },
     outCo: 'loop_enabled',
-    outValueScale: function(value) { return (value) ? this.on : this.off; }
+    outValueScale: function (value) {
+        return (value) ? this.on : this.off;
+    }
 });
 
 /**
+HotcueButton
 Default behavior: set hotcue if it is not set. If it is set, jump to it.
 Shift behavior: delete hotcue
 
-LED indicates whether the hotcue is set.
+The LED indicates whether the hotcue is set.
+
+Pass the number of the hotcue as the number property of the options argument for the constructor.
+For example:
+
+var hotcues = [];
+for (var i = 1; i <= 8; i++) {
+    hotcues[i] = new HotcueButton({
+        number: i,
+        group: '[Channel1]',
+        midi: [0x91, 0x26 + i],
+    });
+}
+
 **/
 var HotcueButton = function (options) {
     if (options.number === undefined) {
@@ -383,12 +459,17 @@ var HotcueButton = function (options) {
     Button.call(this, options);
 };
 HotcueButton.prototype = new Button({
-    unshift: function () { this.inCo = 'hotcue_' + this.number + '_activate'; },
-    shift: function () { this.inCo = 'hotcue_' + this.number + '_clear'; },
+    unshift: function () {
+        this.inCo = 'hotcue_' + this.number + '_activate';
+    },
+    shift: function () {
+        this.inCo = 'hotcue_' + this.number + '_clear';
+    },
     onlyOnPress: false
 });
 
 /**
+SamplerButton
 Default behavior:
 Press the button to load the track selected in the library into an empty sampler. Press a loaded
 sampler to play it from its cue point. Press again while playing to jump back to the cue point.
@@ -397,10 +478,13 @@ If the sampler is playing, stop it. If the sampler is stopped, eject it.
 
 Specify the sampler number as the number property of the object passed to the constructor. There
 is no need to manually specify the group. For example:
-var samplerButton = [];
-var samplerButton[1] = new SamplerButton(
-    midi: [0x91, 0x02],
-    number: 1
+
+var samplerButtons = [];
+for (var n = 1; n <= 8; n++) {
+    samplerButtons[n] = new SamplerButton({
+        number: n,
+        midi: [0x91, 0x02],
+    });
 )};
 
 When the sampler is loaded, the LED will be set to the value of the "on" property. When the sampler
@@ -436,27 +520,29 @@ var SamplerButton = function (options) {
     Button.call(this, options);
 };
 SamplerButton.prototype = new Button({
-    inputUnshifted: function (channel, control, value, status, group) {
-        if (value > 0) {
-            // track_samples is 0 when the sampler is empty and > 0 when a sample is loaded
-            if (engine.getValue(this.group, 'track_samples') === 0) {
-                engine.setValue(this.group, 'LoadSelectedTrack', 1);
-            } else {
-                engine.setValue(this.group, 'cue_gotoandplay', 1);
+    unshift: function () {
+        this.input = function (channel, control, value, status, group) {
+            if (value > 0) {
+                // track_samples is 0 when the sampler is empty and > 0 when a sample is loaded
+                if (engine.getValue(this.group, 'track_samples') === 0) {
+                    engine.setValue(this.group, 'LoadSelectedTrack', 1);
+                } else {
+                    engine.setValue(this.group, 'cue_gotoandplay', 1);
+                }
             }
-        }
+        };
     },
-    unshift: function () { this.input = this.inputUnshifted; },
-    inputShifted: function (channel, control, value, status, group) {
-        if (value > 0) {
-            if (engine.getValue(this.group, 'play') === 1) {
-                engine.setValue(this.group, 'play', 0);
-            } else {
-                engine.setValue(this.group, 'eject', 1);
+    shift: function() {
+        this.input = function (channel, control, value, status, group) {
+            if (value > 0) {
+                if (engine.getValue(this.group, 'play') === 1) {
+                    engine.setValue(this.group, 'play', 0);
+                } else {
+                    engine.setValue(this.group, 'eject', 1);
+                }
             }
-        }
+        };
     },
-    shift: function() { this.input = this.inputShifted; },
     output: function (value, group, control) {
         if (engine.getValue(this.group, 'track_samples') > 0) {
             if (this.playing === undefined) {
@@ -482,11 +568,27 @@ SamplerButton.prototype = new Button({
 });
 
 /**
-A CC is a Control for potentiometers (faders and knobs) with finite ranges. The name CC comes
-from MIDI Control Change signals. Using a CC is helpful because CC.connect() and CC.disconnect()
-take care of soft takeover when switching layers with ControlContainer.reconnectControls() and
-ControlContainer.applyLayer(). Soft takeover is not activated until the first input is received so
-it does not interfere with setting initial values for controllers that can report that information.
+A CC is a Control for potentiometers (faders and knobs) with finite ranges, although it can be
+adapted for infintely turning encoders. The name CC comes from MIDI Control Change signals. Using a
+CC is helpful because CC.connect() and CC.disconnect() take care of soft takeover when switching
+layers with ControlContainer.reconnectControls() and ControlContainer.applyLayer(). Soft takeover is
+not activated until the first input is received so it does not interfere with setting initial values
+for controllers that can report that information.
+
+The midi attribute does not need to be specified because CCs do not send any MIDI output. You may
+want to specify it anyway to make the code self-documenting.
+
+To adapt a CC for an infinitely rotating encoder, replace its inValueScale() function with a
+function that increments or decrements the parameter depending on the direction the encoder is
+turned. For example, if the encoder sends a MIDI value of 1 for a left turn and 127 for a right
+turn:
+
+MyController.effectUnit.dryWetKnob.inValueScale = function (value) {
+    if (value === 1) {
+        return this.getParameterIn() - .05;
+    } else if (value === 127) {
+        return this.getParameterIn() + .05;
+    }
 **/
 var CC = function (options) {
     Control.call(this, options);
@@ -496,7 +598,7 @@ var CC = function (options) {
 CC.prototype = new Control({
     inValueScale: function (value) { return value / this.max; },
     input: function (channel, control, value, status, group) {
-        engine.setParameter(this.group, this.inCo, this.inValueScale(value));
+        this.setParameter(this.inValueScale(value));
         if (! this.firstValueReceived) {
             this.firstValueReceived = true;
             this.connect();
@@ -511,12 +613,28 @@ CC.prototype = new Control({
         engine.softTakeoverIgnoreNextValue(this.group, this.inCo);
     },
     trigger: function () {},
-    max: 127,
 });
 
 /**
+RingEncoder is a Control for encoders with LED rings around them. These are different from CCs
+because they are sent MIDI messages to keep their LED rings in sync with the state of Mixxx and
+do not require soft takeover.
+
+These encoders can often be pushed like a button. Usually, it is best to use a separate Button
+Control to handle the MIDI signals from pushing it.
+
+The generic Control code provides everything to implement a RingEncoder. This RingEncoder Control
+to be able to use instanceof to separate RingEncoders from other Controls and make code more
+self-documenting.
+**/
+var RingEncoder = function (options) {
+    Control.call(this, options);
+};
+RingEncoder.prototype = new Control();
+
+/**
 A ControlContainer is an object that contains Controls as properties, with methods to help
-with batch manipulation of those Controls. Documentation for each method is inline below.
+iterate over those Controls. Documentation for each method is inline below.
 **/
 var ControlContainer = function (initialLayer) {
     if (typeof initialLayer === 'object') {
@@ -525,6 +643,7 @@ var ControlContainer = function (initialLayer) {
 };
 ControlContainer.prototype = {
     /**
+    forEachControl
     Iterate over all Controls in this ControlContainer and perform an operation on them.
 
     operation, function that takes 1 argument:
@@ -561,6 +680,7 @@ ControlContainer.prototype = {
         }
     },
     /**
+    reconnectControls
     Disconnect and reconnect output callbacks for each Control. Optionally perform an operation
     on each Control between disconnecting and reconnecting the output callbacks. Arguments are
     the same as forEachControl().
@@ -575,9 +695,13 @@ ControlContainer.prototype = {
             control.trigger();
         }, recursive);
     },
-    // Call each Control's shift() function if it exists. This iterates recursively on any
-    // Controls in ControlContainers that are properties of this, so there is no need to call
-    // shift() on each child ControlContainer.
+    isShifted: false,
+    /**
+    shift
+    Call each Control's shift() function if it exists. This iterates recursively on any
+    Controls in ControlContainers that are properties of this, so there is no need to call
+    shift() on each child ControlContainer.
+    **/
     shift: function () {
         this.forEachControl(function (control) {
             if (typeof control.shift === 'function') {
@@ -587,9 +711,12 @@ ControlContainer.prototype = {
             this.isShifted = true;
         });
     },
-    // Call each Control's unshift() function if it exists. This iterates recursively on any
-    // Controls in ControlContainers that are properties of this, so there is no need to call
-    // unshift() on each child ControlContainer.
+    /**
+    unshift
+    Call each Control's unshift() function if it exists. This iterates recursively on any
+    Controls in ControlContainers that are properties of this, so there is no need to call
+    unshift() on each child ControlContainer.
+    **/
     unshift: function () {
         this.forEachControl(function (control) {
             if (typeof control.unshift === 'function') {
@@ -599,8 +726,8 @@ ControlContainer.prototype = {
             this.isShifted = false;
         });
     },
-    isShifted: false,
     /**
+    applyLayer
     Activate a new layer of functionality. Layers are merely objects with properties to overwrite
     the properties of the Controls within this ControlContainer. Layer objects are deeply merged.
     If a new layer does not define a property for a Control, the Control's old property will be
@@ -647,13 +774,14 @@ script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/ ;
 script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/ ;
 
 /**
-A Deck is a ControlContainer with methods for conveniently changing the group attributes of
+Deck
+This is a ControlContainer with methods for conveniently changing the group attributes of
 contained Controls to switch the deck that a set of Controls is manipulating. The setCurrentDeck()
 method takes the new deck as a string and sets the Controls' group property appropriately, including
 for equalizer knobs and QuickEffect (filter) knobs.
 
-The Deck constructor takes one argument, an array of deck numbers to cycle through with the toggle()
-method. Typically this will be [1, 3] or [2, 4].
+The Deck constructor takes one argument, which is an array of deck numbers to cycle through with the\
+toggle() method. Typically this will be [1, 3] or [2, 4].
 
 To map your own controller, create a custom derivative of Deck and create instances of your custom
 Deck objects in your controller's init() function. Use a constructor function to create all the
@@ -664,18 +792,29 @@ MyController.init = function () {
     this.leftDeck = new MyController.Deck([1, 2]);
     this.rightDeck = new MyController.Deck([2, 4]);
 };
-MyController.Deck = function (deckNumbers, channel) {
-    Deck.call(this, deckNumbers); // call the Deck constructor to setup the currentDeck and
-                                  // deckNumber properties
-    var channel = deckNumbers[0]; // many controllers use the same MIDI messages for both sides,
-                                  // but with a different MIDI channel number
-    this.hotcueButton = [];
+MyController.Deck = function (deckNumbers, midiChannel) {
+    // Call the Deck constructor to setup the currentDeck and deckNumbers properties.
+    Deck.call(this, deckNumbers);
+    this.playButton = new PlayButton([0x90 + midiChannel, 0x01]);
+    this.CueButton = new CueButton([0x90 + midiChannel, 0x02]);
+    this.hotcueButtons = [];
     for (var i = 1; i <= 8; i++) {
-        this.hotcueButton[i] = new HotcueButton({
-            midi: [0x90 + channel, 0x10 + i],
+        this.hotcueButtons[i] = new HotcueButton({
+            midi: [0x90 + midiChannel, 0x10 + i],
             number: i
         });
     }
+    // ... define as many other Controls as necessary ...
+
+    // Set the group properties of the above Controls and connect their output callback functions
+    // Without this, the group property for each Control would have to be specified to its
+    // constructor.
+    this.reconnectControls(function (c) {
+        if (c.group === undefined) {
+            // 'this' inside a function passed to reconnectControls refers to the ControlContainer.
+            c.group = this.currentDeck;
+        }
+    });
 };
 MyController.Deck.prototype = new Deck();
 **/
@@ -715,11 +854,13 @@ Deck.prototype = new ControlContainer({
 });
 
 /**
-This EffectUnit ControlContainer provides Controls designed to be mapped to the common arrangement
-of 3 knobs with 3 buttons for controlling effects, plus a knob or encoder for dry/wet and an
-additional button to toggle the effect unit between hiding and showing effect parameters. Turning
-the dry/wet knob with shift controls the superknob for the whole effect unit. The Controls provided
-are:
+EffectUnit
+This ControlContainer provides Controls designed to be mapped to the common arrangement of 4 knobs
+and 4 buttons for controlling effects. 3 knobs are used for controlling effect metaknobs
+or parameters, depending on whether the effects' parameters are shown. The other knob is used for
+the dry/wet knob of the whole chain or the superknob when shift is pressed. 3 buttons are used for
+enabling effects and the other button toggles the effect unit between hiding and showing effect
+parameters. The Controls provided are:
 
 dryWetKnob (CC)
 showParametersButton (Button)
@@ -739,7 +880,8 @@ shift + its enableButton or clicking the focus button on screen. Pressing shift 
 for the focused effect again unfocuses the effect.
 
 The enableOnChannelButtons allow assigning the effect unit to different channels and are named after
-the Mixxx channel they affect. The following Buttons are provided by default:
+the Mixxx channel they affect. Not all controllers have buttons to map these. The following Buttons
+are provided by default:
 Channel1
 Channel2
 Channel3
@@ -771,16 +913,8 @@ Controllers designed for Serato and Rekordbox often have an encoder instead of a
 (labeled "Beats" for Serato or "Release FX" for Rekordbox) and a button labeled "Tap". If the
 encoder sends a MIDI signal when pushed, it is recommended to map the encoder push to the
 EffectUnit's showParametersButton, otherwise map that to the "Tap" button. To use the dryWetKnob
-Control with an encoder, replace the CC.prototype.inValueScale() function with a function that can
-appropriately handle the signals sent by your controller. For example, if your controller sends
-a MIDI value of 1 for a left turn and 127 for a right turn:
-MyController.effectUnit.dryWetKnob.inValueScale = function (value) {
-    if (value === 1) {
-        return this.getParameterIn() - .05;
-    } else if (value === 127) {
-        return this.getParameterIn() + .05;
-    }
-}
+CC with an encoder, replace its inValueScale() function with a function that can appropriately
+handle the signals sent by your controller. Refer to the CC documentation for an example.
 
 For the shift functionality to work, the shift button of your controller must be mapped to a
 function that calls the shift()/unshift() functions of the EffectUnit on button press/release. If
@@ -962,7 +1096,6 @@ EffectUnit = function (unitNumber) {
             }
         },
         outConnect: false,
-        skipInitTrigger: true
     });
 
     this.init = function () {
@@ -992,6 +1125,18 @@ P32.init = function () {
     Control.prototype.shiftOffset = 3;
     Control.prototype.shiftChannel = true;
     Button.prototype.sendShifted = true;
+
+    /**
+    The P32 has encoders for changing tempo, so the actual tempo getting out of sync with a hardware
+    fader and dealing with soft takeover in that situation is not an issue. So, make toggling master
+    sync the default unshifted behavior and momentary sync the shifted behavior.
+    **/
+    SyncButton.prototype.unshift = function () {
+        this.inCo = 'sync_enabled';
+    };
+    SyncButton.prototype.shift = function () {
+        this.inCo = 'beatsync';
+    };
 
     P32.leftDeck = new P32.Deck([1,3], 1);
     P32.rightDeck = new P32.Deck([2,4], 2);
@@ -1047,7 +1192,9 @@ P32.recordButton = new Button({
     midi: [0x90, 0x02],
     group: '[Recording]',
     inCo: 'toggle_recording',
-    outCo: 'status'
+    onlyOnPress: false,
+    outCo: 'status',
+    sendShifted: false,
 });
 
 P32.slipButton = new Button({
@@ -1081,6 +1228,7 @@ P32.slipButton = new Button({
         this.send(slipEnabledOnAnyDeck ? this.on : this.off);
     },
     co: 'slip_enabled',
+    sendShifted: false,
     group: null // hack to get Control constructor to call this.connect()
 });
 
@@ -1125,7 +1273,8 @@ P32.Deck = function (deckNumbers, channel) {
     });
 
     // ==================================== PAD GRID ============================================
-    // Slicer layer is handled by this.effectUnit.enableOnChannelButtons, set up below
+    // The slicer layer is handled by this.effectUnit.enableOnChannelButtons, set up under the
+    // EFFECTS section.
 
     this.hotcueButton = [];
     this.samplerButton = [];
@@ -1328,6 +1477,7 @@ P32.Deck = function (deckNumbers, channel) {
         }
     });
 
+    // ==================================== EFFECTS ==============================================
     this.effectUnit = new EffectUnit(deckNumbers[0]);
     this.effectUnit.enableButtons[1].midi = [0x90 + channel, 0x03];
     this.effectUnit.enableButtons[2].midi = [0x90 + channel, 0x04];
