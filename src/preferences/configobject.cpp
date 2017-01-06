@@ -171,6 +171,12 @@ bool ConfigObject<ValueType>::exists(const ConfigKey& k) const {
 }
 
 template <class ValueType>
+bool ConfigObject<ValueType>::remove(const ConfigKey& k) {
+    QWriteLocker lock(&m_valuesLock);
+    return m_values.remove(k) > 0;
+}
+
+template <class ValueType>
 QString ConfigObject<ValueType>::getValueString(const ConfigKey& k) const {
     ValueType v = get(k);
     return v.value;

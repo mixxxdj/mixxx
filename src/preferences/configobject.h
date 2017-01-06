@@ -110,6 +110,8 @@ template <class ValueType> class ConfigObject {
     bool exists(const ConfigKey& key) const;
     QString getValueString(const ConfigKey& k) const;
     QString getValueString(const ConfigKey& k, const QString& default_string) const;
+    // Removes key from ConfigObject. Returns whether key was present.
+    bool remove(const ConfigKey& key);
 
     template <class ResultType>
     void setValue(const ConfigKey& key, const ResultType& value);
