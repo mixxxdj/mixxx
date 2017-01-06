@@ -771,10 +771,16 @@ Controllers designed for Serato and Rekordbox often have an encoder instead of a
 (labeled "Beats" for Serato or "Release FX" for Rekordbox) and a button labeled "Tap". If the
 encoder sends a MIDI signal when pushed, it is recommended to map the encoder push to the
 EffectUnit's showParametersButton, otherwise map that to the "Tap" button. To use the dryWetKnob
-Control with an encoder, replace its inValueScale() function with a function that can appropriately
-handle the signals sent by your controller. In that inValueScale() function, call
-this.getParameterIn() and return the new parameter value depending on the direction the encoder
-turns.
+Control with an encoder, replace the CC.prototype.inValueScale() function with a function that can
+appropriately handle the signals sent by your controller. For example, if your controller sends
+a MIDI value of 1 for a left turn and 127 for a right turn:
+MyController.effectUnit.dryWetKnob.inValueScale = function (value) {
+    if (value === 1) {
+        return this.getParameterIn() - .05;
+    } else if (value === 127) {
+        return this.getParameterIn() + .05;
+    }
+}
 
 For the shift functionality to work, the shift button of your controller must be mapped to a
 function that calls the shift()/unshift() functions of the EffectUnit on button press/release. If
