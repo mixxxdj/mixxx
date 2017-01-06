@@ -237,7 +237,7 @@ bool CrateStorage::readCrateById(CrateId id, Crate* pCrate) const {
     query.bindValue(":id", id);
     if (query.execPrepared()) {
         CrateSelectIterator crates(query);
-        if ((pCrate != nullptr) ? crates.readNext(pCrate) : crates.next()) {
+        if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
             DEBUG_ASSERT_AND_HANDLE(!crates.next()) {
                 qWarning() << "Ambiguous crate id:" << id;
             }
@@ -258,7 +258,7 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
     query.bindValue(":name", name);
     if (query.execPrepared()) {
         CrateSelectIterator crates(query);
-        if ((pCrate != nullptr) ? crates.readNext(pCrate) : crates.next()) {
+        if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
             DEBUG_ASSERT_AND_HANDLE(!crates.next()) {
                 qWarning() << "Ambiguous crate name:" << name;
             }
@@ -363,7 +363,7 @@ bool CrateStorage::readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary)
     query.bindValue(":id", id);
     if (query.execPrepared()) {
         CrateSummarySelectIterator crateSummaries(query);
-        if ((pCrateSummary != nullptr) ? crateSummaries.readNext(pCrateSummary) : crateSummaries.next()) {
+        if ((pCrateSummary != nullptr) ? crateSummaries.populateNext(pCrateSummary) : crateSummaries.next()) {
             DEBUG_ASSERT_AND_HANDLE(!crateSummaries.next()) {
                 qWarning() << "Ambiguous crate id:" << id;
             }

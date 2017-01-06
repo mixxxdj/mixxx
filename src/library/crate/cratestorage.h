@@ -55,7 +55,7 @@ public:
     }
     ~CrateSelectIterator() override = default;
 
-    bool readNext(Crate* pCrate) {
+    bool populateNext(Crate* pCrate) {
         if (next()) {
             m_queryFields.populateFromQuery(query(), pCrate);
             return true;
@@ -115,7 +115,7 @@ public:
     }
     ~CrateSummarySelectIterator() override = default;
 
-    bool readNext(CrateSummary* pCrateSummary) {
+    bool populateNext(CrateSummary* pCrateSummary) {
         if (next()) {
             m_queryFields.populateFromQuery(query(), pCrateSummary);
             return true;

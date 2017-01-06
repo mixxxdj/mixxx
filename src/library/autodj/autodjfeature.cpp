@@ -251,7 +251,7 @@ void AutoDJFeature::constructCrateChildModel() {
     m_crateList.clear();
     CrateSelectIterator autoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(true));
     Crate crate;
-    while (autoDjCrates.readNext(&crate)) {
+    while (autoDjCrates.populateNext(&crate)) {
         // Create the TreeItem for this crate.
         m_pCratesTreeItem->appendChild(crate.getName(), crate.getId().toVariant());
         m_crateList.append(crate);
@@ -268,7 +268,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         crateMenu.setTitle(tr("Add Crate as Track Source"));
         CrateSelectIterator nonAutoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(false));
         Crate crate;
-        while (nonAutoDjCrates.readNext(&crate)) {
+        while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
             m_crateMapper.setMapping(pAction.get(), crate.getId().toInt());
             connect(pAction.get(), SIGNAL(triggered()), &m_crateMapper, SLOT(map()));

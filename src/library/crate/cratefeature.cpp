@@ -593,7 +593,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     CrateSummarySelectIterator crateSummaries(
             m_pTrackCollection->crates().selectCrateSummaries());
     CrateSummary crateSummary;
-    while (crateSummaries.readNext(&crateSummary)) {
+    while (crateSummaries.populateNext(&crateSummary)) {
         auto pTreeItem = newTreeItem(crateSummary, selectedTrackId);
         modelRows.append(pTreeItem.get());
         pTreeItem.release();
