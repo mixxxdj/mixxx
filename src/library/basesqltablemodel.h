@@ -84,8 +84,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void select();
 
   protected:
-    // Returns the row of trackId in this result set. If trackId is not present,
-    // returns -1.
     void setTable(const QString& tableName, const QString& trackIdColumn,
                   const QStringList& tableColumns,
                   QSharedPointer<BaseTrackCache> trackSource);
