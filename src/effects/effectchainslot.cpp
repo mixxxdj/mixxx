@@ -3,6 +3,7 @@
 #include "effects/effectrack.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "mixer/playermanager.h"
 #include "util/math.h"
 
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
@@ -263,8 +264,16 @@ void EffectChainSlot::registerChannel(const ChannelHandleAndGroup& handle_group)
                    << handle_group.name();
         return;
     }
+
+    double initialValue = 0.0;
+    int deckNumber;
+    if (PlayerManager::isDeckGroup(handle_group.name(), &deckNumber) &&
+        (m_iChainSlotNumber + 1) == (unsigned) deckNumber) {
+        initialValue = 1.0;
+    }
     ControlPushButton* pEnableControl = new ControlPushButton(
-            ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())));
+            ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())),
+            true, initialValue);
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
 
     ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
@@ -272,6 +281,14 @@ void EffectChainSlot::registerChannel(const ChannelHandleAndGroup& handle_group)
     m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
     connect(pEnableControl, SIGNAL(valueChanged(double)),
             &m_channelStatusMapper, SLOT(map()));
+
+    if (m_pEffectChain != nullptr) {
+        if (pEnableControl->toBool()) {
+            m_pEffectChain->enableForChannel(handle_group);
+        } else {
+            m_pEffectChain->disableForChannel(handle_group);
+        }
+    }
 }
 
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {

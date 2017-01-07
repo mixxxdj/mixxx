@@ -29,11 +29,10 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlNumButtonParameterSlots = new ControlObject(ConfigKey(m_group, "num_button_parameterslots"));
     m_pControlNumButtonParameterSlots->setReadOnly();
 
+    // Default to disabled to prevent accidental activation of effects
+    // at the beginning of a set.
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
-    // Default to enabled. The skin might not show these buttons.
-    m_pControlEnabled->setDefaultValue(true);
-    m_pControlEnabled->set(true);
     connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotEnabled(double)));
 
@@ -146,9 +145,10 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         m_pControlNumParameters->forceSet(pEffect->numKnobParameters());
         m_pControlNumButtonParameters->forceSet(pEffect->numButtonParameters());
 
-        // Enabled is a persistent property of the effect slot, not of the
-        // effect. Propagate the current setting to the effect.
-        pEffect->setEnabled(m_pControlEnabled->get() > 0.0);
+        // The enabled status persists in the EffectSlot when loading a new
+        // EffectPointer to the EffectSlot. Effects and EngineEffects default to
+        // disabled, so if this EffectSlot was enabled, enable the Effect and EngineEffect.
+        pEffect->setEnabled(m_pControlEnabled->toBool());
 
         connect(pEffect.data(), SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));
@@ -161,11 +161,11 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             addEffectButtonParameterSlot();
         }
 
-        foreach (EffectParameterSlotPointer pParameter, m_parameters) {
+        for (const auto& pParameter : m_parameters) {
             pParameter->loadEffect(pEffect);
         }
 
-        foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
+        for (const auto& pParameter : m_buttonParameters) {
             pParameter->loadEffect(pEffect);
         }
 
