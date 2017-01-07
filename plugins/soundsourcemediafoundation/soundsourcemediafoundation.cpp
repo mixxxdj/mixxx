@@ -1,25 +1,3 @@
-/**
- * \file soundsourcemediafoundation.cpp
- * \author Bill Good <bkgood at gmail dot com>
- * \author Albert Santoni <alberts at mixxx dot org>
- * \date Jan 10, 2011
- * \note This file uses COM interfaces defined in Windows 7 and later added to
- * Vista and Server 2008 via the "Platform Update Supplement for Windows Vista
- * and for Windows Server 2008" (http://support.microsoft.com/kb/2117917).
- * Earlier versions of Vista (and possibly Server 2008) have some Media
- * Foundation interfaces but not the required IMFSourceReader, and are missing
- * the Microsoft-provided AAC decoder. XP does not include Media Foundation.
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #include "soundsourcemediafoundation.h"
 
 #include <mfapi.h>
