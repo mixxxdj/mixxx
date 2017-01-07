@@ -8,6 +8,7 @@
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "controllers/softtakeover.h"
 #include "effects/effect.h"
 #include "effects/effectparameterslot.h"
 #include "effects/effectbuttonparameterslot.h"
@@ -107,6 +108,8 @@ class EffectSlot : public QObject {
     ControlPotmeter* m_pControlMetaParameter;
     QList<EffectParameterSlotPointer> m_parameters;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;
+
+    SoftTakeover* m_pSoftTakeover;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };
