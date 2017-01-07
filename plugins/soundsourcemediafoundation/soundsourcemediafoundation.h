@@ -1,15 +1,50 @@
 #ifndef SOUNDSOURCEMEDIAFOUNDATION_H
 #define SOUNDSOURCEMEDIAFOUNDATION_H
 
-#include "sources/soundsourceplugin.h"
-
 #include <windows.h>
+
+#include "sources/soundsourceplugin.h"
+#include "util/samplebuffer.h"
 
 class IMFSourceReader;
 class IMFMediaType;
 class IMFMediaSource;
 
 namespace mixxx {
+
+class StreamUnitConverter final {
+    const static SINT kStreamUnitsPerSecond = 1000 * 1000 * 10; // frame length = 100 ns
+
+  public:
+    StreamUnitConverter()
+        : m_streamUnitsPerFrame(0) {
+    }
+    explicit StreamUnitConverter(SINT frameRate)
+        : m_streamUnitsPerFrame(double(kStreamUnitsPerSecond) / double(frameRate)),
+          m_toFrameIndexBias(kStreamUnitsPerSecond / frameRate / 2) {
+        // The stream units should actually be much shorter
+        // than the frames to minimize jitter. Even a frame
+        // at 192 kHz has a length of about 5000 ns >> 100 ns.
+        DEBUG_ASSERT(m_streamUnitsPerFrame >= 50);
+        DEBUG_ASSERT(m_toFrameIndexBias > 0);
+    }
+
+    qint64 fromFrameIndex(SINT frameIndex) const {
+        // Used for seeking, so we need to round down to hit the
+        // corresponding stream unit where the given stream unit
+        // starts
+        return floor(frameIndex * m_streamUnitsPerFrame);
+    }
+
+    SINT toFrameIndex(qint64 streamPos) const {
+        // NOTE(uklotzde): Add m_toFrameIndexBias to account for rounding errors
+        return floor((streamPos + m_toFrameIndexBias) / m_streamUnitsPerFrame);
+    }
+
+  private:
+    double m_streamUnitsPerFrame;
+    SINT m_toFrameIndexBias;
+};
 
 class SoundSourceMediaFoundation : public mixxx::SoundSourcePlugin {
 public:
@@ -28,21 +63,18 @@ private:
     bool configureAudioStream(const mixxx::AudioSourceConfig& audioSrcCfg);
     bool readProperties();
 
-    void copyFrames(CSAMPLE *dest, SINT *destFrames, const CSAMPLE *src,
-            SINT srcFrames);
-
     HRESULT m_hrCoInitialize;
     HRESULT m_hrMFStartup;
-    IMFSourceReader *m_pReader;
-    SINT m_nextFrame;
-    CSAMPLE *m_leftoverBuffer;
-    SINT m_leftoverBufferSize;
-    SINT m_leftoverBufferLength;
-    SINT m_leftoverBufferPosition;
-    qint64 m_mfDuration;
-    SINT m_iCurrentPosition;
-    bool m_dead;
-    bool m_seeking;
+
+    IMFSourceReader* m_pSourceReader;
+
+    StreamUnitConverter m_streamUnitConverter;
+
+    SINT m_currentFrameIndex;
+
+    SampleBuffer m_sampleBuffer;
+    SINT m_sampleBufferOffset;
+    SINT m_sampleBufferCount;
 };
 
 class SoundSourceProviderMediaFoundation: public SoundSourceProvider {
