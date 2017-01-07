@@ -68,30 +68,30 @@ class LibraryControl : public QObject {
     void slotDecrementFontSize(double v);
 
   private:
-    Library* m_pLibrary;
+    Library* m_pLibrary = nullptr;
 
-    ControlObject* m_pSelectNextTrack;
-    ControlObject* m_pSelectPrevTrack;
-    ControlObject* m_pSelectTrack;
+    ControlObject* m_pSelectNextTrack = nullptr;
+    ControlObject* m_pSelectPrevTrack = nullptr;
+    ControlObject* m_pSelectTrack = nullptr;
 
-    ControlObject* m_pSelectSidebarItem;
-    ControlObject* m_pToggleFocusWidget;
-    ControlObject* m_pSelectItem;
-    ControlObject* m_pSelectPrevSidebarItem;
-    ControlObject* m_pSelectNextSidebarItem;
+    ControlObject* m_pSelectSidebarItem = nullptr;
+    ControlObject* m_pToggleFocusWidget = nullptr;
+    ControlObject* m_pSelectItem = nullptr;
+    ControlObject* m_pSelectPrevSidebarItem = nullptr;
+    ControlObject* m_pSelectNextSidebarItem = nullptr;
 
-    ControlObject* m_pToggleSidebarItem;
-    ControlObject* m_pChooseItem;
-    ControlObject* m_pLoadSelectedIntoFirstStopped;
-    ControlObject* m_pAutoDjAddTop;
-    ControlObject* m_pAutoDjAddBottom;
+    ControlObject* m_pToggleSidebarItem = nullptr;
+    ControlObject* m_pChooseItem = nullptr;
+    ControlObject* m_pLoadSelectedIntoFirstStopped = nullptr;
+    ControlObject* m_pAutoDjAddTop = nullptr;
+    ControlObject* m_pAutoDjAddBottom = nullptr;
 
-    ControlObject* m_pFontSizeKnob;
-    ControlPushButton* m_pFontSizeIncrement;
-    ControlPushButton* m_pFontSizeDecrement;
+    ControlObject* m_pFontSizeKnob = nullptr;
+    ControlPushButton* m_pFontSizeIncrement = nullptr;
+    ControlPushButton* m_pFontSizeDecrement = nullptr;
 
-    WLibrary* m_pLibraryWidget;
-    WLibrarySidebar* m_pSidebarWidget;
+    WLibrary* m_pLibraryWidget = nullptr;
+    WLibrarySidebar* m_pSidebarWidget = nullptr;
     ControlProxy m_numDecks;
     ControlProxy m_numSamplers;
     ControlProxy m_numPreviewDecks;
