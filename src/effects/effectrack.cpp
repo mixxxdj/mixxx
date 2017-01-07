@@ -333,6 +333,8 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
         pEffectSlot->onChainSuperParameterChanged(
                 pChainSlot->getSuperParameter(), true);
     }
+
+    pEffect->setEnabled(true);
     return true;
 }
 
@@ -366,6 +368,7 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
     }
 
     pChain->replaceEffect(0, pEffect);
+    pEffect->setEnabled(true);
     return true;
 }
 

@@ -29,12 +29,10 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlNumButtonParameterSlots = new ControlObject(ConfigKey(m_group, "num_button_parameterslots"));
     m_pControlNumButtonParameterSlots->setReadOnly();
 
-    m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
-    m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
     // Default to disabled to prevent accidental activation of effects
     // at the beginning of a set.
-    m_pControlEnabled->setDefaultValue(false);
-    m_pControlEnabled->set(false);
+    m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
+    m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
     connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotEnabled(double)));
 
@@ -147,7 +145,7 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         m_pControlNumParameters->forceSet(pEffect->numKnobParameters());
         m_pControlNumButtonParameters->forceSet(pEffect->numButtonParameters());
 
-        pEffect->updateEngineState();
+        pEffect->setEnabled(m_pControlEnabled->toBool());
 
         connect(pEffect.data(), SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));
