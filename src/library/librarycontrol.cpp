@@ -50,6 +50,8 @@ void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
 LibraryControl::LibraryControl(Library* pLibrary)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
+          m_pLibraryWidget(nullptr),
+          m_pSidebarWidget(nullptr),
           m_numDecks("[Master]", "num_decks", this),
           m_numSamplers("[Master]", "num_samplers", this),
           m_numPreviewDecks("[Master]", "num_preview_decks", this) {

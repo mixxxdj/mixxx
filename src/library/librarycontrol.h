@@ -78,49 +78,49 @@ class LibraryControl : public QObject {
     void slotDecrementFontSize(double v);
 
   private:
-    Library* m_pLibrary = nullptr;
+    Library* m_pLibrary;
 
     // Simulate pressing a key on the keyboard
     void emitKeyEvent(QKeyEvent&& event);
 
     // Controls to navigate vertically within currently focussed widget (up/down buttons)
-    ControlPushButton* m_pMoveUp = nullptr;
-    ControlPushButton* m_pMoveDown = nullptr;
-    ControlObject* m_pMoveVertical = nullptr;
+    ControlPushButton* m_pMoveUp;
+    ControlPushButton* m_pMoveDown;
+    ControlObject* m_pMoveVertical;
 
     // Controls to navigate horizontally within currently selected item (left/right buttons)
-    ControlPushButton* m_pMoveLeft = nullptr;
-    ControlPushButton* m_pMoveRight = nullptr;
-    ControlObject* m_pMoveHorizontal = nullptr;
+    ControlPushButton* m_pMoveLeft;
+    ControlPushButton* m_pMoveRight;
+    ControlObject* m_pMoveHorizontal;
 
     // Controls to navigate between widgets (tab/shit+tab button)
-    ControlPushButton* m_pMoveFocusForward = nullptr;
-    ControlPushButton* m_pMoveFocusBackward = nullptr;
-    ControlObject* m_pMoveFocus = nullptr;
+    ControlPushButton* m_pMoveFocusForward;
+    ControlPushButton* m_pMoveFocusBackward;
+    ControlObject* m_pMoveFocus;
 
     // Control to choose the currently selected item in focussed widget (double click)
-    ControlObject* m_pChooseItem = nullptr;
+    ControlObject* m_pChooseItem;
 
     // Font sizes
-    ControlPushButton* m_pFontSizeIncrement = nullptr;
-    ControlPushButton* m_pFontSizeDecrement = nullptr;
-    ControlObject* m_pFontSizeKnob = nullptr;
+    ControlPushButton* m_pFontSizeIncrement;
+    ControlPushButton* m_pFontSizeDecrement;
+    ControlObject* m_pFontSizeKnob;
 
     // Direct navigation controls for specific widgets (deprecated)
-    ControlObject* m_pSelectNextTrack = nullptr;
-    ControlObject* m_pSelectPrevTrack = nullptr;
-    ControlObject* m_pSelectTrack = nullptr;
-    ControlObject* m_pSelectSidebarItem = nullptr;
-    ControlObject* m_pSelectPrevSidebarItem = nullptr;
-    ControlObject* m_pSelectNextSidebarItem = nullptr;
-    ControlObject* m_pToggleSidebarItem = nullptr;
-    ControlObject* m_pLoadSelectedIntoFirstStopped = nullptr;
-    ControlObject* m_pAutoDjAddTop = nullptr;
-    ControlObject* m_pAutoDjAddBottom = nullptr;
+    ControlObject* m_pSelectNextTrack;
+    ControlObject* m_pSelectPrevTrack;
+    ControlObject* m_pSelectTrack;
+    ControlObject* m_pSelectSidebarItem;
+    ControlObject* m_pSelectPrevSidebarItem;
+    ControlObject* m_pSelectNextSidebarItem;
+    ControlObject* m_pToggleSidebarItem;
+    ControlObject* m_pLoadSelectedIntoFirstStopped;
+    ControlObject* m_pAutoDjAddTop;
+    ControlObject* m_pAutoDjAddBottom;
 
     // Library widgets
-    WLibrary* m_pLibraryWidget = nullptr;
-    WLibrarySidebar* m_pSidebarWidget = nullptr;
+    WLibrary* m_pLibraryWidget;
+    WLibrarySidebar* m_pSidebarWidget;
 
     // Other variables
     ControlProxy m_numDecks;
