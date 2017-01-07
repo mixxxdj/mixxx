@@ -158,11 +158,11 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             addEffectButtonParameterSlot();
         }
 
-        for (EffectParameterSlotPointer pParameter : m_parameters) {
+        for (const auto& pParameter : m_parameters) {
             pParameter->loadEffect(pEffect);
         }
 
-        for (EffectButtonParameterSlotPointer pParameter : m_buttonParameters) {
+        for (const auto& pParameter : m_buttonParameters) {
             pParameter->loadEffect(pEffect);
         }
 
