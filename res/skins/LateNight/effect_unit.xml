@@ -93,10 +93,6 @@
                   <Text>ON</Text>
                 </State>
                 <Connection>
-                  <ConfigKey persist="true"></ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
                   <!-- FIXME: Quick hack until effect chains are implemented. -->
                   <ConfigKey persist="true">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect1],enabled</ConfigKey>
                 </Connection>
