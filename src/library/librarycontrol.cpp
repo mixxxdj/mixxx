@@ -380,10 +380,15 @@ void LibraryControl::slotMoveFocus(double v) {
 
 void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     auto focusWidget = QApplication::focusWidget();
+    // Set the sidebar as the default focused widget
     if (!focusWidget) {
-        qWarning() << "LibraryControl::emitKeyPress() failed due to no widget having focus";
-        return;
+        if (!m_pSidebarWidget) {
+            return;
+        }
+        m_pSidebarWidget->setFocus();
+        focusWidget = m_pSidebarWidget;
     }
+    // Send a pointer to the event to focused widget
     QApplication::sendEvent(focusWidget, &event);
 }
 
