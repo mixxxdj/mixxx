@@ -145,6 +145,9 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         m_pControlNumParameters->forceSet(pEffect->numKnobParameters());
         m_pControlNumButtonParameters->forceSet(pEffect->numButtonParameters());
 
+        // The enabled status persists in the EffectSlot when loading a new
+        // EffectPointer to the EffectSlot. Effects and EngineEffects default to
+        // disabled, so if this EffectSlot was enabled, enable the Effect and EngineEffect.
         pEffect->setEnabled(m_pControlEnabled->toBool());
 
         connect(pEffect.data(), SIGNAL(enabledChanged(bool)),
