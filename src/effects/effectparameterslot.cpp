@@ -2,6 +2,7 @@
 
 #include "control/controleffectknob.h"
 #include "effects/effectparameterslot.h"
+#include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
@@ -249,16 +250,20 @@ void EffectParameterSlot::slotValueChanged(double v) {
 QDomElement EffectParameterSlot::toXML(QDomDocument* doc) const {
     QDomElement knobParameterElement;
     if (m_pEffectParameter != nullptr) {
-        knobParameterElement = doc->createElement("KnobParameter");
-        XmlParse::addElement(*doc, knobParameterElement, "Id",
+        knobParameterElement = doc->createElement(EffectXml::KnobParameter);
+        XmlParse::addElement(*doc, knobParameterElement,
+                             EffectXml::KnobParameterId,
                              m_pEffectParameter->id());
         // TODO(rryan): Do smarter QVariant formatting?
-        XmlParse::addElement(*doc, knobParameterElement, "Value",
-                            QString::number(m_pControlValue->getParameter()));
-        XmlParse::addElement(*doc, knobParameterElement, "LinkType",
-                            QString::number(m_pControlLinkType->get()));
-        XmlParse::addElement(*doc, knobParameterElement, "LinkInversion",
-                            QString::number(m_pControlLinkInverse->get()));
+        XmlParse::addElement(*doc, knobParameterElement,
+                             EffectXml::KnobParameterValue,
+                             QString::number(m_pControlValue->getParameter()));
+        XmlParse::addElement(*doc, knobParameterElement,
+                             EffectXml::KnobParameterLinkType,
+                             QString::number(m_pControlLinkType->get()));
+        XmlParse::addElement(*doc, knobParameterElement,
+                             EffectXml::KnobParameterLinkInversion,
+                             QString::number(m_pControlLinkInverse->get()));
     }
 
     return knobParameterElement;
@@ -278,11 +283,14 @@ void EffectParameterSlot::loadValuesFromXml(const QDomElement& knobParameterElem
         // Need to use setParameterFrom(..., nullptr) here to
         // trigger valueChanged() signal emission and execute slotValueChanged()
         m_pControlValue->setParameterFrom(
-            XmlParse::selectNodeDouble(knobParameterElement, "Value"),
+            XmlParse::selectNodeDouble(knobParameterElement,
+                                       EffectXml::KnobParameterValue),
             nullptr);
         m_pControlLinkType->set(
-            XmlParse::selectNodeDouble(knobParameterElement, "LinkType"));
+            XmlParse::selectNodeDouble(knobParameterElement,
+                                       EffectXml::KnobParameterLinkType));
         m_pControlLinkInverse->set(
-            XmlParse::selectNodeDouble(knobParameterElement, "LinkInversion"));
+            XmlParse::selectNodeDouble(knobParameterElement,
+                                       EffectXml::KnobParameterLinkInversion));
     }
 }

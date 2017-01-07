@@ -22,10 +22,6 @@
 #include "util/class.h"
 #include "util/fifo.h"
 
-// Version history:
-// 0 (Mixxx 2.1.0): initial support for saving state of effects
-const int EFFECT_XML_VERSION = 0;
-
 class EngineEffectsManager;
 
 class EffectsManager : public QObject {

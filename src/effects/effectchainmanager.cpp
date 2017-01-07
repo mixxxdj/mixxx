@@ -1,11 +1,11 @@
 #include "effects/effectchainmanager.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectxmlelements.h"
 
 #include <QtDebug>
 #include <QDomDocument>
 #include <QFile>
 #include <QDir>
-
 
 EffectChainManager::EffectChainManager(UserSettingsPointer pConfig,
                                        EffectsManager* pEffectsManager)
@@ -130,13 +130,13 @@ bool EffectChainManager::saveEffectChains() {
     QDomDocument doc("MixxxEffects");
 
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<MixxxEffects>\n"
-        "</MixxxEffects>\n";
+        "<" + EffectXml::Root + ">\n"
+        "</" + EffectXml::Root + ">\n";
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();
-    QDomElement mixxxVersionElement = doc.createElement("SchemaVersion");
-    QDomText version = doc.createTextNode(QString::number(EFFECT_XML_VERSION));
+    QDomElement mixxxVersionElement = doc.createElement(EffectXml::SchemaVersion);
+    QDomText version = doc.createTextNode(QString::number(EffectXml::kXmlSchemaVersion));
     mixxxVersionElement.appendChild(version);
     rootNode.appendChild(mixxxVersionElement);
 
@@ -179,7 +179,7 @@ QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffect
 
     if (!file.open(QIODevice::ReadOnly)) {
         EffectChainPointer pEmptyChain;
-        QDomElement emptyChainElement = doc.createElement("EffectChain");
+        QDomElement emptyChainElement = doc.createElement(EffectXml::Chain);
         for (int i = 0; i < kNumEffectsPerUnit; ++i) {
             pEmptyChain = EffectChainPointer(new EffectChain(m_pEffectsManager,
                                                             QString(),
@@ -192,7 +192,7 @@ QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffect
     if (!doc.setContent(&file)) {
         file.close();
         EffectChainPointer pEmptyChain;
-        QDomElement emptyChainElement = doc.createElement("EffectChain");
+        QDomElement emptyChainElement = doc.createElement(EffectXml::Chain);
         for (int i = 0; i < kNumEffectsPerUnit; ++i) {
             pEmptyChain = EffectChainPointer(new EffectChain(m_pEffectsManager,
                                                             QString(),
@@ -204,9 +204,9 @@ QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffect
     file.close();
 
     QDomElement root = doc.documentElement();
-    QDomElement rackElement = XmlParse::selectElement(root, "Rack");
-    QDomElement chainsElement = XmlParse::selectElement(rackElement, "Chains");
-    QDomNodeList chainsList = chainsElement.elementsByTagName("EffectChain");
+    QDomElement rackElement = XmlParse::selectElement(root, EffectXml::Rack);
+    QDomElement chainsElement = XmlParse::selectElement(rackElement, EffectXml::ChainsRoot);
+    QDomNodeList chainsList = chainsElement.elementsByTagName(EffectXml::Chain);
 
     for (int i = 0; i < chainsList.count(); ++i) {
         QDomNode chainNode = chainsList.at(i);

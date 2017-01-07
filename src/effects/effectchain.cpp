@@ -2,6 +2,7 @@
 
 #include "effects/effectchainmanager.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffectrack.h"
 #include "engine/effects/message.h"
@@ -280,10 +281,14 @@ void EffectChain::sendParameterUpdate() {
 // static
 EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
                                         const QDomElement& element) {
-    QString id = XmlParse::selectNodeQString(element, "Id");
-    QString name = XmlParse::selectNodeQString(element, "Name");
-    QString description = XmlParse::selectNodeQString(element, "Description");
-    QString insertionTypeStr = XmlParse::selectNodeQString(element, "InsertionType");
+    QString id = XmlParse::selectNodeQString(element,
+                                             EffectXml::ChainId);
+    QString name = XmlParse::selectNodeQString(element,
+                                               EffectXml::ChainName);
+    QString description = XmlParse::selectNodeQString(element,
+                                                      EffectXml::ChainDescription);
+    QString insertionTypeStr = XmlParse::selectNodeQString(element,
+                                                           EffectXml::ChainInsertionType);
 
     EffectChain* pChain = new EffectChain(pEffectsManager, id);
     pChain->setName(name);
@@ -296,7 +301,7 @@ EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
     EffectChainPointer pChainWrapped(pChain);
     pEffectsManager->getEffectChainManager()->addEffectChain(pChainWrapped);
 
-    QDomElement effects = XmlParse::selectElement(element, "Effects");
+    QDomElement effects = XmlParse::selectElement(element, EffectXml::EffectsRoot);
     QDomNodeList effectChildren = effects.childNodes();
 
     for (int i = 0; i < effectChildren.count(); ++i) {

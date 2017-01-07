@@ -1,6 +1,7 @@
 #include "effects/effectchainslot.h"
 
 #include "effects/effectrack.h"
+#include "effects/effectxmlelements.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
@@ -434,27 +435,29 @@ unsigned int EffectChainSlot::getChainSlotNumber() const {
 }
 
 QDomElement EffectChainSlot::toXML(QDomDocument* doc) const {
-    QDomElement chainElement = doc->createElement("EffectChain");
+    QDomElement chainElement = doc->createElement(EffectXml::Chain);
     if (m_pEffectChain == nullptr) {
         return chainElement;
     }
 
-    XmlParse::addElement(*doc, chainElement, "Name",
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainId,
+                         m_pEffectChain->id());
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainName,
                          m_pEffectChain->name());
-    XmlParse::addElement(*doc, chainElement, "Description",
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainDescription,
                          m_pEffectChain->description());
-    XmlParse::addElement(*doc, chainElement, "InsertionType",
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainInsertionType,
                          QString::number(m_pControlChainInsertionType->get()));
 
-    QDomElement effectsElement = doc->createElement("Effects");
-    for (EffectSlotPointer pEffectSlot : m_slots) {
+    QDomElement effectsElement = doc->createElement(EffectXml::EffectsRoot);
+    for (const auto& pEffectSlot : m_slots) {
         QDomElement effectNode;
         if (pEffectSlot->getEffect()) {
             effectNode = pEffectSlot->toXML(doc);
         } else {
             // Create empty element to ensure effects stay in order
             // if there are empty slots before loaded slots.
-            effectNode = doc->createElement("Effect");
+            effectNode = doc->createElement(EffectXml::Effect);
         }
         effectsElement.appendChild(effectNode);
     }
@@ -468,7 +471,8 @@ void EffectChainSlot::loadValuesFromXml(const QDomElement& effectChainElement) {
         return;
     }
 
-    QDomElement effectsElement = XmlParse::selectElement(effectChainElement, "Effects");
+    QDomElement effectsElement = XmlParse::selectElement(effectChainElement,
+                                                         EffectXml::EffectsRoot);
     QDomNodeList effectsNodeList = effectsElement.childNodes();
     for (int i = 0; i < m_slots.size(); ++i) {
         if (m_slots[i] != nullptr) {

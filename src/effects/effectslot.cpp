@@ -1,4 +1,5 @@
 #include "effects/effectslot.h"
+#include "effects/effectxmlelements.h"
 
 #include <QDebug>
 
@@ -271,24 +272,25 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
 }
 
 QDomElement EffectSlot::toXML(QDomDocument* doc) const {
-    QDomElement effectElement = doc->createElement("Effect");
+    QDomElement effectElement = doc->createElement(EffectXml::Effect);
     if (m_pEffect == nullptr) {
         return effectElement;
     }
 
     EffectManifest manifest = m_pEffect->getManifest();
-    XmlParse::addElement(*doc, effectElement, "Id", manifest.id());
-    XmlParse::addElement(*doc, effectElement, "Version", manifest.version());
+    XmlParse::addElement(*doc, effectElement, EffectXml::EffectId, manifest.id());
+    XmlParse::addElement(*doc, effectElement, EffectXml::EffectVersion, manifest.version());
 
-    QDomElement parametersElement = doc->createElement("Parameters");
+    QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
 
-    QDomElement knobParametersElement = doc->createElement("KnobParameters");
+    QDomElement knobParametersElement = doc->createElement(EffectXml::KnobParametersRoot);
     for (EffectParameterSlotPointer pParameterSlot : m_parameters) {
         knobParametersElement.appendChild(pParameterSlot->toXML(doc));
     }
     parametersElement.appendChild(knobParametersElement);
 
-    QDomElement buttonParametersElement = doc->createElement("ButtonParameters");
+    QDomElement buttonParametersElement = doc->createElement(
+        EffectXml::ButtonParametersRoot);
     for (EffectButtonParameterSlotPointer pButtonParameterSlot : m_buttonParameters) {
         buttonParametersElement.appendChild(pButtonParameterSlot->toXML(doc));
     }
@@ -304,13 +306,14 @@ void EffectSlot::loadValuesFromXml(const QDomElement& effectElement) {
     }
 
     QDomElement parametersElement = XmlParse::selectElement(effectElement,
-                                                            "Parameters");
+                                                            EffectXml::ParametersRoot);
     if (parametersElement.text().isEmpty()) {
         return;
     }
 
-    QDomElement knobParametersElement = XmlParse::selectElement(parametersElement,
-                                                                "KnobParameters");
+    QDomElement knobParametersElement = XmlParse::selectElement(
+                                            parametersElement,
+                                            EffectXml::KnobParametersRoot);
     QDomNodeList knobParametersNodeList = knobParametersElement.childNodes();
     for (int i = 0; i < m_parameters.size(); ++i) {
         if (m_parameters[i] != nullptr) {
@@ -322,8 +325,9 @@ void EffectSlot::loadValuesFromXml(const QDomElement& effectElement) {
         }
     }
 
-    QDomElement buttonParametersElement = XmlParse::selectElement(parametersElement,
-                                                                  "ButtonParameters");
+    QDomElement buttonParametersElement = XmlParse::selectElement(
+                                              parametersElement,
+                                              EffectXml::ButtonParametersRoot);
     QDomNodeList buttonParametersNodeList = buttonParametersElement.childNodes();
     for (int i = 0; i < m_buttonParameters.size(); ++i) {
         if (i == m_buttonParameters.size()) {

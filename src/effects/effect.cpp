@@ -3,6 +3,7 @@
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffect.h"
 #include "util/xml.h"
@@ -180,7 +181,7 @@ EffectPointer Effect::createFromXml(EffectsManager* pEffectsManager,
     if (element.text().isEmpty()) {
         return EffectPointer();
     }
-    QString effectId = XmlParse::selectNodeQString(element, "Id");
+    QString effectId = XmlParse::selectNodeQString(element, EffectXml::EffectId);
     EffectPointer pEffect = pEffectsManager->instantiateEffect(effectId);
     return pEffect;
 }
