@@ -334,7 +334,9 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
                 pChainSlot->getSuperParameter(), true);
     }
 
-    pEffect->setEnabled(true);
+    if (pEffect != nullptr) {
+        pEffect->setEnabled(true);
+    }
     return true;
 }
 
@@ -368,7 +370,9 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
     }
 
     pChain->replaceEffect(0, pEffect);
-    pEffect->setEnabled(true);
+    if (pEffect != nullptr) {
+        pEffect->setEnabled(true);
+    }
     return true;
 }
 
