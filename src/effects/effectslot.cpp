@@ -277,9 +277,15 @@ QDomElement EffectSlot::toXML(QDomDocument* doc) const {
         return effectElement;
     }
 
+    QDomElement metaKnobElement = doc->createElement(EffectXml::EffectMetaParameter);
+    XmlParse::addElement(*doc, effectElement,
+                         EffectXml::EffectMetaParameter,
+                         QString::number(m_pControlMetaParameter->get()));
     EffectManifest manifest = m_pEffect->getManifest();
-    XmlParse::addElement(*doc, effectElement, EffectXml::EffectId, manifest.id());
-    XmlParse::addElement(*doc, effectElement, EffectXml::EffectVersion, manifest.version());
+    XmlParse::addElement(*doc, effectElement,
+                         EffectXml::EffectId, manifest.id());
+    XmlParse::addElement(*doc, effectElement,
+                         EffectXml::EffectVersion, manifest.version());
 
     QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
 
@@ -304,6 +310,9 @@ void EffectSlot::loadValuesFromXml(const QDomElement& effectElement) {
     if (effectElement.text().isEmpty()) {
         return;
     }
+
+    m_pControlMetaParameter->set(XmlParse::selectNodeDouble(effectElement,
+                                                            EffectXml::EffectMetaParameter));
 
     QDomElement parametersElement = XmlParse::selectElement(effectElement,
                                                             EffectXml::ParametersRoot);
