@@ -448,6 +448,8 @@ QDomElement EffectChainSlot::toXML(QDomDocument* doc) const {
                          m_pEffectChain->description());
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainInsertionType,
                          QString::number(m_pControlChainInsertionType->get()));
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainSuperParameter,
+                         QString::number(m_pControlChainSuperParameter->get()));
 
     QDomElement effectsElement = doc->createElement(EffectXml::EffectsRoot);
     for (const auto& pEffectSlot : m_slots) {
@@ -470,6 +472,10 @@ void EffectChainSlot::loadValuesFromXml(const QDomElement& effectChainElement) {
     if (effectChainElement.text().isEmpty()) {
         return;
     }
+
+    m_pControlChainSuperParameter->set(XmlParse::selectNodeDouble(
+                                          effectChainElement,
+                                          EffectXml::ChainSuperParameter));
 
     QDomElement effectsElement = XmlParse::selectElement(effectChainElement,
                                                          EffectXml::EffectsRoot);
