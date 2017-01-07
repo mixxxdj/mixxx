@@ -61,62 +61,36 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_numSamplers.connectValueChanged(SLOT(slotNumSamplersChanged(double)));
     m_numPreviewDecks.connectValueChanged(SLOT(slotNumPreviewDecksChanged(double)));
 
-    // Make controls for library navigation and track loading.
+    // Controls to navigate vertically within currently focussed widget (up/down buttons)
+    m_pMoveUp = new ControlPushButton(ConfigKey("[Playlist]", "MoveUp"));
+    m_pMoveDown = new ControlPushButton(ConfigKey("[Playlist]", "MoveDown"));
+    m_pMoveVertical = new ControlObject(ConfigKey("[Playlist]", "MoveVertical"), false);
+    connect(m_pMoveUp, SIGNAL(valueChanged(double)),this, SLOT(slotMoveUp(double)));
+    connect(m_pMoveDown, SIGNAL(valueChanged(double)),this, SLOT(slotMoveDown(double)));
+    connect(m_pMoveVertical, SIGNAL(valueChanged(double)),this, SLOT(slotMoveVertical(double)));
 
-    m_pSelectNextTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextTrack"));
-    connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectNextTrack(double)));
+    // Controls to navigate horizontally within currently selected item (left/right buttons)
+    m_pMoveLeft = new ControlPushButton(ConfigKey("[Playlist]", "MoveLeft"));
+    m_pMoveRight = new ControlPushButton(ConfigKey("[Playlist]", "MoveRight"));
+    m_pMoveHorizontal = new ControlObject(ConfigKey("[Playlist]", "MoveHorizontal"), false);
+    connect(m_pMoveLeft, SIGNAL(valueChanged(double)),this, SLOT(slotMoveLeft(double)));
+    connect(m_pMoveRight, SIGNAL(valueChanged(double)),this, SLOT(slotMoveRight(double)));
+    connect(m_pMoveHorizontal, SIGNAL(valueChanged(double)),this, SLOT(slotMoveHorizontal(double)));
 
-    m_pSelectPrevTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevTrack"));
-    connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectPrevTrack(double)));
+    // Control to navigate between widgets (tab/shit+tab button)
+    m_pMoveFocusForward = new ControlPushButton(ConfigKey("[Playlist]", "MoveFocusForward"));
+    m_pMoveFocusBackward = new ControlPushButton(ConfigKey("[Playlist]", "MoveFocusBackward"));
+    m_pMoveFocus = new ControlObject(ConfigKey("[Playlist]", "MoveFocus"), false);
+    connect(m_pMoveFocusForward, SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusForward(double)));
+    connect(m_pMoveFocusBackward, SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusBackward(double)));
+    connect(m_pMoveFocus, SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocus(double)));
 
-    // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectTrack = new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob"), false);
-    connect(m_pSelectTrack, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectTrack(double)));
-
-    // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectItem = new ControlObject(ConfigKey("[Playlist]","SelectItemKnob"), false);
-    connect(m_pSelectItem, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectItem(double)));
-
-    m_pSelectNextSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextPlaylist"));
-    connect(m_pSelectNextSidebarItem, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectNextSidebarItem(double)));
-
-    m_pSelectPrevSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevPlaylist"));
-    connect(m_pSelectPrevSidebarItem, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectPrevSidebarItem(double)));
-
-    // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectSidebarItem = new ControlObject(ConfigKey("[Playlist]", "SelectPlaylist"), false);
-    connect(m_pSelectSidebarItem, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectSidebarItem(double)));
-
-    m_pToggleFocusWidget = new ControlPushButton(ConfigKey("[Playlist]", "ToggleFocusWidget"));
-    connect(m_pToggleFocusWidget, SIGNAL(valueChanged(double)),this, SLOT(slotToggleFocusWidget(double)));
-
-    m_pToggleSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
-    connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)),
-            this, SLOT(slotToggleSelectedSidebarItem(double)));
-
+    // Control to choose the currently selected item in focussed widget (double click)
     m_pChooseItem = new ControlPushButton(ConfigKey("[Playlist]", "ChooseItem"));
     connect(m_pChooseItem, SIGNAL(valueChanged(double)), this, SLOT(slotChooseItem(double)));
 
-    m_pLoadSelectedIntoFirstStopped = new ControlPushButton(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
-    connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
 
-    m_pAutoDjAddTop = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddTop"));
-    connect(m_pAutoDjAddTop, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAutoDjAddTop(double)));
-
-    m_pAutoDjAddBottom = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddBottom"));
-    connect(m_pAutoDjAddBottom, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAutoDjAddBottom(double)));
-
-    // Ignoring no-ops is important since this is for +/- tickers.
+    // Font sizes
     m_pFontSizeKnob = new ControlObject(
             ConfigKey("[Library]", "font_size_knob"), false);
     connect(m_pFontSizeKnob, SIGNAL(valueChanged(double)),
@@ -131,6 +105,53 @@ LibraryControl::LibraryControl(Library* pLibrary)
             ConfigKey("[Library]", "font_size_increment"));
     connect(m_pFontSizeIncrement, SIGNAL(valueChanged(double)),
             this, SLOT(slotIncrementFontSize(double)));
+
+
+    /// Deprecated controls
+    m_pSelectNextTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextTrack"));
+    connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSelectNextTrack(double)));
+
+
+    m_pSelectPrevTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevTrack"));
+    connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSelectPrevTrack(double)));
+
+    // Ignoring no-ops is important since this is for +/- tickers.
+    m_pSelectTrack = new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob"), false);
+    connect(m_pSelectTrack, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSelectTrack(double)));
+
+
+    m_pSelectNextSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextPlaylist"));
+    connect(m_pSelectNextSidebarItem, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSelectNextSidebarItem(double)));
+
+    m_pSelectPrevSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevPlaylist"));
+    connect(m_pSelectPrevSidebarItem, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSelectPrevSidebarItem(double)));
+
+    // Ignoring no-ops is important since this is for +/- tickers.
+    m_pSelectSidebarItem = new ControlObject(ConfigKey("[Playlist]", "SelectPlaylist"), false);
+    connect(m_pSelectSidebarItem, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSelectSidebarItem(double)));
+
+    m_pToggleSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
+    connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)),
+            this, SLOT(slotToggleSelectedSidebarItem(double)));
+
+    m_pLoadSelectedIntoFirstStopped = new ControlPushButton(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
+    connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
+
+    m_pAutoDjAddTop = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddTop"));
+    connect(m_pAutoDjAddTop, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAutoDjAddTop(double)));
+
+    m_pAutoDjAddBottom = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddBottom"));
+    connect(m_pAutoDjAddBottom, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAutoDjAddBottom(double)));
+
 }
 
 LibraryControl::~LibraryControl() {
@@ -301,36 +322,76 @@ void LibraryControl::slotSelectTrack(double v) {
     activeView->moveSelection(i);
 }
 
-void LibraryControl::slotSelectItem(double v) {
-    if (!m_pLibraryWidget || !m_pSidebarWidget) {
+
+
+void LibraryControl::slotMoveUp(double v) {
+    if (v > 0) {
+        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier});
+    }
+}
+
+void LibraryControl::slotMoveDown(double v) {
+    if (v > 0) {
+        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier});
+    }
+}
+
+void LibraryControl::slotMoveVertical(double v) {
+    const auto key = (v < 0) ? Qt::Key_Up: Qt::Key_Down;
+    const auto times = static_cast<unsigned short>(v);
+    emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
+}
+
+void LibraryControl::slotMoveLeft(double v) {
+    if (v > 0) {
+        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Left, Qt::NoModifier});
+    }
+}
+
+void LibraryControl::slotMoveRight(double v) {
+    if (v > 0) {
+        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Right, Qt::NoModifier});
+    }
+}
+
+void LibraryControl::slotMoveHorizontal(double v) {
+    const auto key = (v < 0) ? Qt::Key_Left: Qt::Key_Right;
+    const auto times = static_cast<unsigned short>(v);
+    emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
+}
+
+void LibraryControl::slotMoveFocusForward(double v) {
+    if (v > 0) {
+        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier});
+    }
+}
+
+void LibraryControl::slotMoveFocusBackward(double v) {
+    if (v > 0) {
+        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier});
+    }
+}
+
+void LibraryControl::slotMoveFocus(double v) {
+    const auto shift = (v < 0) ? Qt::ShiftModifier: Qt::NoModifier;
+    const auto times = static_cast<unsigned short>(v);
+    emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, shift, QString(), false, times});
+}
+
+void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
+    auto focusWidget = QApplication::focusWidget();
+    if (!focusWidget) {
+        qWarning() << "LibraryControl::emitKeyPress() failed due to no widget having focus";
         return;
     }
-    // Select track if a LibraryView object has focus, otherwise select sidebar item
-    const auto activeView = m_pLibraryWidget->getActiveView();
-    if (activeView && activeView->hasFocus()) {
-        return slotSelectTrack(v);
-    }
-    slotSelectSidebarItem(v);
+    QApplication::sendEvent(focusWidget, &event);
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
-    if (!m_pSidebarWidget) {
-        return;
-    }
-    if (v > 0) {
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyPress,
-            (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyRelease,
-            (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
-    } else if (v < 0) {
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyPress,
-            (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyRelease,
-            (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
+    if (v != 0) {
+        const auto key = (v < 0) ? Qt::Key_Up : Qt::Key_Down;
+        emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier});
+        emitKeyEvent(QKeyEvent{QEvent::KeyRelease, key, Qt::NoModifier});
     }
 }
 
@@ -346,14 +407,6 @@ void LibraryControl::slotSelectPrevSidebarItem(double v) {
     }
 }
 
-void LibraryControl::slotToggleFocusWidget(double v) {
-    if (v <= 0 || !m_pSidebarWidget) {
-        return;
-    }
-    QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-        QEvent::KeyPress, (int)Qt::Key_Tab, Qt::NoModifier, QString(), true));
-}
-
 void LibraryControl::slotToggleSelectedSidebarItem(double v) {
     if (m_pSidebarWidget && v > 0) {
         m_pSidebarWidget->toggleSelectedItem();
@@ -361,6 +414,7 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
 }
 
 void LibraryControl::slotChooseItem(double v) {
+    // XXX: Make this more generic? If Enter key is mapped correctly maybe we can use that
     if (!m_pLibraryWidget) {
         return;
     }
