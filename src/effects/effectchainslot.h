@@ -124,8 +124,6 @@ class EffectChainSlot : public QObject {
     const QString m_group;
     EffectRack* m_pEffectRack;
 
-    unsigned int m_focusedEffectNumber;
-
     EffectChainPointer m_pEffectChain;
 
     ControlPushButton* m_pControlClear;
@@ -149,7 +147,7 @@ class EffectChainSlot : public QObject {
       object than the mapping.
     **/
     ControlPushButton* m_pControlChainShowFocus;
-    ControlPushButton*m_pControlChainShowParameters;
+    ControlPushButton* m_pControlChainShowParameters;
     ControlObject* m_pControlChainFocusedEffect;
 
     struct ChannelInfo {
