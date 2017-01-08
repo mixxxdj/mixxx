@@ -89,12 +89,12 @@ class LibraryControl : public QObject {
     // Give the keyboard focus to the main library pane
     void setLibraryFocus();
 
-    // Controls to navigate vertically within currently focussed widget (up/down buttons)
+    // Controls to navigate vertically within currently focused widget (up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveUp;
     std::unique_ptr<ControlPushButton> m_pMoveDown;
     std::unique_ptr<ControlObject> m_pMoveVertical;
 
-    // Controls to QUICKLY navigate vertically within currently focussed widget (pageup/pagedown buttons)
+    // Controls to QUICKLY navigate vertically within currently focused widget (pageup/pagedown buttons)
     std::unique_ptr<ControlPushButton> m_pScrollUp;
     std::unique_ptr<ControlPushButton> m_pScrollDown;
     std::unique_ptr<ControlObject> m_pScrollVertical;
@@ -109,7 +109,7 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pMoveFocusBackward;
     std::unique_ptr<ControlObject> m_pMoveFocus;
 
-    // Control to choose the currently selected item in focussed widget (double click)
+    // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pChooseItem;
 
     // Font sizes
