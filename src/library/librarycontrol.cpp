@@ -61,39 +61,39 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_numPreviewDecks.connectValueChanged(SLOT(slotNumPreviewDecksChanged(double)));
 
     // Controls to navigate vertically within currently focussed widget (up/down buttons)
-    m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveUp"));
-    m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveDown"));
-    m_pMoveVertical = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "MoveVertical"), false);
+    m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveUp"));
+    m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveDown"));
+    m_pMoveVertical = std::make_unique<ControlObject>(ConfigKey("[Library]", "MoveVertical"), false);
     connect(m_pMoveUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveUp(double)));
     connect(m_pMoveDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveDown(double)));
     connect(m_pMoveVertical.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveVertical(double)));
 
     // Controls to navigate vertically within currently focussed widget (up/down buttons)
-    m_pScrollUp = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "ScrollUp"));
-    m_pScrollDown = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "ScrollDown"));
-    m_pScrollVertical = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "ScrollVertical"), false);
+    m_pScrollUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollUp"));
+    m_pScrollDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollDown"));
+    m_pScrollVertical = std::make_unique<ControlObject>(ConfigKey("[Library]", "ScrollVertical"), false);
     connect(m_pScrollUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollUp(double)));
     connect(m_pScrollDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollDown(double)));
     connect(m_pScrollVertical.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollVertical(double)));
 
     // Controls to navigate horizontally within currently selected item (left/right buttons)
-    m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveLeft"));
-    m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveRight"));
-    m_pMoveHorizontal = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "MoveHorizontal"), false);
+    m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveLeft"));
+    m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveRight"));
+    m_pMoveHorizontal = std::make_unique<ControlObject>(ConfigKey("[Library]", "MoveHorizontal"), false);
     connect(m_pMoveLeft.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveLeft(double)));
     connect(m_pMoveRight.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveRight(double)));
     connect(m_pMoveHorizontal.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveHorizontal(double)));
 
     // Control to navigate between widgets (tab/shit+tab button)
-    m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveFocusForward"));
-    m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveFocusBackward"));
-    m_pMoveFocus = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "MoveFocus"), false);
+    m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
+    m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
+    m_pMoveFocus = std::make_unique<ControlObject>(ConfigKey("[Library]", "MoveFocus"), false);
     connect(m_pMoveFocusForward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusForward(double)));
     connect(m_pMoveFocusBackward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusBackward(double)));
     connect(m_pMoveFocus.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocus(double)));
 
     // Control to choose the currently selected item in focussed widget (double click)
-    m_pChooseItem = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "ChooseItem"));
+    m_pChooseItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ChooseItem"));
     connect(m_pChooseItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotChooseItem(double)));
 
 
