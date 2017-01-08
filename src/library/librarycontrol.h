@@ -1,6 +1,7 @@
 #ifndef LIBRARYMIDICONTROL_H
 #define LIBRARYMIDICONTROL_H
 
+#include <memory>
 #include <QObject>
 
 #include "control/controlproxy.h"
@@ -27,8 +28,8 @@ class LoadToGroupController : public QObject {
 
   private:
     QString m_group;
-    ControlObject* m_pLoadControl;
-    ControlObject* m_pLoadAndPlayControl;
+    std::unique_ptr<ControlObject> m_pLoadControl;
+    std::unique_ptr<ControlObject> m_pLoadAndPlayControl;
 };
 
 class LibraryControl : public QObject {
@@ -84,39 +85,39 @@ class LibraryControl : public QObject {
     void emitKeyEvent(QKeyEvent&& event);
 
     // Controls to navigate vertically within currently focussed widget (up/down buttons)
-    ControlPushButton* m_pMoveUp;
-    ControlPushButton* m_pMoveDown;
-    ControlObject* m_pMoveVertical;
+    std::unique_ptr<ControlPushButton> m_pMoveUp;
+    std::unique_ptr<ControlPushButton> m_pMoveDown;
+    std::unique_ptr<ControlObject> m_pMoveVertical;
 
     // Controls to navigate horizontally within currently selected item (left/right buttons)
-    ControlPushButton* m_pMoveLeft;
-    ControlPushButton* m_pMoveRight;
-    ControlObject* m_pMoveHorizontal;
+    std::unique_ptr<ControlPushButton> m_pMoveLeft;
+    std::unique_ptr<ControlPushButton> m_pMoveRight;
+    std::unique_ptr<ControlObject> m_pMoveHorizontal;
 
     // Controls to navigate between widgets (tab/shit+tab button)
-    ControlPushButton* m_pMoveFocusForward;
-    ControlPushButton* m_pMoveFocusBackward;
-    ControlObject* m_pMoveFocus;
+    std::unique_ptr<ControlPushButton> m_pMoveFocusForward;
+    std::unique_ptr<ControlPushButton> m_pMoveFocusBackward;
+    std::unique_ptr<ControlObject> m_pMoveFocus;
 
     // Control to choose the currently selected item in focussed widget (double click)
-    ControlObject* m_pChooseItem;
+    std::unique_ptr<ControlObject> m_pChooseItem;
 
     // Font sizes
-    ControlPushButton* m_pFontSizeIncrement;
-    ControlPushButton* m_pFontSizeDecrement;
-    ControlObject* m_pFontSizeKnob;
+    std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;
+    std::unique_ptr<ControlPushButton> m_pFontSizeDecrement;
+    std::unique_ptr<ControlObject> m_pFontSizeKnob;
 
     // Direct navigation controls for specific widgets (deprecated)
-    ControlObject* m_pSelectNextTrack;
-    ControlObject* m_pSelectPrevTrack;
-    ControlObject* m_pSelectTrack;
-    ControlObject* m_pSelectSidebarItem;
-    ControlObject* m_pSelectPrevSidebarItem;
-    ControlObject* m_pSelectNextSidebarItem;
-    ControlObject* m_pToggleSidebarItem;
-    ControlObject* m_pLoadSelectedIntoFirstStopped;
-    ControlObject* m_pAutoDjAddTop;
-    ControlObject* m_pAutoDjAddBottom;
+    std::unique_ptr<ControlObject> m_pSelectNextTrack;
+    std::unique_ptr<ControlObject> m_pSelectPrevTrack;
+    std::unique_ptr<ControlObject> m_pSelectTrack;
+    std::unique_ptr<ControlObject> m_pSelectSidebarItem;
+    std::unique_ptr<ControlObject> m_pSelectPrevSidebarItem;
+    std::unique_ptr<ControlObject> m_pSelectNextSidebarItem;
+    std::unique_ptr<ControlObject> m_pToggleSidebarItem;
+    std::unique_ptr<ControlObject> m_pLoadSelectedIntoFirstStopped;
+    std::unique_ptr<ControlObject> m_pAutoDjAddTop;
+    std::unique_ptr<ControlObject> m_pAutoDjAddBottom;
 
     // Library widgets
     WLibrary* m_pLibraryWidget;
@@ -126,7 +127,7 @@ class LibraryControl : public QObject {
     ControlProxy m_numDecks;
     ControlProxy m_numSamplers;
     ControlProxy m_numPreviewDecks;
-    QMap<QString, LoadToGroupController*> m_loadToGroupControllers;
+    std::map<QString, std::unique_ptr<LoadToGroupController>> m_loadToGroupControllers;
 };
 
 #endif //LIBRARYMIDICONTROL_H

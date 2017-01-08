@@ -18,22 +18,19 @@
 LoadToGroupController::LoadToGroupController(QObject* pParent, const QString& group)
         : QObject(pParent),
           m_group(group) {
-    m_pLoadControl = new ControlPushButton(ConfigKey(group, "LoadSelectedTrack"));
-    connect(m_pLoadControl, SIGNAL(valueChanged(double)),
+    m_pLoadControl = std::make_unique<ControlPushButton>(ConfigKey(group, "LoadSelectedTrack"));
+    connect(m_pLoadControl.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadToGroup(double)));
 
-    m_pLoadAndPlayControl = new ControlPushButton(ConfigKey(group, "LoadSelectedTrackAndPlay"));
-    connect(m_pLoadAndPlayControl, SIGNAL(valueChanged(double)),
+    m_pLoadAndPlayControl = std::make_unique<ControlPushButton>(ConfigKey(group, "LoadSelectedTrackAndPlay"));
+    connect(m_pLoadAndPlayControl.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadToGroupAndPlay(double)));
 
     connect(this, SIGNAL(loadToGroup(QString, bool)),
             pParent, SLOT(slotLoadSelectedTrackToGroup(QString, bool)));
 }
 
-LoadToGroupController::~LoadToGroupController() {
-    delete m_pLoadControl;
-    delete m_pLoadAndPlayControl;
-}
+LoadToGroupController::~LoadToGroupController() = default;
 
 void LoadToGroupController::slotLoadToGroup(double v) {
     if (v > 0) {
@@ -64,120 +61,103 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_numPreviewDecks.connectValueChanged(SLOT(slotNumPreviewDecksChanged(double)));
 
     // Controls to navigate vertically within currently focussed widget (up/down buttons)
-    m_pMoveUp = new ControlPushButton(ConfigKey("[Playlist]", "MoveUp"));
-    m_pMoveDown = new ControlPushButton(ConfigKey("[Playlist]", "MoveDown"));
-    m_pMoveVertical = new ControlObject(ConfigKey("[Playlist]", "MoveVertical"), false);
-    connect(m_pMoveUp, SIGNAL(valueChanged(double)),this, SLOT(slotMoveUp(double)));
-    connect(m_pMoveDown, SIGNAL(valueChanged(double)),this, SLOT(slotMoveDown(double)));
-    connect(m_pMoveVertical, SIGNAL(valueChanged(double)),this, SLOT(slotMoveVertical(double)));
+    m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveUp"));
+    m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveDown"));
+    m_pMoveVertical = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "MoveVertical"), false);
+    connect(m_pMoveUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveUp(double)));
+    connect(m_pMoveDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveDown(double)));
+    connect(m_pMoveVertical.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveVertical(double)));
 
     // Controls to navigate horizontally within currently selected item (left/right buttons)
-    m_pMoveLeft = new ControlPushButton(ConfigKey("[Playlist]", "MoveLeft"));
-    m_pMoveRight = new ControlPushButton(ConfigKey("[Playlist]", "MoveRight"));
-    m_pMoveHorizontal = new ControlObject(ConfigKey("[Playlist]", "MoveHorizontal"), false);
-    connect(m_pMoveLeft, SIGNAL(valueChanged(double)),this, SLOT(slotMoveLeft(double)));
-    connect(m_pMoveRight, SIGNAL(valueChanged(double)),this, SLOT(slotMoveRight(double)));
-    connect(m_pMoveHorizontal, SIGNAL(valueChanged(double)),this, SLOT(slotMoveHorizontal(double)));
+    m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveLeft"));
+    m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveRight"));
+    m_pMoveHorizontal = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "MoveHorizontal"), false);
+    connect(m_pMoveLeft.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveLeft(double)));
+    connect(m_pMoveRight.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveRight(double)));
+    connect(m_pMoveHorizontal.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveHorizontal(double)));
 
     // Control to navigate between widgets (tab/shit+tab button)
-    m_pMoveFocusForward = new ControlPushButton(ConfigKey("[Playlist]", "MoveFocusForward"));
-    m_pMoveFocusBackward = new ControlPushButton(ConfigKey("[Playlist]", "MoveFocusBackward"));
-    m_pMoveFocus = new ControlObject(ConfigKey("[Playlist]", "MoveFocus"), false);
-    connect(m_pMoveFocusForward, SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusForward(double)));
-    connect(m_pMoveFocusBackward, SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusBackward(double)));
-    connect(m_pMoveFocus, SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocus(double)));
+    m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveFocusForward"));
+    m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveFocusBackward"));
+    m_pMoveFocus = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "MoveFocus"), false);
+    connect(m_pMoveFocusForward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusForward(double)));
+    connect(m_pMoveFocusBackward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusBackward(double)));
+    connect(m_pMoveFocus.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocus(double)));
 
     // Control to choose the currently selected item in focussed widget (double click)
-    m_pChooseItem = new ControlPushButton(ConfigKey("[Playlist]", "ChooseItem"));
-    connect(m_pChooseItem, SIGNAL(valueChanged(double)), this, SLOT(slotChooseItem(double)));
+    m_pChooseItem = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "ChooseItem"));
+    connect(m_pChooseItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotChooseItem(double)));
 
 
     // Font sizes
-    m_pFontSizeKnob = new ControlObject(
+    m_pFontSizeKnob = std::make_unique<ControlObject>(
             ConfigKey("[Library]", "font_size_knob"), false);
-    connect(m_pFontSizeKnob, SIGNAL(valueChanged(double)),
+    connect(m_pFontSizeKnob.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotFontSize(double)));
 
-    m_pFontSizeDecrement = new ControlPushButton(
+    m_pFontSizeDecrement = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "font_size_decrement"));
-    connect(m_pFontSizeDecrement, SIGNAL(valueChanged(double)),
+    connect(m_pFontSizeDecrement.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotDecrementFontSize(double)));
 
-    m_pFontSizeIncrement = new ControlPushButton(
+    m_pFontSizeIncrement = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "font_size_increment"));
-    connect(m_pFontSizeIncrement, SIGNAL(valueChanged(double)),
+    connect(m_pFontSizeIncrement.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotIncrementFontSize(double)));
 
 
     /// Deprecated controls
-    m_pSelectNextTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextTrack"));
-    connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)),
+    m_pSelectNextTrack = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectNextTrack"));
+    connect(m_pSelectNextTrack.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectNextTrack(double)));
 
 
-    m_pSelectPrevTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevTrack"));
-    connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)),
+    m_pSelectPrevTrack = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectPrevTrack"));
+    connect(m_pSelectPrevTrack.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevTrack(double)));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectTrack = new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob"), false);
-    connect(m_pSelectTrack, SIGNAL(valueChanged(double)),
+    m_pSelectTrack = std::make_unique<ControlObject>(ConfigKey("[Playlist]","SelectTrackKnob"), false);
+    connect(m_pSelectTrack.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectTrack(double)));
 
 
-    m_pSelectNextSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextPlaylist"));
-    connect(m_pSelectNextSidebarItem, SIGNAL(valueChanged(double)),
+    m_pSelectNextSidebarItem = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectNextPlaylist"));
+    connect(m_pSelectNextSidebarItem.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectNextSidebarItem(double)));
 
-    m_pSelectPrevSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevPlaylist"));
-    connect(m_pSelectPrevSidebarItem, SIGNAL(valueChanged(double)),
+    m_pSelectPrevSidebarItem = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectPrevPlaylist"));
+    connect(m_pSelectPrevSidebarItem.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevSidebarItem(double)));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectSidebarItem = new ControlObject(ConfigKey("[Playlist]", "SelectPlaylist"), false);
-    connect(m_pSelectSidebarItem, SIGNAL(valueChanged(double)),
+    m_pSelectSidebarItem = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "SelectPlaylist"), false);
+    connect(m_pSelectSidebarItem.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectSidebarItem(double)));
 
-    m_pToggleSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
-    connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)),
+    m_pToggleSidebarItem = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
+    connect(m_pToggleSidebarItem.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleSelectedSidebarItem(double)));
 
-    m_pLoadSelectedIntoFirstStopped = new ControlPushButton(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
-    connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
+    m_pLoadSelectedIntoFirstStopped = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
+    connect(m_pLoadSelectedIntoFirstStopped.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
 
-    m_pAutoDjAddTop = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddTop"));
-    connect(m_pAutoDjAddTop, SIGNAL(valueChanged(double)),
+    m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]","AutoDjAddTop"));
+    connect(m_pAutoDjAddTop.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotAutoDjAddTop(double)));
 
-    m_pAutoDjAddBottom = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddBottom"));
-    connect(m_pAutoDjAddBottom, SIGNAL(valueChanged(double)),
+    m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]","AutoDjAddBottom"));
+    connect(m_pAutoDjAddBottom.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotAutoDjAddBottom(double)));
 
 }
 
-LibraryControl::~LibraryControl() {
-   delete m_pSelectNextTrack;
-   delete m_pSelectPrevTrack;
-   delete m_pSelectTrack;
-   delete m_pSelectNextSidebarItem;
-   delete m_pSelectPrevSidebarItem;
-   delete m_pSelectSidebarItem;
-   delete m_pToggleSidebarItem;
-   delete m_pLoadSelectedIntoFirstStopped;
-   delete m_pAutoDjAddTop;
-   delete m_pAutoDjAddBottom;
-   delete m_pFontSizeKnob;
-   delete m_pFontSizeDecrement;
-   delete m_pFontSizeIncrement;
-   deleteMapValues(&m_loadToGroupControllers);
-}
+LibraryControl::~LibraryControl() = default;
 
 void LibraryControl::maybeCreateGroupController(const QString& group) {
-    LoadToGroupController* pGroup = m_loadToGroupControllers.value(group, nullptr);
-    if (!pGroup) {
-        pGroup = new LoadToGroupController(this, group);
-        m_loadToGroupControllers[group] = pGroup;
+    if (m_loadToGroupControllers.find(group) == m_loadToGroupControllers.end()) {
+        m_loadToGroupControllers.emplace(group, std::make_unique<LoadToGroupController>(this, group));
     }
 }
 
@@ -204,6 +184,7 @@ void LibraryControl::slotNumSamplersChanged(double v) {
         maybeCreateGroupController(PlayerManager::groupForSampler(i));
     }
 }
+
 
 void LibraryControl::slotNumPreviewDecksChanged(double v) {
     int iNumPreviewDecks = v;
@@ -276,7 +257,7 @@ void LibraryControl::slotAutoDjAddTop(double v) {
     }
 
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
+        auto activeView = m_pLibraryWidget->getActiveView();
         if (!activeView) {
             return;
         }
@@ -290,7 +271,7 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
     }
 
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
+        auto activeView = m_pLibraryWidget->getActiveView();
         if (!activeView) {
             return;
         }
@@ -317,7 +298,7 @@ void LibraryControl::slotSelectTrack(double v) {
 
     int i = (int)v;
 
-    LibraryView* activeView = m_pLibraryWidget->getActiveView();
+    auto activeView = m_pLibraryWidget->getActiveView();
     if (!activeView) {
         return;
     }
