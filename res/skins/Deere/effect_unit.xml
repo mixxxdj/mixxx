@@ -25,24 +25,10 @@
             <ObjectName>EffectUnitGroupControlsLeft</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
+
               <Template src="skin:hide_show_button.xml">
                 <SetVariable name="object_name">EffectUnitToggle</SetVariable>
-                <SetVariable name="control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</SetVariable>
-              </Template>
-
-              <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
-                <SetVariable name="ObjectName"></SetVariable>
-                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text"></SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_power_48px.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_power_48px.svg</SetVariable>
-                <SetVariable name="state_1_text"></SetVariable>
-                <SetVariable name="state_1_pressed">icon/ic_power_48px.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">icon/ic_power_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,enabled</SetVariable>
+                <SetVariable name="control"><Variable name="group"/>,show_parameters</SetVariable>
               </Template>
 
             </Children>
