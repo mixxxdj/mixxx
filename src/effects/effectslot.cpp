@@ -62,6 +62,8 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlMetaParameter = new ControlPotmeter(ConfigKey(m_group, "meta"), 0.0, 1.0);
     connect(m_pControlMetaParameter, SIGNAL(valueChanged(double)),
             this, SLOT(slotEffectMetaParameter(double)));
+    m_pControlMetaParameter->set(0.0);
+    m_pControlMetaParameter->setDefaultValue(0.0);
 
     clear();
 }
