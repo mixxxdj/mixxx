@@ -388,17 +388,26 @@ void LibraryControl::slotMoveFocus(double v) {
 }
 
 void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
+    // Ensure a valid widget has the keyboard focus
     auto focusWidget = QApplication::focusWidget();
-    // Set the sidebar as the default focused widget
     if (!focusWidget) {
-        if (!m_pSidebarWidget) {
+        setLibraryFocus();
+        focusWidget = QApplication::focusWidget();
+        if (!focusWidget) {
             return;
         }
-        m_pSidebarWidget->setFocus();
-        focusWidget = m_pSidebarWidget;
     }
-    // Send a pointer to the event to focused widget
+    // Send the event pointer to the currently focused widget
     QApplication::sendEvent(focusWidget, &event);
+}
+
+void LibraryControl::setLibraryFocus() {
+    if (m_pSidebarWidget) {
+        // XXX: Set the focus of the library panel directly instead of sending tab from sidebar
+        m_pSidebarWidget->setFocus();
+        QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+        QApplication::sendEvent(m_pSidebarWidget, &event);
+    }
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {

@@ -86,6 +86,8 @@ class LibraryControl : public QObject {
 
     // Simulate pressing a key on the keyboard
     void emitKeyEvent(QKeyEvent&& event);
+    // Give the keyboard focus to the main library pane
+    void setLibraryFocus();
 
     // Controls to navigate vertically within currently focussed widget (up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveUp;
