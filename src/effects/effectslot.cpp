@@ -58,6 +58,12 @@ EffectSlot::EffectSlot(const QString& group,
         addEffectButtonParameterSlot();
     }
 
+    m_pControlMetaParameter = new ControlPotmeter(ConfigKey(m_group, "meta"), 0.0, 1.0);
+    connect(m_pControlMetaParameter, SIGNAL(valueChanged(double)),
+            this, SLOT(slotEffectMetaParameter(double)));
+    m_pControlMetaParameter->set(0.0);
+    m_pControlMetaParameter->setDefaultValue(0.0);
+
     clear();
 }
 
@@ -75,6 +81,7 @@ EffectSlot::~EffectSlot() {
     delete m_pControlEffectSelector;
     delete m_pControlClear;
     delete m_pControlEnabled;
+    delete m_pControlMetaParameter;
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
@@ -169,6 +176,8 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             pParameter->loadEffect(pEffect);
         }
 
+        slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
+
         emit(effectLoaded(pEffect, m_iEffectNumber));
     } else {
         clear();
@@ -185,10 +194,10 @@ void EffectSlot::clear() {
     m_pControlLoaded->forceSet(0.0);
     m_pControlNumParameters->forceSet(0.0);
     m_pControlNumButtonParameters->forceSet(0.0);
-    foreach (EffectParameterSlotPointer pParameter, m_parameters) {
+    for (const auto& pParameter : m_parameters) {
         pParameter->clear();
     }
-    foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
+    for (const auto& pParameter : m_buttonParameters) {
         pParameter->clear();
     }
     m_pEffect.clear();
@@ -221,14 +230,27 @@ void EffectSlot::slotClear(double v) {
     }
 }
 
-void EffectSlot::onChainSuperParameterChanged(double parameter, bool force) {
-    for (int i = 0; i < m_parameters.size(); ++i) {
-        m_parameters[i]->onChainSuperParameterChanged(parameter, force);
+void EffectSlot::syncSofttakeover() {
+    for (const auto& pParameterSlot : m_parameters) {
+        pParameterSlot->syncSofttakeover();
     }
 }
 
-void EffectSlot::syncSofttakeover() {
-    for (int i = 0; i < m_parameters.size(); ++i) {
-        m_parameters[i]->syncSofttakeover();
+// This function is for the superknob to update individual effects' meta knobs
+// slotEffectMetaParameter does not need to update m_pControlMetaParameter's value
+void EffectSlot::setMetaParameter(double v) {
+    m_pControlMetaParameter->set(v);
+    slotEffectMetaParameter(v);
+}
+
+void EffectSlot::slotEffectMetaParameter(double v, bool force) {
+    // Clamp to [0.0, 1.0]
+    if (v < 0.0 || v > 1.0) {
+        qWarning() << debugString() << "value out of limits";
+        v = math_clamp(v, 0.0, 1.0);
+        m_pControlMetaParameter->set(v);
+    }
+    for (const auto& pParameterSlot : m_parameters) {
+        pParameterSlot->onEffectMetaParameterChanged(v, force);
     }
 }
