@@ -1,10 +1,10 @@
 #ifndef LIBRARYMIDICONTROL_H
 #define LIBRARYMIDICONTROL_H
 
-#include <memory>
 #include <QObject>
 
 #include "control/controlproxy.h"
+#include "util/memory.h"
 
 class ControlObject;
 class ControlPushButton;
