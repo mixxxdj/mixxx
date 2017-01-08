@@ -1165,9 +1165,11 @@ class Optimize(Feature):
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automaticaly
                 if build.architecture_is_x86 and not build.machine_is_64bit:
-                    # the sse flags are not set by default on 32 bit builds
-                    # but are not supported on arm builds
-                    build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                    # For 32 bit builds using gcc < 5.0, the mfpmath=sse is 
+                    # not set by default (not supported on arm builds)
+                    # If -msse is not implicite set, it falls back to mfpmath=387
+                    # and a compiler warning is issued (tested with gcc 4.8.4) 
+                    build.env.Append(CCFLAGS='-mfpmath=sse')
                 elif build.architecture_is_arm:
                     self.status = "portable"
                     build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
