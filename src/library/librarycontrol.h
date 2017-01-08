@@ -48,6 +48,9 @@ class LibraryControl : public QObject {
     void slotMoveUp(double);
     void slotMoveDown(double);
     void slotMoveVertical(double);
+    void slotScrollUp(double);
+    void slotScrollDown(double);
+    void slotScrollVertical(double);
     void slotMoveLeft(double);
     void slotMoveRight(double);
     void slotMoveHorizontal(double);
@@ -88,6 +91,11 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pMoveUp;
     std::unique_ptr<ControlPushButton> m_pMoveDown;
     std::unique_ptr<ControlObject> m_pMoveVertical;
+
+    // Controls to QUICKLY navigate vertically within currently focussed widget (pageup/pagedown buttons)
+    std::unique_ptr<ControlPushButton> m_pScrollUp;
+    std::unique_ptr<ControlPushButton> m_pScrollDown;
+    std::unique_ptr<ControlObject> m_pScrollVertical;
 
     // Controls to navigate horizontally within currently selected item (left/right buttons)
     std::unique_ptr<ControlPushButton> m_pMoveLeft;

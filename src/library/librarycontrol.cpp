@@ -68,6 +68,14 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pMoveDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveDown(double)));
     connect(m_pMoveVertical.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveVertical(double)));
 
+    // Controls to navigate vertically within currently focussed widget (up/down buttons)
+    m_pScrollUp = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "ScrollUp"));
+    m_pScrollDown = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "ScrollDown"));
+    m_pScrollVertical = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "ScrollVertical"), false);
+    connect(m_pScrollUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollUp(double)));
+    connect(m_pScrollDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollDown(double)));
+    connect(m_pScrollVertical.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollVertical(double)));
+
     // Controls to navigate horizontally within currently selected item (left/right buttons)
     m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveLeft"));
     m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "MoveRight"));
@@ -321,6 +329,24 @@ void LibraryControl::slotMoveDown(double v) {
 
 void LibraryControl::slotMoveVertical(double v) {
     const auto key = (v < 0) ? Qt::Key_Up: Qt::Key_Down;
+    const auto times = static_cast<unsigned short>(v);
+    emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
+}
+
+void LibraryControl::slotScrollUp(double v) {
+    if (v > 0) {
+        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_PageUp, Qt::NoModifier});
+    }
+}
+
+void LibraryControl::slotScrollDown(double v) {
+    if (v > 0) {
+        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_PageDown, Qt::NoModifier});
+    }
+}
+
+void LibraryControl::slotScrollVertical(double v) {
+    const auto key = (v < 0) ? Qt::Key_PageUp: Qt::Key_PageDown;
     const auto times = static_cast<unsigned short>(v);
     emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
 }
