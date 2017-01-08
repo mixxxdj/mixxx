@@ -329,7 +329,7 @@ void LibraryControl::slotMoveDown(double v) {
 
 void LibraryControl::slotMoveVertical(double v) {
     const auto key = (v < 0) ? Qt::Key_Up: Qt::Key_Down;
-    const auto times = static_cast<unsigned short>(v);
+    const auto times = static_cast<unsigned short>(std::abs(v));
     emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
 }
 
@@ -347,7 +347,7 @@ void LibraryControl::slotScrollDown(double v) {
 
 void LibraryControl::slotScrollVertical(double v) {
     const auto key = (v < 0) ? Qt::Key_PageUp: Qt::Key_PageDown;
-    const auto times = static_cast<unsigned short>(v);
+    const auto times = static_cast<unsigned short>(std::abs(v));
     emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
 }
 
@@ -365,7 +365,7 @@ void LibraryControl::slotMoveRight(double v) {
 
 void LibraryControl::slotMoveHorizontal(double v) {
     const auto key = (v < 0) ? Qt::Key_Left: Qt::Key_Right;
-    const auto times = static_cast<unsigned short>(v);
+    const auto times = static_cast<unsigned short>(std::abs(v));
     emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
 }
 
@@ -383,7 +383,7 @@ void LibraryControl::slotMoveFocusBackward(double v) {
 
 void LibraryControl::slotMoveFocus(double v) {
     const auto shift = (v < 0) ? Qt::ShiftModifier: Qt::NoModifier;
-    const auto times = static_cast<unsigned short>(v);
+    const auto times = static_cast<unsigned short>(std::abs(v));
     emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, shift, QString(), false, times});
 }
 
@@ -398,7 +398,9 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
         }
     }
     // Send the event pointer to the currently focused widget
-    QApplication::sendEvent(focusWidget, &event);
+    for (auto i = 0; i < event.count(); ++i) {
+        QApplication::sendEvent(focusWidget, &event);
+    }
 }
 
 void LibraryControl::setLibraryFocus() {
