@@ -13,7 +13,7 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <MinimumSize>-1,50</MinimumSize>
-    <MaximumSize>-1,185</MaximumSize>
+    <MaximumSize>-1,195</MaximumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitGroupControls</ObjectName>
@@ -220,9 +220,11 @@
           </Template>
         </Children>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</ConfigKey>
+          <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
           <BindProperty>visible</BindProperty>
-          <Transform><Not/></Transform>
+          <Transform>
+            <Not/>
+          </Transform>
         </Connection>
       </WidgetGroup>
 
@@ -233,7 +235,7 @@
           </Template>
         </Children>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</ConfigKey>
+          <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

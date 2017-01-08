@@ -794,12 +794,12 @@ WWidget, QLabel {
 
 #EffectHighlightable[highlight="0"] {
   border: 0px;
-  padding: 1px;
+  padding: 4px;
 }
 
 #EffectHighlightable[highlight="1"] {
   border: 2px solid #b0b0b0;
-  padding: 1px;
+  padding: 2px;
 }
 
 #EffectChainGroupControlButton {
