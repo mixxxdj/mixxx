@@ -131,9 +131,18 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     if (m_currentFrameIndex < frameIndex) {
         // seeking forward
         SINT skipFramesCount = frameIndex - m_currentFrameIndex;
-        if (skipFramesCount <= kNumberOfPrefetchFrames) {
+        // When to prefer skipping over seeking:
+        // 1) The sample buffer would be discarded before seeking anyway and
+        //    skipping those already decoded samples effectively costs nothing
+        // 2) After seeking we need to decode at least kNumberOfPrefetchFrames
+        //    before reaching the actual target position -> Only seek if we
+        //    need to decode more than  2 * kNumberOfPrefetchFrames frames
+        //    while skipping
+        SINT skipFramesCountMax =
+                samples2frames(m_sampleBufferCount) +
+                2 * kNumberOfPrefetchFrames;
+        if (skipFramesCount <= skipFramesCountMax) {
             skipSampleFrames(skipFramesCount);
-            DEBUG_ASSERT(m_currentFrameIndex == frameIndex);
         }
     }
 
