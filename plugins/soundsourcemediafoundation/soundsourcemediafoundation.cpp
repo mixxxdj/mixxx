@@ -25,6 +25,9 @@ const SINT kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF A
 // playback from any point in the bistream."
 const SINT kNumberOfPrefetchFrames = 2112;
 
+// Only read the first audio stream
+const DWORD kStreamIndex = MF_SOURCE_READER_FIRST_AUDIO_STREAM;
+
 /** Microsoft examples use this snippet often. */
 template<class T> static void safeRelease(T **ppT) {
     if (*ppT) {
@@ -146,7 +149,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
 
     HRESULT hr;
 
-    hr = m_pSourceReader->Flush(MF_SOURCE_READER_FIRST_AUDIO_STREAM);
+    hr = m_pSourceReader->Flush(kStreamIndex);
     if (FAILED(hr)) {
         qWarning() << "SoundSourceMediaFoundation:"
                 << "Failed to flush reader before seeking"
@@ -242,7 +245,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         qint64 streamPos = 0;
         IMFSample* pSample = nullptr;
         HRESULT hr = m_pSourceReader->ReadSample(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, // [in] DWORD dwStreamIndex,
+            kStreamIndex, // [in] DWORD dwStreamIndex,
             0,                                 // [in] DWORD dwControlFlags,
             nullptr,                      // [out] DWORD *pdwActualStreamIndex,
             &dwFlags,                        // [out] DWORD *pdwStreamFlags,
@@ -420,7 +423,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     }
 
     hr = m_pSourceReader->SetStreamSelection(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, true);
+            kStreamIndex, true);
     if (FAILED(hr)) {
         qWarning() << "SSMF" << hr
                 << "failed to select first audio stream";
@@ -430,7 +433,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     IMFMediaType* pAudioType = nullptr;
 
     hr = m_pSourceReader->GetCurrentMediaType(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, &pAudioType);
+            kStreamIndex, &pAudioType);
     if (FAILED(hr)) {
         qWarning() << "SSMF" << hr
                 << "failed to get current media type from stream";
@@ -541,7 +544,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     // Set this type on the source reader. The source reader will
     // load the necessary decoder.
     hr = m_pSourceReader->SetCurrentMediaType(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, nullptr, pAudioType);
+            kStreamIndex, nullptr, pAudioType);
     if (FAILED(hr)) {
         qWarning() << "SSMF" << hr
             << "failed to set media type";
@@ -554,7 +557,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
 
     // Get the resulting output format.
     hr = m_pSourceReader->GetCurrentMediaType(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, &pAudioType);
+            kStreamIndex, &pAudioType);
     if (FAILED(hr)) {
         qWarning() << "SSMF" << hr
             << "failed to retrieve completed media type";
@@ -563,7 +566,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
 
     // Ensure the stream is selected.
     hr = m_pSourceReader->SetStreamSelection(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, true);
+            kStreamIndex, true);
     if (FAILED(hr)) {
         qWarning() << "SSMF" << hr
             << "failed to select first audio stream (again)";
