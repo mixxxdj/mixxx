@@ -156,12 +156,6 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
 
     HRESULT hr;
 
-    hr = m_pSourceReader->Flush(kStreamIndex);
-    if (FAILED(hr)) {
-        qWarning() << "SoundSourceMediaFoundation:"
-                << "Failed to flush reader before seeking"
-                << hr;
-    }
     // Flush left over buffer
     m_sampleBufferCount = 0;
     m_sampleBufferOffset = 0;
