@@ -176,7 +176,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     // each position in the stream.
     SINT seekIndex = std::max(SINT(frameIndex - kNumberOfPrefetchFrames), SINT(0));
 
-    qint64 seekPos = m_streamUnitConverter.fromFrameIndex(seekIndex);
+    LONGLONG seekPos = m_streamUnitConverter.fromFrameIndex(seekIndex);
     DEBUG_ASSERT(seekPos >= 0);
     PROPVARIANT prop;
     hr = InitPropVariantFromInt64(seekPos, &prop);
@@ -249,7 +249,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         }
 
         DWORD dwFlags = 0;
-        qint64 streamPos = 0;
+        LONGLONG streamPos = 0;
         IMFSample* pSample = nullptr;
         HRESULT hr = m_pSourceReader->ReadSample(
             kStreamIndex, // [in] DWORD dwStreamIndex,

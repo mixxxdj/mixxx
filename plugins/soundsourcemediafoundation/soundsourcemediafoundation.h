@@ -28,14 +28,14 @@ class StreamUnitConverter final {
         DEBUG_ASSERT(m_toFrameIndexBias > 0);
     }
 
-    qint64 fromFrameIndex(SINT frameIndex) const {
+    LONGLONG fromFrameIndex(SINT frameIndex) const {
         // Used for seeking, so we need to round down to hit the
         // corresponding stream unit where the given stream unit
         // starts
         return floor(frameIndex * m_streamUnitsPerFrame);
     }
 
-    SINT toFrameIndex(qint64 streamPos) const {
+    SINT toFrameIndex(LONGLONG streamPos) const {
         // NOTE(uklotzde): Add m_toFrameIndexBias to account for rounding errors
         return floor((streamPos + m_toFrameIndexBias) / m_streamUnitsPerFrame);
     }
