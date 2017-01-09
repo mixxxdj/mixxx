@@ -112,6 +112,10 @@ class LibraryControl : public QObject {
     // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pChooseItem;
 
+    // Add to Auto-Dj Cueue
+    std::unique_ptr<ControlObject> m_pAutoDjAddTop;
+    std::unique_ptr<ControlObject> m_pAutoDjAddBottom;
+
     // Font sizes
     std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;
     std::unique_ptr<ControlPushButton> m_pFontSizeDecrement;
@@ -126,8 +130,6 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlObject> m_pSelectNextSidebarItem;
     std::unique_ptr<ControlObject> m_pToggleSidebarItem;
     std::unique_ptr<ControlObject> m_pLoadSelectedIntoFirstStopped;
-    std::unique_ptr<ControlObject> m_pAutoDjAddTop;
-    std::unique_ptr<ControlObject> m_pAutoDjAddBottom;
 
     // Library widgets
     WLibrary* m_pLibraryWidget;

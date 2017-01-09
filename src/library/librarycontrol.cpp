@@ -96,6 +96,14 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pChooseItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ChooseItem"));
     connect(m_pChooseItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotChooseItem(double)));
 
+    // Auto DJ controls
+    m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
+    connect(m_pAutoDjAddTop.get(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotAutoDjAddTop(double)));
+
+    m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddBottom"));
+    connect(m_pAutoDjAddBottom.get(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotAutoDjAddBottom(double)));
 
     // Font sizes
     m_pFontSizeKnob = std::make_unique<ControlObject>(
@@ -151,14 +159,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pLoadSelectedIntoFirstStopped.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
 
-    m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]","AutoDjAddTop"));
-    connect(m_pAutoDjAddTop.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotAutoDjAddTop(double)));
-
-    m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]","AutoDjAddBottom"));
-    connect(m_pAutoDjAddBottom.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotAutoDjAddBottom(double)));
-
+    ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddTop"), ConfigKey("[Library]", "AutoDjAddTop"));
+    ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddBottom"), ConfigKey("[Library]", "AutoDjAddBottom"));
 }
 
 LibraryControl::~LibraryControl() = default;

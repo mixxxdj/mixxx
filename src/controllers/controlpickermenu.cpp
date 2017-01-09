@@ -402,6 +402,16 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Move focus to right/left pane"),
                        tr("Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys"),
                        m_libraryStr, libraryMenu);
+    addPrefixedControl("[Library]", "AutoDjAddBottom",
+                       tr("Add to Auto DJ Queue (bottom)"),
+                       tr("Append the selected track to the Auto DJ Queue"),
+                       m_libraryStr, libraryMenu);
+    addPrefixedControl("[Library]", "AutoDjAddTop",
+                       tr("Add to Auto DJ Queue (top)"),
+                       tr("Prepend selected track to the Auto DJ Queue"),
+                       m_libraryStr, libraryMenu);
+
+    // Load track (these can be loaded into any channel)
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
                              tr("Load selected track"), libraryMenu);
