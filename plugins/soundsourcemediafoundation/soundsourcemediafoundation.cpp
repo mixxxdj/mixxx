@@ -8,7 +8,7 @@
 
 namespace {
 
-const char* const kLogPreamble = kLogPreamble;
+const char* const kLogPreamble = "SoundSourceMediaFoundation:";
 
 const SINT kBytesPerSample = sizeof(CSAMPLE);
 const SINT kBitsPerSample = kBytesPerSample * 8;
