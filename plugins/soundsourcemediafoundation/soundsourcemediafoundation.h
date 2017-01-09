@@ -1,14 +1,13 @@
-#ifndef SOUNDSOURCEMEDIAFOUNDATION_H
-#define SOUNDSOURCEMEDIAFOUNDATION_H
+#ifndef MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H
+#define MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H
 
-#include <windows.h>
+
+#include <mfidl.h>
+#include <mfreadwrite.h>
 
 #include "sources/soundsourceplugin.h"
 #include "util/samplebuffer.h"
 
-class IMFSourceReader;
-class IMFMediaType;
-class IMFMediaSource;
 
 namespace mixxx {
 
@@ -88,10 +87,12 @@ public:
 
 } // namespace mixxx
 
+
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*);
 
-#endif // SOUNDSOURCEMEDIAFOUNDATION_H
+
+#endif // MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H

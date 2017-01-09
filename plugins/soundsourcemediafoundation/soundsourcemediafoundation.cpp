@@ -1,8 +1,6 @@
 #include "soundsourcemediafoundation.h"
 
 #include <mfapi.h>
-#include <mfidl.h>
-#include <mfreadwrite.h>
 #include <mferror.h>
 #include <propvarutil.h>
 
