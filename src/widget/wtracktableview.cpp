@@ -1680,3 +1680,7 @@ void WTrackTableView::slotReloadCoverArt() {
         pCache->requestGuessCovers(selectedTracks);
     }
 }
+
+bool WTrackTableView::hasFocus() const {
+    return QWidget::hasFocus();
+}
