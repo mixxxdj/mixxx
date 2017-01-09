@@ -167,7 +167,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     m_sampleBufferOffset = 0;
 
     // Invalidate current position
-    m_currentFrameIndex = getMaxFrameIndex(); // invalidate
+    m_currentFrameIndex = getMaxFrameIndex();
 
     // Jump to a position before the actual seeking position.
     // Prefetching a certain number of frames is necessary for
@@ -263,25 +263,26 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                 << "IMFSourceReader::ReadSample() failed"
                 << hr
                 << "-> abort decoding";
+            DEBUG_ASSERT(pSample == nullptr);
             break; // abort
         }
         if (dwFlags & MF_SOURCE_READERF_ERROR) {
-            DEBUG_ASSERT(pSample == nullptr);
             qWarning()
                     << "IMFSourceReader::ReadSample() detected stream errors"
                     << "(MF_SOURCE_READERF_ERROR)"
                     << "-> abort and stop decoding";
-            safeRelease(&m_pSourceReader);
+            DEBUG_ASSERT(pSample == nullptr);
+            safeRelease(&m_pSourceReader); // kill the reader
             break; // abort
         } else if (dwFlags & MF_SOURCE_READERF_ENDOFSTREAM) {
             DEBUG_ASSERT(pSample == nullptr);
             break; // finished reading
         } else if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) {
-            DEBUG_ASSERT(pSample == nullptr);
             qWarning()
                     << "IMFSourceReader::ReadSample() detected that the media type has changed"
                     << "(MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED)"
                     << "-> abort decoding";
+            DEBUG_ASSERT(pSample == nullptr);
             break; // abort
         }
         DEBUG_ASSERT(pSample != nullptr);
@@ -312,7 +313,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
             safeRelease(&pSample);
             break; // abort
         }
-        // Grow temporary buffer (if necessary)
+        // Enlarge temporary buffer (if necessary)
         DEBUG_ASSERT((dwSampleTotalLengthInBytes % kBytesPerSample) == 0);
         SINT numberOfSamplesToBuffer =
             dwSampleTotalLengthInBytes / kBytesPerSample;
@@ -322,6 +323,11 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
             sampleBufferSize *= 2;
         }
         if (m_sampleBuffer.size() < sampleBufferSize) {
+            qDebug() << "SoundSourceMediaFoundation:"
+                    << "Enlarging sample buffer"
+                    << m_sampleBuffer.size()
+                    << "->"
+                    << sampleBufferSize;
             SampleBuffer(sampleBufferSize).swap(m_sampleBuffer);
         }
 
@@ -334,6 +340,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                     << "IMFSample::GetBufferByIndex() failed"
                     << hr
                     << "-> abort decoding";
+                DEBUG_ASSERT(pMediaBuffer == nullptr);
                 break; // prematurely exit buffer loop
             }
 
