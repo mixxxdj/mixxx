@@ -45,9 +45,7 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
           m_hrCoInitialize(E_FAIL),
           m_hrMFStartup(E_FAIL),
           m_pSourceReader(nullptr),
-          m_currentFrameIndex(0),
-          m_sampleBufferOffset(0),
-          m_sampleBufferCount(0) {
+          m_currentFrameIndex(0) {
 }
 
 SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
@@ -147,7 +145,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
         //    need to decode more than  2 * kNumberOfPrefetchFrames frames
         //    while skipping
         SINT skipFramesCountMax =
-                samples2frames(m_sampleBufferCount) +
+                samples2frames(m_sampleBuffer.getSize()) +
                 2 * kNumberOfPrefetchFrames;
         if (skipFramesCount <= skipFramesCountMax) {
             skipSampleFrames(skipFramesCount);
@@ -165,8 +163,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     }
 
     // Discard decoded samples
-    m_sampleBufferCount = 0;
-    m_sampleBufferOffset = 0;
+    m_sampleBuffer.reset();
 
     // Invalidate current position (end of stream)
     m_currentFrameIndex = getMaxFrameIndex();
@@ -231,36 +228,32 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
     CSAMPLE* pSampleBuffer = sampleBuffer;
 
     while (numberOfFramesRemaining > 0) {
-        SINT copySamplesCount =
-                std::min(frames2samples(numberOfFramesRemaining), m_sampleBufferCount);
-        if (copySamplesCount > 0) {
+        SampleBuffer::ReadableChunk readableChunk(
+                m_sampleBuffer.readFromHead(
+                        frames2samples(numberOfFramesRemaining)));
+        DEBUG_ASSERT(readableChunk.size()
+                <= frames2samples(numberOfFramesRemaining));
+        if (readableChunk.size() > 0) {
             DEBUG_ASSERT(m_currentFrameIndex < getMaxFrameIndex());
             if (sampleBuffer != nullptr) {
                 SampleUtil::copy(
                         pSampleBuffer,
-                        m_sampleBuffer.data() + m_sampleBufferOffset,
-                        copySamplesCount);
-                pSampleBuffer += copySamplesCount;
+                        readableChunk.data(),
+                        readableChunk.size());
+                pSampleBuffer += readableChunk.size();
             }
-            m_sampleBufferOffset += copySamplesCount;
-            m_sampleBufferCount -= copySamplesCount;
-            if (m_sampleBufferCount == 0) {
-                // All buffered samples have been read/consumed
-                m_sampleBufferOffset = 0;
-            }
-            m_currentFrameIndex += samples2frames(copySamplesCount);
-            numberOfFramesRemaining -= samples2frames(copySamplesCount);
+            m_currentFrameIndex += samples2frames(readableChunk.size());
+            numberOfFramesRemaining -= samples2frames(readableChunk.size());
         }
         if (numberOfFramesRemaining == 0) {
             break; // finished reading
         }
 
-        // No more buffered frames available
-        DEBUG_ASSERT(m_sampleBufferOffset == 0);
-        DEBUG_ASSERT(m_sampleBufferCount == 0);
+        // No more decoded sample frames available
+        DEBUG_ASSERT(m_sampleBuffer.isEmpty());
 
         if (m_pSourceReader == nullptr) {
-            break; // abort (reader is dead)
+            break; // abort if reader is dead
         }
 
         DWORD dwFlags = 0;
@@ -336,18 +329,18 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         DEBUG_ASSERT((dwSampleTotalLengthInBytes % kBytesPerSample) == 0);
         SINT numberOfSamplesToBuffer =
             dwSampleTotalLengthInBytes / kBytesPerSample;
-        SINT sampleBufferSize = m_sampleBuffer.size();
-        DEBUG_ASSERT(sampleBufferSize > 0);
-        while (sampleBufferSize < numberOfSamplesToBuffer) {
-            sampleBufferSize *= 2;
+        SINT sampleBufferCapacity = m_sampleBuffer.getCapacity();
+        DEBUG_ASSERT(sampleBufferCapacity > 0);
+        while (sampleBufferCapacity < numberOfSamplesToBuffer) {
+            sampleBufferCapacity *= 2;
         }
-        if (m_sampleBuffer.size() < sampleBufferSize) {
+        if (m_sampleBuffer.getCapacity() < sampleBufferCapacity) {
             qDebug() << kLogPreamble
-                    << "Enlarging sample buffer size"
-                    << m_sampleBuffer.size()
+                    << "Enlarging sample buffer capacity"
+                    << m_sampleBuffer.getCapacity()
                     << "->"
-                    << sampleBufferSize;
-            SampleBuffer(sampleBufferSize).swap(m_sampleBuffer);
+                    << sampleBufferCapacity;
+            m_sampleBuffer.resetCapacity(sampleBufferCapacity);
         }
 
         DWORD dwSampleBufferIndex = 0;
@@ -380,11 +373,10 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
 
             DEBUG_ASSERT((lockedSampleBufferLengthInBytes % sizeof(pLockedSampleBuffer[0])) == 0);
             SINT lockedSampleBufferCount =
-                lockedSampleBufferLengthInBytes / sizeof(pLockedSampleBuffer[0]);
-            DEBUG_ASSERT(lockedSampleBufferCount
-                <= (m_sampleBuffer.size() - m_sampleBufferOffset));
-            SINT copySamplesCount =
-                std::min(frames2samples(numberOfFramesRemaining), lockedSampleBufferCount);
+                    lockedSampleBufferLengthInBytes / sizeof(pLockedSampleBuffer[0]);
+            SINT copySamplesCount = std::min(
+                    frames2samples(numberOfFramesRemaining),
+                    lockedSampleBufferCount);
             if (copySamplesCount > 0) {
                 // Copy samples directly into output buffer if possible
                 if (pSampleBuffer != nullptr) {
@@ -400,13 +392,14 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                 numberOfFramesRemaining -= samples2frames(copySamplesCount);
             }
             // Buffer the remaining samples
-            DEBUG_ASSERT(m_sampleBufferOffset == 0); // no reading while buffering
-            SINT sampleBufferWriteOffset = m_sampleBufferCount; // + m_sampleBufferOffset == 0
+            SampleBuffer::WritableChunk writableChunk(
+                    m_sampleBuffer.writeToTail(lockedSampleBufferCount));
+            // The required capacity has been calculated in advance (see above)
+            DEBUG_ASSERT(writableChunk.size() == lockedSampleBufferCount);
             SampleUtil::copy(
-                    m_sampleBuffer.data() + sampleBufferWriteOffset,
+                    writableChunk.data(),
                     pLockedSampleBuffer,
-                    lockedSampleBufferCount);
-            m_sampleBufferCount += lockedSampleBufferCount;
+                    writableChunk.size());
             HRESULT hrUnlock = pMediaBuffer->Unlock();
             DEBUG_ASSERT_AND_HANDLE(SUCCEEDED(hrUnlock)) {
                 qWarning() << kLogPreamble
@@ -634,9 +627,11 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         return false;
     }
     DEBUG_ASSERT((leftoverBufferSizeInBytes % kBytesPerSample) == 0);
-    SampleBuffer(leftoverBufferSizeInBytes / kBytesPerSample).swap(m_sampleBuffer);
-    DEBUG_ASSERT(m_sampleBuffer.size() > 0);
-    qDebug() << kLogPreamble << "Sample buffer size" << m_sampleBuffer.size();
+    m_sampleBuffer.resetCapacity(leftoverBufferSizeInBytes / kBytesPerSample);
+    DEBUG_ASSERT(m_sampleBuffer.getCapacity() > 0);
+    qDebug() << kLogPreamble
+            << "Sample buffer capacity"
+            << m_sampleBuffer.getCapacity();
 
     // Finally release the reference
     safeRelease(&pAudioType);
