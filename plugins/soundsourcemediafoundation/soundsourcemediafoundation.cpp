@@ -184,22 +184,32 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     hr = m_pSourceReader->SetCurrentPosition(GUID_NULL, prop);
     PropVariantClear(&prop);
     if (SUCCEEDED(hr)) {
-        // Restart decoding by skipping over the prefetch samples
-        DEBUG_ASSERT(seekIndex < frameIndex);
+        // NOTE(uklotzde): After SetCurrentPosition() the actual position
+        // of the stream is unknown until reading the next samples from
+        // the reader. Please note that the first sample decoded after
+        // SetCurrentPosition() may start BEFORE the actual target position.
+        // See also: https://msdn.microsoft.com/en-us/library/windows/desktop/dd374668(v=vs.85).aspx
+        //   "The SetCurrentPosition method does not guarantee exact seeking." ...
+        //   "After seeking, the application should call IMFSourceReader::ReadSample
+        //    and advance to the desired position.
         SINT skipFramesCount = frameIndex - seekIndex;
-        // NOTE(uklotzde): This loop is needed, because often the
-        // target position has not been reached after the first
-        // invocation of skipSampleFrames()!?!?
-        while (skipFramesCount > 0) {
-            skipSampleFrames(skipFramesCount);
-            if (m_currentFrameIndex < frameIndex) {
-                skipFramesCount = frameIndex - m_currentFrameIndex;
-            } else {
-                DEBUG_ASSERT(m_currentFrameIndex == frameIndex); // must not overshoot
-                break;
-            }
+        // We need to fetch at least 1 sample from the reader to obtain the
+        // current position!
+        DEBUG_ASSERT(skipFramesCount > 0);
+        skipSampleFrames(skipFramesCount);
+        // Now m_currentFrameIndex reflects the actual position of the reader
+        if (m_currentFrameIndex < frameIndex) {
+            // Skip more samples if frameIndex has not yet been reached
+            skipSampleFrames(frameIndex - m_currentFrameIndex);
         }
-        DEBUG_ASSERT(m_currentFrameIndex == frameIndex);
+        if (m_currentFrameIndex != frameIndex) {
+            qWarning() << kLogPreamble
+                    << "Seek to frame"
+                    << frameIndex
+                    << "failed";
+            // Jump to end of stream (= invalidate current position)
+            m_currentFrameIndex = getMaxFrameIndex();
+        }
     } else {
         qWarning() << "IMFSourceReader::SetCurrentPosition() failed"
                 << hr;
