@@ -33,7 +33,9 @@
 TreeItem::TreeItem()
     : m_pFeature(nullptr),
       m_pParent(nullptr),
-      m_bold(false) {
+	  m_divider(false),
+      m_bold(false),
+	  m_trackCount(-1) {
 }
 
 TreeItem::TreeItem(
@@ -44,7 +46,9 @@ TreeItem::TreeItem(
       m_pParent(nullptr),
       m_label(label),
       m_data(data),
-      m_bold(false) {
+	  m_divider(false),
+      m_bold(false),
+	  m_trackCount(-1) {
     DEBUG_ASSERT(m_pFeature != nullptr);
 }
 

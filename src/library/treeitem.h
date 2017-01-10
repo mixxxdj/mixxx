@@ -147,15 +147,15 @@ class TreeItem final {
     
 	LibraryFeature* m_pFeature;
     
-	bool m_divider;
-    bool m_bold;
-    int m_trackCount;
-
     QString m_label;
 	QString m_labelNumbered;
     QVariant m_data;
     QIcon m_icon;
     CoverInfo m_cover;
+
+	bool m_divider;
+    bool m_bold;
+    int m_trackCount;
 };
 
 #endif // MIXXX_TREEITEM_H
