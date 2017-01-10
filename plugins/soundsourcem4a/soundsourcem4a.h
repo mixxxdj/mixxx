@@ -39,9 +39,7 @@ private:
     MP4FileHandle m_hFile;
     MP4TrackId m_trackId;
     MP4Duration m_framesPerSampleBlock;
-    SINT m_numberOfPrefetchSampleBlocks;
     MP4SampleId m_maxSampleBlockId;
-    MP4SampleId m_curSampleBlockId;
 
     typedef std::vector<u_int8_t> InputBuffer;
     InputBuffer m_inputBuffer;
@@ -49,6 +47,8 @@ private:
     SINT m_inputBufferOffset;
 
     NeAACDecHandle m_hDecoder;
+    SINT m_numberOfPrefetchSampleBlocks;
+    MP4SampleId m_curSampleBlockId;
 
     SingularSampleBuffer m_sampleBuffer;
 
