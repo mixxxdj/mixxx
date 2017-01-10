@@ -157,8 +157,7 @@ void PlaylistFeature::buildPlaylistList() {
     m_playlistList.clear();
 
     QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
-        "AS SELECT "
+        "SELECT "
         "  Playlists.id AS id, "
         "  Playlists.name AS name, "
         "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) AS count, "
