@@ -610,7 +610,7 @@ void TraktorFeature::onTrackCollectionLoaded() {
 
         //m_pTraktorTableModel->select();
         showTrackModel(m_pTraktorTableModel);
-        showBreadCrumb(root);
+        showBreadCrumb(m_childModel.getRootItem());
         qDebug() << "Traktor library loaded successfully";
     } else {
         QMessageBox::warning(

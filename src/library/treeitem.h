@@ -84,7 +84,7 @@ class TreeItem final {
 
     inline const QString& getLabel() const {
 		if (m_trackCount >= 0) {
-			return m_label + " (" + QString::number(m_trackCount) + ")";
+			return m_labelNumbered;
 		}
         return m_label;
     }
@@ -131,6 +131,7 @@ class TreeItem final {
     
 	inline void setTrackCount(int count) {
 		m_trackCount = count;
+		m_labelNumbered = m_label + " (" + QString::number(m_trackCount) + ")";
 	}
 
 	inline int getTrackCount() {
@@ -151,6 +152,7 @@ class TreeItem final {
     int m_trackCount;
 
     QString m_label;
+	QString m_labelNumbered;
     QVariant m_data;
     QIcon m_icon;
     CoverInfo m_cover;

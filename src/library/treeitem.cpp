@@ -91,7 +91,7 @@ void TreeItem::insertChild(TreeItem* pChild, int row) {
 	DEBUG_ASSERT(pChild->feature() == feature());
 	DEBUG_ASSERT(!pChild->hasParent());
 	m_children.insert(row, pChild);
-	pChild->parent = this;
+	pChild->m_pParent = this;
 }
 
 TreeItem* TreeItem::appendChild(

@@ -93,7 +93,7 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
     // Set the relevant data.
     switch (a_iRole) {
         case Qt::DisplayRole:
-			pItem->setLabel(a_rValue.toString);
+			pItem->setLabel(a_rValue.toString());
             break;
         case AbstractRole::RoleData:
             pItem->setData(a_rValue);
