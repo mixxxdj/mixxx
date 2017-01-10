@@ -701,10 +701,8 @@ void Library::createFeatures(UserSettingsPointer pConfig,
     addFeature(new AutoDJFeature(
             pConfig, this, this, pPlayerManager, m_pTrackCollection));
     
-	// For the moment this feature is not added, it may be added in a future
-	// PR
-    //addFeature(new LibraryFoldersFeature(
-    //        pConfig, this, this, m_pTrackCollection));
+	addFeature(new LibraryFoldersFeature(
+            pConfig, this, this, m_pTrackCollection));
     
     m_pPlaylistFeature = new PlaylistFeature(
             pConfig, this, this, m_pTrackCollection);
