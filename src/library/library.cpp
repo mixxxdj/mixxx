@@ -684,9 +684,8 @@ void Library::createTrackCache() {
         }
     }
 
-    QSharedPointer<BaseTrackCache> pBaseTrackCache(
-            new BaseTrackCache(
-                    m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true));
+    QSharedPointer<BaseTrackCache> pBaseTrackCache(new BaseTrackCache(
+			m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true));
 
     m_pTrackCollection->setTrackSource(pBaseTrackCache);
 }
@@ -702,8 +701,10 @@ void Library::createFeatures(UserSettingsPointer pConfig,
     addFeature(new AutoDJFeature(
             pConfig, this, this, pPlayerManager, m_pTrackCollection));
     
-    addFeature(new LibraryFoldersFeature(
-            pConfig, this, this, m_pTrackCollection));
+	// For the moment this feature is not added, it may be added in a future
+	// PR
+    //addFeature(new LibraryFoldersFeature(
+    //        pConfig, this, this, m_pTrackCollection));
     
     m_pPlaylistFeature = new PlaylistFeature(
             pConfig, this, this, m_pTrackCollection);
@@ -714,7 +715,7 @@ void Library::createFeatures(UserSettingsPointer pConfig,
     addFeature(m_pCrateFeature);
     
     BrowseFeature* browseFeature = new BrowseFeature(
-        pConfig, this, this, m_pTrackCollection, m_pRecordingManager);
+			pConfig, this, this, m_pTrackCollection, m_pRecordingManager);
     connect(browseFeature, SIGNAL(scanLibrary()),
             &m_scanner, SLOT(scan()));
     connect(&m_scanner, SIGNAL(scanStarted()),
@@ -723,11 +724,13 @@ void Library::createFeatures(UserSettingsPointer pConfig,
             browseFeature, SLOT(slotLibraryScanFinished()));
     addFeature(browseFeature);
 
-    addFeature(new RecordingFeature(pConfig, this, this, m_pTrackCollection, m_pRecordingManager));
+    addFeature(new RecordingFeature(
+			pConfig, this, this, m_pTrackCollection, m_pRecordingManager));
     
     addFeature(new HistoryFeature(pConfig, this, this, m_pTrackCollection));
     
-    m_pAnalysisFeature = new AnalysisFeature(pConfig, this, m_pTrackCollection, this);
+    m_pAnalysisFeature = new AnalysisFeature(
+			pConfig, this, m_pTrackCollection, this);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
