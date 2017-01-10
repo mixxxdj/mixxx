@@ -81,7 +81,8 @@ QString MixxxLibraryFeature::getSettingsName() const {
 }
 
 TreeItemModel* MixxxLibraryFeature::getChildModel() {
-    return m_pChildModel;
+    //return m_pChildModel;
+	return nullptr;
 }
 
 QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {

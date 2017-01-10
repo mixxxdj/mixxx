@@ -140,8 +140,8 @@ QList<QVariant> HistoryTreeModel::idsFromItem(TreeItem* pTree) const {
     return res;
 }
 
-TreeItem* HistoryTreeModel::findItemFromPlaylistId(TreeItem* pTree, 
-                                                  int playlistId, int& row) const {
+TreeItem* HistoryTreeModel::findItemFromPlaylistId(
+		TreeItem* pTree, int playlistId, int& row) const {
     int size = pTree->childRows();
     if (size <= 0) {
         bool ok = false;
