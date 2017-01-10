@@ -60,6 +60,33 @@ class SoundSourceProxyTest: public MixxxTest {
         TrackPointer pTrack(Track::newTemporary(filePath));
         return SoundSourceProxy(pTrack).openAudioSource();
     }
+
+    static void expectDecodedSamplesEqual(
+            SINT size,
+            const CSAMPLE* expected,
+            const CSAMPLE* actual,
+            const char* errorMessage) {
+        for (SINT i = 0; i < size; ++i) {
+            EXPECT_EQ(expected[i], actual[i]) << errorMessage;
+        }
+    }
+
+    static void expectDecodedSamplesEqualOpus(
+            SINT size,
+            const CSAMPLE* expected,
+            const CSAMPLE* actual,
+            const char* errorMessage) {
+        // According to API documentation of op_pcm_seek():
+        // "...decoding after seeking may not return exactly the same
+        // values as would be obtained by decoding the stream straight
+        // through. However, such differences are expected to be smaller
+        // than the loss introduced by Opus's lossy compression."
+        const CSAMPLE kAcceptableOpusSeekDecodingError = 0.2f;
+
+        for (SINT i = 0; i < size; ++i) {
+            EXPECT_NEAR(expected[i], actual[i], kAcceptableOpusSeekDecodingError) << errorMessage;
+        }
+    }
 };
 
 TEST_F(SoundSourceProxyTest, open) {
@@ -101,19 +128,8 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
     EXPECT_EQ("TITLE", trackMetadata.getAlbumArtist());
 }
 
-TEST_F(SoundSourceProxyTest, seekForward) {
+TEST_F(SoundSourceProxyTest, seekForwardBackward) {
     const SINT kReadFrameCount = 10000;
-
-    // According to API documentation of op_pcm_seek():
-    // "...decoding after seeking may not return exactly the same
-    // values as would be obtained by decoding the stream straight
-    // through. However, such differences are expected to be smaller
-    // than the loss introduced by Opus's lossy compression."
-    // NOTE(uklotzde): The current version 0.6 of opusfile doesn't
-    // seem to support sample accurate seeking. The differences
-    // between the samples decoded with continuous reading and
-    // those samples decoded after seeking are quite noticeable!
-    const CSAMPLE kOpusSeekDecodingError = 0.2f;
 
     for (const auto& filePath: getFilePaths()) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
@@ -136,6 +152,8 @@ TEST_F(SoundSourceProxyTest, seekForward) {
                 pContReadSource->isValidFrameIndex(contFrameIndex);
                 contFrameIndex += kReadFrameCount) {
 
+            qDebug() << "Decoding from:" << contFrameIndex;
+
             // Read next chunk of frames for Cont source without seek
             const SINT contReadFrameCount =
                     pContReadSource->readSampleFrames(kReadFrameCount, &contReadData[0]);
@@ -146,36 +164,49 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             ASSERT_EQ(pContReadSource->getFrameCount(), pSeekReadSource->getFrameCount());
 
             // Seek source to next chunk and read it
-            const SINT seekFrameIndex =
+            SINT seekFrameIndex =
                     pSeekReadSource->seekSampleFrame(contFrameIndex);
             ASSERT_EQ(contFrameIndex, seekFrameIndex);
-            const SINT seekReadFrameCount =
+            SINT seekReadFrameCount =
                     pSeekReadSource->readSampleFrames(kReadFrameCount, &seekReadData[0]);
 
-            // content of both buffers should be equal
+            // Both buffers should be equal
             ASSERT_EQ(contReadFrameCount, seekReadFrameCount);
-            const SINT readSampleCount =
-                    pContReadSource->frames2samples(contReadFrameCount);
-            for (SINT readSampleOffset = 0;
-                    readSampleOffset < readSampleCount;
-                    ++readSampleOffset) {
-                if (filePath.endsWith(".opus")) {
-                    EXPECT_NEAR(contReadData[readSampleOffset], seekReadData[readSampleOffset], kOpusSeekDecodingError)
-                            << "Mismatch in " << filePath.toStdString()
-                            << " at seek frame index " << seekFrameIndex
-                            << "/" << pContReadSource->getMaxFrameIndex()
-                            << " for read sample offset " << readSampleOffset;
-                } else {
-                    // NOTE(uklotzde): The comparison EXPECT_EQ might be
-                    // replaced with EXPECT_FLOAT_EQ to guarantee almost
-                    // accurate seeking. Currently EXPECT_EQ works for all
-                    // tested file formats except Opus.
-                    EXPECT_EQ(contReadData[readSampleOffset], seekReadData[readSampleOffset])
-                            << "Mismatch in " << filePath.toStdString()
-                            << " at seek frame index " << seekFrameIndex
-                            << "/" << pContReadSource->getMaxFrameIndex()
-                            << " for read sample offset " << readSampleOffset;
-                }
+            if (filePath.endsWith(".opus")) {
+                expectDecodedSamplesEqualOpus(
+                        pContReadSource->frames2samples(contReadFrameCount),
+                        &contReadData[0],
+                        &seekReadData[0],
+                        "Decoding mismatch after seeking forward");
+            } else {
+                expectDecodedSamplesEqual(
+                        pContReadSource->frames2samples(contReadFrameCount),
+                        &contReadData[0],
+                        &seekReadData[0],
+                        "Decoding mismatch after seeking forward");
+            }
+
+            // Seek backwards to beginning of chunk and read again
+            seekFrameIndex =
+                    pSeekReadSource->seekSampleFrame(contFrameIndex);
+            ASSERT_EQ(contFrameIndex, seekFrameIndex);
+            seekReadFrameCount =
+                    pSeekReadSource->readSampleFrames(kReadFrameCount, &seekReadData[0]);
+
+            // Both buffers should again be equal
+            ASSERT_EQ(contReadFrameCount, seekReadFrameCount);
+            if (filePath.endsWith(".opus")) {
+                expectDecodedSamplesEqualOpus(
+                        pContReadSource->frames2samples(contReadFrameCount),
+                        &contReadData[0],
+                        &seekReadData[0],
+                        "Decoding mismatch after seeking backward");
+            } else {
+                expectDecodedSamplesEqual(
+                        pContReadSource->frames2samples(contReadFrameCount),
+                        &contReadData[0],
+                        &seekReadData[0],
+                        "Decoding mismatch after seeking backward");
             }
         }
     }
