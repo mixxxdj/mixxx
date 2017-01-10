@@ -65,6 +65,7 @@ MixxxTest::MixxxTest()
         : m_testDataDir(makeTestDir()),
           m_pConfig(new UserSettings(makeTestConfigFile(
               m_testDataDir.filePath("test.cfg")))) {
+    ControlDoublePrivate::setUserConfig(m_pConfig);
 }
 
 MixxxTest::~MixxxTest() {

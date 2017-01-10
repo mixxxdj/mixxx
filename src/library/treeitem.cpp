@@ -1,7 +1,6 @@
 // TreeItem.cpp
 // Created 10/02/2010 by Tobias Rafreider
 
-#include <QString>
 #include <QStringList>
 
 #include "library/coverart.h"
@@ -31,190 +30,104 @@
  * - cratefeature.cpp
  * - *feature.cpp
  */
-TreeItem::TreeItem(const QVariant& data, const QVariant& dataPath,
-                   LibraryFeature* pFeature, TreeItem* parent)
-        : m_data(data),
-          m_dataPath(dataPath),
-          m_pFeature(pFeature),
-          m_bold(false),
-          m_divider(false),
-          m_trackCount(-1),
-          m_pParent(parent) {
-}
-
-TreeItem::TreeItem(LibraryFeature* pFeature)
-        : m_data("$root"),
-          m_dataPath("$root"),
-          m_pFeature(pFeature),
-          m_bold(false),
-          m_divider(false),
-          m_trackCount(-1),
-          m_pParent(nullptr) {
-    
-}
-
-TreeItem::TreeItem(TreeItem* parent)
-        : m_data("$root"),
-          m_dataPath("$root"),
-          m_pFeature(nullptr),
-          m_bold(false),
-          m_divider(false),
-          m_trackCount(-1),
-          m_pParent(parent) {
-
-}
-
 TreeItem::TreeItem()
-        : m_data("$root"),
-          m_dataPath("$root"),
-          m_pFeature(nullptr),
-          m_bold(false),
-          m_divider(false),
-          m_trackCount(-1),
-          m_pParent(nullptr) {
+    : m_pFeature(nullptr),
+      m_pParent(nullptr),
+      m_bold(false) {
+}
+
+TreeItem::TreeItem(
+        LibraryFeature* pFeature,
+        const QString& label,
+        const QVariant& data)
+    : m_pFeature(pFeature),
+      m_pParent(nullptr),
+      m_label(label),
+      m_data(data),
+      m_bold(false) {
+    DEBUG_ASSERT(m_pFeature != nullptr);
 }
 
 TreeItem::~TreeItem() {
-    qDeleteAll(m_childItems);
-}
-
-void TreeItem::appendChild(TreeItem* item) {
-    m_childItems.append(item);
-}
-
-void TreeItem::removeChild(int index) {
-    m_childItems.removeAt(index);
-}
-
-TreeItem* TreeItem::child(int row) {
-    return m_childItems.value(row);
-}
-
-int TreeItem::childCount() const {
-    return m_childItems.count();
-}
-
-QVariant TreeItem::data() const {
-    if (m_trackCount >= 0) {
-        return m_data.toString() + " (" + QString::number(m_trackCount) + ")";
-    }
-    
-    return m_data;
-}
-
-QVariant TreeItem::dataPath() const {
-    return m_dataPath;
+    qDeleteAll(m_children);
 }
 
 bool TreeItem::isPlaylist() const {
-    return (m_childItems.count() == 0);
+    return (m_children.count() == 0);
 }
 
 bool TreeItem::isFolder() const {
-    return (m_childItems.count() != 0);
+	return (m_children.count() != 0);
 }
 
-TreeItem* TreeItem::parent() {
-    return m_pParent;
-}
-
-void TreeItem::setParent(TreeItem* parent) {
-    m_pParent = parent;
-}
-
-int TreeItem::row() const {
+int TreeItem::parentRow() const {
     if (m_pParent) {
-        return m_pParent->m_childItems.indexOf(const_cast<TreeItem*>(this));
+        return m_pParent->m_children.indexOf(const_cast<TreeItem*>(this));
+    } else {
+        return kInvalidRow;
     }
-
-    return 0;
 }
 
-LibraryFeature* TreeItem::getFeature() {
-    return m_pFeature;
+TreeItem* TreeItem::child(int row) const {
+    DEBUG_ASSERT(row >= 0);
+    DEBUG_ASSERT(row < m_children.size());
+    return m_children[row];
 }
 
-void TreeItem::setLibraryFeature(LibraryFeature* pFeature) {
-    m_pFeature = pFeature;
+void TreeItem::appendChild(TreeItem* pChild) {
+    DEBUG_ASSERT(feature() != nullptr);
+    DEBUG_ASSERT(pChild != nullptr);
+    DEBUG_ASSERT(pChild->feature() == feature());
+    DEBUG_ASSERT(!pChild->hasParent());
+    m_children.append(pChild);
+    pChild->m_pParent = this;
 }
 
-void TreeItem::setBold(bool bold) {
-    m_bold = bold;
+void TreeItem::insertChild(TreeItem* pChild, int row) {
+	DEBUG_ASSERT(row >= 0);
+	DEBUG_ASSERT(row < m_children.size());
+	DEBUG_ASSERT(feature() != nullptr);
+	DEBUG_ASSERT(pChild != nullptr);
+	DEBUG_ASSERT(pChild->feature() == feature());
+	DEBUG_ASSERT(!pChild->hasParent());
+	m_children.insert(row, pChild);
+	pChild->parent = this;
 }
 
-bool TreeItem::isBold() const {
-    return m_bold;
+TreeItem* TreeItem::appendChild(
+        const QString& label,
+        const QVariant& data) {
+    auto pNewChild = std::make_unique<TreeItem>(feature(), label, data);
+    TreeItem* pChild = pNewChild.get();
+    appendChild(pChild); // transfer ownership
+    pNewChild.release(); // release ownership (afterwards)
+    return pChild;
 }
 
-void TreeItem::setDivider(bool divider) {
-    m_divider = divider;
+void TreeItem::removeChild(int row) {
+    DEBUG_ASSERT(row >= 0);
+    DEBUG_ASSERT(row < m_children.size());
+    delete m_children.takeAt(row);
 }
 
-bool TreeItem::isDivider() const {
-    return m_divider;
-}
-
-bool TreeItem::insertChildren(QList<TreeItem*>& data, int position, int count) {
-    if (position < 0 || position > m_childItems.size()) {
-        return false;
+void TreeItem::insertChildren(QList<TreeItem*>& children, int row, int count) {
+    DEBUG_ASSERT(feature() != nullptr);
+    DEBUG_ASSERT(count >= 0);
+    DEBUG_ASSERT(count <= children.size());
+    DEBUG_ASSERT(row >= 0);
+    DEBUG_ASSERT(row <= m_children.size());
+    for (int counter = row; counter < count + row; ++counter) {
+        DEBUG_ASSERT(!children.empty());
+        TreeItem* pChild = children.takeFirst();
+        insertChild(pChild, counter);
     }
-
-    for (int row = 0; row < count; ++row) {
-        TreeItem* item = data.at(row);
-        m_childItems.insert(position + row, item);
-    }
-
-    return true;
 }
 
-bool TreeItem::removeChildren(int position, int count) {
-    if (position < 0 || position + count > m_childItems.size()) {
-        return false;
-    }
-
-    for (int row = 0; row < count; ++row) {
-        //Remove from list to avoid invalid pointers
-        TreeItem* item = m_childItems.takeAt(position);
-        if (item) {
-            delete item;
-        }
-    }
-    return true;
-}
-
-void TreeItem::setData(const QVariant& data) {
-    m_data = data;
-}
-
-void TreeItem::setData(const QVariant& data, const QVariant& dataPath) {
-    m_data = data;
-    m_dataPath = dataPath;
-}
-
-void TreeItem::setDataPath(const QVariant& dataPath) {
-    m_dataPath = dataPath;
-}
-
-QIcon TreeItem::getIcon() const {
-    return m_icon;
-}
-
-void TreeItem::setIcon(const QIcon& icon) {
-    m_icon = icon;
-}
-
-void TreeItem::setCoverInfo(const CoverInfo &cover) {
-    m_cover = cover;
-}
-
-const CoverInfo& TreeItem::getCoverInfo() const {
-    return m_cover;
-}
-
-void TreeItem::setTrackCount(int count) {
-    m_trackCount = count;
-}
-
-int TreeItem::getTrackCount() {
-    return m_trackCount;
+void TreeItem::removeChildren(int row, int count) {
+    DEBUG_ASSERT(count >= 0);
+    DEBUG_ASSERT(count <= m_children.size());
+    DEBUG_ASSERT(row >= 0);
+    DEBUG_ASSERT(row <= (m_children.size() - count));
+    qDeleteAll(m_children.begin() + row, m_children.begin() + (row + count));
+    m_children.erase(m_children.begin() + row, m_children.begin() + (row + count));
 }

@@ -86,20 +86,20 @@ TEST_F(SuperLinkTest, LinkDefault) {
     // default is not Linked, value must be unchanged
     m_pEffectSlot->syncSofttakeover();
     EXPECT_EQ(1.0, m_pControlValue->get());
-    m_pEffectSlot->onChainSuperParameterChanged(1.0);
+    m_pEffectSlot->slotEffectMetaParameter(1.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
-    m_pEffectSlot->onChainSuperParameterChanged(0.5);
+    m_pEffectSlot->slotEffectMetaParameter(0.5);
     EXPECT_EQ(1.0, m_pControlValue->get());
-    m_pEffectSlot->onChainSuperParameterChanged(0.3);
+    m_pEffectSlot->slotEffectMetaParameter(0.3);
     EXPECT_EQ(1.0, m_pControlValue->get());
 }
 
 TEST_F(SuperLinkTest, LinkLinked) {
     m_pEffectSlot->syncSofttakeover();
     m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
-    m_pEffectSlot->onChainSuperParameterChanged(1.0);
+    m_pEffectSlot->slotEffectMetaParameter(1.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
-    m_pEffectSlot->onChainSuperParameterChanged(0.5);
+    m_pEffectSlot->slotEffectMetaParameter(0.5);
     EXPECT_EQ(0.25, m_pControlValue->get());
 }
 
@@ -107,16 +107,16 @@ TEST_F(SuperLinkTest, LinkLinkedInverse) {
     m_pEffectSlot->syncSofttakeover();
     m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
     m_pControlLinkInverse->set(1.0);
-    m_pEffectSlot->onChainSuperParameterChanged(0.0);
+    m_pEffectSlot->slotEffectMetaParameter(0.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
-    m_pEffectSlot->onChainSuperParameterChanged(0.5);
+    m_pEffectSlot->slotEffectMetaParameter(0.5);
     EXPECT_EQ(0.25, m_pControlValue->get());
 }
 
 TEST_F(SuperLinkTest, Softtakeover) {
     m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
     // Soft takeover always ignores the first change.
-    m_pEffectSlot->onChainSuperParameterChanged(0.5);
+    m_pEffectSlot->slotEffectMetaParameter(0.5);
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pControlValue->set(0.1);
     // Let enough time pass by to exceed soft-takeover's override interval.
@@ -124,7 +124,7 @@ TEST_F(SuperLinkTest, Softtakeover) {
                              mixxx::Duration::fromMillis(2));
     // Ignored by SoftTakeover since it is too far from the current value of
     // 0.1.
-    m_pEffectSlot->onChainSuperParameterChanged(0.7);
+    m_pEffectSlot->slotEffectMetaParameter(0.7);
     EXPECT_EQ(0.1, m_pControlValue->get());
 }
 
@@ -167,25 +167,25 @@ TEST_F(SuperLinkTest, HalfLinkTakeover) {
     // linked control will fail the soft takeover test and not change the
     // value...
     double newParam = 0.5 - SoftTakeover::kDefaultTakeoverThreshold * 1.5;
-    m_pEffectSlot->onChainSuperParameterChanged(newParam);
+    m_pEffectSlot->slotEffectMetaParameter(newParam);
     EXPECT_EQ(1.0, m_pControlValue->get());
 
     // ...but that value is still within the tolerance of a linked-left
     // and linked-right control.  So if we set the exact same newParam,
     // we should see the control change as expected.
-    m_pEffectSlot->onChainSuperParameterChanged(0.5);
+    m_pEffectSlot->slotEffectMetaParameter(0.5);
     m_pControlValue->set(1.0);
     m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED_LEFT);
     m_pEffectSlot->syncSofttakeover();
-    m_pEffectSlot->onChainSuperParameterChanged(newParam);
+    m_pEffectSlot->slotEffectMetaParameter(newParam);
     EXPECT_EQ(newParam * 2.0, m_pControlValue->get());
 
     // This tolerance change should also work for linked-right controls.
-    m_pEffectSlot->onChainSuperParameterChanged(0.5);
+    m_pEffectSlot->slotEffectMetaParameter(0.5);
     m_pControlValue->set(1.0);
     m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED_RIGHT);
     m_pEffectSlot->syncSofttakeover();
     newParam = 0.5 + SoftTakeover::kDefaultTakeoverThreshold * 1.5;
-    m_pEffectSlot->onChainSuperParameterChanged(newParam);
+    m_pEffectSlot->slotEffectMetaParameter(newParam);
     EXPECT_FLOAT_EQ(0.9296875, m_pControlValue->get());
 }

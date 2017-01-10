@@ -57,9 +57,8 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
             this, SLOT(slotEnableCO(double)));
 
     m_pStatusCO = new ControlObject(ConfigKey(BROADCAST_PREF_KEY, "status"));
-    m_pStatusCO->connectValueChangeRequest(
-            this, SLOT(slotStatusCO(double)));
-    m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
+    m_pStatusCO->setReadOnly();
+    m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
 
     setState(NETWORKSTREAMWORKER_STATE_INIT);
 
@@ -408,13 +407,13 @@ bool EngineBroadcast::processConnect() {
 
     if (!m_encoder) {
         // updateFromPreferences failed
-        m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+        m_pStatusCO->forceSet(STATUSCO_FAILURE);
         m_pBroadcastEnabled->set(0);
         qDebug() << "EngineBroadcast::processConnect() returning false";
         return false;
     }
 
-    m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
+    m_pStatusCO->forceSet(STATUSCO_CONNECTING);
     m_iShoutFailures = 0;
     m_lastErrorStr.clear();
     // set to a high number to automatically update the metadata
@@ -503,7 +502,7 @@ bool EngineBroadcast::processConnect() {
                 m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
             }
             m_threadWaiting = true;
-            m_pStatusCO->setAndConfirm(STATUSCO_CONNECTED);
+            m_pStatusCO->forceSet(STATUSCO_CONNECTED);
             emit(broadcastConnected());
             qDebug() << "EngineBroadcast::processConnect() returning true";
             return true;
@@ -527,10 +526,10 @@ bool EngineBroadcast::processConnect() {
         m_encoder = nullptr;
     }
     if (m_pBroadcastEnabled->toBool()) {
-        m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+        m_pStatusCO->forceSet(STATUSCO_FAILURE);
         m_pBroadcastEnabled->set(0);
     } else {
-        m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
+        m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
     }
     qDebug() << "EngineBroadcast::processConnect() returning false";
     return false;
@@ -578,7 +577,7 @@ void EngineBroadcast::write(unsigned char *header, unsigned char *body,
             qDebug() << "shout_queuelen" << queuelen;
             NetworkStreamWorker::debugState();
             if (queuelen > kMaxNetworkCache) {
-                m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+                m_pStatusCO->forceSet(STATUSCO_FAILURE);
                 processDisconnect();
                 if (!processConnect()) {
                     errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
@@ -600,7 +599,7 @@ bool EngineBroadcast::writeSingle(const unsigned char* data, size_t len) {
                  << ret << shout_get_error(m_pShout);
         NetworkStreamWorker::debugState();
         if (m_iShoutFailures > kMaxShoutFailures) {
-            m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+            m_pStatusCO->forceSet(STATUSCO_FAILURE);
             processDisconnect();
             if (!processConnect()) {
                 errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
@@ -843,7 +842,7 @@ void EngineBroadcast::run() {
         // broadcast if necessary.
         if (!m_pBroadcastEnabled->toBool()) {
             m_threadWaiting = false;
-            m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
+            m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
             processDisconnect();
             setFunctionCode(2);
             return;
@@ -872,29 +871,31 @@ bool EngineBroadcast::threadWaiting() {
 }
 
 #ifndef __WINDOWS__
-void EngineBroadcast::ignoreSigpipe()
-{
-    // shout_send_raw() can cause SIGPIPE, which is passed to this theread
-    // and which will finally crash Mixxx if it remains unhandled.
-    // Each thread has its own signal mask, so it is safe to do this for the
-    // broadcast thread only
+void EngineBroadcast::ignoreSigpipe() {
+    // If the remote connection is closed, shout_send_raw() can cause a
+    // SIGPIPE. If it is unhandled then Mixxx will quit immediately.
+#ifdef Q_OS_MAC
+    // The per-thread approach using pthread_sigmask below does not seem to work
+    // on macOS.
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = SIG_IGN;
+    if (sigaction(SIGPIPE, &sa, NULL) != 0) {
+        qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
+    }
+#else
     // http://www.microhowto.info/howto/ignore_sigpipe_without_affecting_other_threads_in_a_process.html
     sigset_t sigpipe_mask;
     sigemptyset(&sigpipe_mask);
     sigaddset(&sigpipe_mask, SIGPIPE);
     sigset_t saved_mask;
-    if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) == -1) {
+    if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) != 0) {
         qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
     }
+#endif
 }
 #endif
 
-void EngineBroadcast::slotStatusCO(double v) {
-    // Ignore external sets "status"
-    Q_UNUSED(v);
-    qWarning() << "WARNING:"
-            << BROADCAST_PREF_KEY << "\"status\" is a read-only control, ignoring";
-}
 
 void EngineBroadcast::slotEnableCO(double v) {
     if (v > 1.0) {

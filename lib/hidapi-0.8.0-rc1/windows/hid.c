@@ -219,9 +219,7 @@ static HANDLE open_device(const char *path, BOOL enumerate)
 {
 	HANDLE handle;
 	DWORD desired_access = (enumerate)? 0: (GENERIC_WRITE | GENERIC_READ);
-	DWORD share_mode = (enumerate)?
-	                      FILE_SHARE_READ|FILE_SHARE_WRITE:
-	                      FILE_SHARE_READ;
+	DWORD share_mode = FILE_SHARE_READ|FILE_SHARE_WRITE;
 
 	handle = CreateFileA(path,
 		desired_access,

@@ -227,7 +227,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
             "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
             "VALUES (:playlist_id, :track_id, :position)");
     //The tree structure holding the playlists
-    TreeItem* rootItem = new TreeItem();
+    TreeItem* rootItem = new TreeItem(this);
 
     QXmlStreamReader xml(&db);
     while (!xml.atEnd() && !m_cancelImport) {
@@ -240,8 +240,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
                 QString playlist_name = attr.value("name").toString();
 
                 //Construct the childmodel
-                TreeItem * item = new TreeItem(playlist_name, playlist_name, this, rootItem);
-                rootItem->appendChild(item);
+                rootItem->appendChild(playlist_name);
 
                 //Execute SQL statement
                 query_insert_to_playlists.bindValue(":name", playlist_name);
@@ -442,10 +441,9 @@ void RhythmboxFeature::clearTable(QString table_name) {
 }
 
 void RhythmboxFeature::onTrackCollectionLoaded() {
-    TreeItem* root = m_track_future.result();
-    root->setLibraryFeature(this);
+    std::unique_ptr<TreeItem> root(m_track_future.result());
     if (root) {
-        m_childModel.setRootItem(root);
+        m_childModel.setRootItem(std::move(root));
 
         // Tell the rhythmbox track source that it should re-build its index.
         m_trackSource->buildIndex();

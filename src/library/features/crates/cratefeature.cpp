@@ -96,9 +96,8 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
             this, SLOT(slotCrateTableChanged(int)));
 
     // construct child model
-    TreeItem *pRootItem = new TreeItem();
-    pRootItem->setLibraryFeature(this);
-    m_childModel.setRootItem(pRootItem);
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_childModel.setRootItem(std::move(pRootItem));
     constructChildModel(-1);
 
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
@@ -136,7 +135,7 @@ bool CrateFeature::isSinglePane() const {
 
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
     bool ok = false;
-    int crateId = index.data(AbstractRole::RoleDataPath).toInt(&ok);
+    int crateId = index.data(AbstractRole::RoleData).toInt(&ok);
     return ok ? crateId : -1;
 }
 
@@ -547,8 +546,6 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
     buildCrateList();
     QList<TreeItem*> data_list;
     int selected_row = -1;
-    // Access the invisible root item
-    TreeItem* root = m_childModel.getItem(QModelIndex());
 
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
@@ -563,8 +560,8 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(crate_name, QString::number(crate_id), this, root);
         bool locked = m_crateDao.isCrateLocked(crate_id);
+        TreeItem* item = new TreeItem(this, crate_name, crate_id);
         item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
         item->setBold(m_cratesSelectedTrackIsIn.contains(crate_id));
         data_list.append(item);
@@ -589,7 +586,8 @@ void CrateFeature::updateChildModel(int selected_id) {
 
         if (selected_id == crate_id) {
             TreeItem* item = m_childModel.getItem(indexFromCrateId(crate_id));
-            item->setData(crate_name, QString::number(crate_id));
+            item->setLabel(crate_name);
+            item->setData(crate_id);
             bool locked = m_crateDao.isCrateLocked(crate_id);
             item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
 
@@ -862,7 +860,7 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     TrackId trackId(pTrack ? pTrack->getId() : TrackId());
     m_crateDao.getCratesTrackIsIn(trackId, &m_cratesSelectedTrackIsIn);
 
-    TreeItem* rootItem = m_childModel.getItem(QModelIndex());
+    TreeItem* rootItem = m_childModel.getRootItem();
     if (rootItem == nullptr) {
         return;
     }

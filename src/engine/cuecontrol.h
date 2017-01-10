@@ -126,7 +126,6 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
-    void saveCuePoint(double cuePoint);
 
     bool m_bPreviewing;
     ControlObject* m_pPlay;

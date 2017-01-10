@@ -369,6 +369,8 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Behringer-BCD2000-scripts.js"
   Delete "$INSTDIR\controllers\Behringer-BCD3000-Advanced-scripts.js"
   Delete "$INSTDIR\controllers\Behringer-BCD3000-scripts.js"
+  Delete "$INSTDIR\controllers\Behringer CMD Micro.midi.xml"
+  Delete "$INSTDIR\controllers\Behringer-CMD-Micro-scripts.js"
   Delete "$INSTDIR\controllers\common-bulk-midi.js"
   Delete "$INSTDIR\controllers\common-controller-scripts.js"
   Delete "$INSTDIR\controllers\common-hid-devices.js"
@@ -434,6 +436,8 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-RMX-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-RMX-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-AIR-scripts.js"
+  Delete "$INSTDIR\controllers\Hercules DJControl Compact.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules-DJControl-Compact-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-Instinct-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-MP3-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-MP3-scripts.js"
@@ -562,7 +566,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Xone K2.midi.xml"
   Delete "$INSTDIR\controllers\Xone-K2-scripts.js"
 
-	
+
   ;Delete $INSTDIR\controllers\*.* ; Avoid this since it will delete customized files too
   RMDir "$INSTDIR\controllers"
 

@@ -172,12 +172,11 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     //access underlying TreeItem object
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
-    if (item->isPlaylist()) {
-        qDebug() << "Activate Traktor Playlist: " << item->dataPath().toString();
-        m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
-        
-        showTrackModel(m_pTraktorPlaylistModel);
-        showBreadCrumb(item);
+    if (!item->hasChildren()) {
+        qDebug() << "Activate Traktor Playlist: " << item->getData().toString();
+        m_pTraktorPlaylistModel->setPlaylist(item->getData().toString());
+        emit(showTrackModel(m_pTraktorPlaylistModel));
+        emit(enableCoverArtDisplay(false));
     }
 }
 
@@ -387,7 +386,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
     QString delimiter = "-->";
 
-    TreeItem *rootItem = new TreeItem();
+    TreeItem *rootItem = new TreeItem(this);
     TreeItem * parent = rootItem;
 
     QSqlQuery query_insert_to_playlists(m_database);
@@ -413,19 +412,16 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                if (type == "FOLDER") {
                     current_path += delimiter;
                     current_path += name;
-                    //qDebug() << "Folder: " +current_path << " has parent " << parent->data().toString();
+                    //qDebug() << "Folder: " +current_path << " has parent " << parent->getData().toString();
                     map.insert(current_path, "FOLDER");
-                    TreeItem * item = new TreeItem(name,current_path, this, parent);
-                    parent->appendChild(item);
-                    parent = item;
+                    parent = parent->appendChild(name, current_path);
                } else if (type == "PLAYLIST") {
                     current_path += delimiter;
                     current_path += name;
-                    //qDebug() << "Playlist: " +current_path << " has parent " << parent->data().toString();
+                    //qDebug() << "Playlist: " +current_path << " has parent " << parent->getData().toString();
                     map.insert(current_path, "PLAYLIST");
 
-                    TreeItem * item = new TreeItem(name,current_path, this, parent);
-                    parent->appendChild(item);
+                    parent->appendChild(name, current_path);
                     // process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml, current_path,
                                          query_insert_to_playlists,
@@ -606,10 +602,9 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 }
 
 void TraktorFeature::onTrackCollectionLoaded() {
-    TreeItem* root = m_future.result();
-    root->setLibraryFeature(this);
+    std::unique_ptr<TreeItem> root(m_future.result());
     if (root) {
-        m_childModel.setRootItem(root);
+        m_childModel.setRootItem(std::move(root));
         // Tell the traktor track source that it should re-build its index.
         m_trackSource->buildIndex();
 

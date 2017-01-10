@@ -140,8 +140,8 @@ ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& elemen
     return controlFromConfigKey(key, bPersist, created);
 }
 
-LegacySkinParser::LegacySkinParser()
-        : m_pConfig(NULL),
+LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
+        : m_pConfig(pConfig),
           m_pKeyboard(NULL),
           m_pPlayerManager(NULL),
           m_pControllerManager(NULL),
@@ -413,6 +413,10 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 }
 
 LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget* pParent) {
+    delete m_pContext;
+    m_pContext = new SkinContext(m_pConfig, skinPath + "/skin.xml");
+    m_pContext->setSkinBasePath(skinPath + "/");
+
     QDomElement skinDocument = openSkin(skinPath);
     if (skinDocument.isNull()) {
         return NULL;
@@ -637,17 +641,12 @@ QWidget* LegacySkinParser::parseSplitter(const QDomElement& node) {
     return pSplitter;
 }
 
-QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
-    WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
-    commonWidgetSetup(node, pGroup);
-    pGroup->setup(node, *m_pContext);
-    pGroup->Init();
-
+void LegacySkinParser::parseChildren(
+        const QDomElement& node,
+        WWidgetGroup* pGroup) {
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
-
     QWidget* pOldParent = m_pParent;
     m_pParent = pGroup;
-
     if (!childrenNode.isNull()) {
         // Descend children
         QDomNodeList children = childrenNode.childNodes();
@@ -655,7 +654,6 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
             QDomNode node = children.at(i);
             if (node.isElement()) {
                 QList<QWidget*> children = parseNode(node.toElement());
-
                 foreach (QWidget* pChild, children) {
                     if (pChild == NULL) {
                         continue;
@@ -666,6 +664,14 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
         }
     }
     m_pParent = pOldParent;
+}
+
+QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
+    WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
+    commonWidgetSetup(node, pGroup);
+    pGroup->setup(node, *m_pContext);
+    pGroup->Init();
+    parseChildren(node, pGroup);
     return pGroup;
 }
 

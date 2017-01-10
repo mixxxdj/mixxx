@@ -4,7 +4,7 @@
 #include <QAbstractItemModel>
 
 enum AbstractRole {
-    RoleDataPath = Qt::UserRole,
+    RoleData = Qt::UserRole,
     RoleBold,
     RoleDivider,
     RoleQuery,

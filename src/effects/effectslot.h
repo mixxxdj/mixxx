@@ -6,6 +6,7 @@
 #include <QString>
 
 #include "control/controlobject.h"
+#include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "effects/effect.h"
 #include "effects/effectparameterslot.h"
@@ -36,8 +37,6 @@ class EffectSlot : public QObject {
     EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
     EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
 
-    void onChainSuperParameterChanged(double parameter, bool force=false);
-
     // ensures that Softtakover is bypassed for the following
     // ChainParameterChange. Uses for testing only
     void syncSofttakeover();
@@ -52,16 +51,15 @@ class EffectSlot : public QObject {
   public slots:
     // Request that this EffectSlot load the given Effect
     void loadEffect(EffectPointer pEffect);
+    void setMetaParameter(double v);
 
-    void slotLoaded(double v);
-    void slotNumParameters(double v);
-    void slotNumParameterSlots(double v);
     void slotEnabled(double v);
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
     void slotClear(double v);
     void slotEffectSelector(double v);
     void slotEffectEnabledChanged(bool enabled);
+    void slotEffectMetaParameter(double v, bool force = false);
 
   signals:
     // Indicates that the effect pEffect has been loaded into this
@@ -106,6 +104,7 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlPrevEffect;
     ControlObject* m_pControlEffectSelector;
     ControlObject* m_pControlClear;
+    ControlPotmeter* m_pControlMetaParameter;
     QList<EffectParameterSlotPointer> m_parameters;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 

@@ -80,6 +80,13 @@ class EffectManifestParameter {
         m_name = name;
     }
 
+    virtual const QString& shortName() const {
+        return m_shortName;
+    }
+    virtual void setShortName(const QString& shortName) {
+        m_shortName = shortName;
+    }
+
     virtual const QString& description() const {
         return m_description;
     }
@@ -193,6 +200,7 @@ class EffectManifestParameter {
 
     QString m_id;
     QString m_name;
+    QString m_shortName;
     QString m_description;
 
     ControlHint m_controlHint;

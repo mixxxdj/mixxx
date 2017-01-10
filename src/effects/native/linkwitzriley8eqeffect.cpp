@@ -15,6 +15,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("LinkwitzRiley8 EQ"));
+    manifest.setShortName(QObject::tr("LR8 EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(

@@ -12,12 +12,6 @@
 // construct the default QPixmap in CoverArtCache
 class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
   protected:
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     void loadCoverFromMetadata(QString trackLocation) {
         CoverInfo info;
         info.type = CoverInfo::METADATA;

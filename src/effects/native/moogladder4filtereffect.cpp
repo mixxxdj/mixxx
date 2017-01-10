@@ -16,6 +16,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Moog Ladder 4 Filter"));
+    manifest.setShortName(QObject::tr("Moog Filter"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
@@ -40,6 +41,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     EffectManifestParameter* q = manifest.addParameter();
     q->setId("resonance");
     q->setName(QObject::tr("Resonance"));
+    q->setShortName(QObject::tr("Res"));
     q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);

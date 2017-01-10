@@ -28,6 +28,7 @@ addons:
       - libportmidi-dev
       - libprotobuf-dev
       - libqt4-dev
+      - libqt4-opengl-dev
       - libqt4-sql-sqlite
       - librubberband-dev
       - libshout3-dev
@@ -54,7 +55,7 @@ install:
   # Common
 
   # Build flags common to OS X and Linux.
-  - export COMMON="test=1 localecompare=1 mad=1 faad=1 ffmpeg=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1"
+  - export COMMON="test=1 mad=1 faad=1 ffmpeg=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1"
 
   #####
   # Ubuntu Trusty Build
@@ -63,7 +64,7 @@ install:
   # OS X Build
 
   # Define QTDIR.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export QTDIR=$(find /usr/local/Cellar/qt -d 1 | tail -n 1) ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export QTDIR=$(find /usr/local/Cellar/qt5 -d 1 | tail -n 1) ; fi
 
   # Workaround for bug in libopus's opus.h including <opus_multistream.h>
   # instead of <opus/opus_multistream.h>.
@@ -73,11 +74,14 @@ install:
   # NOTE(rryan): 11/15/2016 we are experiencing Travis timeouts for the OSX
   # build.  Turning off optimizations to see if that speeds up compile times. We
   # also need to avoid going over 4MB of output so we turn off verbose mode.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS="optimize=none verbose=0" ; fi
+  # NOTE(rryan): 12/31/2016 Homebrew has dropped qt4 support. Build with qt5.
+  # TODO(rryan): localecompare doesn't work on Travis with qt5 for some reason.
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS="optimize=none asan=1 verbose=0 qt5=1 localecompare=0" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1" ; fi
 
   ####
   # Common Build
-  - scons $COMMON $ARCH_FLAGS
+  - scons $COMMON $EXTRA_FLAGS
 
 script:
   - ./mixxx-test

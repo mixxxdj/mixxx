@@ -19,16 +19,13 @@
 // the no-argument constructor be non-explicit. All methods are left virtual to
 // allow a backend to replace the entire functionality with its own (for
 // example, a database-backed manifest)
-class EffectManifest {
+class EffectManifest final {
   public:
     EffectManifest()
         : m_isMixingEQ(false),
           m_isMasterEQ(false),
           m_isForFilterKnob(false),
           m_effectRampsFromDry(false) {
-    }
-    virtual ~EffectManifest() {
-        //qDebug() << debugString() << "deleted";
     }
 
     virtual const QString& id() const {
@@ -43,6 +40,13 @@ class EffectManifest {
     }
     virtual void setName(const QString& name) {
         m_name = name;
+    }
+
+    virtual const QString& shortName() const {
+        return m_shortName;
+    }
+    virtual void setShortName(const QString& shortName) {
+        m_shortName = shortName;
     }
 
     virtual const QString& author() const {
@@ -114,6 +118,7 @@ class EffectManifest {
 
     QString m_id;
     QString m_name;
+    QString m_shortName;
     QString m_author;
     QString m_version;
     QString m_description;

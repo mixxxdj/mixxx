@@ -770,12 +770,15 @@ QScriptValue ControllerEngine::connectControl(
     }
 
     if (function.isFunction()) {
-        qDebug() << "Connection:" << group << name;
-
         ControllerEngineConnection conn;
         conn.key = key;
         conn.ce = this;
         conn.function = function;
+
+        if (disconnect) {
+            disconnectControl(conn);
+            return QScriptValue(true);
+        }
 
         QScriptContext *ctxt = m_pEngine->currentContext();
         // Our current context is a function call to engine.connectControl. We
