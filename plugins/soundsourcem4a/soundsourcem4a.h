@@ -32,6 +32,10 @@ public:
 private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
+    bool openDecoder();
+    void closeDecoder();
+    bool reopenDecoder();
+
     bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 
     void restartDecoding(MP4SampleId sampleBlockId);
@@ -45,6 +49,8 @@ private:
     InputBuffer m_inputBuffer;
     SINT m_inputBufferLength;
     SINT m_inputBufferOffset;
+
+    AudioSourceConfig m_audioSrcCfg;
 
     NeAACDecHandle m_hDecoder;
     SINT m_numberOfPrefetchSampleBlocks;

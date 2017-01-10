@@ -239,17 +239,28 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     }
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
 
-    DEBUG_ASSERT(nullptr == m_hDecoder); // not already opened
-    m_hDecoder = NeAACDecOpen();
-    if (!m_hDecoder) {
-        qWarning() << "Failed to open the AAC decoder!";
+    m_audioSrcCfg = audioSrcCfg;
+
+    if (openDecoder()) {
+        return OpenResult::SUCCEEDED;
+    } else {
         return OpenResult::FAILED;
+    }
+}
+
+bool SoundSourceM4A::openDecoder() {
+    DEBUG_ASSERT(m_hDecoder == nullptr); // not already opened
+
+    m_hDecoder = NeAACDecOpen();
+    if (m_hDecoder == nullptr) {
+        qWarning() << "Failed to open the AAC decoder!";
+        return false;
     }
     NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
-    if ((kChannelCountMono == audioSrcCfg.getChannelCount()) ||
-            (kChannelCountStereo == audioSrcCfg.getChannelCount())) {
+    if ((kChannelCountMono == m_audioSrcCfg.getChannelCount()) ||
+            (kChannelCountStereo == m_audioSrcCfg.getChannelCount())) {
         pDecoderConfig->downMatrix = 1;
     } else {
         pDecoderConfig->downMatrix = 0;
@@ -258,7 +269,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     pDecoderConfig->defObjectType = LC;
     if (!NeAACDecSetConfiguration(m_hDecoder, pDecoderConfig)) {
         qWarning() << "Failed to configure AAC decoder!";
-        return OpenResult::FAILED;
+        return false;
     }
 
     u_int8_t* configBuffer = nullptr;
@@ -277,7 +288,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
                     &samplingRate, &channelCount)) {
         free(configBuffer);
         qWarning() << "Failed to initialize the AAC decoder!";
-        return OpenResult::FAILED;
+        return false;
     } else {
         free(configBuffer);
     }
@@ -298,6 +309,9 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
             frames2samples(m_framesPerSampleBlock);
     m_sampleBuffer.resetCapacity(sampleBufferCapacity);
 
+    // Discard all buffered samples
+    m_inputBufferLength = 0;
+
     // Invalidate current position to enforce the following
     // seek operation
     m_curFrameIndex = getMaxFrameIndex();
@@ -305,19 +319,29 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     // (Re-)Start decoding at the beginning of the file
     seekSampleFrame(getMinFrameIndex());
 
-    return OpenResult::SUCCEEDED;
+    return m_curFrameIndex == getMinFrameIndex();
 }
 
-void SoundSourceM4A::close() {
-    if (m_hDecoder) {
+void SoundSourceM4A::closeDecoder() {
+    if (m_hDecoder != nullptr) {
         NeAACDecClose(m_hDecoder);
         m_hDecoder = nullptr;
     }
+}
+
+bool SoundSourceM4A::reopenDecoder() {
+    closeDecoder();
+    return openDecoder();
+}
+
+void SoundSourceM4A::close() {
+    closeDecoder();
+    m_sampleBuffer.reset();
+    m_inputBuffer.clear();
     if (MP4_INVALID_FILE_HANDLE != m_hFile) {
         MP4Close(m_hFile);
         m_hFile = MP4_INVALID_FILE_HANDLE;
     }
-    m_inputBuffer.clear();
 }
 
 bool SoundSourceM4A::isValidSampleBlockId(MP4SampleId sampleBlockId) const {
@@ -326,12 +350,12 @@ bool SoundSourceM4A::isValidSampleBlockId(MP4SampleId sampleBlockId) const {
 }
 
 void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
-    DEBUG_ASSERT(MP4_INVALID_SAMPLE_ID != sampleBlockId);
+    DEBUG_ASSERT(sampleBlockId >= kSampleBlockIdMin);
 
     NeAACDecPostSeekReset(m_hDecoder, sampleBlockId);
     m_curSampleBlockId = sampleBlockId;
     m_curFrameIndex = AudioSource::getMinFrameIndex() +
-      (sampleBlockId - kSampleBlockIdMin) * m_framesPerSampleBlock;
+            (sampleBlockId - kSampleBlockIdMin) * m_framesPerSampleBlock;
 
     // Discard input buffer
     m_inputBufferLength = 0;
@@ -342,10 +366,15 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 
 SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
+    DEBUG_ASSERT_AND_HANDLE(isValidFrameIndex(frameIndex)) {
+        // EOF reached
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
 
     // Handle trivial case
-    if (m_curFrameIndex == frameIndex) {
+    if (frameIndex == m_curFrameIndex) {
         // Nothing to do
         return m_curFrameIndex;
     }
