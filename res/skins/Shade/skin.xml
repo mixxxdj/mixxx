@@ -883,20 +883,6 @@
                                         </LibraryPane>
                                     </Children>
                                 </WidgetGroup>
-                                <WidgetGroup>
-                                    <Layout>vertical</Layout>
-                                    <Children>
-                                        <LibraryBreadCrumb>
-                                            <Id>2</Id>
-                                        </LibraryBreadCrumb>
-                                        <SearchBox>
-                                            <Id>2</Id>
-                                        </SearchBox>
-                                        <LibraryPane>
-                                            <Id>2</Id>
-                                        </LibraryPane>
-                                    </Children>
-                                </WidgetGroup>
                             </Children>
                         </Splitter>
                     </Children>
