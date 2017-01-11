@@ -63,8 +63,9 @@ MC4000.init = function () {
         engine.setValue("[Sampler3]", "pregain", script.absoluteNonLin(value, 0, 1.0, 4.0));
         engine.setValue("[Sampler4]", "pregain", script.absoluteNonLin(value, 0, 1.0, 4.0));
     }
-    // TODO: Figure out the message Serato sends to the controller to get it to tell us current states
-    // midi.sendShortMsg(0xB0, 0x7F, 0x7F);
+    // Get the controller to send its current status (Sniffed from Serato with Snoize Midi Monitor spy function)
+    var byteArray = [ 0xF0, 0x00, 0x02, 0x0B, 0x7F, 0x01, 0x60, 0x00, 0x04, 0x04, 0x01, 0x00, 0x00, 0xF7 ];
+    midi.sendSysexMsg(byteArray,byteArray.length);
 };
 
 MC4000.shutdown = function () {};
@@ -130,16 +131,24 @@ MC4000.Deck = function (channel) {
     }
 };
 
-/** 
- * Callback to set the left Vu Meter
- */
+/// Callback to set the FX wet/dry value
+MC4000.fxWetDry = function(midichan, control, value, status, group) {
+	var numTicks = (value < 0x40) ? value: (value - 0x80);
+	var newVal = engine.getValue(group, "mix") + numTicks/64.0*2;
+	engine.setValue(group, "mix", Math.max(0, Math.min(1, newVal)));
+};
+
+/// Callback to set the headphone split mode
+MC4000.headphoneSplit = function (channel, control, value, status, group) {
+	engine.setValue(group, "headSplit", Math.min(value, 1.0));
+}
+
+/// Callback to set the left Vu Meter
 MC4000.OnVuMeterChangeL = function(value, group, control) {
     midi.sendShortMsg(0xBF, 0x44, value*0x7F);
 }
 
-/** 
- * Callback to set the right Vu Meter
- */
+/// Callback to set the right Vu Meter
 MC4000.OnVuMeterChangeR = function(value, group, control) {
     midi.sendShortMsg(0xBF, 0x45, value*0x7F);
 }

@@ -155,7 +155,7 @@ class SndFile(Dependence):
             raise Exception(
                 "Did not find libsndfile or it\'s development headers")
         build.env.Append(CPPDEFINES='__SNDFILE__')
-        
+
         if build.platform_is_windows and build.static_dependencies:
             build.env.Append(CPPDEFINES='FLAC__NO_DLL')
             conf.CheckLib('g72x')
@@ -255,12 +255,12 @@ class Qt(Dependence):
         qt5 = Qt.qt5_enabled(build)
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
-        
+
         if build.static_qt:
             build.env.Append(CPPDEFINES='QT_NODLL')
         else:
             build.env.Append(CPPDEFINES='QT_SHARED')
-        
+
         if qt5:
             # Enable qt4 support.
             build.env.Append(CPPDEFINES='QT_DISABLE_DEPRECATED_BEFORE')
@@ -268,7 +268,7 @@ class Qt(Dependence):
         # Set qt_sqlite_plugin flag if we should package the Qt SQLite plugin.
         build.flags['qt_sqlite_plugin'] = util.get_flags(
             build.env, 'qt_sqlite_plugin', 0)
-            
+
         # Link in SQLite library if Qt is compiled statically
         if build.platform_is_windows and build.static_dependencies \
            and build.flags['qt_sqlite_plugin'] == 0 :
@@ -1186,6 +1186,10 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES='MIXXX_BUILD_DEBUG')
         elif build.build_is_release:
             build.env.Append(CPPDEFINES='MIXXX_BUILD_RELEASE')
+            # Disable assert.h assertions in release mode. Some libraries use
+            # this as a signal for when to enable code that should be disabled
+            # in release mode.
+            build.env.Append(CPPDEFINES='NDEBUG')
 
             # In a release build we want to disable all Q_ASSERTs in Qt headers
             # that we include. We can't define QT_NO_DEBUG because that would
