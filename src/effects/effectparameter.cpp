@@ -51,6 +51,10 @@ const QString EffectParameter::name() const {
     return m_parameter.name();
 }
 
+const QString EffectParameter::shortName() const {
+    return m_parameter.shortName();
+}
+
 const QString EffectParameter::description() const {
     return m_parameter.description();
 }

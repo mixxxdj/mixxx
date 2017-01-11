@@ -72,6 +72,7 @@ EffectManifest AutoPanEffect::getManifest() {
     EffectManifestParameter* smoothing = manifest.addParameter();
     smoothing->setId("smoothing");
     smoothing->setName(QObject::tr("Smoothing"));
+    smoothing->setShortName(QObject::tr("Smooth"));
     smoothing->setDescription(
             QObject::tr("How fast the signal goes from a channel to an other"));
     smoothing->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);

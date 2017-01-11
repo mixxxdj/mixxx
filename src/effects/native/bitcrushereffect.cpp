@@ -39,6 +39,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("downsample");
     frequency->setName(QObject::tr("Downsampling"));
+    frequency->setShortName(QObject::tr("Down"));
     frequency->setDescription(QObject::tr("Adjusts the sample rate, to which the signal is downsampled."));
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);

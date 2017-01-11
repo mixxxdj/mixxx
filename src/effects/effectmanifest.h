@@ -45,6 +45,13 @@ class EffectManifest {
         m_name = name;
     }
 
+    virtual const QString& shortName() const {
+        return m_shortName;
+    }
+    virtual void setShortName(const QString& shortName) {
+        m_shortName = shortName;
+    }
+
     virtual const QString& author() const {
         return m_author;
     }
@@ -114,6 +121,7 @@ class EffectManifest {
 
     QString m_id;
     QString m_name;
+    QString m_shortName;
     QString m_author;
     QString m_version;
     QString m_description;
