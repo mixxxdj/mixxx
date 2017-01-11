@@ -25,8 +25,8 @@ AnalysisFeature::AnalysisFeature(UserSettingsPointer pConfig,
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(nullptr){
-    
-    m_childModel.setRootItem(new TreeItem("$root", "$root", this, nullptr));
+
+    m_childModel.setRootItem(std::make_unique<TreeItem>(this));
     setTitleDefault();
 }
 

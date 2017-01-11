@@ -69,7 +69,7 @@ void WLibraryBreadCrumb::setPreviewed(bool value) {
 }
 
 void WLibraryBreadCrumb::showBreadCrumb(TreeItem* pTree) {
-    LibraryFeature* pFeature = pTree->getFeature();
+    LibraryFeature* pFeature = pTree->feature();
     DEBUG_ASSERT_AND_HANDLE(pFeature != nullptr) {
         return;
     }

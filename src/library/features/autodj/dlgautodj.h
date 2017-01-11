@@ -1,6 +1,7 @@
 #ifndef DLGAUTODJ_H
 #define DLGAUTODJ_H
 
+#include <QFrame>
 #include <QWidget>
 #include <QString>
 #include <QList>
@@ -17,12 +18,10 @@ class DlgAutoDJ : public QFrame, public Ui::DlgAutoDJ {
     Q_OBJECT
   public:
     DlgAutoDJ(QWidget* parent, AutoDJProcessor* pProcessor);
-    virtual ~DlgAutoDJ();
-    
-    void onShow();
     
     // These seleced rows are always from the focused pane
     void setSelectedRows(const QModelIndexList& selectedRows);
+    void onShow();
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);

@@ -31,11 +31,10 @@
  */
 TreeItemModel::TreeItemModel(QObject* parent)
         : QAbstractItemModel(parent),
-          m_pRootItem(new TreeItem()) {
+          m_pRootItem(std::make_unique<TreeItem>()) {
 }
 
 TreeItemModel::~TreeItemModel() {
-    delete m_pRootItem;
 }
 
 //Our Treeview Model supports exactly a single column
@@ -45,8 +44,9 @@ int TreeItemModel::columnCount(const QModelIndex &parent) const {
 }
 
 QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return QVariant();
+    }
 
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
@@ -56,7 +56,7 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     // We use Qt::UserRole to ask for the datapath.    
     switch(role) {
         case Qt::DisplayRole:
-            return item->data();
+            return item->getLabel();
         case Qt::SizeHintRole:
         {
             QIcon icon(item->getIcon());
@@ -70,7 +70,7 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         case Qt::DecorationRole:
             return item->getIcon();
         case AbstractRole::RoleDataPath:
-            return item->dataPath();
+            return item->getData();
         case AbstractRole::RoleBold:
             return item->isBold();
         case AbstractRole::RoleDivider:
@@ -78,7 +78,7 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         case AbstractRole::RoleBreadCrumb:
             return getBreadCrumbString(item);
         case AbstractRole::RoleGroupingLetter:
-            return StringHelper::getFirstCharForGrouping(item->data().toString());
+            return StringHelper::getFirstCharForGrouping(item->getData().toString());
     }
 
     return QVariant();
@@ -95,10 +95,10 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
     // Set the relevant data.
     switch (a_iRole) {
         case Qt::DisplayRole:
-            pItem->setData(a_rValue, pItem->dataPath());
+            pItem->setLabel(a_rValue.toString());
             break;
         case AbstractRole::RoleDataPath:
-            pItem->setData(pItem->data(), a_rValue);
+            pItem->setData(a_rValue);
             break;
         case AbstractRole::RoleBold:
             pItem->setBold(a_rValue.toBool());
@@ -135,64 +135,61 @@ QVariant TreeItemModel::headerData(int section, Qt::Orientation orientation, int
 }
 
 QModelIndex TreeItemModel::index(int row, int column, const QModelIndex &parent) const {
-    if (!hasIndex(row, column, parent))
+    if (!hasIndex(row, column, parent)) {
         return QModelIndex();
+    }
 
-    TreeItem *parentItem = NULL;
-
-    if (!parent.isValid())
-        parentItem = m_pRootItem;
-    else
+    TreeItem *parentItem;
+    if (parent.isValid()) {
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
+    } else {
+        parentItem = getRootItem();
+    }
 
     TreeItem *childItem = parentItem->child(row);
-    if (childItem)
+    if (childItem) {
         return createIndex(row, column, childItem);
-    else
+    } else {
         return QModelIndex();
+    }
 }
 
-QModelIndex TreeItemModel::parent(const QModelIndex &index) const {
-    if (!index.isValid())
+QModelIndex TreeItemModel::parent(const QModelIndex& index) const {
+    if (!index.isValid()) {
         return QModelIndex();
+    }
 
     TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
     TreeItem *parentItem = childItem->parent();
-
-    if (parentItem == m_pRootItem)
+    if (parentItem == getRootItem()) {
         return QModelIndex();
-
-    return createIndex(parentItem->row(), 0, parentItem);
+    } else {
+        return createIndex(parentItem->parentRow(), 0, parentItem);
+    }
 }
 
-int TreeItemModel::rowCount(const QModelIndex &parent) const {
-    if (parent.column() > 0)
+int TreeItemModel::rowCount(const QModelIndex& parent) const {
+    if (parent.column() > 0) {
         return 0;
-
-    TreeItem *parentItem = NULL;
-    //qDebug() << "parent data: " << parent.data();
-    if (!parent.isValid()) {
-        parentItem = m_pRootItem;
     }
-    else{
+
+    TreeItem* parentItem;
+    if (parent.isValid()) {
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
-
+    } else {
+        parentItem = getRootItem();
     }
-
-    //qDebug() << "TreeItem data: " << parent.internalPointer();
-
-    return parentItem->childCount();
+    return parentItem->childRows();
 }
 
 /**
  * Populates the model and notifies the view.
  * Call this method first, before you do call any other methods.
  */
-void TreeItemModel::setRootItem(TreeItem *item) {
-    if(m_pRootItem) delete m_pRootItem;
-
-    m_pRootItem = item;
+TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
+    m_pRootItem = std::move(pRootItem);
     reset();
+    return getRootItem();
 }
 
 /**
@@ -207,10 +204,10 @@ bool TreeItemModel::insertRows(
     TreeItem *parentItem = getItem(parent);
 
     beginInsertRows(parent, position, position + rows - 1);
-    bool success = parentItem->insertChildren(data, position, rows);
+    parentItem->insertChildren(data, position, rows);
     endInsertRows();
 
-    return success;
+    return true;
 }
 
 bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent) {
@@ -220,18 +217,20 @@ bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent
     TreeItem *parentItem = getItem(parent);
 
     beginRemoveRows(parent, position, position + rows - 1);
-    bool success = parentItem->removeChildren(position, rows);
+    parentItem->removeChildren(position, rows);
     endRemoveRows();
 
-    return success;
+    return true;
 }
 
 TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
     if (index.isValid()) {
-        TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-        if (item) return item;
+        TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+        if (pItem != nullptr) {
+            return pItem;
+        }
     }
-    return m_pRootItem;
+    return getRootItem();
 }
 
 void TreeItemModel::triggerRepaint() {
@@ -243,15 +242,15 @@ void TreeItemModel::triggerRepaint() {
 //static
 QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {    
     // Base case
-    if (pTree == nullptr || pTree->getFeature() == nullptr) {
+    if (pTree == nullptr || pTree->feature() == nullptr) {
         return QString();
     }
     else if (pTree->parent() == nullptr) {
-        return pTree->getFeature()->title().toString();
+        return pTree->feature()->title().toString();
     }
     
     // Recursive case
-    QString text = pTree->data().toString();
+    QString text = pTree->getLabel();
     QString next = getBreadCrumbString(pTree->parent());
     return next % QLatin1String(" > ") % text;
 }
@@ -291,5 +290,5 @@ LibraryFeature* TreeItemModel::getFeatureFromIndex(const QModelIndex& index) con
     if (pTree == nullptr) {
         return nullptr;
     }
-    return pTree->getFeature();
+    return pTree->feature();
 }

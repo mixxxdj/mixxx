@@ -14,6 +14,7 @@ class WLibraryTextBrowser : public QTextBrowser, public LibraryView {
     explicit WLibraryTextBrowser(QWidget* parent = nullptr);
 
     void onShow() override {}
+    bool hasFocus() const override;
 };
 
 #endif /* WLIBRARYTEXTBROWSER_H */

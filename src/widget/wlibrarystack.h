@@ -19,7 +19,9 @@ class WLibraryStack : public QStackedWidget, public LibraryView {
     int addWidget(QWidget* w);
     int insertWidget(int index, QWidget *w);
 
-    void onShow();
+    void onShow() override;
+    bool hasFocus() const override;
+
     void onSearch(const QString& text);
 
     void loadSelectedTrack();

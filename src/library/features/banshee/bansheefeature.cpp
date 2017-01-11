@@ -96,26 +96,19 @@ void BansheeFeature::activate() {
 
         m_isActivated =  true;
 
-        TreeItem* playlistRoot = new TreeItem();
-        playlistRoot->setLibraryFeature(this);
-
-        QList<struct BansheeDbConnection::Playlist> list = m_connection.getPlaylists();
-
-        struct BansheeDbConnection::Playlist playlist;
-        foreach (playlist, list) {
+        auto pRootItem = std::make_unique<TreeItem>(this);
+        QList<BansheeDbConnection::Playlist> playlists = m_connection.getPlaylists();
+        for (const BansheeDbConnection::Playlist& playlist: playlists) {
             qDebug() << playlist.name;
             // append the playlist to the child model
-            TreeItem *item = new TreeItem(playlist.name, playlist.playlistId, this, playlistRoot);
-            playlistRoot->appendChild(item);
+            pRootItem->appendChild(playlist.name, playlist.playlistId);
         }
+        m_childModel.setRootItem(std::move(pRootItem));
 
-        if (playlistRoot) {
-            m_childModel.setRootItem(playlistRoot);
-            if (m_isActivated) {
-                activate();
-            }
-            qDebug() << "Banshee library loaded: success";
+        if (m_isActivated) {
+            activate();
         }
+        qDebug() << "Banshee library loaded: success";
 
         //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
         m_title = tr("Banshee");
@@ -130,11 +123,9 @@ void BansheeFeature::activate() {
 
 void BansheeFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    //qDebug() << "BansheeFeature::activateChild " << item->data() << " " << item->dataPath();
-    QString playlist = item->dataPath().toString();
-    int playlistID = playlist.toInt();
+    int playlistID = item->getData().toInt();
     if (playlistID > 0) {
-        qDebug() << "Activating " << item->data().toString();
+        qDebug() << "Activating " << item->getLabel();
         m_pBansheePlaylistModel->setTableModel(playlistID);
         
         showTrackModel(m_pBansheePlaylistModel);
@@ -149,10 +140,9 @@ TreeItemModel* BansheeFeature::getChildModel() {
 void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) {
     if (m_lastRightClickedIndex.isValid()) {
         TreeItem *item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
-        *pPlaylist = item->data().toString();
-        QString playlistStId = item->dataPath().toString();
-        int playlistID = playlistStId.toInt();
-        qDebug() << "BansheeFeature::appendTrackIdsFromRightClickIndex " << *pPlaylist << " " << playlistStId;
+        *pPlaylist = item->getLabel();
+        int playlistID = item->getData().toInt();
+        qDebug() << "BansheeFeature::appendTrackIdsFromRightClickIndex " << *pPlaylist << " " << playlistID;
         if (playlistID > 0) {
             BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
             pPlaylistModelToAdd->setTableModel(playlistID);
