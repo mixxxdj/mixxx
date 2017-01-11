@@ -13,7 +13,7 @@ class DlgMissing : public QFrame, public Ui::DlgMissing {
     Q_OBJECT
   public:
     DlgMissing(QWidget* parent);
-    virtual ~DlgMissing();
+    ~DlgMissing() override;
 
     // The indexes are always from the Focused pane
     void setSelectedIndexes(const QModelIndexList& selectedIndexes);

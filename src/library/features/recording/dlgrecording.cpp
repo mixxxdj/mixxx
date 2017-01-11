@@ -44,7 +44,7 @@ void DlgRecording::onShow() {
 
 void DlgRecording::setProxyTrackModel(ProxyTrackModel* pProxyModel) {
     m_pProxyModel = pProxyModel;
-
+    
     m_pProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_pProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 }

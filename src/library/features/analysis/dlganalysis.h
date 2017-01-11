@@ -23,9 +23,9 @@ class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
     DlgAnalysis(QWidget *parent,
                 AnalysisFeature* pAnalysis,
                 TrackCollection* pTrackCollection);
-    virtual ~DlgAnalysis();
+    ~DlgAnalysis() override;
 
-    virtual void onShow();
+    void onShow();
     inline const QString currentSearch() {
         return m_pAnalysisLibraryTableModel->currentSearch();
     }

@@ -14,7 +14,7 @@ class DlgHidden : public QFrame, public Ui::DlgHidden {
     Q_OBJECT
   public:
     DlgHidden(QWidget* parent);
-    virtual ~DlgHidden();
+    ~DlgHidden() override;
 
     // The indexes are always from the focused pane
     void setSelectedIndexes(const QModelIndexList& selectedIndexes);

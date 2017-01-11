@@ -21,9 +21,9 @@ class DlgRecording : public QFrame, public Ui::DlgRecording {
   public:
     DlgRecording(QWidget *parent, TrackCollection* pTrackCollection,
                  RecordingManager* pRecManager);
-    virtual ~DlgRecording();
+    ~DlgRecording() override;
 
-    virtual void onShow();
+    void onShow();
     void setProxyTrackModel(ProxyTrackModel* pProxyModel);
     void setBrowseTableModel(BrowseTableModel* pBrowseModel);
 
