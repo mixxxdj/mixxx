@@ -119,6 +119,38 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     delete m_pEndOfTrack;
 }
 
+TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setSampleRate(44100);
+    // 10 seconds
+    pTrack->setDuration(10);
+    if (filebpm > 0) {
+        pTrack->setBpm(filebpm);
+    }
+
+    TrackPointer pOldTrack = m_pLoadedTrack;
+    m_pLoadedTrack = pTrack;
+    if (m_pLoadedTrack) {
+        // Listen for updates to the file's BPM
+        connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
+                m_pBPM, SLOT(set(double)));
+
+        connect(m_pLoadedTrack.get(), SIGNAL(keyUpdated(double)),
+                m_pKey, SLOT(set(double)));
+
+        // Listen for updates to the file's Replay Gain
+        connect(m_pLoadedTrack.get(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
+                this, SLOT(slotSetReplayGain(mixxx::ReplayGain)));
+    }
+
+    // Request a new track from EngineBuffer and wait for slotTrackLoaded()
+    // call.
+    EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
+    pEngineBuffer->loadFakeTrack(pTrack, bPlay);
+    emit(loadingTrack(pTrack, pOldTrack));
+    return pTrack;
+}
+
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     qDebug() << "BaseTrackPlayerImpl::slotLoadTrack";
     // Before loading the track, ensure we have access. This uses lazy
@@ -287,7 +319,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
             // Avoid reseting speed if master sync is enabled and other decks with sync enabled
             // are playing, as this would change the speed of already playing decks.
-            if (! m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
+            if (!m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
                 if (m_pRateSlider != NULL) {
                     m_pRateSlider->set(0.0);
                 }

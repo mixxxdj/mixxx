@@ -132,9 +132,9 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
 
 LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {
     QString skinPath = getSkinPath();
-    LegacySkinParser parser;
+    LegacySkinParser parser(m_pConfig);
     LaunchImage* pLaunchImage = parser.parseLaunchImage(skinPath, pParent);
-    if (pLaunchImage == NULL) {
+    if (pLaunchImage == nullptr) {
         // Construct default LaunchImage
         pLaunchImage = new LaunchImage(pParent, QString());
     }

@@ -8,16 +8,6 @@ namespace {
 
 class DbIdTest : public testing::Test {
   protected:
-
-    DbIdTest() {
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     static DbId fromValidVariant(const QVariant& variant) {
         DbId actual(variant);
         EXPECT_TRUE(actual.isValid());

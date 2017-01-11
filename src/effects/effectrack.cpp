@@ -330,8 +330,12 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
     // Force update the new effect to match the current superknob position.
     EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
     if (pEffectSlot) {
-        pEffectSlot->onChainSuperParameterChanged(
+        pEffectSlot->slotEffectMetaParameter(
                 pChainSlot->getSuperParameter(), true);
+    }
+
+    if (pEffect != nullptr) {
+        pEffect->setEnabled(true);
     }
     return true;
 }
@@ -366,6 +370,9 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
     }
 
     pChain->replaceEffect(0, pEffect);
+    if (pEffect != nullptr) {
+        pEffect->setEnabled(true);
+    }
     return true;
 }
 

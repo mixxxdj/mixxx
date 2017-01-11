@@ -29,7 +29,7 @@ class WWidgetGroup;
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
-    LegacySkinParser();
+    LegacySkinParser(UserSettingsPointer pConfig);
     LegacySkinParser(UserSettingsPointer pConfig,
                      KeyboardEventFilter* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,

@@ -29,11 +29,10 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlNumButtonParameterSlots = new ControlObject(ConfigKey(m_group, "num_button_parameterslots"));
     m_pControlNumButtonParameterSlots->setReadOnly();
 
+    // Default to disabled to prevent accidental activation of effects
+    // at the beginning of a set.
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
-    // Default to enabled. The skin might not show these buttons.
-    m_pControlEnabled->setDefaultValue(true);
-    m_pControlEnabled->set(true);
     connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotEnabled(double)));
 
@@ -59,6 +58,12 @@ EffectSlot::EffectSlot(const QString& group,
         addEffectButtonParameterSlot();
     }
 
+    m_pControlMetaParameter = new ControlPotmeter(ConfigKey(m_group, "meta"), 0.0, 1.0);
+    connect(m_pControlMetaParameter, SIGNAL(valueChanged(double)),
+            this, SLOT(slotEffectMetaParameter(double)));
+    m_pControlMetaParameter->set(0.0);
+    m_pControlMetaParameter->setDefaultValue(0.0);
+
     clear();
 }
 
@@ -76,6 +81,7 @@ EffectSlot::~EffectSlot() {
     delete m_pControlEffectSelector;
     delete m_pControlClear;
     delete m_pControlEnabled;
+    delete m_pControlMetaParameter;
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
@@ -146,9 +152,10 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         m_pControlNumParameters->forceSet(pEffect->numKnobParameters());
         m_pControlNumButtonParameters->forceSet(pEffect->numButtonParameters());
 
-        // Enabled is a persistent property of the effect slot, not of the
-        // effect. Propagate the current setting to the effect.
-        pEffect->setEnabled(m_pControlEnabled->get() > 0.0);
+        // The enabled status persists in the EffectSlot when loading a new
+        // EffectPointer to the EffectSlot. Effects and EngineEffects default to
+        // disabled, so if this EffectSlot was enabled, enable the Effect and EngineEffect.
+        pEffect->setEnabled(m_pControlEnabled->toBool());
 
         connect(pEffect.data(), SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));
@@ -161,13 +168,15 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             addEffectButtonParameterSlot();
         }
 
-        foreach (EffectParameterSlotPointer pParameter, m_parameters) {
+        for (const auto& pParameter : m_parameters) {
             pParameter->loadEffect(pEffect);
         }
 
-        foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
+        for (const auto& pParameter : m_buttonParameters) {
             pParameter->loadEffect(pEffect);
         }
+
+        slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
 
         emit(effectLoaded(pEffect, m_iEffectNumber));
     } else {
@@ -185,10 +194,10 @@ void EffectSlot::clear() {
     m_pControlLoaded->forceSet(0.0);
     m_pControlNumParameters->forceSet(0.0);
     m_pControlNumButtonParameters->forceSet(0.0);
-    foreach (EffectParameterSlotPointer pParameter, m_parameters) {
+    for (const auto& pParameter : m_parameters) {
         pParameter->clear();
     }
-    foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
+    for (const auto& pParameter : m_buttonParameters) {
         pParameter->clear();
     }
     m_pEffect.clear();
@@ -221,14 +230,27 @@ void EffectSlot::slotClear(double v) {
     }
 }
 
-void EffectSlot::onChainSuperParameterChanged(double parameter, bool force) {
-    for (int i = 0; i < m_parameters.size(); ++i) {
-        m_parameters[i]->onChainSuperParameterChanged(parameter, force);
+void EffectSlot::syncSofttakeover() {
+    for (const auto& pParameterSlot : m_parameters) {
+        pParameterSlot->syncSofttakeover();
     }
 }
 
-void EffectSlot::syncSofttakeover() {
-    for (int i = 0; i < m_parameters.size(); ++i) {
-        m_parameters[i]->syncSofttakeover();
+// This function is for the superknob to update individual effects' meta knobs
+// slotEffectMetaParameter does not need to update m_pControlMetaParameter's value
+void EffectSlot::setMetaParameter(double v) {
+    m_pControlMetaParameter->set(v);
+    slotEffectMetaParameter(v);
+}
+
+void EffectSlot::slotEffectMetaParameter(double v, bool force) {
+    // Clamp to [0.0, 1.0]
+    if (v < 0.0 || v > 1.0) {
+        qWarning() << debugString() << "value out of limits";
+        v = math_clamp(v, 0.0, 1.0);
+        m_pControlMetaParameter->set(v);
+    }
+    for (const auto& pParameterSlot : m_parameters) {
+        pParameterSlot->onEffectMetaParameterChanged(v, force);
     }
 }
