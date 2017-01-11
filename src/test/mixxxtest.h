@@ -17,7 +17,6 @@
 #define ASSERT_QSTRING_EQ(expected, test) ASSERT_STREQ(qPrintable(expected), qPrintable(test))
 
 typedef QScopedPointer<QTemporaryFile> ScopedTemporaryFile;
-typedef QScopedPointer<ControlObject> ScopedControl;
 
 class MixxxTest : public testing::Test {
   public:
@@ -69,6 +68,5 @@ class MixxxTest : public testing::Test {
   protected:
     UserSettingsPointer m_pConfig;
 };
-
 
 #endif /* MIXXXTEST_H */

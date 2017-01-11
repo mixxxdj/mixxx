@@ -185,6 +185,9 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
 
+    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"));
+    m_pTrackLoaded->setReadOnly();
+
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
@@ -292,6 +295,7 @@ EngineBuffer::~EngineBuffer() {
     delete m_pRepeat;
     delete m_pSampleRate;
 
+    delete m_pTrackLoaded;
     delete m_pTrackSamples;
     delete m_pTrackSampleRate;
 
@@ -521,6 +525,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_bSlipEnabledProcessing = false;
     m_dSlipPosition = 0.;
     m_dSlipRate = 0;
+    m_pTrackLoaded->forceSet(1);
     // Reset the pitch value for the new track.
     m_pause.unlock();
 
@@ -550,6 +555,7 @@ void EngineBuffer::ejectTrack() {
     //qDebug() << "EngineBuffer::ejectTrack()";
     m_pause.lock();
     m_iTrackLoading = 0;
+    m_pTrackLoaded->forceSet(0);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
@@ -1133,7 +1139,7 @@ void EngineBuffer::processSyncRequests() {
 void EngineBuffer::processSeek(bool paused) {
     // We need to read position just after reading seekType, to ensure that we
     // read the matching position to seek_typ or a position from a new (second)
-    // seek just queued from an other thread
+    // seek just queued from another thread
     // The later case is ok, because we will process the new seek in the next
     // call anyway again.
 
