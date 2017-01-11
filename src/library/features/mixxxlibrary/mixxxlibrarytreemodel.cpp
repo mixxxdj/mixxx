@@ -135,18 +135,14 @@ void MixxxLibraryTreeModel::reloadTree() {
     //qDebug() << "LibraryTreeModel::reloadTracksTree";
     beginResetModel();
     // Create root item
-    TreeItem* pRootItem = new TreeItem();
-    pRootItem->setLibraryFeature(m_pFeature);
+    TreeItem* pRootItem = setRootItem(std::make_unique<TreeItem>(m_pFeature));
 
-    m_pLibraryItem = new TreeItem(tr("Show all"), "", m_pFeature, pRootItem);
-    pRootItem->appendChild(m_pLibraryItem);
+    m_pLibraryItem = pRootItem->appendChild(tr("Show all"), "");
 
     QString groupTitle = tr("Grouping Options (%1)").arg(m_sortOrder.join(" > "));
-    m_pSettings = new TreeItem(groupTitle, "", m_pFeature, pRootItem);
-    pRootItem->appendChild(m_pSettings);
+    m_pSettings = pRootItem->appendChild(groupTitle, "");
     
     // Deletes the old root item if the previous root item was not null
-    setRootItem(pRootItem);
     createTracksTree();
     endResetModel();
 }
@@ -183,7 +179,7 @@ QVariant MixxxLibraryTreeModel::getQuery(TreeItem* pTree) const {
     QStringList result;
     
     // We need to know the depth before doing anything
-    while (pAux->parent() != m_pRootItem && pAux->parent() != nullptr) {
+    while (pAux->parent() != getRootItem() && pAux->parent() != nullptr) {
         pAux = pAux->parent();
         ++depth;
     }
@@ -191,7 +187,7 @@ QVariant MixxxLibraryTreeModel::getQuery(TreeItem* pTree) const {
     // Generate the query
     pAux = pTree;
     while (depth >= 0) {
-        QString value = pAux->dataPath().toString();
+        QString value = pAux->getData().toString();
         if (pAux->isDivider()) {
             value.append("*");
         }
@@ -267,7 +263,7 @@ void MixxxLibraryTreeModel::createTracksTree() {
     // with this we can always use parent[i] to get the parent of the element at
     // depth i and to set the parent we avoid checking that i + 1 < treeDepth
     QVector<TreeItem*> parent(treeDepth + 1, nullptr);
-    parent[0] = m_pRootItem;
+    parent[0] = getRootItem();
     
     while (query.next()) {
         for (int i = 0; i < treeDepth; ++i) {
@@ -292,20 +288,17 @@ void MixxxLibraryTreeModel::createTracksTree() {
                 QChar c = StringHelper::getFirstCharForGrouping(treeItemLabel);
                 if (lastHeader != c) {
                     lastHeader = c;
-                    TreeItem* pTree = new TreeItem(lastHeader, lastHeader, 
-                                                   m_pFeature, parent[0]);
+                    TreeItem* pTree = 
+                        parent[0]->appendChild(lastHeader, lastHeader);
                     pTree->setDivider(true);
-                    parent[0]->appendChild(pTree);
                 }   
             }
             
             lastUsed[i] = dataPath;
             
             // We need to create a new item
-            TreeItem* pTree = new TreeItem(treeItemLabel, dataPath, 
-                                           m_pFeature, parent[i]);
+            TreeItem* pTree = parent[i]->appendChild(treeItemLabel, dataPath);
             pTree->setTrackCount(0);
-            parent[i]->appendChild(pTree);
             parent[i + 1] = pTree;
             
             // Add coverart info

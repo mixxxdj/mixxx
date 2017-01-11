@@ -198,6 +198,9 @@ void LibraryControl::sidebarWidgetDeleted() {
 }
 
 void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
+    if (!m_pLibrary) {
+        return;
+    }
 
     LibraryView* activeView = m_pLibrary->getActiveView();
     if (!activeView) {

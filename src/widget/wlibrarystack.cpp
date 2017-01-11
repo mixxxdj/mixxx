@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QEvent>
+#include <QWidget>
 
 #include "widget/wlibrarystack.h"
 
@@ -75,6 +76,10 @@ bool WLibraryStack::checkAndWarning(QWidget* w) {
         return false;
     }
     return true;
+}
+
+bool WLibraryStack::hasFocus() const {
+    return QStackedWidget::hasFocus();
 }
 
 LibraryView *WLibraryStack::getCurrentView() {

@@ -1603,6 +1603,10 @@ void WTrackTableView::slotReloadCoverArt() {
     }
 }
 
+bool WTrackTableView::hasFocus() const {
+    return QWidget::hasFocus();
+}
+
 void WTrackTableView::cut() {
     copy();
     slotRemove();

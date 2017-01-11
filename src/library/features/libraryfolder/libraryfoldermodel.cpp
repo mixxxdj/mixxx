@@ -69,7 +69,7 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
         }
         
         const QString param("%1:=\"%2\"");
-        return param.arg("folder", pTree->dataPath().toString());
+        return param.arg("folder", pTree->getData().toString());
     }
 
     return TreeItemModel::data(index, role);
@@ -79,11 +79,10 @@ void LibraryFolderModel::reloadTree() {
     //qDebug() <<  "LibraryFolderModel::reloadTree()";
     beginResetModel();
     // Remove current root
-    setRootItem(new TreeItem(m_pFeature));
+    setRootItem(std::make_unique<TreeItem>(m_pFeature));
 
     // Add "show all" item
-    m_pShowAllItem = new TreeItem(tr("Show all"), "", m_pFeature, m_pRootItem);
-    m_pRootItem->appendChild(m_pShowAllItem);
+    m_pShowAllItem = m_pRootItem->appendChild(tr("Show all"), "");
 
     // Get the Library directories
     QStringList dirs(m_pTrackCollection->getDirectoryDAO().getDirs());
@@ -118,7 +117,7 @@ void LibraryFolderModel::reloadTree() {
 void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& query) {
     QStringList lastUsed;
     QList<TreeItem*> parent;
-    parent.append(m_pRootItem);
+    parent.append(getRootItem());
     bool first = true;
     
     while (query.next()) {
@@ -139,9 +138,8 @@ void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& 
             if (m_folderRecursive) {
                 path.append("*");
             }
-            TreeItem* pTree = new TreeItem(dir, path, m_pFeature, m_pRootItem);
+            TreeItem* pTree = m_pRootItem->appendChild(dir, path);
             pTree->setDivider(true);
-            m_pRootItem->appendChild(pTree);
         }
 
         // Do not add empty items
@@ -174,9 +172,8 @@ void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& 
                     fullPath.append("*");
                 }
                 
-                TreeItem* pItem = new TreeItem(val, fullPath, m_pFeature, parent[i]);
+                TreeItem* pItem = parent[i]->appendChild(val, fullPath);
                 pItem->setTrackCount(0);
-                parent[i]->appendChild(pItem);
                 
                 parent[i + 1] = pItem;
                 lastUsed[i] = val;

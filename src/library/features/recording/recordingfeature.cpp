@@ -22,9 +22,7 @@ RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,
           m_pBrowseModel(nullptr),
           m_pProxyModel(nullptr) {
     
-    TreeItem* pRoot = new TreeItem();
-    pRoot->setLibraryFeature(this);
-    m_childModel.setRootItem(pRoot);
+    m_childModel.setRootItem(std::make_unique<TreeItem>(this));
 }
 
 RecordingFeature::~RecordingFeature() {

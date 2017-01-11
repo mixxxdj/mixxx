@@ -9,13 +9,15 @@
 #include <QSplitter>
 
 #include "library/features/autodj/autodjfeature.h"
-
+#include "library/features/autodj/dlgautodj.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/features/autodj/autodjprocessor.h"
-#include "library/features/autodj/dlgautodj.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"
 #include "mixer/playermanager.h"
+#include "library/trackcollection.h"
+#include "library/treeitem.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "widget/wlibrarysidebar.h"
@@ -54,15 +56,15 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
 
 
     // Create the "Crates" tree-item under the root item.
-    TreeItem* root = m_childModel.getItem(QModelIndex());
-    root->setLibraryFeature(this);
-    
-    m_pCratesTreeItem = new TreeItem(tr("Crates"), "", this, root);
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
-    root->appendChild(m_pCratesTreeItem);
+    //m_pCratesTreeItem->setLibraryFeature(this);
 
     // Create tree-items under "Crates".
     constructCrateChildModel();
+
+    m_childModel.setRootItem(std::move(pRootItem));
 
     // Be notified when the status of crates changes.
     connect(&m_crateDao, SIGNAL(added(int)),
@@ -103,18 +105,18 @@ QString AutoDJFeature::getSettingsName() const {
 QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter*, int paneId) {
     WTrackTableView* pTrackTableView = createTableWidget(paneId);
     pTrackTableView->loadTrackModel(m_pAutoDJProcessor->getTableModel());
-    
+
     connect(pTrackTableView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-            this, 
+            this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
-    
+
     return pTrackTableView;
 }
 
 QWidget* AutoDJFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
     QTabWidget* pContainer = new QTabWidget(nullptr);
-    
+
     // Add controls
     m_pAutoDJView = new DlgAutoDJ(pContainer, m_pAutoDJProcessor);
     m_pAutoDJView->installEventFilter(pKeyboard);
@@ -122,11 +124,11 @@ QWidget* AutoDJFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard)
     pScroll->setWidget(m_pAutoDJView);
     pScroll->setWidgetResizable(true);
     pContainer->addTab(pScroll, tr("Controls"));
-    
+
     // Add drop target
     WLibrarySidebar* pSidebar = createLibrarySidebarWidget(pKeyboard);
     pSidebar->setParent(pContainer);
-    
+
     pContainer->addTab(pSidebar, tr("Track source"));
 
     // Be informed when the user wants to add another random track.
@@ -134,7 +136,7 @@ QWidget* AutoDJFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard)
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
-    
+
     return pContainer;
 }
 
@@ -147,13 +149,13 @@ void AutoDJFeature::activate() {
     DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
         return;
     }
-    
+
     m_pAutoDJView->onShow();
-    
+
     switchToFeature();
     showBreadCrumb();
-    restoreSearch(QString()); //Null String disables search box
-    
+    restoreSearch(QString()); // Null String disables search box
+
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
@@ -247,13 +249,9 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
         // Add our record of this crate-ID and name.
         m_crateList.append(qMakePair(crateId, strName));
 
-        // Create a tree-item for this crate.
-        TreeItem* item = new TreeItem(strName, strName, this,
-                                      m_pCratesTreeItem);
-
         // Prepare to add it to the "Crates" tree-item.
         QList<TreeItem*> lstItems;
-        lstItems.append(item);
+        lstItems.append(new TreeItem(this, strName));
 
         // Add it to the "Crates" tree-item.
         QModelIndex oCratesIndex = m_childModel.index(0, 0);
@@ -292,7 +290,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                     DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
                         return;
                     }
-                    
+
                     m_pAutoDJView->onShow();
                     return;
                 } else {
@@ -316,7 +314,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                         DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
                             return;
                         }
-                        
+
                         m_pAutoDJView->onShow();
                         return;
                     }
@@ -359,8 +357,7 @@ void AutoDJFeature::constructCrateChildModel() {
         m_crateList.append(qMakePair(id, name));
 
         // Create the TreeItem for this crate.
-        TreeItem* item = new TreeItem(name, name, this, m_pCratesTreeItem);
-        m_pCratesTreeItem->appendChild(item);
+        m_pCratesTreeItem->appendChild(name);
     }
 }
 
@@ -370,15 +367,14 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
     QString crateName;
     if (index.isValid()) {
         m_lastRightClickedIndex = index;
-    
+
         TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
         DEBUG_ASSERT_AND_HANDLE(item) {
             return;
         }
-    
-        crateName = item->dataPath().toString();
+        crateName = item->getLabel();
     }
-    
+
     if (!crateName.isEmpty()) {
         // A crate was right-clicked.
         // Bring up the context menu.
@@ -386,7 +382,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         menu.addAction(m_pRemoveCrateFromAutoDj);
         menu.exec(globalPos);
         return;
-    } 
+    }
     else {
         // The "Crates" tree-item was right-clicked.
         // Bring up the context menu.

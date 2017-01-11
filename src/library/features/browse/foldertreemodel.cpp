@@ -45,14 +45,14 @@ bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
         return false;
     }
     
-    if(item->dataPath().toString() == QUICK_LINK_NODE)
+    if(item->getData().toString() == QUICK_LINK_NODE)
         return true;
     //Can only happen on Windows
-    if(item->dataPath().toString() == DEVICE_NODE)
+    if(item->getData().toString() == DEVICE_NODE)
         return true;
 
-    // In all other cases the dataPath() points to a folder
-    QString folder = item->dataPath().toString();
+    // In all other cases the getData() points to a folder
+    QString folder = item->getData().toString();
     return directoryHasChildren(folder);
 }
 
@@ -70,7 +70,7 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
      *  QDIR::EntryInfoList returns a full QFileInfolist
      *
      *
-     *  QDir dir(item->dataPath().toString());
+     *  QDir dir(item->getData().toString());
      *  QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
      *  return (all.count() > 0);
      *
