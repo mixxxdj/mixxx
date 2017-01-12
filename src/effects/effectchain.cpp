@@ -92,10 +92,10 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
 
     EffectChain* pClone = new EffectChain(
         pChain->m_pEffectsManager, pChain->id(), pChain);
-    pClone->setEnabled(pChain->enabled());
     pClone->setName(pChain->name());
-    pClone->setMix(pChain->mix());
-    foreach (EffectPointer pEffect, pChain->effects()) {
+    // Do not set the state of the chain because that information belongs
+    // to the EffectChainSlot. Leave that to EffectChainSlot::loadEffectChain.
+    for (const auto& pEffect : pChain->effects()) {
         EffectPointer pClonedEffect = pChain->m_pEffectsManager
                 ->instantiateEffect(pEffect->getManifest().id());
         pClone->addEffect(pClonedEffect);

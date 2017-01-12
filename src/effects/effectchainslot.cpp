@@ -162,21 +162,28 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
                                              bool shouldEmit) {
     //qDebug() << debugString() << "slotChainEffectChanged" << effectSlotNumber;
     if (m_pEffectChain) {
-        QList<EffectPointer> effects = m_pEffectChain->effects();
+        const QList<EffectPointer> effects = m_pEffectChain->effects();
+        EffectSlotPointer pSlot;
+        EffectPointer pEffect;
+
         if (effects.size() > m_slots.size()) {
             qWarning() << debugString() << "has too few slots for effect";
         }
-        EffectSlotPointer pSlot = m_slots[effectSlotNumber];
-        EffectPointer pEffect;
-        if (effectSlotNumber < (unsigned) effects.size()) {
-            pEffect = effects[effectSlotNumber];
+
+        if (effectSlotNumber < (unsigned) m_slots.size()) {
+            pSlot = m_slots.at(effectSlotNumber);
         }
-        if (pSlot) {
+        if (effectSlotNumber < (unsigned) effects.size()) {
+            pEffect = effects.at(effectSlotNumber);
+        }
+        if (pSlot != nullptr) {
             pSlot->loadEffect(pEffect);
         }
+
         m_pControlNumEffects->forceSet(math_min(
             static_cast<unsigned int>(m_slots.size()),
             m_pEffectChain->numEffects()));
+
         if (shouldEmit) {
             emit(updated());
         }
