@@ -95,9 +95,6 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
     pClone->setEnabled(pChain->enabled());
     pClone->setName(pChain->name());
     pClone->setMix(pChain->mix());
-    foreach (const ChannelHandleAndGroup& handle_group, pChain->enabledChannels()) {
-        pClone->enableForChannel(handle_group);
-    }
     foreach (EffectPointer pEffect, pChain->effects()) {
         EffectPointer pClonedEffect = pChain->m_pEffectsManager
                 ->instantiateEffect(pEffect->getManifest().id());
@@ -212,7 +209,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
     if (m_bAddedToEngine) {
         pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1);
     }
-    emit(effectsChanged());
+    emit(effectChanged(m_effects.size() - 1));
 }
 
 void EffectChain::replaceEffect(unsigned int effectSlotNumber,
@@ -240,7 +237,7 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
         }
     }
 
-    emit(effectsChanged());
+    emit(effectChanged(effectSlotNumber));
 }
 
 void EffectChain::removeEffect(unsigned int effectSlotNumber) {
