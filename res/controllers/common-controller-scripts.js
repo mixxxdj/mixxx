@@ -282,7 +282,7 @@ script.loopMove = function (group,direction,numberOfBeats) {
    -------- ------------------------------------------------------ */
 // TODO: Is this still useful now that MidiController.cpp properly handles these?
 script.midiPitch = function (LSB, MSB, status) {
-    if ((status & 0xF0) != 0xE0) {  // Mask the upper nybble so we can check the opcode regardless of the channel
+    if ((status & 0xF0) !== 0xE0) {  // Mask the upper nybble so we can check the opcode regardless of the channel
         print("Script.midiPitch: Error, not a MIDI pitch (0xEn) message: "+status);
         return false;
     }
@@ -303,7 +303,7 @@ script.midiPitch = function (LSB, MSB, status) {
    -------- ------------------------------------------------------ */
 script.spinback = function(channel, control, value, status, group) {
     // disable on note-off or zero value note/cc
-    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
+    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0));
 }
 
 /* -------- ------------------------------------------------------
@@ -320,7 +320,7 @@ script.brake = function(channel, control, value, status, group, factor) {
         factor = 1;
     }
     // disable on note-off or zero value note/cc, use default decay rate '1'
-    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0), factor);
+    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), factor);
 }
 
 /* -------- ------------------------------------------------------
@@ -332,11 +332,11 @@ script.brake = function(channel, control, value, status, group, factor) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.softStart = function(channel, control, value, status, group, factor) {
-	if (factor == undefined) {
+	if (factor === undefined) {
 		factor = 1;
 	}
     // disable on note-off or zero value note/cc, use default increase rate '1'
-    engine.softStart(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0), 1);
+    engine.softStart(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), 1);
 }
 
 // bpm - Used for tapping the desired BPM for a deck
