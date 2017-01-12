@@ -59,7 +59,6 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
     auto pRootItem = std::make_unique<TreeItem>(this);
     m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
-    //m_pCratesTreeItem->setLibraryFeature(this);
 
     // Create tree-items under "Crates".
     constructCrateChildModel();
