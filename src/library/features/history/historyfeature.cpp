@@ -74,7 +74,7 @@ void HistoryFeature::onRightClickChild(const QPoint& globalPos, const QModelInde
     //Save the model index so we can get it in the action slots...
     m_lastChildClicked[m_featurePane] = m_lastRightClickedIndex = index;
     bool ok;
-    int playlistId = index.data(AbstractRole::RoleDataPath).toInt(&ok);
+    int playlistId = index.data(AbstractRole::RoleData).toInt(&ok);
     if (!ok || playlistId < 0) {
         return;
     }
@@ -211,7 +211,7 @@ void HistoryFeature::slotJoinWithNext() {
     if (m_lastRightClickedIndex.isValid()) {
         bool ok;
         int currentPlaylistId =
-                m_lastRightClickedIndex.data(AbstractRole::RoleDataPath).toInt(&ok);
+                m_lastRightClickedIndex.data(AbstractRole::RoleData).toInt(&ok);
         
         if (!ok) {
             return;

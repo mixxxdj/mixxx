@@ -69,7 +69,7 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         }
         case Qt::DecorationRole:
             return item->getIcon();
-        case AbstractRole::RoleDataPath:
+        case AbstractRole::RoleData:
             return item->getData();
         case AbstractRole::RoleBold:
             return item->isBold();
@@ -97,7 +97,7 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
         case Qt::DisplayRole:
             pItem->setLabel(a_rValue.toString());
             break;
-        case AbstractRole::RoleDataPath:
+        case AbstractRole::RoleData:
             pItem->setData(a_rValue);
             break;
         case AbstractRole::RoleBold:

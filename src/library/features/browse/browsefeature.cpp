@@ -232,7 +232,7 @@ void BrowseFeature::activate() {
 void BrowseFeature::activateChild(const QModelIndex& index) {
     m_lastClickedChild = index;
     QString data = index.data().toString();
-    QString dataPath = index.data(AbstractRole::RoleDataPath).toString();
+    QString dataPath = index.data(AbstractRole::RoleData).toString();
     qDebug() << "BrowseFeature::activateChild " << data << dataPath;
     
     if (dataPath == QUICK_LINK_NODE || dataPath == DEVICE_NODE) {

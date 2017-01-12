@@ -126,7 +126,7 @@ class BasePlaylistFeature : public LibraryFeature {
     
     QHash<int, QModelIndex> m_lastChildClicked;
 
-  private slots:
+  protected slots:
     void slotTrackSelected(TrackPointer pTrack);
 
   private:

@@ -134,7 +134,7 @@ bool CrateFeature::isSinglePane() const {
 
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
     bool ok = false;
-    int crateId = index.data(AbstractRole::RoleDataPath).toInt(&ok);
+    int crateId = index.data(AbstractRole::RoleData).toInt(&ok);
     return ok ? crateId : -1;
 }
 

@@ -644,7 +644,7 @@ QString BasePlaylistFeature::getValidPlaylistName() const {
 
 QSet<int> BasePlaylistFeature::playlistIdsFromIndex(const QModelIndex &index) const {
     bool ok = false;
-    int playlistId = index.data(AbstractRole::RoleDataPath).toInt(&ok);
+    int playlistId = index.data(AbstractRole::RoleData).toInt(&ok);
     QSet<int> set;
     if (ok) {
         set.insert(playlistId);
@@ -795,23 +795,13 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     }
     m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);
 
-    TreeItem* rootItem = m_childModel->getItem(QModelIndex());
-    if (rootItem == nullptr) {
-        return;
-    }
-
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
-    int row = 0;
-    for (const PlaylistItem& p : m_playlistList) {        
-        TreeItem* playlist = rootItem->child(row);
-        if (playlist == nullptr) {
-            continue;
-        }
+    for (const PlaylistItem& p : m_playlistList) { 
+        QModelIndex index = indexFromPlaylistId(p.id);
         
         bool shouldBold = m_playlistsSelectedTrackIsIn.contains(p.id);
-        playlist->setBold(shouldBold);
-        ++row;
+        m_childModel->setData(index, shouldBold, AbstractRole::RoleBold);
     }
 
     m_childModel->triggerRepaint();
