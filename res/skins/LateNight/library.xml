@@ -19,7 +19,7 @@
 					<Splitter>
                         <ObjectName>LibrarySplitter</ObjectName>
 						<Size>me,me</Size>
-						<SplitSizes>1,6,6</SplitSizes>
+						<SplitSizes>1,6</SplitSizes>
                         <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<Children>
 							<WidgetGroup>
