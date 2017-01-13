@@ -20,6 +20,7 @@
 #include "util/dnd.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "util/stringhelper.h"
 
 static const bool sDebug = false;
 
@@ -108,6 +109,14 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Cover Art"), 90);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
                         tr("ReplayGain"), 50);
+}
+
+QSet<TrackId> BaseSqlTableModel::getTrackIdsFromIndices(const QModelIndexList& list) const {
+    QSet<TrackId> ret;
+    for (const QModelIndex& index : list) {
+        ret.insert(getTrackId(index));
+    }
+    return ret;
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -407,6 +416,16 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
     m_currentSearchFilter = extraFilter;
 }
 
+void BaseSqlTableModel::onSearchStarting() {
+    // Save current sorting
+    m_savedSortColumns = m_sortColumns;
+}
+
+void BaseSqlTableModel::onSearchCleared() {
+    // Restore sorting
+    m_sortColumns = m_savedSortColumns;
+}
+
 void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
@@ -432,22 +451,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     // There's no item to sort already, load from Settings last sort
     if (m_sortColumns.isEmpty()) {
         QString val = getModelSetting(COLUMNS_SORTING);
-        QTextStream in(&val);
-        
-        while (!in.atEnd()) {
-            int ordI = -1;
-            QString name;
-            
-            in >> name >> ordI;
-            
-            int col = fieldIndex(name);
-            if (col < 0) continue;
-            
-            Qt::SortOrder ord;
-            ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
-            
-            m_sortColumns << SortColumn(col, ord);
-        }
+        deserialzeSortColumns(val);
     }
     if (m_sortColumns.size() > 0 && m_sortColumns.at(0).m_column == column) {
          // Only the order has changed
@@ -471,23 +475,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     }
     
     // Write new sortColumns order to user settings
-    QString val;
-    QTextStream out(&val);
-    for (SortColumn& sc : m_sortColumns) {
-
-        QString name;        
-        if (sc.m_column > 0 && sc.m_column < m_tableColumns.size()) {
-            name = m_tableColumns[sc.m_column];
-        } else {
-            // ccColumn between 1..x to skip the id column
-            int ccColumn = sc.m_column - m_tableColumns.size() + 1;
-            name = m_trackSource->columnNameForFieldIndex(ccColumn);
-        }
-
-        out << name << " ";
-        out << (sc.m_order == Qt::AscendingOrder ? 1 : -1) << " ";
-    }
-    out.flush();
+    QString val = serializedSortColumns();
     setModelSetting(COLUMNS_SORTING, val);
 
     if (sDebug) {
@@ -626,12 +614,16 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid() || (role != Qt::DisplayRole &&
                              role != Qt::EditRole &&
                              role != Qt::CheckStateRole &&
-                             role != Qt::ToolTipRole)) {
+                             role != Qt::ToolTipRole &&
+                             role != AbstractRole::RoleGroupingLetter)) {
         return QVariant();
     }
 
     int row = index.row();
     int column = index.column();
+    if (role == AbstractRole::RoleGroupingLetter && !m_sortColumns.isEmpty()) {
+        column = m_sortColumns.first().m_column;
+    }
 
     // This value is the value in its most raw form. It was looked up either
     // from the SQL table or from the cached track layer.
@@ -723,6 +715,19 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 bool locked = index.sibling(
                         row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)).data().toBool();
                 value = locked ? Qt::Checked : Qt::Unchecked;
+            }
+            break;
+        case AbstractRole::RoleGroupingLetter:
+            if (isValidColumn(column)) {
+                if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) && 
+                        value.toString().size() == 4) {
+                    // Show the decade
+                    value = value.toString().at(2);
+                } else {
+                    value = StringHelper::getFirstCharForGrouping(value.toString());
+                }
+            } else {
+                value = QVariant();
             }
             break;
         default:
@@ -965,12 +970,16 @@ QVariant BaseSqlTableModel::getBaseValue(
     const QModelIndex& index, int role) const {
     if (role != Qt::DisplayRole &&
         role != Qt::ToolTipRole &&
-        role != Qt::EditRole) {
+        role != Qt::EditRole &&
+        role != AbstractRole::RoleGroupingLetter) {
         return QVariant();
     }
 
     int row = index.row();
     int column = index.column();
+    if (role == AbstractRole::RoleGroupingLetter && !m_sortColumns.isEmpty()) {
+        column = m_sortColumns.first().m_column;
+    }
 
     if (row < 0 || row >= m_rowInfo.size()) {
         return QVariant();
@@ -1046,6 +1055,45 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
+void BaseSqlTableModel::saveSelection(const QModelIndexList& selection) {
+    m_savedSelectionIndices = getTrackIdsFromIndices(selection);
+}
+
+QModelIndexList BaseSqlTableModel::getSavedSelectionIndices() {
+    QModelIndexList ret;
+    for (const TrackId& id : m_savedSelectionIndices) {
+        QLinkedList<int> rows = getTrackRows(id);
+        for (const int row : rows) {
+            ret << index(row, 0);
+        }
+    }
+    return ret;
+}
+
+void BaseSqlTableModel::restoreQuery(const SavedSearchQuery& query) {
+    // Restore selection
+    m_savedSelectionIndices.clear();
+    for (const DbId& id : query.selectedItems) {
+        m_savedSelectionIndices.insert(TrackId(id.toVariant()));
+    }
+    
+    deserialzeSortColumns(query.sortOrder);
+    search(query.query);
+}
+
+SavedSearchQuery BaseSqlTableModel::saveQuery(const QModelIndexList& indices, 
+                                      SavedSearchQuery query) const {
+    query.selectedItems.clear();
+    auto ids = getTrackIdsFromIndices(indices);
+    for (const TrackId& id : ids) {
+        query.selectedItems.insert(id);
+    }
+    
+    query.sortOrder = serializedSortColumns();
+    
+    return query;
+}
+
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
@@ -1079,4 +1127,58 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
     select(); //Repopulate the data model.
+}
+
+QString BaseSqlTableModel::serializedSortColumns() const {
+    QString val;
+    QTextStream out(&val);
+    for (const SortColumn& sc : m_sortColumns) {
+
+        QString name;        
+        if (sc.m_column > 0 && sc.m_column < m_tableColumns.size()) {
+            name = m_tableColumns[sc.m_column];
+        } else {
+            // ccColumn between 1..x to skip the id column
+            int ccColumn = sc.m_column - m_tableColumns.size() + 1;
+            name = m_trackSource->columnNameForFieldIndex(ccColumn);
+        }
+
+        out << name << " ";
+        out << (sc.m_order == Qt::AscendingOrder ? 1 : -1) << " ";
+    }
+    out.flush();
+    return val;
+}
+
+void BaseSqlTableModel::deserialzeSortColumns(QString serialized) {
+    QTextStream in(&serialized);
+    m_sortColumns.clear();
+    
+    while (!in.atEnd()) {
+        int ordI = -1;
+        QString name;
+        
+        in >> name >> ordI;
+        
+        int col = fieldIndex(name);
+        if (col < 0) continue;
+        
+        Qt::SortOrder ord;
+        ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
+        
+        m_sortColumns << SortColumn(col, ord);
+    }
+}
+
+bool BaseSqlTableModel::isValidColumn(int column) const {
+    return 
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE) ||
+        column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) ||
+        column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_ARTIST) ||
+        column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TITLE);
 }

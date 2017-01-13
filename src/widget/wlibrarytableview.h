@@ -12,7 +12,7 @@
 #include "library/libraryview.h"
 #include "track/track.h"
 #include "library/coverartcache.h"
-
+#include "library/dao/savedqueriesdao.h"
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
@@ -24,6 +24,9 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     ~WLibraryTableView() override;
     void moveSelection(int delta) override;
 
+    virtual void restoreQuery(const SavedSearchQuery& query);
+    virtual SavedSearchQuery saveQuery(SavedSearchQuery query = SavedSearchQuery()) const;
+    
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group,
@@ -31,10 +34,11 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void trackSelected(TrackPointer pTrack);
     void onlyCachedCoverArt(bool);
     void scrollValueChanged(int);
+    
 
   public slots:
-    void saveVScrollBarPos();
-    void restoreVScrollBarPos();
+    void saveView();
+    void restoreView();
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
 
@@ -47,6 +51,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     // The position of the vertical scrollbar slider, eg. before a search is
     // executed
     int m_iSavedVScrollBarPos;
+    int m_savedSortColumn;
+    Qt::SortOrder m_savedSortOrder;
 };
 
 

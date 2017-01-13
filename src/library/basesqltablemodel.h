@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QtSql>
 
+#include "library/abstractmodelroles.h"
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
@@ -30,27 +31,34 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     }
 
     void setSearch(const QString& searchText, const QString& extraFilter = QString());
+    void onSearchStarting() override;
+    void onSearchCleared() override;
     void setSort(int column, Qt::SortOrder order);
 
-    int fieldIndex(ColumnCache::Column column) const;
 
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from TrackModel
     ///////////////////////////////////////////////////////////////////////////
+    int fieldIndex(ColumnCache::Column column) const;
     int fieldIndex(const QString& fieldName) const final;
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Inherited from QAbstractItemModel
-    ///////////////////////////////////////////////////////////////////////////
-    void sort(int column, Qt::SortOrder order) final;
-    int rowCount(const QModelIndex& parent=QModelIndex()) const final;
+    // Methods reimplemented from QAbstractItemModel
+    void sort(int column, Qt::SortOrder order) override final;
+    int rowCount(const QModelIndex& parent=QModelIndex()) const override final;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const final;
+    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
     int columnCount(const QModelIndex& parent = QModelIndex()) const final;
     bool setHeaderData(int section, Qt::Orientation orientation,
                        const QVariant &value, int role = Qt::DisplayRole) final;
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role=Qt::DisplayRole) const final;
-    QMimeData* mimeData(const QModelIndexList &indexes) const final;
+    virtual QMimeData* mimeData(const QModelIndexList &indexes) const final;
+    
+    void saveSelection(const QModelIndexList& selection) override;
+    QModelIndexList getSavedSelectionIndices() override;
+    
+    void restoreQuery(const SavedSearchQuery& query) override;
+    SavedSearchQuery saveQuery(const QModelIndexList &indices, SavedSearchQuery query) const override;
 
     ///////////////////////////////////////////////////////////////////////////
     //  Functions that might be reimplemented/overridden in derived classes
@@ -74,12 +82,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
     const QString currentSearch() const override;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Inherited from QAbstractItemModel
-    ///////////////////////////////////////////////////////////////////////////
-    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
-
+    
   public slots:
     void select();
 
@@ -88,6 +91,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
                   const QStringList& tableColumns,
                   QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderData();
+    
+    QSet<TrackId> getTrackIdsFromIndices(const QModelIndexList& list) const;
 
     // Use this if you want a model that is read-only.
     virtual Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
@@ -119,6 +124,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // called.
     QString orderByClause() const;
     QSqlDatabase database() const;
+    QString serializedSortColumns() const;
+    void deserialzeSortColumns(QString serialized);
+    bool isValidColumn(int column) const;
 
     struct RowInfo {
         TrackId trackId;
@@ -158,8 +166,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     TrackId2Rows m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
+    QList<SortColumn> m_savedSortColumns;
     QVector<QHash<int, QVariant> > m_headerInfo;
     QString m_trackSourceOrderBy;
+    QSet<TrackId> m_savedSelectionIndices;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };

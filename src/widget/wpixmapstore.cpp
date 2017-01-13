@@ -17,6 +17,7 @@
 
 #include "widget/wpixmapstore.h"
 
+#include <QIcon>
 #include <QString>
 #include <QtDebug>
 
@@ -24,7 +25,8 @@
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
-QSharedPointer<ImgSource> WPixmapStore::m_loader = QSharedPointer<ImgSource>();
+QSharedPointer<ImgSource> WPixmapStore::m_pLoader = QSharedPointer<ImgSource>();
+QSharedPointer<ImgSource> WPixmapStore::m_pIconLoader = QSharedPointer<ImgSource>();
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
@@ -312,8 +314,8 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
     // Otherwise, construct it with the pixmap loader.
     //qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
 
-    if (m_loader) {
-        QImage* pImage = m_loader->getImage(source.getPath());
+    if (m_pLoader) {
+        QImage* pImage = m_pLoader->getImage(source.getPath());
         pPaintable = PaintablePointer(new Paintable(pImage, mode));
     } else {
         pPaintable = PaintablePointer(new Paintable(source, mode));
@@ -340,8 +342,8 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
 // static
 QPixmap* WPixmapStore::getPixmapNoCache(const QString& fileName) {
     QPixmap* pPixmap = nullptr;
-    if (m_loader) {
-        QImage* img = m_loader->getImage(fileName);
+    if (m_pLoader) {
+        QImage* img = m_pLoader->getImage(fileName);
 #if QT_VERSION >= 0x040700
         pPixmap = new QPixmap();
         pPixmap->convertFromImage(*img);
@@ -356,10 +358,35 @@ QPixmap* WPixmapStore::getPixmapNoCache(const QString& fileName) {
 }
 
 void WPixmapStore::setLoader(QSharedPointer<ImgSource> ld) {
-    m_loader = ld;
+    m_pLoader = ld;
 
     // We shouldn't hand out pointers to existing pixmaps anymore since our
     // loader has changed. The pixmaps will get freed once all the widgets
     // referring to them are destroyed.
     m_paintableCache.clear();
+}
+
+void WPixmapStore::setLibraryIconLoader(QSharedPointer<ImgSource> pIconLoader) {
+    m_pIconLoader = pIconLoader;
+}
+
+QIcon WPixmapStore::getLibraryIcon(const QString& fileName) {
+    return QIcon(getLibraryPixmap(fileName));
+}
+
+QPixmap WPixmapStore::getLibraryPixmap(const QString& fileName) {
+    if (m_pIconLoader.isNull()) {
+        return QPixmap(fileName);
+    }
+
+    QImage* image = m_pIconLoader->getImage(fileName);
+
+    if (!m_pLoader.isNull()) {
+        m_pLoader->correctImageColors(image);
+
+    }
+
+    QPixmap pixmap(QPixmap::fromImage(*image));
+    delete image;
+    return pixmap;
 }

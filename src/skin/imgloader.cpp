@@ -8,3 +8,6 @@ QImage * ImgLoader::getImage(QString img) {
     return new QImage(img);
 }
 
+void ImgLoader::correctImageColors(QImage*) {
+}
+

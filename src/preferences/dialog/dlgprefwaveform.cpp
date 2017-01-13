@@ -1,6 +1,7 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
 #include "mixxx.h"
+#include "library/trackcollection.h"
 #include "preferences/waveformsettings.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"

@@ -14,7 +14,7 @@
 #include "util/assert.h"
 
 // static
-const int TrackCollection::kRequiredSchemaVersion = 27;
+const int TrackCollection::kRequiredSchemaVersion = 28;
 
 TrackCollection::TrackCollection(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
@@ -25,6 +25,7 @@ TrackCollection::TrackCollection(UserSettingsPointer pConfig)
           m_directoryDao(m_db),
           m_analysisDao(m_db, pConfig),
           m_libraryHashDao(m_db),
+          m_savedDao(m_db),
           m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
@@ -129,6 +130,7 @@ bool TrackCollection::checkForTables() {
     m_cueDao.initialize();
     m_directoryDao.initialize();
     m_libraryHashDao.initialize();
+    m_savedDao.initialize();
     return true;
 }
 
@@ -150,6 +152,10 @@ PlaylistDAO& TrackCollection::getPlaylistDAO() {
 
 DirectoryDAO& TrackCollection::getDirectoryDAO() {
     return m_directoryDao;
+}
+
+SavedQueriesDAO &TrackCollection::getSavedQueriesDAO() {
+    return m_savedDao;
 }
 
 QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource() {

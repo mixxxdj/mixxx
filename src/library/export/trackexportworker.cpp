@@ -70,21 +70,29 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
 
 void TrackExportWorker::run() {
     int i = 0;
-    QMap<QString, QFileInfo> copy_list = createCopylist(m_tracks);
-    for (auto it = copy_list.constBegin(); it != copy_list.constEnd(); ++it) {
+    QMap<QString, QFileInfo> copyList = createCopylist(m_tracks);
+    for (auto it = copyList.constBegin(); it != copyList.constEnd(); ++it) {
         // We emit progress twice per loop, which may seem excessive, but it
         // guarantees that we emit a sane progress before we start and after
         // we end.  In between, each filename will get its own visible tick
         // on the bar, which looks really nice.
-        emit(progress(it->fileName(), i, copy_list.size()));
+        emit(progress(it->fileName(), i, copyList.size()));
         copyFile(*it, it.key());
         if (load_atomic(m_bStop)) {
             emit(canceled());
             return;
         }
         ++i;
-        emit(progress(it->fileName(), i, copy_list.size()));
+        emit(progress(it->fileName(), i, copyList.size()));
     }
+    
+    // If no file is being copied sleep a bit of time to allow the dialog to be
+    // shown, otherwise no dialog is shown and it seems that anything is done
+    if (copyList.size() <= 0) {
+        QThread::msleep(500);
+    }
+    
+    emit progress("", copyList.size(), copyList.size());
 }
 
 void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,

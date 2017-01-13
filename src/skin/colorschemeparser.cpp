@@ -60,20 +60,20 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
         return 0;
     }
 
-    ImgSource * ret = new ImgLoader();
+    ImgSource* ret = new ImgLoader();
 
     QDomNode f = filt.firstChild();
 
     while (!f.isNull()) {
         QString name = f.nodeName().toLower();
         if (name == "invert") {
-            ret = new ImgInvert(ret);
+            ret = new ImgInvert(QSharedPointer<ImgSource>(ret));
         } else if (name == "hueinv") {
-            ret = new ImgHueInv(ret);
+            ret = new ImgHueInv(QSharedPointer<ImgSource>(ret));
         } else if (name == "add") {
-            ret = new ImgAdd(ret, XmlParse::selectNodeInt(f, "Amount"));
+            ret = new ImgAdd(QSharedPointer<ImgSource>(ret), XmlParse::selectNodeInt(f, "Amount"));
         } else if (name == "scalewhite") {
-            ret = new ImgScaleWhite(ret, XmlParse::selectNodeFloat(f, "Amount"));
+            ret = new ImgScaleWhite(QSharedPointer<ImgSource>(ret), XmlParse::selectNodeFloat(f, "Amount"));
         } else if (name == "hsvtweak") {
             int hmin = 0;
             int hmax = 359;
@@ -103,7 +103,7 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
             if (!f.namedItem("SFact").isNull()) { sfact = XmlParse::selectNodeFloat(f, "SFact"); }
             if (!f.namedItem("VFact").isNull()) { vfact = XmlParse::selectNodeFloat(f, "VFact"); }
 
-            ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
+            ret = new ImgHSVTweak(QSharedPointer<ImgSource>(ret), hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
                                   sfact, sconst, vfact, vconst);
         } else {
             qDebug() << "Unknown image filter:" << name;

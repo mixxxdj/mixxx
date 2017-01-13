@@ -11,45 +11,68 @@
 #include <QObject>
 #include <QAbstractItemModel>
 #include <QFont>
+#include <QHash>
 
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "recording/recordingmanager.h"
-#include "analysisfeature.h"
-#include "library/coverartcache.h"
-#include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
 
-class TrackModel;
-class TrackCollection;
-class SidebarModel;
+class AnalysisFeature;
+class CrateFeature;
+class KeyboardEventFilter;
+class LibraryPaneManager;
+class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
-class WLibrarySidebar;
-class WLibrary;
-class WSearchLineEdit;
+class LibrarySidebarExpandedManager;
+class LibraryView;
 class MixxxLibraryFeature;
 class PlaylistFeature;
-class CrateFeature;
-class LibraryControl;
-class KeyboardEventFilter;
 class PlayerManagerInterface;
+class SidebarModel;
+class TrackModel;
+class TrackCollection;
+class WBaseLibrary;
+class WLibraryPane;
+class WLibrarySidebar;
+class WLibraryBreadCrumb;
+class WButtonBar;
+class WSearchLineEdit;
+class TreeItem;
 
 class Library : public QObject {
     Q_OBJECT
 public:
-    Library(QObject* parent,
-            UserSettingsPointer pConfig,
+    enum RemovalType {
+        LeaveTracksUnchanged = 0,
+        HideTracks,
+        PurgeTracks
+    };
+    
+    static const int kDefaultRowHeightPx;
+    
+    Library(UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
+    
+    void bindSearchBar(WSearchLineEdit* searchLine, int id);
+    void bindSidebarButtons(WButtonBar* sidebar);
+    void bindPaneWidget(WLibraryPane* libraryWidget,
+                        KeyboardEventFilter* pKeyboard, int paneId);
+    void bindSidebarExpanded(WBaseLibrary* expandedPane, 
+                             KeyboardEventFilter* pKeyboard);
+    void bindBreadCrumb(WLibraryBreadCrumb *pBreadCrumb, int paneId);
 
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* pKeyboard);
-    void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
-
+    void destroyInterface();
+    LibraryView* getActiveView();
+    
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
+    
+    void paneCollapsed(int paneId);
+    void paneUncollapsed(int paneId);
 
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
     // waveform widgets can signal to a player to load a track. This can be
@@ -66,24 +89,29 @@ public:
     inline const QFont& getTrackTableFont() const {
         return m_trackTableFont;
     }
+    
+    void switchToFeature(LibraryFeature* pFeature);
+    void showBreadCrumb(int paneId, TreeItem* pTree);
+    void showBreadCrumb(int paneId, const QString& text, const QIcon& icon);
+    void restoreSearch(int paneId, const QString& text);
+    void restoreSaveButton(int paneId);
+    void paneFocused(LibraryPaneManager *pPane);
+    void panePreselected(LibraryPaneManager* pPane, bool value);
+    
+    int getFocusedPaneId();
+    int getPreselectedPaneId();
 
-    //static Library* buildDefaultLibrary();
-
-    enum RemovalType {
-        LeaveTracksUnchanged = 0,
-        HideTracks,
-        PurgeTracks
-    };
-
-    static const int kDefaultRowHeightPx;
+    void focusSearch();
 
   public slots:
-    void slotShowTrackModel(QAbstractItemModel* model);
-    void slotSwitchToView(const QString& view);
+    
+    void slotActivateFeature(LibraryFeature* pFeature);
+    void slotHoverFeature(LibraryFeature* pFeature);
+    
+    // Updates the focus from the feature before changing the view
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
-    void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
@@ -93,20 +121,20 @@ public:
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
+    
+    void slotSetHoveredFeature(LibraryFeature* pFeature);
+    void slotResetHoveredFeature(LibraryFeature* pFeature);
+    void slotSetFocusedFeature(LibraryFeature* pFeature);
+    void slotResetFocusedFeature(LibraryFeature* pFeature);
 
     void scan() {
         m_scanner.scan();
     }
 
   signals:
-    void showTrackModel(QAbstractItemModel* model);
-    void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    void restoreSearch(const QString&);
-    void search(const QString& text);
-    void searchCleared();
-    void searchStarting();
+    
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
@@ -119,12 +147,20 @@ public:
     void scanFinished();
 
   private:
+    
+    // If the pane exists returns it, otherwise it creates the pane
+    LibraryPaneManager* getOrCreatePane(int paneId);
+    LibraryPaneManager* getFocusedPane();
+    LibraryPaneManager* getPreselectedPane();
+    
+    void createTrackCache();
+    void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
+    
+    void handleFocus();
+    void handlePreselection();
+    
     UserSettingsPointer m_pConfig;
-    SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
-    QList<LibraryFeature*> m_features;
-    const static QString m_sTrackViewName;
-    const static QString m_sAutoDJViewName;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
@@ -135,6 +171,20 @@ public:
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     QScopedPointer<ControlObject> m_pKeyNotation;
+    
+    QHash<int, LibraryPaneManager*> m_panes;
+    LibraryPaneManager* m_pSidebarExpanded;
+    QList<LibraryFeature*> m_features;
+    QSet<int> m_collapsedPanes;
+    QHash<int, LibraryFeature*> m_savedFeatures;
+    // Used to show the preselected pane when the mouse is over the button
+    LibraryFeature* m_hoveredFeature;
+    LibraryFeature* m_focusedFeature;
+    
+    // Can be any integer as it's used with a HashMap
+    int m_focusedPaneId;
+    int m_preselectedPane;
+    int m_previewPreselectedPane;
 };
 
 #endif /* LIBRARY_H */

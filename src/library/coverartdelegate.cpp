@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QTableView>
 
 #include "library/coverartdelegate.h"
@@ -81,12 +82,18 @@ void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
     }
 }
 
-void CoverArtDelegate::paint(QPainter *painter,
-                             const QStyleOptionViewItem &option,
-                             const QModelIndex &index) const {
-    if (option.state & QStyle::State_Selected) {
-        painter->fillRect(option.rect, option.palette.highlight());
-    }
+void CoverArtDelegate::paint(QPainter* painter,
+                             const QStyleOptionViewItem& option,
+                             const QModelIndex& index) const {
+
+    QStyleOptionViewItemV4 opt = option;
+    initStyleOption(&opt, index);
+
+    // Draw original item without text as background
+    opt.text = QString();
+    const QWidget *widget = opt.widget;
+    QStyle *style = widget ? widget->style() : QApplication::style();
+    style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, widget);
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache == NULL || m_iIdColumn == -1 || m_iCoverSourceColumn == -1 ||

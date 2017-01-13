@@ -30,7 +30,7 @@ QColor ImgScaleWhite::doColorCorrection(QColor c) {
     return c;
 }
 
-ImgAdd::ImgAdd(ImgSource * parent, int amt)
+ImgAdd::ImgAdd(const QSharedPointer<ImgSource> &parent, int amt)
     : ImgColorProcessor(parent), m_amt(amt) {
     // Nothing left to do
 }
@@ -48,7 +48,7 @@ QColor ImgAdd::doColorCorrection(QColor c) {
     return QColor(r, g, b, c.alpha());
 }
 
-ImgMax::ImgMax(ImgSource * parent, int amt)
+ImgMax::ImgMax(const QSharedPointer<ImgSource> &parent, int amt)
     : ImgColorProcessor(parent), m_amt(amt) {
 }
 
@@ -88,3 +88,15 @@ QColor ImgHSVTweak::doColorCorrection(QColor c) {
     return c;
 }
 
+ImgMonoColor::ImgMonoColor(const QSharedPointer<ImgSource> &parent, const QColor& baseColor)
+    : ImgColorProcessor(parent),
+      m_baseColor(baseColor) {
+}
+
+QColor ImgMonoColor::doColorCorrection(QColor c) {
+    // Get the hue color to do a monochrome image
+    int h, a, s, v;
+    c.getHsv(&h, &s, &v, &a);
+    c.setHsv(m_baseColor.hue(), s, v, a);
+    return c;
+}

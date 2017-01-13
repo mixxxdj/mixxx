@@ -189,17 +189,14 @@ TEST_F(SearchQueryParserTest, TextFilterEmpty) {
     searchColumns << "artist"
                   << "album";
 
-    // An empty argument should pass everything.
+    // An empty argument should pass "is null" elements.
     auto pQuery(
         m_parser.parseQuery("comment:", searchColumns, ""));
 
     TrackPointer pTrack(Track::newTemporary());
     pTrack->setComment("test ASDF test");
-    EXPECT_TRUE(pQuery->match(pTrack));
-
-    EXPECT_STREQ(
-        qPrintable(QString("")),
-        qPrintable(pQuery->toSql()));
+    EXPECT_TRUE(pQuery->match(pTrack));    
+    EXPECT_TRUE(pQuery->toSql().contains(QRegExp(".*IS NULL.*")));
 }
 
 TEST_F(SearchQueryParserTest, TextFilterQuote) {

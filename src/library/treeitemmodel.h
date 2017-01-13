@@ -1,22 +1,24 @@
 #ifndef TREE_ITEM_MODEL_H
 #define TREE_ITEM_MODEL_H
 
-#include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
 #include <QList>
+#include <QUrl>
 
+#include "library/abstractmodelroles.h"
 #include "util/memory.h"
+#include "library/treeitem.h"
 
+class LibraryFeature;
 class TreeItem;
 
 class TreeItemModel : public QAbstractItemModel {
     Q_OBJECT
+    
   public:
-    static const int kDataRole = Qt::UserRole;
-    static const int kBoldRole = Qt::UserRole + 1;
 
-    explicit TreeItemModel(QObject *parent = 0);
+    explicit TreeItemModel(QObject* parent = nullptr);
     ~TreeItemModel() override;
 
     QVariant data(const QModelIndex &index, int role) const override;
@@ -42,10 +44,20 @@ class TreeItemModel : public QAbstractItemModel {
     // Return the underlying TreeItem.
     // If the index is invalid, the root item is returned.
     TreeItem* getItem(const QModelIndex &index) const;
-
+    
+    bool dropAccept(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
+    bool dragMoveAccept(const QModelIndex& index, QUrl url);
+    
+    static QString getBreadCrumbString(TreeItem* pTree);
+    static QSize getDefaultIconSize();
+    
+  public slots:
+    virtual void reloadTree();
     void triggerRepaint();
 
-  private:
+  protected:
+    LibraryFeature* getFeatureFromIndex(const QModelIndex& index) const;
+    
     std::unique_ptr<TreeItem> m_pRootItem;
 };
 

@@ -16,7 +16,9 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
                                      ConfigKey vScrollBarPosKey)
         : QTableView(parent),
           m_pConfig(pConfig),
-          m_vScrollBarPosKey(vScrollBarPosKey) {
+          m_vScrollBarPosKey(vScrollBarPosKey),
+          m_savedSortColumn(-1),
+          m_savedSortOrder(Qt::AscendingOrder) {
 
     // Setup properties for table
 
@@ -62,17 +64,20 @@ void WLibraryTableView::loadVScrollBarPosState() {
     m_iSavedVScrollBarPos = m_pConfig->getValueString(m_vScrollBarPosKey).toInt();
 }
 
-void WLibraryTableView::restoreVScrollBarPos() {
-    //Restore the scrollbar's position (scroll to that spot)
-    //when the search has been cleared
+void WLibraryTableView::restoreView() {
+    // Restore the scrollbar's position (scroll to that spot), and sorting order
+    // when the search has been cleared
     updateGeometries();
     verticalScrollBar()->setValue(m_iSavedVScrollBarPos);
+    horizontalHeader()->setSortIndicator(m_savedSortColumn, m_savedSortOrder);
 }
 
-void WLibraryTableView::saveVScrollBarPos() {
-    //Save the scrollbar's position so we can return here after
-    //a search is cleared.
+void WLibraryTableView::saveView() {
+    // Save the scrollbar's position and sorting order so we can return here 
+    // after a search is cleared.
     m_iSavedVScrollBarPos = verticalScrollBar()->value();
+    m_savedSortColumn = horizontalHeader()->sortIndicatorSection();
+    m_savedSortOrder = horizontalHeader()->sortIndicatorOrder();
 }
 
 
@@ -110,6 +115,27 @@ void WLibraryTableView::moveSelection(int delta) {
             delta++;
         }
     }
+}
+
+void WLibraryTableView::restoreQuery(const SavedSearchQuery& query) {
+    verticalScrollBar()->setValue(query.vScrollBarPos);
+    
+    Qt::SortOrder order;
+    if (query.sortAscendingOrder) {
+        order = Qt::AscendingOrder;
+    } else {
+        order = Qt::DescendingOrder;
+    }
+    
+    horizontalHeader()->setSortIndicator(query.sortColumn, order);
+}
+
+SavedSearchQuery WLibraryTableView::saveQuery(SavedSearchQuery query) const {
+    query.vScrollBarPos = verticalScrollBar()->value();
+    query.sortColumn = horizontalHeader()->sortIndicatorSection();
+    query.sortAscendingOrder = 
+            horizontalHeader()->sortIndicatorOrder() == Qt::AscendingOrder;
+    return query;
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {

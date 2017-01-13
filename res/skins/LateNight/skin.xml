@@ -55,6 +55,7 @@
       <attribute persist="true" config_key="[Master],view_curpage">2</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Library],show_current">1</attribute>
+      <attribute persist="true" config_key="[Library],show_icon_text">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
       <attribute config_key="[Library],show_library">1</attribute>

@@ -108,5 +108,15 @@
         <file>translations/mixxx_uz.qm</file>
         <file>translations/mixxx_zh_CN.qm</file>
         <file>translations/mixxx_zh_TW.qm</file>
+        <file>images/library/ic_library_maintenance.png</file>
+        <file>images/library/ic_library_folder.png</file>
+        <file>skins/save.png</file>
+        <file>skins/downArrow.png</file>
+        <file>skins/cross_2.png</file>
+        <file>skins/save_disabled.png</file>
+        <file>images/library/ic_library_preselect.png</file>
+        <file>images/library/ic_library_notpreselect.png</file>
+        <file>images/library/ic_library_lockpreselect.png</file>
+        <file>images/library/ic_library_pinned.png</file>
     </qresource>
 </RCC>

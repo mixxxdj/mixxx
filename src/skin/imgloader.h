@@ -24,7 +24,8 @@ class ImgLoader : public ImgSource {
 
 public:
     ImgLoader();
-    virtual QImage* getImage(QString img);
+    QImage* getImage(QString img) override;
+    void correctImageColors(QImage*) override;
 };
 
 #endif

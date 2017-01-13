@@ -354,64 +354,47 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
-    addPrefixedControl("[Library]", "MoveUp",
-                       tr("Move up"),
-                       tr("Equivalent to pressing the UP key on the keyboard"),
+    addPrefixedControl("[Playlist]", "ToggleSelectedSidebarItem",
+                       tr("Expand/Collapse View"),
+                       tr("Expand/collapse the selected view (library, playlist..)"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveDown",
-                       tr("Move down"),
-                       tr("Equivalent to pressing the DOWN key on the keyboard"),
+
+    addPrefixedControl("[Playlist]", "SelectPlaylist",
+                       tr("Switch Next/Previous View"),
+                       tr("Switch to the next or previous view (library, playlist..)"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveVertical",
-                       tr("Move up/down"),
-                       tr("Move vertically in either direction using a knob, as if pressing UP/DOWN keys"),
+    addPrefixedControl("[Playlist]", "SelectNextPlaylist",
+                       tr("Switch To Next View"),
+                       tr("Switch to the next view (library, playlist..)"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "ScrollUp",
-                       tr("Scroll Up"),
-                       tr("Equivalent to pressing the PAGE UP key on the keyboard"),
+    addPrefixedControl("[Playlist]", "SelectPrevPlaylist",
+                       tr("Switch To Previous View"),
+                       tr("Switch to the previous view (library, playlist..)"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "ScrollDown",
-                       tr("Scroll Down"),
-                       tr("Equivalent to pressing the PAGE DOWN key on the keyboard"),
+    addPrefixedControl("[Playlist]", "SelectTrackKnob",
+                       tr("Scroll To Next/Previous Track"),
+                       tr("Scroll up or down in library/playlist"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "ScrollVertical",
-                       tr("Scroll up/down"),
-                       tr("Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys"),
+    addPrefixedControl("[Playlist]", "SelectNextTrack",
+                       tr("Scroll To Next Track"),
+                       tr("Scroll to next track in library/playlist"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveLeft",
-                       tr("Move left"),
-                       tr("Equivalent to pressing the LEFT key on the keyboard"),
+    addPrefixedControl("[Playlist]", "SelectPrevTrack",
+                       tr("Scroll To Previous Track"),
+                       tr("Scroll to previous track in library/playlist"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveRight",
-                       tr("Move right"),
-                       tr("Equivalent to pressing the RIGHT key on the keyboard"),
+    addPrefixedControl("[Playlist]", "LoadSelectedIntoFirstStopped",
+                       tr("Load Track Into Stopped Deck"),
+                       tr("Load selected track into first stopped deck"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveHorizontal",
-                       tr("Move left/right"),
-                       tr("Move horizontall in either direction using a knob, as if pressing LEFT/RIGHT keys"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveFocusForward",
-                       tr("Move focus to right pane"),
-                       tr("Equivalent to pressing the TAB key on the keyboard"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveFocusBackward",
-                       tr("Move focus to left pane"),
-                       tr("Equivalent to pressing the SHIFT+TAB key on the keyboard"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveFocus",
-                       tr("Move focus to right/left pane"),
-                       tr("Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "AutoDjAddBottom",
+    addPrefixedControl("[Playlist]", "AutoDjAddBottom",
                        tr("Add to Auto DJ Queue (bottom)"),
                        tr("Append the selected track to the Auto DJ Queue"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "AutoDjAddTop",
+    addPrefixedControl("[Playlist]", "AutoDjAddTop",
                        tr("Add to Auto DJ Queue (top)"),
                        tr("Prepend selected track to the Auto DJ Queue"),
                        m_libraryStr, libraryMenu);
-
-    // Load track (these can be loaded into any channel)
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
                              tr("Load selected track"), libraryMenu);
@@ -749,6 +732,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
                tr("Show/hide cover art"), guiMenu);
+    addControl("[Library]", "show_icon_text",
+               tr("Icons' text Show/Hide"),
+               tr("Show/Hide icons' text"), guiMenu);
 
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");

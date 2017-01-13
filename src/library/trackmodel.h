@@ -4,9 +4,11 @@
 #include <QList>
 #include <QLinkedList>
 #include <QItemDelegate>
+#include <QItemSelection>
 #include <QtSql>
 
 #include "track/track.h"
+#include "library/dao/savedqueriesdao.h"
 #include "library/dao/settingsdao.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
@@ -65,6 +67,8 @@ class TrackModel {
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
+    virtual void onSearchStarting() {}
+    virtual void onSearchCleared() {}
     virtual const QString currentSearch() const = 0;
     virtual bool isColumnInternal(int column) = 0;
     // if no header state exists, we may hide some columns so that the user can
@@ -143,7 +147,26 @@ class TrackModel {
 
     virtual void select() {
     }
+    
+    virtual void saveSelection(const QModelIndexList&) {
+    }
+    
+    virtual QModelIndexList getSavedSelectionIndices() {
+        return QModelIndexList();
+    }
 
+    virtual void restoreQuery(const SavedSearchQuery&) {
+    }
+    
+    virtual SavedSearchQuery saveQuery(const QModelIndexList& /* selected */, 
+                                       SavedSearchQuery query = SavedSearchQuery()) const {
+        return query;
+    }
+    
+    virtual SavedSearchQuery saveQuery(SavedSearchQuery = SavedSearchQuery()) {
+        return SavedSearchQuery();
+    }
+    
   private:
     QSqlDatabase m_db;
     QString m_settingsNamespace;

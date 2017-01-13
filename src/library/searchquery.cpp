@@ -165,6 +165,17 @@ QString TextFilterNode::toSql() const {
     return concatSqlClauses(searchClauses, "OR");
 }
 
+QString ExactFilterNode::toSql() const {
+    FieldEscaper escaper(m_database);
+    QString escapedArgument = escaper.escapeString(m_argument);
+    
+    QStringList searchClauses;
+    for (const QString& sqlColumn : m_sqlColumns) {
+        searchClauses << QString("%1 GLOB %2").arg(sqlColumn, escapedArgument);
+    }
+    return concatSqlClauses(searchClauses, "OR");
+}
+
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
         : m_sqlColumns(sqlColumns),
           m_bOperatorQuery(false),

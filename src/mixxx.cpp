@@ -23,6 +23,7 @@
 #include <QGLWidget>
 #include <QUrl>
 #include <QtDebug>
+#include <QShortcut>
 
 #include "analyzer/analyzerqueue.h"
 #include "dialog/dlgabout.h"
@@ -263,10 +264,14 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     CoverArtCache::create();
 
     // (long)
-    m_pLibrary = new Library(this, pConfig,
+    m_pLibrary = new Library(pConfig,
                              m_pPlayerManager,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
+    
+    new QShortcut(
+            QKeySequence(tr("Ctrl+F", "Search|Focus")),
+            this, SLOT(slotFocusSearch()));
 
     launchProgress(35);
 
@@ -676,8 +681,9 @@ void MixxxMainWindow::initializeKeyboard() {
     // initialization into KeyboardEventFilter
     // Workaround for today: KeyboardEventFilter calls delete
     bool keyboardShortcutsEnabled = pConfig->getValueString(
-        ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
+            ConfigKey("[Keyboard]", "Enabled")) == "1";
+    m_pKeyboard = new KeyboardEventFilter(
+            keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
 QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
@@ -1107,6 +1113,7 @@ void MixxxMainWindow::rebootMixxxView() {
     // that need to be deleted -- otherwise we can't tell what features the skin
     // supports since the controls from the previous skin will be left over.
     m_pMenuBar->onNewSkinAboutToLoad();
+    m_pLibrary->destroyInterface();
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
@@ -1293,4 +1300,8 @@ void MixxxMainWindow::launchProgress(int progress) {
         m_pLaunchImage->progress(progress);
     }
     qApp->processEvents();
+}
+
+void MixxxMainWindow::slotFocusSearch() {
+    m_pLibrary->focusSearch();
 }
