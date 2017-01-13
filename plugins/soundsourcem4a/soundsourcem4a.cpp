@@ -312,8 +312,8 @@ bool SoundSourceM4A::openDecoder() {
     // Discard all buffered samples
     m_inputBufferLength = 0;
 
-    // Invalidate current position to enforce the following
-    // seek operation
+    // Invalidate current position(s) for the following seek operation
+    m_curSampleBlockId = MP4_INVALID_SAMPLE_ID;
     m_curFrameIndex = getMaxFrameIndex();
 
     // (Re-)Start decoding at the beginning of the file
@@ -378,10 +378,16 @@ SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
         // Nothing to do
         return m_curFrameIndex;
     }
-    // Handle edge case
-    if (getMaxFrameIndex() <= frameIndex) {
-        // EOF reached
-        m_curFrameIndex = getMaxFrameIndex();
+
+    // NOTE(uklotzde): Resetting the decoder near to the beginning
+    // of the stream when seeking backwards produces invalid sample
+    // values! As a consequence the seeking test fails.
+    if (isValidSampleBlockId(m_curSampleBlockId) &&
+            (frameIndex <= kNumberOfPrefetchFrames)) {
+        // Workaround: Reset the decoder when seeking near to the beginning
+        // of the stream while decoding.
+        reopenDecoder();
+        skipSampleFrames(frameIndex);
         return m_curFrameIndex;
     }
 
