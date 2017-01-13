@@ -135,7 +135,7 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Library");
+    return tr("Tracks");
 }
 
 QIcon MixxxLibraryFeature::getIcon() {
