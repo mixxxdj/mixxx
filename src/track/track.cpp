@@ -49,7 +49,7 @@ Track::Track(
           m_id(trackId),
           m_bDirty(false),
           m_iRating(0),
-          m_cuePoint(0.0f),
+          m_cuePoint(0.0),
           m_dateAdded(QDateTime::currentDateTime()),
           m_bHeaderParsed(false),
           m_bBpmLocked(false),

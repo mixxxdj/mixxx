@@ -832,7 +832,7 @@ void CueControl::cueDefault(double v) {
 void CueControl::pause(double v) {
     QMutexLocker lock(&m_mutex);
     //qDebug() << "CueControl::pause()" << v;
-    if (v != 0) {
+    if (v != 0.0) {
         m_pPlay->set(0.0);
     }
 }
@@ -840,7 +840,7 @@ void CueControl::pause(double v) {
 void CueControl::playStutter(double v) {
     QMutexLocker lock(&m_mutex);
     //qDebug() << "playStutter" << v;
-    if (v != 0) {
+    if (v != 0.0) {
         if (isPlayingByPlayButton()) {
             cueGoto(1.0);
         } else {
@@ -908,7 +908,7 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
 
     if (cueMode != CUE_MODE_DENON && cueMode != CUE_MODE_NUMARK) {
         if (m_pCuePoint->get() != -1) {
-            if (newPlay == 0 && !isTrackAtCue() &&
+            if (newPlay == 0.0 && !isTrackAtCue() &&
                     !atEndPosition()) {
                 if (cueMode == CUE_MODE_MIXXX) {
                     // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
@@ -1123,5 +1123,5 @@ void HotcueControl::resetCue() {
 
 void HotcueControl::setPosition(double position) {
     m_hotcuePosition->set(position);
-    m_hotcueEnabled->forceSet(position == -1 ? 0.0 : 1.0);
+    m_hotcueEnabled->forceSet(position == -1.0 ? 0.0 : 1.0);
 }
