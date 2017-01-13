@@ -21,6 +21,7 @@
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wpixmapstore.h"
 
 static const int kMaxRetrieveAttempts = 3;
 
@@ -54,11 +55,10 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
-
     // Create the "Crates" tree-item under the root item.
     auto pRootItem = std::make_unique<TreeItem>(this);
     m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
-    m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+    // we set the Icon later, because the icon loader is not fully set up yet 
 
     // Create tree-items under "Crates".
     constructCrateChildModel();
@@ -115,6 +115,10 @@ QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter*, int paneId) {
 
 QWidget* AutoDJFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
     QTabWidget* pContainer = new QTabWidget(nullptr);
+
+    // now the icon loader is set up and get an icon 
+    m_pCratesTreeItem->setIcon(WPixmapStore::getLibraryIcon(
+            ":/images/library/ic_library_crates.png"));
 
     // Add controls
     m_pAutoDJView = new DlgAutoDJ(pContainer, m_pAutoDJProcessor);
