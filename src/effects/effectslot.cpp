@@ -239,13 +239,18 @@ void EffectSlot::syncSofttakeover() {
     }
 }
 
+double EffectSlot::getMetaParameter() const {
+    return m_pControlMetaParameter->get();
+}
+
 // This function is for the superknob to update individual effects' meta knobs
 // slotEffectMetaParameter does not need to update m_pControlMetaParameter's value
-void EffectSlot::setMetaParameter(double v) {
-    if (!m_pSoftTakeover->ignore(m_pControlMetaParameter, v) ||
-        !m_pControlEnabled->toBool()) {
+void EffectSlot::setMetaParameter(double v, bool force) {
+    if (!m_pSoftTakeover->ignore(m_pControlMetaParameter, v)
+        || !m_pControlEnabled->toBool()
+        || force) {
         m_pControlMetaParameter->set(v);
-        slotEffectMetaParameter(v);
+        slotEffectMetaParameter(v, force);
     }
 }
 
