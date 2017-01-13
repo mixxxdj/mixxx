@@ -8,6 +8,7 @@
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "controllers/softtakeover.h"
 #include "effects/effect.h"
 #include "effects/effectparameterslot.h"
 #include "effects/effectbuttonparameterslot.h"
@@ -37,6 +38,8 @@ class EffectSlot : public QObject {
     EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
     EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
 
+    double getMetaParameter() const;
+
     // ensures that Softtakover is bypassed for the following
     // ChainParameterChange. Uses for testing only
     void syncSofttakeover();
@@ -51,7 +54,7 @@ class EffectSlot : public QObject {
   public slots:
     // Request that this EffectSlot load the given Effect
     void loadEffect(EffectPointer pEffect);
-    void setMetaParameter(double v);
+    void setMetaParameter(double v, bool force = false);
 
     void slotEnabled(double v);
     void slotNextEffect(double v);
@@ -107,6 +110,8 @@ class EffectSlot : public QObject {
     ControlPotmeter* m_pControlMetaParameter;
     QList<EffectParameterSlotPointer> m_parameters;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;
+
+    SoftTakeover* m_pSoftTakeover;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };

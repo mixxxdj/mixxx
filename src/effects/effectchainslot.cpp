@@ -122,8 +122,9 @@ double EffectChainSlot::getSuperParameter() const {
     return m_pControlChainSuperParameter->get();
 }
 
-void EffectChainSlot::setSuperParameter(double value) {
+void EffectChainSlot::setSuperParameter(double value, bool force) {
     m_pControlChainSuperParameter->set(value);
+    slotControlChainSuperParameter(value, force);
 }
 
 void EffectChainSlot::setSuperParameterDefaultValue(double value) {
@@ -366,7 +367,7 @@ void EffectChainSlot::slotControlChainMix(double v) {
     }
 }
 
-void EffectChainSlot::slotControlChainSuperParameter(double v) {
+void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
     //qDebug() << debugString() << "slotControlChainSuperParameter" << v;
 
     // Clamp to [0.0, 1.0]
@@ -376,7 +377,7 @@ void EffectChainSlot::slotControlChainSuperParameter(double v) {
         m_pControlChainSuperParameter->set(v);
     }
     for (const auto& pSlot : m_slots) {
-        pSlot->setMetaParameter(v);
+        pSlot->setMetaParameter(v, force);
     }
 }
 
