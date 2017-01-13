@@ -150,8 +150,14 @@ bool CmdlineArgs::isSettingsPathValid() const {
      * as we can make the file there even without the readable permission
      */
     QString path = getSettingsPath();
-    if(path.toStdString().find(".mixxx") != std::string::npos)
-        return true;
+    QDir givenDir(path);
+    bool checkDirExists = givenDir.exists();
+    if(!checkDirExists) {
+        bool checkDirMade = givenDir.mkpath(".");
+        if(!checkDirMade) {
+            return false;
+        }
+    }
     QFileInfo info(path); 
     bool status = true;
     QTemporaryFile fle(path + "/temp_file");
@@ -164,6 +170,9 @@ bool CmdlineArgs::isSettingsPathValid() const {
     
     if(!info.isReadable()) {
         status = false;
+    }
+    if(!checkDirExists) {
+        givenDir.rmpath(".");
     }
 
     return status;
