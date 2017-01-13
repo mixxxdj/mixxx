@@ -62,7 +62,7 @@ The output does not need to be mapped in XML. It is handled by the library in Ja
 
 A handful of derivative Control objects are available that are more convenient for common use cases.
 These derivative objects will cover most use cases. In practice, most Controls are derivatives
-of the Button or CC Controls. Only if you need to make a lot of changes to the default Control
+of the Button or Pot Controls. Only if you need to make a lot of changes to the default Control
 attributes should you use the Control constructor directly.
 
 Create Controls by calling the constructor with JavaScript's "new" keyword. The Control constructor
@@ -568,34 +568,35 @@ SamplerButton.prototype = new Button({
 });
 
 /**
-A CC is a Control for potentiometers (faders and knobs) with finite ranges, although it can be
-adapted for infintely turning encoders. The name CC comes from MIDI Control Change signals. Using a
-CC is helpful because CC.connect() and CC.disconnect() take care of soft takeover when switching
-layers with ControlContainer.reconnectControls() and ControlContainer.applyLayer(). Soft takeover is
-not activated until the first input is received so it does not interfere with setting initial values
+A Pot is a Control for potentiometers (faders and knobs) with finite ranges, although it can be
+adapted for infintely turning encoders. Using a Pot Control is helpful because Pot.connect() and
+Pot.disconnect() take care of soft takeover when switching layers with
+ControlContainer.reconnectControls() and ControlContainer.applyLayer(). Soft takeover is not
+activated until the first input is received so it does not interfere with setting initial values
 for controllers that can report that information.
 
-The midi attribute does not need to be specified because CCs do not send any MIDI output. You may
+The midi attribute does not need to be specified because Pots do not send any MIDI output. You may
 want to specify it anyway to make the code self-documenting.
 
-To adapt a CC for an infinitely rotating encoder, replace its inValueScale() function with a
+To adapt a Pot for an infinitely rotating encoder, replace its inValueScale() function with a
 function that increments or decrements the parameter depending on the direction the encoder is
 turned. For example, if the encoder sends a MIDI value of 1 for a left turn and 127 for a right
 turn:
 
-MyController.effectUnit.dryWetKnob.inValueScale = function (value) {
+MyController.SomePot.inValueScale = function (value) {
     if (value === 1) {
         return this.getParameterIn() - .05;
     } else if (value === 127) {
         return this.getParameterIn() + .05;
     }
+}
 **/
-var CC = function (options) {
+var Pot = function (options) {
     Control.call(this, options);
 
     this.firstValueReceived = false;
 };
-CC.prototype = new Control({
+Pot.prototype = new Control({
     inValueScale: function (value) { return value / this.max; },
     input: function (channel, control, value, status, group) {
         this.setParameter(this.inValueScale(value));
@@ -616,7 +617,7 @@ CC.prototype = new Control({
 });
 
 /**
-RingEncoder is a Control for encoders with LED rings around them. These are different from CCs
+RingEncoder is a Control for encoders with LED rings around them. These are different from Pots
 because they are sent MIDI messages to keep their LED rings in sync with the state of Mixxx and
 do not require soft takeover.
 
@@ -862,10 +863,10 @@ the dry/wet knob of the whole chain or the superknob when shift is pressed. 3 bu
 enabling effects and the other button toggles the effect unit between hiding and showing effect
 parameters. The Controls provided are:
 
-dryWetKnob (CC)
+dryWetKnob (Pot)
 showParametersButton (Button)
 enableButtons[1-3] (ControlContainer of Buttons)
-knobs[1-3] (ControlContainer of CCs)
+knobs[1-3] (ControlContainer of Pots)
 enableOnChannelButtons (ControlContainer of Buttons)
 
 When the effect unit is showing the metaknobs of the effects but not each parameter, the knobs
@@ -896,7 +897,7 @@ CHANNEL_NAME).
 
 To map an EffectUnit for your controller, call the constructor with the unit number of the effect
 unit as the only argument. Then, set the midi attributes for the showParametersButton,
-enableButtons[1-3], and optionally enableOnChannelButtons (setting the midi attributes for the CCs
+enableButtons[1-3], and optionally enableOnChannelButtons (setting the midi attributes for the Pots
 is not necessary because they do not send any output). After the midi attributes are set up, call
 EffectUnit.init() to set up the output callbacks. For example:
 
@@ -913,8 +914,8 @@ Controllers designed for Serato and Rekordbox often have an encoder instead of a
 (labeled "Beats" for Serato or "Release FX" for Rekordbox) and a button labeled "Tap". If the
 encoder sends a MIDI signal when pushed, it is recommended to map the encoder push to the
 EffectUnit's showParametersButton, otherwise map that to the "Tap" button. To use the dryWetKnob
-CC with an encoder, replace its inValueScale() function with a function that can appropriately
-handle the signals sent by your controller. Refer to the CC documentation for an example.
+Pot with an encoder, replace its inValueScale() function with a function that can appropriately
+handle the signals sent by your controller. Refer to the Pot documentation for an example.
 
 For the shift functionality to work, the shift button of your controller must be mapped to a
 function that calls the shift()/unshift() functions of the EffectUnit on button press/release. If
@@ -926,7 +927,7 @@ EffectUnit = function (unitNumber) {
     var eu = this;
     this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
 
-    this.dryWetKnob = new CC({
+    this.dryWetKnob = new Pot({
         group: this.group,
         unshift: function () {
             this.inCo = 'mix';
@@ -963,9 +964,9 @@ EffectUnit = function (unitNumber) {
 
     this.EffectUnitKnob = function (number) {
         this.number = number;
-        CC.call(this);
+        Pot.call(this);
     };
-    this.EffectUnitKnob.prototype = new CC({
+    this.EffectUnitKnob.prototype = new Pot({
         onParametersHide: function () {
             this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.number + ']';
             this.inCo = 'meta';
@@ -1255,7 +1256,7 @@ P32.Deck = function (deckNumbers, channel) {
     // ===================================== MIXER ==============================================
     this.eqKnob = [];
     for (var k = 1; k <= 3; k++) {
-        this.eqKnob[k] = new CC({
+        this.eqKnob[k] = new Pot({
             midi: [0xB0 + channel, 0x02 + k],
             group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
             inCo: 'parameter' + k,
@@ -1267,7 +1268,7 @@ P32.Deck = function (deckNumbers, channel) {
         co: 'pfl',
     });
 
-    this.volume = new CC({
+    this.volume = new Pot({
         midi: [0xB0 + channel, 0x01],
         inCo: 'volume',
     });
