@@ -219,6 +219,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
             Qt::DirectConnection);
 
     CuePointer pLoadCue;
+    CuePointer pPreviewCue;
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
         if (pCue->getType() == Cue::CUE) {
             continue; // skip
@@ -227,17 +228,26 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
             DEBUG_ASSERT(!pLoadCue);
             pLoadCue = pCue;
         }
+        if (pCue->getType() == Cue::PREVIEW) {
+            pPreviewCue = pCue;
+        }
         int hotcue = pCue->getHotCue();
         if (hotcue != -1) {
             attachCue(pCue, hotcue);
         }
     }
     double cuePoint;
+    double previewCuePoint;
+    bool onPreviewDeck = false;
     if (pLoadCue) {
         cuePoint = pLoadCue->getPosition();
     } else {
         // If no load cue point is stored, read from track
         cuePoint = m_pLoadedTrack->getCuePoint();
+    }
+    if(pPreviewCue) {
+        previewCuePoint = pPreviewCue->getPosition();
+        onPreviewDeck = true;
     }
     m_pCuePoint->set(cuePoint);
 
@@ -260,6 +270,10 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
         // vinylcontrol is on and set to absolute.  This allows users to
         // load tracks and have the needle-drop be maintained.
         seekExact(0.0);
+    }
+
+    if(onPreviewDeck) {
+        seekExact(previewCuePoint);
     }
 
     trackCuesUpdated();
