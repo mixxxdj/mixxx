@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="2.0.0+" schemaVersion="1">
     <info>
-        <name>Hercules DJ Console 4-Mx (2.0)</name>
+        <name>Hercules DJ Console 4-Mx (2.1)</name>
         <author>josepma</author>
-        <description>Hercules DJ Console 4-Mx (2.0)</description>
+        <description>Hercules DJ Console 4-Mx (2.1) 2016-11-06</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3023</forums>
         <wiki>http://mixxx.org/wiki/doku.php/hercules_dj_console_4-mx</wiki>
     </info>
@@ -24,42 +24,42 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
+                <key>Hercules4Mx.LoadSelectedTrack</key>
                 <description>Button Load on Right Deck</description>
                 <status>0x90</status>
                 <midino>0x4B</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>LoadSelectedTrack</key>
+                <key>Hercules4Mx.LoadSelectedTrack</key>
                 <description>Button Load on Right Deck</description>
                 <status>0x91</status>
                 <midino>0x4B</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
+                <key>Hercules4Mx.LoadSelectedTrack</key>
                 <description>Button Load on Left Deck</description>
                 <status>0x90</status>
                 <midino>0x4A</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>LoadSelectedTrack</key>
+                <key>Hercules4Mx.LoadSelectedTrack</key>
                 <description>Button Load on Left Deck</description>
                 <status>0x91</status>
                 <midino>0x4A</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -88,6 +88,9 @@
                 <description>Button Mic On/Off (state)</description>
                 <status>0x90</status>
                 <midino>0x47</midino>
+                <options>
+                    <normal/>
+                </options>
             </control>
             <control>
                 <group>[Channel2]</group>
@@ -481,22 +484,22 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>Hercules4Mx.deckheadphones</key>
                 <description>Right Cue Select Deck (PFL headphones)</description>
                 <status>0x90</status>
                 <midino>0x2F</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>pfl</key>
+                <key>Hercules4Mx.deckheadphones</key>
                 <description>Right Cue Select Deck (PFL headphones)</description>
                 <status>0x91</status>
                 <midino>0x2F</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -521,22 +524,22 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>cue_default</key>
+                <key>Hercules4Mx.cueButton</key>
                 <description>Right Cue</description>
                 <status>0x90</status>
                 <midino>0x2D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>cue_default</key>
+                <key>Hercules4Mx.cueButton</key>
                 <description>Right Cue</description>
                 <status>0x91</status>
                 <midino>0x2D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1121,22 +1124,22 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>Hercules4Mx.deckheadphones</key>
                 <description>Left Deck Cue Select (PFL headphones)</description>
                 <status>0x90</status>
                 <midino>0x0F</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>pfl</key>
+                <key>Hercules4Mx.deckheadphones</key>
                 <description>Left Deck Cue Select (PFL headphones)</description>
                 <status>0x91</status>
                 <midino>0x0F</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1161,22 +1164,22 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>cue_default</key>
+                <key>Hercules4Mx.cueButton</key>
                 <description>Left Cue</description>
                 <status>0x90</status>
                 <midino>0x0D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>cue_default</key>
+                <key>Hercules4Mx.cueButton</key>
                 <description>Left Cue</description>
                 <status>0x91</status>
                 <midino>0x0D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
