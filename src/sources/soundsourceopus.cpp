@@ -2,10 +2,22 @@
 
 namespace mixxx {
 
+// Depends on kNumberOfPrefetchFrames (see below)
+//static
+const CSAMPLE SoundSourceOpus::kMaxDecodingError = 0.01f;
+
 namespace {
 
-// Decoded output of opusfile has a fixed sample rate of 48 kHz
+// Decoded output of opusfile has a fixed sample rate of 48 kHz (fullband)
 const SINT kSamplingRate = 48000;
+
+// http://opus-codec.org
+//  - Sampling rate 48 kHz (fullband)
+//  - Frame sizes from 2.5 ms to 60 ms
+//   => Up to 48000 kHz * 0.06 s = 2880 sample frames per data frame
+// Prefetching 2 * 2880 sample frames while seeking limits the decoding
+// errors to kMaxDecodingError (see definition below) during our tests.
+const SINT kNumberOfPrefetchFrames = 2 * 2880;
 
 // Parameter for op_channel_count()
 // See also: https://mf4.xiph.org/jenkins/view/opus/job/opusfile-unix/ws/doc/html/group__stream__info.html
@@ -37,6 +49,7 @@ SoundSourceOpus::SoundSourceOpus(const QUrl& url)
         : SoundSource(url, "opus"),
           m_pOggOpusFile(nullptr),
           m_downmixToStereo(false),
+          m_prefetchSampleBuffer(kNumberOfPrefetchFrames),
           m_curFrameIndex(getMinFrameIndex()) {
 }
 
@@ -213,11 +226,33 @@ void SoundSourceOpus::close() {
 
 SINT SoundSourceOpus::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    int seekResult = op_pcm_seek(m_pOggOpusFile, frameIndex);
+    DEBUG_ASSERT_AND_HANDLE(isValidFrameIndex(frameIndex)) {
+        // EOF reached
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    // Handle trivial case
+    if (frameIndex == m_curFrameIndex) {
+        // Nothing to do
+        return m_curFrameIndex;
+    }
+
+    if ((frameIndex > m_curFrameIndex) &&
+            ((frameIndex - m_curFrameIndex) <= 2 * kNumberOfPrefetchFrames)) {
+        // Prefer skipping over seeking if the seek position is up to
+        // 2 * kNumberOfPrefetchFrames in front of the current position
+        skipSampleFrames(frameIndex - m_curFrameIndex);
+        return m_curFrameIndex;
+    }
+
+    SINT seekIndex = std::max(frameIndex - kNumberOfPrefetchFrames, getMinFrameIndex());
+    int seekResult = op_pcm_seek(m_pOggOpusFile, seekIndex);
     if (0 == seekResult) {
-        m_curFrameIndex = frameIndex;
+        m_curFrameIndex = seekIndex;
+        // Skip prefetched frames
+        skipSampleFrames(frameIndex - seekIndex);
     } else {
         qWarning() << "Failed to seek OggOpus file:" << seekResult;
         const ogg_int64_t pcmOffset = op_pcm_tell(m_pOggOpusFile);
@@ -243,17 +278,31 @@ SINT SoundSourceOpus::readSampleFrames(
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
+        SINT numberOfFramesToRead = numberOfFramesRemaining;
+        if (sampleBuffer == nullptr) {
+            // NOTE(uklotzde): The opusfile API does not provide any
+            // functions for skipping samples in the audio stream. Calling
+            // API functions with a nullptr buffer does not return. Since
+            // seeking in Opus files requires prefetching + skipping we
+            // need to skip sample frame by reading into a temporary
+            // buffer
+            pSampleBuffer = m_prefetchSampleBuffer.data();
+            if (numberOfFramesToRead > m_prefetchSampleBuffer.size()) {
+                numberOfFramesToRead = m_prefetchSampleBuffer.size();
+            }
+        }
         int readResult = 0;
+        SINT numberOfSamplesToRead = frames2samples(numberOfFramesToRead);
         if (m_downmixToStereo) {
             readResult = op_read_float_stereo(
                     m_pOggOpusFile,
                     pSampleBuffer,
-                    frames2samples(numberOfFramesRemaining));
+                    numberOfSamplesToRead);
         } else {
             readResult = op_read_float(
                     m_pOggOpusFile,
                     pSampleBuffer,
-                    frames2samples(numberOfFramesRemaining),
+                    numberOfSamplesToRead,
                     nullptr);
         }
         if (0 < readResult) {

@@ -4,6 +4,7 @@
 
 #include "track/trackmetadata.h"
 #include "sources/soundsourceproxy.h"
+#include "sources/soundsourceopus.h"
 #include "test/mixxxtest.h"
 #include "util/samplebuffer.h"
 
@@ -76,15 +77,9 @@ class SoundSourceProxyTest: public MixxxTest {
             const CSAMPLE* expected,
             const CSAMPLE* actual,
             const char* errorMessage) {
-        // According to API documentation of op_pcm_seek():
-        // "...decoding after seeking may not return exactly the same
-        // values as would be obtained by decoding the stream straight
-        // through. However, such differences are expected to be smaller
-        // than the loss introduced by Opus's lossy compression."
-        const CSAMPLE kAcceptableOpusSeekDecodingError = 0.2f;
-
         for (SINT i = 0; i < size; ++i) {
-            EXPECT_NEAR(expected[i], actual[i], kAcceptableOpusSeekDecodingError) << errorMessage;
+            EXPECT_NEAR(expected[i], actual[i],
+                    mixxx::SoundSourceOpus::kMaxDecodingError) << errorMessage;
         }
     }
 };
