@@ -26,7 +26,8 @@ const QStringList MixxxLibraryFeature::kGroupingText =
         tr("Artist > Album"),
         tr("Album"),
         tr("Genre > Artist > Album"),
-        tr("Genre > Album")
+        tr("Genre > Album"),
+        tr("Folder")
 });
 
 const QList<QStringList> MixxxLibraryFeature::kGroupingOptions =
@@ -35,7 +36,8 @@ const QList<QStringList> MixxxLibraryFeature::kGroupingOptions =
         QStringList::fromStdList({ LIBRARYTABLE_ALBUM }),
         QStringList::fromStdList({ LIBRARYTABLE_GENRE, LIBRARYTABLE_ARTIST, 
                                    LIBRARYTABLE_ALBUM }),
-        QStringList::fromStdList({ LIBRARYTABLE_GENRE, LIBRARYTABLE_ALBUM })
+        QStringList::fromStdList({ LIBRARYTABLE_GENRE, LIBRARYTABLE_ALBUM }),
+        QStringList::fromStdList({ MixxxLibraryTreeModel::kLibraryFoder })
 });
 
 MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,

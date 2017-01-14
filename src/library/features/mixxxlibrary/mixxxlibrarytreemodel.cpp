@@ -18,6 +18,8 @@ namespace  {
 QHash<const MixxxLibraryTreeModel*, QHash<quint16, QModelIndex> > m_hashToIndex;
 }
 
+const QString MixxxLibraryTreeModel::kLibraryFoder = "$FOLDER$";
+
 MixxxLibraryTreeModel::MixxxLibraryTreeModel(LibraryFeature* pFeature,
                                              TrackCollection* pTrackCollection, 
                                              UserSettingsPointer pConfig,
@@ -69,14 +71,14 @@ QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
     }
     
     if (role == AbstractRole::RoleGroupingLetter) {
-        if (pTree == m_pLibraryItem || pTree == m_pSettings) {
+        if (pTree == m_pShowAll || pTree == m_pGrouping) {
             return QChar();
         }
         return TreeItemModel::data(index, role);
     }
     
     if (role == AbstractRole::RoleBreadCrumb) {
-        if (pTree == m_pLibraryItem) {
+        if (pTree == m_pShowAll) {
             return m_pFeature->title();
         } else {
             return TreeItemModel::data(index, role);
@@ -137,10 +139,10 @@ void MixxxLibraryTreeModel::reloadTree() {
     // Create root item
     TreeItem* pRootItem = setRootItem(std::make_unique<TreeItem>(m_pFeature));
 
-    m_pLibraryItem = pRootItem->appendChild(tr("Show all"), "");
+    m_pShowAll = pRootItem->appendChild(tr("Show all"), "");
 
     QString groupTitle = tr("Grouping Options (%1)").arg(m_sortOrder.join(" > "));
-    m_pSettings = pRootItem->appendChild(groupTitle, "");
+    m_pGrouping = pRootItem->appendChild(groupTitle, "");
     
     // Deletes the old root item if the previous root item was not null
     createTracksTree();
@@ -166,9 +168,9 @@ QVariant MixxxLibraryTreeModel::getQuery(TreeItem* pTree) const {
         return "";
     }
     
-    if (pTree == m_pLibraryItem) {
+    if (pTree == m_pShowAll) {
         return "";
-    } else if (pTree == m_pSettings) {
+    } else if (pTree == m_pGrouping) {
         return "$groupingSettings$";
     }
     

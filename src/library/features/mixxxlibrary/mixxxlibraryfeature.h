@@ -74,6 +74,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     static const QString kLibraryTitle;
     static const QList<QStringList> kGroupingOptions;
     static const QStringList kGroupingText;
+    static const QString kLibraryFolder;
     
   private slots:
     void setTreeSettings(const QVariant &settings);

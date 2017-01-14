@@ -40,13 +40,15 @@ bool LibraryFolderModel::setData(
                        ConfigValue((int)m_folderRecursive));
         return true;
     } else {
-        return TreeItemModel::setData(index, value, role);
+        return MixxxLibraryTreeModel::setData(index, value, role);
     }
 }
 
 QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
     if (role == AbstractRole::RoleSettings) {
         return m_folderRecursive;
+    } else if (role == AbstractRole::RoleBreadCrumb) {
+        return MixxxLibraryTreeModel::data(index, role);
     }
     
     TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
@@ -54,36 +56,20 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
         return TreeItemModel::data(index, role);
     }
     
-    if (role == AbstractRole::RoleBreadCrumb) {
-        if (pTree == m_pShowAllItem) {
-            return m_pFeature->title();
-        } else {
-            return TreeItemModel::data(index, role);
-        }
-    }
-    
     if (role == AbstractRole::RoleQuery) {
         // User has clicked the show all item
-        if (pTree == m_pShowAllItem) {
-            return "";
+        if (pTree == m_pShowAll || pTree == m_pGrouping) {
+            return MixxxLibraryTreeModel::data(index, role);
         }
         
         const QString param("%1:=\"%2\"");
         return param.arg("folder", pTree->getData().toString());
     }
 
-    return TreeItemModel::data(index, role);
+    return MixxxLibraryTreeModel::data(index, role);
 }
 
-void LibraryFolderModel::reloadTree() {
-    //qDebug() <<  "LibraryFolderModel::reloadTree()";
-    beginResetModel();
-    // Remove current root
-    setRootItem(std::make_unique<TreeItem>(m_pFeature));
-
-    // Add "show all" item
-    m_pShowAllItem = m_pRootItem->appendChild(tr("Show all"), "");
-
+void LibraryFolderModel::createTracksTree() {
     // Get the Library directories
     QStringList dirs(m_pTrackCollection->getDirectoryDAO().getDirs());
 
@@ -111,7 +97,6 @@ void LibraryFolderModel::reloadTree() {
         // For each source folder create the tree
         createTreeForLibraryDir(dir, query);
     }
-    endResetModel();
 }
 
 void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& query) {
@@ -124,8 +109,7 @@ void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& 
         QString location = query.value(1).toString();
         //qDebug() << location;
         
-        
-        // Remove the 
+        // Remove the first / character
         QString dispValue = location.mid(dir.size());
         if (dispValue.startsWith("/")) {
             dispValue = dispValue.mid(1);

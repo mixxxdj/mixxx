@@ -26,11 +26,20 @@ class MixxxLibraryTreeModel : public TreeItemModel {
     virtual QVariant data(const QModelIndex& index, int role) const;
     virtual bool setData(const QModelIndex& index, const QVariant& value, int role);
     
+    static const QString kLibraryFoder;
+    
   public slots:  
     void reloadTree() override;
     
-  private:
+  protected:
+    TreeItem* m_pGrouping;
+    TreeItem* m_pShowAll;
     
+    LibraryFeature* m_pFeature;
+    TrackCollection* m_pTrackCollection;
+    UserSettingsPointer m_pConfig;
+  
+  private:  
     struct CoverIndex {
         int iCoverHash;
         int iCoverLoc;
@@ -42,21 +51,15 @@ class MixxxLibraryTreeModel : public TreeItemModel {
   private slots:
     void coverFound(const QObject* requestor, int requestReference, const CoverInfo&,
                     QPixmap pixmap, bool fromCache);
+    virtual void createTracksTree();
     
   private:    
     QVariant getQuery(TreeItem* pTree) const;
-    void createTracksTree();
     void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);
     
-    LibraryFeature* m_pFeature;
-    TrackCollection* m_pTrackCollection;
-    UserSettingsPointer m_pConfig;
     
     QStringList m_sortOrder;
     QStringList m_coverQuery;
-    
-    TreeItem* m_pSettings;
-    TreeItem* m_pLibraryItem;
     
     bool m_folderRecursive;
 };
