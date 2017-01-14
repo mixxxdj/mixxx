@@ -173,7 +173,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     // sample accurate decoding. The decoder needs to decode
     // some frames in advance to produce the same result at
     // each position in the stream.
-    SINT seekIndex = std::max(SINT(frameIndex - kNumberOfPrefetchFrames), SINT(0));
+    SINT seekIndex = std::max(SINT(frameIndex - kNumberOfPrefetchFrames), AudioSource::getMinFrameIndex());
 
     LONGLONG seekPos = m_streamUnitConverter.fromFrameIndex(seekIndex);
     DEBUG_ASSERT(seekPos >= 0);
