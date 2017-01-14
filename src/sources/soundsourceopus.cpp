@@ -36,6 +36,7 @@ private:
 SoundSourceOpus::SoundSourceOpus(const QUrl& url)
         : SoundSource(url, "opus"),
           m_pOggOpusFile(nullptr),
+          m_downmixToStereo(false),
           m_curFrameIndex(getMinFrameIndex()) {
 }
 
@@ -139,7 +140,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     return OK;
 }
 
-SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     // From opus/opusfile.h
     // On Windows, this string must be UTF-8 (to allow access to
     // files whose names cannot be represented in the current
@@ -172,6 +173,9 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audi
     const int channelCount = op_channel_count(m_pOggOpusFile, kCurrentStreamLink);
     if (0 < channelCount) {
         setChannelCount(channelCount);
+        m_downmixToStereo = (getChannelCount() > AudioSignal::kChannelCountStereo) &&
+                (audioSrcCfg.getChannelCount() >= AudioSignal::kChannelCountMono) &&
+                (audioSrcCfg.getChannelCount() <= AudioSignal::kChannelCountStereo);
     } else {
         qWarning() << "Failed to read channel configuration of OggOpus file:" << getUrlString();
         return OpenResult::FAILED;
@@ -239,9 +243,19 @@ SINT SoundSourceOpus::readSampleFrames(
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
-        int readResult = op_read_float(m_pOggOpusFile,
-                pSampleBuffer,
-                frames2samples(numberOfFramesRemaining), nullptr);
+        int readResult = 0;
+        if (m_downmixToStereo) {
+            readResult = op_read_float_stereo(
+                    m_pOggOpusFile,
+                    pSampleBuffer,
+                    frames2samples(numberOfFramesRemaining));
+        } else {
+            readResult = op_read_float(
+                    m_pOggOpusFile,
+                    pSampleBuffer,
+                    frames2samples(numberOfFramesRemaining),
+                    nullptr);
+        }
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             pSampleBuffer += frames2samples(readResult);

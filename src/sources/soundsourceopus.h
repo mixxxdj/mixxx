@@ -30,6 +30,7 @@ private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     OggOpusFile *m_pOggOpusFile;
+    bool m_downmixToStereo;
 
     SINT m_curFrameIndex;
 };
