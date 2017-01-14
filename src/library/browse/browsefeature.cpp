@@ -122,7 +122,7 @@ BrowseFeature::~BrowseFeature() {
 }
 
 QVariant BrowseFeature::title() {
-    return QVariant(tr("Browse"));
+    return QVariant(tr("This Computer"));
 }
 
 void BrowseFeature::slotAddQuickLink() {
@@ -354,8 +354,8 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 }
 
 QString BrowseFeature::getRootViewHtml() const {
-    QString browseTitle = tr("Browse");
-    QString browseSummary = tr("Browse lets you navigate, view, and load tracks"
+    QString browseTitle = tr("This Computer");
+    QString browseSummary = tr("\"This Computer\" lets you navigate, view, and load tracks"
                         " from folders on your hard disk and external devices.");
 
     QString html;
