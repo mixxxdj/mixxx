@@ -139,7 +139,7 @@ QVariant MixxxLibraryFeature::title() {
 }
 
 QIcon MixxxLibraryFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_library.png");
+    return QIcon(":/images/library/ic_library_tracks.png");
 }
 
 TreeItemModel* MixxxLibraryFeature::getChildModel() {
