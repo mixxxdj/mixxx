@@ -188,7 +188,7 @@ void BrowseFeature::slotRemoveQuickLink() {
 }
 
 QIcon BrowseFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_browse.png");
+    return QIcon(":/images/library/ic_library_this_computer.png");
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {
