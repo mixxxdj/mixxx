@@ -166,26 +166,28 @@ SINT SoundSourceOggVorbis::readSampleFrames(
                 numberOfFramesRemaining, &currentSection);
         if (0 < readResult) {
             m_curFrameIndex += readResult;
-            if (kChannelCountMono == getChannelCount()) {
-                if (readStereoSamples) {
+            if (pSampleBuffer != nullptr) {
+                if (kChannelCountMono == getChannelCount()) {
+                    if (readStereoSamples) {
+                        for (long i = 0; i < readResult; ++i) {
+                            *pSampleBuffer++ = pcmChannels[0][i];
+                            *pSampleBuffer++ = pcmChannels[0][i];
+                        }
+                    } else {
+                        for (long i = 0; i < readResult; ++i) {
+                            *pSampleBuffer++ = pcmChannels[0][i];
+                        }
+                    }
+                } else if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
                     for (long i = 0; i < readResult; ++i) {
                         *pSampleBuffer++ = pcmChannels[0][i];
-                        *pSampleBuffer++ = pcmChannels[0][i];
+                        *pSampleBuffer++ = pcmChannels[1][i];
                     }
                 } else {
                     for (long i = 0; i < readResult; ++i) {
-                        *pSampleBuffer++ = pcmChannels[0][i];
-                    }
-                }
-            } else if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
-                for (long i = 0; i < readResult; ++i) {
-                    *pSampleBuffer++ = pcmChannels[0][i];
-                    *pSampleBuffer++ = pcmChannels[1][i];
-                }
-            } else {
-                for (long i = 0; i < readResult; ++i) {
-                    for (SINT j = 0; j < getChannelCount(); ++j) {
-                        *pSampleBuffer++ = pcmChannels[j][i];
+                        for (SINT j = 0; j < getChannelCount(); ++j) {
+                            *pSampleBuffer++ = pcmChannels[j][i];
+                        }
                     }
                 }
             }
