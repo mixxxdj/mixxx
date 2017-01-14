@@ -68,6 +68,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool isColumnHiddenByDefault(int column) override;
     TrackPointer getTrack(const QModelIndex& index) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
+    const QLinkedList<int> getTrackRows(TrackId trackId) const override;
     QString getTrackLocation(const QModelIndex& index) const override;
     void hideTracks(const QModelIndexList& indices) override;
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
@@ -83,9 +84,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void select();
 
   protected:
-    // Returns the row of trackId in this result set. If trackId is not present,
-    // returns -1.
-    const QLinkedList<int> getTrackRows(TrackId trackId) const;
     void setTable(const QString& tableName, const QString& trackIdColumn,
                   const QStringList& tableColumns,
                   QSharedPointer<BaseTrackCache> trackSource);
@@ -138,6 +136,13 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
         }
     };
 
+    typedef QHash<TrackId, QLinkedList<int>> TrackId2Rows;
+
+    void clearRows();
+    void replaceRows(
+            QVector<RowInfo>&& rows,
+            TrackId2Rows&& trackIdToRows);
+
     QVector<RowInfo> m_rowInfo;
 
     QString m_tableName;
@@ -150,7 +155,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool m_bInitialized;
     QSqlRecord m_queryRecord;
     QHash<TrackId, int> m_trackSortOrder;
-    QHash<TrackId, QLinkedList<int> > m_trackIdToRows;
+    TrackId2Rows m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant> > m_headerInfo;

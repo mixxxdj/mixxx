@@ -63,6 +63,10 @@ void DlgTrackInfo::init() {
             this, SLOT(slotBpmTwoThirds()));
     connect(bpmThreeFourth, SIGNAL(clicked()),
             this, SLOT(slotBpmThreeFourth()));
+    connect(bpmFourThirds, SIGNAL(clicked()),
+            this, SLOT(slotBpmFourThirds()));
+    connect(bpmThreeHalves, SIGNAL(clicked()),
+            this, SLOT(slotBpmThreeHalves()));
     connect(bpmClear, SIGNAL(clicked()),
             this, SLOT(slotBpmClear()));
 
@@ -498,6 +502,20 @@ void DlgTrackInfo::slotBpmTwoThirds() {
 
 void DlgTrackInfo::slotBpmThreeFourth() {
     m_pBeatsClone->scale(Beats::THREEFOURTHS);
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
+}
+
+void DlgTrackInfo::slotBpmFourThirds() {
+    m_pBeatsClone->scale(Beats::FOURTHIRDS);
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
+}
+
+void DlgTrackInfo::slotBpmThreeHalves() {
+    m_pBeatsClone->scale(Beats::THREEHALVES);
     // read back the actual value
     double newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue);

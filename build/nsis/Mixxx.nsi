@@ -189,7 +189,7 @@ Section "Mixxx (required)" SecMixxx
 
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
-  
+
   !ifdef STATICDEPS
     ; The below is not fatal if Mixxx is built with static dependencies
     ; since there may not be any DLLs to bundle
@@ -197,7 +197,7 @@ Section "Mixxx (required)" SecMixxx
   !else
     File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
   !endif
-  
+
   ; If PDB files are present bundle them. For release builds we will not copy
   ; PDBs into the distXX folder so they won't get bundled.
   File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.pdb"
@@ -357,7 +357,6 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Akai-LPD8-RK.midi.xml"
   Delete "$INSTDIR\controllers\American Audio RADIUS 2000 CH1.midi.xml"
   Delete "$INSTDIR\controllers\American Audio RADIUS 2000 CH2.midi.xml"
-  Delete "$INSTDIR\controllers\American Audio VMS2 Alternative.midi.xml"
   Delete "$INSTDIR\controllers\American Audio VMS2.midi.xml"
   Delete "$INSTDIR\controllers\American Audio VMS4.midi.xml"
   Delete "$INSTDIR\controllers\American-Audio-RADIUS-2000-scripts.js"
@@ -366,11 +365,13 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Behringer BCD2000.midi.xml"
   Delete "$INSTDIR\controllers\Behringer BCD3000 Advanced.midi.xml"
   Delete "$INSTDIR\controllers\Behringer BCD3000.midi.xml"
+  Delete "$INSTDIR\controllers\Behringer CMDStudio4a.midi.xml"
   Delete "$INSTDIR\controllers\Behringer-BCD2000-scripts.js"
   Delete "$INSTDIR\controllers\Behringer-BCD3000-Advanced-scripts.js"
   Delete "$INSTDIR\controllers\Behringer-BCD3000-scripts.js"
   Delete "$INSTDIR\controllers\Behringer CMD Micro.midi.xml"
   Delete "$INSTDIR\controllers\Behringer-CMD-Micro-scripts.js"
+  Delete "$INSTDIR\controllers\Behringer-CMDStudio4a-scripts.js"
   Delete "$INSTDIR\controllers\common-bulk-midi.js"
   Delete "$INSTDIR\controllers\common-controller-scripts.js"
   Delete "$INSTDIR\controllers\common-hid-devices.js"

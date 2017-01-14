@@ -80,7 +80,6 @@ class BpmControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
-    void slotSetEngineBpm(double);
     void slotFileBpmChanged(double);
     void slotAdjustBeatsFaster(double);
     void slotAdjustBeatsSlower(double);
@@ -91,7 +90,8 @@ class BpmControl : public EngineControl {
     void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
-    void slotAdjustRateSlider();
+    void slotUpdateRateSlider();
+    void slotUpdateEngineBpm();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);

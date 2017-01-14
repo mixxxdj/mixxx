@@ -77,6 +77,11 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     OggOpusFileOwner l_ptrOpusFile(
             op_open_file(qBAFilename.constData(), &error));
 
+    // Bug #1541667.
+    if (!l_ptrOpusFile) {
+        return ERR;
+    }
+
     int i = 0;
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
 
