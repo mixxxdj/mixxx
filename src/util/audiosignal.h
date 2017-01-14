@@ -71,14 +71,7 @@ public:
         DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate); // unsigned value
     }
 
-    // all-default memory management
-    AudioSignal(const AudioSignal&) = default;
     virtual ~AudioSignal() = default;
-// Visual Studio does not support default generated move constructors yet
-#if !defined(_MSC_VER) || _MSC_VER > 1900
-    AudioSignal(AudioSignal&&) = default;
-    AudioSignal& operator=(AudioSignal&&) = default;
-#endif
 
     // Returns the ordering of samples in contiguous buffers
     SampleLayout getSampleLayout() const {
