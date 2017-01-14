@@ -173,16 +173,6 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>ReloopBeatpad.spflBtn</key>
-                <description>SHIFT+PFL 2</description>
-                <status>0x91</status>
-                <midino>0x61</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel1]</group>
                 <key>ReloopBeatpad.PlayBtn</key>
                 <description>PLAY 1</description>
@@ -883,16 +873,6 @@
                 </options>
             </control>
             <control>
-                <group>[Recording]</group>
-                <key>ReloopBeatpad.sRecBtn</key>
-                <description>REC Btn</description>
-                <status>0x94</status>
-                <midino>0x01</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel1]</group>
                 <key>pitch_set_default</key>
                 <description>SHIFT_FILTER_MID 1</description>
@@ -1153,8 +1133,18 @@
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>ReloopBeatpad.spflBtn</key>
+                <description>SHIFT+PFL 2</description>
+                <status>0x91</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>ReloopBeatpad.reverseroll</key>
+                <key>ReloopBeatpad.ReverseRoll</key>
                 <description>CENSOR 1</description>
                 <status>0x90</status>
                 <midino>0x20</midino>
@@ -1174,7 +1164,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ReloopBeatpad.reverseroll</key>
+                <key>ReloopBeatpad.ReverseRoll</key>
                 <description>CENSOR 2</description>
                 <status>0x91</status>
                 <midino>0x20</midino>
@@ -1184,7 +1174,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ReloopBeatpad.brake</key>
+                <key>ReloopBeatpad.Brake</key>
                 <description>SHIFT_JUMP 1 (BRAKE 1)</description>
                 <status>0x90</status>
                 <midino>0x1F</midino>
@@ -1204,7 +1194,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ReloopBeatpad.brake</key>
+                <key>ReloopBeatpad.Brake</key>
                 <description>SHIFT_JUMP 2 (BRAKE 2)</description>
                 <status>0x91</status>
                 <midino>0x1F</midino>
@@ -1763,6 +1753,16 @@
                 </options>
             </control>
             <control>
+                <group>[Recording]</group>
+                <key>ReloopBeatpad.sRecBtn</key>
+                <description>REC Btn</description>
+                <status>0x94</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>volume</key>
                 <description>SHIFT_VOLUME 1 (Level fader)</description>
@@ -1914,8 +1914,8 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ReloopBeatpad.FXSelectKnob</key>
-                <description>SHIFT_FXSELECT2</description>
+                <key>ReloopBeatpad.sFXSelectKnob</key>
+                <description>SHIFT_FXSELECT 2</description>
                 <status>0xB1</status>
                 <midino>0x02</midino>
                 <options>
@@ -1982,7 +1982,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>ReloopBeatpad.inboundSysex</key>
+                <key>ReloopBeatpad.InboundSysex</key>
                 <description>SYSEX</description>
                 <status>0xF0</status>
                 <options>
