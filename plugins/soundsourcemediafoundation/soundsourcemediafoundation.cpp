@@ -173,7 +173,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     // sample accurate decoding. The decoder needs to decode
     // some frames in advance to produce the same result at
     // each position in the stream.
-    SINT seekIndex = std::max(SINT(frameIndex - kNumberOfPrefetchFrames), SINT(0));
+    SINT seekIndex = std::max(SINT(frameIndex - kNumberOfPrefetchFrames), AudioSource::getMinFrameIndex());
 
     LONGLONG seekPos = m_streamUnitConverter.fromFrameIndex(seekIndex);
     DEBUG_ASSERT(seekPos >= 0);
@@ -194,22 +194,29 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
         //   "After seeking, the application should call IMFSourceReader::ReadSample
         //    and advance to the desired position.
         SINT skipFramesCount = frameIndex - seekIndex;
-        // We need to fetch at least 1 sample from the reader to obtain the
-        // current position!
-        DEBUG_ASSERT(skipFramesCount > 0);
-        skipSampleFrames(skipFramesCount);
-        // Now m_currentFrameIndex reflects the actual position of the reader
-        if (m_currentFrameIndex < frameIndex) {
-            // Skip more samples if frameIndex has not yet been reached
-            skipSampleFrames(frameIndex - m_currentFrameIndex);
-        }
-        if (m_currentFrameIndex != frameIndex) {
-            qWarning() << kLogPreamble
-                    << "Seek to frame"
-                    << frameIndex
-                    << "failed";
-            // Jump to end of stream (= invalidate current position)
-            m_currentFrameIndex = getMaxFrameIndex();
+        if (skipFramesCount > 0) {
+            // We need to fetch at least 1 sample from the reader to obtain the
+            // current position!
+            skipSampleFrames(skipFramesCount);
+            // Now m_currentFrameIndex reflects the actual position of the reader
+            if (m_currentFrameIndex < frameIndex) {
+                // Skip more samples if frameIndex has not yet been reached
+                skipSampleFrames(frameIndex - m_currentFrameIndex);
+            }
+            if (m_currentFrameIndex != frameIndex) {
+                qWarning() << kLogPreamble
+                        << "Seek to frame"
+                        << frameIndex
+                        << "failed";
+                // Jump to end of stream (= invalidate current position)
+                m_currentFrameIndex = getMaxFrameIndex();
+            }
+        } else {
+            // We are at the beginning of the stream and don't need
+            // to skip any frames. Calling IMFSourceReader::ReadSample
+            // is not necessary in this special case.
+            DEBUG_ASSERT(frameIndex == AudioSource::getMinFrameIndex());
+            m_currentFrameIndex = frameIndex;
         }
     } else {
         qWarning() << kLogPreamble
