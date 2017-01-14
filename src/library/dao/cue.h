@@ -16,8 +16,8 @@ class Cue : public QObject {
   public:
     enum CueType {
         INVALID = 0,
-        CUE     = 1,
-        LOAD    = 2,
+        CUE     = 1, // hot cue
+        LOAD    = 2, // the cue
         BEAT    = 3,
         LOOP    = 4,
         JUMP    = 5,
@@ -32,11 +32,11 @@ class Cue : public QObject {
     CueType getType() const;
     void setType(CueType type);
 
-    int getPosition() const;
-    void setPosition(int position);
+    double getPosition() const;
+    void setPosition(double samplePosition);
 
-    int getLength() const;
-    void setLength(int length);
+    double getLength() const;
+    void setLength(double length);
 
     int getHotCue() const;
     void setHotCue(int hotCue);
@@ -52,7 +52,7 @@ class Cue : public QObject {
 
   private:
     explicit Cue(TrackId trackId);
-    Cue(int id, TrackId trackId, CueType type, int position, int length,
+    Cue(int id, TrackId trackId, CueType type, double position, double length,
         int hotCue, QString label, QColor color);
     void setDirty(bool dirty);
     void setId(int id);
@@ -64,8 +64,8 @@ class Cue : public QObject {
     int m_iId;
     TrackId m_trackId;
     CueType m_type;
-    int m_iPosition;
-    int m_iLength;
+    double m_samplePosition;
+    double m_length;
     int m_iHotCue;
     QString m_label;
     QColor m_color;
