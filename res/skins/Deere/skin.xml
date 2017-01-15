@@ -91,6 +91,21 @@
     <SetVariable name="VerticalStretchButtonMaximumSize">20,-1</SetVariable>
     <SetVariable name="VerticalStretchButtonSizePolicy">f,me</SetVariable>
 
+    <SingletonDefinition>
+      <ObjectName>DecksMixerSingleton</ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <SizePolicy>me,min</SizePolicy>
+          <Children>
+            <Template src="skin:left_gutter.xml"/>
+            <Template src="skin:mixer.xml"/>
+            <Template src="skin:right_gutter.xml"/>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </SingletonDefinition>
+
     <WidgetGroup>
       <SizePolicy>me,me</SizePolicy>
       <Layout>vertical</Layout>
