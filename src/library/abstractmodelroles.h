@@ -9,6 +9,7 @@ enum AbstractRole {
     RoleDivider,
     RoleQuery,
     RoleBreadCrumb,
+    RoleSorting,
     RoleSettings,
     RoleGroupingLetter
 };

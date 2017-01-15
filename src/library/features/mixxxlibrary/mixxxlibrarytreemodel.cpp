@@ -58,7 +58,7 @@ MixxxLibraryTreeModel::MixxxLibraryTreeModel(LibraryFeature* pFeature,
 
 
 QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
-    if (role == AbstractRole::RoleSettings) {
+    if (role == AbstractRole::RoleSorting) {
         return m_sortOrder;
     }
     
@@ -69,14 +69,14 @@ QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
     }
     
     if (role == AbstractRole::RoleGroupingLetter) {
-        if (pTree == m_pLibraryItem || pTree == m_pSettings) {
+        if (pTree == m_pShowAll || pTree == m_pGrouping) {
             return QChar();
         }
         return TreeItemModel::data(index, role);
     }
     
     if (role == AbstractRole::RoleBreadCrumb) {
-        if (pTree == m_pLibraryItem) {
+        if (pTree == m_pShowAll) {
             return m_pFeature->title();
         } else {
             return TreeItemModel::data(index, role);
@@ -121,7 +121,7 @@ QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
 
 bool MixxxLibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, 
                                     int role) {
-    if (role == AbstractRole::RoleSettings) {
+    if (role == AbstractRole::RoleSorting) {
         m_sortOrder = value.toStringList();
         m_pConfig->set(ConfigKey("[Library]", LIBRARYTREEMODEL_SORT),
                        ConfigValue(m_sortOrder.join(",")));
@@ -137,10 +137,10 @@ void MixxxLibraryTreeModel::reloadTree() {
     // Create root item
     TreeItem* pRootItem = setRootItem(std::make_unique<TreeItem>(m_pFeature));
 
-    m_pLibraryItem = pRootItem->appendChild(tr("Show all"), "");
+    m_pShowAll = pRootItem->appendChild(tr("Show all"), "");
 
-    QString groupTitle = tr("Grouping Options (%1)").arg(m_sortOrder.join(" > "));
-    m_pSettings = pRootItem->appendChild(groupTitle, "");
+    QString groupTitle = tr("Grouping Options (%1)").arg(getGroupingOptions());
+    m_pGrouping = pRootItem->appendChild(groupTitle, "");
     
     // Deletes the old root item if the previous root item was not null
     createTracksTree();
@@ -166,9 +166,9 @@ QVariant MixxxLibraryTreeModel::getQuery(TreeItem* pTree) const {
         return "";
     }
     
-    if (pTree == m_pLibraryItem) {
+    if (pTree == m_pShowAll) {
         return "";
-    } else if (pTree == m_pSettings) {
+    } else if (pTree == m_pGrouping) {
         return "$groupingSettings$";
     }
     
@@ -318,6 +318,10 @@ void MixxxLibraryTreeModel::createTracksTree() {
             pTree->setTrackCount(pTree->getTrackCount() + val);
         }
     }
+}
+
+QString MixxxLibraryTreeModel::getGroupingOptions() {
+    return m_sortOrder.join(" > ");
 }
 
 void MixxxLibraryTreeModel::addCoverArt(const MixxxLibraryTreeModel::CoverIndex& index,
