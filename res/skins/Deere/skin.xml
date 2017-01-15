@@ -94,7 +94,15 @@
     <SingletonDefinition>
       <ObjectName>DecksMixerSingleton</ObjectName>
       <Children>
-        <Template src="skin:decks_mixer_wrapper.xml"/>
+        <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <SizePolicy>me,min</SizePolicy>
+          <Children>
+            <Template src="skin:left_gutter.xml"/>
+            <Template src="skin:mixer.xml"/>
+            <Template src="skin:right_gutter.xml"/>
+          </Children>
+        </WidgetGroup>
       </Children>
     </SingletonDefinition>
 
