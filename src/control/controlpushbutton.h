@@ -19,7 +19,6 @@
 #define CONTROLPUSHBUTTON_H
 
 #include "control/controlobject.h"
-#include "controllers/midi/midimessage.h"
 
 /**
   *@author Tue and Ken Haste Andersen
