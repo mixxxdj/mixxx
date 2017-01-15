@@ -11,6 +11,7 @@
 #include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wtracktableview.h"
 #include "library/library.h"
 #include "library/libraryview.h"
 #include "util/container.h"
@@ -91,9 +92,9 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pMoveFocusBackward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusBackward(double)));
     connect(m_pMoveFocus.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocus(double)));
 
-    // Control to choose the currently selected item in focussed widget (double click)
-    m_pChooseItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ChooseItem"));
-    connect(m_pChooseItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotChooseItem(double)));
+    // Control to "goto" the currently selected item in focussed widget (context dependent)
+    m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
+    connect(m_pGoToItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotGoToItem(double)));
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
@@ -233,7 +234,7 @@ void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
-    
+
     if (v > 0) {
         LibraryView* activeView = m_pLibrary->getActiveView();
         if (!activeView) {
@@ -410,18 +411,17 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
     }
 }
 
-void LibraryControl::slotChooseItem(double v) {
-    // XXX: Make this more generic? If Enter key is mapped correctly maybe we can use that
-    if (!m_pLibrary) {
-        return;
+void LibraryControl::slotGoToItem(double v) {
+    if (v > 0) {
+        if (dynamic_cast<WTrackTableView*>(QApplication::focusWidget())) {
+            // If main pane is focused then try to load the selected track into first stopped
+            return slotLoadSelectedIntoFirstStopped(v);
+        } else {
+            // Otherwise we press return + tab to select current item and go to the next pane
+            emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier});
+            emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier});
+        }
     }
-    // Load current track if a LibraryView object has focus
-    const auto activeView = m_pLibrary->getActiveView();
-    if (activeView && activeView->hasFocus()) {
-        return slotLoadSelectedIntoFirstStopped(v);
-    }
-    // Otherwise toggle the sidebar item expanded state (like a double-click)
-    slotToggleSelectedSidebarItem(v);
 }
 
 void LibraryControl::slotFontSize(double v) {
