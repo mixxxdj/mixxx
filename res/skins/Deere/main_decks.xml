@@ -111,7 +111,7 @@
     </Connection>
   </WidgetGroup>
 
-    <WidgetGroup>
+  <WidgetGroup>
     <ObjectName>MainDeckContainer</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,me</SizePolicy>

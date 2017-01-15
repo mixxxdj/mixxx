@@ -10,10 +10,11 @@
   <WidgetGroup>
     <ObjectName>HotcueGrid</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>max,max</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
       <WidgetGroup>
         <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">1</SetVariable>
@@ -24,8 +25,13 @@
         </Children>
       </WidgetGroup>
 
+      <!-- Workaround. Remove when https://bugs.launchpad.net/mixxx/+bug/1578111
+          is fixed -->
+      <WidgetGroup><Size>1min,2f</Size><Children/></WidgetGroup>
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">3</SetVariable>
@@ -49,11 +55,11 @@
   <WidgetGroup>
     <ObjectName>HotcueGridExtended</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>max,max</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
       <WidgetGroup>
-        <ObjectName>HotcueGridExtendedRow1</ObjectName>
         <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">1</SetVariable>
@@ -71,8 +77,8 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>HotcueGridExtendedRow2</ObjectName>
         <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">5</SetVariable>

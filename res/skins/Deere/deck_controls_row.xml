@@ -15,8 +15,11 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:transport.xml"/>
+          <!-- Expanding spacers in between control contexts -->
+          <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
           <Template src="skin:beatloop.xml"/>
           <Template src="skin:loop.xml"/>
+          <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
           <Template src="skin:hotcue.xml"/>
         </Children>
         <Connection>
@@ -49,7 +52,12 @@
                 <SetVariable name="state_1_pressed">icon/ic_quantize_48px.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">icon/ic_quantize_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,quantize</SetVariable>
-              </Template>
+                </Template>
+
+                <!-- Workaround for layout spacing -->
+                <Template src="skin:spacer_hx.xml">
+                  <SetVariable name="width">2</SetVariable>
+                </Template>
 
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">keylock</SetVariable>
@@ -64,6 +72,11 @@
                 <SetVariable name="state_1_pressed">icon/ic_key_48px.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">icon/ic_key_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,keylock</SetVariable>
+              </Template>
+
+              <!-- Workaround for layout spacing -->
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">2</SetVariable>
               </Template>
 
               <Template src="skin:left_2state_button.xml">
@@ -102,6 +115,11 @@
             <SetVariable name="left_connection_control"><Variable name="group"/>,cue_default</SetVariable>
             <SetVariable name="right_connection_control"><Variable name="group"/>,cue_gotoandstop</SetVariable>
             <SetVariable name="display_connection_control"><Variable name="group"/>,cue_indicator</SetVariable>
+          </Template>
+
+          <!-- Workaround for layout spacing -->
+          <Template src="skin:spacer_hx.xml">
+            <SetVariable name="width">2</SetVariable>
           </Template>
 
           <Template src="skin:left_right_display_2state_button.xml">
