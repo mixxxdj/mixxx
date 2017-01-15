@@ -111,7 +111,16 @@ void SoundSourceOggVorbis::close() {
 SINT SoundSourceOggVorbis::seekSampleFrame(
         SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    if (frameIndex == m_curFrameIndex) {
+        return m_curFrameIndex;
+    }
 
     const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
     if (0 == seekResult) {

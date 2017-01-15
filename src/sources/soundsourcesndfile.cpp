@@ -78,7 +78,17 @@ void SoundSourceSndFile::close() {
 
 SINT SoundSourceSndFile::seekSampleFrame(
         SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    if (frameIndex == m_curFrameIndex) {
+        return m_curFrameIndex;
+    }
 
     const sf_count_t seekResult = sf_seek(m_pSndFile, frameIndex, SEEK_SET);
     if (0 <= seekResult) {

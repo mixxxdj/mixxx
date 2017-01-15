@@ -238,23 +238,20 @@ void SoundSourceOpus::close() {
 SINT SoundSourceOpus::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
-    DEBUG_ASSERT_AND_HANDLE(isValidFrameIndex(frameIndex)) {
-        // EOF reached
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF
         m_curFrameIndex = getMaxFrameIndex();
         return m_curFrameIndex;
     }
 
-    // Handle trivial case
-    if (frameIndex == m_curFrameIndex) {
-        // Nothing to do
-        return m_curFrameIndex;
-    }
-
-    if ((frameIndex > m_curFrameIndex) &&
+    if ((frameIndex > m_curFrameIndex) && // seeking forward
             ((frameIndex - m_curFrameIndex) <= 2 * kNumberOfPrefetchFrames)) {
         // Prefer skipping over seeking if the seek position is up to
         // 2 * kNumberOfPrefetchFrames in front of the current position
         skipSampleFrames(frameIndex - m_curFrameIndex);
+        return m_curFrameIndex;
+    }
+    if (frameIndex == m_curFrameIndex) {
         return m_curFrameIndex;
     }
 

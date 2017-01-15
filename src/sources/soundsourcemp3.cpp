@@ -415,14 +415,13 @@ SINT SoundSourceMp3::restartDecoding(
         mad_synth_mute(&m_madSynth);
     }
 
-    if (!decodeFrameHeader(&m_madFrame.header, &m_madStream, false)) {
-        if (!isStreamValid(m_madStream)) {
-            // Failure -> Seek to EOF
-            return getFrameCount();
-        }
+    if (decodeFrameHeader(&m_madFrame.header, &m_madStream, false)
+            && isStreamValid(m_madStream)) {
+        m_curFrameIndex = seekFrame.frameIndex;
+    } else {
+        // Failure -> Seek to EOF
+        m_curFrameIndex = getMaxFrameIndex();
     }
-
-    return seekFrame.frameIndex;
 }
 
 void SoundSourceMp3::addSeekFrame(
@@ -485,17 +484,14 @@ SINT SoundSourceMp3::findSeekFrameIndex(
 
 SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    // Handle trivial case
-    if (m_curFrameIndex == frameIndex) {
-        // Nothing to do
-        return m_curFrameIndex;
-    }
-    // Handle edge case
-    if (getMaxFrameIndex() <= frameIndex) {
+    if (frameIndex >= getMaxFrameIndex()) {
         // EOF reached
         m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    if (frameIndex == m_curFrameIndex) {
         return m_curFrameIndex;
     }
 
@@ -525,23 +521,21 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
         }
 
         m_curFrameIndex = restartDecoding(m_seekFrameList[seekFrameIndex]);
-        if (getMaxFrameIndex() <= m_curFrameIndex) {
-            // out of range -> abort
-            return m_curFrameIndex;
-        }
+
         DEBUG_ASSERT(findSeekFrameIndex(m_curFrameIndex) == seekFrameIndex);
     }
 
-    // Decoding starts before the actual target position
+    // Decoding starts at or before the actual target position
     DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
 
     // Skip (= decode and discard) all samples up to the target position
-    const SINT prefetchFrameCount = frameIndex - m_curFrameIndex;
-    const SINT skipFrameCount = skipSampleFrames(prefetchFrameCount);
-    DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
-    if (skipFrameCount < prefetchFrameCount) {
-        qWarning() << "Failed to prefetch sample data while seeking"
-                << skipFrameCount << "<" << prefetchFrameCount;
+    if (m_curFrameIndex < frameIndex) {
+        skipSampleFrames(frameIndex - m_curFrameIndex);
+        DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
+        if (m_curFrameIndex < frameIndex) {
+            qWarning() << "Failed to prefetch sample data while seeking:"
+                    << m_curFrameIndex << "<" << frameIndex;
+        }
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));

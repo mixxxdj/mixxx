@@ -91,7 +91,18 @@ void SoundSourceWV::close() {
 }
 
 SINT SoundSourceWV::seekSampleFrame(SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF reached
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    if (frameIndex == m_curFrameIndex) {
+        return m_curFrameIndex;
+    }
+
     if (WavpackSeekSample(m_wpc, frameIndex) == true) {
         m_curFrameIndex = frameIndex;
         return frameIndex;

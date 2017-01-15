@@ -367,15 +367,9 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
-    DEBUG_ASSERT_AND_HANDLE(isValidFrameIndex(frameIndex)) {
-        // EOF reached
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF
         m_curFrameIndex = getMaxFrameIndex();
-        return m_curFrameIndex;
-    }
-
-    // Handle trivial case
-    if (frameIndex == m_curFrameIndex) {
-        // Nothing to do
         return m_curFrameIndex;
     }
 
@@ -388,6 +382,8 @@ SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
         // of the stream while decoding.
         reopenDecoder();
         skipSampleFrames(frameIndex);
+    }
+    if (frameIndex == m_curFrameIndex) {
         return m_curFrameIndex;
     }
 
