@@ -63,7 +63,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
     connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
             m_pBaseTrackCache.data(), SLOT(slotDbTrackAdded(TrackPointer)));
 
-    setChildModel(new MixxxLibraryTreeModel(this, m_pTrackCollection, m_pConfig));
+    setChildModel(new LibraryFolderModel(this, m_pTrackCollection, m_pConfig));
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
 }
 
@@ -163,9 +163,11 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& pos,
     
     // Create the sort menu
     QMenu menu;    
-    QVariant varSort = m_pChildModel->data(QModelIndex(), 
-                                           AbstractRole::RoleSettings);
-    QStringList currentSort = varSort.toStringList();
+    QStringList currentSort = m_pChildModel->data(
+            QModelIndex(), AbstractRole::RoleSorting).toStringList();
+    bool recursive = m_pChildModel->data(
+            QModelIndex(), AbstractRole::RoleSettings).toBool();
+    
     
     QActionGroup* orderGroup = new QActionGroup(&menu);
     for (int i = 0; i < kGroupingOptions.size(); ++i) {
@@ -176,19 +178,20 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& pos,
         action->setChecked(currentSort == kGroupingOptions.at(i));
     }
     
+    menu.addSeparator();
+    QAction* folderRecursive = menu.addAction(tr("Get recursive folder search query"));
+    folderRecursive->setCheckable(true);
+    folderRecursive->setChecked(recursive);
+    
     QAction* selected = menu.exec(pos);
     if (selected == nullptr) {
         return;
+    } else if (selected == folderRecursive) {
+        setTreeSettings(folderRecursive->isChecked(), 
+                        AbstractRole::RoleSettings);
+    } else {
+        setTreeSettings(selected->data());
     }
-    if (selected->data() == LIBRARYFOLDERMODEL_FOLDER && !m_foldersShown) {
-        // Remove the current mixxxlibrarytreemodel and show the
-        // libraryfoldermodel
-        delete m_pChildModel;
-        m_pChildModel = 
-            new LibraryFolderModel(this, m_pTrackCollection, m_pConfig);
-        
-    }
-    setTreeSettings(selected->data());
 }
 
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
@@ -210,10 +213,11 @@ bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
-void MixxxLibraryFeature::setTreeSettings(const QVariant& settings) {
+void MixxxLibraryFeature::setTreeSettings(const QVariant& settings, 
+                                          AbstractRole role) {
     if (m_pChildModel.isNull()) {
         return;
     }
-    m_pChildModel->setData(QModelIndex(), settings, AbstractRole::RoleSettings);
+    m_pChildModel->setData(QModelIndex(), settings, role);
     m_pChildModel->reloadTree();
 }

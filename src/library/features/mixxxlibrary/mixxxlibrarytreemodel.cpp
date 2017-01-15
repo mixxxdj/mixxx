@@ -58,7 +58,7 @@ MixxxLibraryTreeModel::MixxxLibraryTreeModel(LibraryFeature* pFeature,
 
 
 QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
-    if (role == AbstractRole::RoleSettings) {
+    if (role == AbstractRole::RoleSorting) {
         return m_sortOrder;
     }
     
@@ -121,7 +121,7 @@ QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
 
 bool MixxxLibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, 
                                     int role) {
-    if (role == AbstractRole::RoleSettings) {
+    if (role == AbstractRole::RoleSorting) {
         m_sortOrder = value.toStringList();
         m_pConfig->set(ConfigKey("[Library]", LIBRARYTREEMODEL_SORT),
                        ConfigValue(m_sortOrder.join(",")));
@@ -139,7 +139,7 @@ void MixxxLibraryTreeModel::reloadTree() {
 
     m_pShowAll = pRootItem->appendChild(tr("Show all"), "");
 
-    QString groupTitle = tr("Grouping Options (%1)").arg(m_sortOrder.join(" > "));
+    QString groupTitle = tr("Grouping Options (%1)").arg(getGroupingOptions());
     m_pGrouping = pRootItem->appendChild(groupTitle, "");
     
     // Deletes the old root item if the previous root item was not null
@@ -318,6 +318,10 @@ void MixxxLibraryTreeModel::createTracksTree() {
             pTree->setTrackCount(pTree->getTrackCount() + val);
         }
     }
+}
+
+QString MixxxLibraryTreeModel::getGroupingOptions() {
+    return m_sortOrder.join(" > ");
 }
 
 void MixxxLibraryTreeModel::addCoverArt(const MixxxLibraryTreeModel::CoverIndex& index,

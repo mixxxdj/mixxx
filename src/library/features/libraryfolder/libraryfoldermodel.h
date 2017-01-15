@@ -9,6 +9,7 @@ class LibraryFeature;
 class TrackCollection;
 
 const QString LIBRARYFOLDERMODEL_FOLDER = "$FOLDER$";
+const QString LIBRARYFOLDERMODEL_RECURSIVE = "FolderRecursive";
 
 class LibraryFolderModel : public MixxxLibraryTreeModel
 {
@@ -23,11 +24,13 @@ class LibraryFolderModel : public MixxxLibraryTreeModel
 
   protected:
     void createTracksTree() override;
+    QString getGroupingOptions() override;
     
   private:
     void createTreeForLibraryDir(const QString& dir, QSqlQuery& query);
     
     bool m_folderRecursive;
+    bool m_showFolders;
 };
 
 #endif // LIBRARYFOLDERMODEL_H

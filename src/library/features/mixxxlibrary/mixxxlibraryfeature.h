@@ -77,7 +77,8 @@ class MixxxLibraryFeature : public LibraryFeature {
     static const QString kLibraryFolder;
     
   private slots:
-    void setTreeSettings(const QVariant &settings);
+    void setTreeSettings(const QVariant &settings, 
+                         AbstractRole role = AbstractRole::RoleSorting);
     
   private:
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;

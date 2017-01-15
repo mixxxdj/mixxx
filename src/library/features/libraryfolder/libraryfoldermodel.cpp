@@ -10,11 +10,16 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
                                        TrackCollection* pTrackCollection,
                                        UserSettingsPointer pConfig,
                                        QObject* parent)
-        : MixxxLibraryTreeModel(pFeature, pTrackCollection, pConfig, parent) {
+        : MixxxLibraryTreeModel(pFeature, pTrackCollection, pConfig, parent),
+          m_showFolders(false) {
 
-    QString recursive = m_pConfig->getValueString(ConfigKey("[Library]",
-                                                            "FolderRecursive"));
+    QString recursive = m_pConfig->getValueString(
+            ConfigKey("[Library]", LIBRARYFOLDERMODEL_RECURSIVE));
     m_folderRecursive = recursive.toInt() == 1;
+    
+    QString showFolders = m_pConfig->getValueString(
+            ConfigKey("[Library]", LIBRARYFOLDERMODEL_FOLDER));
+    m_showFolders = showFolders.toInt() == 1;
     
     TrackDAO& trackDAO(pTrackCollection->getTrackDAO());
     connect(&trackDAO, SIGNAL(forceModelUpdate()), this, SLOT(reloadTree()));
@@ -30,19 +35,30 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
 
 bool LibraryFolderModel::setData(
         const QModelIndex& index, const QVariant& value, int role) {
-    if (role == AbstractRole::RoleSettings) {
+    if (role == AbstractRole::RoleSorting) {
+        QStringList sort = value.toStringList();
+        m_showFolders = sort.first() == LIBRARYFOLDERMODEL_FOLDER;        
+        m_pConfig->set(ConfigKey("[Library]", LIBRARYFOLDERMODEL_FOLDER),
+                       ConfigValue((int)m_showFolders));
+        
+    } else if (role == AbstractRole::RoleSettings) {
         m_folderRecursive = value.toBool();
         m_pConfig->set(ConfigKey("[Library]", "FolderRecursive"), 
                        ConfigValue((int)m_folderRecursive));
         return true;
-    } else {
-        return MixxxLibraryTreeModel::setData(index, value, role);
     }
+    
+    return MixxxLibraryTreeModel::setData(index, value, role);
 }
 
 QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
     if (role == AbstractRole::RoleSettings) {
         return m_folderRecursive;
+    } else if (role == AbstractRole::RoleSorting) {
+        if (m_showFolders)
+            return LIBRARYFOLDERMODEL_FOLDER;
+        
+        return MixxxLibraryTreeModel::data(index, role);
     } else if (role == AbstractRole::RoleBreadCrumb) {
         return MixxxLibraryTreeModel::data(index, role);
     }
@@ -52,9 +68,10 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
         return TreeItemModel::data(index, role);
     }
     
-    if (role == AbstractRole::RoleQuery) {
-        // User has clicked the show all item
-        if (pTree == m_pShowAll || pTree == m_pGrouping) {
+    if (role == AbstractRole::RoleQuery) {        
+        // User has clicked the show all item or we are showing the library
+        // instead of the folders
+        if (!m_folderRecursive || pTree == m_pShowAll || pTree == m_pGrouping) {
             return MixxxLibraryTreeModel::data(index, role);
         }
         
@@ -66,6 +83,11 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
 }
 
 void LibraryFolderModel::createTracksTree() {
+    if (!m_showFolders) {
+        MixxxLibraryTreeModel::createTracksTree();
+        return;
+    }
+    
     // Get the Library directories
     QStringList dirs(m_pTrackCollection->getDirectoryDAO().getDirs());
 
@@ -93,6 +115,13 @@ void LibraryFolderModel::createTracksTree() {
         // For each source folder create the tree
         createTreeForLibraryDir(dir, query);
     }
+}
+
+QString LibraryFolderModel::getGroupingOptions() {
+    if (m_showFolders) 
+        return tr("Folders");
+    
+    return MixxxLibraryTreeModel::getGroupingOptions();
 }
 
 void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& query) {

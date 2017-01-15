@@ -30,6 +30,9 @@ class MixxxLibraryTreeModel : public TreeItemModel {
     void reloadTree() override;
     
   protected:
+    virtual void createTracksTree();
+    virtual QString getGroupingOptions();
+    
     TreeItem* m_pGrouping;
     TreeItem* m_pShowAll;
     
@@ -49,7 +52,6 @@ class MixxxLibraryTreeModel : public TreeItemModel {
   private slots:
     void coverFound(const QObject* requestor, int requestReference, const CoverInfo&,
                     QPixmap pixmap, bool fromCache);
-    virtual void createTracksTree();
     
   private:    
     QVariant getQuery(TreeItem* pTree) const;
@@ -58,8 +60,6 @@ class MixxxLibraryTreeModel : public TreeItemModel {
     
     QStringList m_sortOrder;
     QStringList m_coverQuery;
-    
-    bool m_folderRecursive;
 };
 
 #endif // LIBRARYTREEMODEL_H
