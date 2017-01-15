@@ -16,7 +16,6 @@
 #include "library/features/crates/cratefeature.h"
 #include "library/features/history/historyfeature.h"
 #include "library/features/itunes/itunesfeature.h"
-#include "library/features/libraryfolder/libraryfoldersfeature.h"
 #include "library/features/maintenance/maintenancefeature.h"
 #include "library/features/mixxxlibrary/mixxxlibraryfeature.h"
 #include "library/features/playlist/playlistfeature.h"
@@ -700,9 +699,6 @@ void Library::createFeatures(UserSettingsPointer pConfig,
 
     addFeature(new AutoDJFeature(
             pConfig, this, this, pPlayerManager, m_pTrackCollection));
-    
-	addFeature(new LibraryFoldersFeature(
-            pConfig, this, this, m_pTrackCollection));
     
     m_pPlaylistFeature = new PlaylistFeature(
             pConfig, this, this, m_pTrackCollection);
