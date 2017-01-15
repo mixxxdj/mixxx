@@ -7,7 +7,7 @@
 #include <QComboBox>
 #include <QIcon>
 #include <QList>
-#include <QModelIndex>
+#include <QPersistentModelIndex>
 #include <QPointer>
 #include <QSharedPointer>
 #include <QStackedWidget>
@@ -84,7 +84,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
     TrackDAO& m_trackDao;
-    QModelIndex m_lastClickedIndex;
+    QPersistentModelIndex m_lastClickedIndex;
     bool m_foldersShown;
     
 };

@@ -82,7 +82,7 @@ class AutoDJFeature : public LibraryFeature {
 
     // The model-index of the last tree-item that was right-clicked on.
     // Only stored for tree-items contained by the "Crates" tree-item.
-    QModelIndex m_lastRightClickedIndex;
+    QPersistentModelIndex m_lastRightClickedIndex;
 
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.

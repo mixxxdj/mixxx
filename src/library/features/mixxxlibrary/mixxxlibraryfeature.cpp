@@ -122,7 +122,7 @@ void MixxxLibraryFeature::setChildModel(TreeItemModel* pChild) {
             m_pChildModel, SLOT(reloadTree()));
 }
 
-void MixxxLibraryFeature::activate() {
+void MixxxLibraryFeature::activate() {    
     if (m_lastClickedIndex.isValid()) {
         activateChild(m_lastClickedIndex);
         return;
@@ -137,6 +137,7 @@ void MixxxLibraryFeature::activate() {
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
+    
     if (!index.isValid()) return;
 
     QString query = index.data(AbstractRole::RoleQuery).toString();
@@ -155,7 +156,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
 }
 
 void MixxxLibraryFeature::invalidateChild() {
-    m_lastClickedIndex = QModelIndex();
+    m_lastClickedIndex = QPersistentModelIndex();
 }
 
 void MixxxLibraryFeature::onRightClickChild(const QPoint& pos, 

@@ -4,10 +4,10 @@
 #include <QAction>
 #include <QUrl>
 #include <QObject>
-#include <QModelIndex>
 #include <QAction>
 #include <QList>
 #include <QPair>
+#include <QPersistentModelIndex>
 #include <QSet>
 #include <QString>
 
@@ -120,11 +120,11 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pDuplicatePlaylistAction;
     QAction *m_pAnalyzePlaylistAction;
     QList<PlaylistItem> m_playlistList;
-    QModelIndex m_lastRightClickedIndex;
+    QPersistentModelIndex m_lastRightClickedIndex;
     TreeItemModel* m_childModel;
     TrackPointer m_pSelectedTrack;
     
-    QHash<int, QModelIndex> m_lastChildClicked;
+    QHash<int, QPersistentModelIndex> m_lastChildClicked;
 
   protected slots:
     void slotTrackSelected(TrackPointer pTrack);
