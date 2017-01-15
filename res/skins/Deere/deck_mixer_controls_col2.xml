@@ -20,7 +20,6 @@
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId">pfl</SetVariable>
             <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
-            <!-- make Pfl button bigger because it's important and space is occupied anyway -->
             <SetVariable name="MinimumSize">30,30</SetVariable>
             <SetVariable name="MaximumSize">30,30</SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
