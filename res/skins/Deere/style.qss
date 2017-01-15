@@ -623,13 +623,15 @@ WWidget, QLabel {
   qproperty-layoutSpacing: 5;
 }
 
+#MinimalControlsContainer {
+  qproperty-layoutSpacing: 2;}
+
 #HotcueGrid, #HotcueGridExtended {
   background-color: #333333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }
 #HotcueGridExtendedRow1, #HotcueGridExtendedRow1 {
-  qproperty-layoutSpacing: 2;
 }
 
 #HotcueGrid WWidgetGroup, #HotcueGridExtended WWidgetGroup {
@@ -1071,6 +1073,13 @@ WStarRating {
 #SamplerBankContainer {
   padding: 4px;
   qproperty-layoutSpacing: 2;
+}
+
+#SamplerBankGrid {
+  qproperty-layoutSpacing: 2;
+}
+
+#SamplerBankToggle {
 }
 
 #SampleDecksExpanded, #SampleDecksCollapsed {

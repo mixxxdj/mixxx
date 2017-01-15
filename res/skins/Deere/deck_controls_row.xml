@@ -15,8 +15,11 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:transport.xml"/>
+          <!-- Expanding spacers in between control contexts -->
+          <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
           <Template src="skin:beatloop.xml"/>
           <Template src="skin:loop.xml"/>
+          <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
           <Template src="skin:hotcue.xml"/>
         </Children>
         <Connection>
@@ -103,6 +106,11 @@
             <SetVariable name="right_connection_control"><Variable name="group"/>,cue_gotoandstop</SetVariable>
             <SetVariable name="display_connection_control"><Variable name="group"/>,cue_indicator</SetVariable>
           </Template>
+
+          <!-- Workaround for layout spacing
+          <Template src="skin:spacer_hx.xml">
+            <SetVariable name="width">2</SetVariable>
+          </Template> -->
 
           <Template src="skin:left_right_display_2state_button.xml">
             <SetVariable name="TooltipId">play_cue_set</SetVariable>

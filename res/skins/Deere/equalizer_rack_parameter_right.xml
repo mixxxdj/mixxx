@@ -19,6 +19,7 @@
     <Children>
 
       <SizeAwareStack>
+        <Size>40f,-1me</Size>
         <Children>
 
           <WidgetGroup>
