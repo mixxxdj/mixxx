@@ -80,11 +80,11 @@ class MixxxLibraryFeature : public LibraryFeature {
     void setTreeSettings(const QVariant &settings);
     
   private:
-    QPointer<QComboBox> m_pGroupingCombo;
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
     TrackDAO& m_trackDao;
     QModelIndex m_lastClickedIndex;
+    bool m_foldersShown;
     
 };
 

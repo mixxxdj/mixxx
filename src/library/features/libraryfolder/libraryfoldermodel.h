@@ -8,6 +8,8 @@
 class LibraryFeature;
 class TrackCollection;
 
+const QString LIBRARYFOLDERMODEL_FOLDER = "$FOLDER$";
+
 class LibraryFolderModel : public MixxxLibraryTreeModel
 {
   public:

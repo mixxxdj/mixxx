@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 
 #include "library/features/mixxxlibrary/mixxxlibraryfeature.h"
+#include "library/features/libraryfolder/libraryfoldermodel.h"
 
 #include "library/basetrackcache.h"
 #include "library/librarytablemodel.h"
@@ -37,7 +38,7 @@ const QList<QStringList> MixxxLibraryFeature::kGroupingOptions =
         QStringList::fromStdList({ LIBRARYTABLE_GENRE, LIBRARYTABLE_ARTIST, 
                                    LIBRARYTABLE_ALBUM }),
         QStringList::fromStdList({ LIBRARYTABLE_GENRE, LIBRARYTABLE_ALBUM }),
-        QStringList::fromStdList({ MixxxLibraryTreeModel::kLibraryFoder })
+        QStringList::fromStdList({ LIBRARYFOLDERMODEL_FOLDER })
 });
 
 MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
@@ -45,7 +46,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          QObject* parent,
                                          TrackCollection* pTrackCollection)
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
-          m_trackDao(pTrackCollection->getTrackDAO()) {
+          m_trackDao(pTrackCollection->getTrackDAO()),
+          m_foldersShown(false) {
 
     m_pBaseTrackCache = pTrackCollection->getTrackSource();
     connect(&m_trackDao, SIGNAL(trackDirty(TrackId)),
@@ -178,9 +180,13 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& pos,
     if (selected == nullptr) {
         return;
     }
-    if (!m_pGroupingCombo.isNull()) {
-        int index = kGroupingOptions.indexOf(selected->data().toStringList());
-        m_pGroupingCombo->setCurrentIndex(index);
+    if (selected->data() == LIBRARYFOLDERMODEL_FOLDER && !m_foldersShown) {
+        // Remove the current mixxxlibrarytreemodel and show the
+        // libraryfoldermodel
+        delete m_pChildModel;
+        m_pChildModel = 
+            new LibraryFolderModel(this, m_pTrackCollection, m_pConfig);
+        
     }
     setTreeSettings(selected->data());
 }

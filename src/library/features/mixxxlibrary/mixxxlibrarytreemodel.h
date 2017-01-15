@@ -26,8 +26,6 @@ class MixxxLibraryTreeModel : public TreeItemModel {
     virtual QVariant data(const QModelIndex& index, int role) const;
     virtual bool setData(const QModelIndex& index, const QVariant& value, int role);
     
-    static const QString kLibraryFoder;
-    
   public slots:  
     void reloadTree() override;
     

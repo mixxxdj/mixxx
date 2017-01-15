@@ -10,11 +10,7 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
                                        TrackCollection* pTrackCollection,
                                        UserSettingsPointer pConfig,
                                        QObject* parent)
-        : TreeItemModel(parent),
-          m_pFeature(pFeature),
-          m_pTrackCollection(pTrackCollection),
-          m_pConfig(pConfig),
-          m_pShowAllItem(nullptr) {
+        : MixxxLibraryTreeModel(pFeature, pTrackCollection, pConfig, parent) {
 
     QString recursive = m_pConfig->getValueString(ConfigKey("[Library]",
                                                             "FolderRecursive"));

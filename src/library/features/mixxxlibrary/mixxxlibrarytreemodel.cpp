@@ -18,8 +18,6 @@ namespace  {
 QHash<const MixxxLibraryTreeModel*, QHash<quint16, QModelIndex> > m_hashToIndex;
 }
 
-const QString MixxxLibraryTreeModel::kLibraryFoder = "$FOLDER$";
-
 MixxxLibraryTreeModel::MixxxLibraryTreeModel(LibraryFeature* pFeature,
                                              TrackCollection* pTrackCollection, 
                                              UserSettingsPointer pConfig,
