@@ -11,7 +11,7 @@
   <WidgetGroup>
     <ObjectName>SamplerBankContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,f</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
       <Label>
         <ObjectName>SamplerBankLabel</ObjectName>
@@ -102,7 +102,9 @@
       </Label>
 
       <WidgetGroup>
+        <ObjectName>SamplerBankGrid</ObjectName>
         <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:left_2state_button.xml">
             <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
@@ -138,7 +140,9 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>SamplerBankGrid</ObjectName>
         <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:left_2state_button.xml">
             <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
@@ -176,7 +180,9 @@
       <Template src="skin:spacer_v.xml"/>
 
       <WidgetGroup>
+        <ObjectName>SamplerBankGrid</ObjectName>
         <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:left_1state_button.xml">
             <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
