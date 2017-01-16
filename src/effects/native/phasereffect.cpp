@@ -21,6 +21,7 @@ EffectManifest PhaserEffect::getManifest() {
     manifest.setDescription(QObject::tr(
                 "A more complex sound effect obtained by mixing the input signal"
                 " with a copy passed through a series of all-pass filters."));
+    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
