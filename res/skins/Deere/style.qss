@@ -650,6 +650,7 @@ WWidget, QLabel {
 }
 
 #LoopingContainer WPushButton, #BeatLoopContainer WPushButton, #TransportContainer WPushButton, #VinylControlsContainer WPushButton {
+  font-size: 12px;
 }
 /* End spacing for Deck controls row */
 
@@ -684,7 +685,7 @@ WWidget, QLabel {
 }
 
 #KnobLabelH, #HeadSplit {
-  font: bold 10px;
+  font: bold 11px;
 }
 
 /* All widget groups that are children of #DeckRows should AlignTop. */
@@ -758,7 +759,7 @@ WWidget, QLabel {
 
 #SamplerTextRow #TitleGutter WLabel {
   font-weight: bold;
-  font-size: 13px;
+  font-size: 15px;
   text-transform: none;
   text-align: left;
 }
@@ -849,8 +850,7 @@ WWidget, QLabel {
   background-color: none;
   border: none;
   qproperty-alignment: 'AlignHCenter';
-  font: 9px;
-  margin-top: -3px;
+  font: 10px;
 }
 
 #SmallKnobLabel {
@@ -943,7 +943,7 @@ WWidget, WLabel {
 }
 
 WNumberRate {
-  font-size: 12px;
+  font-size: 13px;
 }
 #RateDisplay1, #RateDisplay2, #RateDisplay3, #RateDisplay4 {
   qproperty-layoutAlignment: 'AlignHCenter';
@@ -1384,16 +1384,8 @@ WPushButton[value="2"]:hover {
   border: none;
 }
 
-#DeckCue {
+#BeatJumpValue, #BeatLoopButton, #LoopMoveValue, #HotcueButton, #DeckCue, #DeckSync, #BeatsyncButton {
   font: bold 12px;
-}
-
-#DeckSync {
-  font: bold 10px;
-}
-
-#BeatJumpValue, #BeatLoopButton, #LoopMoveValue, #HotcueButton {
-  font: bold 9px;
 }
 
 /*******************************************************************************
