@@ -20,8 +20,8 @@
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId">pfl</SetVariable>
             <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
-            <SetVariable name="MinimumSize">30,30</SetVariable>
-            <SetVariable name="MaximumSize">30,30</SetVariable>
+            <SetVariable name="MinimumSize">22,22</SetVariable>
+            <SetVariable name="MaximumSize">22,22</SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text"></SetVariable>
             <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
@@ -50,8 +50,8 @@
             <SetVariable name="TooltipId">pfl</SetVariable>
             <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
             <!-- make Pfl button bigger because it's important and space is occupied anyway -->
-            <SetVariable name="MinimumSize">25,25</SetVariable>
-            <SetVariable name="MaximumSize">25,25</SetVariable>
+            <SetVariable name="MinimumSize">22,22</SetVariable>
+            <SetVariable name="MaximumSize">22,22</SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text"></SetVariable>
             <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
