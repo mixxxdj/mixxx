@@ -43,7 +43,7 @@
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
+      <ConfigKey>[Deere],show_more_hotcues</ConfigKey>
       <BindProperty>visible</BindProperty>
       <Transform>
         <Not/>
@@ -96,7 +96,7 @@
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
+      <ConfigKey>[Deere],show_more_hotcues</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

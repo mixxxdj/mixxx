@@ -24,7 +24,7 @@
           </CoverArt>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+          <ConfigKey>[Deere],show_coverart</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -479,7 +479,7 @@
                       </StarRating>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
+                      <ConfigKey>[Deere],show_starrating</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>

@@ -18,7 +18,7 @@
         <Children>
 
           <!-- Collapsed SampleDecks -->
-          <WidgetStack currentpage="[Deere],sampler_bank_current" persist="true">
+          <WidgetStack currentpage="[Deere],sampler_bank_current" >
             <NextControl>[Deere],sampler_bank_next</NextControl>
             <PrevControl>[Deere],sampler_bank_prev</PrevControl>
             <Children>
@@ -131,7 +131,7 @@
           </WidgetStack>
 
           <!-- Expanded SampleDecks -->
-          <WidgetStack trigger="[Samplers],show_expanded" currentpage="[Deere],sampler_bank_current" persist="true">
+          <WidgetStack trigger="[Samplers],show_expanded" currentpage="[Deere],sampler_bank_current" >
             <NextControl>[Deere],sampler_bank_next</NextControl>
             <PrevControl>[Deere],sampler_bank_prev</PrevControl>
             <Children>

@@ -278,7 +278,7 @@
               </Label>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_skin_settings</ConfigKey>
+              <ConfigKey>[Deere],show_skin_settings</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>

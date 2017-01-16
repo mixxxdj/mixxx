@@ -164,7 +164,7 @@
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Deere],show_minimal_deck_controls</ConfigKey>
+          <ConfigKey>[Deere],show_minimal_deck_controls</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>
