@@ -36,6 +36,10 @@
             </Children>
           </WidgetGroup>
 
+
+          <Template src="skin:spacer_h.xml"/>
+
+
           <WidgetGroup>
             <ObjectName>HeadphoneControls</ObjectName>
             <SizePolicy>min,min</SizePolicy>
@@ -60,7 +64,7 @@
               <PushButton>
                 <TooltipId>headSplit</TooltipId>
                 <ObjectName>HeadSplit</ObjectName>
-                <Size>55f,20f</Size>
+                <Size>60f,20f</Size>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -105,12 +109,9 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <Template src="skin:spacer_h.xml"/>
-        </Children>
-      </WidgetGroup>
+
+      <Template src="skin:spacer_h.xml"/>
+
 
       <WidgetGroup>
         <ObjectName>ToolBarRight</ObjectName>
@@ -262,34 +263,34 @@
             </Children>
           </WidgetGroup>
 
-          <!-- TODO: center this logo -->
           <WidgetGroup>
             <Size>119f,28f</Size>
             <BackPath>image/mixxx_logo.svg</BackPath>
           </WidgetGroup>
 
           <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Label>
-                <ObjectName>KnobLabelH</ObjectName> <!--Hack to make the text a readable size.-->
-                <Size>80f, 25f</Size>
-                <Text>SKIN SETTINGS</Text>
-              </Label>
-            </Children>
-            <Connection>
-              <ConfigKey>[Deere],show_skin_settings</ConfigKey>
-              <BindProperty>visible</BindProperty>
-              <Transform>
-                <Not/>
-              </Transform>
-            </Connection>
-          </WidgetGroup>
 
-          <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Label>
+                    <ObjectName>KnobLabelH</ObjectName> <!--Hack to make the text a readable size.-->
+                    <Size>80f, 25f</Size>
+                    <Text>SKIN SETTINGS</Text>
+                  </Label>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Deere],show_skin_settings</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform>
+                    <Not/>
+                  </Transform>
+                </Connection>
+              </WidgetGroup>
+
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId"></SetVariable>
                 <SetVariable name="Tooltip">Show/hide skin settings</SetVariable>

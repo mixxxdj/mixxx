@@ -531,6 +531,7 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
 
 #SkinSettingsTop {
   margin: 7px 4px 6px 6px;
+  border-bottom: 1px solid #A9A9A9;
 }
 
 #SkinSettingsTop > #h1 {
@@ -661,8 +662,12 @@ WWidget, QLabel {
   background-color: #111111;
 }
 
-#ToolBarLeft, #ToolBarRight {
+#ToolBarLeft {
   qproperty-layoutSpacing: 5;
+}
+
+#ToolBarRight {
+  qproperty-layoutSpacing: 12;
 }
 
 #NotificationsContainer {
