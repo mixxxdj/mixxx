@@ -273,7 +273,7 @@
             <Children>
               <Label>
                 <ObjectName>KnobLabelH</ObjectName> <!--Hack to make the text a readable size.-->
-                <Size>75f, 25f</Size>
+                <Size>80f, 25f</Size>
                 <Text>SKIN SETTINGS</Text>
               </Label>
             </Children>

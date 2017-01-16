@@ -70,7 +70,7 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Size>-1,155max</Size>
-                <MaximumSize>-1,315</MaximumSize>
+                <MaximumSize>-1,330</MaximumSize>
                 <Children>
                   <SingletonContainer>
                     <ObjectName>DecksMixerSingleton</ObjectName>
