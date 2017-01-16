@@ -254,21 +254,15 @@
 
           </Children>
           <Connection>
-            <ConfigKey>[Deere],hide_crossfader</ConfigKey>
+            <ConfigKey>[Deere],show_crossfader</ConfigKey>
             <BindProperty>visible</BindProperty>
-            <Transform>
-              <Not/>
-            </Transform>
           </Connection>
       </WidgetGroup>
 
     </Children>
     <Connection>
-      <ConfigKey>[Master],hide_mixer</ConfigKey>
+      <ConfigKey>[Master],show_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
-      <Transform>
-        <Not/>
-      </Transform>
     </Connection>
   </WidgetGroup>
 </Template>

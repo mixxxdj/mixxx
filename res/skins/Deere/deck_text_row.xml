@@ -56,11 +56,8 @@
                     <Group><Variable name="group"/></Group>
                     <Elide>right</Elide>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
-                      <Transform>
-                        <Not/>
-                      </Transform>
                     </Connection>
                   </TrackProperty>
 
@@ -70,8 +67,11 @@
                     <ObjectName>HiddenTrackTitleInfo</ObjectName>
                     <Text>***</Text>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>
+                      </Transform>
                     </Connection>
                   </Label>
 
@@ -262,11 +262,8 @@
                                   <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                                 </Connection>
                                 <Connection>
-                                  <ConfigKey>[Deere],show_no_bpm_info</ConfigKey>
+                                  <ConfigKey>[Deere],show_bpm_info</ConfigKey>
                                   <BindProperty>visible</BindProperty>
-                                  <Transform>
-                                    <Not/>
-                                  </Transform>
                                 </Connection>
                               </NumberBpm>
 
@@ -276,8 +273,11 @@
                                 <ObjectName>HiddenBpmInfo</ObjectName>
                                 <Text>***.**</Text>
                                 <Connection>
-                                  <ConfigKey>[Deere],show_no_bpm_info</ConfigKey>
+                                  <ConfigKey>[Deere],show_bpm_info</ConfigKey>
                                   <BindProperty>visible</BindProperty>
+                                  <Transform>
+                                    <Not/>
+                                  </Transform>
                                 </Connection>
                               </Label>
 
@@ -449,11 +449,8 @@
                     <Elide>right</Elide>
                     <Group><Variable name="group"/></Group>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
-                      <Transform>
-                        <Not/>
-                      </Transform>
                     </Connection>
                   </TrackProperty>
 
@@ -463,8 +460,11 @@
                     <ObjectName>HiddenTrackArtistInfo</ObjectName>
                     <Text>***</Text>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>
+                      </Transform>
                     </Connection>
                   </Label>
 
