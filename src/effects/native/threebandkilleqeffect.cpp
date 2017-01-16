@@ -54,9 +54,9 @@ EffectManifest ThreeBandKillEQEffect::getManifest() {
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     low->setNeutralPointOnScale(0.5);
-    low->setDefault(0.0);
-    low->setMinimum(-1);
-    low->setMaximum(1.0);
+    low->setDefault(1.0);
+    low->setMinimum(0);
+    low->setMaximum(2.0);
 
     EffectManifestParameter* killLow = manifest.addParameter();
     killLow->setId("killLow");
@@ -77,9 +77,9 @@ EffectManifest ThreeBandKillEQEffect::getManifest() {
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     mid->setNeutralPointOnScale(0.5);
-    mid->setDefault(0.0);
-    mid->setMinimum(-1);
-    mid->setMaximum(1.0);
+    mid->setDefault(1.0);
+    mid->setMinimum(0);
+    mid->setMaximum(2.0);
 
     EffectManifestParameter* killMid = manifest.addParameter();
     killMid->setId("killMid");
@@ -100,9 +100,9 @@ EffectManifest ThreeBandKillEQEffect::getManifest() {
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     high->setNeutralPointOnScale(0.5);
-    high->setDefault(0.0);
-    high->setMinimum(-1);
-    high->setMaximum(1.0);
+    high->setDefault(1.0);
+    high->setMinimum(0);
+    high->setMaximum(2.0);
 
     EffectManifestParameter* killHigh = manifest.addParameter();
     killHigh->setId("killHigh");
@@ -226,13 +226,13 @@ void ThreeBandKillEQEffect::processChannel(
     } else {
         float fLow = -1.f, fMid = -1.f, fHigh = -1.f;
         if (!m_pKillLow->toBool()) {
-            fLow = m_pPotLow->value();
+            fLow = m_pPotLow->value() -1;
         }
         if (!m_pKillMid->toBool()) {
-            fMid = m_pPotMid->value();
+            fMid = m_pPotMid->value() -1;
         }
         if (!m_pKillHigh->toBool()) {
-            fHigh = m_pPotHigh->value();
+            fHigh = m_pPotHigh->value() -1;
         }
 
         if (fLow >= 0) {
