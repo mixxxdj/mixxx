@@ -103,9 +103,9 @@ void DlgPrefWaveform::slotUpdate() {
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
 
-    // By default we set filtered woverview = "0"
+    // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValueString(
-            ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
+            ConfigKey("[Waveform]","WaveformOverviewType"), "2").toInt();
     if (overviewType != waveformOverviewComboBox->currentIndex()) {
         waveformOverviewComboBox->setCurrentIndex(overviewType);
     }
@@ -146,8 +146,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Don't synchronize zoom by default.
     synchronizeZoomCheckBox->setChecked(false);
 
-    // Filtered overview.
-    waveformOverviewComboBox->setCurrentIndex(0);
+    // RGB overview.
+    waveformOverviewComboBox->setCurrentIndex(2);
 
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);
