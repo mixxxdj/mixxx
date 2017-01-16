@@ -94,21 +94,6 @@
     <SetVariable name="VerticalStretchButtonSizePolicy">f,me</SetVariable>
 
     <SingletonDefinition>
-      <ObjectName>DecksMixerSingleton</ObjectName>
-      <Children>
-        <WidgetGroup>
-          <Layout>horizontal</Layout>
-          <SizePolicy>me,min</SizePolicy>
-          <Children>
-            <Template src="skin:left_gutter.xml"/>
-            <Template src="skin:mixer.xml"/>
-            <Template src="skin:right_gutter.xml"/>
-          </Children>
-        </WidgetGroup>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
       <ObjectName>DeckVisualRow1</ObjectName>
       <Children>
         <Template src="skin:deck_visual_row.xml">
@@ -161,6 +146,21 @@
           <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
           <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DecksMixerSingleton</ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <SizePolicy>me,min</SizePolicy>
+          <Children>
+            <Template src="skin:left_gutter.xml"/>
+            <Template src="skin:mixer.xml"/>
+            <Template src="skin:right_gutter.xml"/>
+          </Children>
+        </WidgetGroup>
       </Children>
     </SingletonDefinition>
 
