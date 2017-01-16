@@ -15,10 +15,10 @@
         <Children>
 
           <Splitter>
-            <ObjectName>StackedWaveformSplitter</ObjectName>
+            <ObjectName>DeckSplitter</ObjectName>
             <Orientation>vertical</Orientation>
             <Size>-1me,-1me</Size>
-            <SplitSizesConfigKey>[Deere],StackedWaveformsDecksSplit</SplitSizesConfigKey>
+            <SplitSizesConfigKey>[Deere],DeckSplitterStackedWaveforms</SplitSizesConfigKey>
             <Children>
               <WidgetGroup>
                 <ObjectName>StackedWaveformsContainer</ObjectName>
@@ -31,21 +31,6 @@
                   <SingletonContainer>
                     <ObjectName>DeckVisualRow2</ObjectName>
                   </SingletonContainer>
-
-<!--                  <Template src="skin:deck_visual_row.xml">
-                    <SetVariable name="i">1</SetVariable>
-                    <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                    <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
-                    <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                    <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-                  </Template>
-                  <Template src="skin:deck_visual_row.xml">
-                    <SetVariable name="i">2</SetVariable>
-                    <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                    <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
-                    <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                    <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-                  </Template>-->
 
                 </Children>
               </WidgetGroup>
@@ -76,10 +61,10 @@
         <Children>
 
           <Splitter>
-            <ObjectName>StackedWaveformSplitter</ObjectName>
+            <ObjectName>DeckSplitter</ObjectName>
             <Orientation>vertical</Orientation>
             <Size>-1me,-1me</Size>
-            <SplitSizesConfigKey>[Deere],StackedWaveformsDecksSplit</SplitSizesConfigKey>
+            <SplitSizesConfigKey>[Deere],DeckSplitterSplitWaveforms</SplitSizesConfigKey>
             <Children>
 
               <WidgetGroup>
@@ -127,10 +112,10 @@
         <Children>
 
           <Splitter>
-            <ObjectName>StackedWaveformSplitter</ObjectName>
+            <ObjectName>DeckSplitter</ObjectName>
             <Orientation>vertical</Orientation>
             <Size>-1me,-1me</Size>
-            <SplitSizesConfigKey>[Deere],StackedWaveformsDecksSplit</SplitSizesConfigKey>
+            <SplitSizesConfigKey>[Deere],DeckSplitterStackedWaveforms</SplitSizesConfigKey>
             <SplitSizes>2,8</SplitSizes>
             <Children>
               <!-- Is displayed if the stacked waveforms option is activated in the skin settings -->
@@ -151,35 +136,6 @@
                   <SingletonContainer>
                     <ObjectName>DeckVisualRow4</ObjectName>
                   </SingletonContainer>
-
-<!--                  <Template src="skin:deck_visual_row.xml">
-                    <SetVariable name="i">3</SetVariable>
-                    <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                    <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
-                    <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                    <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-                  </Template>
-                  <Template src="skin:deck_visual_row.xml">
-                    <SetVariable name="i">1</SetVariable>
-                    <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                    <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
-                    <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                    <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-                  </Template>
-                  <Template src="skin:deck_visual_row.xml">
-                    <SetVariable name="i">2</SetVariable>
-                    <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                    <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
-                    <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                    <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-                  </Template>
-                  <Template src="skin:deck_visual_row.xml">
-                    <SetVariable name="i">4</SetVariable>
-                    <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                    <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
-                    <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                    <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-                  </Template>-->
 
                 </Children>
               </WidgetGroup>
@@ -210,10 +166,10 @@
         <Children>
 
           <Splitter>
-            <ObjectName>StackedWaveformSplitter</ObjectName>
+            <ObjectName>DeckSplitter</ObjectName>
             <Orientation>vertical</Orientation>
             <Size>-1me,-1me</Size>
-            <SplitSizesConfigKey>[Deere],StackedWaveformsDecksSplit</SplitSizesConfigKey>
+            <SplitSizesConfigKey>[Deere],DeckSplitterSplitWaveforms</SplitSizesConfigKey>
             <Children>
 
               <WidgetGroup>
