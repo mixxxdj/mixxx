@@ -25,7 +25,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+              <ConfigKey>[Master],show_eqs</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>
@@ -34,7 +34,7 @@
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -54,7 +54,7 @@
           </Template>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>
@@ -68,7 +68,7 @@
         <Layout>vertical</Layout>
         <Children/>
         <Connection>
-          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>

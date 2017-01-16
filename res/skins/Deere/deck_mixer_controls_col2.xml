@@ -33,7 +33,7 @@
           </Template>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>
@@ -63,7 +63,7 @@
           </Template>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -91,7 +91,7 @@
               </SliderComposed>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>
@@ -117,7 +117,7 @@
               </SliderComposed>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -147,7 +147,7 @@
           </Template>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

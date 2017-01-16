@@ -6,7 +6,7 @@
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Connection>
-      <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+      <ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
     <Children>

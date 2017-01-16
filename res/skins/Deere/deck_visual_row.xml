@@ -149,7 +149,7 @@
         </Children>
         <!--The zoom buttons shift the center line off center in stacked waveform mode.-->
         <Connection>
-          <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+          <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>
@@ -180,7 +180,7 @@
               </Spinny>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+              <ConfigKey>[Deere],show_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>
@@ -208,14 +208,14 @@
               </Spinny>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+              <ConfigKey>[Deere],show_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
 
         </Children>
         <Connection>
-          <ConfigKey persist="true"><Variable name="control_show_spinny"/></ConfigKey>
+          <ConfigKey><Variable name="control_show_spinny"/></ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup> <!--SpinnyContainer-->

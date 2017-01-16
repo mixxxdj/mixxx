@@ -51,7 +51,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+          <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -83,7 +83,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+          <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>
@@ -93,7 +93,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+      <ConfigKey>[Master],show_4decks</ConfigKey>
       <BindProperty>visible</BindProperty>
       <Transform>
         <Not/>
@@ -156,7 +156,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+          <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -187,7 +187,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+          <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>
@@ -197,7 +197,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+      <ConfigKey>[Master],show_4decks</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

@@ -43,9 +43,6 @@
       <attribute persist="true" config_key="[Samplers],show_expanded">0</attribute>
 
       <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
-
-<!--      <attribute persist="true" config_key="[Deere],stacked_waveform_height">140</attribute>
-      <attribute persist="true" config_key="[Deere],above_library_height">370</attribute>-->
     </attributes>
   </manifest>
 

@@ -138,7 +138,7 @@
                       </WidgetGroup>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                      <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
@@ -162,7 +162,7 @@
                         <SizePolicy>me,me</SizePolicy>
                         <MinimumSize>30,30</MinimumSize>
                         <Connection>
-                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                          <ConfigKey>[Library],show_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </CoverArt>

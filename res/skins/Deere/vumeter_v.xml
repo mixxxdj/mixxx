@@ -47,7 +47,7 @@
                   </VuMeter>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                  <ConfigKey>[Master],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                   <Transform>
                     <Not/>
@@ -75,7 +75,7 @@
                   </VuMeter>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                  <ConfigKey>[Master],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

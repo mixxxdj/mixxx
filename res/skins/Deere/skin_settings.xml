@@ -62,7 +62,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+              <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -81,7 +81,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
             </Connection>
           </PushButton>
@@ -100,7 +100,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+              <ConfigKey>[Deere],show_coverart</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -118,7 +118,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
+              <ConfigKey>[Deere],show_starrating</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -136,7 +136,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
+              <ConfigKey>[Deere],show_more_hotcues</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -190,7 +190,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+              <ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -209,7 +209,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_minimal_deck_controls</ConfigKey>
+              <ConfigKey>[Deere],show_minimal_deck_controls</ConfigKey>
             </Connection>
           </PushButton>
         </Children>
@@ -240,7 +240,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Master],hide_mixer</ConfigKey>
+              <ConfigKey>[Master],hide_mixer</ConfigKey>
               <Transform>
                 <Not/>
               </Transform>
@@ -283,7 +283,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+              <ConfigKey>[Master],show_eqs</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -315,7 +315,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+              <ConfigKey>[Samplers],show_samplers</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -333,7 +333,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Samplers],show_expanded</ConfigKey>
+              <ConfigKey>[Samplers],show_expanded</ConfigKey>
             </Connection>
           </PushButton>
         </Children>
@@ -364,7 +364,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+              <ConfigKey>[EffectRack1],show</ConfigKey>
             </Connection>
           </PushButton>
         </Children>
@@ -396,7 +396,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+              <ConfigKey>[Microphone],show_microphone</ConfigKey>
             </Connection>
           </PushButton>
         </Children>
@@ -428,7 +428,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+              <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -447,7 +447,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+              <ConfigKey>[Library],show_coverart</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -466,7 +466,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+              <ConfigKey>[Master],maximize_library</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
             </Connection>
           </PushButton>
@@ -477,7 +477,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Deere],show_skin_settings</ConfigKey>
+      <ConfigKey>[Deere],show_skin_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
