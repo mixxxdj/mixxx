@@ -180,8 +180,13 @@ static bool isMasterEQ(EffectManifest* pManifest) {
     return pManifest->isMasterEQ();
 }
 
-static bool isForFilterKnob(EffectManifest* pManifest) {
-    return pManifest->isForFilterKnob();
+static bool hasSuperKnobLinking(EffectManifest* pManifest) {
+    for (const auto& pParameterManifest : pManifest->parameters()) {
+        if (pParameterManifest.defaultLinkType() != EffectManifestParameter::LINK_NONE) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
@@ -190,21 +195,21 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     QList<QPair<QString, QString> > availableEQEffectNames;
     QList<QPair<QString, QString> > availableQuickEffectNames;
     EffectsManager::EffectManifestFilterFnc filterEQ;
-    EffectsManager::EffectManifestFilterFnc filterFilter;
+    EffectsManager::EffectManifestFilterFnc filterHasSuperKnobLinking;
     if (CheckBoxEqOnly->isChecked()) {
         m_pConfig->set(ConfigKey(kConfigKey, kEqsOnly), QString("yes"));
         filterEQ = isMixingEQ;
-        filterFilter = isForFilterKnob;
+        filterHasSuperKnobLinking = hasSuperKnobLinking;
     } else {
         m_pConfig->set(ConfigKey(kConfigKey, kEqsOnly), QString("no"));
-        filterEQ = NULL; // take all;
-        filterFilter = NULL;
+        filterEQ = nullptr; // take all;
+        filterHasSuperKnobLinking = nullptr;
     }
     availableEQEffectNames =
             m_pEffectsManager->getEffectNamesFiltered(filterEQ);
     availableEQEffectNames.append(QPair<QString,QString>("none", tr("None")));
     availableQuickEffectNames =
-            m_pEffectsManager->getEffectNamesFiltered(filterFilter);
+            m_pEffectsManager->getEffectNamesFiltered(filterHasSuperKnobLinking);
     availableQuickEffectNames.append(QPair<QString,QString>("none", tr("None")));
 
     foreach (QComboBox* box, m_deckEqEffectSelectors) {
