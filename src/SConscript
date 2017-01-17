@@ -664,7 +664,7 @@ def BuildRelease(target, source, env):
     if True:
         # TODO(XXX): Installing a runtime isn't specific to MSVS?
         if build.toolchain_is_msvs:
-            redist_file = 'vcredist_%s.exe' % arch
+            redist_file = 'vc_redist.%s.exe' % arch
             print "Searching for the Visual C++ DLL installer package", redist_file
             # Check for the runtime installer in the winlib root.
             redist_path = '%s' % os.path.join(mixxx_winlib_path, redist_file)

@@ -98,7 +98,7 @@
     </Property>
     
     <!-- References the VCRedist package -->
-    <Binary Id="VCRedist" SourceFile="$(var.WINLIBPATH)\vcredist_$(var.Platform).exe" />
+    <Binary Id="VCRedist" SourceFile="$(var.WINLIBPATH)\vc_redist.$(var.Platform).exe" />
 
     <!-- This will search if mixxx is already installed in another bitWidth -->
     <Property Id="OTHERBITWIDTHINSTALLED">

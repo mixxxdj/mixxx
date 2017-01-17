@@ -119,12 +119,12 @@ Function InstallVCRedist
   SetOutPath $TEMP
 
   ; Put the VC redist installer files there
-  File ${WINLIB_PATH}\vcredist_${ARCH}.exe
+  File ${WINLIB_PATH}\vc_redist.${ARCH}.exe
 
   ClearErrors
   ; Call it & wait for it to install
-  ExecWait "$TEMP\vcredist_${ARCH}.exe /quiet /install /norestart"
-  Delete "$TEMP\vcredist_${ARCH}.exe"
+  ExecWait "$TEMP\vc_redist.${ARCH}.exe /quiet /install /norestart"
+  Delete "$TEMP\vc_redist.${ARCH}.exe"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
