@@ -4,6 +4,7 @@
 namespace {
 
 // The defaults are tweaked to match the Xone:23 EQ
+// but allow 12 dB boost instead of just 6 dB
 static const int kStartupSamplerate = 44100;
 static const double kMinimumFrequency = 10.0;
 static const double kMaximumFrequency = kStartupSamplerate / 2;
@@ -13,7 +14,7 @@ static const double kStartupHiFreq = 12000.0;
 static const double kQBoost = 0.3;
 static const double kQKill = 0.9;
 static const double kQKillShelve = 0.4;
-static const double kBoostGain = 6;
+static const double kBoostGain = 12;
 static const double kKillGain = 23;
 
 
