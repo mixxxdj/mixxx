@@ -536,7 +536,7 @@ public:
         DEBUG_ASSERT(pTrack);
         DEBUG_ASSERT(pAudioSource);
         return mixxx::AudioSourcePointer(
-                new AudioSourceProxy(pTrack, pAudioSource));
+                std::make_shared<AudioSourceProxy>(pTrack, pAudioSource));
     }
 
     SINT seekSampleFrame(SINT frameIndex) override {
