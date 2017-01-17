@@ -178,7 +178,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
                 << "Stream in"
                 << getUrlString()
                 << "is not seekable";
-        return OpenResult::UNSUPPORTED_FORMAT;
+        return OpenResult::ABORTED;
     }
 
     const int channelCount = op_channel_count(m_pOggOpusFile, kCurrentStreamLink);

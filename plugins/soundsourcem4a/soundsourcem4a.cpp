@@ -192,7 +192,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     m_trackId = findFirstAudioTrackId(m_hFile, getLocalFileName());
     if (MP4_INVALID_TRACK_ID == m_trackId) {
         qWarning() << "No AAC track found:" << getUrlString();
-        return OpenResult::UNSUPPORTED_FORMAT;
+        return OpenResult::ABORTED;
     }
 
     // Read fixed sample duration.  If the sample duration is not

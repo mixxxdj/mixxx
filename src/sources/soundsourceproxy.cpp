@@ -578,7 +578,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
             return m_pAudioSource; // failure -> exit loop
         }
         const mixxx::SoundSource::OpenResult openResult = m_pSoundSource->open(audioSrcCfg);
-        if (mixxx::SoundSource::OpenResult::UNSUPPORTED_FORMAT != openResult) {
+        if (mixxx::SoundSource::OpenResult::ABORTED != openResult) {
             qDebug() << "Opened AudioSource for file"
                      << getUrl().toString()
                      << "with provider"

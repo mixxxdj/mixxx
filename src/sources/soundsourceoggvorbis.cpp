@@ -53,7 +53,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
         qWarning() << "SoundSourceOggVorbis:"
             << "Unsupported format in"
             << getUrlString();
-        return OpenResult::UNSUPPORTED_FORMAT;
+        return OpenResult::ABORTED;
     default:
         qWarning() << "SoundSourceOggVorbis:"
             << "Failed to initialize decoder for"
@@ -66,7 +66,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
                 << "Stream in"
                 << getUrlString()
                 << "is not seekable";
-        return OpenResult::UNSUPPORTED_FORMAT;
+        return OpenResult::ABORTED;
     }
 
     // lookup the ogg's channels and sample rate

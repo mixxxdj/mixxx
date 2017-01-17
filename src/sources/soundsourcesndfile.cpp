@@ -37,14 +37,14 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*a
         DEBUG_ASSERT(m_pSndFile != nullptr);
         break; // continue
     case SF_ERR_UNRECOGNISED_FORMAT:
-        return OpenResult::UNSUPPORTED_FORMAT;
+        return OpenResult::ABORTED;
     default:
         const QString errorMsg(sf_strerror(m_pSndFile));
         if (errorMsg.toLower().indexOf("unknown format") != -1) {
             // NOTE(uklotzde 2016-05-11): This actually happens when
             // trying to open a file with a supported file extension
             // that contains data in an unsupported format!
-            return OpenResult::UNSUPPORTED_FORMAT;
+            return OpenResult::ABORTED;
         } else {
             qWarning() << "Error opening libsndfile file:"
                     << getUrlString()
