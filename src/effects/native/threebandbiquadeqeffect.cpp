@@ -23,7 +23,7 @@ double getCenterFrequency(double low, double high) {
     double scaleHigh = log10(high);
 
     double scaleCenter = (scaleHigh - scaleLow) / 2 + scaleLow;
-    return pow10(scaleCenter);
+    return pow(10, scaleCenter);
 }
 
 } // anonymous namesspace
