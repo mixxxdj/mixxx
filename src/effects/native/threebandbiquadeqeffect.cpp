@@ -43,7 +43,8 @@ EffectManifest ThreeBandBiquadEQEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "An 3-band EQ with two biquad filters, a shelving high pass and kill switches. "
+        "An 3-band EQ with two biquad filters, a shelving high pass and kill switches.") +
+        " " +  QObject::tr(
         "To adjust frequency shelves see the Equalizer preferences."));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsMixingEQ(true);
