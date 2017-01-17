@@ -229,7 +229,7 @@ class Qt(Dependence):
         qt5 = Qt.qt5_enabled(build)
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork',
+            'QtSql', 'QtScript', 'QtNetwork',
             'QtTest', 'QtScriptTools'
         ]
         if qt5:
