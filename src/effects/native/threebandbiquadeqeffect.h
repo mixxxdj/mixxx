@@ -43,10 +43,10 @@ class ThreeBandKillEQEffectGroupState {
     unsigned int m_oldSampleRate;
 };
 
-class ThreeBandKillEQEffect : public PerChannelEffectProcessor<ThreeBandKillEQEffectGroupState> {
+class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandKillEQEffectGroupState> {
   public:
-    ThreeBandKillEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    ~ThreeBandKillEQEffect() override;
+    ThreeBandBiquadEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    ~ThreeBandBiquadEQEffect() override;
 
     static QString getId();
     static EffectManifest getManifest();
@@ -63,8 +63,8 @@ class ThreeBandKillEQEffect : public PerChannelEffectProcessor<ThreeBandKillEQEf
                         const GroupFeatureState& groupFeatureState);
 
   private:
-    ThreeBandKillEQEffect(const ThreeBandKillEQEffect&) = delete;
-    void operator=(const ThreeBandKillEQEffect&) = delete;
+    ThreeBandBiquadEQEffect(const ThreeBandBiquadEQEffect&) = delete;
+    void operator=(const ThreeBandBiquadEQEffect&) = delete;
 
     QString debugString() const {
         return getId();

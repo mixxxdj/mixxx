@@ -1,4 +1,4 @@
-#include "effects/native/threebandkilleqeffect.h"
+#include <effects/native/threebandbiquadeqeffect.h>
 #include "util/math.h"
 
 namespace {
@@ -29,19 +29,20 @@ double getCenterFrequency(double low, double high) {
 
 
 // static
-QString ThreeBandKillEQEffect::getId() {
-    return "org.mixxx.effects.threebandkilleq";
+QString ThreeBandBiquadEQEffect::getId() {
+    return "org.mixxx.effects.threebandbiquadeq";
 }
 
 // static
-EffectManifest ThreeBandKillEQEffect::getManifest() {
+EffectManifest ThreeBandBiquadEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("3-Band Kill EQ"));
+    manifest.setName(QObject::tr("3-Band Biquad EQ"));
+    manifest.setShortName(QObject::tr("BQ EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "An 3 band EQ with two bequad filters, a shelving high pass and kill switches. "
+        "An 3-band EQ with two biquad filters, a shelving high pass and kill switches. "
         "To adjust frequency shelves see the Equalizer preferences."));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsMixingEQ(true);
@@ -171,7 +172,7 @@ void ThreeBandKillEQEffectGroupState::setFilters(
 
 }
 
-ThreeBandKillEQEffect::ThreeBandKillEQEffect(EngineEffect* pEffect,
+ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect(EngineEffect* pEffect,
                                              const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
@@ -184,10 +185,10 @@ ThreeBandKillEQEffect::ThreeBandKillEQEffect(EngineEffect* pEffect,
     m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
 }
 
-ThreeBandKillEQEffect::~ThreeBandKillEQEffect() {
+ThreeBandBiquadEQEffect::~ThreeBandBiquadEQEffect() {
 }
 
-void ThreeBandKillEQEffect::processChannel(
+void ThreeBandBiquadEQEffect::processChannel(
         const ChannelHandle& handle,
         ThreeBandKillEQEffectGroupState* pState,
         const CSAMPLE* pInput,

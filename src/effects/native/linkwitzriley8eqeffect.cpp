@@ -14,12 +14,12 @@ QString LinkwitzRiley8EQEffect::getId() {
 EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("LinkwitzRiley8 EQ"));
-    manifest.setShortName(QObject::tr("LR8 EQ"));
+    manifest.setName(QObject::tr("LinkwitzRiley8 ISO"));
+    manifest.setShortName(QObject::tr("LR8 ISO"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct). "
+        "A Linkwitz-Riley 8th order filter isolator (optimized crossover, constant phase shift, roll-off -48 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
     manifest.setIsMixingEQ(true);
 

@@ -1,3 +1,4 @@
+#include <effects/native/threebandbiquadeqeffect.h>
 #include <QtDebug>
 
 #include "effects/native/nativebackend.h"
@@ -6,7 +7,6 @@
 #include "effects/native/linkwitzriley8eqeffect.h"
 #include "effects/native/bessel8lvmixeqeffect.h"
 #include "effects/native/bessel4lvmixeqeffect.h"
-#include "effects/native/threebandkilleqeffect.h"
 #include "effects/native/graphiceqeffect.h"
 #include "effects/native/filtereffect.h"
 #include "effects/native/moogladder4filtereffect.h"
@@ -24,7 +24,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<Bessel4LVMixEQEffect>();
     registerEffect<Bessel8LVMixEQEffect>();
     registerEffect<LinkwitzRiley8EQEffect>();
-    registerEffect<ThreeBandKillEQEffect>();
+    registerEffect<ThreeBandBiquadEQEffect>();
     // Compensations EQs    
     registerEffect<GraphicEQEffect>();
     // Fading Effcts

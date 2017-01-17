@@ -10,12 +10,12 @@ QString Bessel4LVMixEQEffect::getId() {
 EffectManifest Bessel4LVMixEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Bessel4 LV-Mix EQ"));
-    manifest.setShortName(QObject::tr("Bessel4 EQ"));
+    manifest.setName(QObject::tr("Bessel4 LV-Mix ISO"));
+    manifest.setShortName(QObject::tr("Bessel4 ISO"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Bessel 4th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -24 db/Oct). "
+        "A Bessel 4th order filter isolator with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -24 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
     manifest.setIsMixingEQ(true);
     manifest.setEffectRampsFromDry(true);
