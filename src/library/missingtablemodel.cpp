@@ -4,7 +4,11 @@
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
 
-const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
+namespace {
+
+const QString kMissingFilter = "mixxx_deleted=0 AND fs_deleted=1";
+
+} // anonymous namespace
 
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
@@ -29,7 +33,7 @@ void MissingTableModel::setTableModel(int id) {
                   " FROM library "
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
-                  "WHERE " + MissingTableModel::MISSINGFILTER);
+                  "WHERE " + kMissingFilter);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }

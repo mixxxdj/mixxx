@@ -56,7 +56,9 @@ class ControllerEngineConnectionScriptValue : public QObject {
 
 /* comparison function for ControllerEngineConnection */
 inline bool operator==(const ControllerEngineConnection &c1, const ControllerEngineConnection &c2) {
-    return c1.id == c2.id && c1.key.group == c2.key.group && c1.key.item == c2.key.item;
+    return (c1.id == c2.id ||
+            (c1.function.isFunction() && c2.function.isFunction() && c1.function.strictlyEquals(c2.function))) &&
+            c1.key.group == c2.key.group && c1.key.item == c2.key.item;
 }
 
 class ControllerEngine : public QObject {

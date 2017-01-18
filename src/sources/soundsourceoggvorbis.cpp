@@ -111,7 +111,16 @@ void SoundSourceOggVorbis::close() {
 SINT SoundSourceOggVorbis::seekSampleFrame(
         SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    if (frameIndex == m_curFrameIndex) {
+        return m_curFrameIndex;
+    }
 
     const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
     if (0 == seekResult) {
@@ -166,26 +175,28 @@ SINT SoundSourceOggVorbis::readSampleFrames(
                 numberOfFramesRemaining, &currentSection);
         if (0 < readResult) {
             m_curFrameIndex += readResult;
-            if (kChannelCountMono == getChannelCount()) {
-                if (readStereoSamples) {
+            if (pSampleBuffer != nullptr) {
+                if (kChannelCountMono == getChannelCount()) {
+                    if (readStereoSamples) {
+                        for (long i = 0; i < readResult; ++i) {
+                            *pSampleBuffer++ = pcmChannels[0][i];
+                            *pSampleBuffer++ = pcmChannels[0][i];
+                        }
+                    } else {
+                        for (long i = 0; i < readResult; ++i) {
+                            *pSampleBuffer++ = pcmChannels[0][i];
+                        }
+                    }
+                } else if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
                     for (long i = 0; i < readResult; ++i) {
                         *pSampleBuffer++ = pcmChannels[0][i];
-                        *pSampleBuffer++ = pcmChannels[0][i];
+                        *pSampleBuffer++ = pcmChannels[1][i];
                     }
                 } else {
                     for (long i = 0; i < readResult; ++i) {
-                        *pSampleBuffer++ = pcmChannels[0][i];
-                    }
-                }
-            } else if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
-                for (long i = 0; i < readResult; ++i) {
-                    *pSampleBuffer++ = pcmChannels[0][i];
-                    *pSampleBuffer++ = pcmChannels[1][i];
-                }
-            } else {
-                for (long i = 0; i < readResult; ++i) {
-                    for (SINT j = 0; j < getChannelCount(); ++j) {
-                        *pSampleBuffer++ = pcmChannels[j][i];
+                        for (SINT j = 0; j < getChannelCount(); ++j) {
+                            *pSampleBuffer++ = pcmChannels[j][i];
+                        }
                     }
                 }
             }

@@ -171,6 +171,12 @@ bool ConfigObject<ValueType>::exists(const ConfigKey& k) const {
 }
 
 template <class ValueType>
+bool ConfigObject<ValueType>::remove(const ConfigKey& k) {
+    QWriteLocker lock(&m_valuesLock);
+    return m_values.remove(k) > 0;
+}
+
+template <class ValueType>
 QString ConfigObject<ValueType>::getValueString(const ConfigKey& k) const {
     ValueType v = get(k);
     return v.value;
@@ -316,7 +322,9 @@ bool ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
     if (value.isNull()) {
         return default_value;
     }
-    return static_cast<bool>(value.value.toInt());
+    bool ok;
+    auto result = value.value.toInt(&ok);
+    return ok ? result != 0 : default_value;
 }
 
 template <> template <>
@@ -326,7 +334,21 @@ int ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
     if (value.isNull()) {
         return default_value;
     }
-    return value.value.toInt();
+    bool ok;
+    auto result = value.value.toInt(&ok);
+    return ok ? result : default_value;
+}
+
+template <> template <>
+double ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
+                                           const double& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    bool ok;
+    auto result = value.value.toDouble(&ok);
+    return ok ? result : default_value;
 }
 
 template <> template <>

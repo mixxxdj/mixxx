@@ -607,9 +607,11 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    // TODO(XXX): support soft takeover.
     if (coScript != nullptr) {
-        coScript->setParameter(newParameter);
+        ControlObject* pControl = ControlObject::getControl(coScript->getKey());
+        if (pControl && !m_st.ignore(pControl, newParameter)) {
+          coScript->setParameter(newParameter);
+        }
     }
 }
 
@@ -768,12 +770,15 @@ QScriptValue ControllerEngine::connectControl(
     }
 
     if (function.isFunction()) {
-        qDebug() << "Connection:" << group << name;
-
         ControllerEngineConnection conn;
         conn.key = key;
         conn.ce = this;
         conn.function = function;
+
+        if (disconnect) {
+            disconnectControl(conn);
+            return QScriptValue(true);
+        }
 
         QScriptContext *ctxt = m_pEngine->currentContext();
         // Our current context is a function call to engine.connectControl. We
