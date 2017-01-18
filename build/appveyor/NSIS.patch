@@ -1,27 +1,28 @@
---- C:/Programme/NSIS/Include/MultiUser.nsh So Feb 1 15:44:30 2009
-+++ C:/Programme/NSIS/Include/Kopie von MultiUser.nsh Do Apr 30 15:34:13 2009
+--- MultiUser.nsh.orig	2016-03-11 19:16:38.000000000 +0000
++++ MultiUser.nsh	2017-01-18 19:43:33.803305800 +0000
 @@ -91,7 +91,11 @@
-!if "${UNINSTALLER_PREFIX}" != UN
-;Set default installation location for installer
-!ifdef MULTIUSER_INSTALLMODE_INSTDIR
-- StrCpy $INSTDIR "$PROGRAMFILES\${MULTIUSER_INSTALLMODE_INSTDIR}"
-+ !ifdef MULTIUSER_USE_PROGRAMFILES64
-+ StrCpy $INSTDIR "$PROGRAMFILES64\${MULTIUSER_INSTALLMODE_INSTDIR}"
-+ !else
-+ StrCpy $INSTDIR "$PROGRAMFILES\${MULTIUSER_INSTALLMODE_INSTDIR}"
-+ !endif
-!endif
-!endif
+     !if "${UNINSTALLER_PREFIX}" != UN
+       ;Set default installation location for installer
+       !ifdef MULTIUSER_INSTALLMODE_INSTDIR
+-        StrCpy $INSTDIR "$PROGRAMFILES\${MULTIUSER_INSTALLMODE_INSTDIR}"
++        !ifdef MULTIUSER_USE_PROGRAMFILES64
++          StrCpy $INSTDIR "$PROGRAMFILES64\${MULTIUSER_INSTALLMODE_INSTDIR}"
++        !else
++          StrCpy $INSTDIR "$PROGRAMFILES\${MULTIUSER_INSTALLMODE_INSTDIR}"
++        !endif
+       !endif
+     !endif
 
 @@ -129,7 +133,11 @@
-${if} ${AtLeastWin2000}
-StrCpy $INSTDIR "$LOCALAPPDATA\${MULTIUSER_INSTALLMODE_INSTDIR}"
-${else}
-+ !ifdef MULTIUSER_USE_PROGRAMFILES64
-+ StrCpy $INSTDIR "$PROGRAMFILES64\${MULTIUSER_INSTALLMODE_INSTDIR}"
-+ !else
-StrCpy $INSTDIR "$PROGRAMFILES\${MULTIUSER_INSTALLMODE_INSTDIR}"
-+ !endif
-${endif}
-!endif
-!endif
+         ${if} ${AtLeastWin2000}
+           StrCpy $INSTDIR "$LOCALAPPDATA\${MULTIUSER_INSTALLMODE_INSTDIR}"
+         ${else}
+-          StrCpy $INSTDIR "$PROGRAMFILES\${MULTIUSER_INSTALLMODE_INSTDIR}"
++		  !ifdef MULTIUSER_USE_PROGRAMFILES64
++            StrCpy $INSTDIR "$PROGRAMFILES64\${MULTIUSER_INSTALLMODE_INSTDIR}"
++          !else
++            StrCpy $INSTDIR "$PROGRAMFILES\${MULTIUSER_INSTALLMODE_INSTDIR}"
++		  !endif
+         ${endif}
+       !endif
+     !endif
