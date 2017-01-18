@@ -92,7 +92,7 @@
     <Property Id="VCREDISTINSTALLED">
       <RegistrySearch Id="VCRedistInstalledSearch"
                       Root="HKLM"
-                      Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\$(var.Platform)"
+                      Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\$(var.Platform)"
                       Name="Installed"
                       Type="raw" />
     </Property>

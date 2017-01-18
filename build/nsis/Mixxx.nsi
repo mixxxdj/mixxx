@@ -165,7 +165,7 @@ FunctionEnd
 Function CheckVCRedist
    Push $R0
    ClearErrors
-   ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\${ARCH}" "Installed"
+   ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\${ARCH}" "Installed"
 
    IfErrors 0 VSRedistInstalled
    StrCpy $R0 "-1"
