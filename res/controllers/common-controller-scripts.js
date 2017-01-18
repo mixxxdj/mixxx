@@ -336,7 +336,7 @@ script.softStart = function(channel, control, value, status, group, factor) {
 		factor = 1;
 	}
     // disable on note-off or zero value note/cc, use default increase rate '1'
-    engine.softStart(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), 1);
+    engine.softStart(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), factor);
 }
 
 // bpm - Used for tapping the desired BPM for a deck
