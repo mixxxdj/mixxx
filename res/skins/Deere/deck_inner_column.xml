@@ -38,16 +38,21 @@
         </Connection>
       </WidgetGroup>
 
-      <SliderComposed>
-        <TooltipId>rate</TooltipId>
-        <Size>40f,-1me</Size>
-        <MaximumSize>40,200</MaximumSize>
-        <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-        <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,rate</ConfigKey>
-        </Connection>
-      </SliderComposed>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SliderComposed>
+            <TooltipId>rate</TooltipId>
+            <Size>40f,-1me</Size>
+            <MaximumSize>40,200</MaximumSize>
+            <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+            </Connection>
+          </SliderComposed>
+        </Children>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>RateDisplay<Variable name="i"/></ObjectName>
