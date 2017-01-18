@@ -29,7 +29,7 @@ class ThreeBandKillEQEffectGroupState {
     std::unique_ptr<EngineFilterBiquad1Peaking> m_lowKill;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_midKill;
     std::unique_ptr<EngineFilterBiquad1HighShelving> m_highKill;
-    QList<CSAMPLE*> m_pBufs;
+    CSAMPLE* m_pBuf;
     double m_oldLowBoost;
     double m_oldMidBoost;
     double m_oldHighBoost;

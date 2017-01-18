@@ -132,8 +132,7 @@ ThreeBandKillEQEffectGroupState::ThreeBandKillEQEffectGroupState()
           m_highFreqCorner(0),
           m_oldSampleRate(kStartupSamplerate) {
 
-    m_pBufs.append(SampleUtil::alloc(MAX_BUFFER_LEN));
-    m_pBufs.append(SampleUtil::alloc(MAX_BUFFER_LEN));
+    m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
 
     // Initialize the filters with default parameters
 
@@ -146,9 +145,7 @@ ThreeBandKillEQEffectGroupState::ThreeBandKillEQEffectGroupState()
 }
 
 ThreeBandKillEQEffectGroupState::~ThreeBandKillEQEffectGroupState() {
-    foreach(CSAMPLE* buf, m_pBufs) {
-        SampleUtil::free(buf);
-    }
+    SampleUtil::free(m_pBuf);
 }
 
 void ThreeBandKillEQEffectGroupState::setFilters(
@@ -297,54 +294,91 @@ void ThreeBandBiquadEQEffect::processChannel(
         pState->m_oldHighKill = fHighKill;
     }
 
+    int activeFilters = 0;
+
+    if (fLowBoost) {
+        ++activeFilters;
+    }
+    if (fMidBoost) {
+        ++activeFilters;
+    }
+    if (fHighBoost) {
+        ++activeFilters;
+    }
+    if (fLowKill) {
+        ++activeFilters;
+    }
+    if (fMidKill) {
+        ++activeFilters;
+    }
+    if (fHighKill) {
+        ++activeFilters;
+    }
+
+    QVarLengthArray<const CSAMPLE*, 3> inBuffer;
+    QVarLengthArray<CSAMPLE*, 3> outBuffer;
+
+    if (activeFilters == 2) {
+        inBuffer.append(pInput);
+        outBuffer.append(pState->m_pBuf);
+        inBuffer.append(pState->m_pBuf);
+        outBuffer.append(pOutput);
+    }
+    else
+    {
+        inBuffer.append(pInput);
+        outBuffer.append(pOutput);
+        inBuffer.append(pOutput);
+        outBuffer.append(pState->m_pBuf);
+        inBuffer.append(pState->m_pBuf);
+        outBuffer.append(pOutput);
+    }
+
     int bufIndex = 0;
     if (fLowBoost) {
-        pState->m_lowBoost->process(pInput, pState->m_pBufs[1 - bufIndex], numSamples);
-        bufIndex = 1 - bufIndex;
+        pState->m_lowBoost->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        ++bufIndex;
     } else {
         pState->m_lowBoost->pauseFilter();
-        SampleUtil::copy(pState->m_pBufs[bufIndex], pInput, numSamples);
     }
 
     if (fMidBoost) {
-        pState->m_midBoost->process(
-                pState->m_pBufs[bufIndex], pState->m_pBufs[1 - bufIndex], numSamples);
-        bufIndex = 1 - bufIndex;
+        pState->m_midBoost->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        ++bufIndex;
     } else {
         pState->m_midBoost->pauseFilter();
     }
 
     if (fHighBoost) {
-        pState->m_highBoost->process(
-                pState->m_pBufs[bufIndex], pState->m_pBufs[1 - bufIndex], numSamples);
-        bufIndex = 1 - bufIndex;
+        pState->m_highBoost->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        ++bufIndex;
     } else {
         pState->m_highBoost->pauseFilter();
     }
 
     if (fLowKill) {
-        pState->m_lowKill->process(
-                pState->m_pBufs[bufIndex], pState->m_pBufs[1 - bufIndex], numSamples);
-        bufIndex = 1 - bufIndex;
+        pState->m_lowKill->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        ++bufIndex;
     } else {
         pState->m_lowKill->pauseFilter();
     }
 
     if (fMidKill) {
-        pState->m_midKill->process(
-                pState->m_pBufs[bufIndex], pState->m_pBufs[1 - bufIndex], numSamples);
-        bufIndex = 1 - bufIndex;
+        pState->m_midKill->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        ++bufIndex;
     } else {
         pState->m_midKill->pauseFilter();
     }
 
     if (fHighKill) {
-        pState->m_highKill->process(
-                pState->m_pBufs[bufIndex], pOutput, numSamples);
-        bufIndex = 1 - bufIndex;
+        pState->m_highKill->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        ++bufIndex;
     } else {
-        SampleUtil::copy(pOutput, pState->m_pBufs[bufIndex], numSamples);
         pState->m_highKill->pauseFilter();
+    }
+
+    if (activeFilters == 0) {
+        SampleUtil::copy(pOutput, pInput, numSamples);
     }
 
     if (enableState == EffectProcessor::DISABLING) {
