@@ -334,7 +334,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
 
         // ...and verify read results
         mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
-        ASSERT_TRUE(pContReadSource);
+        ASSERT_FALSE(!pContReadSource);
         ASSERT_EQ(frameOffset, pContReadSource->skipSampleFrames(frameOffset));
         SampleBuffer contReadData(
                 pContReadSource->frames2samples(kReadFrameCount));
