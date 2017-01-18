@@ -39,6 +39,9 @@ install:
   - 7z x scons-2.5.1.zip
   - cd scons-2.5.1
   - python setup.py install
+  - echo *** Patching NSIS
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - patch "C:\Program Files (x86)\NSIS\Include\MultiUser.nsh" < build\appveyor\NSIS.patch
   - echo *** Downloading precompiled build environment if not in build-cache
   - cd %APPVEYOR_BUILD_FOLDER%
   - build\appveyor\install_buildenv.bat %platform% %configuration%
