@@ -1,5 +1,5 @@
-#ifndef THREEBANDKILLEQEFFECT_H
-#define THREEBANDKILLEQEFFECT_H
+#ifndef THREEBANDBIQUADEQEFFECT_H
+#define THREEBANDBIQUADEQEFFECT_H
 
 #include <QMap>
 
@@ -82,4 +82,4 @@ class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandKillEQ
     std::unique_ptr<ControlProxy> m_pHiFreqCorner;
 };
 
-#endif // ThreeBANDKILLEQEFFECT_H
+#endif // THREEBANDBIQUADEQEFFECT_H
