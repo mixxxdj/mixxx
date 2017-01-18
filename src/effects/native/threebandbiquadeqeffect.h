@@ -15,10 +15,10 @@
 #include "util/types.h"
 #include "util/memory.h"
 
-class ThreeBandKillEQEffectGroupState {
+class ThreeBandKillEQEffectGroupState final {
   public:
     ThreeBandKillEQEffectGroupState();
-    virtual ~ThreeBandKillEQEffectGroupState();
+    ~ThreeBandKillEQEffectGroupState();
 
     void setFilters(
             int sampleRate, double lowFreqCorner, double highFreqCorner);
