@@ -6,7 +6,7 @@ image: Visual Studio 2013
 init:
   - git config --global core.autocrlf input
 # Uncomment the following line to show RDP info at beginning of job
-  #- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+#  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 clone_folder: c:\projects\mixxx
 skip_commits:
   files:
@@ -70,7 +70,7 @@ on_finish:
   # Uncomment the following line if you don't want the build VM to be destroyed
   # and be able to RDP on it until a special “lock” file on VM desktop is deleted
   # The RDP session is limited by overall build time (60 min).
-  #- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
   - echo "*** DONE ***"
 deploy:
   - provider: Environment
