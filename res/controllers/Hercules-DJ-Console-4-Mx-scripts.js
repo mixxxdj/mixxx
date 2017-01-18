@@ -32,7 +32,7 @@
 //          a loop size with the fx knob. See the updated wiki for a detailed explanation.
 //        The FX "super" knob can be controlled from the controller now. Maintain the fx button pressed and move the knob.
 //        Pressing either of the pitch scale buttons (musical key action) together with moving the fx knob can be used to control the key
-// Versio 2016-11-06
+// Version 2016-11-06
 //        Preview deck control. Press shift+PFL (headphones) on any deck, and the controls will be sent
 //          to the preview deck instead. The button flashes to indicate this state.
 //          Press PFL (with or without shift) to go back to usual deck controls.
@@ -338,7 +338,7 @@ Hercules4Mx.init = function(id, debugging) {
 //timer-called (delayed) setup.
 Hercules4Mx.doDelayedSetup = function() {
     var i;
-    // Activate soft takeover for the relevant controls. Important: engine.softTakeover only works when scripted with setValue !!
+    // Activate soft takeover for the relevant controls. Important: Previous to 2.1, engine.softTakeover only works when scripted with setValue !!
     for (i = 1; i <= 4; i++) {
         engine.softTakeover("[Channel" + i + "]", "rate", true);
         engine.softTakeover("[Channel" + i + "]", "volume", true);
@@ -422,7 +422,7 @@ Hercules4Mx.allLedsOff = function() {
 
 // The jog wheel sensitivity setting has changed. This is reported in two scenarios:
 // when the setting is changed in the tray icon, and when the crossfader curve is changed to beatmix.
-Hercules4Mx.onSensitivityChange = function(value, group, control) {
+Hercules4Mx.sensitivityChanged = function(value, group, control, status, group) {
     Hercules4Mx.userSettings.sensitivity = 1 / value;
 };
 
@@ -689,7 +689,7 @@ Hercules4Mx.onKillOrSourceChange4 = function(value, group, control) {
 // --- Actions ----
 //Any of the shift buttons for effects has been pressed. This button simply changes
 //the controller internal state, but we can use it for other reasons while the user maintains it pressed.
-Hercules4Mx.pressEffectShift = function(midichan, control, value) {
+Hercules4Mx.pressEffectShift = function(midichan, control, value, status, group) {
     // I don't diferentiate between decks. I don't expect two shift buttons being pressed at the same time.
     Hercules4Mx.shiftStatus.pressed = (value) ? true : false;
 };
@@ -707,7 +707,7 @@ Hercules4Mx.stateEffectShift = function(midichan, control, value, status, group)
 //Auto DJ button is pressed. Two functions: enable autoDJ, and Fade to next track.
 //The virtualDJ function is to do a fade to next in interactive mode (Mixxx fade to next requires autoDJ)
 //The would then be determined by the beats per minute.
-Hercules4Mx.autoDJButton = function(midichan, control, value) {
+Hercules4Mx.autoDJButton = function(midichan, control, value, status, group) {
     if (value) {
         if (engine.getParameter("[AutoDJ]", "enabled") === 0) {
             //If not enable, enable autoDJ
@@ -1141,8 +1141,7 @@ Hercules4Mx.effectKnob = function(midichan, control, value, status, group) {
         if (direction > 0 ) {
             engine.setParameter(fxGroup, "pitch_adjust_up_small", 1);
             engine.setParameter(fxGroup, "pitch_adjust_up_small", 0);
-        }
-        else {
+        } else {
             engine.setParameter(fxGroup, "pitch_adjust_down_small", 1);
             engine.setParameter(fxGroup, "pitch_adjust_down_small", 0);
         }
@@ -1453,6 +1452,7 @@ Hercules4Mx.deckRateLsb = function(midichan, control, value, status, groupInitia
 //These are mapped with javascript so that engine.softTakeover can be enabled programatically.
 //If we could use the setParameter() method, we wouldn't need the 
 //absoluteNonLin or faderToVolume, but setParameter currently does not work with softTakeover.
+//TODO: Since version 2.1, setParameter works. Simplify the code.
 Hercules4Mx.deckGain = function(midichan, control, value, status, groupInitial) {
     var group = (Hercules4Mx.previewOnDeck[groupInitial] === true) ? '[PreviewDeck1]' : groupInitial;
     engine.setValue(group, "pregain", script.absoluteNonLin(value, 0, 1, 4));
@@ -1491,8 +1491,7 @@ Hercules4Mx.faderToVolume = function (value) {
     var lowerdb = 0.125; //(1/4th of 1)
     if (value < lowerval) {
         return value*lowerdb/lowerval;
-    }
-    else {
+    } else {
         var dbs = -(127-value)*6/32;
 		return Math.pow(10.0,dbs/20.0);
     }
@@ -1519,8 +1518,7 @@ Hercules4Mx.deckheadphones = function(midichan, control, value, status, group) {
                 Hercules4Mx.shiftStatus.used = true;
                 Hercules4Mx.previewOnDeck[group] = true;
                 midi.sendShortMsg(messageto, 0x4F+offset, 0x7F);
-            }
-            else {
+            } else {
                 engine.setParameter(group, "pfl", (engine.getParameter(group, "pfl") > 0) ? 0 : 1);
             }
         }
@@ -1738,3 +1736,4 @@ Hercules4Mx.setupFXButtonsCustomMixx21 = function() {
     Hercules4Mx.beatLoopEditButtons.push("beatloop_8_toggle"); // loop edit mode, button 5
     Hercules4Mx.beatLoopEditButtons.push("beatloop_32_toggle"); // loop edit mode, button 6
 };
+
