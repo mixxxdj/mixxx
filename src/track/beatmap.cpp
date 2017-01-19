@@ -552,9 +552,6 @@ void BeatMap::scale(enum BPMScale scale) {
 
     switch (scale) {
     case DOUBLE:
-        if (getBpm() * 2 > getMaxBpm()) {
-            return;
-        }
         // introduce a new beat into every gap
         scaleDouble();
         break;
@@ -573,6 +570,18 @@ void BeatMap::scale(enum BPMScale scale) {
         scaleTriple();
         // remove every second third and forth beat
         scaleFourth();
+        break;
+    case FOURTHIRDS:
+        // introduce three beats into every gap
+        scaleQuadruple();
+        // remove every second third and forth beat
+        scaleThird();
+        break;
+    case THREEHALVES:
+        // introduce two beats into every gap
+        scaleTriple();
+        // remove every second beat
+        scaleHalve();
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
@@ -611,6 +620,23 @@ void BeatMap::scaleTriple() {
         beat.set_frame_position(prevBeat.frame_position() + distance * 2 / 3);
         it = m_beats.insert(it, beat);
         prevBeat = (++it)[0];
+    }
+}
+
+void BeatMap::scaleQuadruple() {
+    Beat prevBeat = m_beats.first();
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = m_beats.begin() + 1;
+    for (; it != m_beats.end(); ++it) {
+        // Need to not accrue fractional frames.
+        int distance = it->frame_position() - prevBeat.frame_position();
+        Beat beat;
+        for (int i = 1; i <= 3; i++) {
+            beat.set_frame_position(prevBeat.frame_position() + distance * i / 4);
+            it = m_beats.insert(it, beat);
+            ++it;
+        }
+        prevBeat = it[0];
     }
 }
 

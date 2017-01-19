@@ -21,6 +21,26 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
+namespace {
+
+QString nameForPreset(const PresetInfo& preset) {
+    QString name = preset.getName();
+    if (name.length() == 0) {
+        QFileInfo file(preset.getPath());
+        name = file.baseName();
+    }
+    return name;
+}
+
+bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
+    // the comparison function for PresetInfo objects
+    // this function is used to sort the list of
+    // presets in the combo box
+    return nameForPreset(a) < nameForPreset(b);
+}
+
+} // The anonymous namespace
+
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
                                      UserSettingsPointer pConfig)
@@ -229,15 +249,6 @@ void DlgPrefController::slotDirty() {
     m_bDirty = true;
 }
 
-QString nameForPreset(const PresetInfo& preset) {
-    QString name = preset.getName();
-    if (name.length() == 0) {
-        QFileInfo file(preset.getPath());
-        name = file.baseName();
-    }
-    return name;
-}
-
 void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->clear();
 
@@ -248,7 +259,6 @@ void DlgPrefController::enumeratePresets() {
     // user has their controller plugged in)
     m_ui.comboBoxPreset->addItem("...");
 
-    m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
     // Ask the controller manager for a list of applicable presets
     QSharedPointer<PresetInfoEnumerator> pie =
             m_pControllerManager->getMainThreadPresetEnumerator();
@@ -259,8 +269,10 @@ void DlgPrefController::enumeratePresets() {
         return;
     }
 
-    const QList<PresetInfo> presets = pie->getPresetsByExtension(
+    // Making the list of presets in the alphabetical order
+    QList<PresetInfo> presets = pie->getPresetsByExtension(
         m_pController->presetExtension());
+    qSort(presets.begin(), presets.end(), presetInfoNameComparator);
 
     PresetInfo match;
     for (const PresetInfo& preset : presets) {
@@ -749,3 +761,5 @@ void DlgPrefController::openScript() {
         }
     }
 }
+
+

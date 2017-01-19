@@ -75,9 +75,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     // Get loop point control objects
     m_pLoopInPoint = new ControlProxy(
-            getGroup(),"loop_start_position", this);
+            getGroup(), "loop_start_position", this);
     m_pLoopOutPoint = new ControlProxy(
-            getGroup(),"loop_end_position", this);
+            getGroup(), "loop_end_position", this);
 
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
@@ -119,6 +119,38 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     delete m_pEndOfTrack;
 }
 
+TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setSampleRate(44100);
+    // 10 seconds
+    pTrack->setDuration(10);
+    if (filebpm > 0) {
+        pTrack->setBpm(filebpm);
+    }
+
+    TrackPointer pOldTrack = m_pLoadedTrack;
+    m_pLoadedTrack = pTrack;
+    if (m_pLoadedTrack) {
+        // Listen for updates to the file's BPM
+        connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
+                m_pBPM, SLOT(set(double)));
+
+        connect(m_pLoadedTrack.get(), SIGNAL(keyUpdated(double)),
+                m_pKey, SLOT(set(double)));
+
+        // Listen for updates to the file's Replay Gain
+        connect(m_pLoadedTrack.get(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
+                this, SLOT(slotSetReplayGain(mixxx::ReplayGain)));
+    }
+
+    // Request a new track from EngineBuffer and wait for slotTrackLoaded()
+    // call.
+    EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
+    pEngineBuffer->loadFakeTrack(pTrack, bPlay);
+    emit(loadingTrack(pTrack, pOldTrack));
+    return pTrack;
+}
+
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     qDebug() << "BaseTrackPlayerImpl::slotLoadTrack";
     // Before loading the track, ensure we have access. This uses lazy
@@ -134,10 +166,9 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     if (m_pLoadedTrack) {
         // Save the loops that are currently set in a loop cue. If no loop cue is
         // currently on the track, then create a new one.
-        int loopStart = m_pLoopInPoint->get();
-        int loopEnd = m_pLoopOutPoint->get();
-        if (loopStart != -1 && loopEnd != -1 &&
-            even(loopStart) && even(loopEnd) && loopStart <= loopEnd) {
+        double loopStart = m_pLoopInPoint->get();
+        double loopEnd = m_pLoopOutPoint->get();
+        if (loopStart != -1 && loopEnd != -1 && loopStart <= loopEnd) {
             CuePointer pLoopCue;
             QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
             QListIterator<CuePointer> it(cuePoints);
@@ -148,7 +179,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
                 }
             }
             if (!pLoopCue) {
-                pLoopCue = m_pLoadedTrack->addCue();
+                pLoopCue = m_pLoadedTrack->createAndAddCue();
                 pLoopCue->setType(Cue::LOOP);
             }
             pLoopCue->setPosition(loopStart);
@@ -258,9 +289,9 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         while (it.hasNext()) {
             CuePointer pCue(it.next());
             if (pCue->getType() == Cue::LOOP) {
-                int loopStart = pCue->getPosition();
-                int loopEnd = loopStart + pCue->getLength();
-                if (loopStart != -1 && loopEnd != -1 && even(loopStart) && even(loopEnd)) {
+                double loopStart = pCue->getPosition();
+                double loopEnd = loopStart + pCue->getLength();
+                if (loopStart != -1 && loopEnd != -1) {
                     m_pLoopInPoint->set(loopStart);
                     m_pLoopOutPoint->set(loopEnd);
                     break;
@@ -294,7 +325,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
             // Avoid reseting speed if master sync is enabled and other decks with sync enabled
             // are playing, as this would change the speed of already playing decks.
-            if (! m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
+            if (!m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
                 if (m_pRateSlider != NULL) {
                     m_pRateSlider->set(0.0);
                 }

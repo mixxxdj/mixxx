@@ -19,16 +19,12 @@
 // the no-argument constructor be non-explicit. All methods are left virtual to
 // allow a backend to replace the entire functionality with its own (for
 // example, a database-backed manifest)
-class EffectManifest {
+class EffectManifest final {
   public:
     EffectManifest()
         : m_isMixingEQ(false),
           m_isMasterEQ(false),
-          m_isForFilterKnob(false),
           m_effectRampsFromDry(false) {
-    }
-    virtual ~EffectManifest() {
-        //qDebug() << debugString() << "deleted";
     }
 
     virtual const QString& id() const {
@@ -86,14 +82,6 @@ class EffectManifest {
         m_isMasterEQ = value;
     }
 
-    virtual const bool& isForFilterKnob() const {
-        return m_isForFilterKnob;
-    }
-
-    virtual void setIsForFilterKnob(const bool value) {
-        m_isForFilterKnob = value;
-    }
-
     virtual void setDescription(const QString& description) {
         m_description = description;
     }
@@ -128,8 +116,6 @@ class EffectManifest {
     // This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
     bool m_isMasterEQ;
-    // This helps us at DlgPrefEQ's basic selection of Filter knob effects
-    bool m_isForFilterKnob;
     QList<EffectManifestParameter> m_parameters;
     bool m_effectRampsFromDry;
 };

@@ -27,6 +27,7 @@
 #include "track/track.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
+#include "soundio/sounddeviceerror.h"
 
 class ControlPushButton;
 class ControllerManager;
@@ -114,8 +115,12 @@ class MixxxMainWindow : public QMainWindow {
     void initializeKeyboard();
     void checkDirectRendering();
     bool confirmExit();
-    int noSoundDlg(void);
-    int noOutputDlg(bool* continueClicked);
+    QDialog::DialogCode soundDeviceErrorDlg(
+            const QString &title, const QString &text, bool* retryClicked);
+    QDialog::DialogCode soundDeviceBusyDlg(bool* retryClicked);
+    QDialog::DialogCode soundDeviceErrorMsgDlg(
+            SoundDeviceError err, bool* retryClicked);
+    QDialog::DialogCode noOutputDlg(bool* continueClicked);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;

@@ -76,10 +76,6 @@ class EngineDeck : public EngineChannel, public AudioDestination {
   public slots:
     void slotPassingToggle(double v);
 
-  private slots:
-    // Reject all change requests for input configured.
-    void slotInputConfiguredChangeRequest(double) {}
-
   private:
     UserSettingsPointer m_pConfig;
     EngineBuffer* m_pBuffer;

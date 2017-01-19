@@ -6,7 +6,6 @@
 #include <QList>
 #include <QMutex>
 #include <QObject>
-#include <QSharedPointer>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
@@ -16,13 +15,14 @@
 #include "track/trackid.h"
 #include "track/playcounter.h"
 #include "track/trackmetadata.h"
+#include "util/memory.h"
 #include "util/sandbox.h"
 #include "util/duration.h"
 #include "waveform/waveform.h"
 
 class Track;
 class TrackPointer;
-typedef QWeakPointer<Track> TrackWeakPointer;
+typedef std::weak_ptr<Track> TrackWeakPointer;
 
 class Track : public QObject {
     Q_OBJECT
@@ -243,13 +243,13 @@ class Track : public QObject {
     void setAnalyzerProgress(int progress);
     int getAnalyzerProgress() const;
 
-    /** Save the cue point (in samples... I think) */
-    void setCuePoint(float cue);
+    // Save the cue point in samples
+    void setCuePoint(double cue);
     // Get saved the cue point
-    float getCuePoint() const;
+    double getCuePoint() const;
 
     // Calls for managing the track's cue points
-    CuePointer addCue();
+    CuePointer createAndAddCue();
     void removeCue(const CuePointer& pCue);
     QList<CuePointer> getCuePoints() const;
     void setCuePoints(const QList<CuePointer>& cuePoints);
@@ -382,8 +382,9 @@ class Track : public QObject {
     // Track rating
     int m_iRating;
 
-    // Cue point in samples or something
-    float m_fCuePoint;
+    // Cue point in samples
+    double m_cuePoint;
+
     // Date the track was added to the library
     QDateTime m_dateAdded;
 
@@ -414,26 +415,17 @@ class Track : public QObject {
     friend class TrackDAO;
 };
 
-class TrackPointer: public QSharedPointer<Track> {
+class TrackPointer: public std::shared_ptr<Track> {
   public:
     TrackPointer() {}
     explicit TrackPointer(const TrackWeakPointer& pTrack)
-        : QSharedPointer<Track>(pTrack) {
+        : std::shared_ptr<Track>(pTrack.lock()) {
     }
     explicit TrackPointer(Track* pTrack)
-        : QSharedPointer<Track>(pTrack, deleteLater) {
+        : std::shared_ptr<Track>(pTrack, deleteLater) {
     }
     TrackPointer(Track* pTrack, void (*deleter)(Track*))
-        : QSharedPointer<Track>(pTrack, deleter) {
-    }
-
-    // TODO(uklotzde): Remove these functions after migration
-    // from QSharedPointer to std::shared_ptr
-    Track* get() const {
-        return data();
-    }
-    void reset() {
-        clear();
+        : std::shared_ptr<Track>(pTrack, deleter) {
     }
 
   private:

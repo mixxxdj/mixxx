@@ -178,10 +178,11 @@ DlgPrefSound::~DlgPrefSound() {
 void DlgPrefSound::slotUpdate() {
     // this is unfortunate, because slotUpdate is called every time
     // we change to this pane, we lose changed and unapplied settings
-    // every time. There's no real way around this, just anothe argument
+    // every time. There's no real way around this, just another argument
     // for a prefs rewrite -- bkgood
-    loadSettings();
     m_settingsModified = false;
+    loadSettings();
+
 }
 
 /**
@@ -192,7 +193,7 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
-    int err = OK;
+    SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     {
         ScopedWaitCursor cursor;
         m_pKeylockEngine->set(keylockComboBox->currentIndex());
@@ -204,26 +205,12 @@ void DlgPrefSound::slotApply() {
         emit(writePaths(&m_config));
         err = m_pSoundManager->setConfig(m_config);
     }
-    if (err != OK) {
-        QString error;
-        QString deviceName(tr("a device"));
-        QString detailedError(tr("An unknown error occurred"));
-        SoundDevice *device = m_pSoundManager->getErrorDevice();
-        if (device != NULL) {
-            deviceName = tr("sound device \"%1\"").arg(device->getDisplayName());
-            detailedError = device->getError();
-        }
-        switch (err) {
-        case SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL:
-            error = tr("Two outputs cannot share channels on %1").arg(deviceName);
-            break;
-        default:
-            error = tr("Error opening %1\n%2").arg(deviceName, detailedError);
-            break;
-        }
+    if (err != SOUNDDEVICE_ERROR_OK) {
+        QString error = m_pSoundManager->getLastErrorMessage(err);
         QMessageBox::warning(NULL, tr("Configuration error"), error);
+    } else {
+        m_settingsModified = false;
     }
-    m_settingsModified = false;
     loadSettings(); // in case SM decided to change anything it didn't like
 }
 
@@ -388,8 +375,9 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
             ConfigKey("[Master]", "keylock_engine"), "1").toInt();
     keylockComboBox->setCurrentIndex(keylock_engine);
 
-    emit(loadPaths(m_config));
     m_loading = false;
+    // DlgPrefSoundItem has it's own inhibit flag 
+    emit(loadPaths(m_config));
 }
 
 /**

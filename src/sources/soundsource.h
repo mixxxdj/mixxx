@@ -75,11 +75,11 @@ private:
     const QString m_type;
 };
 
-typedef QSharedPointer<SoundSource> SoundSourcePointer;
+typedef std::shared_ptr<SoundSource> SoundSourcePointer;
 
 template<typename T>
 SoundSourcePointer newSoundSourceFromUrl(const QUrl& url) {
-    return SoundSourcePointer(new T(url));
+    return std::make_shared<T>(url);
 }
 
 } //namespace mixxx

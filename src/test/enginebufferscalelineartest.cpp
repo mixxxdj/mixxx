@@ -61,12 +61,12 @@ class ReadAheadManagerMock : public ReadAheadManager {
 
 class EngineBufferScaleLinearTest : public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pReadAheadMock = new StrictMock<ReadAheadManagerMock>();
         m_pScaler = new EngineBufferScaleLinear(m_pReadAheadMock);
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
         delete m_pScaler;
         delete m_pReadAheadMock;
     }

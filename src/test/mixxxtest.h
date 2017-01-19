@@ -17,7 +17,6 @@
 #define ASSERT_QSTRING_EQ(expected, test) ASSERT_STREQ(qPrintable(expected), qPrintable(test))
 
 typedef QScopedPointer<QTemporaryFile> ScopedTemporaryFile;
-typedef QScopedPointer<ControlObject> ScopedControl;
 
 class MixxxTest : public testing::Test {
   public:
@@ -44,10 +43,6 @@ class MixxxTest : public testing::Test {
         return m_pConfig;
     }
 
-    ControlProxy* getControlProxy(const ConfigKey& key) const {
-        return new ControlProxy(key);
-    }
-
     QTemporaryFile* makeTemporaryFile(const QString& contents) const {
         QByteArray contentsBa = contents.toLocal8Bit();
         QTemporaryFile* file = new QTemporaryFile();
@@ -69,6 +64,5 @@ class MixxxTest : public testing::Test {
   protected:
     UserSettingsPointer m_pConfig;
 };
-
 
 #endif /* MIXXXTEST_H */

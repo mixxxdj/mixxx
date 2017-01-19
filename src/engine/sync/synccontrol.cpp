@@ -250,6 +250,9 @@ void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bp
 
 double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
     double multiplier = kBpmUnity;
+    if (myBpm == 0.0) {
+        return multiplier;
+    }
     double best_margin = fabs((targetBpm / myBpm) - 1.0);
 
     double try_margin = fabs((targetBpm * kBpmHalve / myBpm) - 1.0);

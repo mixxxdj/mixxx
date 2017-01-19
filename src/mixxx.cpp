@@ -155,14 +155,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     ScopedTimer t("MixxxMainWindow::initialize");
 
-    // Register custom data types for signal processing
-    qRegisterMetaType<TrackId>("TrackId");
-    qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
-    qRegisterMetaType<TrackPointer>("TrackPointer");
-    qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
-    qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
-    qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
-
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
     Sandbox::initialize(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
@@ -397,27 +389,37 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Try open player device If that fails, the preference panel is opened.
-    int setupDevices = m_pSoundManager->setupDevices();
-    unsigned int numDevices = m_pSoundManager->getConfig().getOutputs().count();
-    // test for at least one out device, if none, display another dlg that
-    // says "mixxx will barely work with no outs"
-    while (setupDevices != OK || numDevices == 0) {
-        // Exit when we press the Exit button in the noSoundDlg dialog
-        // only call it if setupDevices != OK
-        if (setupDevices != OK) {
-            if (noSoundDlg() != 0) {
+    bool retryClicked;
+    do {
+        retryClicked = false;
+        SoundDeviceError result = m_pSoundManager->setupDevices();
+        if (result == SOUNDDEVICE_ERROR_DEVICE_COUNT ||
+                result == SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL) {
+            if (soundDeviceBusyDlg(&retryClicked) != QDialog::Accepted) {
                 exit(0);
             }
-        } else if (numDevices == 0) {
-            bool continueClicked = false;
-            int noOutput = noOutputDlg(&continueClicked);
-            if (continueClicked) break;
-            if (noOutput != 0) {
+        } else if (result != SOUNDDEVICE_ERROR_OK) {
+            if (soundDeviceErrorMsgDlg(result, &retryClicked) !=
+                    QDialog::Accepted) {
                 exit(0);
             }
         }
-        numDevices = m_pSoundManager->getConfig().getOutputs().count();
-    }
+    } while (retryClicked);
+
+    // test for at least one out device, if none, display another dlg that
+    // says "mixxx will barely work with no outs"
+    // In case persisting errors, the user has already received a message
+    // box from the preferences dialog above. So we can watch here just the
+    // output count.
+    while (m_pSoundManager->getConfig().getOutputs().count() == 0) {
+        // Exit when we press the Exit button in the noSoundDlg dialog
+        // only call it if result != OK
+        bool continueClicked = false;
+        if (noOutputDlg(&continueClicked) != QDialog::Accepted) {
+            exit(0);
+        }
+        if (continueClicked) break;
+   }
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -437,7 +439,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
     setCentralWidget(m_pWidgetParent);
-    // The old central widget is automatically disposed.
+    // The launch image widget is automatically disposed, but we still have a
+    // pointer to it.
+    m_pLaunchImage = nullptr;
 }
 
 void MixxxMainWindow::finalize() {
@@ -450,7 +454,23 @@ void MixxxMainWindow::finalize() {
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "state"),
         QString(saveState().toBase64()));
 
-    setCentralWidget(NULL);
+    qDebug() << "Destroying MixxxMainWindow";
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "saving configuration";
+    m_pSettingsManager->save();
+
+    // GUI depends on KeyboardEventFilter, PlayerManager, Library
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
+    m_pWidgetParent = nullptr;
+    QPointer<QWidget> pSkin(centralWidget());
+    setCentralWidget(nullptr);
+    if (!pSkin.isNull()) {
+        QCoreApplication::sendPostedEvents(pSkin, QEvent::DeferredDelete);
+    }
+    // Our central widget is now deleted.
+    DEBUG_ASSERT_AND_HANDLE(pSkin.isNull()) {
+        qWarning() << "Central widget was not deleted by our sendPostedEvents trick.";
+    }
 
     // TODO(rryan): WMainMenuBar holds references to controls so we need to delete it
     // before MixxxMainWindow is destroyed. QMainWindow calls deleteLater() in
@@ -458,26 +478,20 @@ void MixxxMainWindow::finalize() {
     // DeferredDelete events to be processed for it. Once Mixxx shutdown lives
     // outside of MixxxMainWindow the parent relationship will directly destroy
     // the WMainMenuBar and this will no longer be a problem.
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting menubar";
     QPointer<QWidget> pMenuBar(menuBar());
-    setMenuBar(new QMenuBar());
-    QCoreApplication::sendPostedEvents(pMenuBar, QEvent::DeferredDelete);
+    setMenuBar(nullptr);
+    if (!pMenuBar.isNull()) {
+        QCoreApplication::sendPostedEvents(pMenuBar, QEvent::DeferredDelete);
+    }
     // Our main menu is now deleted.
     DEBUG_ASSERT_AND_HANDLE(pMenuBar.isNull()) {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
 
-    qDebug() << "Destroying MixxxMainWindow";
-
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "saving configuration";
-    m_pSettingsManager->save();
-
     // SoundManager depend on Engine and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
-
-    // GUI depends on KeyboardEventFilter, PlayerManager, Library
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Skin";
-    delete m_pWidgetParent;
 
     // ControllerManager depends on Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ControllerManager";
@@ -658,40 +672,21 @@ void MixxxMainWindow::initializeKeyboard() {
     m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
-int MixxxMainWindow::noSoundDlg(void) {
+QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
+        const QString &title, const QString &text, bool* retryClicked) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
-    msgBox.setWindowTitle(tr("Sound Device Busy"));
-    msgBox.setText(
-        "<html>" +
-        tr("Mixxx was unable to access all the configured sound devices. "
-        "Another application is using a sound device Mixxx is configured to "
-        "use or a device is not plugged in.") +
-        "<ul>"
-            "<li>" +
-                tr("<b>Retry</b> after closing the other application "
-                "or reconnecting a sound device") +
-            "</li>"
-            "<li>" +
-                tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
-            "</li>"
-            "<li>" +
-                tr("Get <b>Help</b> from the Mixxx Wiki.") +
-            "</li>"
-            "<li>" +
-                tr("<b>Exit</b> Mixxx.") +
-            "</li>"
-        "</ul></html>"
-    );
+    msgBox.setWindowTitle(title);
+    msgBox.setText(text);
 
-    QPushButton *retryButton = msgBox.addButton(tr("Retry"),
-        QMessageBox::ActionRole);
-    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"),
-        QMessageBox::ActionRole);
-    QPushButton *wikiButton = msgBox.addButton(tr("Help"),
-        QMessageBox::ActionRole);
-    QPushButton *exitButton = msgBox.addButton(tr("Exit"),
-        QMessageBox::ActionRole);
+    QPushButton* retryButton =
+            msgBox.addButton(tr("Retry"), QMessageBox::ActionRole);
+    QPushButton* reconfigureButton =
+            msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton* wikiButton =
+            msgBox.addButton(tr("Help"), QMessageBox::ActionRole);
+    QPushButton* exitButton =
+            msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
 
     while (true)
     {
@@ -699,7 +694,8 @@ int MixxxMainWindow::noSoundDlg(void) {
 
         if (msgBox.clickedButton() == retryButton) {
             m_pSoundManager->clearAndQueryDevices();
-            return 0;
+            *retryClicked = true;
+            return QDialog::Accepted;
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(
                 "http://mixxx.org/wiki/doku.php/troubleshooting"
@@ -708,43 +704,102 @@ int MixxxMainWindow::noSoundDlg(void) {
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
 
+            m_pSoundManager->clearAndQueryDevices();
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
-                return 0;
+                return QDialog::Accepted;
             }
 
             msgBox.show();
-
         } else if (msgBox.clickedButton() == exitButton) {
-            return 1;
+            // Will finally quit Mixxx
+            return QDialog::Rejected;
         }
     }
 }
 
-int MixxxMainWindow::noOutputDlg(bool *continueClicked) {
+QDialog::DialogCode MixxxMainWindow::soundDeviceBusyDlg(bool* retryClicked) {
+    QString title(tr("Sound Device Busy"));
+    QString text(
+            "<html> <p>" %
+            tr("Mixxx was unable to open all the configured sound devices.") +
+            "</p> <p>" %
+            m_pSoundManager->getErrorDeviceName() %
+            " is used by another application or not plugged in."
+            "</p><ul>"
+                "<li>" %
+                    tr("<b>Retry</b> after closing the other application "
+                    "or reconnecting a sound device") %
+                "</li>"
+                "<li>" %
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") %
+                "</li>"
+                "<li>" %
+                    tr("Get <b>Help</b> from the Mixxx Wiki.") %
+                "</li>"
+                "<li>" %
+                    tr("<b>Exit</b> Mixxx.") %
+                "</li>"
+            "</ul></html>"
+    );
+    return soundDeviceErrorDlg(title, text, retryClicked);
+}
+
+
+QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
+        SoundDeviceError err, bool* retryClicked) {
+    QString title(tr("Sound Device Error"));
+    QString text(
+            "<html> <p>" %
+            tr("Mixxx was unable to open all the configured sound devices.") +
+            "</p> <p>" %
+            m_pSoundManager->getLastErrorMessage(err).replace("\n", "<br/>") %
+            "</p><ul>"
+                "<li>" %
+                    tr("<b>Retry</b> after fixing an issue") %
+                "</li>"
+                "<li>" %
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") %
+                "</li>"
+                "<li>" %
+                    tr("Get <b>Help</b> from the Mixxx Wiki.") %
+                "</li>"
+                "<li>" %
+                    tr("<b>Exit</b> Mixxx.") %
+                "</li>"
+            "</ul></html>"
+    );
+    return soundDeviceErrorDlg(title, text, retryClicked);
+}
+
+QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("No Output Devices"));
-    msgBox.setText( "<html>" + tr("Mixxx was configured without any output sound devices. "
-                    "Audio processing will be disabled without a configured output device.") +
-                    "<ul>"
-                        "<li>" +
-                            tr("<b>Continue</b> without any outputs.") +
-                        "</li>"
-                        "<li>" +
-                            tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
-                        "</li>"
-                        "<li>" +
-                            tr("<b>Exit</b> Mixxx.") +
-                        "</li>"
-                    "</ul></html>"
+    msgBox.setText(
+            "<html>" + tr("Mixxx was configured without any output sound devices. "
+            "Audio processing will be disabled without a configured output device.") +
+            "<ul>"
+                "<li>" +
+                    tr("<b>Continue</b> without any outputs.") +
+                "</li>"
+                "<li>" +
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
+                "</li>"
+                "<li>" +
+                    tr("<b>Exit</b> Mixxx.") +
+                "</li>"
+            "</ul></html>"
     );
 
-    QPushButton *continueButton = msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
-    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
-    QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
+    QPushButton* continueButton =
+            msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
+    QPushButton* reconfigureButton =
+            msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton* exitButton =
+            msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
 
     while (true)
     {
@@ -752,7 +807,7 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked) {
 
         if (msgBox.clickedButton() == continueButton) {
             *continueClicked = true;
-            return 0;
+            return QDialog::Accepted;
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
 
@@ -760,13 +815,14 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked) {
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
-                return 0;
+                return QDialog::Accepted;
             }
 
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            return 1;
+            // Will finally quit Mixxx
+            return QDialog::Rejected;
         }
     }
 }
@@ -1225,6 +1281,8 @@ bool MixxxMainWindow::confirmExit() {
 }
 
 void MixxxMainWindow::launchProgress(int progress) {
-    m_pLaunchImage->progress(progress);
+    if (m_pLaunchImage) {
+        m_pLaunchImage->progress(progress);
+    }
     qApp->processEvents();
 }

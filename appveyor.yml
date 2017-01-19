@@ -2,7 +2,7 @@
 version: '{branch}-{build}'
 skip_tags: true
 max_jobs: 1
-image: Visual Studio 2013
+image: Visual Studio 2015
 init:
   - git config --global core.autocrlf input
 # Uncomment the following line to show RDP info at beginning of job
@@ -32,20 +32,16 @@ cache:
   - C:\mixxx-buildserver
 install:
   - cd %TEMP%
-  - echo *** Downloading and installing scons
-  # SF.net download currently broken from EC2 to some mirrors, so hosting scons myself
-#  - curl -fsS -L -o scons-2.5.1.zip http://prdownloads.sourceforge.net/scons/scons-2.5.1.zip
-  - curl -fsS -L -o scons-2.5.1.zip https://downloads.mixxx.org/builds/appveyor/environments/2.0/scons-2.5.1.zip
-  - 7z x scons-2.5.1.zip
-  - cd scons-2.5.1
-  - python setup.py install
+  - echo *** Patching NSIS
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - patch "C:\Program Files (x86)\NSIS\Include\MultiUser.nsh" < build\appveyor\NSIS.patch
   - echo *** Downloading precompiled build environment if not in build-cache
   - cd %APPVEYOR_BUILD_FOLDER%
-  - build\appveyor\install_buildenv.bat %platform% %configuration%
+  - build\appveyor\install_buildenv.bat https://downloads.mixxx.org/builds/appveyor/environments/2.1 2.1-20170118-%platform%-%configuration%-fastbuild-static-5e57821-minimal
 before_build:
   - cd %APPVEYOR_BUILD_FOLDER%
 build_script:
-  - build\appveyor\build_mixxx.bat %platform% %configuration%
+  - build\appveyor\build_mixxx.bat %platform% %configuration% c:\mixxx-buildserver\2.1-20170118-%platform%-%configuration%-fastbuild-static-5e57821-minimal
 test_script:
   - echo *** Testing
   # Calling mixxx-test under bash to have standard output

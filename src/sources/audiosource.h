@@ -1,10 +1,9 @@
 #ifndef MIXXX_AUDIOSOURCE_H
 #define MIXXX_AUDIOSOURCE_H
 
-#include <QSharedPointer>
-
 #include "sources/urlresource.h"
 #include "util/audiosignal.h"
+#include "util/memory.h"
 #include "util/result.h"
 #include "util/samplebuffer.h"
 
@@ -231,7 +230,7 @@ class AudioSourceConfig : public AudioSignal {
     using AudioSignal::resetSamplingRate;
 };
 
-typedef QSharedPointer<AudioSource> AudioSourcePointer;
+typedef std::shared_ptr<AudioSource> AudioSourcePointer;
 
 } // namespace mixxx
 

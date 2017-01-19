@@ -5,21 +5,23 @@
 
 #include "waveformmark.h"
 
-WaveformMark::WaveformMark(int hotCue)
+WaveformMark::WaveformMark(const QString& group,
+                           const QDomNode& node,
+                           const SkinContext& context,
+                           const WaveformSignalColors& signalColors,
+                           int hotCue,
+                           QString item)
     : m_iHotCue(hotCue) {
-}
-
-void WaveformMark::reset(int hotCue) {
-    WaveformMark(hotCue).swap(*this);
-}
-
-void WaveformMark::setup(const QString& group, const QDomNode& node,
-                         const SkinContext& context,
-                         const WaveformSignalColors& signalColors) {
-    QString item = context.selectString(node, "Control");
+    if(item.isEmpty())
+        item = context.selectString(node, "Control");
     if (!item.isEmpty()) {
         m_pPointCos = std::make_unique<ControlProxy>(group, item);
     }
-
     m_properties = WaveformMarkProperties(node, context, signalColors);
 }
+
+
+void WaveformMark::connectSamplePositionChanged(const QObject *obj, const char *slt) const {
+    m_pPointCos->connectValueChanged(obj, slt, Qt::AutoConnection);
+}
+

@@ -4,6 +4,7 @@
 *.orig
 *.os
 *.patch
+!build/appveyor/NSIS.patch
 *.pyc
 *.rej
 *_build
