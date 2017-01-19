@@ -196,14 +196,13 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     QList<QPair<QString, QString> > availableQuickEffectNames;
     EffectsManager::EffectManifestFilterFnc filterEQ;
     EffectsManager::EffectManifestFilterFnc filterHasSuperKnobLinking;
+    filterHasSuperKnobLinking = hasSuperKnobLinking;
     if (CheckBoxEqOnly->isChecked()) {
         m_pConfig->set(ConfigKey(kConfigKey, kEqsOnly), QString("yes"));
         filterEQ = isMixingEQ;
-        filterHasSuperKnobLinking = hasSuperKnobLinking;
     } else {
         m_pConfig->set(ConfigKey(kConfigKey, kEqsOnly), QString("no"));
         filterEQ = nullptr; // take all;
-        filterHasSuperKnobLinking = nullptr;
     }
     availableEQEffectNames =
             m_pEffectsManager->getEffectNamesFiltered(filterEQ);
