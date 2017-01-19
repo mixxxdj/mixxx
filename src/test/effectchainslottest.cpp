@@ -36,7 +36,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
+    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot(pChain, QDomElement());
     pSlot->clear();
 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
@@ -89,7 +89,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_StartsWithChainLoaded) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
+    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot(pChain, QDomElement());
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
     EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(group, "loaded")));
@@ -103,7 +103,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_Clear) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
+    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot(pChain, QDomElement());
 
     // Clear the default chain.
     pSlot->clear();

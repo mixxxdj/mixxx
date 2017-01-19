@@ -39,7 +39,7 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     int iEffectNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
+    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot(pChain, QDomElement());
     // StandardEffectRack::addEffectChainSlot automatically adds 4 effect
     // slots. In the future we will probably remove this so this will just start
     // segfaulting.

@@ -272,6 +272,10 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
 
 QDomElement EffectSlot::toXML(QDomDocument* doc) const {
     QDomElement effectElement = doc->createElement("Effect");
+    if (m_pEffect == nullptr) {
+        return effectElement;
+    }
+
     EffectManifest manifest = m_pEffect->getManifest();
     XmlParse::addElement(*doc, effectElement, "Id", manifest.id());
     XmlParse::addElement(*doc, effectElement, "Version", manifest.version());
