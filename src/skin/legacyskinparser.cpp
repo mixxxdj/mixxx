@@ -53,6 +53,7 @@
 #include "widget/wnumberrate.h"
 #include "widget/weffectchain.h"
 #include "widget/weffect.h"
+#include "widget/weffectselector.h"
 #include "widget/weffectparameter.h"
 #include "widget/weffectbuttonparameter.h"
 #include "widget/weffectparameterbase.h"
@@ -545,6 +546,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseEffectChainName(node));
     } else if (nodeName == "EffectName") {
         result = wrapWidget(parseEffectName(node));
+    } else if (nodeName == "EffectSelector") {
+        result = wrapWidget(parseEffectSelector(node));
     } else if (nodeName == "EffectParameterName") {
         result = wrapWidget(parseEffectParameterName(node));
     } else if (nodeName == "EffectButtonParameterName") {
@@ -1574,6 +1577,17 @@ QWidget* LegacySkinParser::parseEffectName(const QDomElement& node) {
     WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffect);
     return pEffect;
+}
+
+QWidget* LegacySkinParser::parseEffectSelector(const QDomElement& node) {
+    WEffectSelector* pSelector = new WEffectSelector(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pSelector);
+    pSelector->setup(node, *m_pContext);
+    pSelector->installEventFilter(m_pKeyboard);
+    pSelector->installEventFilter(
+        m_pControllerManager->getControllerLearningEventFilter());
+    pSelector->Init();
+    return pSelector;
 }
 
 QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {

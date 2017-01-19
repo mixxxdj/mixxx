@@ -87,6 +87,11 @@ const QList<QString> EffectsManager::getAvailableEffects() const {
     return availableEffects;
 }
 
+bool alphabetizeEffectNameIdPairs(const QPair<QString, QString>& pair1,
+                                 const QPair<QString, QString>& pair2) {
+    return pair1.second < pair2.second;
+}
+
 const QList<QPair<QString, QString> > EffectsManager::getEffectNamesFiltered(
         EffectManifestFilterFnc filter) const {
     QList<QPair<QString, QString> > filteredEQEffectNames;
@@ -104,6 +109,32 @@ const QList<QPair<QString, QString> > EffectsManager::getEffectNamesFiltered(
     }
 
     return filteredEQEffectNames;
+}
+
+// Each returned QPair has the effect ID and short name.
+const QList<QPair<QString, QString> > EffectsManager::getEffectShortNamesFiltered(
+        EffectManifestFilterFnc filter) const {
+    QList<QPair<QString, QString> > filteredEffectShortNames;
+    QString currentEffectShortName;
+    for (const EffectsBackend* pBackend : m_effectsBackends) {
+        QList<QString> backendEffects = pBackend->getEffectIds();
+        for (const QString effectId : backendEffects) {
+            EffectManifest manifest = pBackend->getManifest(effectId);
+            if (filter != nullptr && !filter(&manifest)) {
+                continue;
+            }
+            currentEffectShortName = manifest.shortName();
+            if (currentEffectShortName.isEmpty()) {
+                currentEffectShortName = manifest.name();
+            }
+            filteredEffectShortNames.append(qMakePair(effectId, currentEffectShortName));
+        }
+    }
+
+    qSort(filteredEffectShortNames.begin(), filteredEffectShortNames.end(),
+          alphabetizeEffectNameIdPairs);
+
+    return filteredEffectShortNames;
 }
 
 bool EffectsManager::isEQ(const QString& effectId) const {

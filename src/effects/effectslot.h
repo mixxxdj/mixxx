@@ -30,6 +30,10 @@ class EffectSlot : public QObject {
     // returns a null EffectPointer.
     EffectPointer getEffect() const;
 
+    inline int getEffectSlotNumber() const {
+        return m_iEffectNumber;
+    }
+
     unsigned int numParameterSlots() const;
     EffectParameterSlotPointer addEffectParameterSlot();
     EffectParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
