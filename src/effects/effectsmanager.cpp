@@ -142,40 +142,47 @@ bool EffectsManager::isEQ(const QString& effectId) const {
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
-    const QList<QString> effects = getAvailableEffects();
+    const QList<QPair<QString, QString> > idNamePairs = getEffectShortNamesFiltered(nullptr);
 
-    if (effects.isEmpty()) {
+    if (idNamePairs.isEmpty()) {
         return QString();
     }
-
     if (effectId.isNull()) {
-        return effects.first();
+        return idNamePairs.first().first;
     }
 
-    int index = effects.indexOf(effectId);
-    if (++index >= effects.size()) {
+    int index;
+    for (index = 0; index < idNamePairs.size(); ++index) {
+        if (effectId == idNamePairs.at(index).first) {
+            break;
+        }
+    }
+    if (++index >= idNamePairs.size()) {
         index = 0;
     }
-    return effects.at(index);
+    return idNamePairs.at(index).first;
 }
 
 QString EffectsManager::getPrevEffectId(const QString& effectId) {
-    const QList<QString> effects = getAvailableEffects();
+    const QList<QPair<QString, QString> > idNamePairs = getEffectShortNamesFiltered(nullptr);
 
-    if (effects.isEmpty()) {
+    if (idNamePairs.isEmpty()) {
         return QString();
     }
-
     if (effectId.isNull()) {
-        return effects.last();
+        return idNamePairs.last().first;
     }
 
-    int index = effects.indexOf(effectId);
+    int index;
+    for (index = 0; index < idNamePairs.size(); ++index) {
+        if (effectId == idNamePairs.at(index).first) {
+            break;
+        }
+    }
     if (--index < 0) {
-        index = effects.size() - 1;
+        index = idNamePairs.size() - 1;
     }
-    return effects.at(index);
-
+    return idNamePairs.at(index).first;
 }
 
 QPair<EffectManifest, EffectsBackend*> EffectsManager::getEffectManifestAndBackend(
