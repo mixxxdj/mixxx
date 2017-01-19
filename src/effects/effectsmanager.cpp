@@ -70,45 +70,32 @@ const QSet<ChannelHandleAndGroup>& EffectsManager::registeredChannels() const {
     return m_pEffectChainManager->registeredChannels();
 }
 
-const QList<QString> EffectsManager::getAvailableEffects() const {
-    QList<QString> availableEffects;
-
-    foreach (EffectsBackend* pBackend, m_effectsBackends) {
-        const QList<QString>& backendEffects = pBackend->getEffectIds();
-        foreach (QString effectId, backendEffects) {
-            if (availableEffects.contains(effectId)) {
-                qWarning() << "WARNING: Duplicate effect ID" << effectId;
-                continue;
-            }
-            availableEffects.append(effectId);
-        }
-    }
-
-    return availableEffects;
-}
-
 bool alphabetizeEffectNameIdPairs(const QPair<QString, QString>& pair1,
                                  const QPair<QString, QString>& pair2) {
     return pair1.second < pair2.second;
 }
 
+// Each returned QPair has the effect ID and full name.
 const QList<QPair<QString, QString> > EffectsManager::getEffectNamesFiltered(
         EffectManifestFilterFnc filter) const {
-    QList<QPair<QString, QString> > filteredEQEffectNames;
+    QList<QPair<QString, QString> > filteredEffectNames;
     QString currentEffectName;
-    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+    for (const EffectsBackend* pBackend : m_effectsBackends) {
         QList<QString> backendEffects = pBackend->getEffectIds();
-        foreach (QString effectId, backendEffects) {
+        for (const QString effectId : backendEffects) {
             EffectManifest manifest = pBackend->getManifest(effectId);
             if (filter && !filter(&manifest)) {
                 continue;
             }
             currentEffectName = manifest.name();
-            filteredEQEffectNames.append(qMakePair(effectId, currentEffectName));
+            filteredEffectNames.append(qMakePair(effectId, currentEffectName));
         }
     }
 
-    return filteredEQEffectNames;
+    qSort(filteredEffectNames.begin(), filteredEffectNames.end(),
+          alphabetizeEffectNameIdPairs);
+
+    return filteredEffectNames;
 }
 
 // Each returned QPair has the effect ID and short name.
