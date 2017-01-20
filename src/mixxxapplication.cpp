@@ -1,9 +1,23 @@
 #include <QtDebug>
 #include <QTouchEvent>
-
 #include "mixxxapplication.h"
 #include "control/controlproxy.h"
 #include "mixxx.h"
+
+// When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
+// plugins we link in build/depends.py.
+#ifdef QT_NODLL
+#include <QtPlugin>
+// iconengines plugins
+Q_IMPORT_PLUGIN(qsvgicon)
+// imageformats plugins
+Q_IMPORT_PLUGIN(qsvg)
+Q_IMPORT_PLUGIN(qico)
+Q_IMPORT_PLUGIN(qtga)
+// accessible plugins
+Q_IMPORT_PLUGIN(qtaccessiblewidgets)
+#endif
+
 
 MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
