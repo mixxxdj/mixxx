@@ -385,10 +385,12 @@ class Qt(Dependence):
                 # QtNetwork openssl-linked
                 build.env.Append(LIBS = 'crypt32')
 
-                # NOTE(rryan): Not all imageformats plugins are built as .libs
-                # when building Qt statically on Windows. Check the build
-                # environment to see exactly what's available as a standalone
-                # .lib vs linked into Qt .libs by default.
+                # NOTE(rryan): If you are adding a plugin here, you must also
+                # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
+                # for it. Not all imageformats plugins are built as .libs when
+                # building Qt statically on Windows. Check the build environment
+                # to see exactly what's available as a standalone .lib vs linked
+                # into Qt .libs by default.
 
                 # iconengines plugins
                 build.env.Append(LIBPATH=[
