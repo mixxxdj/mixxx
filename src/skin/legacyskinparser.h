@@ -23,11 +23,12 @@ class SkinContext;
 class WLabel;
 class ControlObject;
 class LaunchImage;
+class WWidgetGroup;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
-    LegacySkinParser();
+    LegacySkinParser(UserSettingsPointer pConfig);
     LegacySkinParser(UserSettingsPointer pConfig,
                      KeyboardEventFilter* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
@@ -125,6 +126,7 @@ class LegacySkinParser : public QObject, public SkinParser {
                                          bool* created);
 
     QString parseLaunchImageStyle(const QDomNode& node);
+    void parseChildren(const QDomElement& node, WWidgetGroup* pGroup);
 
     UserSettingsPointer m_pConfig;
     KeyboardEventFilter* m_pKeyboard;

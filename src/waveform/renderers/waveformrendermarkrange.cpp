@@ -58,8 +58,8 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         int startSample = markRange.start();
         int endSample = markRange.end();
 
-        double startPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(startSample);
-        double endPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(endSample);
+        double startPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(startSample);
+        double endPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(endSample);
 
         //range not in the current display
         if (startPosition > m_waveformRenderer->getLength() || endPosition < 0)

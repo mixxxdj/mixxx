@@ -33,7 +33,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     double getValueParameter() const;
 
-    void onChainSuperParameterChanged(double parameter, bool force=false);
+    void onEffectMetaParameterChanged(double parameter, bool force=false);
 
     // Syncs the Super button with the parameter, that the following
     // super button change will be passed to the effect parameter

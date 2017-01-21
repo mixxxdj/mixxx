@@ -40,11 +40,17 @@ class EffectManifestParameter {
         NUM_LINK_TYPES
     };
 
+    enum class LinkInversion {
+        NOT_INVERTED = 0,
+        INVERTED = 1
+    };
+
     EffectManifestParameter()
             : m_controlHint(CONTROL_UNKNOWN),
               m_semanticHint(SEMANTIC_UNKNOWN),
               m_unitsHint(UNITS_UNKNOWN),
               m_defaultLinkType(LINK_NONE),
+              m_defaultLinkInversion(LinkInversion::NOT_INVERTED),
               m_neutralPointOnScale(0.0),
               m_default(0),
               m_minimum(0),
@@ -72,6 +78,13 @@ class EffectManifestParameter {
     }
     virtual void setName(const QString& name) {
         m_name = name;
+    }
+
+    virtual const QString& shortName() const {
+        return m_shortName;
+    }
+    virtual void setShortName(const QString& shortName) {
+        m_shortName = shortName;
     }
 
     virtual const QString& description() const {
@@ -109,9 +122,17 @@ class EffectManifestParameter {
     virtual LinkType defaultLinkType() const {
         return m_defaultLinkType;
     }
-    virtual void setDefaultLinkType(LinkType linkType) {
+    virtual void setDefaultLinkType(const LinkType linkType) {
         m_defaultLinkType = linkType;
     }
+
+    virtual LinkInversion defaultLinkInversion() const {
+        return m_defaultLinkInversion;
+    }
+    virtual void setDefaultLinkInversion(const LinkInversion linkInversion) {
+        m_defaultLinkInversion = linkInversion;
+    }
+
 
     // Neutral Point On Scale is the parameter in the range 0 .. 1 on the knob that
     // is adopted as neutral when controlled by the super knob.
@@ -179,12 +200,14 @@ class EffectManifestParameter {
 
     QString m_id;
     QString m_name;
+    QString m_shortName;
     QString m_description;
 
     ControlHint m_controlHint;
     SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
     LinkType m_defaultLinkType;
+    LinkInversion m_defaultLinkInversion;
     double m_neutralPointOnScale;
 
     double m_default;

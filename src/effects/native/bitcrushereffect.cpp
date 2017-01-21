@@ -17,7 +17,6 @@ EffectManifest BitCrusherEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "The BitCrusher is an effect that adds quantisation noise to the signal "
         "by the reduction of the resolution or bandwidth of the samples."));
-    manifest.setIsForFilterKnob(true);
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* depth = manifest.addParameter();
@@ -28,6 +27,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    depth->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     depth->setNeutralPointOnScale(1.0);
     depth->setDefault(16);
     // for values -1 0 +1
@@ -38,11 +38,13 @@ EffectManifest BitCrusherEffect::getManifest() {
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("downsample");
     frequency->setName(QObject::tr("Downsampling"));
+    frequency->setShortName(QObject::tr("Down"));
     frequency->setDescription(QObject::tr("Adjusts the sample rate, to which the signal is downsampled."));
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
     frequency->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    frequency->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     frequency->setNeutralPointOnScale(1.0);
     frequency->setDefault(1.0);
     frequency->setMinimum(0.02);

@@ -39,7 +39,7 @@ class EffectChainSlot : public QObject {
     void registerChannel(const ChannelHandleAndGroup& handle_group);
 
     double getSuperParameter() const;
-    void setSuperParameter(double value);
+    void setSuperParameter(double value, bool force = false);
     void setSuperParameterDefaultValue(double value);
 
     // Unload the loaded EffectChain.
@@ -93,9 +93,8 @@ class EffectChainSlot : public QObject {
 
 
   private slots:
-    void slotChainEffectsChanged(bool shouldEmit=true);
+    void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit=true);
     void slotChainNameChanged(const QString& name);
-    void slotChainSuperParameterChanged(double parameter);
     void slotChainEnabledChanged(bool enabled);
     void slotChainMixChanged(double mix);
     void slotChainInsertionTypeChanged(EffectChain::InsertionType type);
@@ -106,12 +105,9 @@ class EffectChainSlot : public QObject {
     void slotClearEffect(unsigned int iEffectSlotNumber);
 
     void slotControlClear(double v);
-    void slotControlNumEffects(double v);
-    void slotControlNumEffectSlots(double v);
-    void slotControlChainLoaded(double v);
     void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
-    void slotControlChainSuperParameter(double v);
+    void slotControlChainSuperParameter(double v, bool force = false);
     void slotControlChainInsertionType(double v);
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
@@ -140,6 +136,18 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;
     ControlPushButton* m_pControlChainPrevPreset;
+
+    /**
+      These COs do not affect how the effects are processed;
+      they are defined here for skins and controller mappings to communicate
+      with each other. They cannot be defined in skins because they must be present
+      when both skins and mappings are loaded, otherwise the skin will
+      create a new CO with the same ConfigKey but actually be interacting with a different
+      object than the mapping.
+    **/
+    ControlPushButton* m_pControlChainShowFocus;
+    ControlPushButton* m_pControlChainShowParameters;
+    ControlObject* m_pControlChainFocusedEffect;
 
     struct ChannelInfo {
         // Takes ownership of pEnabled.

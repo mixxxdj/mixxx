@@ -119,12 +119,12 @@ Function InstallVCRedist
   SetOutPath $TEMP
 
   ; Put the VC redist installer files there
-  File ${WINLIB_PATH}\vcredist_${ARCH}.exe
+  File ${WINLIB_PATH}\vc_redist.${ARCH}.exe
 
   ClearErrors
   ; Call it & wait for it to install
-  ExecWait "$TEMP\vcredist_${ARCH}.exe /quiet /install /norestart"
-  Delete "$TEMP\vcredist_${ARCH}.exe"
+  ExecWait "$TEMP\vc_redist.${ARCH}.exe /quiet /install /norestart"
+  Delete "$TEMP\vc_redist.${ARCH}.exe"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
@@ -189,7 +189,7 @@ Section "Mixxx (required)" SecMixxx
 
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
-  
+
   !ifdef STATICDEPS
     ; The below is not fatal if Mixxx is built with static dependencies
     ; since there may not be any DLLs to bundle
@@ -197,7 +197,7 @@ Section "Mixxx (required)" SecMixxx
   !else
     File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
   !endif
-  
+
   ; If PDB files are present bundle them. For release builds we will not copy
   ; PDBs into the distXX folder so they won't get bundled.
   File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.pdb"
@@ -357,7 +357,6 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Akai-LPD8-RK.midi.xml"
   Delete "$INSTDIR\controllers\American Audio RADIUS 2000 CH1.midi.xml"
   Delete "$INSTDIR\controllers\American Audio RADIUS 2000 CH2.midi.xml"
-  Delete "$INSTDIR\controllers\American Audio VMS2 Alternative.midi.xml"
   Delete "$INSTDIR\controllers\American Audio VMS2.midi.xml"
   Delete "$INSTDIR\controllers\American Audio VMS4.midi.xml"
   Delete "$INSTDIR\controllers\American-Audio-RADIUS-2000-scripts.js"
@@ -366,9 +365,13 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Behringer BCD2000.midi.xml"
   Delete "$INSTDIR\controllers\Behringer BCD3000 Advanced.midi.xml"
   Delete "$INSTDIR\controllers\Behringer BCD3000.midi.xml"
+  Delete "$INSTDIR\controllers\Behringer CMDStudio4a.midi.xml"
   Delete "$INSTDIR\controllers\Behringer-BCD2000-scripts.js"
   Delete "$INSTDIR\controllers\Behringer-BCD3000-Advanced-scripts.js"
   Delete "$INSTDIR\controllers\Behringer-BCD3000-scripts.js"
+  Delete "$INSTDIR\controllers\Behringer CMD Micro.midi.xml"
+  Delete "$INSTDIR\controllers\Behringer-CMD-Micro-scripts.js"
+  Delete "$INSTDIR\controllers\Behringer-CMDStudio4a-scripts.js"
   Delete "$INSTDIR\controllers\common-bulk-midi.js"
   Delete "$INSTDIR\controllers\common-controller-scripts.js"
   Delete "$INSTDIR\controllers\common-hid-devices.js"
@@ -379,6 +382,8 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Denon-DN-HS5500-scripts.js"
   Delete "$INSTDIR\controllers\Denon-DN-SC2000.midi.js"
   Delete "$INSTDIR\controllers\Denon-MC3000-scripts.js"
+  Delete "$INSTDIR\controllers\Denon-MC4000-scripts.js"
+  Delete "$INSTDIR\controllers\Denon MC4000.midi.xml"
   Delete "$INSTDIR\controllers\Denon-MC6000MK2-scripts.js"
   Delete "$INSTDIR\controllers\Denon-MC6000MK2.midi.xml"
   Delete "$INSTDIR\controllers\DJ-Tech CDJ-101.midi.xml"
@@ -423,6 +428,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Hercules DJ Control MP3.hid.xml"
   Delete "$INSTDIR\controllers\Hercules DJ Control MP3.midi.xml"
   Delete "$INSTDIR\controllers\Hercules DJ Control Steel.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules P32 DJ.midi.xml"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-4-Mx-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk1-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk2-hid-scripts.js"
@@ -432,11 +438,14 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-RMX-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-RMX-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-AIR-scripts.js"
+  Delete "$INSTDIR\controllers\Hercules DJControl Compact.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules-DJControl-Compact-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-Instinct-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-MP3-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-MP3-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-Steel-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-mp3e2-compat.js"
+  Delete "$INSTDIR\controllers\Hercules-P32-scripts.js"
   Delete "$INSTDIR\controllers\HID-Keyboard.js"
   Delete "$INSTDIR\controllers\HID-Trackpad.js"
   Delete "$INSTDIR\controllers\Ion Discover DJ.midi.xml"
@@ -450,6 +459,9 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Korg nanoPAD2.midi.xml"
   Delete "$INSTDIR\controllers\Korg-nanoKONTROL-2-scripts.js"
   Delete "$INSTDIR\controllers\Korg-nanoPAD2-scripts.js"
+  Delete "$INSTDIR\controllers\lodash.mixxx.js"
+  Delete "$INSTDIR\controllers\M-Audio-Xponent-scripts.js"
+  Delete "$INSTDIR\controllers\M-Audio_Xponent.midi.xml"
   Delete "$INSTDIR\controllers\korg_nanokontrol2.mixco.output.js"
   Delete "$INSTDIR\controllers\korg_nanokontrol2.mixco.output.midi.xml"
   Delete "$INSTDIR\controllers\M-Audio_Xsession_pro.midi.xml"
@@ -515,7 +527,9 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Reloop Terminal Mix 2-4.midi.xml"
   Delete "$INSTDIR\controllers\Reloop-Beatmix-2-4-scripts.js"
   Delete "$INSTDIR\controllers\Reloop-Beatpad-scripts.js"
+  Delete "$INSTDIR\controllers\Reloop Jockey 3 ME.midi.xml"
   Delete "$INSTDIR\controllers\Reloop-Digital-Jockey2-Controller-scripts.js"
+  Delete "$INSTDIR\controllers\Reloop-Jockey-3-ME-scripts.js"
   Delete "$INSTDIR\controllers\Sony SixxAxis.hid.xml"
   Delete "$INSTDIR\controllers\Sony-SixxAxis.js"
   Delete "$INSTDIR\controllers\Stanton SCS.1d.midi.xml"
@@ -558,7 +572,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Xone K2.midi.xml"
   Delete "$INSTDIR\controllers\Xone-K2-scripts.js"
 
-	
+
   ;Delete $INSTDIR\controllers\*.* ; Avoid this since it will delete customized files too
   RMDir "$INSTDIR\controllers"
 

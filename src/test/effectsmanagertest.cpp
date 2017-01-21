@@ -17,7 +17,7 @@ using ::testing::_;
 
 class EffectsManagerTest : public BaseEffectTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         registerTestBackend();
     }
 };

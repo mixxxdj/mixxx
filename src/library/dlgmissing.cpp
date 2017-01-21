@@ -87,3 +87,7 @@ void DlgMissing::setTrackTableFont(const QFont& font) {
 void DlgMissing::setTrackTableRowHeight(int rowHeight) {
     m_pTrackTableView->setTrackTableRowHeight(rowHeight);
 }
+
+bool DlgMissing::hasFocus() const {
+    return QWidget::hasFocus();
+}

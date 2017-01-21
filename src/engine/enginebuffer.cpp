@@ -185,6 +185,9 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
 
+    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"));
+    m_pTrackLoaded->setReadOnly();
+
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
@@ -292,6 +295,7 @@ EngineBuffer::~EngineBuffer() {
     delete m_pRepeat;
     delete m_pSampleRate;
 
+    delete m_pTrackLoaded;
     delete m_pTrackSamples;
     delete m_pTrackSampleRate;
 
@@ -439,7 +443,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     if (m_rate_old != 0.0) {
         // Before seeking, read extra buffer for crossfading
-        // (calls notifySeek())
+        // this also sets m_pReadAheadManager to newpos
         readToCrossfadeBuffer(m_iLastBufferSize);
     } else {
         m_pReadAheadManager->notifySeek(m_filepos_play);
@@ -485,20 +489,14 @@ void EngineBuffer::slotTrackLoading() {
     m_pTrackSamples->set(0); // Stop renderer
 }
 
-TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
-    // 10 seconds
-    pTrack->setDuration(10);
-    if (filebpm > 0) {
-        double bpm = pTrack->setBpm(filebpm);
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0);
-        pTrack->setBeats(pBeats);
+void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
+    if (bPlay) {
+        m_playButton->set((double)bPlay);
     }
-    slotTrackLoaded(pTrack, 44100, 44100 * 10);
-    m_pSyncControl->setLocalBpm(filebpm);
+    slotTrackLoaded(pTrack, pTrack->getSampleRate(),
+                    pTrack->getSampleRate() * pTrack->getDurationInt());
+    m_pSyncControl->setLocalBpm(pTrack->getBpm());
     m_pSyncControl->trackLoaded(pTrack, TrackPointer());
-    return pTrack;
 }
 
 // WARNING: Always called from the EngineWorker thread pool
@@ -521,6 +519,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_bSlipEnabledProcessing = false;
     m_dSlipPosition = 0.;
     m_dSlipRate = 0;
+    m_pTrackLoaded->forceSet(1);
     // Reset the pitch value for the new track.
     m_pause.unlock();
 
@@ -550,10 +549,11 @@ void EngineBuffer::ejectTrack() {
     //qDebug() << "EngineBuffer::ejectTrack()";
     m_pause.lock();
     m_iTrackLoading = 0;
+    m_pTrackLoaded->forceSet(0);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
-    m_pCurrentTrack.clear();
+    m_pCurrentTrack.reset();
     m_trackSampleRateOld = 0;
     m_trackSamplesOld = 0;
     m_playButton->set(0.0);
@@ -594,9 +594,8 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     if (isnan(fractionalPos)) {
         return;
     }
-    // Find new play frame, restrict to valid ranges.
-    double newPlayFrame = round(fractionalPos * m_trackSamplesOld / kSamplesPerFrame);
-    doSeekPlayPos(newPlayFrame * kSamplesPerFrame, seekType);
+    double newSamplePosition = fractionalPos * m_trackSamplesOld;
+    doSeekPlayPos(newSamplePosition, seekType);
 }
 
 void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
@@ -641,7 +640,19 @@ void EngineBuffer::verifyPlay() {
 }
 
 void EngineBuffer::slotControlPlayRequest(double v) {
+    bool oldPlay = m_playButton->toBool();
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
+
+    if (!oldPlay && verifiedPlay) {
+        if (m_pQuantize->get() > 0.0
+#ifdef __VINYLCONTROL__
+                && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
+#endif
+        ) {
+            requestSyncPhase();
+        }
+    }
+
     // set and confirm must be called here in any case to update the widget toggle state
     m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
 }
@@ -767,6 +778,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // keylock is enabled, this is applied to either the rate or the tempo.
         double speed = m_pRateControl->calculateSpeed(
                 baserate, tempoRatio, paused, iBufferSize, &is_scratching, &is_reverse);
+
+        // The cue indicator may change when scratch state is changed
+        if (is_scratching != m_scratching_old) {
+            m_pCueControl->updateIndicators();
+        }
 
         bool useIndependentPitchAndTempoScaling = false;
 
@@ -948,10 +964,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
-            //if (rate == 0) {
-            //    qDebug() << "ramp to rate 0";
-            //}
-
             // Perform scaling of Reader buffer into buffer.
             double framesRead =
                     m_pScale->scaleBuffer(pOutput, iBufferSize);
@@ -968,7 +980,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             } else {
                 // Adjust filepos_play by the amount we processed.
                 m_filepos_play =
-                        m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
+                        m_pReadAheadManager->getFilePlaypositionFromLog(
                                 m_filepos_play, samplesRead);
             }
             if (m_bCrossfadeReady) {
@@ -1120,7 +1132,7 @@ void EngineBuffer::processSyncRequests() {
 void EngineBuffer::processSeek(bool paused) {
     // We need to read position just after reading seekType, to ensure that we
     // read the matching position to seek_typ or a position from a new (second)
-    // seek just queued from an other thread
+    // seek just queued from another thread
     // The later case is ok, because we will process the new seek in the next
     // call anyway again.
 
@@ -1245,14 +1257,14 @@ void EngineBuffer::hintReader(const double dRate) {
 
 // WARNING: This method runs in the GUI thread
 void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
-    if (pTrack.isNull()) {
-        // Loading a null track means "eject"
-        ejectTrack();
-    } else {
+    if (pTrack) {
         // Signal to the reader to load the track. The reader will respond with
         // trackLoading and then either with trackLoaded or trackLoadFailed signals.
         m_bPlayAfterLoading = play;
         m_pReader->newTrack(pTrack);
+    } else {
+        // Loading a null track means "eject"
+        ejectTrack();
     }
 }
 

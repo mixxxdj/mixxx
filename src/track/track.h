@@ -1,12 +1,11 @@
-#ifndef TRACK_TRACK_H
-#define TRACK_TRACK_H
+#ifndef MIXXX_TRACK_H
+#define MIXXX_TRACK_H
 
 #include <QAtomicInt>
 #include <QFileInfo>
 #include <QList>
 #include <QMutex>
 #include <QObject>
-#include <QSharedPointer>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
@@ -16,13 +15,14 @@
 #include "track/trackid.h"
 #include "track/playcounter.h"
 #include "track/trackmetadata.h"
+#include "util/memory.h"
 #include "util/sandbox.h"
 #include "util/duration.h"
 #include "waveform/waveform.h"
 
 class Track;
-typedef QSharedPointer<Track> TrackPointer;
-typedef QWeakPointer<Track> TrackWeakPointer;
+class TrackPointer;
+typedef std::weak_ptr<Track> TrackWeakPointer;
 
 class Track : public QObject {
     Q_OBJECT
@@ -234,7 +234,7 @@ class Track : public QObject {
     // Output a formatted string with artist and title.
     QString getInfo() const;
 
-    ConstWaveformPointer getWaveform();
+    ConstWaveformPointer getWaveform() const;
     void setWaveform(ConstWaveformPointer pWaveform);
 
     ConstWaveformPointer getWaveformSummary() const;
@@ -243,13 +243,13 @@ class Track : public QObject {
     void setAnalyzerProgress(int progress);
     int getAnalyzerProgress() const;
 
-    /** Save the cue point (in samples... I think) */
-    void setCuePoint(float cue);
+    // Save the cue point in samples
+    void setCuePoint(double cue);
     // Get saved the cue point
-    float getCuePoint() const;
+    double getCuePoint() const;
 
     // Calls for managing the track's cue points
-    CuePointer addCue();
+    CuePointer createAndAddCue();
     void removeCue(const CuePointer& pCue);
     QList<CuePointer> getCuePoints() const;
     void setCuePoints(const QList<CuePointer>& cuePoints);
@@ -382,8 +382,9 @@ class Track : public QObject {
     // Track rating
     int m_iRating;
 
-    // Cue point in samples or something
-    float m_fCuePoint;
+    // Cue point in samples
+    double m_cuePoint;
+
     // Date the track was added to the library
     QDateTime m_dateAdded;
 
@@ -414,4 +415,25 @@ class Track : public QObject {
     friend class TrackDAO;
 };
 
-#endif // TRACK_TRACK_H
+class TrackPointer: public std::shared_ptr<Track> {
+  public:
+    TrackPointer() {}
+    explicit TrackPointer(const TrackWeakPointer& pTrack)
+        : std::shared_ptr<Track>(pTrack.lock()) {
+    }
+    explicit TrackPointer(Track* pTrack)
+        : std::shared_ptr<Track>(pTrack, deleteLater) {
+    }
+    TrackPointer(Track* pTrack, void (*deleter)(Track*))
+        : std::shared_ptr<Track>(pTrack, deleter) {
+    }
+
+  private:
+    static void deleteLater(Track* pTrack) {
+        if (pTrack != nullptr) {
+            pTrack->deleteLater();
+        }
+    }
+};
+
+#endif // MIXXX_TRACK_H

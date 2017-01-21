@@ -22,20 +22,13 @@
 #include <QList>
 
 #include "soundio/soundmanager.h"
-#include "util/result.h"
+#include "soundio/sounddeviceerror.h"
 
 //Forward declarations
 class SoundDevice;
 class SoundManager;
 class AudioOutput;
 class AudioInput;
-
-enum SoundDeviceError {
-    SOUNDDEVICE_ERROR_OK = OK,
-    SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL,
-    SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL,
-    SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL,
-};
 
 const QString kNetworkDeviceInternalName = "Network stream";
 
@@ -55,9 +48,9 @@ class SoundDevice {
     }
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual Result open(bool isClkRefDevice, int syncBuffers) = 0;
+    virtual SoundDeviceError open(bool isClkRefDevice, int syncBuffers) = 0;
     virtual bool isOpen() const = 0;
-    virtual Result close() = 0;
+    virtual SoundDeviceError close() = 0;
     virtual void readProcess() = 0;
     virtual void writeProcess() = 0;
     virtual QString getError() const = 0;

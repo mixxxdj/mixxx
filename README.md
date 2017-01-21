@@ -29,7 +29,8 @@ bug list][easybugs] and get started!
 
 ## Compiling
 
-[![Build Status](https://travis-ci.org/mixxxdj/mixxx.svg)](https://travis-ci.org/mixxxdj/mixxx)
+* Linux / MacOS [![Build Status](https://travis-ci.org/mixxxdj/mixxx.svg)](https://travis-ci.org/mixxxdj/mixxx)
+* Windows [![Build status](https://ci.appveyor.com/api/projects/status/j460rficblcaopwx?svg=true)](https://ci.appveyor.com/project/mixxxdj/mixxx)
 
 First, you must install all of Mixxx's dependencies. To compile Mixxx using
 [SCons], run:

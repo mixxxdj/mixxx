@@ -23,19 +23,22 @@ class BeatMap : public QObject, public Beats {
     Q_OBJECT
   public:
     // Construct a BeatMap. iSampleRate may be provided if a more accurate
+    // sample rate is known than the one associated with the Track.
+    BeatMap(const Track& track, SINT iSampleRate);
+    // Construct a BeatMap. iSampleRate may be provided if a more accurate
     // sample rate is known than the one associated with the Track. If it is
-    // zero then the track's sample rate will be used. If a byte array is
-    // provided then the BeatMap will be deserialized from the byte array.
-    BeatMap(TrackPointer pTrack, int iSampleRate,
-            const QByteArray* pByteArray = nullptr);
+    // zero then the track's sample rate will be used. The BeatMap will be
+    // deserialized from the byte array.
+    BeatMap(const Track& track, SINT iSampleRate,
+            const QByteArray& byteArray);
     // Construct a BeatMap. iSampleRate may be provided if a more accurate
     // sample rate is known than the one associated with the Track. If it is
     // zero then the track's sample rate will be used. A list of beat locations
     // in audio frames may be provided.
-    BeatMap(TrackPointer pTrack, int iSampleRate,
+    BeatMap(const Track& track, SINT iSampleRate,
             const QVector<double>& beats);
 
-    virtual ~BeatMap();
+    ~BeatMap() override = default;
 
     // See method comments in beats.h
 
@@ -83,8 +86,7 @@ class BeatMap : public QObject, public Beats {
     void updated();
 
   private:
-    BeatMap (const BeatMap& other);
-    void initialize(TrackPointer pTrack, int iSampleRate);
+    BeatMap(const BeatMap& other);
     bool readByteArray(const QByteArray& byteArray);
     void createFromBeatVector(const QVector<double>& beats);
     void onBeatlistChanged();
@@ -96,14 +98,15 @@ class BeatMap : public QObject, public Beats {
 
     void scaleDouble();
     void scaleTriple();
+    void scaleQuadruple();
     void scaleHalve();
     void scaleThird();
     void scaleFourth();
 
     mutable QMutex m_mutex;
     QString m_subVersion;
+    SINT m_iSampleRate;
     double m_dCachedBpm;
-    int m_iSampleRate;
     double m_dLastFrame;
     BeatList m_beats;
 };

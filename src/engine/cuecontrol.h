@@ -26,9 +26,10 @@ class HotcueControl : public QObject {
 
     inline int getHotcueNumber() { return m_iHotcueNumber; }
     inline CuePointer getCue() { return m_pCue; }
-    inline void setCue(CuePointer pCue) { m_pCue = pCue; }
-    inline ControlObject* getPosition() { return m_hotcuePosition; }
-    inline ControlObject* getEnabled() { return m_hotcueEnabled; }
+    double getPosition() const;
+    void setCue(CuePointer pCue);
+    void resetCue();
+    void setPosition(double position);
 
     // Used for caching the preview state of this hotcue control.
     inline bool isPreviewing() { return m_bPreviewing; }
@@ -91,6 +92,7 @@ class CueControl : public EngineControl {
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtCue();
+    bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
 
   public slots:
@@ -125,10 +127,9 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
-    void saveCuePoint(double cuePoint);
 
     bool m_bPreviewing;
-    ControlObject* m_pPlayButton;
+    ControlObject* m_pPlay;
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
@@ -137,7 +138,7 @@ class CueControl : public EngineControl {
     bool m_bypassCueSetByPlay;
 
     const int m_iNumHotCues;
-    QList<HotcueControl*> m_hotcueControl;
+    QList<HotcueControl*> m_hotcueControls;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;

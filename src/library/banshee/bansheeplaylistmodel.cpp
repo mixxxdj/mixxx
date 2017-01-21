@@ -33,7 +33,6 @@
 
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
-          m_pTrackCollection(pTrackCollection),
           m_pConnection(pConnection),
           m_playlistId(-1) {
 }
@@ -320,7 +319,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         pTrack->setComposer(getFieldString(index, CLM_COMPOSER));
         // If the track has a BPM, then give it a static beatgrid.
         if (bpm > 0) {
-            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0);
+            BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0.0);
             pTrack->setBeats(pBeats);
         }
 
