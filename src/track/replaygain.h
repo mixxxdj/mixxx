@@ -31,13 +31,11 @@ public:
     static constexpr CSAMPLE kPeakMin = CSAMPLE_ZERO; // lower bound (inclusive)
     static constexpr CSAMPLE kPeakClip = CSAMPLE_PEAK; // upper bound (inclusive) represents digital full scale without clipping
 
-    // TODO(uklotzde): Uncomment after switching to Visual Studio 2015
-    // on Windows.
-    //static_assert(ReplayGain::kPeakClip == 1.0,
-    //        "http://wiki.hydrogenaud.io/index.php"
-    //        "?title=ReplayGain_2.0_specification#Peak_amplitude: "
-    //        "The maximum peak amplitude value is stored as a floating number, "
-    //        "where 1.0 represents digital full scale");
+    static_assert(ReplayGain::kPeakClip == 1.0,
+            "http://wiki.hydrogenaud.io/index.php"
+            "?title=ReplayGain_2.0_specification#Peak_amplitude: "
+            "The maximum peak amplitude value is stored as a floating number, "
+            "where 1.0 represents digital full scale");
 
     ReplayGain()
         : ReplayGain(kRatioUndefined, kPeakUndefined) {
