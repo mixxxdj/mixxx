@@ -689,7 +689,7 @@ def BuildRelease(target, source, env):
             wix_path = '%s' % os.path.join(wix_directory, "bin")
         elif build.crosscompile and build.platform_is_windows:
             # TODO(XXX) How to handle that ? what does this exactly means ?
-            raise Exception('Unimplemented...')
+            raise NotImplementedError
 
         if not wix_directory:
             raise Exception ('Cannot find WIX Toolkit. Do you have it installed?')
@@ -698,10 +698,10 @@ def BuildRelease(target, source, env):
 
         WinSDK_path = 'build\\wix'
 
-        if not os.path.isfile(WinSDK_path + '\wisubstg.vbs'):
+        if not os.path.isfile(os.path.join(WinSDK_path, 'wisubstg.vbs')):
             raise Exception ('can not find ' + WinSDK_path + '\wisubstg.vbs')
 
-        if not os.path.isfile(WinSDK_path + '\WiLangId.vbs'):
+        if not os.path.isfile(os.path.join(WinSDK_path, '\WiLangId.vbs')):
             raise Exception ('can not find ' + WinSDK_path + '\WiLangId.vbs')
 
         # The default language
@@ -790,7 +790,7 @@ def BuildRelease(target, source, env):
 
         # Harvest main PDB from install dir if they exist
         isPdb = "no"
-        if bundle_pdbs and len(glob.glob(dist_dir + "\*.pdb")) > 0:
+        if bundle_pdbs and glob.glob(os.path.join(dist_dir, "*.pdb")):
             isPdb = "yes"
             command = '"%(wix)s\\heat.exe" dir %(distdir)s -nologo -sfrag -suid -ag -srd -cg mainPDBCompGroup -dr INSTALLDIR -out build\wix\subdirs\mainPDB.wxs -sw5150 -var var.SourceDir -t build\wix\only-pdb.xslt' % \
             {'wix': wix_path,
