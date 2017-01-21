@@ -1475,9 +1475,9 @@ Hercules4Mx.deckRateMsb = function(midichan, control, value, status, group) {
         var deck = script.deckFromGroup(group);
         //Calculating this always, or else the first time will not work
         //(which is precisely when the controller reports the initial positions)
-        Hercules4Mx.pitchMsbValue[deck - 1] = value * 0x80;
+        Hercules4Mx.pitchMsbValue[deck - 1] = value;
         if (Hercules4Mx.pitch14bitMode === false) {
-            engine.setParameter(group, "rate", value / 0x7F);
+            engine.setValue(group, "rate", script.midiPitch(0,value, 0xE0));
         }
     }
 };
@@ -1488,8 +1488,7 @@ Hercules4Mx.deckRateLsb = function(midichan, control, value, status, group) {
         var deck = script.deckFromGroup(group);
         var msbval = Hercules4Mx.pitchMsbValue[deck - 1];
         Hercules4Mx.pitch14bitMode = true;
-        engine.setValue(group, "rate", script.absoluteLin(msbval + value, -1, 1, 0, 0x3FFF));
-        //TODO: how to use script.midiPitch() instead?
+        engine.setValue(group, "rate", script.midiPitch(value,msbval,0xE0));
     }
 };
 
