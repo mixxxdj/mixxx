@@ -9,7 +9,7 @@ const CSAMPLE SoundSourceOpus::kMaxDecodingError = 0.01f;
 namespace {
 
 // Decoded output of opusfile has a fixed sample rate of 48 kHz (fullband)
-const SINT kSamplingRate = 48000;
+constexpr SINT kSamplingRate = 48000;
 
 // http://opus-codec.org
 //  - Sampling rate 48 kHz (fullband)
@@ -17,15 +17,15 @@ const SINT kSamplingRate = 48000;
 //   => Up to 48000 kHz * 0.06 s = 2880 sample frames per data frame
 // Prefetching 2 * 2880 sample frames while seeking limits the decoding
 // errors to kMaxDecodingError (see definition below) during our tests.
-const SINT kNumberOfPrefetchFrames = 2 * 2880;
+constexpr SINT kNumberOfPrefetchFrames = 2 * 2880;
 
 // Parameter for op_channel_count()
 // See also: https://mf4.xiph.org/jenkins/view/opus/job/opusfile-unix/ws/doc/html/group__stream__info.html
-const int kCurrentStreamLink = -1; // get ... of the current (stream) link
+constexpr int kCurrentStreamLink = -1; // get ... of the current (stream) link
 
 // Parameter for op_pcm_total() and op_bitrate()
 // See also: https://mf4.xiph.org/jenkins/view/opus/job/opusfile-unix/ws/doc/html/group__stream__info.html
-const int kEntireStreamLink  = -1; // get ... of the whole/entire stream
+constexpr int kEntireStreamLink  = -1; // get ... of the whole/entire stream
 
 class OggOpusFileOwner {
 public:
