@@ -71,7 +71,7 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
     if (role == AbstractRole::RoleQuery) {        
         // User has clicked the show all item or we are showing the library
         // instead of the folders
-        if (!m_folderRecursive || pTree == m_pShowAll || pTree == m_pGrouping) {
+        if (!m_showFolders || pTree == m_pShowAll || pTree == m_pGrouping) {
             return MixxxLibraryTreeModel::data(index, role);
         }
         
