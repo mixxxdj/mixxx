@@ -91,7 +91,7 @@ void CoverArtDelegate::paint(QPainter* painter,
 
     // Draw original item without text as background
     opt.text = QString();
-    const QWidget *widget = opt.widget;
+    const auto widget = opt.widget;
     QStyle *style = widget ? widget->style() : QApplication::style();
     style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, widget);
 

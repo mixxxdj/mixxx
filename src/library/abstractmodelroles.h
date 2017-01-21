@@ -3,7 +3,7 @@
 
 #include <QAbstractItemModel>
 
-enum AbstractRole {
+enum class AbstractRole {
     RoleData = Qt::UserRole,
     RoleBold,
     RoleDivider,

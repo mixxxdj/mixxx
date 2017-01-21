@@ -34,13 +34,13 @@ void DlgSavedQueriesEditor::accept() {
 }
 
 void DlgSavedQueriesEditor::removeQuery() {
-    QItemSelectionModel* model = tableView->selectionModel();
+    auto model = tableView->selectionModel();
     if (model == nullptr) return;
     
     QModelIndexList selected = model->selectedRows();
     
     QSet<int> removedRows;
-    for (const QModelIndex& index : selected) {
+    for (const auto& index : selected) {
         removedRows << index.row();
     }
     
