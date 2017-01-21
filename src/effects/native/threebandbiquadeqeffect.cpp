@@ -38,12 +38,12 @@ QString ThreeBandBiquadEQEffect::getId() {
 EffectManifest ThreeBandBiquadEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("3-Band Biquad EQ"));
+    manifest.setName(QObject::tr("Biquad Equalizer"));
     manifest.setShortName(QObject::tr("BQ EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "An 3-band EQ with two biquad filters, a shelving high pass and kill switches.") +
+        "A 3-band Equalizer with two biquad bell filters, a shelving high pass and kill switches.") +
         " " +  QObject::tr(
         "To adjust frequency shelves see the Equalizer preferences."));
     manifest.setEffectRampsFromDry(true);
