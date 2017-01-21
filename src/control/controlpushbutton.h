@@ -19,7 +19,6 @@
 #define CONTROLPUSHBUTTON_H
 
 #include "control/controlobject.h"
-#include "controllers/midi/midimessage.h"
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -53,7 +52,7 @@ class ControlPushButton : public ControlObject {
         }
     }
 
-    ControlPushButton(ConfigKey key, bool bPersist=false);
+    ControlPushButton(ConfigKey key, bool bPersist = false, double defaultValue = 0.0);
     virtual ~ControlPushButton();
 
     inline ButtonMode getButtonMode() const {

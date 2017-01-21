@@ -5,24 +5,11 @@
 
 namespace {
 
-class MovingInterquartileMeanTest : public ::testing::Test {
- protected:
-  MovingInterquartileMeanTest() : maxAcceptedError(0.5E-6) {
-      // This is the current lowest error that lets the class pass
-      // tests doubles7 and doubles9.
-  }
+// This is the current lowest error that lets the class pass
+// tests doubles7 and doubles9.
+const double kMaxAcceptedError = 0.5e-6;
 
-  virtual ~MovingInterquartileMeanTest() {
-  }
-
-  virtual void SetUp() {
-  }
-
-  virtual void TearDown() {
-  }
-
-  const double maxAcceptedError;
-};
+class MovingInterquartileMeanTest : public ::testing::Test {};
 
 TEST_F(MovingInterquartileMeanTest, zeros1) {
     MovingInterquartileMean iqm(1);
@@ -100,7 +87,7 @@ TEST_F(MovingInterquartileMeanTest, doubles7) {
     for (int i = 0; i < 9; ++i) {
         double mean = iqm.insert(input[i]);
         //TODO(Ferran Pujol): Why does EXPECT_DOUBLE_EQ fail here?
-        EXPECT_NEAR(means[i], mean, maxAcceptedError) << "Iteration i=" << i;
+        EXPECT_NEAR(means[i], mean, kMaxAcceptedError) << "Iteration i=" << i;
     }
 }
 
@@ -118,7 +105,7 @@ TEST_F(MovingInterquartileMeanTest, doubles9) {
     for (int i = 0; i < 15; ++i) {
         double mean = iqm.insert(input[i]);
         //TODO(Ferran Pujol): Why does EXPECT_DOUBLE_EQ fail here?
-        EXPECT_NEAR(means[i], mean, maxAcceptedError) << "Iteration i=" << i;
+        EXPECT_NEAR(means[i], mean, kMaxAcceptedError) << "Iteration i=" << i;
     }
 }
 

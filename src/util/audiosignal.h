@@ -70,7 +70,8 @@ public:
         DEBUG_ASSERT(kChannelCountZero <= m_channelCount); // unsigned value
         DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate); // unsigned value
     }
-    virtual ~AudioSignal() {}
+
+    virtual ~AudioSignal() = default;
 
     // Returns the ordering of samples in contiguous buffers
     SampleLayout getSampleLayout() const {

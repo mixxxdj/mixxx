@@ -16,15 +16,7 @@ class TrackCollectionTest : public TrackCollection {
 };
 
 
-class SqliteLikeTest : public testing::Test {
-  public:
-    SqliteLikeTest() {
-    }
-
-  protected:
-    virtual void SetUp() {
-    }
-};
+class SqliteLikeTest : public testing::Test {};
 
 #ifdef __SQLITE3__
 TEST_F(SqliteLikeTest, PatternTest) {
@@ -73,5 +65,3 @@ TEST_F(SqliteLikeTest, PatternTest) {
     EXPECT_FALSE(TrackCollectionTest::likeCompareLatinLowTest(&pattern, &string, esc));
 }
 #endif // __SQLITE3__
-
-

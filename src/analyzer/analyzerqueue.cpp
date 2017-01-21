@@ -294,7 +294,7 @@ void AnalyzerQueue::run() {
     if (m_aq.size() == 0)
         return;
 
-    m_progressInfo.current_track.clear();
+    m_progressInfo.current_track.reset();
     m_progressInfo.track_progress = 0;
     m_progressInfo.queue_size = 0;
     m_progressInfo.sema.release(); // Initialize with one
@@ -409,7 +409,7 @@ void AnalyzerQueue::slotUpdateProgress() {
     if (m_progressInfo.current_track) {
         m_progressInfo.current_track->setAnalyzerProgress(
         		m_progressInfo.track_progress);
-        m_progressInfo.current_track.clear();
+        m_progressInfo.current_track.reset();
     }
     emit(trackProgress(m_progressInfo.track_progress / 10));
     if (m_progressInfo.track_progress == 1000) {

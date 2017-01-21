@@ -15,7 +15,7 @@ namespace mixxx {
         return s_loadedPluginLibraries.value(libFilePath);
     } else {
         SoundSourcePluginLibraryPointer pPluginLibrary(
-                new SoundSourcePluginLibrary(libFilePath));
+                std::make_shared<SoundSourcePluginLibrary>(libFilePath));
         if (pPluginLibrary->init()) {
             s_loadedPluginLibraries.insert(libFilePath, pPluginLibrary);
             return pPluginLibrary;

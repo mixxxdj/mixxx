@@ -316,11 +316,7 @@ bool AnalysisDao::saveDataToFile(const QString& fileName, const QByteArray& data
     return true;
 }
 
-void AnalysisDao::saveTrackAnalyses(Track* pTrack) {
-    if (!pTrack) {
-        return;
-    }
-
+void AnalysisDao::saveTrackAnalyses(const Track& track) {
     // The only analyses we have at the moment are waveform analyses so we have
     // nothing to do if it is disabled.
     WaveformSettings waveformSettings(m_pConfig);
@@ -328,8 +324,8 @@ void AnalysisDao::saveTrackAnalyses(Track* pTrack) {
         return;
     }
 
-    ConstWaveformPointer pWaveform = pTrack->getWaveform();
-    ConstWaveformPointer pWaveSummary = pTrack->getWaveformSummary();
+    ConstWaveformPointer pWaveform = track.getWaveform();
+    ConstWaveformPointer pWaveSummary = track.getWaveformSummary();
 
     // Don't try to save invalid or non-dirty waveforms.
     if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||
@@ -337,7 +333,7 @@ void AnalysisDao::saveTrackAnalyses(Track* pTrack) {
         return;
     }
 
-    TrackId trackId(pTrack->getId());
+    TrackId trackId(track.getId());
 
     AnalysisDao::AnalysisInfo analysis;
     analysis.trackId = trackId;

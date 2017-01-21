@@ -17,19 +17,6 @@ namespace {
     // The transformation mode when scaling images
     const Qt::TransformationMode kTransformationMode = Qt::SmoothTransformation;
 
-    // Resizes the image (preserving aspect ratio) if the size of width or height
-    // exceeds maxEdgeSize.
-    inline QImage limitImageSize(const QImage& image, int maxEdgeSize) {
-        if ((image.width() > maxEdgeSize) || (image.height() > maxEdgeSize)) {
-            return image.scaled(
-                    maxEdgeSize, maxEdgeSize,
-                    Qt::KeepAspectRatio,
-                    kTransformationMode);
-        } else {
-            return image;
-        }
-    }
-
     // Resizes the image (preserving aspect ratio) to width.
     inline QImage resizeImageWidth(const QImage& image, int width) {
         return image.scaledToWidth(width, kTransformationMode);
@@ -112,12 +99,12 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 }
 
 //static
-void CoverArtCache::requestCover(const Track* pTrack,
+void CoverArtCache::requestCover(const Track& track,
                          const QObject* pRequestor) {
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache == nullptr || pTrack == nullptr) return;
+    if (pCache == nullptr) return;
 
-    CoverInfo info = pTrack->getCoverInfo();
+    CoverInfo info = track.getCoverInfo();
     pCache->requestCover(info, pRequestor, 0, false, true);
 }
 
@@ -170,7 +157,7 @@ void CoverArtCache::coverLoaded() {
     // loaded with an artificial delay anyway and an additional
     // re-load delay can be accepted.
 
-    // Create pixmap, GUI thread only 
+    // Create pixmap, GUI thread only
     QPixmap pixmap = QPixmap::fromImage(res.cover.image);
     if (!pixmap.isNull() && res.cover.resizedToWidth != 0) {
         // we have to be sure that res.cover.hash is unique
@@ -209,4 +196,3 @@ void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
         guessCover(pTrack);
     }
 }
-

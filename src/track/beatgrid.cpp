@@ -35,34 +35,33 @@ class BeatGridIterator : public BeatIterator {
     double m_dEndSample;
 };
 
-BeatGrid::BeatGrid(Track* pTrack, int iSampleRate,
-                   const QByteArray* pByteArray)
-        : QObject(),
-          m_mutex(QMutex::Recursive),
-          m_iSampleRate(iSampleRate > 0 ? iSampleRate :
-                        pTrack->getSampleRate()),
+BeatGrid::BeatGrid(
+        const Track& track,
+        SINT iSampleRate)
+        : m_mutex(QMutex::Recursive),
+          m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
           m_dBeatLength(0.0) {
-    if (pTrack != nullptr) {
-        // BeatGrid should live in the same thread as the track it is associated
-        // with.
-        moveToThread(pTrack->thread());
-    }
-    if (pByteArray != nullptr) {
-        readByteArray(*pByteArray);
-    }
+    // BeatGrid should live in the same thread as the track it is associated
+    // with.
+    moveToThread(track.thread());
+}
+
+BeatGrid::BeatGrid(
+        const Track& track,
+        SINT iSampleRate,
+        const QByteArray& byteArray)
+        : BeatGrid(track, iSampleRate) {
+    readByteArray(byteArray);
 }
 
 BeatGrid::BeatGrid(const BeatGrid& other)
         : QObject(),
-          m_mutex(QMutex::Recursive) {
-    m_iSampleRate = other.m_iSampleRate;
-    m_dBeatLength = other.m_dBeatLength;
+          m_mutex(QMutex::Recursive),
+          m_subVersion(other.m_subVersion),
+          m_iSampleRate(other.m_iSampleRate),
+          m_grid(other.m_grid),
+          m_dBeatLength(other.m_dBeatLength) {
     moveToThread(other.thread());
-    m_subVersion = other.m_subVersion;
-    m_grid = other.m_grid;
-}
-
-BeatGrid::~BeatGrid() {
 }
 
 void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
@@ -358,6 +357,12 @@ void BeatGrid::scale(enum BPMScale scale) {
         break;
     case THREEFOURTHS:
         bpm *= 3.0 / 4;
+        break;
+    case FOURTHIRDS:
+        bpm *= 4.0 / 3;
+        break;
+    case THREEHALVES:
+        bpm *= 3.0 / 2;
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
