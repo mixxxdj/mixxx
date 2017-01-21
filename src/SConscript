@@ -701,7 +701,7 @@ def BuildRelease(target, source, env):
         if not os.path.isfile(os.path.join(WinSDK_path, 'wisubstg.vbs')):
             raise Exception ('can not find ' + WinSDK_path + '\wisubstg.vbs')
 
-        if not os.path.isfile(os.path.join(WinSDK_path, '\WiLangId.vbs')):
+        if not os.path.isfile(os.path.join(WinSDK_path, 'WiLangId.vbs')):
             raise Exception ('can not find ' + WinSDK_path + '\WiLangId.vbs')
 
         # The default language
