@@ -10,7 +10,7 @@
 
 #define SAVEDQUERYTABLE "savedQueries"
 
-enum class SavedQueryColumns {
+enum SavedQueryColumns {
     ID,
     LIBRARYFEATURE,
     QUERY,

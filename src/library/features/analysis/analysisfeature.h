@@ -78,7 +78,7 @@ class AnalysisFeature : public LibraryFeature {
     TreeItemModel m_childModel;
     QString m_analysisTitleName;
     QPointer<DlgAnalysis> m_pAnalysisView;
-    QPointer<AnalysisLibraryTableModel> m_pAnalysisLibraryTableModel;
+    AnalysisLibraryTableModel m_analysisLibraryTableModel;
 };
 
 
