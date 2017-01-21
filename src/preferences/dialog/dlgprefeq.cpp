@@ -589,9 +589,9 @@ void DlgPrefEQ::slotBypass(int state) {
     if (state) {
         m_pConfig->set(ConfigKey(kConfigKey, kEnableEqs), QString("no"));
         // Disable effect processing for all decks by setting the appropriate
-        // controls to 0 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
+        // controls to 0 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
         int deck = 0;
-        foreach(QComboBox* box, m_deckEqEffectSelectors) {
+        for (const auto& box: m_deckEqEffectSelectors) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 0);
             m_filterWaveformEnableCOs[deck]->set(0);
@@ -601,10 +601,9 @@ void DlgPrefEQ::slotBypass(int state) {
     } else {
         m_pConfig->set(ConfigKey(kConfigKey, kEnableEqs), QString("yes"));
         // Enable effect processing for all decks by setting the appropriate
-        // controls to 1 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
+        // controls to 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
         int deck = 0;
-        ControlProxy enableControl;
-        foreach(QComboBox* box, m_deckEqEffectSelectors) {
+        for (const auto& box: m_deckEqEffectSelectors) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 1);
             m_filterWaveformEnableCOs[deck]->set(m_filterWaveformEffectLoaded[deck]);
@@ -691,6 +690,9 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
         }
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
         pChain->replaceEffect(0, pEffect);
+
+        QString group = m_pEQEffectRack->formatEffectSlotGroupString(0, "[Master]");
+        ControlObject::set(ConfigKey(group, "enabled"), 1);
 
         if (pEffect) {
             m_pEffectMasterEQ = pEffect;
