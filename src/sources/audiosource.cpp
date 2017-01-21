@@ -4,6 +4,16 @@
 
 namespace mixxx {
 
+/*static*/ const AudioSignal::SampleLayout AudioSource::kSampleLayout;
+
+/*static*/ const SINT AudioSource::kFrameCountZero;
+/*static*/ const SINT AudioSource::kFrameCountDefault;
+
+/*static*/ const SINT AudioSource::kFrameIndexMin;
+
+/*static*/ const SINT AudioSource::kBitrateZero;
+/*static*/ const SINT AudioSource::kBitrateDefault;
+
 void AudioSource::clampFrameInterval(
         SINT* pMinFrameIndexOfInterval,
         SINT* pMaxFrameIndexOfInterval,
