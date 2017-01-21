@@ -35,10 +35,15 @@
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Hoiatus</String>
 
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">Launch Mixxx when setup exits.</String>
+
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">Kogu pakett.</String>
   <String Id="FeatureMainProgramTitle">Põhi rakendus</String>
   <String Id="FeatureMainProgramDescription">Põhirakendus Mixxx koos kontrollerite eelseadistustega.</String>
+  <String Id="FeaturePDBTitle">PDB debug files</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
   <String Id="FeatureDesktopShortcutTitle">Töölaua otsetee</String>
   <String Id="FeatureDesktopShortcutDescription">Lisa Mixxxi otsetee oma töölauale</String>
   <String Id="FeatureManualTitle">Kasutusjuhend</String>
