@@ -92,13 +92,13 @@
     <Property Id="VCREDISTINSTALLED">
       <RegistrySearch Id="VCRedistInstalledSearch"
                       Root="HKLM"
-                      Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\$(var.Platform)"
+                      Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\$(var.Platform)"
                       Name="Installed"
                       Type="raw" />
     </Property>
     
     <!-- References the VCRedist package -->
-    <Binary Id="VCRedist" SourceFile="$(var.WINLIBPATH)\vcredist_$(var.Platform).exe" />
+    <Binary Id="VCRedist" SourceFile="$(var.WINLIBPATH)\vc_redist.$(var.Platform).exe" />
 
     <!-- This will search if mixxx is already installed in another bitWidth -->
     <Property Id="OTHERBITWIDTHINSTALLED">

@@ -119,12 +119,12 @@ Function InstallVCRedist
   SetOutPath $TEMP
 
   ; Put the VC redist installer files there
-  File ${WINLIB_PATH}\vcredist_${ARCH}.exe
+  File ${WINLIB_PATH}\vc_redist.${ARCH}.exe
 
   ClearErrors
   ; Call it & wait for it to install
-  ExecWait "$TEMP\vcredist_${ARCH}.exe /quiet /install /norestart"
-  Delete "$TEMP\vcredist_${ARCH}.exe"
+  ExecWait "$TEMP\vc_redist.${ARCH}.exe /quiet /install /norestart"
+  Delete "$TEMP\vc_redist.${ARCH}.exe"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
@@ -165,7 +165,7 @@ FunctionEnd
 Function CheckVCRedist
    Push $R0
    ClearErrors
-   ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\${ARCH}" "Installed"
+   ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\${ARCH}" "Installed"
 
    IfErrors 0 VSRedistInstalled
    StrCpy $R0 "-1"
@@ -428,6 +428,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Hercules DJ Control MP3.hid.xml"
   Delete "$INSTDIR\controllers\Hercules DJ Control MP3.midi.xml"
   Delete "$INSTDIR\controllers\Hercules DJ Control Steel.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules P32 DJ.midi.xml"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-4-Mx-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk1-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk2-hid-scripts.js"
@@ -444,6 +445,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-MP3-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-Steel-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-mp3e2-compat.js"
+  Delete "$INSTDIR\controllers\Hercules-P32-scripts.js"
   Delete "$INSTDIR\controllers\HID-Keyboard.js"
   Delete "$INSTDIR\controllers\HID-Trackpad.js"
   Delete "$INSTDIR\controllers\Ion Discover DJ.midi.xml"
@@ -457,6 +459,9 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Korg nanoPAD2.midi.xml"
   Delete "$INSTDIR\controllers\Korg-nanoKONTROL-2-scripts.js"
   Delete "$INSTDIR\controllers\Korg-nanoPAD2-scripts.js"
+  Delete "$INSTDIR\controllers\lodash.mixxx.js"
+  Delete "$INSTDIR\controllers\M-Audio-Xponent-scripts.js"
+  Delete "$INSTDIR\controllers\M-Audio_Xponent.midi.xml"
   Delete "$INSTDIR\controllers\korg_nanokontrol2.mixco.output.js"
   Delete "$INSTDIR\controllers\korg_nanokontrol2.mixco.output.midi.xml"
   Delete "$INSTDIR\controllers\M-Audio_Xsession_pro.midi.xml"
