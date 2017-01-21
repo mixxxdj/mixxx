@@ -17,8 +17,8 @@ namespace mixxx {
 class SoundSourceModPlug: public mixxx::SoundSource {
 public:
      static constexpr SINT kChannelCount = kChannelCountStereo;
-     static constexpr SINT kSamplingRate = 16;
-     static constexpr SINT kBitsPerSample = 44100;
+     static constexpr SINT kSamplingRate = 44100;
+     static constexpr SINT kBitsPerSample = 16;
 
     // apply settings for decoding
     static void configure(unsigned int bufferSizeLimit,
