@@ -1,3 +1,4 @@
+#include <effects/native/threebandbiquadeqeffect.h>
 #include <QtDebug>
 
 #include "effects/native/nativebackend.h"
@@ -23,6 +24,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<Bessel4LVMixEQEffect>();
     registerEffect<Bessel8LVMixEQEffect>();
     registerEffect<LinkwitzRiley8EQEffect>();
+    registerEffect<ThreeBandBiquadEQEffect>();
     // Compensations EQs    
     registerEffect<GraphicEQEffect>();
     // Fading Effcts
