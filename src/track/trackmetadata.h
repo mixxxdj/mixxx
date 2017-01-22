@@ -9,7 +9,7 @@
 namespace mixxx {
 
 // DTO for track metadata properties. Must not be subclassed (no virtual destructor)!
-class TrackMetadata {
+class TrackMetadata final {
 public:
     TrackMetadata();
 
@@ -165,7 +165,7 @@ public:
     }
 
     // Parse and format the calendar year (for simplified display)
-    static const int kCalendarYearInvalid;
+    static constexpr int kCalendarYearInvalid = 0;
     static int parseCalendarYear(QString year, bool* pValid = 0);
     static QString formatCalendarYear(QString year, bool* pValid = 0);
 

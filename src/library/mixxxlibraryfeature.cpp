@@ -135,11 +135,11 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Library");
+    return tr("Tracks");
 }
 
 QIcon MixxxLibraryFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_library.png");
+    return QIcon(":/images/library/ic_library_tracks.png");
 }
 
 TreeItemModel* MixxxLibraryFeature::getChildModel() {

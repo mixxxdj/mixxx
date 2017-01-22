@@ -152,7 +152,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
         const float v2 = 2 + kVt;   // twice the 'thermal voltage of a transistor'
 
-        // cascade of 4 1st order sections
+        // cascade of 4 1st-order sections
         float x1 = input - pB->m_amf * m_kacr;
         float az1 = pB->m_azt1 + m_k2vg * tanh_approx(x1 / v2);
         float at1 = m_k2vg * tanh_approx(az1 / v2);
