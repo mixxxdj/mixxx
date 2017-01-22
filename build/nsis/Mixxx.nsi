@@ -208,9 +208,6 @@ Section "Mixxx (required)" SecMixxx
   File "${BASE_BUILD_DIR}\README"
   File "${BASE_BUILD_DIR}\COPYING"
 
-  SetOutPath $INSTDIR\promo\${PRODUCT_VERSION}
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\promo\${PRODUCT_VERSION}\*"
-
   SetOutPath $INSTDIR\sqldrivers
   ; Copies both DLLs and PDBs.
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
@@ -575,12 +572,6 @@ Section "Uninstall"
 
   ;Delete $INSTDIR\controllers\*.* ; Avoid this since it will delete customized files too
   RMDir "$INSTDIR\controllers"
-
-  ; Remove promos
-  Delete $INSTDIR\promo\${PRODUCT_VERSION}\*.*
-  Delete $INSTDIR\promo\*.*
-  RMDir /r "$INSTDIR\promo\${PRODUCT_VERSION}"
-  RMDir "$INSTDIR\promo"
 
   ; Remove skins we (might have) installed
   Delete $INSTDIR\skins\*.* ; This just deletes files at the root of the skins directory

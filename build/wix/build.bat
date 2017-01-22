@@ -55,14 +55,6 @@ IF EXIST ..\..\dist%BITWIDTH%\imageformats (
   "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dimageformatsVar=..\..\dist%BITWIDTH%\imageformats -arch %ARCH% -out subdirs\imageformats.wixobj subdirs\imageformats.wxs
 )
 
-SET promo=no
-
-IF EXIST ..\..\dist%BITWIDTH%\promo (
-  SET promo=yes
-  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH%\promo -nologo -sfrag -suid -ag -srd -cg promoComp -dr promoDir -out subdirs\promo.wxs -sw5150 -var var.promoVar
-  "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dpromoVar=..\..\dist%BITWIDTH%\promo -arch %ARCH% -out subdirs\promo.wixobj subdirs\promo.wxs
-)
-
 REM Harvest main DLL from install dir
 "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH% -nologo -sfrag -suid -ag -srd -cg mainDLLCompGroup -dr INSTALLDIR -out subdirs\mainDLL.wxs -sw5150 -var var.SourceDir -t only-dll.xslt
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dSourceDir=..\..\dist%BITWIDTH% -arch %ARCH% -out subdirs\mainDLL.wixobj subdirs\mainDLL.wxs
@@ -76,7 +68,7 @@ IF EXIST ..\..\dist%BITWIDTH%\*.pdb (
 )
 
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -arch %ARCH% warningDlg.wxs
-"%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dPromo=%promo% -dPDB=%PDB% -dImageformats=%imageformats% -arch %ARCH% mixxx.wxs
+"%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dPDB=%PDB% -dImageformats=%imageformats% -arch %ARCH% mixxx.wxs
 
 echo.
 echo *** Building package for default language %DefaultLanguage%
