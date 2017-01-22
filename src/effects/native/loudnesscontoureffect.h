@@ -1,8 +1,6 @@
 #ifndef LOUDNESSCONTOUREFFECT_H
 #define LOUDNESSCONTOUREFFECT_H
 
-#include <QMap>
-
 #include "control/controlproxy.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"

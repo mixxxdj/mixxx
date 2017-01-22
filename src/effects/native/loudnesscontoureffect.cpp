@@ -1,4 +1,4 @@
-#include <effects/native/loudnesscontoureffect.h>
+#include "effects/native/loudnesscontoureffect.h"
 #include "util/math.h"
 
 namespace {
@@ -29,21 +29,22 @@ EffectManifest LoudnessContourEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A filter to compensate the loudness contour at lower volume"));
+            "Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear."));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsMixingEQ(true);
 
-    EffectManifestParameter* low = manifest.addParameter();
-    low->setId("loudness");
-    low->setName(QObject::tr("Loudness"));
-    low->setDescription(QObject::tr("Set the gain of the applied loudness contour"));
-    low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    low->setNeutralPointOnScale(1);
-    low->setDefault(-kMaxLoGain / 2);
-    low->setMinimum(-kMaxLoGain);
-    low->setMaximum(0);
+    EffectManifestParameter* loudness = manifest.addParameter();
+    loudness->setId("loudness");
+    loudness->setName(QObject::tr("Loudness"));
+    loudness->setDescription(QObject::tr("Set the gain of the applied loudness contour"));
+    loudness->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    loudness->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    loudness->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    loudness->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    loudness->setNeutralPointOnScale(1);
+    loudness->setDefault(-kMaxLoGain / 2);
+    loudness->setMinimum(-kMaxLoGain);
+    loudness->setMaximum(0);
 
     EffectManifestParameter* killLow = manifest.addParameter();
     killLow->setId("useMasterGain");
@@ -114,24 +115,24 @@ void LoudnessContourEffect::processChannel(
 
     if (enableState != EffectProcessor::DISABLING) {
 
-        bool useMatser = m_pUseMasterGain->toBool();
+        bool useMaster = m_pUseMasterGain->toBool();
         double loudness = m_pLoudness->value();
         double masterGain = m_pMasterGain->get();
 
         filterGainDb = loudness;
 
-        if (useMatser != pState->m_oldUseMaster ||
+        if (useMaster != pState->m_oldUseMaster ||
                 masterGain != pState->m_oldMasterGain ||
                 loudness != pState->m_oldLoudness ||
                 sampleRate != pState->m_oldSampleRate) {
 
-            pState->m_oldUseMaster = useMatser;
+            pState->m_oldUseMaster = useMaster;
             pState->m_oldMasterGain =  masterGain;
             pState->m_oldLoudness = loudness;
             pState->m_oldSampleRate = sampleRate;
 
-            if (useMatser) {
-                masterGain = std::min(std::max(masterGain, 0.03), 1.0); // Limit at 0 .. -30 dB
+            if (useMaster) {
+                masterGain = math_clamp(masterGain, 0.03, 1.0); // Limit at 0 .. -30 dB
                 double masterGainDb = ratio2db(masterGain);
                 filterGainDb = loudness * masterGainDb / kMaxLoGain;
                 gain = 1; // No need for adjust gain because master gain follows
