@@ -1,4 +1,4 @@
-#
+# 
 # Translators:
 # Diogo Oliveira <diogodesigns@gmail.com>, 2016
 # Joaquim Carvalho <j.carvalho59@gmail.com>, 2016
@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-06-13 16:18+0000\n"
+"PO-Revision-Date: 2017-01-22 20:14+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Portuguese (Portugal) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/pt_PT/)\n"
 "MIME-Version: 1.0\n"
@@ -100,7 +100,7 @@ msgstr "{\\WixUI_Font_Title}Aviso"
 #.  Custom exit dialog
 msgctxt "StartOnExit"
 msgid "Launch Mixxx when setup exits."
-msgstr ""
+msgstr "Iniciar o Mixxx após sair da instalação."
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
@@ -151,4 +151,4 @@ msgctxt "FeatureTranslationsDescription"
 msgid ""
 "Resource files that allow Mixxx to display in alternate languages, other "
 "than US english"
-msgstr "Ficheiros de recurso que permitem ao Mixxx apresentar outras linguagens, diferentes do US english"
+msgstr "Ficheiros de recurso que permitem ao Mixxx apresentar outras linguagens, diferentes do inglês - EUA"

@@ -1,13 +1,14 @@
-#
+# 
 # Translators:
 # Benny Beat <bennybeat@gmail.com>, 2016
 # Ferran Pujol Camins <ferranpujolcamins@gmail.com>, 2016
+# Josep Maria Antolin <josepma@gmail.com>, 2016
 # Josep Maria Antolin <josepma@gmail.com>, 2016
 # S.Brandt <s.brandt@mixxx.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-06-13 16:18+0000\n"
+"PO-Revision-Date: 2017-01-22 20:14+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Catalan (Spain) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ca_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -101,7 +102,7 @@ msgstr "{\\WixUI_Font_Title}Avís"
 #.  Custom exit dialog
 msgctxt "StartOnExit"
 msgid "Launch Mixxx when setup exits."
-msgstr ""
+msgstr "Inicia el Mixxx en acabar la instal·lació."
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
