@@ -275,9 +275,6 @@ font_files = Glob('#res/fonts/*')
 #Keyboard mapping(s)
 keyboardmappings_files = Glob('#res/keyboard/*')
 
-#Promo tracks
-promotracks_files = Glob('#res/promo/*')
-
 #Documentation
 docs_files = Glob('#./LICENSE')
 docs_files += Glob('#./README')
@@ -398,7 +395,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                 dotappstream = env.Install(os.path.join(unix_share_path, 'appdata'), dotappstream_files)
                 docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
                 icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
-                promotracks = env.Install(os.path.join(unix_share_path, 'mixxx', 'promo'), promotracks_files)
 
                 # NOTE(rryan): Hack to detect when we're Debian packaging.
                 building_debian_package = 'debian/tmp/usr' in install_root
@@ -417,7 +413,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', dotdesktop)
                 env.Alias('install', dotappstream)
                 env.Alias('install', icon)
-                env.Alias('install', promotracks)
                 env.Alias('install', vamp_plugin)
 
                 if not building_debian_package and os.access(udev_root, os.W_OK):
@@ -506,7 +501,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                    translation_files,
                    Dir('#res/keyboard/'),
                    Dir('#res/doc/'),
-                   Dir('#res/promo/'),
                    Dir(menu_nib),
                    File("#README"),
                    File("#LICENSE")]
@@ -566,7 +560,6 @@ if build.platform_is_windows:
         translations = env.Install(os.path.join(base_dist_dir, "translations"), translation_files)
         keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
         docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
-        promotracks = env.Install(os.path.join(base_dist_dir, "promo/"), promotracks_files)
         #icon = env.Install(base_dist_dir+"", icon_files)
         dlls = env.Install(base_dist_dir+"/", dll_files)
         soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"),
@@ -581,7 +574,6 @@ if build.platform_is_windows:
         env.Alias('mixxx', fonts)
         env.Alias('mixxx', translations)
         env.Alias('mixxx', keyboardmappings)
-        env.Alias('mixxx', promotracks)
         env.Alias('mixxx', docs)
         env.Alias('mixxx', dlls)
         env.Alias('mixxx', soundsource_plugins)
@@ -715,8 +707,8 @@ def BuildRelease(target, source, env):
         print "*** Building intermediate files"
         for subdir in next(os.walk(dist_dir))[1]:
             print "    " + dist_dir + "\\" + subdir
-            # Exclude doc, promo tracks and imageformats helper DLLs, they are bundled elsewhere
-            if subdir in ["doc", "promo", 'imageformats']:
+            # Exclude doc and imageformats helper DLLs, they are bundled elsewhere
+            if subdir in ['doc', 'imageformats']:
                 continue
             command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
                 {'wix': wix_path,
@@ -730,26 +722,6 @@ def BuildRelease(target, source, env):
                  'arch': winArch,
                  'distdir': dist_dir,
                  'sub': subdir}
-            print "Using Command: " + command
-            subprocess.check_call(command)
-
-        # Handle promo tracks if any
-        promo = "no"
-        if os.path.exists(os.path.join(dist_dir,"promo")):
-            promo = "yes"
-            command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
-                {'wix': wix_path,
-                 'distdir': dist_dir,
-                 'sub': "promo"}
-            print "Using Command: " + command
-            subprocess.check_call(command)
-
-            command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
-                {'wix': wix_path,
-                 'winlibpath': mixxx_winlib_path,
-                 'arch': winArch,
-                 'distdir': dist_dir,
-                 'sub': "promo"}
             print "Using Command: " + command
             subprocess.check_call(command)
 
@@ -813,10 +785,9 @@ def BuildRelease(target, source, env):
              'arch': winArch}
         print "Using Command: " + command
         subprocess.check_call(command)
-        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dPromo=%(ispromo)s -dImageformats=%(isimageformats)s -dPDB=%(isPDB)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
+        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dImageformats=%(isimageformats)s -dPDB=%(isPDB)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
             {'wix': wix_path,
              'winlibpath': mixxx_winlib_path,
-             'ispromo': promo,
              'isimageformats': imageformats,
              'isPDB': isPdb,
              'arch': winArch}
