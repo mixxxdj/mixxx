@@ -400,7 +400,7 @@ void DlgTrackInfo::saveTrack() {
             int iTableHotcue = vHotcue.toInt();
             // The GUI shows hotcues as 1-indexed, but they are actually
             // 0-indexed, so subtract 1
-            pCue->setHotCue(iTableHotcue-1);
+            pCue->setHotCue(iTableHotcue - 1);
         } else {
             pCue->setHotCue(-1);
         }

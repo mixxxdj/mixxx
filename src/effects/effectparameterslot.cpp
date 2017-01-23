@@ -180,10 +180,9 @@ void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool fo
                 break;
             case EffectManifestParameter::LINK_LINKED_LEFT:
                 if (parameter >= 0.5 && parameter <= 1.0) {
-                    parameter = 0;
+                    parameter = 1;
                 } else if (parameter >= 0.0 && parameter <= 0.5) {
                     parameter *= 2;
-                    parameter = 1.0 - parameter;
                 } else {
                     return;
                 }

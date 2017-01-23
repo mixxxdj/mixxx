@@ -4,7 +4,6 @@
 #include "control/control.h"
 
 #include "util/stat.h"
-#include "util/timer.h"
 
 // Static member variable definition
 UserSettingsPointer ControlDoublePrivate::s_pUserConfig;

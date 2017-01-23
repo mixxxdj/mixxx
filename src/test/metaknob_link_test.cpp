@@ -211,7 +211,6 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    low->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     low->setNeutralPointOnScale(1.0);
     low->setDefault(1.0);
     low->setMinimum(0);
@@ -252,5 +251,5 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     m_pEffectSlot->syncSofttakeover();
     newParam = 0.5 + SoftTakeover::kDefaultTakeoverThreshold * 1.5;
     m_pEffectSlot->slotEffectMetaParameter(newParam);
-    EXPECT_FLOAT_EQ(0.9296875, m_pControlValue->get());
+    EXPECT_FLOAT_EQ(0.0703125, m_pControlValue->get());
 }

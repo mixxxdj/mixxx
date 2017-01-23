@@ -32,6 +32,10 @@ public:
 private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
+    bool openDecoder();
+    void closeDecoder();
+    bool reopenDecoder();
+
     bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 
     void restartDecoding(MP4SampleId sampleBlockId);
@@ -39,16 +43,18 @@ private:
     MP4FileHandle m_hFile;
     MP4TrackId m_trackId;
     MP4Duration m_framesPerSampleBlock;
-    SINT m_numberOfPrefetchSampleBlocks;
     MP4SampleId m_maxSampleBlockId;
-    MP4SampleId m_curSampleBlockId;
 
     typedef std::vector<u_int8_t> InputBuffer;
     InputBuffer m_inputBuffer;
     SINT m_inputBufferLength;
     SINT m_inputBufferOffset;
 
+    AudioSourceConfig m_audioSrcCfg;
+
     NeAACDecHandle m_hDecoder;
+    SINT m_numberOfPrefetchSampleBlocks;
+    MP4SampleId m_curSampleBlockId;
 
     SingularSampleBuffer m_sampleBuffer;
 

@@ -5,12 +5,12 @@
 
 #include "waveformmark.h"
 
-WaveformMark::WaveformMark( const QString& group,
-                            const QDomNode& node,
-                            const SkinContext& context,
-                            const WaveformSignalColors& signalColors,
-                            int hotCue,
-                            QString item)
+WaveformMark::WaveformMark(const QString& group,
+                           const QDomNode& node,
+                           const SkinContext& context,
+                           const WaveformSignalColors& signalColors,
+                           int hotCue,
+                           QString item)
     : m_iHotCue(hotCue) {
     if(item.isEmpty())
         item = context.selectString(node, "Control");

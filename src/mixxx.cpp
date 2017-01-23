@@ -155,14 +155,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     ScopedTimer t("MixxxMainWindow::initialize");
 
-    // Register custom data types for signal processing
-    qRegisterMetaType<TrackId>("TrackId");
-    qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
-    qRegisterMetaType<TrackPointer>("TrackPointer");
-    qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
-    qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
-    qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
-
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
     Sandbox::initialize(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
