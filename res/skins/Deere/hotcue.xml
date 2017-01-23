@@ -25,10 +25,6 @@
         </Children>
       </WidgetGroup>
 
-      <!-- Workaround. Remove when https://bugs.launchpad.net/mixxx/+bug/1578111
-          is fixed -->
-      <WidgetGroup><Size>1min,2f</Size><Children/></WidgetGroup>
-
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
