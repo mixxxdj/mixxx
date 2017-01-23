@@ -1,11 +1,12 @@
-#
+# 
 # Translators:
+# Chee Kin Weng <rhytanbernama@gmail.com>, 2016
 # Nya Chan (喵酱) <dlj2013@gmail.com>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-06-13 16:18+0000\n"
+"PO-Revision-Date: 2017-01-22 20:14+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -99,7 +100,7 @@ msgstr "{\\WixUI_Font_Title}警告"
 #.  Custom exit dialog
 msgctxt "StartOnExit"
 msgid "Launch Mixxx when setup exits."
-msgstr ""
+msgstr "退出安装程序后，启动Mixxx"
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"

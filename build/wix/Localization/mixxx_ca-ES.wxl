@@ -36,7 +36,7 @@
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Avís</String>
 
   <!-- Custom exit dialog -->
-  <String Id="StartOnExit">Launch Mixxx when setup exits.</String>
+  <String Id="StartOnExit">Inicia el Mixxx en acabar la instal·lació.</String>
 
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">El paquet complet.</String>
