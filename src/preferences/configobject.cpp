@@ -345,9 +345,12 @@ double ConfigObject<ConfigValue>::getValue(
     if (value.isNull()) {
         return default_value;
     }
-    return value.value.toDouble();
+    bool ok;
+    auto result = value.value.toDouble(&ok);
+    return ok ? result : default_value;
 }
 
+// For string literal default
 template <>
 QString ConfigObject<ConfigValue>::getValue(
         const ConfigKey& key, const char* default_value) const {
