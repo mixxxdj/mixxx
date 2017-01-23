@@ -1225,7 +1225,7 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-g')
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
-            mixxx_lib_path = self.winlib_path
+            mixxx_lib_path = build.winlib_path
             if not os.path.exists(mixxx_lib_path):
                 raise Exception("Winlib path does not exist! Please specify your winlib directory"
                                 "path by running 'scons winlib=[path]'")
