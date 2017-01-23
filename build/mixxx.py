@@ -122,6 +122,8 @@ class MixxxBuild(object):
         logging.info(
             "Crosscompile: %s" % ("YES" if self.crosscompile else "NO"))
         if self.platform_is_windows:
+            self.winlib_path = Script.ARGUMENTS.get('winlib', '')
+            logging.info("Winlib Path: %s" % self.winlib_path)
             logging.info("Static dependencies: %s" % (
                 "YES" if self.static_dependencies else "NO"))
             logging.info("Static Qt: %s" % (

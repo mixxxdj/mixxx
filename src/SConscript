@@ -301,14 +301,13 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 # all files on 2+ builds after a clean.
 dll_files = []
 if build.toolchain_is_msvs and not build.static_dependencies:
-        mixxx_winlib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc90-release')
         # skip the MSVC DLLs incase they're in there too
-        dll_files.extend(Glob('%s/*.dll' % mixxx_winlib_path))
-        dll_files.extend(Glob('%s/lib/*.dll' % mixxx_winlib_path))
+        dll_files.extend(Glob('%s/*.dll' % build.winlib_path))
+        dll_files.extend(Glob('%s/lib/*.dll' % build.winlib_path))
 
         if bundle_pdbs:
-                dll_files.extend(Glob('%s/*.pdb' % mixxx_winlib_path))
-                dll_files.extend(Glob('%s/lib/*.pdb' % mixxx_winlib_path))
+                dll_files.extend(Glob('%s/*.pdb' % build.winlib_path))
+                dll_files.extend(Glob('%s/lib/*.pdb' % build.winlib_path))
 elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu and not build.static_dependencies:
         # We're cross-compiling, grab these from the crosscompile bin
         # folder. How should we be doing this?
@@ -667,7 +666,7 @@ def BuildRelease(target, source, env):
             redist_file = 'vc_redist.%s.exe' % arch
             print "Searching for the Visual C++ DLL installer package", redist_file
             # Check for the runtime installer in the winlib root.
-            redist_path = '%s' % os.path.join(mixxx_winlib_path, redist_file)
+            redist_path = '%s' % os.path.join(build.winlib_path, redist_file)
             print "   ", redist_path,
             if not os.path.isfile(redist_path):
                 raise Exception('Could not find the MSVC++ runtime installer.')
@@ -718,7 +717,7 @@ def BuildRelease(target, source, env):
             subprocess.check_call(command)
             command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
                 {'wix': wix_path,
-                 'winlibpath': mixxx_winlib_path,
+                 'winlibpath': build.winlib_path,
                  'arch': winArch,
                  'distdir': dist_dir,
                  'sub': subdir}
@@ -738,7 +737,7 @@ def BuildRelease(target, source, env):
 
             command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
                 {'wix': wix_path,
-                 'winlibpath': mixxx_winlib_path,
+                 'winlibpath': build.winlib_path,
                  'arch': winArch,
                  'distdir': dist_dir,
                  'sub': "imageformats"}
@@ -754,7 +753,7 @@ def BuildRelease(target, source, env):
 
         command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dSourceDir=%(distdir)s -arch %(arch)s -out build\wix\subdirs\mainDLL.wixobj build\wix\subdirs\mainDLL.wxs' % \
             {'wix': wix_path,
-             'winlibpath': mixxx_winlib_path,
+             'winlibpath': build.winlib_path,
              'arch': winArch,
              'distdir': dist_dir}
         print "Using Command: " + command
@@ -772,7 +771,7 @@ def BuildRelease(target, source, env):
 
             command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dSourceDir=%(distdir)s -arch %(arch)s -out build\wix\subdirs\mainPDB.wixobj build\wix\subdirs\mainPDB.wxs' % \
             {'wix': wix_path,
-             'winlibpath': mixxx_winlib_path,
+             'winlibpath': build.winlib_path,
              'arch': winArch,
              'distdir': dist_dir}
             print "Using Command: " + command
@@ -781,13 +780,13 @@ def BuildRelease(target, source, env):
         # Compile main wix files
         command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -arch %(arch)s -out build\wix\warningDlg.wixobj build\wix\warningDlg.wxs' % \
             {'wix': wix_path,
-             'winlibpath': mixxx_winlib_path,
+             'winlibpath': build.winlib_path,
              'arch': winArch}
         print "Using Command: " + command
         subprocess.check_call(command)
         command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dImageformats=%(isimageformats)s -dPDB=%(isPDB)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
             {'wix': wix_path,
-             'winlibpath': mixxx_winlib_path,
+             'winlibpath': build.winlib_path,
              'isimageformats': imageformats,
              'isPDB': isPdb,
              'arch': winArch}
