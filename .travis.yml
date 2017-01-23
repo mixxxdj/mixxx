@@ -84,4 +84,4 @@ install:
   - scons $COMMON $EXTRA_FLAGS
 
 script:
-  - ./mixxx-test
+  - lldb ./mixxx-test --batch -o 'run' -o 'quit' -k 'thread backtrace all' -k 'quit'
