@@ -300,7 +300,7 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets
 # all files on 2+ builds after a clean.
 dll_files = []
-if build.toolchain_is_msvs:
+if build.toolchain_is_msvs and not build.static_dependencies:
         mixxx_winlib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc90-release')
         # skip the MSVC DLLs incase they're in there too
         dll_files.extend(Glob('%s/*.dll' % mixxx_winlib_path))
@@ -309,7 +309,7 @@ if build.toolchain_is_msvs:
         if bundle_pdbs:
                 dll_files.extend(Glob('%s/*.pdb' % mixxx_winlib_path))
                 dll_files.extend(Glob('%s/lib/*.pdb' % mixxx_winlib_path))
-elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu and not build.static_dependencies:
         # We're cross-compiling, grab these from the crosscompile bin
         # folder. How should we be doing this?
         dll_files = Glob('#/../../mixxx-win%slib-crossmingw' % build.bitwidth)
