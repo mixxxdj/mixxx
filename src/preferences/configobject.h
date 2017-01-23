@@ -105,13 +105,30 @@ template <class ValueType> class ConfigObject {
     ConfigObject(const QDomNode& node);
     ~ConfigObject();
 
+    // Sets the value v for key k, over-writing pre-existing values.
     void set(const ConfigKey& k, const ValueType& v);
+
+    // Returns the ValueType entry for k. If k is not present, returns
+    // ValueType().
     ValueType get(const ConfigKey& k) const;
+
+    // Returns true if key is present.
     bool exists(const ConfigKey& key) const;
 
+    // Removes key from ConfigObject. Returns whether key was present.
+    bool remove(const ConfigKey& key);
+
+    // Returns the string value associated with key. If key is not present,
+    // returns QString().
+    QString getValueString(const ConfigKey& key) const;
+
+    // Sets the value for key to ValueType(value), over-writing pre-existing
+    // values. ResultType is serialized to string on a per-type basis.
     template <class ResultType>
     void setValue(const ConfigKey& key, const ResultType& value);
 
+    // Returns the value for key, converted to ResultType. If key is not present
+    // or the value cannot be converted to ResultType, returns ResultType().
     template <class ResultType>
     ResultType getValue(const ConfigKey& key) const {
         return getValue<ResultType>(key, ResultType());
@@ -120,11 +137,11 @@ template <class ValueType> class ConfigObject {
         return getValueString(key);
     }
 
+    // Returns the value for key, converted to ResultType. If key is not present
+    // or the value cannot be converted to ResultType, returns default_value.
     template <class ResultType>
     ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
     QString getValue(const ConfigKey& key, const char* default_value) const;
-
-    QString getValueString(const ConfigKey& key) const;
 
     QMultiHash<ValueType, ConfigKey> transpose() const;
 

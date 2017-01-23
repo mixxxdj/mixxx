@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include "control/controlproxy.h"
+#include "util/memory.h"
 
 class ControlObject;
 class ControlPushButton;
@@ -27,8 +28,8 @@ class LoadToGroupController : public QObject {
 
   private:
     QString m_group;
-    ControlObject* m_pLoadControl;
-    ControlObject* m_pLoadAndPlayControl;
+    std::unique_ptr<ControlObject> m_pLoadControl;
+    std::unique_ptr<ControlObject> m_pLoadAndPlayControl;
 };
 
 class LibraryControl : public QObject {
@@ -43,6 +44,22 @@ class LibraryControl : public QObject {
   private slots:
     void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
+
+    void slotMoveUp(double);
+    void slotMoveDown(double);
+    void slotMoveVertical(double);
+    void slotScrollUp(double);
+    void slotScrollDown(double);
+    void slotScrollVertical(double);
+    void slotMoveLeft(double);
+    void slotMoveRight(double);
+    void slotMoveHorizontal(double);
+    void slotMoveFocusForward(double);
+    void slotMoveFocusBackward(double);
+    void slotMoveFocus(double);
+    void slotChooseItem(double v);
+
+    // Deprecated navigation slots
     void slotLoadSelectedTrackToGroup(QString group, bool play);
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
@@ -67,29 +84,62 @@ class LibraryControl : public QObject {
   private:
     Library* m_pLibrary;
 
-    ControlObject* m_pSelectNextTrack;
-    ControlObject* m_pSelectPrevTrack;
-    ControlObject* m_pSelectTrack;
+    // Simulate pressing a key on the keyboard
+    void emitKeyEvent(QKeyEvent&& event);
+    // Give the keyboard focus to the main library pane
+    void setLibraryFocus();
 
-    ControlObject* m_pSelectSidebarItem;
-    ControlObject* m_pSelectPrevSidebarItem;
-    ControlObject* m_pSelectNextSidebarItem;
+    // Controls to navigate vertically within currently focused widget (up/down buttons)
+    std::unique_ptr<ControlPushButton> m_pMoveUp;
+    std::unique_ptr<ControlPushButton> m_pMoveDown;
+    std::unique_ptr<ControlObject> m_pMoveVertical;
 
-    ControlObject* m_pToggleSidebarItem;
-    ControlObject* m_pLoadSelectedIntoFirstStopped;
-    ControlObject* m_pAutoDjAddTop;
-    ControlObject* m_pAutoDjAddBottom;
+    // Controls to QUICKLY navigate vertically within currently focused widget (pageup/pagedown buttons)
+    std::unique_ptr<ControlPushButton> m_pScrollUp;
+    std::unique_ptr<ControlPushButton> m_pScrollDown;
+    std::unique_ptr<ControlObject> m_pScrollVertical;
 
-    ControlObject* m_pFontSizeKnob;
-    ControlPushButton* m_pFontSizeIncrement;
-    ControlPushButton* m_pFontSizeDecrement;
+    // Controls to navigate horizontally within currently selected item (left/right buttons)
+    std::unique_ptr<ControlPushButton> m_pMoveLeft;
+    std::unique_ptr<ControlPushButton> m_pMoveRight;
+    std::unique_ptr<ControlObject> m_pMoveHorizontal;
 
+    // Controls to navigate between widgets (tab/shit+tab button)
+    std::unique_ptr<ControlPushButton> m_pMoveFocusForward;
+    std::unique_ptr<ControlPushButton> m_pMoveFocusBackward;
+    std::unique_ptr<ControlObject> m_pMoveFocus;
+
+    // Control to choose the currently selected item in focused widget (double click)
+    std::unique_ptr<ControlObject> m_pChooseItem;
+
+    // Add to Auto-Dj Cueue
+    std::unique_ptr<ControlObject> m_pAutoDjAddTop;
+    std::unique_ptr<ControlObject> m_pAutoDjAddBottom;
+
+    // Font sizes
+    std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;
+    std::unique_ptr<ControlPushButton> m_pFontSizeDecrement;
+    std::unique_ptr<ControlObject> m_pFontSizeKnob;
+
+    // Direct navigation controls for specific widgets (deprecated)
+    std::unique_ptr<ControlObject> m_pSelectNextTrack;
+    std::unique_ptr<ControlObject> m_pSelectPrevTrack;
+    std::unique_ptr<ControlObject> m_pSelectTrack;
+    std::unique_ptr<ControlObject> m_pSelectSidebarItem;
+    std::unique_ptr<ControlObject> m_pSelectPrevSidebarItem;
+    std::unique_ptr<ControlObject> m_pSelectNextSidebarItem;
+    std::unique_ptr<ControlObject> m_pToggleSidebarItem;
+    std::unique_ptr<ControlObject> m_pLoadSelectedIntoFirstStopped;
+
+    // Library widgets
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
+
+    // Other variables
     ControlProxy m_numDecks;
     ControlProxy m_numSamplers;
     ControlProxy m_numPreviewDecks;
-    QMap<QString, LoadToGroupController*> m_loadToGroupControllers;
+    std::map<QString, std::unique_ptr<LoadToGroupController>> m_loadToGroupControllers;
 };
 
 #endif //LIBRARYMIDICONTROL_H

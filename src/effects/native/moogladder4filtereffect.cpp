@@ -22,7 +22,6 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     manifest.setDescription(QObject::tr(
             "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
     manifest.setEffectRampsFromDry(true);
-    manifest.setIsForFilterKnob(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
@@ -32,7 +31,6 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     lpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     lpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT);
-    lpf->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     lpf->setNeutralPointOnScale(1);
     lpf->setDefault(kMaxCorner);
     lpf->setMinimum(kMinCorner);

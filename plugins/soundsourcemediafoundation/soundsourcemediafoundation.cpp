@@ -1,54 +1,32 @@
-/**
- * \file soundsourcemediafoundation.cpp
- * \author Bill Good <bkgood at gmail dot com>
- * \author Albert Santoni <alberts at mixxx dot org>
- * \date Jan 10, 2011
- * \note This file uses COM interfaces defined in Windows 7 and later added to
- * Vista and Server 2008 via the "Platform Update Supplement for Windows Vista
- * and for Windows Server 2008" (http://support.microsoft.com/kb/2117917).
- * Earlier versions of Vista (and possibly Server 2008) have some Media
- * Foundation interfaces but not the required IMFSourceReader, and are missing
- * the Microsoft-provided AAC decoder. XP does not include Media Foundation.
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #include "soundsourcemediafoundation.h"
 
 #include <mfapi.h>
-#include <mfidl.h>
-#include <mfreadwrite.h>
 #include <mferror.h>
 #include <propvarutil.h>
 
+#include "util/sample.h"
+
 namespace {
 
-const bool sDebug = false;
+const char* const kLogPreamble = "SoundSourceMediaFoundation:";
 
 const SINT kBytesPerSample = sizeof(CSAMPLE);
 const SINT kBitsPerSample = kBytesPerSample * 8;
 const SINT kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF AAC
 
-/**
- * Convert a 100ns Media Foundation value to a frame offset.
- */
-inline qint64 frameFromMF(qint64 mf, SINT frameRate) {
-    return static_cast<qreal>(mf) * frameRate / 1e7;
-}
+// Decoding will be restarted one or more blocks of samples
+// before the actual position after seeking randomly in the
+// audio stream to avoid audible glitches.
+//
+// "AAC Audio - Encoder Delay and Synchronization: The 2112 Sample Assumption"
+// https://developer.apple.com/library/ios/technotes/tn2258/_index.html
+// "It must also be assumed that without an explicit value, the playback
+// system will trim 2112 samples from the AAC decoder output when starting
+// playback from any point in the bistream."
+const SINT kNumberOfPrefetchFrames = 2112;
 
-/**
- * Convert a frame offset to a 100ns Media Foundation value.
- */
-inline qint64 mfFromFrame(qint64 frame, SINT frameRate) {
-    return static_cast<qreal>(frame) / frameRate * 1e7;
-}
+// Only read the first audio stream
+const DWORD kStreamIndex = MF_SOURCE_READER_FIRST_AUDIO_STREAM;
 
 /** Microsoft examples use this snippet often. */
 template<class T> static void safeRelease(T **ppT) {
@@ -66,16 +44,8 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
           m_hrCoInitialize(E_FAIL),
           m_hrMFStartup(E_FAIL),
-          m_pReader(nullptr),
-          m_nextFrame(0),
-          m_leftoverBuffer(nullptr),
-          m_leftoverBufferSize(0),
-          m_leftoverBufferLength(0),
-          m_leftoverBufferPosition(0),
-          m_mfDuration(0),
-          m_iCurrentPosition(0),
-          m_dead(false),
-          m_seeking(false) {
+          m_pSourceReader(nullptr),
+          m_currentFrameIndex(0) {
 }
 
 SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
@@ -83,28 +53,28 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
 }
 
 SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
-    if (SUCCEEDED(m_hrCoInitialize)) {
-        qWarning() << "Cannot reopen MediaFoundation file" << getUrlString();
+    DEBUG_ASSERT_AND_HANDLE(!SUCCEEDED(m_hrCoInitialize)) {
+        qWarning() << kLogPreamble
+                << "Cannot reopen file"
+                << getUrlString();
         return OpenResult::FAILED;
     }
 
     const QString fileName(getLocalFileName());
 
-    if (sDebug) {
-        qDebug() << "open()" << fileName;
-    }
-
     // Initialize the COM library.
     m_hrCoInitialize = CoInitializeEx(nullptr,
             COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (FAILED(m_hrCoInitialize)) {
-        qWarning() << "SSMF: failed to initialize COM";
+        qWarning() << kLogPreamble
+                << "failed to initialize COM";
         return OpenResult::FAILED;
     }
     // Initialize the Media Foundation platform.
     m_hrMFStartup = MFStartup(MF_VERSION);
     if (FAILED(m_hrCoInitialize)) {
-        qWarning() << "SSMF: failed to initialize Media Foundation";
+        qWarning() << kLogPreamble
+                << "failed to initialize Media Foundation";
         return OpenResult::FAILED;
     }
 
@@ -116,20 +86,26 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
     HRESULT hr = MFCreateSourceReaderFromURL(
             reinterpret_cast<const wchar_t*>(fileNameUtf16),
             nullptr,
-            &m_pReader);
+            &m_pSourceReader);
 
     if (FAILED(hr)) {
-        qWarning() << "SSMF: Error opening input file:" << fileName;
+        qWarning() << kLogPreamble
+                << "Error opening input file:"
+                << fileName;
         return OpenResult::FAILED;
     }
 
     if (!configureAudioStream(audioSrcCfg)) {
-        qWarning() << "SSMF: Error configuring audio stream.";
+        qWarning() << kLogPreamble
+                << "Failed to configure audio stream";
         return OpenResult::FAILED;
     }
 
+    m_streamUnitConverter = StreamUnitConverter(getSamplingRate());
+
     if (!readProperties()) {
-        qWarning() << "SSMF::readProperties failed";
+        qWarning() << kLogPreamble
+                << "Failed to read file properties";
         return OpenResult::FAILED;
     }
 
@@ -142,10 +118,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
 }
 
 void SoundSourceMediaFoundation::close() {
-    delete[] m_leftoverBuffer;
-    m_leftoverBuffer = nullptr;
-
-    safeRelease(&m_pReader);
+    safeRelease(&m_pSourceReader);
 
     if (SUCCEEDED(m_hrMFStartup)) {
         MFShutdown();
@@ -159,234 +132,307 @@ void SoundSourceMediaFoundation::close() {
 
 SINT SoundSourceMediaFoundation::seekSampleFrame(
         SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
-    if (sDebug) {
-        qDebug() << "seekSampleFrame()" << frameIndex;
-    }
-    qint64 mfSeekTarget(mfFromFrame(frameIndex, getSamplingRate()) - 1);
-    // minus 1 here seems to make our seeking work properly, otherwise we will
-    // (more often than not, maybe always) seek a bit too far (although not
-    // enough for our calculatedFrameFromMF <= nextFrame assertion in ::read).
-    // Has something to do with 100ns MF units being much smaller than most
-    // frame offsets (in seconds) -bkgood
-    SINT result = m_iCurrentPosition;
-    if (m_dead) {
-        return result;
+    DEBUG_ASSERT(isValidFrameIndex(m_currentFrameIndex));
+
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF
+        m_currentFrameIndex = getMaxFrameIndex();
+        return m_currentFrameIndex;
     }
 
+    if (frameIndex > m_currentFrameIndex) {
+        // seeking forward
+        SINT skipFramesCount = frameIndex - m_currentFrameIndex;
+        // When to prefer skipping over seeking:
+        // 1) The sample buffer would be discarded before seeking anyway and
+        //    skipping those already decoded samples effectively costs nothing
+        // 2) After seeking we need to decode at least kNumberOfPrefetchFrames
+        //    before reaching the actual target position -> Only seek if we
+        //    need to decode more than  2 * kNumberOfPrefetchFrames frames
+        //    while skipping
+        SINT skipFramesCountMax =
+                samples2frames(m_sampleBuffer.getSize()) +
+                2 * kNumberOfPrefetchFrames;
+        if (skipFramesCount <= skipFramesCountMax) {
+            skipSampleFrames(skipFramesCount);
+        }
+    }
+    if (frameIndex == m_currentFrameIndex) {
+        return m_currentFrameIndex;
+    }
+
+    // Discard decoded samples
+    m_sampleBuffer.reset();
+
+    // Invalidate current position (end of stream)
+    m_currentFrameIndex = getMaxFrameIndex();
+
+    if (m_pSourceReader == nullptr) {
+        // reader is dead
+        return m_currentFrameIndex;
+    }
+
+    // Jump to a position before the actual seeking position.
+    // Prefetching a certain number of frames is necessary for
+    // sample accurate decoding. The decoder needs to decode
+    // some frames in advance to produce the same result at
+    // each position in the stream.
+    SINT seekIndex = std::max(SINT(frameIndex - kNumberOfPrefetchFrames), AudioSource::getMinFrameIndex());
+
+    LONGLONG seekPos = m_streamUnitConverter.fromFrameIndex(seekIndex);
+    DEBUG_ASSERT(seekPos >= 0);
     PROPVARIANT prop;
-    HRESULT hr;
-
-    // this doesn't fail, see MS's implementation
-    hr = InitPropVariantFromInt64(mfSeekTarget < 0 ? 0 : mfSeekTarget, &prop);
-
-    hr = m_pReader->Flush(MF_SOURCE_READER_FIRST_AUDIO_STREAM);
-    if (FAILED(hr)) {
-        qWarning() << "SSMF: failed to flush before seek";
-    }
-
-    // http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
-    hr = m_pReader->SetCurrentPosition(GUID_NULL, prop);
-    if (FAILED(hr)) {
-        // nothing we can do here as we can't fail (no facility to other than
-        // crashing mixxx)
-        qWarning() << "SSMF: failed to seek"
-                << (hr == MF_E_INVALIDREQUEST ?
-                        "Sample requests still pending" : "");
-    } else {
-        result = frameIndex;
-    }
+    HRESULT hrInitPropVariantFromInt64 =
+            InitPropVariantFromInt64(seekPos, &prop);
+    DEBUG_ASSERT(SUCCEEDED(hrInitPropVariantFromInt64)); // never fails
+    HRESULT hrSetCurrentPosition =
+            m_pSourceReader->SetCurrentPosition(GUID_NULL, prop);
     PropVariantClear(&prop);
+    if (SUCCEEDED(hrSetCurrentPosition)) {
+        // NOTE(uklotzde): After SetCurrentPosition() the actual position
+        // of the stream is unknown until reading the next samples from
+        // the reader. Please note that the first sample decoded after
+        // SetCurrentPosition() may start BEFORE the actual target position.
+        // See also: https://msdn.microsoft.com/en-us/library/windows/desktop/dd374668(v=vs.85).aspx
+        //   "The SetCurrentPosition method does not guarantee exact seeking." ...
+        //   "After seeking, the application should call IMFSourceReader::ReadSample
+        //    and advance to the desired position.
+        SINT skipFramesCount = frameIndex - seekIndex;
+        if (skipFramesCount > 0) {
+            // We need to fetch at least 1 sample from the reader to obtain the
+            // current position!
+            skipSampleFrames(skipFramesCount);
+            // Now m_currentFrameIndex reflects the actual position of the reader
+            if (m_currentFrameIndex < frameIndex) {
+                // Skip more samples if frameIndex has not yet been reached
+                skipSampleFrames(frameIndex - m_currentFrameIndex);
+            }
+            if (m_currentFrameIndex != frameIndex) {
+                qWarning() << kLogPreamble
+                        << "Seek to frame"
+                        << frameIndex
+                        << "failed";
+                // Jump to end of stream (= invalidate current position)
+                m_currentFrameIndex = getMaxFrameIndex();
+            }
+        } else {
+            // We are at the beginning of the stream and don't need
+            // to skip any frames. Calling IMFSourceReader::ReadSample
+            // is not necessary in this special case.
+            DEBUG_ASSERT(frameIndex == AudioSource::getMinFrameIndex());
+            m_currentFrameIndex = frameIndex;
+        }
+    } else {
+        qWarning() << kLogPreamble
+                << "IMFSourceReader::SetCurrentPosition() failed"
+                << hrSetCurrentPosition;
+        safeRelease(&m_pSourceReader); // kill the reader
+    }
 
-    // record the next frame so that we can make sure we're there the next
-    // time we get a buffer from MFSourceReader
-    m_nextFrame = frameIndex;
-    m_seeking = true;
-    m_iCurrentPosition = result;
-    return result;
+    return m_currentFrameIndex;
 }
 
 SINT SoundSourceMediaFoundation::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    if (sDebug) {
-        qDebug() << "read()" << numberOfFrames;
-    }
-    SINT framesNeeded(numberOfFrames);
 
-    // first, copy frames from leftover buffer IF the leftover buffer is at
-    // the correct frame
-    if (m_leftoverBufferLength > 0 && m_leftoverBufferPosition == m_nextFrame) {
-        copyFrames(sampleBuffer, &framesNeeded, m_leftoverBuffer,
-                m_leftoverBufferLength);
-        if (m_leftoverBufferLength > 0) {
-            if (framesNeeded != 0) {
-                qWarning() << __FILE__ << __LINE__
-                        << "WARNING: Expected frames needed to be 0. Abandoning this file.";
-                m_dead = true;
+    SINT numberOfFramesRemaining = numberOfFrames;
+    CSAMPLE* pSampleBuffer = sampleBuffer;
+
+    while (numberOfFramesRemaining > 0) {
+        SampleBuffer::ReadableChunk readableChunk(
+                m_sampleBuffer.readFromHead(
+                        frames2samples(numberOfFramesRemaining)));
+        DEBUG_ASSERT(readableChunk.size()
+                <= frames2samples(numberOfFramesRemaining));
+        if (readableChunk.size() > 0) {
+            DEBUG_ASSERT(m_currentFrameIndex < getMaxFrameIndex());
+            if (sampleBuffer != nullptr) {
+                SampleUtil::copy(
+                        pSampleBuffer,
+                        readableChunk.data(),
+                        readableChunk.size());
+                pSampleBuffer += readableChunk.size();
             }
-            m_leftoverBufferPosition += numberOfFrames;
+            m_currentFrameIndex += samples2frames(readableChunk.size());
+            numberOfFramesRemaining -= samples2frames(readableChunk.size());
         }
-    } else {
-        // leftoverBuffer already empty or in the wrong position, clear it
-        m_leftoverBufferLength = 0;
-    }
+        if (numberOfFramesRemaining == 0) {
+            break; // finished reading
+        }
 
-    while (!m_dead && framesNeeded > 0) {
-        HRESULT hr(S_OK);
-        DWORD dwFlags(0);
-        qint64 timestamp(0);
-        IMFSample *pSample(nullptr);
-        bool error(false); // set to true to break after releasing
+        // No more decoded sample frames available
+        DEBUG_ASSERT(m_sampleBuffer.isEmpty());
 
-        hr = m_pReader->ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM, // [in] DWORD dwStreamIndex,
-                0,                                 // [in] DWORD dwControlFlags,
-                nullptr,                      // [out] DWORD *pdwActualStreamIndex,
-                &dwFlags,                        // [out] DWORD *pdwStreamFlags,
-                &timestamp,                     // [out] LONGLONG *pllTimestamp,
-                &pSample);                         // [out] IMFSample **ppSample
-        if (FAILED(hr)) {
-            qWarning() << "ReadSample failed!";
+        if (m_pSourceReader == nullptr) {
+            break; // abort if reader is dead
+        }
+
+        DWORD dwFlags = 0;
+        LONGLONG streamPos = 0;
+        IMFSample* pSample = nullptr;
+        HRESULT hrReadSample =
+                m_pSourceReader->ReadSample(
+                        kStreamIndex, // [in]  DWORD dwStreamIndex,
+                        0,            // [in]  DWORD dwControlFlags,
+                        nullptr,      // [out] DWORD *pdwActualStreamIndex,
+                        &dwFlags,     // [out] DWORD *pdwStreamFlags,
+                        &streamPos,   // [out] LONGLONG *pllTimestamp,
+                        &pSample);    // [out] IMFSample **ppSample
+        if (FAILED(hrReadSample)) {
+            qWarning() << kLogPreamble
+                    << "IMFSourceReader::ReadSample() failed"
+                    << hrReadSample
+                    << "-> abort decoding";
+            DEBUG_ASSERT(pSample == nullptr);
+            break; // abort
+        }
+        if (dwFlags & MF_SOURCE_READERF_ERROR) {
+            qWarning() << kLogPreamble
+                    << "IMFSourceReader::ReadSample()"
+                    << "detected stream errors"
+                    << "(MF_SOURCE_READERF_ERROR)"
+                    << "-> abort and stop decoding";
+            DEBUG_ASSERT(pSample == nullptr);
+            safeRelease(&m_pSourceReader); // kill the reader
+            break; // abort
+        } else if (dwFlags & MF_SOURCE_READERF_ENDOFSTREAM) {
+            DEBUG_ASSERT(pSample == nullptr);
+            break; // finished reading
+        } else if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) {
+            qWarning() << kLogPreamble
+                    << "IMFSourceReader::ReadSample()"
+                    << "detected that the media type has changed"
+                    << "(MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED)"
+                    << "-> abort decoding";
+            DEBUG_ASSERT(pSample == nullptr);
+            break; // abort
+        }
+        DEBUG_ASSERT(pSample != nullptr);
+        SINT readerFrameIndex = m_streamUnitConverter.toFrameIndex(streamPos);
+        DEBUG_ASSERT(
+                (m_currentFrameIndex == getMaxFrameIndex()) || // unknown position after seeking
+                (m_currentFrameIndex == readerFrameIndex));
+        m_currentFrameIndex = readerFrameIndex;
+
+        DWORD dwSampleBufferCount = 0;
+        HRESULT hrGetBufferCount =
+                pSample->GetBufferCount(&dwSampleBufferCount);
+        if (FAILED(hrGetBufferCount)) {
+            qWarning() << kLogPreamble
+                    << "IMFSample::GetBufferCount() failed"
+                    << hrGetBufferCount
+                    << "-> abort decoding";
+            safeRelease(&pSample);
             break; // abort
         }
 
-        if (sDebug) {
-            qDebug() << "ReadSample timestamp:" << timestamp << "frame:"
-                    << frameFromMF(timestamp, getSamplingRate()) << "dwflags:" << dwFlags;
+        DWORD dwSampleTotalLengthInBytes = 0;
+        HRESULT hrGetTotalLength = pSample->GetTotalLength(&dwSampleTotalLengthInBytes);
+        if (FAILED(hrGetTotalLength)) {
+            qWarning() << kLogPreamble
+                    << "IMFSample::GetTotalLength() failed"
+                    << hrGetTotalLength
+                    << "-> abort decoding";
+            safeRelease(&pSample);
+            break; // abort
+        }
+        // Enlarge temporary buffer (if necessary)
+        DEBUG_ASSERT((dwSampleTotalLengthInBytes % kBytesPerSample) == 0);
+        SINT numberOfSamplesToBuffer =
+            dwSampleTotalLengthInBytes / kBytesPerSample;
+        SINT sampleBufferCapacity = m_sampleBuffer.getCapacity();
+        DEBUG_ASSERT(sampleBufferCapacity > 0);
+        while (sampleBufferCapacity < numberOfSamplesToBuffer) {
+            sampleBufferCapacity *= 2;
+        }
+        if (m_sampleBuffer.getCapacity() < sampleBufferCapacity) {
+            qDebug() << kLogPreamble
+                    << "Enlarging sample buffer capacity"
+                    << m_sampleBuffer.getCapacity()
+                    << "->"
+                    << sampleBufferCapacity;
+            m_sampleBuffer.resetCapacity(sampleBufferCapacity);
         }
 
-        if (dwFlags & MF_SOURCE_READERF_ERROR) {
-            // our source reader is now dead, according to the docs
-            qWarning()
-                    << "SSMF: ReadSample set ERROR, SourceReader is now dead";
-            m_dead = true;
-            break;
-        } else if (dwFlags & MF_SOURCE_READERF_ENDOFSTREAM) {
-            qDebug() << "SSMF: End of input file.";
-            break;
-        } else if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) {
-            qWarning() << "SSMF: Type change";
-            break;
-        } else if (pSample == nullptr) {
-            // generally this will happen when dwFlags contains ENDOFSTREAM,
-            // so it'll be caught before now -bkgood
-            qWarning() << "SSMF: No sample";
-            continue;
-        } // we now own a ref to the instance at pSample
-
-        IMFMediaBuffer *pMBuffer(nullptr);
-        // I know this does at least a memcopy and maybe a malloc, if we have
-        // xrun issues with this we might want to look into using
-        // IMFSample::GetBufferByIndex (although MS doesn't recommend this)
-        if (FAILED(hr = pSample->ConvertToContiguousBuffer(&pMBuffer))) {
-            error = true;
-            goto releaseSample;
-        }
-        CSAMPLE *buffer(nullptr);
-        DWORD bufferLengthInBytes(0);
-        hr = pMBuffer->Lock(reinterpret_cast<quint8**>(&buffer), nullptr, &bufferLengthInBytes);
-        if (FAILED(hr)) {
-            error = true;
-            goto releaseMBuffer;
-        }
-        SINT bufferLength = samples2frames(bufferLengthInBytes / sizeof(buffer[0]));
-
-        if (m_seeking) {
-            qint64 bufferPosition(frameFromMF(timestamp, getSamplingRate()));
-            if (sDebug) {
-                qDebug() << "While seeking to " << m_nextFrame
-                        << "WMF put us at" << bufferPosition;
-
+        DWORD dwSampleBufferIndex = 0;
+        while (dwSampleBufferIndex < dwSampleBufferCount) {
+            IMFMediaBuffer* pMediaBuffer = nullptr;
+            HRESULT hrGetBufferByIndex = pSample->GetBufferByIndex(dwSampleBufferIndex, &pMediaBuffer);
+            if (FAILED(hrGetBufferByIndex)) {
+                qWarning() << kLogPreamble
+                        << "IMFSample::GetBufferByIndex() failed"
+                        << hrGetBufferByIndex
+                        << "-> abort decoding";
+                DEBUG_ASSERT(pMediaBuffer == nullptr);
+                break; // prematurely exit buffer loop
             }
-            if (m_nextFrame < bufferPosition) {
-                // Uh oh. We are farther forward than our seek target. Emit
-                // silence? We can't seek backwards here.
-                CSAMPLE* pBufferCurpos = sampleBuffer
-                        + frames2samples(numberOfFrames - framesNeeded);
-                qint64 offshootFrames = bufferPosition - m_nextFrame;
 
-                // If we can correct this immediately, write zeros and adjust
-                // m_nextFrame to pretend it never happened.
+            CSAMPLE* pLockedSampleBuffer = nullptr;
+            DWORD lockedSampleBufferLengthInBytes = 0;
+            HRESULT hrLock = pMediaBuffer->Lock(
+                    reinterpret_cast<quint8**>(&pLockedSampleBuffer),
+                    nullptr,
+                    &lockedSampleBufferLengthInBytes);
+            if (FAILED(hrLock)) {
+                qWarning() << kLogPreamble
+                        << "IMFMediaBuffer::Lock() failed"
+                        << hrLock
+                        << "-> abort decoding";
+                safeRelease(&pMediaBuffer);
+                break; // prematurely exit buffer loop
+            }
 
-                if (offshootFrames <= framesNeeded) {
-                    qWarning() << __FILE__ << __LINE__
-                            << "Working around inaccurate seeking. Writing silence for"
-                            << offshootFrames << "frames";
-                    // Set offshootFrames samples to zero.
-                    memset(pBufferCurpos, 0,
-                            sizeof(*pBufferCurpos) * frames2samples(offshootFrames));
-                    // Now m_nextFrame == bufferPosition
-                    m_nextFrame += offshootFrames;
-                    framesNeeded -= offshootFrames;
-                } else {
-                    // It's more complicated. The buffer we have just decoded is
-                    // more than framesNeeded frames away from us. It's too hard
-                    // for us to handle this correctly currently, so let's just
-                    // try to get on with our lives.
-                    m_seeking = false;
-                    m_nextFrame = bufferPosition;
-                    qWarning() << __FILE__ << __LINE__
-                            << "Seek offshoot is too drastic. Cutting losses and pretending the current decoded audio buffer is the right seek point.";
+            DEBUG_ASSERT((lockedSampleBufferLengthInBytes % sizeof(pLockedSampleBuffer[0])) == 0);
+            SINT lockedSampleBufferCount =
+                    lockedSampleBufferLengthInBytes / sizeof(pLockedSampleBuffer[0]);
+            SINT copySamplesCount = std::min(
+                    frames2samples(numberOfFramesRemaining),
+                    lockedSampleBufferCount);
+            if (copySamplesCount > 0) {
+                // Copy samples directly into output buffer if possible
+                if (pSampleBuffer != nullptr) {
+                    SampleUtil::copy(
+                            pSampleBuffer,
+                            pLockedSampleBuffer,
+                            copySamplesCount);
+                    pSampleBuffer += copySamplesCount;
                 }
+                pLockedSampleBuffer += copySamplesCount;
+                lockedSampleBufferCount -= copySamplesCount;
+                m_currentFrameIndex += samples2frames(copySamplesCount);
+                numberOfFramesRemaining -= samples2frames(copySamplesCount);
             }
-
-            if (m_nextFrame >= bufferPosition
-                    && m_nextFrame < bufferPosition + bufferLength) {
-                // m_nextFrame is in this buffer.
-                buffer += frames2samples(m_nextFrame - bufferPosition);
-                bufferLength -= m_nextFrame - bufferPosition;
-                m_seeking = false;
-            } else {
-                // we need to keep going forward
-                goto releaseRawBuffer;
+            // Buffer the remaining samples
+            SampleBuffer::WritableChunk writableChunk(
+                    m_sampleBuffer.writeToTail(lockedSampleBufferCount));
+            // The required capacity has been calculated in advance (see above)
+            DEBUG_ASSERT(writableChunk.size() == lockedSampleBufferCount);
+            SampleUtil::copy(
+                    writableChunk.data(),
+                    pLockedSampleBuffer,
+                    writableChunk.size());
+            HRESULT hrUnlock = pMediaBuffer->Unlock();
+            DEBUG_ASSERT_AND_HANDLE(SUCCEEDED(hrUnlock)) {
+                qWarning() << kLogPreamble
+                        << "IMFMediaBuffer::Unlock() failed"
+                        << hrUnlock;
+                // ignore and continue
             }
+            safeRelease(&pMediaBuffer);
+            ++dwSampleBufferIndex;
         }
-
-        // If the bufferLength is larger than the leftover buffer, re-allocate
-        // it with 2x the space.
-        if (frames2samples(bufferLength) > m_leftoverBufferSize) {
-            SINT newSize = m_leftoverBufferSize;
-
-            while (newSize < frames2samples(bufferLength)) {
-                newSize *= 2;
-            }
-            CSAMPLE* newBuffer = new CSAMPLE[newSize];
-            memcpy(newBuffer, m_leftoverBuffer,
-                    sizeof(m_leftoverBuffer[0]) * m_leftoverBufferSize);
-            delete[] m_leftoverBuffer;
-            m_leftoverBuffer = newBuffer;
-            m_leftoverBufferSize = newSize;
+        safeRelease(&pSample);
+        if (dwSampleBufferIndex < dwSampleBufferCount) {
+            // Failed to read data from all buffers -> kill the reader
+            qWarning() << kLogPreamble
+                    << "Failed to read all buffered samples"
+                    << "-> abort and stop decoding";
+            safeRelease(&m_pSourceReader);
+            break; // abort
         }
-        copyFrames(
-                sampleBuffer + frames2samples(numberOfFrames - framesNeeded),
-                &framesNeeded,
-                buffer, bufferLength);
-
-        releaseRawBuffer: hr = pMBuffer->Unlock();
-        // I'm ignoring this, MSDN for IMFMediaBuffer::Unlock stipulates
-        // nothing about the state of the instance if this fails so might as
-        // well just let it be released.
-        //if (FAILED(hr)) break;
-        releaseMBuffer: safeRelease(&pMBuffer);
-        releaseSample: safeRelease(&pSample);
-        if (error)
-            break;
     }
 
-    SINT framesRead = numberOfFrames - framesNeeded;
-    m_iCurrentPosition += framesRead;
-    m_nextFrame += framesRead;
-    if (m_leftoverBufferLength > 0) {
-        if (framesNeeded != 0) {
-            qWarning() << __FILE__ << __LINE__
-                    << "WARNING: Expected frames needed to be 0. Abandoning this file.";
-            m_dead = true;
-        }
-        m_leftoverBufferPosition = m_nextFrame;
-    }
-    if (sDebug) {
-        qDebug() << "read()" << numberOfFrames << "returning" << framesRead;
-    }
-    return framesRead;
+    return numberOfFrames - numberOfFramesRemaining;
 }
 
 //-------------------------------------------------------------------
@@ -407,35 +453,35 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     HRESULT hr;
 
     // deselect all streams, we only want the first
-    hr = m_pReader->SetStreamSelection(
+    hr = m_pSourceReader->SetStreamSelection(
             MF_SOURCE_READER_ALL_STREAMS, false);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
+        qWarning() << kLogPreamble << hr
                 << "failed to deselect all streams";
         return false;
     }
 
-    hr = m_pReader->SetStreamSelection(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, true);
+    hr = m_pSourceReader->SetStreamSelection(
+            kStreamIndex, true);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
+        qWarning() << kLogPreamble << hr
                 << "failed to select first audio stream";
         return false;
     }
 
     IMFMediaType* pAudioType = nullptr;
 
-    hr = m_pReader->GetCurrentMediaType(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, &pAudioType);
+    hr = m_pSourceReader->GetCurrentMediaType(
+            kStreamIndex, &pAudioType);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
+        qWarning() << kLogPreamble << hr
                 << "failed to get current media type from stream";
         return false;
     }
 
     hr = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
+        qWarning() << kLogPreamble << hr
                 << "failed to set major type to audio";
         safeRelease(&pAudioType);
         return false;
@@ -443,24 +489,24 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
 
     hr = pAudioType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_Float);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to set subtype format to float";
+        qWarning() << kLogPreamble << hr
+                << "failed to set subtype format to float";
         safeRelease(&pAudioType);
         return false;
     }
 
     hr = pAudioType->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, true);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to set all samples independent";
+        qWarning() << kLogPreamble << hr
+                << "failed to set all samples independent";
         safeRelease(&pAudioType);
         return false;
     }
 
     hr = pAudioType->SetUINT32(MF_MT_FIXED_SIZE_SAMPLES, true);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to set fixed size samples";
+        qWarning() << kLogPreamble << hr
+                << "failed to set fixed size samples";
         safeRelease(&pAudioType);
         return false;
     }
@@ -468,7 +514,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->SetUINT32(
             MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
+        qWarning() << kLogPreamble << hr
                 << "failed to set bits per sample:"
                 << kBitsPerSample;
         safeRelease(&pAudioType);
@@ -479,7 +525,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->SetUINT32(
             MF_MT_SAMPLE_SIZE, sampleSize);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
+        qWarning() << kLogPreamble << hr
                 << "failed to set sample size:"
                 << sampleSize;
         safeRelease(&pAudioType);
@@ -490,8 +536,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->GetUINT32(
             MF_MT_AUDIO_NUM_CHANNELS, &numChannels);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to get actual number of channels";
+        qWarning() << kLogPreamble << hr
+                << "failed to get actual number of channels";
         return false;
     } else {
         qDebug() << "Number of channels in input stream" << numChannels;
@@ -501,9 +547,9 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_NUM_CHANNELS, numChannels);
         if (FAILED(hr)) {
-            qWarning() << "SSMF" << hr
-                << "failed to set number of channels:"
-                << numChannels;
+            qWarning() << kLogPreamble << hr
+                    << "failed to set number of channels:"
+                    << numChannels;
             safeRelease(&pAudioType);
             return false;
         }
@@ -514,8 +560,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->GetUINT32(
             MF_MT_AUDIO_SAMPLES_PER_SECOND, &samplesPerSecond);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to get samples per second";
+        qWarning() << kLogPreamble << hr
+                << "failed to get samples per second";
         return false;
     } else {
         qDebug() << "Samples per second in input stream" << samplesPerSecond;
@@ -525,9 +571,9 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_SAMPLES_PER_SECOND, samplesPerSecond);
         if (FAILED(hr)) {
-            qWarning() << "SSMF" << hr
-                << "failed to set samples per second:"
-                << samplesPerSecond;
+            qWarning() << kLogPreamble << hr
+                    << "failed to set samples per second:"
+                    << samplesPerSecond;
             safeRelease(&pAudioType);
             return false;
         }
@@ -536,11 +582,11 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
 
     // Set this type on the source reader. The source reader will
     // load the necessary decoder.
-    hr = m_pReader->SetCurrentMediaType(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, nullptr, pAudioType);
+    hr = m_pSourceReader->SetCurrentMediaType(
+            kStreamIndex, nullptr, pAudioType);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to set media type";
+        qWarning() << kLogPreamble << hr
+                << "failed to set media type";
         safeRelease(&pAudioType);
         return false;
     }
@@ -549,28 +595,28 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     safeRelease(&pAudioType);
 
     // Get the resulting output format.
-    hr = m_pReader->GetCurrentMediaType(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, &pAudioType);
+    hr = m_pSourceReader->GetCurrentMediaType(
+            kStreamIndex, &pAudioType);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to retrieve completed media type";
+        qWarning() << kLogPreamble << hr
+                << "failed to retrieve completed media type";
         return false;
     }
 
     // Ensure the stream is selected.
-    hr = m_pReader->SetStreamSelection(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, true);
+    hr = m_pSourceReader->SetStreamSelection(
+            kStreamIndex, true);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to select first audio stream (again)";
+        qWarning() << kLogPreamble << hr
+                << "failed to select first audio stream (again)";
         return false;
     }
 
     hr = pAudioType->GetUINT32(
             MF_MT_AUDIO_NUM_CHANNELS, &numChannels);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to get actual number of channels";
+        qWarning() << kLogPreamble << hr
+                << "failed to get actual number of channels";
         return false;
     }
     setChannelCount(numChannels);
@@ -578,8 +624,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->GetUINT32(
             MF_MT_AUDIO_SAMPLES_PER_SECOND, &samplesPerSecond);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to get the actual sample rate";
+        qWarning() << kLogPreamble << hr
+                << "failed to get the actual sample rate";
         return false;
     }
     setSamplingRate(samplesPerSecond);
@@ -587,13 +633,16 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     UINT32 leftoverBufferSizeInBytes = 0;
     hr = pAudioType->GetUINT32(MF_MT_SAMPLE_SIZE, &leftoverBufferSizeInBytes);
     if (FAILED(hr)) {
-        qWarning() << "SSMF" << hr
-            << "failed to get sample buffer size (in bytes)";
+        qWarning() << kLogPreamble << hr
+                << "failed to get sample buffer size (in bytes)";
         return false;
     }
-    m_leftoverBufferSize = leftoverBufferSizeInBytes / kBytesPerSample;
-    qDebug() << "SSMF: leftover buffer size" << m_leftoverBufferSize;
-    m_leftoverBuffer = new CSAMPLE[m_leftoverBufferSize];
+    DEBUG_ASSERT((leftoverBufferSizeInBytes % kBytesPerSample) == 0);
+    m_sampleBuffer.resetCapacity(leftoverBufferSizeInBytes / kBytesPerSample);
+    DEBUG_ASSERT(m_sampleBuffer.getCapacity() > 0);
+    qDebug() << kLogPreamble
+            << "Sample buffer capacity"
+            << m_sampleBuffer.getCapacity();
 
     // Finally release the reference
     safeRelease(&pAudioType);
@@ -606,15 +655,14 @@ bool SoundSourceMediaFoundation::readProperties() {
     HRESULT hr = S_OK;
 
     //Get the duration, provided as a 64-bit integer of 100-nanosecond units
-    hr = m_pReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
+    hr = m_pSourceReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
         MF_PD_DURATION, &prop);
     if (FAILED(hr)) {
-        qWarning() << "SSMF: error getting duration";
+        qWarning() << kLogPreamble << "error getting duration";
         return false;
     }
-    m_mfDuration = prop.hVal.QuadPart;
-    setFrameCount(frameFromMF(m_mfDuration, getSamplingRate()));
-    qDebug() << "SSMF: Frame count" << getFrameCount();
+    setFrameCount(m_streamUnitConverter.toFrameIndex(prop.hVal.QuadPart));
+    qDebug() << kLogPreamble << "Frame count" << getFrameCount();
     PropVariantClear(&prop);
 
     // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
@@ -623,31 +671,6 @@ bool SoundSourceMediaFoundation::readProperties() {
     setBitrate(kBitsPerSample * frames2samples(getSamplingRate()));
 
     return true;
-}
-
-/**
- * Copies min(destFrames, srcFrames) frames to dest from src. Anything leftover
- * is moved to the beginning of m_leftoverBuffer, so empty it first (possibly
- * with this method). If src and dest overlap, I'll hurt you.
- */
-void SoundSourceMediaFoundation::copyFrames(CSAMPLE *dest, SINT *destFrames,
-        const CSAMPLE *src, SINT srcFrames) {
-    if (srcFrames > *destFrames) {
-        SINT samplesToCopy(frames2samples(*destFrames));
-        memcpy(dest, src, samplesToCopy * sizeof(*src));
-        srcFrames -= *destFrames;
-        memmove(m_leftoverBuffer, src + samplesToCopy,
-                frames2samples(srcFrames) * sizeof(*src));
-        *destFrames = 0;
-        m_leftoverBufferLength = srcFrames;
-    } else {
-        SINT samplesToCopy(frames2samples(srcFrames));
-        memcpy(dest, src, samplesToCopy * sizeof(*src));
-        *destFrames -= srcFrames;
-        if (src == m_leftoverBuffer) {
-            m_leftoverBufferLength = 0;
-        }
-    }
 }
 
 QString SoundSourceProviderMediaFoundation::getName() const {

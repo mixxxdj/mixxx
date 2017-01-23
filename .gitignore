@@ -4,6 +4,7 @@
 *.orig
 *.os
 *.patch
+!build/appveyor/NSIS.patch
 *.pyc
 *.rej
 *_build
@@ -39,11 +40,11 @@ src/test/golden_buffers/*.actual
 res/qrc_mixxx.cc
 res/developer_skins
 
-build/wix/*.wixobj
-build/wix/*.wixpdb
-build/wix/*.msi
-build/wix/*.mst
-build/wix/subdirs/*.wixobj
+*.wixobj
+*.wixpdb
+*.msi
+*.mst
+*.cab
 build/wix/subdirs/*.wxs
 
 *.obj

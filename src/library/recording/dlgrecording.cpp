@@ -69,6 +69,10 @@ void DlgRecording::onShow() {
     m_browseModel.setPath(m_recordingDir);
 }
 
+bool DlgRecording::hasFocus() const {
+    return QWidget::hasFocus();
+}
+
 void DlgRecording::refreshBrowseModel() {
      m_browseModel.setPath(m_recordingDir);
 }

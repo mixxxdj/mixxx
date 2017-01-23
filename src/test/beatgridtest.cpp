@@ -27,8 +27,14 @@ TEST(BeatGridTest, Scale) {
     pGrid->scale(Beats::TWOTHIRDS);
     EXPECT_DOUBLE_EQ(bpm * 2 / 3, pGrid->getBpm());
 
+    pGrid->scale(Beats::THREEHALVES);
+    EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
+
     pGrid->scale(Beats::THREEFOURTHS);
-    EXPECT_DOUBLE_EQ(bpm / 2, pGrid->getBpm());
+    EXPECT_DOUBLE_EQ(bpm * 3 / 4, pGrid->getBpm());
+
+    pGrid->scale(Beats::FOURTHIRDS);
+    EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat) {

@@ -132,6 +132,8 @@ WTrackTableView::~WTrackTableView() {
     delete m_pBpmHalveAction;
     delete m_pBpmTwoThirdsAction;
     delete m_pBpmThreeFourthsAction;
+    delete m_pBpmFourThirdsAction;
+    delete m_pBpmThreeHalvesAction;
     delete m_pBPMMenu;
     delete m_pReplayGainResetAction;
     delete m_pPurgeAct;
@@ -419,11 +421,15 @@ void WTrackTableView::createActions() {
     m_pBpmHalveAction = new QAction(tr("Halve BPM"), this);
     m_pBpmTwoThirdsAction = new QAction(tr("2/3 BPM"), this);
     m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), this);
+    m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), this);
+    m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), this);
 
     m_BpmMapper.setMapping(m_pBpmDoubleAction, Beats::DOUBLE);
     m_BpmMapper.setMapping(m_pBpmHalveAction, Beats::HALVE);
     m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, Beats::TWOTHIRDS);
     m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, Beats::THREEFOURTHS);
+    m_BpmMapper.setMapping(m_pBpmFourThirdsAction, Beats::FOURTHIRDS);
+    m_BpmMapper.setMapping(m_pBpmThreeHalvesAction, Beats::THREEHALVES);
 
     connect(m_pBpmDoubleAction, SIGNAL(triggered()),
             &m_BpmMapper, SLOT(map()));
@@ -432,6 +438,10 @@ void WTrackTableView::createActions() {
     connect(m_pBpmTwoThirdsAction, SIGNAL(triggered()),
             &m_BpmMapper, SLOT(map()));
     connect(m_pBpmThreeFourthsAction, SIGNAL(triggered()),
+            &m_BpmMapper, SLOT(map()));
+    connect(m_pBpmFourThirdsAction, SIGNAL(triggered()),
+            &m_BpmMapper, SLOT(map()));
+    connect(m_pBpmThreeHalvesAction, SIGNAL(triggered()),
             &m_BpmMapper, SLOT(map()));
 
     m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
@@ -837,6 +847,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
+        m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
+        m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmLockAction);
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
@@ -854,6 +866,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 m_pBpmHalveAction->setEnabled(false);
                 m_pBpmTwoThirdsAction->setEnabled(false);
                 m_pBpmThreeFourthsAction->setEnabled(false);
+                m_pBpmFourThirdsAction->setEnabled(false);
+                m_pBpmThreeHalvesAction->setEnabled(false);
             } else { //BPM is not locked
                 m_pBpmUnlockAction->setEnabled(false);
                 m_pBpmLockAction->setEnabled(true);
@@ -861,6 +875,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 m_pBpmHalveAction->setEnabled(true);
                 m_pBpmTwoThirdsAction->setEnabled(true);
                 m_pBpmThreeFourthsAction->setEnabled(true);
+                m_pBpmFourThirdsAction->setEnabled(true);
+                m_pBpmThreeHalvesAction->setEnabled(true);
             }
         } else {
             bool anyLocked = false; //true if any of the selected items are locked
@@ -878,12 +894,18 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 m_pBpmDoubleAction->setEnabled(false);
                 m_pBpmHalveAction->setEnabled(false);
                 m_pBpmTwoThirdsAction->setEnabled(false);
+                m_pBpmThreeFourthsAction->setEnabled(false);
+                m_pBpmFourThirdsAction->setEnabled(false);
+                m_pBpmThreeHalvesAction->setEnabled(false);
             } else {
                 m_pBpmLockAction->setEnabled(true);
                 m_pBpmUnlockAction->setEnabled(false);
                 m_pBpmDoubleAction->setEnabled(true);
                 m_pBpmHalveAction->setEnabled(true);
                 m_pBpmTwoThirdsAction->setEnabled(true);
+                m_pBpmThreeFourthsAction->setEnabled(true);
+                m_pBpmFourThirdsAction->setEnabled(true);
+                m_pBpmThreeHalvesAction->setEnabled(true);
             }
         }
     }
@@ -1657,4 +1679,8 @@ void WTrackTableView::slotReloadCoverArt() {
     if (pCache) {
         pCache->requestGuessCovers(selectedTracks);
     }
+}
+
+bool WTrackTableView::hasFocus() const {
+    return QWidget::hasFocus();
 }
