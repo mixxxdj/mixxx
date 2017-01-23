@@ -24,18 +24,6 @@ EffectManifest EchoEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Simple Echo with pingpong"));
 
-    EffectManifestParameter* send = manifest.addParameter();
-    send->setId("send_amount");
-    send->setName(QObject::tr("Send"));
-    send->setDescription(
-            QObject::tr("How much of the signal to send into the delay buffer"));
-    send->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    send->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    send->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    send->setMinimum(0.0);
-    send->setDefault(1.0);
-    send->setMaximum(1.0);
-
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay_time");
     delay->setName(QObject::tr("Delay"));
@@ -44,7 +32,7 @@ EffectManifest EchoEffect::getManifest() {
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_TIME);
     delay->setMinimum(0.1);
-    delay->setDefault(0.5);
+    delay->setDefault(1.0);
     delay->setMaximum(EchoGroupState::kMaxDelaySeconds);
 
     EffectManifestParameter* feedback = manifest.addParameter();
@@ -55,9 +43,8 @@ EffectManifest EchoEffect::getManifest() {
     feedback->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     feedback->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    feedback->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
     feedback->setMinimum(0.00);
-    feedback->setDefault(0.40);
+    feedback->setDefault(0.5);
     feedback->setMaximum(1.0);
 
     EffectManifestParameter* pingpong = manifest.addParameter();
@@ -73,6 +60,19 @@ EffectManifest EchoEffect::getManifest() {
     pingpong->setMinimum(0.0);
     pingpong->setDefault(0.0);
     pingpong->setMaximum(1.0);
+
+    EffectManifestParameter* send = manifest.addParameter();
+    send->setId("send_amount");
+    send->setName(QObject::tr("Send"));
+    send->setDescription(
+            QObject::tr("How much of the signal to send into the delay buffer"));
+    send->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    send->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    send->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    send->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    send->setMinimum(0.0);
+    send->setDefault(1.0);
+    send->setMaximum(1.0);
 
     return manifest;
 }
