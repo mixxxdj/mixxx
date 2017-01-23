@@ -237,7 +237,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(
         qWarning() << "[SoundSourceFFmpeg]"
                 << "Failed to find a decoder for stream"
                 << pAudioStream->index;
-        return SoundSource::OpenResult::UNSUPPORTED_FORMAT;
+        return SoundSource::OpenResult::ABORTED;
     }
     const int avcodec_open2_result = avcodec_open2(pAudioStream->codec, pDecoder, nullptr);
     if (avcodec_open2_result < 0) {
@@ -319,7 +319,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     if (pAudioStream == nullptr) {
         qWarning() << "[SoundSourceFFmpeg]"
                 << "No audio stream found";
-        return OpenResult::UNSUPPORTED_FORMAT;
+        return OpenResult::ABORTED;
     }
     const OpenResult openAudioStreamResult = openAudioStream(pAudioStream);
     if (openAudioStreamResult != OpenResult::SUCCEEDED) {
@@ -340,7 +340,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         qWarning() << "[SoundSourceFFmpeg]"
                 << "Stream has unsupported number of channels:"
                 << channelCount << ">" << kMaxChannelCount;
-        return OpenResult::UNSUPPORTED_FORMAT;
+        return OpenResult::ABORTED;
     }
 
     const SINT samplingRate = getSamplingRateOfStream(m_pAudioStream);

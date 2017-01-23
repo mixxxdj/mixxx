@@ -100,13 +100,7 @@ class KeyUtils {
     }
 
     static inline double powerOf2ToOctaveChange(const double& power_of_2) {
-        // log2 is in the C99 standard, MSVC only supports C90.
-#ifdef _MSC_VER
-        static const double lg2 = log(2.0);
-        return log(power_of_2) / lg2;
-#else
         return log2(power_of_2);
-#endif
     }
 
     static inline double powerOf2ToSemitoneChange(const double& power_of_2) {

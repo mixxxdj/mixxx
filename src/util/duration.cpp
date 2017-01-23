@@ -5,7 +5,7 @@
 #include <QTime>
 
 #include "util/assert.h"
-#include <util/math.h>
+#include "util/math.h"
 
 namespace mixxx {
 

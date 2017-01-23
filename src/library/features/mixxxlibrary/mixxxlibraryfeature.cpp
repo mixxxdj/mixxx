@@ -19,7 +19,7 @@
 #include "widget/wlibrarystack.h"
 #include "widget/wtracktableview.h"
 
-const QString MixxxLibraryFeature::kLibraryTitle = tr("Library");
+const QString MixxxLibraryFeature::kLibraryTitle = tr("Tracks");
 
 const QStringList MixxxLibraryFeature::kGroupingText = 
     QStringList::fromStdList({
@@ -73,7 +73,7 @@ QVariant MixxxLibraryFeature::title() {
 }
 
 QString MixxxLibraryFeature::getIconPath() {
-    return ":/images/library/ic_library_library.png";
+    return ":/images/library/ic_library_tracks.png";
 }
 
 QString MixxxLibraryFeature::getSettingsName() const {

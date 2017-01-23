@@ -180,8 +180,13 @@ static bool isMasterEQ(EffectManifest* pManifest) {
     return pManifest->isMasterEQ();
 }
 
-static bool isForFilterKnob(EffectManifest* pManifest) {
-    return pManifest->isForFilterKnob();
+static bool hasSuperKnobLinking(EffectManifest* pManifest) {
+    for (const auto& pParameterManifest : pManifest->parameters()) {
+        if (pParameterManifest.defaultLinkType() != EffectManifestParameter::LINK_NONE) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
@@ -190,21 +195,18 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     QList<QPair<QString, QString> > availableEQEffectNames;
     QList<QPair<QString, QString> > availableQuickEffectNames;
     EffectsManager::EffectManifestFilterFnc filterEQ;
-    EffectsManager::EffectManifestFilterFnc filterFilter;
     if (CheckBoxEqOnly->isChecked()) {
         m_pConfig->set(ConfigKey(kConfigKey, kEqsOnly), QString("yes"));
         filterEQ = isMixingEQ;
-        filterFilter = isForFilterKnob;
     } else {
         m_pConfig->set(ConfigKey(kConfigKey, kEqsOnly), QString("no"));
-        filterEQ = NULL; // take all;
-        filterFilter = NULL;
+        filterEQ = nullptr; // take all
     }
     availableEQEffectNames =
             m_pEffectsManager->getEffectNamesFiltered(filterEQ);
     availableEQEffectNames.append(QPair<QString,QString>("none", tr("None")));
     availableQuickEffectNames =
-            m_pEffectsManager->getEffectNamesFiltered(filterFilter);
+            m_pEffectsManager->getEffectNamesFiltered(hasSuperKnobLinking);
     availableQuickEffectNames.append(QPair<QString,QString>("none", tr("None")));
 
     foreach (QComboBox* box, m_deckEqEffectSelectors) {
@@ -587,9 +589,9 @@ void DlgPrefEQ::slotBypass(int state) {
     if (state) {
         m_pConfig->set(ConfigKey(kConfigKey, kEnableEqs), QString("no"));
         // Disable effect processing for all decks by setting the appropriate
-        // controls to 0 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
+        // controls to 0 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
         int deck = 0;
-        foreach(QComboBox* box, m_deckEqEffectSelectors) {
+        for (const auto& box: m_deckEqEffectSelectors) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 0);
             m_filterWaveformEnableCOs[deck]->set(0);
@@ -599,10 +601,9 @@ void DlgPrefEQ::slotBypass(int state) {
     } else {
         m_pConfig->set(ConfigKey(kConfigKey, kEnableEqs), QString("yes"));
         // Enable effect processing for all decks by setting the appropriate
-        // controls to 1 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
+        // controls to 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
         int deck = 0;
-        ControlProxy enableControl;
-        foreach(QComboBox* box, m_deckEqEffectSelectors) {
+        for (const auto& box: m_deckEqEffectSelectors) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 1);
             m_filterWaveformEnableCOs[deck]->set(m_filterWaveformEffectLoaded[deck]);
@@ -689,6 +690,9 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
         }
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
         pChain->replaceEffect(0, pEffect);
+
+        QString group = m_pEQEffectRack->formatEffectSlotGroupString(0, "[Master]");
+        ControlObject::set(ConfigKey(group, "enabled"), 1);
 
         if (pEffect) {
             m_pEffectMasterEQ = pEffect;

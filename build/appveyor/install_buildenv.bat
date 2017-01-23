@@ -1,12 +1,12 @@
-REM @ECHO OFF
+@ECHO OFF
 
 SET BUILDENVBASEDIR=C:\MIXXX-BUILDSERVER
 
-REM Build envs to install. You can specify more than one separated by spaces (no quotes)
-SET BUILDENVS=2.0-%1-%2-minimal
-
 REM precompiled compressed build env base URL
-SET BASEURL=https://downloads.mixxx.org/builds/appveyor/environments/2.0
+SET BASEURL=%1
+
+REM Build envs to install. You can specify more than one separated by spaces (no quotes)
+SET BUILDENVS=%2
 
 REM ---------------------------
 
