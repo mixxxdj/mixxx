@@ -48,12 +48,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Stacked Waveforms</Text>
+              <Text>o Stacked Waveforms</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Stacked Waveforms</Text>
+              <Text>&#10004; Stacked Waveforms</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -67,12 +67,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; 4 Decks</Text>
+              <Text>o 4 Decks</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; 4 Decks</Text>
+              <Text>&#10004; 4 Decks</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -101,12 +101,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Cover Art</Text>
+              <Text>o Cover Art</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Cover Art</Text>
+              <Text>&#10004; Cover Art</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -119,12 +119,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Artist &amp; Track Title</Text>
+              <Text>o Artist &amp; Track Title</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Artist &amp; Track Title</Text>
+              <Text>&#10004; Artist &amp; Track Title</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -137,12 +137,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; BPM</Text>
+              <Text>o BPM</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; BPM</Text>
+              <Text>&#10004; BPM</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -155,12 +155,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Star Rating</Text>
+              <Text>o Star Rating</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Star Rating</Text>
+              <Text>&#10004; Star Rating</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -173,12 +173,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; More Hotcues</Text>
+              <Text>o More Hotcues</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; More Hotcues</Text>
+              <Text>&#10004; More Hotcues</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -191,12 +191,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Vinyl Control Options</Text>
+              <Text>o Vinyl Control Options</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Vinyl Control Options</Text>
+              <Text>&#10004; Vinyl Control Options</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -210,12 +210,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Minimal Controls</Text>
+              <Text>o Minimal Controls</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Minimal Controls</Text>
+              <Text>&#10004; Minimal Controls</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -241,12 +241,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show</Text>
+              <Text>o Show</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show</Text>
+              <Text>&#10004; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -259,12 +259,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Crossfader</Text>
+              <Text>o Crossfader</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Crossfader</Text>
+              <Text>&#10004; Crossfader</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -278,12 +278,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; EQs</Text>
+              <Text>o EQs</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; EQs</Text>
+              <Text>&#10004; EQs</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -310,12 +310,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show</Text>
+              <Text>o Show</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show</Text>
+              <Text>&#10004; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -328,12 +328,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Details</Text>
+              <Text>o Details</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Details</Text>
+              <Text>&#10004; Details</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -359,12 +359,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show</Text>
+              <Text>o Show</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show</Text>
+              <Text>&#10004; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -391,12 +391,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show</Text>
+              <Text>o Show</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show</Text>
+              <Text>&#10004; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -423,12 +423,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Preview Deck</Text>
+              <Text>o Preview Deck</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Preview Deck</Text>
+              <Text>&#10004; Preview Deck</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -442,12 +442,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Cover Art</Text>
+              <Text>o Cover Art</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Cover Art</Text>
+              <Text>&#10004; Cover Art</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -461,12 +461,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Maximize</Text>
+              <Text>o Maximize</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Maximize</Text>
+              <Text>&#10004; Maximize</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
