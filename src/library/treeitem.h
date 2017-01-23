@@ -142,10 +142,10 @@ class TreeItem final {
     void appendChild(TreeItem* pChild);
 	void insertChild(TreeItem* pChild, int row);
 
+    LibraryFeature* m_pFeature;
+    
     TreeItem* m_pParent;
     QList<TreeItem*> m_children; // owned child items
-    
-	LibraryFeature* m_pFeature;
     
     QString m_label;
 	QString m_labelNumbered;

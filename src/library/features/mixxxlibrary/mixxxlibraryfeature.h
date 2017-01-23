@@ -7,7 +7,7 @@
 #include <QComboBox>
 #include <QIcon>
 #include <QList>
-#include <QModelIndex>
+#include <QPersistentModelIndex>
 #include <QPointer>
 #include <QSharedPointer>
 #include <QStackedWidget>
@@ -74,16 +74,18 @@ class MixxxLibraryFeature : public LibraryFeature {
     static const QString kLibraryTitle;
     static const QList<QStringList> kGroupingOptions;
     static const QStringList kGroupingText;
+    static const QString kLibraryFolder;
     
   private slots:
-    void setTreeSettings(const QVariant &settings);
+    void setTreeSettings(const QVariant &settings, 
+                         AbstractRole role = AbstractRole::RoleSorting);
     
   private:
-    QPointer<QComboBox> m_pGroupingCombo;
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
     TrackDAO& m_trackDao;
-    QModelIndex m_lastClickedIndex;
+    QPersistentModelIndex m_lastClickedIndex;
+    bool m_foldersShown;
     
 };
 

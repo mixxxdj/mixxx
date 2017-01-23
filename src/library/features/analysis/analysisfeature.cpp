@@ -24,7 +24,8 @@ AnalysisFeature::AnalysisFeature(UserSettingsPointer pConfig,
         m_pAnalyzerQueue(nullptr),
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
-        m_pAnalysisView(nullptr){
+        m_pAnalysisView(nullptr),
+        m_analysisLibraryTableModel(this, m_pTrackCollection) {
 
     m_childModel.setRootItem(std::make_unique<TreeItem>(this));
     setTitleDefault();
@@ -62,7 +63,7 @@ QString AnalysisFeature::getSettingsName() const {
 
 QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter*, int paneId) {
     WTrackTableView* pTable = createTableWidget(paneId);
-    pTable->loadTrackModel(getAnalysisTableModel());
+    pTable->loadTrackModel(&m_analysisLibraryTableModel);
     connect(pTable->selectionModel(), 
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, 
@@ -74,7 +75,7 @@ QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter*, int paneId) {
 QWidget* AnalysisFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
     m_pAnalysisView = new DlgAnalysis(nullptr, this, m_pTrackCollection);
     
-    m_pAnalysisView->setTableModel(getAnalysisTableModel());
+    m_pAnalysisView->setTableModel(&m_analysisLibraryTableModel);
     
     connect(this, SIGNAL(analysisActive(bool)),
             m_pAnalysisView, SLOT(analysisActive(bool)));
@@ -194,24 +195,13 @@ void AnalysisFeature::tableSelectionChanged(const QItemSelection&,
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
-    QList<QFileInfo> files =
-            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    auto files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<TrackId> trackIds =
-            m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
+    auto trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }
 
 bool AnalysisFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isUrlSupported(url);
-}
-
-AnalysisLibraryTableModel* AnalysisFeature::getAnalysisTableModel() {
-    if (m_pAnalysisLibraryTableModel.isNull()) {
-        m_pAnalysisLibraryTableModel = 
-                new AnalysisLibraryTableModel(this, m_pTrackCollection);
-    }
-    
-    return m_pAnalysisLibraryTableModel;
 }

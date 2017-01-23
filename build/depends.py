@@ -936,7 +936,6 @@ class MixxxCore(Feature):
                    "library/features/history/historytreemodel.cpp",
                    
                    "library/features/libraryfolder/libraryfoldermodel.cpp",
-                   "library/features/libraryfolder/libraryfoldersfeature.cpp",
                    
                    "library/features/maintenance/dlghidden.cpp",
                    "library/features/maintenance/dlgmissing.cpp",

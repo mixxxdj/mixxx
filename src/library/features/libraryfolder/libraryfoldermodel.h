@@ -3,13 +3,15 @@
 
 #include <QSqlQuery>
 
-#include "library/treeitemmodel.h"
-#include "preferences/usersettings.h"
+#include "library/features/mixxxlibrary/mixxxlibrarytreemodel.h"
 
 class LibraryFeature;
 class TrackCollection;
 
-class LibraryFolderModel : public TreeItemModel
+const QString LIBRARYFOLDERMODEL_FOLDER = "$FOLDER$";
+const QString LIBRARYFOLDERMODEL_RECURSIVE = "FolderRecursive";
+
+class LibraryFolderModel : public MixxxLibraryTreeModel
 {
   public:
     LibraryFolderModel(LibraryFeature* pFeature, 
@@ -19,21 +21,16 @@ class LibraryFolderModel : public TreeItemModel
     
     virtual bool setData(const QModelIndex& index, const QVariant& value, int role);
     virtual QVariant data(const QModelIndex &index, int role) const;
-    
-  public slots:
-    void reloadTree();
 
-  private:
+  protected:
+    void createTracksTree() override;
+    QString getGroupingOptions() override;
     
+  private:
     void createTreeForLibraryDir(const QString& dir, QSqlQuery& query);
     
-    LibraryFeature* m_pFeature;
-    TrackCollection* m_pTrackCollection;
-    UserSettingsPointer m_pConfig;
-    
-    TreeItem* m_pShowAllItem;
-    
     bool m_folderRecursive;
+    bool m_showFolders;
 };
 
 #endif // LIBRARYFOLDERMODEL_H

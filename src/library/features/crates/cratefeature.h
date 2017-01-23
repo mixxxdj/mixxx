@@ -1,13 +1,13 @@
 #ifndef CRATEFEATURE_H
 #define CRATEFEATURE_H
 
-#include <QModelIndex>
 #include <QList>
 #include <QPair>
 #include <QAction>
 #include <QVariant>
 #include <QUrl>
 #include <QIcon>
+#include <QPersistentModelIndex>
 #include <QPoint>
 #include <QSet>
 #include <QStackedWidget>
@@ -112,14 +112,14 @@ class CrateFeature : public LibraryFeature {
     QList<QPair<int, QString> > m_crateList;
     QHash<int, QPointer<CrateTableModel> > m_crateTableModel;
     CrateTableModel* m_pCrateTableModel;
-    QModelIndex m_lastRightClickedIndex;
+    QPersistentModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;
     QSet<int> m_cratesSelectedTrackIsIn;
     QHash<int, QPointer<QStackedWidget> > m_panes;
     QHash<int,int> m_idBrowse;
     QHash<int,int> m_idTable;
-    QHash<int, QModelIndex> m_lastClickedIndex;
+    QHash<int, QPersistentModelIndex> m_lastClickedIndex;
 };
 
 #endif /* CRATEFEATURE_H */

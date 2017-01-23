@@ -128,7 +128,7 @@ void BasePlaylistFeature::activate() {
     adoptPreselectedPane();
 
     auto modelIt = m_lastChildClicked.constFind(m_featurePane);
-    if (modelIt != m_lastChildClicked.constEnd() &&  (*modelIt).isValid()) {
+    if (modelIt != m_lastChildClicked.constEnd() &&  modelIt->isValid()) {
         qDebug() << "BasePlaylistFeature::activate" << "m_lastChildClicked found";
         // Open last clicked Playlist in the preselectded pane
         activateChild(*modelIt);
@@ -341,21 +341,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
             return;
         }
         
-        m_playlistDao.deletePlaylist(playlistId);
-
-        // This avoids a bug where the m_lastChildClicked index is still a valid
-        // index but it's not true since we just deleted it
-        for (auto it = m_playlistTableModel.begin(); 
-                it != m_playlistTableModel.end(); ++it) {
-            
-            if ((*it)->getPlaylist() == playlistId) {
-                // Show the browse widget, this avoids a problem when the same
-                // playlist is shown twice and gets deleted. One of the panes
-                // gets still showing the unexisting playlist.
-                m_lastChildClicked[it.key()] = QModelIndex();
-                showBrowse(it.key());
-            }
-        }        
+        m_playlistDao.deletePlaylist(playlistId);   
         activate();
     }
 }
@@ -743,7 +729,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(this, QString::number(p.id), p.id);
+        TreeItem* item = new TreeItem(this, p.name, p.id);
         item->setBold(m_playlistsSelectedTrackIsIn.contains(p.id));
 
         decorateChild(item, p.id);

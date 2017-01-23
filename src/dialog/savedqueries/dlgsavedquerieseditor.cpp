@@ -17,7 +17,8 @@ DlgSavedQueriesEditor::DlgSavedQueriesEditor(LibraryFeature* pFeature,
                                        m_pTrackCollection->getSavedQueriesDAO(),
                                        parent);
     tableView->setModel(pSaveModel);
-    for (int i = 0; i < SavedQueryColumns::NUM_COLUMNS; ++i) {
+    int numColumns = static_cast<int>(SavedQueryColumns::NUM_COLUMNS);
+    for (int i = 0; i < numColumns; ++i) {
         tableView->setColumnHidden(i, pSaveModel->isColumnInternal(i));
     }
     
@@ -34,13 +35,13 @@ void DlgSavedQueriesEditor::accept() {
 }
 
 void DlgSavedQueriesEditor::removeQuery() {
-    QItemSelectionModel* model = tableView->selectionModel();
+    auto model = tableView->selectionModel();
     if (model == nullptr) return;
     
     QModelIndexList selected = model->selectedRows();
     
     QSet<int> removedRows;
-    for (const QModelIndex& index : selected) {
+    for (const auto& index : selected) {
         removedRows << index.row();
     }
     
