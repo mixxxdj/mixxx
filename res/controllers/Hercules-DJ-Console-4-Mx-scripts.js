@@ -39,7 +39,10 @@
 //          What works: Load track, stop, cue, play, forward, rewind, jog wheel, Gain and fx buttons, like hotcues.
 //          The preview deck is not a fully featured deck, so no pitch, sync or EQ.
 //        Removed the deckButtonMode option. The user can always set that from the DJHerculesMix series TrayAgent.
-//        
+// Version 2017-01-21
+//        Round of fixes on several controls related to preview deck and effects.
+//        Added permanent rate change action to pitch buttons when used with shift. (For those cases where
+//          the defined range of the slider is not enough)
 // Usage:
 // ------
 // Check the dedicated controller wiki page at: 
@@ -492,8 +495,9 @@ Hercules4Mx.onEffectStateChange = function(value, group, control) {
     if (fxidx > 0 && fxidx <= Hercules4Mx.FxLedIdx.length) {
         var newval = (value > 0) ? 0x7F : 0x0;
         var deck = parseInt(control.slice(-9).substr(0, 1)); // "group_[Channel1]_enable"
+        var messageto = (deck === 1 || deck === 2) ? Hercules4Mx.NOnC1 : Hercules4Mx.NOnC2;
         var offset = (deck === 1 || deck === 3) ? 0x00 : 0x20;
-        midi.sendShortMsg(Hercules4Mx.NOnC1, Hercules4Mx.FxLedIdx[fxidx - 1] + offset, newval);
+        midi.sendShortMsg(messageto, Hercules4Mx.FxLedIdx[fxidx - 1] + offset, newval);
     }
 };
 //A change in a sampler playback state has happened
@@ -832,63 +836,96 @@ Hercules4Mx.doForwardRewindAction = function() {
 
 // pitch scale minus button is pressed in a deck.
 Hercules4Mx.pScaleDownButton = function(midichan, control, value, status, group) {
-    if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.beatgrid) { //Edit mode. Move the beatgrid to the left.
-        engine.setParameter(group, "beats_translate_earlier", value);
-    } else if (Hercules4Mx.shiftStatus.pressed && value) { // Shift mode: enable/disable keylock
-        engine.setParameter(group, "keylock", !engine.getParameter(group, "keylock"));
-        //Tell shift button not to change state.
-        Hercules4Mx.shiftStatus.used = true;
-    } else if (value) {
-        engine.setParameter(group, "pitch_adjust_down_small", value);
-        if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
+    //preview deck has no rate control
+    if (Hercules4Mx.previewOnDeck[group] === false) {
+        if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.beatgrid) { //Edit mode. Move the beatgrid to the left.
+            engine.setParameter(group, "beats_translate_earlier", value);
+        } else if (Hercules4Mx.shiftStatus.pressed && value) { // Shift mode: enable/disable keylock
+            engine.setParameter(group, "keylock", !engine.getParameter(group, "keylock"));
+            //Tell shift button not to change state.
+            Hercules4Mx.shiftStatus.used = true;
+        } else if (value) {
+            engine.setParameter(group, "pitch_adjust_down_small", value);
+            if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
+                Hercules4Mx.deactivateEditModeAction();
+            }
+            Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.pitchkeychanging, '');
+            Hercules4Mx.editModeStatus.used = false;
+        } else {
             Hercules4Mx.deactivateEditModeAction();
         }
-        Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.pitchkeychanging, '');
-        Hercules4Mx.editModeStatus.used = false;
-    } else {
-        Hercules4Mx.deactivateEditModeAction();
     }
 };
 
 // pitch scale plus button is pressed in a deck.
 Hercules4Mx.pScaleUpButton = function(midichan, control, value, status, group) {
-    if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.beatgrid) { //Edit mode. Move the beatgrid to the right.
-        engine.setParameter(group, "beats_translate_later", value);
-    } else if (Hercules4Mx.shiftStatus.pressed && value) { // Shift mode: enable/disable quantize
-        engine.setParameter(group, "quantize", !engine.getParameter(group, "quantize"));
-        //Tell shift button not to change state.
-        Hercules4Mx.shiftStatus.used = true;
-    } else if (value) {
-        engine.setParameter(group, "pitch_adjust_up_small", value);
-        if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
+    //preview deck has no rate control
+    if (Hercules4Mx.previewOnDeck[group] === false) {
+        if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.beatgrid) { //Edit mode. Move the beatgrid to the right.
+            engine.setParameter(group, "beats_translate_later", value);
+        } else if (Hercules4Mx.shiftStatus.pressed && value) { // Shift mode: enable/disable quantize
+            engine.setParameter(group, "quantize", !engine.getParameter(group, "quantize"));
+            //Tell shift button not to change state.
+            Hercules4Mx.shiftStatus.used = true;
+        } else if (value) {
+            engine.setParameter(group, "pitch_adjust_up_small", value);
+            if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
+                Hercules4Mx.deactivateEditModeAction();
+            }
+            Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.pitchkeychanging, '');
+            Hercules4Mx.editModeStatus.used = false;
+        } else {
             Hercules4Mx.deactivateEditModeAction();
         }
-        Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.pitchkeychanging, '');
-        Hercules4Mx.editModeStatus.used = false;
-    } else {
-        Hercules4Mx.deactivateEditModeAction();
     }
 };
 
 // pitch bend minus button is pressed in a deck.
 Hercules4Mx.pBendDownButton = function(midichan, control, value, status, group) {
-    if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.beatgrid) { //Edit mode. Reduce the BPM.
-        engine.setParameter(group, "beats_adjust_slower", value);
-    } else { //Normal mode: pitch bend down (change the rate down temporarily)
-        engine.setParameter(group, "rate_temp_down", value);
+    //preview deck has no rate control
+    if (Hercules4Mx.previewOnDeck[group] === false) {
+        if (Hercules4Mx.shiftStatus.pressed) { //Shifting: change rate permanently.
+            if (value) {
+                engine.setValue(group, "rate_perm_down", 1);
+                engine.setValue(group, "rate_perm_down", 0);
+            }
+            //Tell shift button not to change state.
+            Hercules4Mx.shiftStatus.used = true;
+        } else {
+            if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.beatgrid) { //Edit mode. Reduce the BPM.
+                engine.setParameter(group, "beats_adjust_slower", value);
+            } else { //Normal mode: pitch bend down (change the rate down temporarily)
+                engine.setParameter(group, "rate_temp_down", value);
+            }
+        }
     }
 };
 // pitch bend plus button is pressed in a deck.
 Hercules4Mx.pBendUpButton = function(midichan, control, value, status, group) {
-    if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.beatgrid) { //Edit mode. Increase the BPM
-        engine.setParameter(group, "beats_adjust_faster", value);
-    } else { //Normal mode: pitch bend up (change the rate up temporarily)
-        engine.setParameter(group, "rate_temp_up", value);
+    //preview deck has no rate control
+    if (Hercules4Mx.previewOnDeck[group] === false) {
+        if (Hercules4Mx.shiftStatus.pressed) { //Shifting: Jump 1 beat forward.
+            if (value) {
+                engine.setValue(group, "rate_perm_up", 1);
+                engine.setValue(group, "rate_perm_up", 0);
+            }
+            //Tell shift button not to change state.
+            Hercules4Mx.shiftStatus.used = true;
+        } else {
+            if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.beatgrid) { //Edit mode. Increase the BPM
+                engine.setParameter(group, "beats_adjust_faster", value);
+            } else { //Normal mode: pitch bend up (change the rate up temporarily)
+                engine.setParameter(group, "rate_temp_up", value);
+            }
+        }
     }
 };
 // Sync button is pressed in a deck.
-Hercules4Mx.syncButton = function(midichan, control, value, status, groupInitial) {
-    var group = (Hercules4Mx.previewOnDeck[groupInitial] === true) ? '[PreviewDeck1]' : groupInitial;
+Hercules4Mx.syncButton = function(midichan, control, value, status, group) {
+    //preview deck has no rate control
+    if (Hercules4Mx.previewOnDeck[group] === true) {
+        return;
+    }
     if (Hercules4Mx.shiftStatus.pressed) { //Shifting: Enable beatgrid editing mode.
         if (value) {
             if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.beatgrid) {
@@ -1401,23 +1438,26 @@ Hercules4Mx.scratchButton = function(midichan, control, value, status, group) {
 };
 // The pressure action over the jog wheel
 Hercules4Mx.wheelTouch = function(midichan, control, value, status, groupInitial) {
-	var group = (Hercules4Mx.previewOnDeck[groupInitial]) ? '[PreviewDeck1]' : groupInitial;
-    if (Hercules4Mx.scratchEnabled && value) {
-        // If button down
-        engine.scratchEnable(script.deckFromGroup(group),
-            256 * Hercules4Mx.userSettings.sensitivity,
-            Hercules4Mx.userSettings.vinylSpeed,
-            Hercules4Mx.userSettings.alpha,
-            Hercules4Mx.userSettings.beta);
-    } else {
-        // If button up
-        engine.scratchDisable(script.deckFromGroup(group));
+    //Scratching does not work with the previewdeck.
+    if (Hercules4Mx.previewOnDeck[groupInitial] === false) {
+        var group = (Hercules4Mx.previewOnDeck[groupInitial]) ? '[PreviewDeck1]' : groupInitial;
+        if (Hercules4Mx.scratchEnabled && value) {
+            // If button down
+            engine.scratchEnable(script.deckFromGroup(group),
+                256 * Hercules4Mx.userSettings.sensitivity,
+                Hercules4Mx.userSettings.vinylSpeed,
+                Hercules4Mx.userSettings.alpha,
+                Hercules4Mx.userSettings.beta);
+        } else {
+            // If button up
+            engine.scratchDisable(script.deckFromGroup(group));
+        }
     }
 };
 //Jog wheel used with pressure (for scratching)
 Hercules4Mx.scratchWheel = function(midichan, control, value, status, groupInitial) {
     if (Hercules4Mx.navigationStatus.enabled ||
-        !engine.isScratching(script.deckFromGroup(group))) {
+        !engine.isScratching(script.deckFromGroup(groupInitial))) {
         //If navigating, or not in scratch mode, do jogWheel
         Hercules4Mx.jogWheel(midichan, control, value, status, groupInitial);
     } else {
@@ -1429,24 +1469,27 @@ Hercules4Mx.scratchWheel = function(midichan, control, value, status, groupIniti
 };
 
 // Pitch slider rate change, MSB (Most significant bits in 14bit mode, or directly the value in 7bit)
-Hercules4Mx.deckRateMsb = function(midichan, control, value, status, groupInitial) {
-    var group = (Hercules4Mx.previewOnDeck[groupInitial] === true) ? '[PreviewDeck1]' : groupInitial;
-    var deck = script.deckFromGroup(group);
-    //Calculating this always, or else the first time will not work
-    //(which is precisely when the controller reports the initial positions)
-    Hercules4Mx.pitchMsbValue[deck - 1] = value * 0x80;
-    if (Hercules4Mx.pitch14bitMode === false) {
-        engine.setParameter(group, "rate", value / 0x7F);
+Hercules4Mx.deckRateMsb = function(midichan, control, value, status, group) {
+    //preview deck has no rate control
+    if (Hercules4Mx.previewOnDeck[group] === false) {
+        var deck = script.deckFromGroup(group);
+        //Calculating this always, or else the first time will not work
+        //(which is precisely when the controller reports the initial positions)
+        Hercules4Mx.pitchMsbValue[deck - 1] = value;
+        if (Hercules4Mx.pitch14bitMode === false) {
+            engine.setValue(group, "rate", script.midiPitch(0,value, 0xE0));
+        }
     }
 };
 // Pitch slider rate change, LSB (Least significant bits in 14bit mode, not called in 7bit)
-Hercules4Mx.deckRateLsb = function(midichan, control, value, status, groupInitial) {
-    var group = (Hercules4Mx.previewOnDeck[groupInitial] === true) ? '[PreviewDeck1]' : groupInitial;
-    var deck = script.deckFromGroup(group);
-    var msbval = Hercules4Mx.pitchMsbValue[deck - 1];
-    Hercules4Mx.pitch14bitMode = true;
-    engine.setValue(group, "rate", script.absoluteLin(msbval + value, -1, 1, 0, 0x3FFF));
-    //TODO: how to use script.midiPitch() instead?
+Hercules4Mx.deckRateLsb = function(midichan, control, value, status, group) {
+    //preview deck has no rate control
+    if (Hercules4Mx.previewOnDeck[group] === false) {
+        var deck = script.deckFromGroup(group);
+        var msbval = Hercules4Mx.pitchMsbValue[deck - 1];
+        Hercules4Mx.pitch14bitMode = true;
+        engine.setValue(group, "rate", script.midiPitch(value,msbval,0xE0));
+    }
 };
 
 //These are mapped with javascript so that engine.softTakeover can be enabled programatically.
