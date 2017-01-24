@@ -37,11 +37,11 @@ install:
   - patch "C:\Program Files (x86)\NSIS\Include\MultiUser.nsh" < build\appveyor\NSIS.patch
   - echo *** Downloading precompiled build environment if not in build-cache
   - cd %APPVEYOR_BUILD_FOLDER%
-  - build\appveyor\install_buildenv.bat https://downloads.mixxx.org/builds/appveyor/environments/2.1 2.1-20170118-%platform%-%configuration%-fastbuild-static-5e57821-minimal
+  - build\windows\install_buildenv.bat https://downloads.mixxx.org/builds/buildserver/2.1.x-windows/ 2.1-j00018-%platform%-%configuration%-fastbuild-static-7510b10-minimal c:\mixxx-buildserver
 before_build:
   - cd %APPVEYOR_BUILD_FOLDER%
 build_script:
-  - build\appveyor\build_mixxx.bat %platform% %configuration% c:\mixxx-buildserver\2.1-20170118-%platform%-%configuration%-fastbuild-static-5e57821-minimal
+  - build\appveyor\build_mixxx.bat %platform% %configuration% c:\mixxx-buildserver\2.1-j00018-%platform%-%configuration%-fastbuild-static-7510b10-minimal
 test_script:
   - echo *** Testing
   # Calling mixxx-test under bash to have standard output
