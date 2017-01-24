@@ -92,7 +92,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         }
     }
 
-    QList<TrackId> trackIds = m_trackDAO.addMultipleTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true);
 
     int tracksAdded = m_pTrackCollection->getPlaylistDAO().insertTracksIntoPlaylist(
         trackIds, m_iPlaylistId, position);

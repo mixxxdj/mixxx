@@ -1,21 +1,23 @@
-// cratetablemodel.h
-// Created 10/25/2009 by RJ Ryan (rryan@mit.edu)
+#ifndef MIXXX_CRATETABLEMODEL_H
+#define MIXXX_CRATETABLEMODEL_H
 
-#ifndef CRATETABLEMODEL_H
-#define CRATETABLEMODEL_H
 
 #include "library/basesqltablemodel.h"
-#include "library/dao/cratedao.h"
+
+#include "library/crate/crateid.h"
+
 
 class CrateTableModel : public BaseSqlTableModel {
     Q_OBJECT
+
   public:
     CrateTableModel(QObject* parent, TrackCollection* pTrackCollection);
     ~CrateTableModel() final;
 
-    void setTableModel(int crateId=-1);
-    int getCrate() const {
-        return m_iCrateId;
+    void selectCrate(
+        CrateId crateId = CrateId());
+    CrateId selectedCrate() const {
+        return m_selectedCrate;
     }
 
     bool addTrack(const QModelIndex &index, QString location);
@@ -28,7 +30,8 @@ class CrateTableModel : public BaseSqlTableModel {
     CapabilitiesFlags getCapabilities() const final;
 
   private:
-    int m_iCrateId;
+    CrateId m_selectedCrate;
 };
 
-#endif /* CRATETABLEMODEL_H */
+
+#endif // MIXXX_CRATETABLEMODEL_H

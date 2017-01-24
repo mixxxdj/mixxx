@@ -9,8 +9,10 @@
 
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
+#include "library/crate/cratestorage.h"
 #include "track/track.h"
-#include "util/xml.h"
+#include "util/db/sqltransaction.h"
+
 #include "util/assert.h"
 
 // static
@@ -20,12 +22,11 @@ TrackCollection::TrackCollection(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
           m_playlistDao(m_db),
-          m_crateDao(m_db),
           m_cueDao(m_db),
           m_directoryDao(m_db),
           m_analysisDao(m_db, pConfig),
           m_libraryHashDao(m_db),
-          m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao,
+          m_trackDao(m_db, m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
 
@@ -48,6 +49,7 @@ TrackCollection::TrackCollection(UserSettingsPointer pConfig)
 TrackCollection::~TrackCollection() {
     qDebug() << "~TrackCollection()";
     m_trackDao.finish();
+    m_crates.detachDatabase();
 
     if (m_db.isOpen()) {
         // There should never be an outstanding transaction when this code is
@@ -125,19 +127,15 @@ bool TrackCollection::checkForTables() {
 
     m_trackDao.initialize();
     m_playlistDao.initialize();
-    m_crateDao.initialize();
     m_cueDao.initialize();
     m_directoryDao.initialize();
     m_libraryHashDao.initialize();
+    m_crates.attachDatabase(m_db);
     return true;
 }
 
 QSqlDatabase& TrackCollection::getDatabase() {
     return m_db;
-}
-
-CrateDAO& TrackCollection::getCrateDAO() {
-    return m_crateDao;
 }
 
 TrackDAO& TrackCollection::getTrackDAO() {
@@ -179,6 +177,219 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     // Clear cache to that all TIO with the old dir information get updated
     m_trackDao.clearCache();
     m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
+}
+
+bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
+    // Transactional
+    SqlTransaction transaction(database());
+    DEBUG_ASSERT_AND_HANDLE(transaction) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(m_trackDao.onHidingTracks(transaction, trackIds)) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+        return false;
+    }
+
+    // Post-processing
+    // TODO(XXX): Move signals from TrackDAO to TrackCollection
+    m_trackDao.afterHidingTracks(trackIds);
+    QSet<CrateId> modifiedCrateSummaries(
+            m_crates.afterHidingOrUnhidingTracks(trackIds));
+
+    // Emit signal(s)
+    // TODO(XXX): Emit signals here instead of from DAOs
+    emit(crateSummaryChanged(modifiedCrateSummaries));
+
+    return true;
+}
+
+bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
+    // Transactional
+    SqlTransaction transaction(database());
+    DEBUG_ASSERT_AND_HANDLE(transaction) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(m_trackDao.onUnhidingTracks(transaction, trackIds)) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+        return false;
+    }
+
+    // Post-processing
+    // TODO(XXX): Move signals from TrackDAO to TrackCollection
+    m_trackDao.afterUnhidingTracks(trackIds);
+    QSet<CrateId> modifiedCrateSummaries(
+            m_crates.afterHidingOrUnhidingTracks(trackIds));
+    // TODO(XXX): Move signals from TrackDAO to TrackCollection
+
+    // Emit signal(s)
+    // TODO(XXX): Emit signals here instead of from DAOs
+    emit(crateSummaryChanged(modifiedCrateSummaries));
+
+    return true;
+}
+
+bool TrackCollection::purgeTracks(
+        const QList<TrackId>& trackIds) {
+    // Transactional
+    SqlTransaction transaction(database());
+    DEBUG_ASSERT_AND_HANDLE(transaction) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(m_trackDao.onPurgingTracks(transaction, trackIds)) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(m_crates.onPurgingTracks(transaction, trackIds)) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+        return false;
+    }
+    // TODO(XXX): Move reversible actions inside transaction
+    m_cueDao.deleteCuesForTracks(trackIds);
+    m_playlistDao.removeTracksFromPlaylists(trackIds);
+    m_analysisDao.deleteAnalyses(trackIds);
+
+    // Post-processing
+    m_crates.afterPurgingTracks(trackIds);
+    // TODO(XXX): Move signals from TrackDAO to TrackCollection
+    m_trackDao.afterPurgingTracks(trackIds);
+
+    // TODO(XXX): Emit signals here instead of from DAOs
+
+    return true;
+}
+
+bool TrackCollection::purgeTracks(
+        const QDir& dir) {
+    QList<TrackId> trackIds(m_trackDao.getTrackIds(dir));
+    return purgeTracks(trackIds);
+}
+
+bool TrackCollection::insertCrate(
+        const Crate& crate,
+        CrateId* pCrateId) {
+    // Transactional
+    SqlTransaction transaction(database());
+    DEBUG_ASSERT_AND_HANDLE(transaction) {
+        return false;
+    }
+    CrateId crateId;
+    DEBUG_ASSERT_AND_HANDLE(m_crates.onInsertingCrate(transaction, crate, &crateId)) {
+        return false;
+    }
+    DEBUG_ASSERT(crateId.isValid());
+    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+        return false;
+    }
+
+    // Post-processing
+    m_crates.afterInsertingCrate(crateId);
+
+    // Emit signals
+    emit(crateInserted(crateId));
+
+    if (pCrateId != nullptr) {
+        *pCrateId = crateId;
+    }
+    return true;
+}
+
+bool TrackCollection::updateCrate(
+        const Crate& crate) {
+    // Transactional
+    SqlTransaction transaction(database());
+    DEBUG_ASSERT_AND_HANDLE(transaction) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(m_crates.onUpdatingCrate(transaction, crate)) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+        return false;
+    }
+
+    // Post-processing
+    m_crates.afterUpdatingCrate(crate.getId());
+
+    // Emit signals
+    emit(crateUpdated(crate.getId()));
+
+    return true;
+}
+
+bool TrackCollection::deleteCrate(
+        CrateId crateId) {
+    // Transactional
+    SqlTransaction transaction(database());
+    DEBUG_ASSERT_AND_HANDLE(transaction) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(m_crates.onDeletingCrate(transaction, crateId)) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+        return false;
+    }
+
+    // Post-processing
+    m_crates.afterDeletingCrate(crateId);
+
+    // Emit signals
+    emit(crateDeleted(crateId));
+
+    return true;
+}
+
+bool TrackCollection::addCrateTracks(
+        CrateId crateId,
+        const QList<TrackId>& trackIds) {
+    // Transactional
+    SqlTransaction transaction(database());
+    DEBUG_ASSERT_AND_HANDLE(transaction) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(m_crates.onAddingCrateTracks(transaction, crateId, trackIds)) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+        return false;
+    }
+
+    // Post-processing
+    m_crates.afterAddingCrateTracks(crateId, trackIds);
+
+    // Emit signals
+    emit(crateTracksChanged(crateId, trackIds, QList<TrackId>()));
+
+    return true;
+}
+
+bool TrackCollection::removeCrateTracks(
+        CrateId crateId,
+        const QList<TrackId>& trackIds) {
+    // Transactional
+    SqlTransaction transaction(database());
+    DEBUG_ASSERT_AND_HANDLE(transaction) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(m_crates.onRemovingCrateTracks(transaction, crateId, trackIds)) {
+        return false;
+    }
+    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+        return false;
+    }
+
+    // Post-processing
+    m_crates.afterRemovingCrateTracks(crateId, trackIds);
+
+    // Emit signals
+    emit(crateTracksChanged(crateId, QList<TrackId>(), trackIds));
+
+    return true;
 }
 
 #ifdef __SQLITE3__

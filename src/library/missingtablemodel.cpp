@@ -64,7 +64,7 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(getTrackId(index));
     }
 
-    m_trackDAO.purgeTracks(trackIds);
+    m_pTrackCollection->purgeTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

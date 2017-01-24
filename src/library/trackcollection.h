@@ -1,20 +1,3 @@
-/***************************************************************************
-                           trackcollection.h
-                              -------------------
-     begin                : 10/27/2008
-     copyright            : (C) 2008 Albert Santoni
-     email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef TRACKCOLLECTION_H
 #define TRACKCOLLECTION_H
 
@@ -25,8 +8,8 @@
 
 #include "preferences/usersettings.h"
 #include "library/basetrackcache.h"
+#include "library/crate/cratestorage.h"
 #include "library/dao/trackdao.h"
-#include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
@@ -38,28 +21,32 @@ typedef struct sqlite3_context sqlite3_context;
 typedef struct Mem sqlite3_value;
 #endif
 
+// forward declaration(s)
 class Track;
 
 #define AUTODJ_TABLE "Auto DJ"
 
 class BpmDetector;
 
-/**
-   @author Albert Santoni
-*/
+// Manages everything around tracks.
 class TrackCollection : public QObject {
     Q_OBJECT
+
   public:
     static const int kRequiredSchemaVersion;
 
     TrackCollection(UserSettingsPointer pConfig);
     virtual ~TrackCollection();
+
     bool checkForTables();
 
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
 
-    CrateDAO& getCrateDAO();
+    const CrateStorage& crates() const {
+        return m_crates;
+    }
+
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
     DirectoryDAO& getDirectoryDAO();
@@ -75,6 +62,30 @@ class TrackCollection : public QObject {
     }
 
     void relocateDirectory(QString oldDir, QString newDir);
+
+    bool hideTracks(const QList<TrackId>& trackIds);
+    bool unhideTracks(const QList<TrackId>& trackIds);
+
+    bool purgeTracks(const QList<TrackId>& trackIds);
+    bool purgeTracks(const QDir& dir);
+
+    bool insertCrate(const Crate& crate, CrateId* pCrateId = nullptr);
+    bool updateCrate(const Crate& crate);
+    bool deleteCrate(CrateId crateId);
+    bool addCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
+    bool removeCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
+
+  signals:
+    void crateInserted(CrateId id);
+    void crateUpdated(CrateId id);
+    void crateDeleted(CrateId id);
+
+    void crateTracksChanged(
+            CrateId crate,
+            const QList<TrackId>& tracksAdded,
+            const QList<TrackId>& tracksRemoved);
+    void crateSummaryChanged(
+            const QSet<CrateId>& crates);
 
   protected:
 #ifdef __SQLITE3__
@@ -103,7 +114,7 @@ class TrackCollection : public QObject {
     QSqlDatabase m_db;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;
     PlaylistDAO m_playlistDao;
-    CrateDAO m_crateDao;
+    CrateStorage m_crates;
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;

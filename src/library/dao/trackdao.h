@@ -18,11 +18,10 @@
 #include "util/class.h"
 #include "util/memory.h"
 
-class ScopedTransaction;
+class SqlTransaction;
 class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
-class CrateDAO;
 class LibraryHashDAO;
 
 // Holds a strong reference to a track while it is in the "recent tracks"
@@ -56,8 +55,9 @@ class TrackDAO : public QObject, public virtual DAO {
     // The 'config object' is necessary because users decide ID3 tags get
     // synchronized on track metadata change
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
-             PlaylistDAO& playlistDao, CrateDAO& crateDao,
-             AnalysisDao& analysisDao, LibraryHashDAO& libraryHashDao,
+             PlaylistDAO& playlistDao,
+             AnalysisDao& analysisDao,
+             LibraryHashDAO& libraryHashDao,
              UserSettingsPointer pConfig);
     virtual ~TrackDAO();
 
@@ -68,6 +68,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     TrackId getTrackId(const QString& absoluteFilePath);
     QList<TrackId> getTrackIds(const QList<QFileInfo>& files);
+    QList<TrackId> getTrackIds(const QDir& dir);
 
     bool trackExistsInDatabase(const QString& absoluteFilePath);
 
@@ -86,10 +87,23 @@ class TrackDAO : public QObject, public virtual DAO {
     TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
     void addTracksFinish(bool rollback = false);
 
-    void hideTracks(const QList<TrackId>& trackIds);
-    void purgeTracks(const QList<TrackId>& trackIds);
-    void purgeTracks(const QString& dir);
-    void unhideTracks(const QList<TrackId>& trackIds);
+    bool onHidingTracks(
+            SqlTransaction& transaction,
+            const QList<TrackId>& trackIds);
+    void afterHidingTracks(
+            const QList<TrackId>& trackIds);
+
+    bool onUnhidingTracks(
+            SqlTransaction& transaction,
+            const QList<TrackId>& trackIds);
+    void afterUnhidingTracks(
+            const QList<TrackId>& trackIds);
+
+    bool onPurgingTracks(
+            SqlTransaction& transaction,
+            const QList<TrackId>& trackIds);
+    void afterPurgingTracks(
+            const QList<TrackId>& trackIds);
 
     // Fetches trackLocation from the database or adds it. If searchForCoverArt
     // is true, searches the track and its directory for cover art via
@@ -161,12 +175,13 @@ class TrackDAO : public QObject, public virtual DAO {
     void saveTrack(Track* pTrack);
     bool updateTrack(Track* pTrack);
 
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
+
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;
-    CrateDAO& m_crateDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
+
     UserSettingsPointer m_pConfig;
     // Mutex that protects m_sTracks.
     static QMutex m_sTracksMutex;
@@ -191,7 +206,7 @@ class TrackDAO : public QObject, public virtual DAO {
     std::unique_ptr<QSqlQuery> m_pQueryLibraryInsert;
     std::unique_ptr<QSqlQuery> m_pQueryLibraryUpdate;
     std::unique_ptr<QSqlQuery> m_pQueryLibrarySelect;
-    std::unique_ptr<ScopedTransaction> m_pTransaction;
+    std::unique_ptr<SqlTransaction> m_pTransaction;
     int m_trackLocationIdColumn;
     int m_queryLibraryIdColumn;
     int m_queryLibraryMixxxDeletedColumn;

@@ -83,7 +83,7 @@ class CrateFeature : public LibraryFeature {
     QModelIndex constructChildModel(CrateId selected_id = CrateId());
     void updateChildModel(CrateId selected_id);
     void clearChildModel();
-    QList<CrateSummary> buildCrateList();
+    QVector<CrateSummary> buildCrateList();
     CrateId crateIdFromIndex(QModelIndex index);
     // Get the QModelIndex of a crate based on its id.  Returns QModelIndex()
     // on failure.

@@ -1,6 +1,3 @@
-// cratefeature.cpp
-// Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "library/crate/cratefeature.h"
 
 #include <QFileDialog>
@@ -126,7 +123,7 @@ CrateId CrateFeature::crateIdFromIndex(QModelIndex index) {
     if (item == nullptr) {
         return CrateId();
     }
-    return CrateId(item->dataPath());
+    return CrateId(item->getData());
 }
 
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
@@ -195,7 +192,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     if (!crateId.isValid()) {
         return;
     }
-    m_crateTableModel.setTableModel(crateId);
+    m_crateTableModel.selectCrate(crateId);
     emit(showTrackModel(&m_crateTableModel));
     emit(enableCoverArtDisplay(true));
 }
@@ -204,7 +201,7 @@ void CrateFeature::activateCrate(CrateId crateId) {
     //qDebug() << "CrateFeature::activateCrate()" << crateId;
     QModelIndex index = indexFromCrateId(crateId);
     if (crateId.isValid() && index.isValid()) {
-        m_crateTableModel.setTableModel(crateId);
+        m_crateTableModel.selectCrate(crateId);
         emit(showTrackModel(&m_crateTableModel));
         emit(enableCoverArtDisplay(true));
         // Update selection
@@ -419,8 +416,16 @@ void CrateFeature::slotDuplicateCrate() {
 
         CrateId crateId;
         if (m_pTrackCollection->insertCrate(crate, &crateId)) {
-            QList<TrackId> trackIds(
-                    m_pTrackCollection->crates().collectCrateTracks(oldCrate.getId()));
+            QList<TrackId> trackIds;
+            trackIds.reserve(
+                    m_pTrackCollection->crates().countCrateTracks(oldCrate.getId()));
+            {
+                CrateTrackSelectIterator crateTracks(
+                        m_pTrackCollection->crates().selectCrateTracks(oldCrate.getId()));
+                while (crateTracks.next()) {
+                    trackIds.append(crateTracks.trackId());
+                }
+            }
             m_pTrackCollection->addCrateTracks(crateId, trackIds);
             activateCrate(crateId);
         } else {
@@ -457,19 +462,32 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
     }
 }
 
-QList<CrateSummary> CrateFeature::buildCrateList() {
+QVector<CrateSummary> CrateFeature::buildCrateList() {
     m_crateList.clear();
+    QVector<CrateSummary> result;
 
-    QList<CrateSummary> crateSummaries(
-            m_pTrackCollection->crates().collectAllCrateSummaries());
-    for (const auto& crateSummary: crateSummaries) {
+    // Reserve memory in advance to avoid expensive reallocations
+    // while collecting the results. This extra query might cause
+    // a minor performance hit for small result sets, but should
+    // improve the performance for big result sets were it actually
+    // matters.
+    uint numCrates = m_pTrackCollection->crates().countCrates();
+    m_crateList.reserve(numCrates);
+    result.reserve(numCrates);
+
+    CrateSummarySelectIterator crateSummaries(
+            m_pTrackCollection->crates().selectCrateSummaries());
+    CrateSummary crateSummary;
+    while (crateSummaries.readNext(&crateSummary)) {
         m_crateList.append(qMakePair(
                 crateSummary.getId(), QString("%1 (%2) %3").arg(
                         crateSummary.getName(),
                         QString::number(crateSummary.getTrackCount()),
                         crateSummary.getTrackDurationText())));
+        result.push_back(std::move(crateSummary));
     }
-    return crateSummaries;
+
+    return result;
 }
 
 /**
@@ -478,7 +496,7 @@ QList<CrateSummary> CrateFeature::buildCrateList() {
   * This method queries the database and does dynamic insertion
 */
 QModelIndex CrateFeature::constructChildModel(CrateId selected_id) {
-    QList<CrateSummary> crates = buildCrateList();
+    QVector<CrateSummary> crates = buildCrateList();
     QList<TreeItem*> data_list;
     int selected_row = -1;
     // Access the invisible root item
@@ -514,7 +532,7 @@ QModelIndex CrateFeature::constructChildModel(CrateId selected_id) {
 }
 
 void CrateFeature::updateChildModel(CrateId selected_id) {
-    QList<CrateSummary> crates = buildCrateList();
+    QVector<CrateSummary> crates = buildCrateList();
 
     int row = 0;
     for (QList<QPair<CrateId, QString> >::const_iterator it = m_crateList.begin();
@@ -629,7 +647,7 @@ void CrateFeature::slotCreateImportCrate() {
         }
 
         if (m_pTrackCollection->insertCrate(crate, &lastCrateId)) {
-            m_crateTableModel.setTableModel(lastCrateId);
+            m_crateTableModel.selectCrate(lastCrateId);
         } else {
             QMessageBox::warning(
                     nullptr,
@@ -647,15 +665,23 @@ void CrateFeature::slotAnalyzeCrate() {
     if (m_lastRightClickedIndex.isValid()) {
         CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
         if (crateId.isValid()) {
-            QList<TrackId> trackIds(
-                    m_pTrackCollection->crates().collectCrateTracks(crateId));
+            QList<TrackId> trackIds;
+            trackIds.reserve(
+                    m_pTrackCollection->crates().countCrateTracks(crateId));
+            {
+                CrateTrackSelectIterator crateTracks(
+                        m_pTrackCollection->crates().selectCrateTracks(crateId));
+                while (crateTracks.next()) {
+                    trackIds.append(crateTracks.trackId());
+                }
+            }
             emit(analyzeTracks(trackIds));
         }
     }
 }
 
 void CrateFeature::slotExportPlaylist() {
-    CrateId crateId = m_crateTableModel.getCrate();
+    CrateId crateId = m_crateTableModel.selectedCrate();
     Crate crate;
     if (m_pTrackCollection->crates().readCrateById(crateId, &crate)) {
         qDebug() << "Exporting crate" << crate;
@@ -663,7 +689,7 @@ void CrateFeature::slotExportPlaylist() {
         qDebug() << "Failed to export crate" << crateId;
     }
 
-    QString lastCrateDirectory = m_pConfig->getValueString(
+    QString lastCrateDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
@@ -688,16 +714,16 @@ void CrateFeature::slotExportPlaylist() {
     // register a security bookmark.
 
     // check config if relative paths are desired
-    bool useRelativePath = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
+    bool useRelativePath =
+        m_pConfig->getValue<bool>(
+            ConfigKey("[Library]", "UseRelativePathOnExport"));
 
     // Create list of files of the crate
     QList<QString> playlist_items;
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
+    pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
@@ -734,7 +760,7 @@ void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
+    pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();

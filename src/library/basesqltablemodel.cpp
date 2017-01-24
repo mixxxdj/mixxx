@@ -38,14 +38,14 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
         : QAbstractTableModel(pParent),
           TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
           m_pTrackCollection(pTrackCollection),
-          m_trackDAO(pTrackCollection->getTrackDAO()),
           m_database(pTrackCollection->getDatabase()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_bInitialized(false),
           m_currentSearch("") {
+    DEBUG_ASSERT(m_pTrackCollection);
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
-    connect(&m_trackDAO, SIGNAL(forceModelUpdate()),
+    connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(forceModelUpdate()),
             this, SLOT(select()));
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
@@ -108,10 +108,6 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Cover Art"), 90);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
                         tr("ReplayGain"), 50);
-}
-
-QSqlDatabase BaseSqlTableModel::database() const {
-    return m_database;
 }
 
 void BaseSqlTableModel::setHeaderProperties(
@@ -771,7 +767,7 @@ bool BaseSqlTableModel::setData(
 
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
-    TrackPointer pTrack = m_trackDAO.getTrack(trackId);
+    TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
     if (!pTrack) {
         return false;
     }
@@ -856,7 +852,7 @@ TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_trackDAO.getTrack(getTrackId(index));
+    return m_pTrackCollection->getTrackDAO().getTrack(getTrackId(index));
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -1074,7 +1070,7 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDAO.hideTracks(trackIds);
+    m_pTrackCollection->hideTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
