@@ -36,7 +36,8 @@ class AnalysisFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     
-    QWidget* createPaneWidget(KeyboardEventFilter*, int paneId) override;
+    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*, 
+            int paneId, const parented_ptr<QWidget>& parent) override;
     QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
     
     TreeItemModel* getChildModel();

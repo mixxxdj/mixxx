@@ -45,15 +45,14 @@ TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 
-QWidget* RecordingFeature::createPaneWidget(
-        KeyboardEventFilter* pKeyboard, int paneId) {
-    Q_UNUSED(pKeyboard);
-    WTrackTableView* pTable = LibraryFeature::createTableWidget(paneId);
+parented_ptr<QWidget> RecordingFeature::createPaneWidget(KeyboardEventFilter*, 
+            int paneId, const parented_ptr<QWidget>& parent) {
+    auto pTable = LibraryFeature::createTableWidget(paneId, parent);
     pTable->setSorting(false);    
     return pTable;
 }
 
-QWidget *RecordingFeature::createInnerSidebarWidget(
+QWidget* RecordingFeature::createInnerSidebarWidget(
         KeyboardEventFilter* pKeyboard) {
     m_pRecordingView = new DlgRecording(nullptr, 
                                         m_pTrackCollection,

@@ -66,10 +66,10 @@ bool LibraryFeature::dragMoveAcceptChild(const QModelIndex &, QUrl) {
     return false;
 }
 
-QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
-                                          int paneId) {
+parented_ptr<QWidget> LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+            int paneId, const parented_ptr<QWidget>& parent) {
     Q_UNUSED(pKeyboard);
-    return createTableWidget(paneId);
+    return createTableWidget(paneId, parent);
 }
 
 QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
@@ -176,27 +176,29 @@ QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {
     return m_savedDAO.getSavedQueries(this);
 }
 
-WTrackTableView* LibraryFeature::createTableWidget(int paneId) {
-    WTrackTableView* pTrackTableView = 
-            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, true);
-    m_trackTablesByPaneId[paneId] = pTrackTableView;
-        
-    WMiniViewScrollBar* pScrollBar = new WMiniViewScrollBar(pTrackTableView);
-    pTrackTableView->setScrollBar(pScrollBar);
+parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId, 
+            const parented_ptr<QWidget>& parent) {
+    auto pTrackTableView = make_parented<WTrackTableView>(
+            parent.get(), m_pConfig, m_pTrackCollection, true);
     
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
+    m_trackTablesByPaneId[paneId] = pTrackTableView.get();
+        
+    auto pScrollBar = make_parented<WMiniViewScrollBar>(pTrackTableView.get());
+    pTrackTableView->setScrollBar(pScrollBar.get());
+    
+    connect(pTrackTableView.get(), SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+    connect(pTrackTableView.get(), SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+    connect(pTrackTableView.get(), SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(tableChanged()),
+    connect(pTrackTableView.get(), SIGNAL(tableChanged()),
             this, SLOT(restoreSaveButton()));
     
     connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            pTrackTableView, SLOT(setTrackTableFont(QFont)));
+            pTrackTableView.get(), SLOT(setTrackTableFont(QFont)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+            pTrackTableView.get(), SLOT(setTrackTableRowHeight(int)));
     
     return pTrackTableView;
 }

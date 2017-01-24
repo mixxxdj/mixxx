@@ -33,7 +33,6 @@ class MaintenanceFeature : public LibraryFeature
   protected:
 
     QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
-    QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, int paneId);
 
   private:
 

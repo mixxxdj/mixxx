@@ -193,22 +193,23 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return !locked && formatSupported;
 }
 
-QWidget* CrateFeature::createPaneWidget(KeyboardEventFilter *pKeyboard, 
-                                        int paneId) {
-    WLibraryStack* pContainer = new WLibraryStack(nullptr);
-    m_panes[paneId] = pContainer;
+parented_ptr<QWidget> CrateFeature::createPaneWidget(
+            KeyboardEventFilter* pKeyboard, int paneId,
+            const parented_ptr<QWidget>& parent) {
+    auto pContainer = make_parented<WLibraryStack>(parent.get());
+    m_panes[paneId] = pContainer.get();
     
-    WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(pContainer);
+    auto pEdit = make_parented<WLibraryTextBrowser>(pContainer.get());
     pEdit->setHtml(getRootViewHtml());
     pEdit->setOpenLinks(false);
     pEdit->installEventFilter(pKeyboard);
-    connect(pEdit, SIGNAL(anchorClicked(const QUrl)),
+    connect(pEdit.get(), SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
     
-    m_idBrowse[paneId] = pContainer->addWidget(pEdit);
+    m_idBrowse[paneId] = pContainer->addWidget(pEdit.get());
     
-    QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId);
-    m_idTable[paneId] = pContainer->addWidget(pTable);
+    auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, pContainer);
+    m_idTable[paneId] = pContainer->addWidget(pTable.get());
     
     return pContainer;
 }

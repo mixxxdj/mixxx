@@ -14,6 +14,7 @@
 #include "preferences/usersettings.h"
 #include "library/dao/savedqueriesdao.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 
 class Library;
 class KeyboardEventFilter;
@@ -60,8 +61,8 @@ class LibraryFeature : public QObject {
     
     // Reimplement this to register custom views with the library widget
     // at the right pane.
-    virtual QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, 
-                                      int paneId);
+    virtual parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter* pKeyboard, 
+            int paneId, const parented_ptr<QWidget>& parent);
     
     // Reimplement this to register custom views with the library widget,
     // at the sidebar expanded pane
@@ -140,7 +141,8 @@ class LibraryFeature : public QObject {
     }
     
     // Creates a table widget with no model
-    WTrackTableView* createTableWidget(int paneId);
+    parented_ptr<WTrackTableView> createTableWidget(int paneId, 
+            const parented_ptr<QWidget>& parent);
     
     // Creates a WLibrarySidebar widget with the getChildModel() function as
     // model
