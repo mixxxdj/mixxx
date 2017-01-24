@@ -5,8 +5,8 @@
 #include "sources/soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "library/trackcollection.h"
-#include "test/mixxxtest.h"
+
+#include "test/librarytest.h"
 
 namespace {
 
@@ -32,26 +32,21 @@ void extractEmbeddedCover(
 
 // first inherit from MixxxTest to construct a QApplication to be able to
 // construct the default QPixmap in CoverArtCache
-class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
+class CoverArtUtilTest : public LibraryTest, public CoverArtCache {
   protected:
     void SetUp() override {
-        m_pTrackCollection = new TrackCollection(config());
     }
 
     void TearDown() override {
         // make sure we clean up the db
-        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QSqlQuery query(collection()->getDatabase());
         query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
         ASSERT_TRUE(query.exec());
         query.prepare("DELETE FROM library");
         ASSERT_TRUE(query.exec());
         query.prepare("DELETE FROM track_locations");
         ASSERT_TRUE(query.exec());
-
-        delete m_pTrackCollection;
     }
-
-    TrackCollection* m_pTrackCollection;
 };
 
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
