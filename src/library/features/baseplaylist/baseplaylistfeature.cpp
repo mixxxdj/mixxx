@@ -27,7 +27,6 @@ BasePlaylistFeature::BasePlaylistFeature(UserSettingsPointer pConfig,
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(nullptr) {
-    m_childModel = new TreeItemModel;
     
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
@@ -680,7 +679,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
 }
 
 TreeItemModel* BasePlaylistFeature::getChildModel() {
-    return m_childModel;
+    return m_childModel.data();
 }
 
 QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,

@@ -30,8 +30,8 @@ HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
     emit(slotGetNewPlaylist());
 
     //construct child model
-    delete m_childModel;
-    m_childModel = m_pHistoryTreeModel = new HistoryTreeModel(this, m_pTrackCollection);
+    m_childModel = m_pHistoryTreeModel = QSharedPointer<HistoryTreeModel>(
+            new HistoryTreeModel(this, m_pTrackCollection));
     constructChildModel(-1);
     
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),

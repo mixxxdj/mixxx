@@ -9,6 +9,7 @@
 #include <QPair>
 #include <QPersistentModelIndex>
 #include <QSet>
+#include <QSharedPointer>
 #include <QString>
 
 #include "library/dao/playlistdao.h"
@@ -121,8 +122,9 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pAnalyzePlaylistAction;
     QList<PlaylistItem> m_playlistList;
     QPersistentModelIndex m_lastRightClickedIndex;
-    TreeItemModel* m_childModel;
     TrackPointer m_pSelectedTrack;
+    
+    QSharedPointer<TreeItemModel> m_childModel;
     
     QHash<int, QPersistentModelIndex> m_lastChildClicked;
 

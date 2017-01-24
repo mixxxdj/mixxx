@@ -56,7 +56,7 @@ public:
     QLinkedList<TrackId> m_recentTracks;
     QAction* m_pJoinWithNextAction;
     QAction* m_pGetNewPlaylist;
-    HistoryTreeModel* m_pHistoryTreeModel;
+    QSharedPointer<HistoryTreeModel> m_pHistoryTreeModel;
     int m_playlistId;
 };
 
