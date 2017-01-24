@@ -26,7 +26,7 @@ class LibraryPaneManager : public QObject {
     bool initialize();
 
     // All features must be added before adding a pane
-    virtual void bindPaneWidget(WBaseLibrary* pLibraryWidget,
+    virtual void bindPaneWidget(QPointer<WBaseLibrary> pLibraryWidget,
                                 KeyboardEventFilter* pKeyboard);
     void bindSearchBar(WSearchLineEdit* pSearchBar);
     void setBreadCrumb(WLibraryBreadCrumb* pBreadCrumb);

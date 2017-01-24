@@ -7,7 +7,7 @@ LibrarySidebarExpandedManager::LibrarySidebarExpandedManager(Library *pLibrary,
 
 }
 
-void LibrarySidebarExpandedManager::bindPaneWidget(WBaseLibrary* sidebarWidget,
+void LibrarySidebarExpandedManager::bindPaneWidget(QPointer<WBaseLibrary> sidebarWidget,
                                                    KeyboardEventFilter* pKeyboard) {
     m_pPaneWidget = sidebarWidget;
 

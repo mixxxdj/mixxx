@@ -19,7 +19,7 @@ LibraryPaneManager::LibraryPaneManager(int paneId, Library *pLibrary, QObject* p
 LibraryPaneManager::~LibraryPaneManager() {
 }
 
-void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pPaneWidget,
+void LibraryPaneManager::bindPaneWidget(QPointer<WBaseLibrary> pPaneWidget,
                                         KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
     m_pPaneWidget = pPaneWidget;
@@ -34,15 +34,10 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pPaneWidget,
     if (qobject_cast<WLibraryPane*>(pPaneWidget) == nullptr) {
         return;
     }
-    for (LibraryFeature* f : m_features) {
-        //f->bindPaneWidget(pPaneWidget, pKeyboard, m_paneId);
-        
-        QWidget* pFeaturePaneWidget = f->createPaneWidget(pKeyboard, m_paneId);
-        if (pFeaturePaneWidget == nullptr) {
-            continue;
-        }
-        pFeaturePaneWidget->setParent(pPaneWidget);
-        pPaneWidget->registerView(f, pFeaturePaneWidget);
+    for (LibraryFeature* f : m_features) {        
+        parented_ptr<QWidget> pFeaturePaneWidget = f->createPaneWidget(
+                pKeyboard, m_paneId, make_parented<WBaseLibrary>(pPaneWidget));
+        pPaneWidget->registerView(f, pFeaturePaneWidget.get());
     }
 }
 

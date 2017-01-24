@@ -104,14 +104,6 @@ QWidget* MaintenanceFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyb
     return m_pTab;
 }
 
-QWidget* MaintenanceFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
-                                              int paneId) {
-    Q_UNUSED(pKeyboard);
-    WTrackTableView* pTable = LibraryFeature::createTableWidget(paneId);
-
-    return pTable;
-}
-
 void MaintenanceFeature::slotTabIndexChanged(int index) {
     QPointer<WTrackTableView> pTable = getFocusedTable();
     if (pTable.isNull()) {
