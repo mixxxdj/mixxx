@@ -22,7 +22,7 @@ PlaylistFeature::PlaylistFeature(UserSettingsPointer pConfig,
                                  TrackCollection* pTrackCollection)
         : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection) {
     //construct child model
-    m_childModel = QSharedPointer<TreeItemModel>(new TreeItemModel(this));
+    m_childModel = std::make_shared<TreeItemModel>();
     auto pRootItem = std::make_unique<TreeItem>(this);
     m_childModel->setRootItem(std::move(pRootItem));
     constructChildModel(-1);

@@ -679,7 +679,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
 }
 
 TreeItemModel* BasePlaylistFeature::getChildModel() {
-    return m_childModel.data();
+    return m_childModel.get();
 }
 
 parented_ptr<QWidget> BasePlaylistFeature::createPaneWidget(

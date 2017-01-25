@@ -125,7 +125,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QPersistentModelIndex m_lastRightClickedIndex;
     TrackPointer m_pSelectedTrack;
     
-    QSharedPointer<TreeItemModel> m_childModel;
+    std::shared_ptr<TreeItemModel> m_childModel;
     
     QHash<int, QPersistentModelIndex> m_lastChildClicked;
 
