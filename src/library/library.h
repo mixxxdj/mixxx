@@ -7,16 +7,17 @@
 #ifndef LIBRARY_H
 #define LIBRARY_H
 
-#include <QList>
-#include <QObject>
 #include <QAbstractItemModel>
 #include <QFont>
 #include <QHash>
+#include <QList>
+#include <QObject>
 
-#include "preferences/usersettings.h"
-#include "track/track.h"
-#include "recording/recordingmanager.h"
 #include "library/scanner/libraryscanner.h"
+#include "preferences/usersettings.h"
+#include "recording/recordingmanager.h"
+#include "track/track.h"
+#include "util/parented_ptr.h"
 
 class AnalysisFeature;
 class CrateFeature;
@@ -59,9 +60,9 @@ public:
     
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
     void bindSidebarButtons(WButtonBar* sidebar);
-    void bindPaneWidget(WLibraryPane* libraryWidget,
+    void bindPaneWidget(const parented_ptr<WLibraryPane>&libraryWidget,
                         KeyboardEventFilter* pKeyboard, int paneId);
-    void bindSidebarExpanded(WBaseLibrary* expandedPane, 
+    void bindSidebarExpanded(const parented_ptr<WBaseLibrary>&expandedPane, 
                              KeyboardEventFilter* pKeyboard);
     void bindBreadCrumb(WLibraryBreadCrumb *pBreadCrumb, int paneId);
 

@@ -137,7 +137,7 @@ void Library::bindSidebarButtons(WButtonBar* sidebar) {
     }
 }
 
-void Library::bindPaneWidget(WLibraryPane* pPaneWidget,
+void Library::bindPaneWidget(const parented_ptr<WLibraryPane>& pPaneWidget,
                              KeyboardEventFilter* pKeyboard, int paneId) {
     
     // Get the value once to avoid searching again in the hash
@@ -153,7 +153,7 @@ void Library::bindPaneWidget(WLibraryPane* pPaneWidget,
     emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
 }
 
-void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
+void Library::bindSidebarExpanded(const parented_ptr<WBaseLibrary>& expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
     //qDebug() << "Library::bindSidebarExpanded";
     m_pSidebarExpanded = new LibrarySidebarExpandedManager(this);

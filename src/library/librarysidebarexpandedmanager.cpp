@@ -7,17 +7,17 @@ LibrarySidebarExpandedManager::LibrarySidebarExpandedManager(Library *pLibrary,
 
 }
 
-void LibrarySidebarExpandedManager::bindPaneWidget(QPointer<WBaseLibrary> sidebarWidget,
+void LibrarySidebarExpandedManager::bindPaneWidget(const parented_ptr<WBaseLibrary>&sidebarWidget,
                                                    KeyboardEventFilter* pKeyboard) {
-    m_pPaneWidget = sidebarWidget;
+    m_pPaneWidget = sidebarWidget.get();
 
     for (LibraryFeature* f : m_features) {        
         QWidget* pPane = f->createSidebarWidget(pKeyboard);
         if (pPane == nullptr) {
             continue;
         }
-        pPane->setParent(sidebarWidget);
-        sidebarWidget->registerView(f, pPane);
+        pPane->setParent(m_pPaneWidget);
+        m_pPaneWidget->registerView(f, pPane);
     }
 }
 
