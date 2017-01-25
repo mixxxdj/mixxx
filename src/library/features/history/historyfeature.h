@@ -4,11 +4,8 @@
 #define SETLOGFEATURE_H
 
 #include <QLinkedList>
-#include <QSqlTableModel>
-#include <QAction>
 
 #include "library/features/baseplaylist/baseplaylistfeature.h"
-#include "preferences/usersettings.h"
 
 class TrackCollection;
 class TreeItem;

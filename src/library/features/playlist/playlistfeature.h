@@ -4,15 +4,7 @@
 #ifndef PLAYLISTFEATURE_H
 #define PLAYLISTFEATURE_H
 
-#include <QVariant>
-#include <QIcon>
-#include <QModelIndex>
-#include <QUrl>
-#include <QObject>
-#include <QPoint>
-
 #include "library/features/baseplaylist/baseplaylistfeature.h"
-#include "preferences/usersettings.h"
 
 class TrackCollection;
 class TreeItem;

@@ -8,7 +8,6 @@
 #include <QFileDialog>
 #include <QHash>
 #include <QPointer>
-#include <QString>
 #include <QUrl>
 
 #include "preferences/usersettings.h"

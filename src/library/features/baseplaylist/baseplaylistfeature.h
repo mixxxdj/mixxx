@@ -1,23 +1,15 @@
 #ifndef BASEPLAYLISTFEATURE_H
 #define BASEPLAYLISTFEATURE_H
 
-#include <QAction>
 #include <QUrl>
-#include <QObject>
-#include <QAction>
 #include <QList>
-#include <QPair>
 #include <QPersistentModelIndex>
 #include <QSet>
-#include <QSharedPointer>
-#include <QString>
 
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/libraryfeature.h"
-#include "track/track.h"
 
-class KeyboardEventFilter;
 class PlaylistTableModel;
 class TrackCollection;
 class TreeItem;
