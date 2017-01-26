@@ -35,9 +35,9 @@ void makeLatinLow(QChar* c, int count) {
     }
 }
 
-const QChar LIKE_MATCH_ONE = '_';
-const QChar LIKE_MATCH_ALL = '%';
-const QChar LIKE_DEFAULT_ESCAPE = '\0';
+const QChar kSqlLikeMatchOne = '_';
+const QChar kSqlLikeMatchAll = '%';
+const QChar kSqlLikeEscapeDefault = '\0';
 
 // The collating function callback is invoked with a copy of the pArg
 // application data pointer and with two strings in the encoding specified
@@ -82,12 +82,12 @@ int likeCompareInner(
         // 3. uPattern is an unescaped escape character, or
         // 4. uPattern is to be handled as an ordinary character
 
-        if (!prevEscape && uPattern == LIKE_MATCH_ALL) {
+        if (!prevEscape && uPattern == kSqlLikeMatchAll) {
             // Case 1.
             QChar c;
 
-            // Skip any LIKE_MATCH_ALL or LIKE_MATCH_ONE characters that follow a
-            // LIKE_MATCH_ALL. For each LIKE_MATCH_ONE, skip one character in the
+            // Skip any kSqlLikeMatchAll or kSqlLikeMatchOne characters that follow a
+            // kSqlLikeMatchAll. For each kSqlLikeMatchOne, skip one character in the
             // test string.
 
             if (iPattern >= patternSize) {
@@ -95,8 +95,8 @@ int likeCompareInner(
                 return 1;
             }
 
-            while ((c = pattern[iPattern]) == LIKE_MATCH_ALL || c == LIKE_MATCH_ONE) {
-                if (c == LIKE_MATCH_ONE) {
+            while ((c = pattern[iPattern]) == kSqlLikeMatchAll || c == kSqlLikeMatchOne) {
+                if (c == kSqlLikeMatchOne) {
                     if (++iString == stringSize) {
                         return 0;
                     }
@@ -115,7 +115,7 @@ int likeCompareInner(
                 iString++;
             }
             return 0;
-        } else if (!prevEscape && uPattern == LIKE_MATCH_ONE) {
+        } else if (!prevEscape && uPattern == kSqlLikeMatchOne) {
             // Case 2.
             if (++iString == stringSize) {
                 return 0;
@@ -163,7 +163,7 @@ void sqliteLike(sqlite3_context *context,
     QString stringB = QString::fromUtf8(b); // Like String
     QString stringA = QString::fromUtf8(a);
 
-    QChar esc = LIKE_DEFAULT_ESCAPE;
+    QChar esc = kSqlLikeEscapeDefault;
     if (aArgc == 3) {
         const char* e = reinterpret_cast<const char*>(
                 sqlite3_value_text(aArgv[2]));
@@ -311,8 +311,8 @@ likeCompare(nsAString::const_iterator aPatternItr,
             nsAString::const_iterator aStringEnd,
             PRUnichar aEscape)
 {
-  const PRUnichar LIKE_MATCH_ALL('%');
-  const PRUnichar LIKE_MATCH_ONE('_');
+  const PRUnichar kSqlLikeMatchAll('%');
+  const PRUnichar kSqlLikeMatchOne('_');
 
   PRBool lastWasEscape = PR_FALSE;
   while (aPatternItr != aPatternEnd) {
@@ -324,15 +324,15 @@ likeCompare(nsAString::const_iterator aPatternItr,
 * 3) character is an un-escaped escape character
 * 4) character is not any of the above
 
-    if (!lastWasEscape && *aPatternItr == LIKE_MATCH_ALL) {
+    if (!lastWasEscape && *aPatternItr == kSqlLikeMatchAll) {
       // CASE 1
 
-* Now we need to skip any LIKE_MATCH_ALL or LIKE_MATCH_ONE characters that follow a
-* LIKE_MATCH_ALL character. For each LIKE_MATCH_ONE character, skip one character
+* Now we need to skip any kSqlLikeMatchAll or kSqlLikeMatchOne characters that follow a
+* kSqlLikeMatchAll character. For each kSqlLikeMatchOne character, skip one character
 * in the pattern string.
 
-      while (*aPatternItr == LIKE_MATCH_ALL || *aPatternItr == LIKE_MATCH_ONE) {
-        if (*aPatternItr == LIKE_MATCH_ONE) {
+      while (*aPatternItr == kSqlLikeMatchAll || *aPatternItr == kSqlLikeMatchOne) {
+        if (*aPatternItr == kSqlLikeMatchOne) {
           // If we've hit the end of the string we are testing, no match
           if (aStringItr == aStringEnd)
             return 0;
@@ -355,7 +355,7 @@ likeCompare(nsAString::const_iterator aPatternItr,
 
       // No match
       return 0;
-    } else if (!lastWasEscape && *aPatternItr == LIKE_MATCH_ONE) {
+    } else if (!lastWasEscape && *aPatternItr == kSqlLikeMatchOne) {
       // CASE 2
       if (aStringItr == aStringEnd) {
         // If we've hit the end of the string we are testing, no match
