@@ -185,7 +185,12 @@ void sqliteLike(sqlite3_context *context,
 } // anonymous namespace
 
 //static
+
+#ifdef __SQLITE3__
 const char* const DbConnection::kStringCollationFunc = "mixxxStringCollation";
+#else
+const char* const DbConnection::kStringCollationFunc = nullptr;
+#endif
 
 DbConnection::DbConnection(const QString& dirPath)
     : m_filePath(QDir(dirPath).filePath(kDatabaseFileName)),

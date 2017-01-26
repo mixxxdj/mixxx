@@ -20,6 +20,7 @@ class DbConnection final {
         return m_database;
     }
 
+    // SQLite3 collation function or nullptr if not supported
     static const char* const kStringCollationFunc;
 
     static int likeCompareLatinLow(

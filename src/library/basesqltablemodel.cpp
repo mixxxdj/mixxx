@@ -511,8 +511,10 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             QString field = m_tableColumns[column];
             QString sort_field = QString("%1.%2").arg(m_tableName, field);
             m_tableOrderBy.append(sort_field);
-            m_tableOrderBy.append(" COLLATE ");
-            m_tableOrderBy.append(DbConnection::kStringCollationFunc);
+            if (DbConnection::kStringCollationFunc) {
+                m_tableOrderBy.append(" COLLATE ");
+                m_tableOrderBy.append(DbConnection::kStringCollationFunc);
+            }
             m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
         }
         m_sortColumns.clear();
@@ -543,8 +545,10 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
             m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
             m_trackSourceOrderBy.append(sort_field);
-            m_trackSourceOrderBy.append(" COLLATE ");
-            m_trackSourceOrderBy.append(DbConnection::kStringCollationFunc);
+            if (DbConnection::kStringCollationFunc) {
+                m_trackSourceOrderBy.append(" COLLATE ");
+                m_trackSourceOrderBy.append(DbConnection::kStringCollationFunc);
+            }
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
                     " ASC" : " DESC");
             //qDebug() << m_trackSourceOrderBy;
