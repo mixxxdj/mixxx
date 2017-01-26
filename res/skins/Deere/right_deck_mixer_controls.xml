@@ -15,18 +15,14 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:deck_mixer_controls_col3.xml"/>
-          <Template src="skin:deck_mixer_controls_col2.xml"/>
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:deck_mixer_controls_col1_right.xml"/>
+              <Template src="skin:deck_mixer_controls_col3.xml"/>
+              <Template src="skin:deck_mixer_controls_col2.xml"/>
             </Children>
-            <Connection>
-              <ConfigKey>[Master],show_eqs</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
+          <Template src="skin:deck_mixer_controls_col1_right.xml"/>
         </Children>
         <Connection>
           <ConfigKey>[Master],show_4decks</ConfigKey>
@@ -41,16 +37,7 @@
       <WidgetGroup>
         <Layout>vertical</Layout>
         <Children>
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:deck_mixer_controls_col1_right.xml"/>
-            </Children>
-            <Connection>
-              <ConfigKey>[Master],show_eqs</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+          <Template src="skin:deck_mixer_controls_col1_right.xml"/>
           <WidgetGroup>
             <Layout>vertical</Layout>
             <ObjectName>4DecksMixerCol2ContainerRight</ObjectName>
