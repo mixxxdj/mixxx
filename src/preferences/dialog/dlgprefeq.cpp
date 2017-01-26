@@ -32,7 +32,10 @@ const char* kEnableEqs = "EnableEQs";
 const char* kEqsOnly = "EQsOnly";
 const char* kSingleEq = "SingleEQEffect";
 const char* kDefaultEqId = "org.mixxx.effects.bessel8lvmixeq";
-const char* kDefaultMasterEqId = "none";
+// This is necessary so effect selections set to None are saved
+// and restored across restarts instead of reset to default.
+const char* kNullEffectId = "none";
+const char* kDefaultMasterEqId = kNullEffectId;
 const char* kDefaultQuickEffectId = "org.mixxx.effects.filter";
 
 const int kFrequencyUpperLimit = 20050;
@@ -172,16 +175,16 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
     slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 }
 
-static bool isMixingEQ(EffectManifest* pManifest) {
-    return pManifest->isMixingEQ();
+static bool isMixingEQ(const EffectManifest& pManifest) {
+    return pManifest.isMixingEQ();
 }
 
-static bool isMasterEQ(EffectManifest* pManifest) {
-    return pManifest->isMasterEQ();
+static bool isMasterEQ(const EffectManifest& pManifest) {
+    return pManifest.isMasterEQ();
 }
 
-static bool hasSuperKnobLinking(EffectManifest* pManifest) {
-    for (const auto& pParameterManifest : pManifest->parameters()) {
+static bool hasSuperKnobLinking(const EffectManifest& pManifest) {
+    for (const auto& pParameterManifest : pManifest.parameters()) {
         if (pParameterManifest.defaultLinkType() != EffectManifestParameter::LINK_NONE) {
             return true;
         }
@@ -192,8 +195,6 @@ static bool hasSuperKnobLinking(EffectManifest* pManifest) {
 void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     m_inSlotPopulateDeckEffectSelectors = true; // prevents a recursive call
 
-    QList<QPair<QString, QString> > availableEQEffectNames;
-    QList<QPair<QString, QString> > availableQuickEffectNames;
     EffectsManager::EffectManifestFilterFnc filterEQ;
     if (CheckBoxEqOnly->isChecked()) {
         m_pConfig->set(ConfigKey(kConfigKey, kEqsOnly), QString("yes"));
@@ -202,40 +203,41 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         m_pConfig->set(ConfigKey(kConfigKey, kEqsOnly), QString("no"));
         filterEQ = nullptr; // take all
     }
-    availableEQEffectNames =
-            m_pEffectsManager->getEffectNamesFiltered(filterEQ);
-    availableEQEffectNames.append(QPair<QString,QString>("none", tr("None")));
-    availableQuickEffectNames =
-            m_pEffectsManager->getEffectNamesFiltered(hasSuperKnobLinking);
-    availableQuickEffectNames.append(QPair<QString,QString>("none", tr("None")));
 
-    foreach (QComboBox* box, m_deckEqEffectSelectors) {
+    QList<EffectManifest> availableEQEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(filterEQ);
+    QList<EffectManifest> availableQuickEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(hasSuperKnobLinking);
+
+    for (QComboBox* box : m_deckEqEffectSelectors) {
         // Populate comboboxes with all available effects
         // Save current selection
         QString selectedEffectId = box->itemData(box->currentIndex()).toString();
         QString selectedEffectName = box->itemText(box->currentIndex());
         box->clear();
-        int currentIndex = -1;// Nothing selected
+        int currentIndex = -1; // Nothing selected
 
         int i;
-        for (i = 0; i < availableEQEffectNames.size(); ++i) {
-            box->addItem(availableEQEffectNames[i].second);
-            box->setItemData(i, QVariant(availableEQEffectNames[i].first));
-            if (selectedEffectId == availableEQEffectNames[i].first) {
+        for (i = 0; i < availableEQEffects.size(); ++i) {
+            const EffectManifest& manifest = availableEQEffects[i];
+            box->addItem(manifest.name(), QVariant(manifest.id()));
+            if (selectedEffectId == manifest.id()) {
                 currentIndex = i;
             }
+        }
+        //: Displayed when no effect is selected
+        box->addItem(tr("None"), QVariant(kNullEffectId));
+        if (selectedEffectId == kNullEffectId) {
+            currentIndex = availableEQEffects.size();
         }
         if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
             // current selection is not part of the new list
             // So we need to add it
-            box->addItem(selectedEffectName);
-            box->setItemData(i, QVariant(selectedEffectId));
-            currentIndex = i;
+            box->addItem(selectedEffectName, QVariant(selectedEffectId));
+            currentIndex = i + 1;
         }
         box->setCurrentIndex(currentIndex);
     }
 
-    foreach (QComboBox* box, m_deckQuickEffectSelectors) {
+    for (QComboBox* box : m_deckQuickEffectSelectors) {
         // Populate comboboxes with all available effects
         // Save current selection
         QString selectedEffectId = box->itemData(box->currentIndex()).toString();
@@ -244,19 +246,23 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         int currentIndex = -1;// Nothing selected
 
         int i;
-        for (i = 0; i < availableQuickEffectNames.size(); ++i) {
-            box->addItem(availableQuickEffectNames[i].second);
-            box->setItemData(i, QVariant(availableQuickEffectNames[i].first));
-            if (selectedEffectId == availableQuickEffectNames[i].first) {
+        for (i = 0; i < availableQuickEffects.size(); ++i) {
+            const EffectManifest& manifest = availableQuickEffects[i];
+            box->addItem(manifest.name(), QVariant(manifest.id()));
+            if (selectedEffectId == manifest.id()) {
                 currentIndex = i;
             }
+        }
+        //: Displayed when no effect is selected
+        box->addItem(tr("None"), QVariant(kNullEffectId));
+        if (selectedEffectId == kNullEffectId) {
+            currentIndex = availableQuickEffects.size();
         }
         if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
             // current selection is not part of the new list
             // So we need to add it
-            box->addItem(selectedEffectName);
-            box->setItemData(i, QVariant(selectedEffectId));
-            currentIndex = i;
+            box->addItem(selectedEffectName, QVariant(selectedEffectId));
+            currentIndex = i + 1;
         }
         box->setCurrentIndex(currentIndex);
     }
@@ -422,7 +428,7 @@ void DlgPrefEQ::applySelections() {
     int deck = 0;
     QString firstEffectId;
     int firstEffectIndex = 0;
-    foreach(QComboBox* box, m_deckEqEffectSelectors) {
+    for (QComboBox* box : m_deckEqEffectSelectors) {
         QString effectId = box->itemData(box->currentIndex()).toString();
         if (deck == 0) {
             firstEffectId = effectId;
@@ -465,7 +471,7 @@ void DlgPrefEQ::applySelections() {
     }
 
     deck = 0;
-    foreach(QComboBox* box, m_deckQuickEffectSelectors) {
+    for (QComboBox* box : m_deckQuickEffectSelectors) {
         QString effectId = box->itemData(box->currentIndex()).toString();
         QString group = PlayerManager::groupForDeck(deck);
 
@@ -625,18 +631,19 @@ void DlgPrefEQ::setUpMasterEQ() {
     QString configuredEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
             "EffectForGroup_[Master]"), kDefaultMasterEqId);
 
-    QList<QPair<QString, QString> > availableMasterEQEffectNames;
-    availableMasterEQEffectNames =
-            m_pEffectsManager->getEffectNamesFiltered(isMasterEQ);
+    QList<EffectManifest> availableMasterEQEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
 
-    availableMasterEQEffectNames.append(QPair<QString,QString>("none", tr("None")));
-
-    for (int i = 0; i < availableMasterEQEffectNames.size(); ++i) {
-        comboBoxMasterEq->addItem(availableMasterEQEffectNames[i].second);
-        comboBoxMasterEq->setItemData(i, QVariant(availableMasterEQEffectNames[i].first));
-        if (configuredEffect == availableMasterEQEffectNames[i].first) {
+    for (int i = 0; i < availableMasterEQEffects.size(); ++i) {
+        const EffectManifest& manifest = availableMasterEQEffects[i];
+        comboBoxMasterEq->addItem(manifest.name(), QVariant(manifest.id()));
+        if (configuredEffect == manifest.id()) {
             comboBoxMasterEq->setCurrentIndex(i);
         }
+    }
+    //: Displayed when no effect is selected
+    comboBoxMasterEq->addItem(tr("None"), QVariant(kNullEffectId));
+    if (configuredEffect == kNullEffectId) {
+        comboBoxMasterEq->setCurrentIndex(availableMasterEQEffects.size());
     }
 
     slotMasterEqEffectChanged(comboBoxMasterEq->currentIndex());
@@ -671,7 +678,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
 
     QString effectId = comboBoxMasterEq->itemData(effectIndex).toString();
 
-    if (effectId == "none") {
+    if (effectId == kNullEffectId) {
         pbResetMasterEq->hide();
     } else {
         pbResetMasterEq->show();

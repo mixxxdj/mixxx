@@ -103,32 +103,19 @@ const QSet<ChannelHandleAndGroup>& EffectsManager::registeredChannels() const {
     return m_pEffectChainManager->registeredChannels();
 }
 
-bool alphabetizeEffectNameIdPairs(const QPair<QString, QString>& pair1,
-                                  const QPair<QString, QString>& pair2) {
-    return pair1.second < pair2.second;
-}
-
-// Each returned QPair has the effect ID and full name.
-const QList<QPair<QString, QString> > EffectsManager::getEffectNamesFiltered(
+const QList<EffectManifest> EffectsManager::getAvailableEffectManifestsFiltered(
         EffectManifestFilterFnc filter) const {
-    QList<QPair<QString, QString> > filteredEffectNames;
-    QString currentEffectName;
-    for (const EffectsBackend* pBackend : m_effectsBackends) {
-        QList<QString> backendEffects = pBackend->getEffectIds();
-        for (const QString effectId : backendEffects) {
-            EffectManifest manifest = pBackend->getManifest(effectId);
-            if (filter && !filter(&manifest)) {
-                continue;
-            }
-            currentEffectName = manifest.name();
-            filteredEffectNames.append(qMakePair(effectId, currentEffectName));
-        }
+    if (filter == nullptr) {
+        return m_availableEffectManifests;
     }
 
-    qSort(filteredEffectNames.begin(), filteredEffectNames.end(),
-          alphabetizeEffectNameIdPairs);
-
-    return filteredEffectNames;
+    QList<EffectManifest> list;
+    for (const auto& manifest : m_availableEffectManifests) {
+        if (filter(manifest)) {
+            list.append(manifest);
+        }
+    }
+    return list;
 }
 
 bool EffectsManager::isEQ(const QString& effectId) const {

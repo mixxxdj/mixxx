@@ -27,7 +27,7 @@ class EngineEffectsManager;
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
-    typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
+    typedef bool (*EffectManifestFilterFnc)(const EffectManifest& pManifest);
 
     EffectsManager(QObject* pParent, UserSettingsPointer pConfig);
     virtual ~EffectsManager();
@@ -61,12 +61,11 @@ class EffectsManager : public QObject {
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
 
-    // Each entry of the set is a pair containing the effect id and its name
-    const QList<QPair<QString, QString> > getEffectNamesFiltered(
-        EffectManifestFilterFnc filter) const;
     inline const QList<EffectManifest>& getAvailableEffectManifests() const {
         return m_availableEffectManifests;
     };
+    const QList<EffectManifest> getAvailableEffectManifestsFiltered(
+        EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
     QPair<EffectManifest, EffectsBackend*> getEffectManifestAndBackend(
             const QString& effectId) const;
