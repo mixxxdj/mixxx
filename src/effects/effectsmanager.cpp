@@ -75,7 +75,7 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
     m_effectsBackends.append(pBackend);
 
     QList<QString> backendEffects = pBackend->getEffectIds();
-    for (const QString effectId : backendEffects) {
+    for (const QString& effectId : backendEffects) {
         m_availableEffectManifests.append(pBackend->getManifest(effectId));
     }
 

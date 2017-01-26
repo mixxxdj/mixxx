@@ -14,7 +14,7 @@ WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManag
     // https://bugs.launchpad.net/mixxx/+bug/1653140
     const QList<EffectManifest> availableEffectManifests = m_pEffectsManager->getAvailableEffectManifests();
     for (int i = 0; i < availableEffectManifests.size(); ++i) {
-        const EffectManifest& manifest = availableEffectManifests[i];
+        const EffectManifest& manifest = availableEffectManifests.at(i);
 
         QString displayName;
         if (manifest.shortName().isEmpty()) {

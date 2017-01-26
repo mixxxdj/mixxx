@@ -204,8 +204,8 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         filterEQ = nullptr; // take all
     }
 
-    QList<EffectManifest> availableEQEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(filterEQ);
-    QList<EffectManifest> availableQuickEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(hasSuperKnobLinking);
+    const QList<EffectManifest> availableEQEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(filterEQ);
+    const QList<EffectManifest> availableQuickEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(hasSuperKnobLinking);
 
     for (QComboBox* box : m_deckEqEffectSelectors) {
         // Populate comboboxes with all available effects
@@ -217,7 +217,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
 
         int i;
         for (i = 0; i < availableEQEffects.size(); ++i) {
-            const EffectManifest& manifest = availableEQEffects[i];
+            const EffectManifest& manifest = availableEQEffects.at(i);
             box->addItem(manifest.name(), QVariant(manifest.id()));
             if (selectedEffectId == manifest.id()) {
                 currentIndex = i;
@@ -247,7 +247,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
 
         int i;
         for (i = 0; i < availableQuickEffects.size(); ++i) {
-            const EffectManifest& manifest = availableQuickEffects[i];
+            const EffectManifest& manifest = availableQuickEffects.at(i);
             box->addItem(manifest.name(), QVariant(manifest.id()));
             if (selectedEffectId == manifest.id()) {
                 currentIndex = i;
@@ -631,10 +631,10 @@ void DlgPrefEQ::setUpMasterEQ() {
     QString configuredEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
             "EffectForGroup_[Master]"), kDefaultMasterEqId);
 
-    QList<EffectManifest> availableMasterEQEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
+    const QList<EffectManifest> availableMasterEQEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
 
     for (int i = 0; i < availableMasterEQEffects.size(); ++i) {
-        const EffectManifest& manifest = availableMasterEQEffects[i];
+        const EffectManifest& manifest = availableMasterEQEffects.at(i);
         comboBoxMasterEq->addItem(manifest.name(), QVariant(manifest.id()));
         if (configuredEffect == manifest.id()) {
             comboBoxMasterEq->setCurrentIndex(i);
