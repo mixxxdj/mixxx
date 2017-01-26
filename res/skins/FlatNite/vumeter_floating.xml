@@ -1,0 +1,72 @@
+<!--
+Description:
+	'Floating' VUMeter next to big CoverArt/Spinny in decks.
+Variables:
+  channum: channel number
+  VUMeter/clipping graphics
+-->
+<Template>
+	<WidgetGroup>
+		<ObjectName>VUMeterFloating</ObjectName>
+		<Layout>horizontal</Layout>
+		<Size>18f,1me</Size>
+		<Children>
+			<WidgetGroup><!-- Left -->
+				<ObjectName>VUMeter</ObjectName>
+				<Layout>stacked</Layout>
+				<Size>4f,1me</Size>
+				<Children>
+					<StatusLight>
+						<PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
+						<PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="channum"/>],PeakIndicatorL</ConfigKey>
+						</Connection>
+					</StatusLight>
+					<VuMeter>
+						<PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
+						<PathBack>skin:/graphics/vumeter_floating.png</PathBack>
+						<Horizontal>false</Horizontal>
+						<PeakHoldSize>5</PeakHoldSize>
+						<PeakHoldTime>500</PeakHoldTime>
+						<PeakFallTime>50</PeakFallTime>
+						<PeakFallStep>2</PeakFallStep>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="channum"/>],VuMeterL</ConfigKey>
+						</Connection>
+					</VuMeter>
+				</Children>
+			</WidgetGroup><!-- /Left -->
+			<WidgetGroup><!-- Right -->
+				<ObjectName>VUMeter</ObjectName>
+				<Layout>stacked</Layout>
+				<Size>4f,1me</Size>
+				<Children>
+					<StatusLight>
+						<PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
+						<PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="channum"/>],PeakIndicatorR</ConfigKey>
+						</Connection>
+					</StatusLight>
+					<VuMeter>
+						<PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
+						<PathBack>skin:/graphics/vumeter_floating.png</PathBack>
+						<Horizontal>false</Horizontal>
+						<PeakHoldSize>5</PeakHoldSize>
+						<PeakHoldTime>500</PeakHoldTime>
+						<PeakFallTime>50</PeakFallTime>
+						<PeakFallStep>2</PeakFallStep>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="channum"/>],VuMeterR</ConfigKey>
+						</Connection>
+					</VuMeter>
+				</Children>
+			</WidgetGroup><!-- /Right -->
+		</Children>
+		<Connection>
+			<ConfigKey persist="true">[FlatNite],vumeter</ConfigKey>
+			<BindProperty>visible</BindProperty>
+		</Connection>
+	</WidgetGroup>
+</Template>

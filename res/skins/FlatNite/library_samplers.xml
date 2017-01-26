@@ -1,0 +1,86 @@
+<!--
+Description:
+	Size-aware container for sampler decks and Library.
+Modes:
+  0-82px    show noting
+  83-164px  show Samplers or Library
+  165-x     show both, depending on display settings
+            Libary expands.
+-->
+<Template>
+	<SizeAwareStack>
+		<Children>
+			
+			<WidgetGroup><!-- 0 -->
+				<ObjectName>SamLib</ObjectName>
+				<Layout>vertical</Layout>
+				<SizePolicy>me,min</SizePolicy>
+				<MinimumSize>770,0</MinimumSize>
+				<MaximumSize>-1,82</MaximumSize>
+				<Children/>
+			</WidgetGroup>
+			
+			<!-- <WidgetGroup trigger="[Library],show_library">1 = Samplers / Lib / nothing -->
+			<WidgetGroup><!-- 1 = Samplers / Lib / nothing -->
+				<ObjectName>SamLib</ObjectName>
+				<Layout>vertical</Layout>
+				<SizePolicy>me,min</SizePolicy>
+				<MinimumSize>770,83</MinimumSize>
+				<MaximumSize>-1,164</MaximumSize>
+				<Children>
+				<!--	<WidgetStack currentpage="[FlatNite],FxLibSam_1_lastOpened" persist="true"> -->
+					<WidgetStack>
+						<Children>
+						    
+						    <WidgetGroup><Size>0f,0f</Size><Children/></WidgetGroup>
+					
+							<SingletonContainer trigger="[Library],show_library" on_hide_select="0">
+								<ObjectName>Library_Singleton</ObjectName>
+								<Connection>
+									<ConfigKey persist="true">[Library],show_library</ConfigKey>
+									<BindProperty>visible</BindProperty>
+								</Connection>
+							</SingletonContainer>
+					
+							<SingletonContainer trigger="[Samplers],show_samplers" on_hide_select="0">
+								<ObjectName>Samplers_Singleton</ObjectName>
+								<Connection>
+									<ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+									<BindProperty>visible</BindProperty>
+								</Connection>
+							</SingletonContainer>
+							
+						</Children>
+					</WidgetStack>
+				</Children>
+			</WidgetGroup><!-- /1  -->
+			
+			<WidgetGroup trigger="[Library],show_library" persist="true"><!-- 2 = Samplers + Lib -->
+				<ObjectName>SamLib</ObjectName>
+				<Layout>vertical</Layout>
+				<SizePolicy>me,me</SizePolicy>
+				<MinimumSize>770,165</MinimumSize>
+				<MaximumSize>-1,-1</MaximumSize>
+				<Children>
+					
+					<SingletonContainer>
+						<ObjectName>Samplers_Singleton</ObjectName>
+						<Connection>
+							<ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+							<BindProperty>visible</BindProperty>
+						</Connection>
+					</SingletonContainer>
+					
+					<SingletonContainer>
+						<ObjectName>Library_Singleton</ObjectName>
+						<Connection>
+							<ConfigKey persist="true">[Library],show_library</ConfigKey>
+							<BindProperty>visible</BindProperty>
+						</Connection>
+					</SingletonContainer>
+				</Children>					
+			</WidgetGroup><!-- /2 -->
+			
+		</Children>
+	</SizeAwareStack>
+</Template>

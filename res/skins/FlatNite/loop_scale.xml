@@ -1,0 +1,32 @@
+<!--
+Description:
+    Looping controls (in, out, reloop, loop move).
+Variables:
+    group: The group for the controls.
+-->
+<Template>
+    <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+    <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+			<Template src="skin:button_1state.xml">
+				<SetVariable name="TooltipId">loop_double</SetVariable>
+				<SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+				<SetVariable name="Size">22f,22f</SetVariable>
+				<SetVariable name="state_0_pressed">up.svg</SetVariable>
+				<SetVariable name="state_0_unpressed">up.svg</SetVariable>
+				<SetVariable name="ConfigKey"><Variable name="group"/>,loop_double</SetVariable>
+			</Template>
+				<WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+			<Template src="skin:button_1state.xml">
+				<SetVariable name="TooltipId">loop_halve</SetVariable>
+				<SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+				<SetVariable name="Size">22f,22f</SetVariable>
+				<SetVariable name="state_0_pressed">down.svg</SetVariable>
+				<SetVariable name="state_0_unpressed">down.svg</SetVariable>
+				<SetVariable name="ConfigKey"><Variable name="group"/>,loop_halve</SetVariable>
+			</Template>
+        </Children>
+    </WidgetGroup>
+</Template>

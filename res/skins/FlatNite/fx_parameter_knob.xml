@@ -1,0 +1,66 @@
+<!--
+Description:
+	An effect parameter knob with a 5 state button below
+	that controls SuperKnob linking type.
+Variables:
+	ToolTip/TooltipId
+	ObjectName
+	Size
+	Color: The knob's notch colour.
+	ConfigKey			The control to connect to.
+	EffectRack: the rack
+	EffectUnit: the unit
+	Effect: the effect
+	EffectParameter: the parameter
+-->
+<Template>
+	<WidgetGroup>
+		<Layout>stacked</Layout>
+		<Size>58f,39f</Size>
+		<Children>
+
+			<WidgetGroup><!-- EffectParameterKnob -->
+				<Layout>vertical</Layout>
+				<ObjectName>EffectParameterKnob</ObjectName>
+				<Size>58f,30f</Size>
+				<Children>
+					<Template src="skin:knob_textless.xml">
+        				<SetVariable name="ToolTipId">EffectSlot_parameter</SetVariable>
+						<SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
+						<SetVariable name="ConfigKey">parameter<Variable name="EffectParameter"/></SetVariable>
+						<SetVariable name="Size">30f,30f</SetVariable>
+						<SetVariable name="Color">yellow</SetVariable>
+					</Template>
+				</Children>
+			</WidgetGroup><!-- /EffectKnob -->
+		
+			<Template src="skin:button_5state.xml">
+				<SetVariable name="ObjectName">EffectLinkTypeButton</SetVariable>
+				<SetVariable name="ToolTipID">EffectSlot_parameter_link_type</SetVariable>
+				<SetVariable name="Size">58f,38f</SetVariable>
+				<SetVariable name="ConfigKey">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
+			</Template>
+			
+			<EffectParameterName><!-- Label -->
+				<Size>56f,1min</Size>
+				<ObjectName>EffectParameterName</ObjectName>
+				<EffectRack><Variable name="EffectRack"/></EffectRack>
+				<EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+				<Effect><Variable name="Effect"/></Effect>
+				<EffectParameter><Variable name="EffectParameter"/></EffectParameter>
+				<Alignment>center</Alignment>
+			</EffectParameterName>
+		
+			<Template src="skin:button_5state.xml">
+				<SetVariable name="ObjectName">EffectLinkTypeButtonUnderlay</SetVariable>
+				<SetVariable name="Size">56f,38f</SetVariable>
+				<SetVariable name="ConfigKey">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
+			</Template>
+		</Children>
+		<!-- show only if parameter is loaded -->
+		<Connection>
+			<ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>
+			<BindProperty>visible</BindProperty>
+		</Connection>
+	</WidgetGroup>
+</Template>

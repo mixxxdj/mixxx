@@ -1,0 +1,57 @@
+<!--
+Description:
+	Container for either CoverArt or Spinny (with or without Cover) next to
+	waveform overview in deck.
+Variables:
+  channum: channel number
+  [FlatNite],spinny0_cover1_stack: show Spinny or CoverArt
+  [FlatNite],spinnyWithCoverArt_stack: show Spinny with or without Cover
+-->
+<Template>
+	<WidgetStack currentpage="[FlatNite],spinny0_cover1_stack" persist="true">
+		<ObjectName>SpinnyCoverSmall</ObjectName>
+		<Size>50f,50f</Size><!-- 3 + 111px + 3px -->
+		<Children>
+			<WidgetStack currentpage="[FlatNite],spinnyWithCoverArt_stack" persist="true">
+				<Size>111f,111f</Size>
+				<Children>
+					<Spinny>
+						<ObjectName>SpinnyMini</ObjectName>
+						<Size>50f,50f</Size>
+						<TooltipId>spinny</TooltipId>
+						<Group>[Channel<Variable name="channum"/>]</Group>
+						<PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinny_bg.svg</PathBackground>
+						<PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator.svg</PathForeground>
+						<PathMask scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_<Variable name="channum"/>_mask.svg</PathMask>
+						<PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator_ghost.svg</PathGhost>
+						<ShowCover>false</ShowCover>
+					</Spinny>
+					<Spinny trigger="[FlatNite],spinnyWithCoverArt" persist="true">
+						<ObjectName>SpinnyMini</ObjectName>
+						<Size>50f,50f</Size>
+						<TooltipId>spinny</TooltipId>
+						<Group>[Channel<Variable name="channum"/>]</Group>
+						<PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinny_bg.svg</PathBackground>
+						<PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator.svg</PathForeground>
+						<PathMask scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_<Variable name="channum"/>_mask.svg</PathMask>
+						<PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator_ghost.svg</PathGhost>
+						<ShowCover>true</ShowCover>
+						<Connection>
+							<ConfigKey persist="true">[FlatNite],spinnyWithCoverArt</ConfigKey>
+							<BindProperty>visible</BindProperty>
+						</Connection>
+					</Spinny>
+				</Children>
+			</WidgetStack>
+			<CoverArt trigger="[FlatNite],spinny0_cover1" persist="true">
+				<Size>50f,50f</Size>
+				<Group>[Channel<Variable name="channum" />]</Group>
+				<DefaultCover>skin:/graphics/cover_default.svg</DefaultCover>
+				<Connection>
+					<ConfigKey persist="true">[FlatNite],spinny0_cover1</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</CoverArt>
+		</Children>
+	</WidgetStack>
+</Template>

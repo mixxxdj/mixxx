@@ -1,0 +1,125 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <!-- fix size, otherwise artist/title won't expand when comment is hidden -->
+    <Size>250me,136min</Size><!-- 136px Deck2/4 + 3px margin-top -->
+    <Children>
+      
+      <WidgetGroup><!-- [Mixer/Spinny + VUMeter + Pitch] + expanding spacer-->
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup><!-- [Mixer/Spinny + VUMeter + Pitch]-->
+            <Layout>horizontal</Layout>
+            <Children>
+      
+              <Template src="skin:pitch_key.xml"/>
+              
+              <!-- Mixer / CoverArt / empty -->
+              <WidgetStack currentpage="[FlatNite],mixer_spinnyCover" persist="true">
+                <ObjectName>MixerCoverStack</ObjectName>
+                <SizePolicy>f,min</SizePolicy>
+                <Children>
+                
+                  <!-- mixer -->
+                  <WidgetGroup trigger="[Master],show_mixer" persist="true" on-hide-select="1">
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>f,f</SizePolicy>
+                    <Children>
+                      <Template src="skin:mixer_channel_right.xml"/>
+                    </Children>
+                  </WidgetGroup><!-- /mixer -->
+                  
+                  <WidgetGroup><!-- Spinny/Cover + VUMeter -->
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Children>
+                      
+                      <Template src="skin:vumeter_floating.xml"/>
+                    
+                      <WidgetGroup><!-- Spinny/Cover -->
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <WidgetGroup>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>min,min</SizePolicy>
+                            <Children>
+                                <Template src="skin:spinnyCover_big.xml"/>
+                            </Children>
+                            <Connection>
+                              <ConfigKey persist="true">[FlatNite],spinnyCoverBIG</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[FlatNite],spinnyCover</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                        
+                    </Children>
+                  </WidgetGroup><!-- [spinnyCover] + VUMeter -->
+                    
+                </Children>
+              </WidgetStack><!-- /Mixer / CoverArt / empty  -->
+            
+            </Children>
+          </WidgetGroup><!-- / [Mixer/Spinny + VUMeter + Pitch]-->
+          
+          <!-- expanding spacer, necessary because obviously WidgetStack breaks
+          qproperty-layoutAlignment of parent Widget -->
+          <WidgetGroup><SizePolicy>min,me</SizePolicy><Children/></WidgetGroup>
+          
+        </Children>
+      </WidgetGroup><!-- / [Mixer/Spinny + VUMeter + Pitch] + expanding spacer-->
+
+      <WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
+        <ObjectName>Deck<Variable name="channum"/></ObjectName>
+        <Size>250me,136min</Size><!--  -->
+        <Layout>vertical</Layout><!--  -->
+        <Children>
+        
+          <!-- Packed Waveform & ArtistTitle into a fixed-size container,
+          so Deck stays steady while Comment can expand and LoopBeatjump
+          controls can be toggled -->
+          <WidgetGroup><!-- Overview, Comment, ArtistTitle -->
+            <Layout>vertical</Layout>
+            <Size>250me,111f</Size>
+            <Children>
+              <Template src="skin:deck_artist_title_right.xml"/><!-- 23me + 21me + 1 -->
+              <Template src="skin:deck_overview_right.xml"><!-- 50f (+ 16f) +1
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable> -->
+                <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
+              </Template>
+              <!--	Additional line to display comments from file tag/library column. 
+              Useful to explain hotcues, loop, Ins & Outs for live sets etc.
+              Deprecated as soon as HotCue labels are easily editable -->
+              <WidgetGroup>
+                <ObjectName>TrackCommentRight</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <TrackProperty>
+                    <Size>0me,16f</Size>
+                    <Property>comment</Property>
+                    <Elide>right</Elide>
+                    <Channel><Variable name="channum" /></Channel>
+                  </TrackProperty>
+                </Children>
+                  <Connection>
+                    <ConfigKey persist="true">[FlatNite],trackComment</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+              </WidgetGroup><!-- /Track Comment -->
+            </Children>
+          </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
+          
+          <Template src="skin:deck_buttons_right.xml" /><!-- 24f -->
+          <Template src="skin:deck_loop_beatjump_right.xml"/><!-- 50+1 -->
+          
+        </Children>
+      </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
+    </Children>
+  </WidgetGroup>
+</Template>

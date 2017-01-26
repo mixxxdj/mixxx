@@ -1,0 +1,63 @@
+<!--
+Description:
+	A widget containing hotcue buttons whose number can be set to 4 or 8.	
+Variables:
+  HotCue: The hotcue nummber (1-8).
+-->
+<Template>
+	<WidgetGroup>
+		<Layout>horizontal</Layout>
+		<SizePolicy>max,max</SizePolicy>
+		<Children>
+			<WidgetGroup><!-- DeckHotcues -->
+				<Layout>horizontal</Layout>
+				<SizePolicy>max,max</SizePolicy>
+				<ObjectNAme>DeckHotcues</ObjectNAme>
+				<Children>
+					<Template src="skin:button_hotcue.xml">
+						<SetVariable name="HotCue">1</SetVariable>
+					</Template>
+					<Template src="skin:button_hotcue.xml">
+						<SetVariable name="HotCue">2</SetVariable>
+					</Template>
+					<Template src="skin:button_hotcue.xml">
+						<SetVariable name="HotCue">3</SetVariable>
+					</Template>
+					<Template src="skin:button_hotcue.xml">
+						<SetVariable name="HotCue">4</SetVariable>
+					</Template>
+				</Children>
+				<Connection>
+					<ConfigKey persist="true">[FlatNite],preview_hotcues</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup><!-- /DeckHotcues -->
+			<WidgetGroup><!-- DeckHotcues -->
+				<Layout>horizontal</Layout>
+				<SizePolicy>max,max</SizePolicy>
+				<ObjectNAme>DeckHotcues</ObjectNAme>
+				<Children>
+					<Template src="skin:button_hotcue.xml">
+						<SetVariable name="HotCue">5</SetVariable>
+					</Template>
+					<Template src="skin:button_hotcue.xml">
+						<SetVariable name="HotCue">6</SetVariable>
+					</Template>
+					<Template src="skin:button_hotcue.xml">
+						<SetVariable name="HotCue">7</SetVariable>
+					</Template>
+					<Template src="skin:button_hotcue.xml">
+						<SetVariable name="HotCue">8</SetVariable>
+					</Template>
+				</Children>
+				<Connection>
+					<ConfigKey persist="true">[FlatNite],preview_hotcues</ConfigKey>
+					<BindProperty>visible</BindProperty>
+					<Transform>
+					  <IsEqual>2</IsEqual>
+					</Transform>
+				</Connection>
+			</WidgetGroup><!-- /DeckHotcues -->
+		</Children>
+	</WidgetGroup>
+</Template>

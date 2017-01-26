@@ -1,0 +1,71 @@
+<!--
+Description:
+	The Library container.
+	Left side contains preview deck, CoverArt and tree view.
+	Right side contains table view and mixerbar at the bottom
+Variables:
+-->
+<Template>
+    <WidgetGroup>
+        <ObjectName>Library</ObjectName>
+        <Size>1010me,0me</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+            <Splitter>
+                <ObjectName>LibrarySplitter</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <SplitSizes>1,6</SplitSizes>
+                <SplitSizesConfigKey>[FlatNite],splitter__tree_lib</SplitSizesConfigKey>
+                <Orientation>horizontal</Orientation>
+                <Collapsible>1,0</Collapsible>
+                <Children>
+
+                    <WidgetGroup><!-- Preview Search Cover Tree -->
+                        <Layout>vertical</Layout>
+                        <Size>191min,80me</Size>
+                        <Children>
+                            <Template src="skin:preview_deck.xml"/>
+                            <!-- Splitter to make CoverArt resizeable -->
+                            <Splitter>
+                                <ObjectName>LibrarySplitter</ObjectName>
+                                <SizePolicy>me,me</SizePolicy>
+                                <SplitSizes>1,3</SplitSizes>
+                                <SplitSizesConfigKey>[FlatNite],splitter__coverArt_tree</SplitSizesConfigKey>
+                                <Orientation>vertical</Orientation>
+                                <Collapsible>0,0</Collapsible>
+                                <Children>
+                                    <CoverArt>
+                                        <Size>60min,60min</Size>
+                                        <Connection>
+                                            <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                                            <BindProperty>visible</BindProperty>
+                                        </Connection>
+                                    </CoverArt>
+                                    <WidgetGroup>
+                                        <Layout>vertical</Layout>
+                                        <SizePolicy>me,min</SizePolicy>
+                                        <Children>
+                                            <SearchBox></SearchBox>
+                                            <LibrarySidebar></LibrarySidebar>
+                                        </Children>
+                                    </WidgetGroup>
+                                </Children>
+                            </Splitter>
+                        </Children>
+                    </WidgetGroup><!-- /Preview Search Cover Tree -->
+
+                    <WidgetGroup><!-- Library Table -->
+                        <Layout>vertical</Layout>
+                        <Children>
+                            <Library>
+                                <BgColor>#585858</BgColor>
+                                <FgColor>#eece33</FgColor>
+                            </Library>
+                            <Template src="skin:mixerbar.xml"/>
+                        </Children>
+                    </WidgetGroup><!-- /Library Table -->
+                </Children>
+            </Splitter>
+        </Children>
+    </WidgetGroup>
+</Template>

@@ -1,0 +1,46 @@
+<!--
+Description:
+	An EQ knob with a Kill button next to it.
+	The knob has an underlying display button connected to 'Kill'
+Variables:
+	group
+	parameter
+	Size
+	Color
+	
+-->
+<Template>
+	<SetVariable name="EqualizerEffectGroup">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+	<WidgetGroup>
+		<ObjectName>EQKnob</ObjectName>
+		<Layout>horizontal</Layout>
+		<SizePolicy>max,max</SizePolicy>
+		<Children>
+			
+			<WidgetGroup>
+				<Layout>stacked</Layout>
+				<Children>
+					<Template src="skin:knob_textless.xml">
+						<SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
+						<SetVariable name="Size">30f,30f</SetVariable>
+						<SetVariable name="Color">white</SetVariable>
+						<SetVariable name="ConfigKey">parameter<Variable name="parameter"/></SetVariable>
+					</Template>
+					<Template src="skin:button_2state.xml">
+						<SetVariable name="ObjectName">EQKillButtonUnderlayLeft</SetVariable>
+						<SetVariable name="Size">30f,30f</SetVariable>
+						<SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
+					</Template>
+				</Children>
+			</WidgetGroup>
+					
+			<Template src="skin:button_2state.xml">
+				<SetVariable name="ObjectName">EQKillButton</SetVariable>
+				<SetVariable name="ToolTipID"><Variable name="ToolTipID"/>Kill</SetVariable>
+				<SetVariable name="Size">12f,30f</SetVariable>
+				<SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
+			</Template>
+			
+		</Children>
+	</WidgetGroup>
+</Template>

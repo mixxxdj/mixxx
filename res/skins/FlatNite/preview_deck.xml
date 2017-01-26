@@ -1,0 +1,155 @@
+<!--
+Description:
+	The Preview deck with 0/4/8 Hotcue buttons and Gain knob
+Variables:
+  ToolTip/ToolTipID
+  ObjectName
+  Size
+  channum: channel number.
+  ConfigKey: left-click connection
+  ConfigKeyRight: right-click connection
+  ConfigKeyDisp: display connection
+  Button graphics
+  Knob graphics
+-->
+<Template>	
+	<SetVariable name="group">[PreviewDeck1]</SetVariable>
+	<WidgetGroup><!-- Preview Deck Column 1 Row 1 -->
+		<ObjectName>PreviewDeck</ObjectName>
+		<Layout>vertical</Layout>
+		<Size>191me,83f</Size>
+		<!-- 'XXXme' is overwritten by parent column in library.xml
+		thus previewdeck would be truncated if XXXme here is bigger than there -->
+		<Children>
+			<WidgetGroup>
+				<ObjectName>PreviewTitleEject</ObjectName>
+				<Layout>horizontal</Layout>
+				<Size>1me,19f</Size><!-- 18px + 1px margin -->
+				<Children>
+					<WidgetGroup><!-- SamplerText -->
+						<Layout>horizontal</Layout>
+						<Size>1me,18f</Size>
+						<ObjectName>PreviewTitle</ObjectName>
+						<Children>
+							<Text>
+								<TooltipId>text</TooltipId>
+								<Size>1me,17f</Size>
+								<Group>[PreviewDeck1]</Group>
+								<Elide>right</Elide>
+							</Text>
+						</Children>
+					</WidgetGroup>
+					<Template src="skin:button_1state.xml">
+						<SetVariable name="ToolTipId">eject</SetVariable>
+						<SetVariable name="ObjectName">PreviewEject</SetVariable>
+						<SetVariable name="Size">18f,18f</SetVariable>
+						<SetVariable name="state_0_pressed">sampler_eject_down.svg</SetVariable>
+						<SetVariable name="state_0_unpressed">sampler_eject.svg</SetVariable>
+						<SetVariable name="ConfigKey">[PreviewDeck1],eject</SetVariable>
+					</Template>
+				</Children>
+			</WidgetGroup>
+
+			<WidgetGroup>
+				<ObjectName>PreviewPlayOverview</ObjectName>
+				<Layout>horizontal</Layout>
+				<Size>80me,35f</Size>
+				<Children>
+					<WidgetGroup>
+						<ObjectName>PreviewPlay</ObjectName>
+						<Layout>stacked</Layout>
+						<Size>25f,34f</Size>
+						<Children>
+							<Template src="skin:button_2state_display.xml">
+								<SetVariable name="ObjectName">PlayCue</SetVariable>
+								<SetVariable name="Size">24f,34f</SetVariable>
+								<SetVariable name="ConfigKey">[PreviewDeck1],play</SetVariable>
+								<SetVariable name="ConfigKeyRight">[PreviewDeck1],cue_default</SetVariable>
+								<SetVariable name="ConfigKeyDisp">[PreviewDeck1],play_indicator</SetVariable>
+							</Template>
+							<!--	Turns Orange when playing Cue/HotCue.
+										Only visible when play_indicator=0 -->
+							<Template src="skin:button_2state.xml">
+								<SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
+								<SetVariable name="Size">24f,34f</SetVariable>
+								<SetVariable name="ConfigKey">[PreviewDeck1],play</SetVariable>
+							</Template>
+						</Children>
+					</WidgetGroup>
+					
+					<WidgetGroup>
+						<ObjectName>PreviewOverview</ObjectName>
+						<Size>1me,34f</Size><!-- appearently overview has a minimum width of 143px -->
+						<Layout>horizontal</Layout>
+						<Children>
+							<Overview>
+								<TooltipId>waveform_overview</TooltipId>
+								<Group>[PreviewDeck1]</Group>
+								<Size>1me,34f</Size>
+								<!-- has no effect here
+								<BgColor>#0f0f0f</BgColor>	-->
+								<SignalColor>#bababa</SignalColor>
+								<PlayPosColor>#FF4300</PlayPosColor>
+								<DefaultMark>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+									<Text> %1 </Text>
+								</DefaultMark>
+								<Mark>
+									<Control>cue_point</Control>
+									<Text>C</Text>
+									<Align>top</Align>
+									<Color>#FF001C</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Connection>
+									<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+								</Connection>
+							</Overview>
+						</Children>
+					</WidgetGroup>
+					
+					<WidgetGroup>
+						<ObjectName>PreviewGainKnob</ObjectName>
+						<Size>30f,34f</Size>
+						<Layout>vertical</Layout>
+						<Children>
+							<!-- Wrapping in WidgetGroup enables padding -->
+							<Template src="skin:knob_textless.xml">
+								<SetVariable name="Size">30f,30f</SetVariable>
+								<SetVariable name="group">[PreviewDeck1]</SetVariable>
+								<SetVariable name="ConfigKey">pregain</SetVariable>
+								<SetVariable name="Color">red</SetVariable>
+							</Template>
+						</Children>
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
+			
+			<WidgetGroup><!-- PreviewHotcues -->
+				<Layout>horizontal</Layout>
+				<ObjectNAme>PreviewHotcues</ObjectNAme>
+				<Size>1me,24f</Size>
+				<Children>
+					
+					<Template src="skin:preview_deck_hotcues.xml"/>
+			
+					<WidgetGroup>
+						<ObjectName>Spacer333333</ObjectName>
+						<Size>0me,1me</Size>
+						<Children/>
+					</WidgetGroup>
+					
+				</Children>
+			</WidgetGroup><!-- /PreviewHotcues -->
+			
+			<WidgetGroup><Size>1me,5f</Size><Children/></WidgetGroup>
+			
+		</Children>
+		<Connection>
+			<ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+			<BindProperty>visible</BindProperty>
+		</Connection>
+	</WidgetGroup>
+</Template>
