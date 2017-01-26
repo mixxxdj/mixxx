@@ -43,6 +43,14 @@ class MixxxTest : public testing::Test {
         return m_pConfig;
     }
 
+    // Simulate restarting Mixxx by saving and reloading the UserSettings.
+    void saveAndReloadConfig() {
+        m_pConfig->save();
+        m_pConfig = UserSettingsPointer(
+            new UserSettings(getTestDataDir().filePath("test.cfg")));
+        ControlDoublePrivate::setUserConfig(m_pConfig);
+    }
+
     QTemporaryFile* makeTemporaryFile(const QString& contents) const {
         QByteArray contentsBa = contents.toLocal8Bit();
         QTemporaryFile* file = new QTemporaryFile();
