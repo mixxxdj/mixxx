@@ -62,8 +62,11 @@ class EffectsManager : public QObject {
     QString getPrevEffectId(const QString& effectId);
 
     // Each entry of the set is a pair containing the effect id and its name
-    const QList<QPair<QString, QString> > getEffectNamesFiltered(EffectManifestFilterFnc filter) const;
-    const QList<QPair<QString, QString> > getEffectShortNamesFiltered(EffectManifestFilterFnc filter) const;
+    const QList<QPair<QString, QString> > getEffectNamesFiltered(
+        EffectManifestFilterFnc filter) const;
+    inline const QList<EffectManifest>& getAvailableEffectManifests() const {
+        return m_availableEffectManifests;
+    };
     bool isEQ(const QString& effectId) const;
     QPair<EffectManifest, EffectsBackend*> getEffectManifestAndBackend(
             const QString& effectId) const;
@@ -78,7 +81,10 @@ class EffectsManager : public QObject {
     bool writeRequest(EffectsRequest* request);
 
   signals:
-    void availableEffectsUpdated();
+    void availableEffectsUpdated(EffectManifest);
+
+  private slots:
+    void slotBackendRegisteredEffect(EffectManifest manifest);
 
   private:
     QString debugString() const {
@@ -89,6 +95,7 @@ class EffectsManager : public QObject {
 
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
+    QList<EffectManifest> m_availableEffectManifests;
 
     EngineEffectsManager* m_pEngineEffectsManager;
 

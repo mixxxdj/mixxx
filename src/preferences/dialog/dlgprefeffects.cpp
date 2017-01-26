@@ -18,17 +18,21 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
 
 void DlgPrefEffects::slotUpdate() {
     clear();
-    // Use short names to match order and appearance in WEffectSelector
-    QList<QPair<QString,QString> > effectIdsAndNames = m_pEffectsManager->getEffectShortNamesFiltered(nullptr);
+    const QList<EffectManifest> availableEffectManifests = m_pEffectsManager->getAvailableEffectManifests();
 
-    for (const auto& pair : effectIdsAndNames) {
+    for (const auto& manifest : availableEffectManifests) {
         QListWidgetItem* pItem = new QListWidgetItem();
-        pItem->setData(Qt::UserRole, pair.first);
-        pItem->setText(pair.second);
+        pItem->setData(Qt::UserRole, manifest.id());
+        // Use short names to match order and appearance in WEffectSelector
+        if (!manifest.shortName().isEmpty()) {
+            pItem->setText(manifest.shortName());
+        } else {
+            pItem->setText(manifest.name());
+        }
         availableEffectsList->addItem(pItem);
     }
 
-    if (!effectIdsAndNames.isEmpty()) {
+    if (!availableEffectManifests.isEmpty()) {
         availableEffectsList->setCurrentRow(0);
     }
 }

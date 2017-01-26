@@ -53,13 +53,46 @@ EffectsManager::~EffectsManager() {
     delete m_pEngineEffectsManager;
 }
 
+bool alphabetizeEffectManifests(const EffectManifest& manifest1,
+                                const EffectManifest& manifest2) {
+    QString displayName1 = manifest1.shortName();
+    if (displayName1.isEmpty()) {
+        displayName1 = manifest1.name();
+    }
+
+    QString displayName2 = manifest2.shortName();
+    if (displayName2.isEmpty()) {
+        displayName2 = manifest2.name();
+    }
+
+    return QString::localeAwareCompare(displayName1, displayName2) < 0;
+}
+
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
     DEBUG_ASSERT_AND_HANDLE(pBackend) {
         return;
     }
     m_effectsBackends.append(pBackend);
-    connect(pBackend, SIGNAL(effectRegistered()),
-            this, SIGNAL(availableEffectsUpdated()));
+
+    QList<QString> backendEffects = pBackend->getEffectIds();
+    for (const QString effectId : backendEffects) {
+        m_availableEffectManifests.append(pBackend->getManifest(effectId));
+    }
+
+    qSort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
+          alphabetizeEffectManifests);
+
+    connect(pBackend, SIGNAL(effectRegistered(EffectManifest)),
+            this, SLOT(slotBackendRegisteredEffect(EffectManifest)));
+
+    connect(pBackend, SIGNAL(effectRegistered(EffectManifest)),
+            this, SIGNAL(availableEffectsUpdated(EffectManifest)));
+}
+
+void EffectsManager::slotBackendRegisteredEffect(EffectManifest manifest) {
+    m_availableEffectManifests.append(manifest);
+    qSort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
+          alphabetizeEffectManifests);
 }
 
 void EffectsManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
@@ -71,7 +104,7 @@ const QSet<ChannelHandleAndGroup>& EffectsManager::registeredChannels() const {
 }
 
 bool alphabetizeEffectNameIdPairs(const QPair<QString, QString>& pair1,
-                                 const QPair<QString, QString>& pair2) {
+                                  const QPair<QString, QString>& pair2) {
     return pair1.second < pair2.second;
 }
 
@@ -98,78 +131,48 @@ const QList<QPair<QString, QString> > EffectsManager::getEffectNamesFiltered(
     return filteredEffectNames;
 }
 
-// Each returned QPair has the effect ID and short name.
-const QList<QPair<QString, QString> > EffectsManager::getEffectShortNamesFiltered(
-        EffectManifestFilterFnc filter) const {
-    QList<QPair<QString, QString> > filteredEffectShortNames;
-    QString currentEffectShortName;
-    for (const EffectsBackend* pBackend : m_effectsBackends) {
-        QList<QString> backendEffects = pBackend->getEffectIds();
-        for (const QString effectId : backendEffects) {
-            EffectManifest manifest = pBackend->getManifest(effectId);
-            if (filter != nullptr && !filter(&manifest)) {
-                continue;
-            }
-            currentEffectShortName = manifest.shortName();
-            if (currentEffectShortName.isEmpty()) {
-                currentEffectShortName = manifest.name();
-            }
-            filteredEffectShortNames.append(qMakePair(effectId, currentEffectShortName));
-        }
-    }
-
-    qSort(filteredEffectShortNames.begin(), filteredEffectShortNames.end(),
-          alphabetizeEffectNameIdPairs);
-
-    return filteredEffectShortNames;
-}
-
 bool EffectsManager::isEQ(const QString& effectId) const {
     return getEffectManifest(effectId).isMixingEQ();
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
-    const QList<QPair<QString, QString> > idNamePairs = getEffectShortNamesFiltered(nullptr);
-
-    if (idNamePairs.isEmpty()) {
+    if (m_availableEffectManifests.isEmpty()) {
         return QString();
     }
     if (effectId.isNull()) {
-        return idNamePairs.first().first;
+        return m_availableEffectManifests.first().id();
     }
 
     int index;
-    for (index = 0; index < idNamePairs.size(); ++index) {
-        if (effectId == idNamePairs.at(index).first) {
+    for (index = 0; index < m_availableEffectManifests.size(); ++index) {
+        if (effectId == m_availableEffectManifests.at(index).id()) {
             break;
         }
     }
-    if (++index >= idNamePairs.size()) {
+    if (++index >= m_availableEffectManifests.size()) {
         index = 0;
     }
-    return idNamePairs.at(index).first;
+    return m_availableEffectManifests.at(index).id();
 }
 
 QString EffectsManager::getPrevEffectId(const QString& effectId) {
-    const QList<QPair<QString, QString> > idNamePairs = getEffectShortNamesFiltered(nullptr);
-
-    if (idNamePairs.isEmpty()) {
+    if (m_availableEffectManifests.isEmpty()) {
         return QString();
     }
     if (effectId.isNull()) {
-        return idNamePairs.last().first;
+        return m_availableEffectManifests.last().id();
     }
 
     int index;
-    for (index = 0; index < idNamePairs.size(); ++index) {
-        if (effectId == idNamePairs.at(index).first) {
+    for (index = 0; index < m_availableEffectManifests.size(); ++index) {
+        if (effectId == m_availableEffectManifests.at(index).id()) {
             break;
         }
     }
     if (--index < 0) {
-        index = idNamePairs.size() - 1;
+        index = m_availableEffectManifests.size() - 1;
     }
-    return idNamePairs.at(index).first;
+    return m_availableEffectManifests.at(index).id();
 }
 
 QPair<EffectManifest, EffectsBackend*> EffectsManager::getEffectManifestAndBackend(
@@ -191,6 +194,9 @@ EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const 
 }
 
 EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
+    if (effectId.isEmpty()) {
+        return EffectPointer();
+    }
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId)) {
             return pBackend->instantiateEffect(this, effectId);

@@ -5,24 +5,34 @@
 #include "effects/effectsmanager.h"
 #include "widget/effectwidgetutils.h"
 
-namespace {
-    const QString nullEffectId = "NULL";
-}
-
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
           WBaseWidget(pParent),
           m_pEffectsManager(pEffectsManager) {
 
-    setInsertPolicy(QComboBox::InsertAlphabetically);
     // TODO(xxx): filter out blacklisted effects
     // https://bugs.launchpad.net/mixxx/+bug/1653140
-    QList<QPair<QString,QString> > idNamePairs = m_pEffectsManager->getEffectShortNamesFiltered(nullptr);
-    for (const auto& effectPair : idNamePairs) {
-        addItem(effectPair.second, QVariant(effectPair.first));
+    const QList<EffectManifest> availableEffectManifests = m_pEffectsManager->getAvailableEffectManifests();
+    for (int i = 0; i < availableEffectManifests.size(); ++i) {
+        const EffectManifest& manifest = availableEffectManifests[i];
+
+        QString displayName;
+        if (manifest.shortName().isEmpty()) {
+            displayName = manifest.name();
+        } else {
+            displayName = manifest.shortName();
+        }
+        addItem(displayName, QVariant(manifest.id()));
+
+        //: %1 = effect name; %2 = effect description
+        QString description = tr("%1: %2").arg(manifest.name(), manifest.description());
+        setItemData(i, QVariant(description), Qt::ToolTipRole);
     }
+
     //: Displayed when no effect is loaded
-    addItem(tr("None"), QVariant(nullEffectId));
+    addItem(tr("None"), QVariant());
+    setItemData(availableEffectManifests.size(), QVariant(tr("No effect loaded.")),
+                Qt::ToolTipRole);
 }
 
 void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
@@ -48,28 +58,16 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
 
 void WEffectSelector::slotEffectSelected(int newIndex) {
     const QString id = itemData(newIndex).toString();
-    EffectPointer pEffect;
 
-    bool loadNew = false;
-    if (m_pEffectSlot == nullptr || m_pEffectSlot->getEffect() == nullptr) {
-        loadNew = true;
-    } else if (id != m_pEffectSlot->getEffect()->getManifest().id()) {
-        loadNew = true;
-    }
+    m_pRack->maybeLoadEffect(
+        m_pChainSlot->getChainSlotNumber(),
+        m_pEffectSlot->getEffectSlotNumber(),
+        id);
 
-    if (loadNew) {
-        EffectChainPointer pChain = m_pChainSlot->getEffectChain();
-        if (id == nullEffectId) {
-            pEffect = EffectPointer();
-        } else {
-            pEffect = m_pEffectsManager->instantiateEffect(id);
-        }
-        pChain->replaceEffect(m_pEffectSlot->getEffectSlotNumber(), pEffect);
-    }
+    setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
 }
 
 void WEffectSelector::slotEffectUpdated() {
-    QString description = tr("No effect loaded.");
     int newIndex;
 
     if (m_pEffectSlot != nullptr) {
@@ -77,17 +75,13 @@ void WEffectSelector::slotEffectUpdated() {
         if (pEffect != nullptr) {
             const EffectManifest& manifest = pEffect->getManifest();
             newIndex = findData(QVariant(manifest.id()));
-
-            //: %1 = effect name; %2 = effect description
-            description = tr("%1: %2").arg(manifest.name(), manifest.description());
         } else {
-            newIndex = findData(QVariant(nullEffectId));
+            newIndex = findData(QVariant());
         }
     } else {
-        newIndex = findData(QVariant(nullEffectId));
+        newIndex = findData(QVariant());
     }
 
-    setBaseTooltip(description);
     if (newIndex != -1 && newIndex != currentIndex()) {
         setCurrentIndex(newIndex);
     }
