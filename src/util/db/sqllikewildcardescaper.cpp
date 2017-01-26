@@ -1,5 +1,7 @@
 #include "util/db/sqllikewildcardescaper.h"
 
+#include "util/db/sqllikewildcards.h"
+
 
 QString SqlLikeWildcardEscaper::apply(const QString& escapeString, QChar escapeCharacter) {
     QString escapeCharacterStr(escapeCharacter);

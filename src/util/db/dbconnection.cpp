@@ -8,6 +8,8 @@
 #include <sqlite3.h>
 #endif // __SQLITE3__
 
+#include "util/db/sqllikewildcards.h"
+
 #include "util/string.h"
 #include "util/assert.h"
 
@@ -35,8 +37,6 @@ void makeLatinLow(QChar* c, int count) {
     }
 }
 
-const QChar kSqlLikeMatchOne = '_';
-const QChar kSqlLikeMatchAll = '%';
 const QChar kSqlLikeEscapeDefault = '\0';
 
 // The collating function callback is invoked with a copy of the pArg
