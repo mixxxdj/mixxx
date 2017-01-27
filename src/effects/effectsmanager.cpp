@@ -80,9 +80,10 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 }
 
 void EffectsManager::slotBackendRegisteredEffect(EffectManifest manifest) {
-    m_availableEffectManifests.append(manifest);
-    qSort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
-          alphabetizeEffectManifests);
+    auto insertion_point = qLowerBound(m_availableEffectManifests.begin(),
+                                       m_availableEffectManifests.end(),
+                                       manifest, alphabetizeEffectManifests);
+    m_availableEffectManifests.insert(insertion_point, manifest);
 }
 
 void EffectsManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
