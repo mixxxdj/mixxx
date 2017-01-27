@@ -23,15 +23,16 @@ class LoudnessContourEffectGroupState final {
     std::unique_ptr<EngineFilterBiquad1Peaking> m_low;
     std::unique_ptr<EngineFilterBiquad1HighShelving> m_high;
     CSAMPLE* m_pBuf;
-    double m_oldMasterGain;
+    double m_oldGainKnob;
     double m_oldLoudness;
     double m_oldGain;
     double m_oldFilterGainDb;
-    bool m_oldUseMaster;
+    bool m_oldUseGain;
     unsigned int m_oldSampleRate;
 };
 
-class LoudnessContourEffect : public PerChannelEffectProcessor<LoudnessContourEffectGroupState> {
+class LoudnessContourEffect
+        : public PerChannelEffectProcessor<LoudnessContourEffectGroupState> {
   public:
     LoudnessContourEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     ~LoudnessContourEffect() override;
@@ -59,8 +60,7 @@ class LoudnessContourEffect : public PerChannelEffectProcessor<LoudnessContourEf
     }
 
     EngineEffectParameter* m_pLoudness;
-    EngineEffectParameter* m_pUseMasterGain;
-    std::unique_ptr<ControlProxy> m_pMasterGain;
+    EngineEffectParameter* m_pUseGain;
 };
 
 #endif // LOUDNESSCONTOUREFFECT_H

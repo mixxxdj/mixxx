@@ -469,6 +469,8 @@ void EngineMaster::process(const int iBufferSize) {
             if (m_pVumeter != NULL) {
                 m_pVumeter->collectFeatures(&masterFeatures);
             }
+            masterFeatures.has_gain = true;
+            masterFeatures.gain = m_pMasterGain->get();
             m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
                                              iBufferSize, iSampleRate,
                                              masterFeatures);

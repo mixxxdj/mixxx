@@ -47,9 +47,9 @@ EffectManifest LoudnessContourEffect::getManifest() {
     loudness->setMaximum(0);
 
     EffectManifestParameter* killLow = manifest.addParameter();
-    killLow->setId("useMasterGain");
-    killLow->setName(QObject::tr("Master Gain"));
-    killLow->setDescription(QObject::tr("Follow master Gain"));
+    killLow->setId("useGain");
+    killLow->setName(QObject::tr("Use Gain"));
+    killLow->setDescription(QObject::tr("Follow Gain Knob"));
     killLow->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
     killLow->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     killLow->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -61,11 +61,11 @@ EffectManifest LoudnessContourEffect::getManifest() {
 }
 
 LoudnessContourEffectGroupState::LoudnessContourEffectGroupState()
-        : m_oldMasterGain(1.0),
+        : m_oldGainKnob(1.0),
           m_oldLoudness(0.0),
           m_oldGain(1.0),
           m_oldFilterGainDb(0),
-          m_oldUseMaster(false),
+          m_oldUseGain(false),
           m_oldSampleRate(kStartupSamplerate) {
 
     m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -90,9 +90,8 @@ void LoudnessContourEffectGroupState::setFilters(int sampleRate, double gain) {
 LoudnessContourEffect::LoudnessContourEffect(
                 EngineEffect* pEffect, const EffectManifest& manifest)
         : m_pLoudness(pEffect->getParameterById("loudness")),
-          m_pUseMasterGain(pEffect->getParameterById("useMasterGain")) {
+          m_pUseGain(pEffect->getParameterById("useGain")) {
     Q_UNUSED(manifest);
-    m_pMasterGain = std::make_unique<ControlProxy>("[Master]", "gain");
 }
 
 LoudnessContourEffect::~LoudnessContourEffect() {
@@ -115,26 +114,26 @@ void LoudnessContourEffect::processChannel(
 
     if (enableState != EffectProcessor::DISABLING) {
 
-        bool useMaster = m_pUseMasterGain->toBool();
+        bool useGain = m_pUseGain->toBool() && groupFeatures.has_gain;
         double loudness = m_pLoudness->value();
-        double masterGain = m_pMasterGain->get();
+        double gainKnob = groupFeatures.gain;
 
         filterGainDb = loudness;
 
-        if (useMaster != pState->m_oldUseMaster ||
-                masterGain != pState->m_oldMasterGain ||
+        if (useGain != pState->m_oldUseGain ||
+                gainKnob != pState->m_oldGainKnob ||
                 loudness != pState->m_oldLoudness ||
                 sampleRate != pState->m_oldSampleRate) {
 
-            pState->m_oldUseMaster = useMaster;
-            pState->m_oldMasterGain =  masterGain;
+            pState->m_oldUseGain = useGain;
+            pState->m_oldGainKnob =  gainKnob;
             pState->m_oldLoudness = loudness;
             pState->m_oldSampleRate = sampleRate;
 
-            if (useMaster) {
-                masterGain = math_clamp(masterGain, 0.03, 1.0); // Limit at 0 .. -30 dB
-                double masterGainDb = ratio2db(masterGain);
-                filterGainDb = loudness * masterGainDb / kMaxLoGain;
+            if (useGain) {
+                gainKnob = math_clamp(gainKnob, 0.03, 1.0); // Limit at 0 .. -30 dB
+                double gainKnobDb = ratio2db(gainKnob);
+                filterGainDb = loudness * gainKnobDb / kMaxLoGain;
                 gain = 1; // No need for adjust gain because master gain follows
             }
             else {
