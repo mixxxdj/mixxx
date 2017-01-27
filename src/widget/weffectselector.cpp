@@ -25,7 +25,9 @@ WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManag
 
         //: %1 = effect name; %2 = effect description
         QString description = tr("%1: %2").arg(manifest.name(), manifest.description());
-        setItemData(i, QVariant(description), Qt::ToolTipRole);
+        // The <span/> is a hack to get Qt to treat the string as rich text so
+        // it automatically wraps long lines.
+        setItemData(i, QVariant("<span/>" + description), Qt::ToolTipRole);
     }
 
     //: Displayed when no effect is loaded
