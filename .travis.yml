@@ -15,6 +15,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
+      - gdb
       - libavformat-dev
       - libchromaprint-dev
       - libfaad-dev
@@ -84,4 +85,5 @@ install:
   - scons $COMMON $EXTRA_FLAGS
 
 script:
-  - ./mixxx-test
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then gdb --batch -ex run -ex "thread apply all bt full" -ex quit ./mixxx-test ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k quit ; fi
