@@ -14,10 +14,14 @@ WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManag
     // https://bugs.launchpad.net/mixxx/+bug/1653140
     const QList<EffectManifest> availableEffectManifests =
         m_pEffectsManager->getAvailableEffectManifests();
+    QFontMetrics metrics(font());
+
     for (int i = 0; i < availableEffectManifests.size(); ++i) {
         const EffectManifest& manifest = availableEffectManifests.at(i);
-
-        addItem(manifest.displayName(), QVariant(manifest.id()));
+        QString elidedDisplayName = metrics.elidedText(manifest.displayName(),
+                                                       Qt::ElideMiddle,
+                                                       width() - 2);
+        addItem(elidedDisplayName, QVariant(manifest.id()));
 
         //: %1 = effect name; %2 = effect description
         QString description = tr("%1: %2").arg(manifest.name(), manifest.description());
