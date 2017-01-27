@@ -201,8 +201,10 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         filterEQ = nullptr; // take all
     }
 
-    const QList<EffectManifest> availableEQEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(filterEQ);
-    const QList<EffectManifest> availableQuickEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(hasSuperKnobLinking);
+    const QList<EffectManifest> availableEQEffects =
+        m_pEffectsManager->getAvailableEffectManifestsFiltered(filterEQ);
+    const QList<EffectManifest> availableQuickEffects =
+        m_pEffectsManager->getAvailableEffectManifestsFiltered(hasSuperKnobLinking);
 
     for (QComboBox* box : m_deckEqEffectSelectors) {
         // Populate comboboxes with all available effects
@@ -628,7 +630,8 @@ void DlgPrefEQ::setUpMasterEQ() {
     QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
             "EffectForGroup_[Master]"), kDefaultMasterEqId);
 
-    const QList<EffectManifest> availableMasterEQEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
+    const QList<EffectManifest> availableMasterEQEffects =
+        m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
 
     for (const auto& manifest : availableMasterEQEffects) {
         comboBoxMasterEq->addItem(manifest.name(), QVariant(manifest.id()));
