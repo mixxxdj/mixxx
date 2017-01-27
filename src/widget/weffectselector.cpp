@@ -16,13 +16,7 @@ WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManag
     for (int i = 0; i < availableEffectManifests.size(); ++i) {
         const EffectManifest& manifest = availableEffectManifests.at(i);
 
-        QString displayName;
-        if (manifest.shortName().isEmpty()) {
-            displayName = manifest.name();
-        } else {
-            displayName = manifest.shortName();
-        }
-        addItem(displayName, QVariant(manifest.id()));
+        addItem(manifest.displayName(), QVariant(manifest.id()));
 
         //: %1 = effect name; %2 = effect description
         QString description = tr("%1: %2").arg(manifest.name(), manifest.description());

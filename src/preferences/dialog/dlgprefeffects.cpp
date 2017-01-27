@@ -23,12 +23,7 @@ void DlgPrefEffects::slotUpdate() {
     for (const auto& manifest : availableEffectManifests) {
         QListWidgetItem* pItem = new QListWidgetItem();
         pItem->setData(Qt::UserRole, manifest.id());
-        // Use short names to match order and appearance in WEffectSelector
-        if (!manifest.shortName().isEmpty()) {
-            pItem->setText(manifest.shortName());
-        } else {
-            pItem->setText(manifest.name());
-        }
+        pItem->setText(manifest.displayName());
         availableEffectsList->addItem(pItem);
     }
 
