@@ -36,7 +36,8 @@ EffectManifest LoudnessContourEffect::getManifest() {
     EffectManifestParameter* loudness = manifest.addParameter();
     loudness->setId("loudness");
     loudness->setName(QObject::tr("Loudness"));
-    loudness->setDescription(QObject::tr("Set the gain of the applied loudness contour"));
+    loudness->setDescription(
+            QObject::tr("Set the gain of the applied loudness contour"));
     loudness->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     loudness->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     loudness->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -71,8 +72,10 @@ LoudnessContourEffectGroupState::LoudnessContourEffectGroupState()
     m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
 
     // Initialize the filters with default parameters
-    m_low = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kLoPeakFreq , kHiShelveQ);
-    m_high = std::make_unique<EngineFilterBiquad1HighShelving>(kStartupSamplerate , kHiShelveFreq ,kHiShelveQ);
+    m_low = std::make_unique<EngineFilterBiquad1Peaking>(
+            kStartupSamplerate , kLoPeakFreq , kHiShelveQ);
+    m_high = std::make_unique<EngineFilterBiquad1HighShelving>(
+            kStartupSamplerate , kHiShelveFreq ,kHiShelveQ);
 }
 
 LoudnessContourEffectGroupState::~LoudnessContourEffectGroupState() {
@@ -138,7 +141,8 @@ void LoudnessContourEffect::processChannel(
             }
             else {
                 filterGainDb = -loudness;
-                gain = db2ratio(-filterGainDb); // compensate filter boost to avoid clipping
+                // compensate filter boost to avoid clipping
+                gain = db2ratio(-filterGainDb);
             }
             pState->setFilters(sampleRate, filterGainDb);
         }
@@ -151,7 +155,8 @@ void LoudnessContourEffect::processChannel(
     } else {
         pState->m_low->process(pInput, pOutput, numSamples);
         pState->m_high->process(pOutput, pState->m_pBuf, numSamples);
-        SampleUtil::copyWithRampingGain(pOutput, pState->m_pBuf, pState->m_oldGain, gain, numSamples);
+        SampleUtil::copyWithRampingGain(
+                pOutput, pState->m_pBuf, pState->m_oldGain, gain, numSamples);
     }
 
     pState->m_oldFilterGainDb = filterGainDb ;
