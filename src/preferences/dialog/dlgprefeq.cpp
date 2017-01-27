@@ -27,16 +27,13 @@
 #include "mixer/playermanager.h"
 #include "effects/effectrack.h"
 
-const char* kConfigKey = "[Mixer Profile]";
-const char* kEnableEqs = "EnableEQs";
-const char* kEqsOnly = "EQsOnly";
-const char* kSingleEq = "SingleEQEffect";
-const char* kDefaultEqId = "org.mixxx.effects.bessel8lvmixeq";
-// This is necessary so effect selections set to None are saved
-// and restored across restarts instead of reset to default.
-const char* kNullEffectId = "none";
-const char* kDefaultMasterEqId = kNullEffectId;
-const char* kDefaultQuickEffectId = "org.mixxx.effects.filter";
+const QString kConfigKey = "[Mixer Profile]";
+const QString kEnableEqs = "EnableEQs";
+const QString kEqsOnly = "EQsOnly";
+const QString kSingleEq = "SingleEQEffect";
+const QString kDefaultEqId = "org.mixxx.effects.bessel8lvmixeq";
+const QString kDefaultMasterEqId = QString();
+const QString kDefaultQuickEffectId = "org.mixxx.effects.filter";
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
@@ -147,7 +144,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         // Set the configured effect for box and simpleBox or Bessel8 LV-Mix EQ
         // if none is configured
         QString group = PlayerManager::groupForDeck(i);
-        QString configuredEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
+        QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
                 "EffectForGroup_" + group), kDefaultEqId);
         int selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(configuredEffect);
         if (selectedEffectIndex < 0) {
@@ -160,12 +157,12 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
                 m_filterWaveformEffectLoaded[i] &&
                 !CheckBoxBypass->checkState());
 
-        QString configuredQuickEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
+        QString configuredQuickEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
                 "QuickEffectForGroup_" + group), kDefaultQuickEffectId);
         int selectedQuickEffectIndex =
                 m_deckQuickEffectSelectors[i]->findData(configuredQuickEffect);
-        if (configuredQuickEffect < 0) {
-            configuredQuickEffect =
+        if (selectedQuickEffectIndex < 0) {
+            selectedQuickEffectIndex =
                     m_deckEqEffectSelectors[i]->findData(kDefaultQuickEffectId);
             configuredEffect = kDefaultQuickEffectId;
         }
@@ -224,9 +221,9 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
             }
         }
         //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant(kNullEffectId));
-        if (selectedEffectId == kNullEffectId) {
-            currentIndex = availableEQEffects.size();
+        box->addItem(tr("None"), QVariant());
+        if (selectedEffectId.isNull()) {
+            currentIndex = availableEQEffects.size(); // selects "None"
         }
         if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
             // current selection is not part of the new list
@@ -254,9 +251,9 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
             }
         }
         //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant(kNullEffectId));
-        if (selectedEffectId == kNullEffectId) {
-            currentIndex = availableQuickEffects.size();
+        box->addItem(tr("None"), QVariant());
+        if (selectedEffectId.isNull()) {
+            currentIndex = availableQuickEffects.size(); // selects "None"
         }
         if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
             // current selection is not part of the new list
@@ -628,25 +625,23 @@ void DlgPrefEQ::setUpMasterEQ() {
     connect(comboBoxMasterEq, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotMasterEqEffectChanged(int)));
 
-    QString configuredEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
+    QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
             "EffectForGroup_[Master]"), kDefaultMasterEqId);
 
     const QList<EffectManifest> availableMasterEQEffects = m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
 
-    for (int i = 0; i < availableMasterEQEffects.size(); ++i) {
-        const EffectManifest& manifest = availableMasterEQEffects.at(i);
+    for (const auto& manifest : availableMasterEQEffects) {
         comboBoxMasterEq->addItem(manifest.name(), QVariant(manifest.id()));
-        if (configuredEffect == manifest.id()) {
-            comboBoxMasterEq->setCurrentIndex(i);
-        }
     }
     //: Displayed when no effect is selected
-    comboBoxMasterEq->addItem(tr("None"), QVariant(kNullEffectId));
-    if (configuredEffect == kNullEffectId) {
-        comboBoxMasterEq->setCurrentIndex(availableMasterEQEffects.size());
-    }
+    comboBoxMasterEq->addItem(tr("None"), QVariant());
 
-    slotMasterEqEffectChanged(comboBoxMasterEq->currentIndex());
+    int masterEqIndex = comboBoxMasterEq->findData(configuredEffect);
+    if (masterEqIndex < 0) {
+        masterEqIndex = availableMasterEQEffects.size(); // selects "None"
+    }
+    comboBoxMasterEq->setCurrentIndex(masterEqIndex);
+    slotMasterEqEffectChanged(masterEqIndex);
 
     // Load parameters from preferences:
     EffectPointer effect(m_pEffectMasterEQ);
@@ -678,7 +673,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
 
     QString effectId = comboBoxMasterEq->itemData(effectIndex).toString();
 
-    if (effectId == kNullEffectId) {
+    if (effectId.isNull()) {
         pbResetMasterEq->hide();
     } else {
         pbResetMasterEq->show();
