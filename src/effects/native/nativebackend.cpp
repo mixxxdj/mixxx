@@ -16,6 +16,7 @@
 #include "effects/native/echoeffect.h"
 #include "effects/native/autopaneffect.h"
 #include "effects/native/phasereffect.h"
+#include "effects/native/loudnesscontoureffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -27,7 +28,8 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<ThreeBandBiquadEQEffect>();
     // Compensations EQs    
     registerEffect<GraphicEQEffect>();
-    // Fading Effcts
+    registerEffect<LoudnessContourEffect>();
+    // Fading Effects
     registerEffect<FilterEffect>();
     registerEffect<MoogLadder4FilterEffect>();
     registerEffect<BitCrusherEffect>();
