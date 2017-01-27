@@ -8,8 +8,8 @@
 #include <QDirIterator>
 
 #include "library/browse/browsetablemodel.h"
-#include "soundsourceproxy.h"
-#include "util/time.h"
+#include "sources/soundsourceproxy.h"
+#include "track/trackmetadata.h"
 #include "util/trace.h"
 
 
@@ -89,6 +89,29 @@ void BrowseThread::run() {
     m_mutex.unlock();
 }
 
+namespace {
+
+class YearItem: public QStandardItem {
+public:
+    explicit YearItem(QString year):
+        QStandardItem(year) {
+    }
+
+    QVariant data(int role) const {
+        switch (role) {
+        case Qt::DisplayRole:
+        {
+            const QString year(QStandardItem::data(role).toString());
+            return mixxx::TrackMetadata::formatCalendarYear(year);
+        }
+        default:
+            return QStandardItem::data(role);
+        }
+    }
+};
+
+}
+
 void BrowseThread::populateModel() {
     m_path_mutex.lock();
     MDir thisPath = m_path;
@@ -96,9 +119,9 @@ void BrowseThread::populateModel() {
     m_path_mutex.unlock();
 
     // Refresh the name filters in case we loaded new SoundSource plugins.
-    QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
+    QStringList nameFilters(SoundSourceProxy::getSupportedFileNamePatterns());
 
-    QDirIterator fileIt(thisPath.dir().canonicalPath(), nameFilters,
+    QDirIterator fileIt(thisPath.dir().absolutePath(), nameFilters,
                         QDir::Files | QDir::NoDotAndDotDot);
 
     // remove all rows
@@ -123,107 +146,121 @@ void BrowseThread::populateModel() {
         }
 
         QString filepath = fileIt.next();
-        TrackInfoObject tio(filepath, thisPath.token());
+        TrackPointer pTrack(Track::newTemporary(filepath, thisPath.token()));
+        SoundSourceProxy(pTrack).loadTrackMetadata();
+
         QList<QStandardItem*> row_data;
 
-        QStandardItem* item = new QStandardItem(tio.getFilename());
+        QStandardItem* item = new QStandardItem("0");
+        item->setData("0", Qt::UserRole);
+        row_data.insert(COLUMN_PREVIEW, item);
+
+        item = new QStandardItem(pTrack->getFileName());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_FILENAME, item);
 
-        item = new QStandardItem(tio.getArtist());
+        item = new QStandardItem(pTrack->getArtist());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_ARTIST, item);
 
-        item = new QStandardItem(tio.getTitle());
+        item = new QStandardItem(pTrack->getTitle());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_TITLE, item);
 
-        item = new QStandardItem(tio.getAlbum());
+        item = new QStandardItem(pTrack->getAlbum());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_ALBUM, item);
 
-        item = new QStandardItem(tio.getAlbumArtist());
+        item = new QStandardItem(pTrack->getAlbumArtist());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_ALBUMARTIST, item);
 
-        item = new QStandardItem(tio.getTrackNumber());
+        item = new QStandardItem(pTrack->getTrackNumber());
         item->setToolTip(item->text());
         item->setData(item->text().toInt(), Qt::UserRole);
         row_data.insert(COLUMN_TRACK_NUMBER, item);
 
-        item = new QStandardItem(tio.getYear());
-        item->setToolTip(item->text());
-        item->setData(item->text().toInt(), Qt::UserRole);
+        const QString year(pTrack->getYear());
+        item = new YearItem(year);
+        item->setToolTip(year);
+        // The year column is sorted according to the numeric calendar year
+        item->setData(mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
         row_data.insert(COLUMN_YEAR, item);
 
-        item = new QStandardItem(tio.getGenre());
+        item = new QStandardItem(pTrack->getGenre());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_GENRE, item);
 
-        item = new QStandardItem(tio.getComposer());
+        item = new QStandardItem(pTrack->getComposer());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_COMPOSER, item);
 
-        item = new QStandardItem(tio.getGrouping());
+        item = new QStandardItem(pTrack->getGrouping());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_GROUPING, item);
 
-        item = new QStandardItem(tio.getComment());
+        item = new QStandardItem(pTrack->getComment());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_COMMENT, item);
 
-        QString duration = Time::formatSeconds(qVariantValue<int>(
-                tio.getDuration()), false);
+        QString duration = pTrack->getDurationText(mixxx::Duration::Precision::SECONDS);
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_DURATION, item);
 
-        item = new QStandardItem(tio.getBpmStr());
+        item = new QStandardItem(pTrack->getBpmText());
         item->setToolTip(item->text());
-        item->setData(tio.getBpm(), Qt::UserRole);
+        item->setData(pTrack->getBpm(), Qt::UserRole);
         row_data.insert(COLUMN_BPM, item);
 
-        item = new QStandardItem(tio.getKeyText());
+        item = new QStandardItem(pTrack->getKeyText());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_KEY, item);
 
-        item = new QStandardItem(tio.getType());
+        item = new QStandardItem(pTrack->getType());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_TYPE, item);
 
-        item = new QStandardItem(tio.getBitrateStr());
+        item = new QStandardItem(pTrack->getBitrateText());
         item->setToolTip(item->text());
-        item->setData(tio.getBitrate(), Qt::UserRole);
+        item->setData(pTrack->getBitrate(), Qt::UserRole);
         row_data.insert(COLUMN_BITRATE, item);
 
-        item = new QStandardItem(filepath);
+        item = new QStandardItem(pTrack->getLocation());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_LOCATION, item);
 
-        QDateTime modifiedTime = tio.getFileModifiedTime().toLocalTime();
+        QDateTime modifiedTime = pTrack->getFileModifiedTime().toLocalTime();
         item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
         item->setToolTip(item->text());
         item->setData(modifiedTime, Qt::UserRole);
         row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
-        QDateTime creationTime = tio.getFileCreationTime().toLocalTime();
+        QDateTime creationTime = pTrack->getFileCreationTime().toLocalTime();
         item = new QStandardItem(creationTime.toString(Qt::DefaultLocaleShortDate));
         item->setToolTip(item->text());
         item->setData(creationTime, Qt::UserRole);
         row_data.insert(COLUMN_FILE_CREATION_TIME, item);
+
+        const mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+        item = new QStandardItem(
+                mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
+        item->setToolTip(item->text());
+        item->setData(item->text(), Qt::UserRole);
+        row_data.insert(COLUMN_REPLAYGAIN, item);
 
         rows.append(row_data);
         ++row;
@@ -232,12 +269,12 @@ void BrowseThread::populateModel() {
         if (row % 10 == 0) {
             // this is a blocking operation
             emit(rowsAppended(rows, thisModelObserver));
-            //qDebug() << "Append " << rows.count() << " from " << filepath;
+            qDebug() << "Append " << rows.count() << " from " << filepath;
             rows.clear();
         }
         // Sleep additionally for 10ms which prevents us from GUI freezes
         msleep(20);
     }
     emit(rowsAppended(rows, thisModelObserver));
-    //qDebug() << "Append last " << rows.count() << " from " << thisPath;
+    qDebug() << "Append last " << rows.count();
 }

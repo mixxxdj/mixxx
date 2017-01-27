@@ -6,9 +6,9 @@
 #include <QList>
 #include <QDomDocument>
 
-#include "util.h"
 #include "effects/effect.h"
 #include "engine/channelhandle.h"
+#include "util/class.h"
 
 class EffectsManager;
 class EngineEffectRack;
@@ -100,7 +100,7 @@ class EffectChain : public QObject {
 
   signals:
     // Signal that indicates that an effect has been added or removed.
-    void effectsChanged();
+    void effectChanged(unsigned int effectSlotNumber);
     void nameChanged(const QString& name);
     void descriptionChanged(const QString& name);
     void enabledChanged(bool enabled);

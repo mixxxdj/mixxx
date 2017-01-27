@@ -5,26 +5,25 @@
 #include <QEvent>
 #include <QSplitter>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 
 class WSplitter : public QSplitter, public WBaseWidget {
     Q_OBJECT
   public:
-    WSplitter(QWidget* pParent, ConfigObject<ConfigValue> *pConfig);
-    virtual ~WSplitter();
+    WSplitter(QWidget* pParent, UserSettingsPointer pConfig);
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   protected:
-    bool event(QEvent* pEvent);
+    bool event(QEvent* pEvent) override;
 
   private slots:
     void slotSplitterMoved();
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     ConfigKey m_configKey;
 };
 

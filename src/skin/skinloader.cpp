@@ -14,10 +14,12 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "effects/effectsmanager.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "util/debug.h"
+#include "skin/launchimage.h"
+#include "util/timer.h"
 
-SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
+SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
         m_pConfig(pConfig) {
 }
 
@@ -108,12 +110,13 @@ QString SkinLoader::getSkinPath() {
 }
 
 QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
-                                     MixxxKeyboard* pKeyboard,
+                                     KeyboardEventFilter* pKeyboard,
                                      PlayerManager* pPlayerManager,
                                      ControllerManager* pControllerManager,
                                      Library* pLibrary,
                                      VinylControlManager* pVCMan,
                                      EffectsManager* pEffectsManager) {
+    ScopedTimer timer("SkinLoader::loadDefaultSkin");
     QString skinPath = getSkinPath();
 
     // If we don't have a skin path then fail.
@@ -125,6 +128,17 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                             pControllerManager, pLibrary, pVCMan,
                             pEffectsManager);
     return legacy.parseSkin(skinPath, pParent);
+}
+
+LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {
+    QString skinPath = getSkinPath();
+    LegacySkinParser parser(m_pConfig);
+    LaunchImage* pLaunchImage = parser.parseLaunchImage(skinPath, pParent);
+    if (pLaunchImage == nullptr) {
+        // Construct default LaunchImage
+        pLaunchImage = new LaunchImage(pParent, QString());
+    }
+    return pLaunchImage;
 }
 
 QString SkinLoader::pickResizableSkin(QString oldSkin) {

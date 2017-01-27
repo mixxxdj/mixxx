@@ -6,6 +6,25 @@ from mixxx import Feature
 import SCons.Script as SCons
 import depends
 
+class OpenGLES(Feature):
+    def description(self):
+        return "OpenGL-ES >= 2.0 support [Experimental]"
+
+    def enabled(self, build):
+        build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
+	return int(build.flags['opengles'])
+
+    def add_options(self, build, vars):
+        vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+	if build.flags['opengles']:
+	    build.env.Append(CPPDEFINES='__OPENGLES__')
+
+    def sources(self, build):
+        return []
 
 class HSS1394(Feature):
     def description(self):
@@ -45,7 +64,8 @@ class HSS1394(Feature):
 
 
 class HID(Feature):
-    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-pre'
+    INTERNAL_LINK = False
+    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-rc1'
 
     def description(self):
         return "HID controller support"
@@ -62,18 +82,21 @@ class HID(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        # TODO(XXX) allow external hidapi install, but for now we just use our
-        # internal one.
-        build.env.Append(
-            CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
 
         if build.platform_is_linux:
-            build.env.ParseConfig(
-                'pkg-config libusb-1.0 --silence-errors --cflags --libs')
-            if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
-                    not conf.CheckHeader('libusb-1.0/libusb.h')):
-                raise Exception(
-                    'Did not find the libusb 1.0 development library or its header file')
+            # Try using system lib
+            if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
+                # No System Lib found
+                self.INTERNAL_LINK = True
+                build.env.ParseConfig(
+                    'pkg-config libusb-1.0 --silence-errors --cflags --libs')
+                if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
+                        not conf.CheckHeader('libusb-1.0/libusb.h')):
+                    raise Exception(
+                           'Did not find the libusb 1.0 development library or its header file')
+            else:
+                build.env.ParseConfig('pkg-config hidapi-libusb --silence-errors --cflags --libs')
+
 
             # Optionally add libpthread and librt. Some distros need this.
             conf.CheckLib(['pthread', 'libpthread'])
@@ -83,29 +106,37 @@ class HID(Feature):
             build.env.Append(CCFLAGS='-pthread')
             build.env.Append(LINKFLAGS='-pthread')
 
-        elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
-            raise Exception('Did not find the setupapi library, exiting.')
-        elif build.platform_is_osx:
-            build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
+        else:
+            self.INTERNAL_LINK = True
+            if build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
+                raise Exception('Did not find the setupapi library, exiting.')
+            elif build.platform_is_osx:
+                build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
 
         build.env.Append(CPPDEFINES='__HID__')
+        if self.INTERNAL_LINK:
+            build.env.Append(
+                 CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
 
     def sources(self, build):
         sources = ['controllers/hid/hidcontroller.cpp',
                    'controllers/hid/hidenumerator.cpp',
                    'controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
-        if build.platform_is_windows:
-            # Requires setupapi.lib which is included by the above check for
-            # setupapi.
-            sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
-        elif build.platform_is_linux:
-            sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
-        elif build.platform_is_osx:
-            sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
+        if self.INTERNAL_LINK:
+            if build.platform_is_windows:
+                # Requires setupapi.lib which is included by the above check for
+                # setupapi.
+                sources.append(
+                    os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
+            elif build.platform_is_linux:
+                # hidapi compiles the libusb implementation by default on Linux
+                sources.append(
+                    os.path.join(self.HIDAPI_INTERNAL_PATH, 'libusb/hid.c'))
+            elif build.platform_is_osx:
+                sources.append(
+                    os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
+
         return sources
 
 
@@ -179,7 +210,7 @@ class Mad(Feature):
         build.env.Append(CPPDEFINES='__MAD__')
 
     def sources(self, build):
-        return ['soundsourcemp3.cpp']
+        return ['sources/soundsourcemp3.cpp']
 
 
 class CoreAudio(Feature):
@@ -214,7 +245,7 @@ class CoreAudio(Feature):
         build.env.Append(CPPDEFINES='__COREAUDIO__')
 
     def sources(self, build):
-        return ['soundsourcecoreaudio.cpp',
+        return ['sources/soundsourcecoreaudio.cpp',
                 '#lib/apple/CAStreamBasicDescription.cpp']
 
 
@@ -322,7 +353,7 @@ class VinylControl(Feature):
     def sources(self, build):
         sources = ['vinylcontrol/vinylcontrol.cpp',
                    'vinylcontrol/vinylcontrolxwax.cpp',
-                   'dlgprefvinyl.cpp',
+                   'preferences/dialog/dlgprefvinyl.cpp',
                    'vinylcontrol/vinylcontrolsignalwidget.cpp',
                    'vinylcontrol/vinylcontrolmanager.cpp',
                    'vinylcontrol/vinylcontrolprocessor.cpp',
@@ -340,10 +371,10 @@ class VinylControl(Feature):
 
 class Vamp(Feature):
     INTERNAL_LINK = False
-    INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
+    INTERNAL_VAMP_PATH = '#lib/vamp-2.6'
 
     def description(self):
-        return "Vamp Analysers support"
+        return "Vamp Analyzer support"
 
     def enabled(self, build):
         build.flags['vamp'] = util.get_flags(build.env, 'vamp', 1)
@@ -358,6 +389,9 @@ class Vamp(Feature):
         if not self.enabled(build):
             return
 
+        build.env.Append(CPPDEFINES='__VAMP__')
+        build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
+
         # If there is no system vamp-hostdk installed, then we'll directly link
         # the vamp-hostsdk.
         if not conf.CheckLib(['vamp-hostsdk']):
@@ -367,9 +401,8 @@ class Vamp(Feature):
 
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
-            # Optionally link libdl and libX11. Required for some distros.
+            # Optionally link libdl Required for some distros.
             conf.CheckLib(['dl', 'libdl'])
-            conf.CheckLib(['X11', 'libX11'])
 
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
@@ -380,14 +413,18 @@ class Vamp(Feature):
                 'pkg-config fftw3 --silence-errors --cflags --libs')
 
     def sources(self, build):
-        sources = ['vamp/vampanalyser.cpp',
-                   'vamp/vamppluginloader.cpp',
-                   'analyserbeats.cpp',
-                   'dlgprefbeats.cpp']
+        sources = ['analyzer/vamp/vampanalyzer.cpp',
+                   'analyzer/vamp/vamppluginloader.cpp',
+                   'analyzer/analyzerbeats.cpp',
+                   'analyzer/analyzerkey.cpp',
+                   'preferences/dialog/dlgprefbeats.cpp',
+                   'preferences/dialog/dlgprefkey.cpp']
+
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
             sources.extend(path % hostsdk_src_path for path in
-                           ['%s/PluginBufferingAdapter.cpp',
+                           ['%s/Files.cpp',
+                            '%s/PluginBufferingAdapter.cpp',
                             '%s/PluginChannelAdapter.cpp',
                             '%s/PluginHostAdapter.cpp',
                             '%s/PluginInputDomainAdapter.cpp',
@@ -428,8 +465,8 @@ class ModPlug(Feature):
             raise Exception('Could not find libmodplug shared library.')
 
     def sources(self, build):
-        depends.Qt.uic(build)('dlgprefmodplugdlg.ui')
-        return ['soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
+        depends.Qt.uic(build)('preferences/dialog/dlgprefmodplugdlg.ui')
+        return ['sources/soundsourcemodplug.cpp', 'preferences/dialog/dlgprefmodplug.cpp']
 
 
 class FAAD(Feature):
@@ -486,7 +523,7 @@ class WavPack(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=False)
+        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=True)
         if not have_wv:
             raise Exception(
                 'Could not find libwavpack, libwv or its development headers.')
@@ -513,27 +550,41 @@ class ColorDiagnostics(Feature):
         build.env.Append(CCFLAGS='-fcolor-diagnostics')
 
 
-class AddressSanitizer(Feature):
+class Sanitizers(Feature):
+    # Known sanitizers, their names, and their -fsanitize=foo argument.
+    SANITIZERS = [('asan', 'AddressSanitizer', 'address'),
+                  ('ubsan', 'UndefinedBehaviorSanitizer', 'undefined'),
+                  ('tsan', 'ThreadSanitizer', 'thread')]
     def description(self):
-        return "Address Sanitizer"
+        return "Clang Sanitizers (asan, ubsan, tsan, etc.)"
 
     def enabled(self, build):
-        build.flags['asan'] = util.get_flags(build.env, 'asan', 0)
-        return bool(int(build.flags['asan']))
+        any_enabled = False
+        for keyword, _, _ in Sanitizers.SANITIZERS:
+            build.flags[keyword] = util.get_flags(build.env, keyword, 0)
+            any_enabled = any_enabled or bool(int(build.flags[keyword]))
+        return any_enabled
 
     def add_options(self, build, vars):
-        vars.Add("asan", "Set to 1 to enable linking against the Clang AddressSanitizer.", 0)
+        for keyword, name, _ in Sanitizers.SANITIZERS:
+            vars.Add(keyword, "Set to 1 to enable the Clang %s." % name, 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
         if not build.compiler_is_clang:
-            raise Exception('Address Sanitizer is only available using clang.')
+            raise Exception('Sanitizers are only available when using clang.')
 
-        # -fno-omit-frame-pointer gets much better stack traces in asan output.
-        build.env.Append(CCFLAGS="-fsanitize=address -fno-omit-frame-pointer")
-        build.env.Append(LINKFLAGS="-fsanitize=address -fno-omit-frame-pointer")
+        sanitizers = []
+        for keyword, _, fsanitize in Sanitizers.SANITIZERS:
+            if bool(int(build.flags[keyword])):
+                sanitizers.append(fsanitize)
+
+        # The Optimize feature below checks whether we are enabled and prevents
+        # -fomit-frame-pointer if any sanitizer is enabled.
+        build.env.Append(CCFLAGS="-fsanitize=%s" % ','.join(sanitizers))
+        build.env.Append(LINKFLAGS="-fsanitize=%s" % ','.join(sanitizers))
 
 
 class PerfTools(Feature):
@@ -601,12 +652,38 @@ class AsmLib(Feature):
             build.env.Prepend(LIBS='libacof%so' % build.bitwidth)
 
 
+class BuildTime(Feature):
+    def description(self):
+        return "Use __DATE__ and __TIME__"
+
+    def enabled(self, build):
+        build.flags['buildtime'] = util.get_flags(build.env, 'buildtime', 1)
+        if int(build.flags['buildtime']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add(
+            'buildtime', 'Set to 0 to disable build time (__DATE__ and __TIME__) usage.', 1)
+
+    def configure(self, build, conf):
+        # Distributions like openSUSE use tools (e. g. build-compare) to detect
+        # whether a built binary differs from a former build to avoid unneeded
+        # publishing of packages.
+        # If __DATE__ and __TIME__ are used the built binary differs always but
+        # the tools cannot detect the root and publish a new package although
+        # the only change is caused by __DATE__ and __TIME__.
+        # So let distributions disable __DATE__ and __TIME__ via buildtime=0.
+        if not self.enabled(build):
+            build.env.Append(CPPDEFINES='DISABLE_BUILDTIME')
+
+
 class QDebug(Feature):
     def description(self):
         return "Debugging message output"
 
     def enabled(self, build):
-        build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 0)
+        build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 1)
         if build.platform_is_windows:
             if build.build_is_debug:
                 # Turn general debugging flag on too if debug build is specified
@@ -663,7 +740,7 @@ class Verbose(Feature):
 
 class Profiling(Feature):
     def description(self):
-        return "gprof/Saturn profiling support"
+        return "profiling (e.g. gprof) support"
 
     def enabled(self, build):
         build.flags['profiling'] = util.get_flags(build.env, 'profiling', 0)
@@ -675,7 +752,7 @@ class Profiling(Feature):
     def add_options(self, build, vars):
         if not build.platform_is_windows:
             vars.Add('profiling',
-                     '(DEVELOPER) Set to 1 to enable profiling using gprof (Linux) or Saturn (OS X)', 0)
+                     '(DEVELOPER) Set to 1 to enable profiling using gprof (Linux). Disables -fomit-frame-pointer.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -683,9 +760,6 @@ class Profiling(Feature):
         if build.platform_is_linux or build.platform_is_bsd:
             build.env.Append(CCFLAGS='-pg')
             build.env.Append(LINKFLAGS='-pg')
-        elif build.platform_is_osx:
-            build.env.Append(CCFLAGS='-finstrument-functions')
-            build.env.Append(LINKFLAGS='-lSaturn')
 
 
 class TestSuite(Feature):
@@ -714,8 +788,9 @@ class TestSuite(Feature):
         test_env = build.env.Clone()
 
         # -pthread tells GCC to do the right thing regardless of system
-        test_env.Append(CCFLAGS='-pthread')
-        test_env.Append(LINKFLAGS='-pthread')
+        if build.toolchain_is_gnu:
+            test_env.Append(CCFLAGS='-pthread')
+            test_env.Append(LINKFLAGS='-pthread')
 
         test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
         gtest_dir = test_env.Dir("#lib/gtest-1.7.0")
@@ -726,6 +801,7 @@ class TestSuite(Feature):
 
         env = test_env
         SCons.Export('env')
+        SCons.Export('build')
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
@@ -736,12 +812,18 @@ class TestSuite(Feature):
 
         env.SConscript(env.File('SConscript', gmock_dir))
 
+        # Build the benchmark library
+        test_env.Append(CPPPATH="#lib/benchmark/include")
+        benchmark_dir = test_env.Dir("#lib/benchmark")
+        test_env['LIB_OUTPUT'] = '#/lib/benchmark/lib'
+        env.SConscript(env.File('SConscript', benchmark_dir))
+
         return []
 
 
-class Shoutcast(Feature):
+class LiveBroadcasting(Feature):
     def description(self):
-        return "Shoutcast Broadcasting (OGG/MP3)"
+        return "Live Broadcasting Support"
 
     def enabled(self, build):
         build.flags['shoutcast'] = util.get_flags(build.env, 'shoutcast', 1)
@@ -750,14 +832,14 @@ class Shoutcast(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 1)
+        vars.Add('shoutcast', 'Set to 1 to enable live broadcasting support', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
         libshout_found = conf.CheckLib(['libshout', 'shout'])
-        build.env.Append(CPPDEFINES='__SHOUTCAST__')
+        build.env.Append(CPPDEFINES='__BROADCAST__')
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
@@ -765,12 +847,13 @@ class Shoutcast(Feature):
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
             conf.CheckLib('ws2_32')
+            conf.CheckLib('gdi32')
 
     def sources(self, build):
-        depends.Qt.uic(build)('dlgprefshoutcastdlg.ui')
-        return ['dlgprefshoutcast.cpp',
-                'shoutcast/shoutcastmanager.cpp',
-                'engine/sidechain/engineshoutcast.cpp']
+        depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')
+        return ['preferences/dialog/dlgprefbroadcast.cpp',
+                'broadcast/broadcastmanager.cpp',
+                'engine/sidechain/enginebroadcast.cpp']
 
 
 class Opus(Feature):
@@ -800,12 +883,6 @@ class Opus(Feature):
 
         # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
-        if not conf.CheckLib(['opus', 'libopus']):
-            if explicit:
-                raise Exception('Could not find libopus.')
-            else:
-                build.flags['opus'] = 0
-            return
         if not conf.CheckLib(['opusfile', 'libopusfile']):
             if explicit:
                 raise Exception('Could not find libopusfile.')
@@ -819,12 +896,12 @@ class Opus(Feature):
             build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
 
     def sources(self, build):
-        return ['soundsourceopus.cpp']
+        return ['sources/soundsourceopus.cpp']
 
 
 class FFMPEG(Feature):
     def description(self):
-        return "FFMPEG/LibAV support"
+        return "FFmpeg/Avconv support"
 
     def enabled(self, build):
         build.flags['ffmpeg'] = util.get_flags(build.env, 'ffmpeg', 0)
@@ -833,16 +910,16 @@ class FFMPEG(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('ffmpeg', 'Set to 1 to enable FFMPEG/Libav support \
-                           (supported FFMPEG 0.11-2.0 and Libav 0.8.x-9.x)', 0)
+        vars.Add('ffmpeg', 'Set to 1 to enable FFmpeg/Avconv support \
+                           (supported FFmpeg 0.11-2.x and Avconv 0.8.x-11.x)', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
-        # Supported version are FFMPEG 0.11-2.0 and Libav 0.8.x-9.x
-        # FFMPEG is multimedia library that can be found http://ffmpeg.org/
-        # Libav is fork of FFMPEG that is used mainly in Debian and Ubuntu
+        # Supported version are FFmpeg 0.11-2.x and Avconv 0.8.x-11.x
+        # FFmpeg is multimedia library that can be found http://ffmpeg.org/
+        # Avconv is fork of FFmpeg that is used mainly in Debian and Ubuntu
         # that can be found http://libav.org
         if build.platform_is_linux or build.platform_is_osx \
                 or build.platform_is_bsd:
@@ -857,12 +934,12 @@ class FFMPEG(Feature):
                                 'It can be separated from main package so'
                                 'check your operating system packages.')
 
-            # Needed to build new FFMPEG
+            # Needed to build new FFmpeg
             build.env.Append(CCFLAGS='-D__STDC_CONSTANT_MACROS')
             build.env.Append(CCFLAGS='-D__STDC_LIMIT_MACROS')
             build.env.Append(CCFLAGS='-D__STDC_FORMAT_MACROS')
 
-            # Grabs the libs and cflags for ffmpeg
+            # Grabs the libs and cflags for FFmpeg
             build.env.ParseConfig('pkg-config libavcodec --silence-errors \
                                   --cflags --libs')
             build.env.ParseConfig('pkg-config libavformat --silence-errors \
@@ -870,49 +947,8 @@ class FFMPEG(Feature):
             build.env.ParseConfig('pkg-config libavutil --silence-errors \
                                    --cflags --libs')
 
-            # What are libavresample and libswresample??
-            # Libav forked from FFMPEG in version 0.10 and there wasn't any
-            # separated library for resampling audio. There we resample API
-            # (actually two and they are both a big mess). API is now marked as
-            # depricated but both are  still available in current version
-            # FFMPEG up to version 1.2 or Libav up to version 9
-            # In some point developers FFMPEG decided to make libswresample
-            # (Software Resample). Libav people also noticed API problem and
-            # created libavresample. After that libavresample were imported in
-            # FFMPEG and it's API/ABI compatible with LibAV.
-            # If you have FFMPEG version 0.10 or Libav version 0.8.x your
-            # resampling is done through inner API
-            # FFMPEG 0.11 Have libswresample but ain't libavresample
-            # FFMPEG 1.0 and above have libswresample and libavresample
-            # Libav after 0.8.x and between 9 have some libavresample
-            # Libav 9 have libavresample have libavresample
-            # Most Linux systems have separated packages for libswresample/
-            # libavresample so you can have them installed or not in you
-            # system most use libavresample.
-            # Ubuntu/Debian only have Libav 0.8.x available (There is PPA for
-            # libav 9)
-            # Fedora uses newest FFMPEG 1.x/2.x (With compability libs)
-            # openSUSE uses newest FFMPEG 1.x/2.x (With compability libs)
-            # Mac OS X does have FFMPEG available (with libswresample) from
-            # macports or homebrew
-            # Microsoft Windows can download FFMPEG or Libav resample libraries
-
-            if conf.CheckForPKG('libavresample', '0.0.3'):
-                build.env.ParseConfig('pkg-config libavresample \
-                                       --silence-errors --cflags --libs')
-                build.env.Append(CPPDEFINES='__FFMPEGFILE__')
-                build.env.Append(CPPDEFINES='__LIBAVRESAMPLE__')
-                self.status = "Enabled -- with libavresample"
-            elif conf.CheckForPKG('libswresample', '0.0.1'):
-                build.env.ParseConfig('pkg-config libswresample \
-                                       --silence-errors --cflags --libs')
-                build.env.Append(CPPDEFINES='__FFMPEGFILE__')
-                build.env.Append(CPPDEFINES='__LIBSWRESAMPLE__')
-                self.status = "Enabled -- with libswresample"
-            else:
-                build.env.Append(CPPDEFINES='__FFMPEGFILE__')
-                build.env.Append(CPPDEFINES='__FFMPEGOLDAPI__')
-                self.status = "Enabled --  with old resample API"
+            build.env.Append(CPPDEFINES='__FFMPEGFILE__')
+            self.status = "Enabled"
 
         else:
             # aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev
@@ -939,7 +975,7 @@ class FFMPEG(Feature):
             build.env.Append(LIBS='ogg')
             build.env.Append(CPPDEFINES='__FFMPEGFILE__')
 
-        # Add new path for ffmpeg header files.
+        # Add new path for FFmpeg header files.
         # Non-crosscompiled builds need this too, don't they?
         if build.crosscompile and build.platform_is_windows \
                 and build.toolchain_is_gnu:
@@ -947,7 +983,7 @@ class FFMPEG(Feature):
                                                   'include', 'ffmpeg'))
 
     def sources(self, build):
-        return ['soundsourceffmpeg.cpp',
+        return ['sources/soundsourceffmpeg.cpp',
                 'encoder/encoderffmpegresample.cpp',
                 'encoder/encoderffmpegcore.cpp',
                 'encoder/encoderffmpegmp3.cpp',
@@ -959,15 +995,19 @@ class Optimize(Feature):
     LEVEL_PORTABLE = 'portable'
     LEVEL_NATIVE = 'native'
     LEVEL_LEGACY = 'legacy'
-
+    LEVEL_FASTBUILD = 'fastbuild'
     LEVEL_DEFAULT = LEVEL_PORTABLE
 
     def description(self):
         return "Optimization and Tuning"
 
     @staticmethod
-    def get_optimization_level():
-        optimize_level = SCons.ARGUMENTS.get('optimize', Optimize.LEVEL_DEFAULT)
+    def get_optimization_level(build):
+        optimize_level = build.env.get('optimize', None)
+        if optimize_level is None:
+            optimize_level = SCons.ARGUMENTS.get('optimize',
+                                                 Optimize.LEVEL_DEFAULT)
+
         try:
             optimize_integer = int(optimize_level)
             if optimize_integer == 0:
@@ -986,24 +1026,31 @@ class Optimize(Feature):
             optimize_level = Optimize.LEVEL_OFF
 
         if optimize_level not in (Optimize.LEVEL_OFF, Optimize.LEVEL_PORTABLE,
-                                  Optimize.LEVEL_NATIVE, Optimize.LEVEL_LEGACY):
+                                  Optimize.LEVEL_NATIVE, Optimize.LEVEL_LEGACY,
+                                  Optimize.LEVEL_FASTBUILD):
             raise Exception("optimize={} is not supported. "
                             "Use portable, native, legacy or off"
                             .format(optimize_level))
         return optimize_level
 
     def enabled(self, build):
-        build.flags['optimize'] = Optimize.get_optimization_level()
+        build.flags['optimize'] = Optimize.get_optimization_level(build)
         return build.flags['optimize'] != Optimize.LEVEL_OFF
 
     def add_options(self, build, vars):
         vars.Add(
             'optimize', 'Set to:\n' \
                         '  portable: sse2 CPU (>= Pentium 4)\n' \
+                        '  fastbuild: portable, but without costly optimization steps\n' \
                         '  native: optimized for the CPU of this system\n' \
                         '  legacy: pure i386 code' \
                         '  off: no optimization' \
                         , Optimize.LEVEL_DEFAULT)
+
+    def build_status(self, level, text=None):
+        if text is None:
+            return level
+        return '%s: %s' % (level, text)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -1012,13 +1059,15 @@ class Optimize(Feature):
         optimize_level = build.flags['optimize']
 
         if optimize_level == Optimize.LEVEL_OFF:
-            self.status = "off: no optimization"
+            self.status = self.build_status(optimize_level, "no optimization")
             return
 
         if build.toolchain_is_msvs:
+            fastbuild_enabled = optimize_level == Optimize.LEVEL_FASTBUILD
+
             # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
             # !!! /GL is incompatible with /ZI, which is set by mscvdebug
-            build.env.Append(CCFLAGS='/GL')
+            build.env.Append(CCFLAGS='/GL-' if fastbuild_enabled else '/GL')
 
             # Use the fastest floating point math library
             # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
@@ -1029,7 +1078,7 @@ class Optimize(Feature):
             # -- this relies on ANSI control characters and tends to overwhelm
             # Jenkins logs) Should we turn on PGO ?
             # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
-            build.env.Append(LINKFLAGS='/LTCG:NOSTATUS')
+            build.env.Append(LINKFLAGS='/LTCG:OFF' if fastbuild_enabled else '/LTCG:NOSTATUS')
 
             # Suggested for unused code removal
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx
@@ -1047,16 +1096,22 @@ class Optimize(Feature):
             # In general, you should pick /O2 over /Ox
             build.env.Append(CCFLAGS='/O2')
 
-            if optimize_level == Optimize.LEVEL_PORTABLE:
-                # portable-binary: sse2 CPU (>= Pentium 4)
-                self.status = "portable: sse2 CPU (>= Pentium 4)"
-                build.env.Append(CCFLAGS='/arch:SSE2')
+            if optimize_level == Optimize.LEVEL_PORTABLE or fastbuild_enabled:
+                # fastbuild/portable-binary: sse2 CPU (>= Pentium 4)
+                self.status = self.build_status(optimize_level,
+                                                "sse2 CPU (>= Pentium 4)")
+                # SSE and SSE2 are core instructions on x64
+                # and consequently raise a warning message from compiler with this flag on x64.
+                if not build.machine_is_64bit:
+                    build.env.Append(CCFLAGS='/arch:SSE2')
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
             elif optimize_level == Optimize.LEVEL_NATIVE:
-                self.status = "native: tuned for this CPU (%s)" % build.machine
+                self.status = self.build_status(
+                    optimize_level, "tuned for this CPU (%s)" % build.machine)
                 build.env.Append(CCFLAGS='/favor:' + build.machine)
             elif optimize_level == Optimize.LEVEL_LEGACY:
-                self.status = "legacy: pure i386 code"
+                self.status = self.build_status(optimize_level,
+                                                "pure i386 code")
             else:
                 # Not possible to reach this code if enabled is written
                 # correctly.
@@ -1069,6 +1124,10 @@ class Optimize(Feature):
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
 
         elif build.toolchain_is_gnu:
+            # Portable is fast enough on GNU.
+            if optimize_level == Optimize.LEVEL_FASTBUILD:
+                optimize_level = Optimize.LEVEL_PORTABLE
+
             # Common flags to all optimizations.
             # -ffast-math will pevent a performance penalty by denormals
             # (floating point values almost Zero are treated as Zero)
@@ -1076,27 +1135,34 @@ class Optimize(Feature):
 
             # the following optimisation flags makes the engine code ~3 times
             # faster, measured on a Atom CPU.
-            build.env.Append(CCFLAGS='-O3 -ffast-math -funroll-loops')
+            build.env.Append(CCFLAGS='-O3')
+            build.env.Append(CCFLAGS='-ffast-math')
+            build.env.Append(CCFLAGS='-funroll-loops')
 
-            # set -fomit-frame-pointer when we don't profile.
+            # set -fomit-frame-pointer when we don't profile and are not using
+            # Clang sanitizers.
             # Note: It is only included in -O on machines where it does not
             # interfere with debugging
-            if not int(build.flags['profiling']):
+            if not int(build.flags['profiling']) and not Sanitizers().enabled(build):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
             if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable: sse2 CPU (>= Pentium 4)
-                if build.architecture_is_x86: 
-                    self.status = "portable: sse2 CPU (>= Pentium 4)"
+                if build.architecture_is_x86:
+                    self.status = self.build_status(optimize_level,
+                                                    "sse2 CPU (>= Pentium 4)")
                     build.env.Append(CCFLAGS='-mtune=generic')
                     # -mtune=generic pick the most common, but compatible options.
-                    # on arm platforms equivalent to -march=arch 
+                    # on arm platforms equivalent to -march=arch
                     if not build.machine_is_64bit:
-                        # the sse flags are not set by default on 32 bit bilds 
-                        # but are not supported on arm builds                     
-                        build.env.Append(CCFLAGS='-msse2 -mfpmath=sse') 
+                        # the sse flags are not set by default on 32 bit builds
+                        # but are not supported on arm builds
+                        build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = self.build_status(optimize_level)
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
                 else:
-                    self.status = "portable"
+                    self.status = self.build_status(optimize_level)
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # This should be our default build for distribution
                 # It's a little sketchy, but turning on SSE2 will gain
@@ -1109,61 +1175,45 @@ class Optimize(Feature):
                 # -- rryan 2/2011
                 # Note: SSE2 is a core part of x64 CPUs
             elif optimize_level == Optimize.LEVEL_NATIVE:
-                self.status = "native: tuned for this CPU (%s)" % build.machine
+                self.status = self.build_status(
+                    optimize_level, "tuned for this CPU (%s)" % build.machine)
                 build.env.Append(CCFLAGS='-march=native')
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automaticaly
                 if build.architecture_is_x86 and not build.machine_is_64bit:
-                    # the sse flags are not set by default on 32 bit bilds 
-                    # but are not supported on arm builds  
-                    build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                    # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
+                    # not set by default (not supported on arm builds)
+                    # If -msse is not implicite set, it falls back to mfpmath=387
+                    # and a compiler warning is issued (tested with gcc 4.8.4)
+                    build.env.Append(CCFLAGS='-mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = self.build_status(optimize_level)
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
             elif optimize_level == Optimize.LEVEL_LEGACY:
                 if build.architecture_is_x86:
-                    self.status = "legacy: pure i386 code"
+                    self.status = self.build_status(
+                        optimize_level, "pure i386 code")
                     build.env.Append(CCFLAGS='-mtune=generic')
                     # -mtune=generic pick the most common, but compatible options.
-                    # on arm platforms equivalent to -march=arch 
-                else: 
-                    self.status = "legacy"    
+                    # on arm platforms equivalent to -march=arch
+                else:
+                    self.status = self.build_status(optimize_level)
             else:
                 # Not possible to reach this code if enabled is written
                 # correctly.
                 raise Exception("optimize={} is not supported. "
-                                "Use portable, native, legacy or off"
+                                "Use portable, native, fastbuild, legacy or off"
                                 .format(optimize_level))
 
             # what others do:
-            # soundtouch uses just -O3 in Ubuntu Trusty
+            # soundtouch uses just -O3 and -msse in Ubuntu Trusty
             # rubberband uses just -O2 in Ubuntu Trusty
             # fftw3 (used by rubberband) in Ubuntu Trusty
             # -O3 -fomit-frame-pointer -mtune=native -malign-double
             # -fstrict-aliasing -fno-schedule-insns -ffast-math
 
-
-class AutoDjCrates(Feature):
-    def description(self):
-        return "Auto-DJ crates (for random tracks)"
-
-    def enabled(self, build):
-        build.flags['autodjcrates'] = \
-            util.get_flags(build.env, 'autodjcrates', 1)
-        if int(build.flags['autodjcrates']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('autodjcrates',
-                 'Set to 1 to enable crates as a source for random Auto-DJ tracks.', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPDEFINES='__AUTODJCRATES__')
-
-    def sources(self, build):
-        return ['library/dao/autodjcratesdao.cpp']
 
 class MacAppStoreException(Feature):
     def description(self):
@@ -1214,3 +1264,36 @@ class LocaleCompare(Feature):
         if not conf.CheckLib(['sqlite3']):
             raise Exception('Missing libsqlite3 -- exiting!')
         build.env.Append(CPPDEFINES='__SQLITE3__')
+
+class Battery(Feature):
+    def description(self):
+        return "Battery meter support."
+
+    def enabled(self, build):
+        build.flags['battery'] = util.get_flags(build.env, 'battery', 1)
+        if int(build.flags['battery']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('battery',
+                 'Set to 1 to enable battery meter support.')
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.Append(CPPDEFINES='__BATTERY__')
+
+    def sources(self, build):
+        if build.platform_is_windows:
+            return ["util/battery/batterywindows.cpp"]
+        elif build.platform_is_osx:
+            return ["util/battery/batterymac.cpp"]
+        elif build.platform_is_linux:
+            return ["util/battery/batterylinux.cpp"]
+        else:
+            raise Exception('Battery support is not implemented for the target platform.')
+
+    def depends(self, build):
+        return [depends.IOKit, depends.UPower]

@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QVariant>
 
-#include "util.h"
 #include "effects/effectmanifestparameter.h"
+#include "util/class.h"
 
 class Effect;
 class EffectsManager;
@@ -32,6 +32,7 @@ class EffectParameter : public QObject {
     const EffectManifestParameter& manifest() const;
     const QString id() const;
     const QString name() const;
+    const QString shortName() const;
     const QString description() const;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,7 @@ class EffectParameter : public QObject {
     ///////////////////////////////////////////////////////////////////////////
 
     EffectManifestParameter::LinkType getDefaultLinkType() const;
+    EffectManifestParameter::LinkInversion getDefaultLinkInversion() const;
     double getNeutralPointOnScale() const;
 
     double getValue() const;

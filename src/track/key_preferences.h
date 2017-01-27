@@ -3,10 +3,11 @@
 
 #define VAMP_CONFIG_KEY "[Vamp]"
 
-// VAMP_CONFIG_KEY Preferences
-#define VAMP_ANALYSER_KEY_LIBRARY "AnalyserKeyLibrary"
-#define VAMP_ANALYSER_KEY_PLUGIN_ID "AnalyserKeyPluginID"
-#define VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID "qm-keydetector:2"
+// VAMP_CONFIG_KEY Preferences. WARNING: Do not fix the "analyser" spelling here
+// since user config files contain these strings.
+#define VAMP_ANALYZER_KEY_LIBRARY "AnalyserKeyLibrary"
+#define VAMP_ANALYZER_KEY_PLUGIN_ID "AnalyserKeyPluginID"
+#define VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID "qm-keydetector:2"
 
 #define KEY_CONFIG_KEY "[Key]"
 

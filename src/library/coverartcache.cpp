@@ -6,11 +6,22 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "soundsourceproxy.h"
 
-// Large cover art wastes space in our cache when we typicaly won't show them at
-// their full size. If no width is specified, this is the maximum width cap.
-const int kMaxCoverWidth = 300;
+
+namespace {
+    QString pixmapCacheKey(quint16 hash, int width) {
+        return QString("CoverArtCache_%1_%2")
+                .arg(QString::number(hash)).arg(width);
+    }
+
+    // The transformation mode when scaling images
+    const Qt::TransformationMode kTransformationMode = Qt::SmoothTransformation;
+
+    // Resizes the image (preserving aspect ratio) to width.
+    inline QImage resizeImageWidth(const QImage& image, int width) {
+        return image.scaledToWidth(width, kTransformationMode);
+    }
+} // anonymous namespace
 
 const bool sDebug = false;
 
@@ -31,19 +42,18 @@ CoverArtCache::~CoverArtCache() {
 
 QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
                                     const QObject* pRequestor,
-                                    int requestReference,
                                     const int desiredWidth,
                                     const bool onlyCached,
                                     const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::requestCover"
-                 << requestInfo << pRequestor << requestReference <<
+                 << requestInfo << pRequestor <<
                 desiredWidth << onlyCached << signalWhenDone;
     }
 
     if (requestInfo.type == CoverInfo::NONE) {
         if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestReference, requestInfo,
+            emit(coverFound(pRequestor, requestInfo,
                             QPixmap(), true));
         }
         return QPixmap();
@@ -51,7 +61,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    QPair<const QObject*, int> requestId = qMakePair(pRequestor, requestReference);
+    QPair<const QObject*, quint16> requestId = qMakePair(pRequestor, requestInfo.hash);
     if (m_runningRequests.contains(requestId)) {
         return QPixmap();
     }
@@ -61,13 +71,12 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     // column). It's very important to keep the cropped covers in cache because
     // it avoids having to rescale+crop it ALWAYS (which brings a lot of
     // performance issues).
-    QString cacheKey = CoverArtUtils::pixmapCacheKey(requestInfo.hash,
-                                                     desiredWidth);
+    QString cacheKey = pixmapCacheKey(requestInfo.hash, desiredWidth);
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestReference, requestInfo, pixmap, true));
+            emit(coverFound(pRequestor, requestInfo, pixmap, true));
         }
         return pixmap;
     }
@@ -83,16 +92,25 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
             this, &CoverArtCache::loadCover, requestInfo, pRequestor,
-            requestReference, desiredWidth, signalWhenDone);
+            desiredWidth, signalWhenDone);
     connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
     watcher->setFuture(future);
     return QPixmap();
 }
 
+//static
+void CoverArtCache::requestCover(const Track& track,
+                         const QObject* pRequestor) {
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache == nullptr) return;
+
+    CoverInfo info = track.getCoverInfo();
+    pCache->requestCover(info, pRequestor, 0, false, true);
+}
+
 CoverArtCache::FutureResult CoverArtCache::loadCover(
         const CoverInfo& info,
         const QObject* pRequestor,
-        int requestReference,
         const int desiredWidth,
         const bool signalWhenDone) {
     if (sDebug) {
@@ -100,17 +118,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
                  << info << desiredWidth << signalWhenDone;
     }
 
-    FutureResult res;
-    res.pRequestor = pRequestor;
-    res.requestReference = requestReference;
-    res.cover.info = info;
-    res.desiredWidth = desiredWidth;
-    res.signalWhenDone = signalWhenDone;
-    res.cover.image = CoverArtUtils::loadCover(res.cover.info);
-
-    if (res.cover.image.isNull()) {
-        return res;
-    }
+    QImage image = CoverArtUtils::loadCover(info);
 
     // TODO(XXX) Should we re-hash here? If the cover file (or track metadata)
     // has changed then info.hash may be incorrect. The fix
@@ -119,13 +127,14 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
 
     // Adjust the cover size according to the request or downsize the image for
     // efficiency.
-    if (res.desiredWidth > 0) {
-        res.cover.image = CoverArtUtils::resizeImage(res.cover.image,
-                                                     res.desiredWidth);
-    } else {
-        res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image,
-                                                          kMaxCoverWidth);
+    if (!image.isNull() && desiredWidth > 0) {
+        image = resizeImageWidth(image, desiredWidth);
     }
+
+    FutureResult res;
+    res.pRequestor = pRequestor;
+    res.cover = CoverArt(info, image, desiredWidth);
+    res.signalWhenDone = signalWhenDone;
 
     return res;
 }
@@ -140,18 +149,28 @@ void CoverArtCache::coverLoaded() {
         qDebug() << "CoverArtCache::coverLoaded" << res.cover;
     }
 
-    QString cacheKey = CoverArtUtils::pixmapCacheKey(res.cover.info.hash,
-                                                     res.desiredWidth);
-    QPixmap pixmap;
-    if (!QPixmapCache::find(cacheKey, &pixmap) && !res.cover.image.isNull()) {
-        pixmap.convertFromImage(res.cover.image);
+    // Don't cache full size covers (resizedToWidth = 0)
+    // Large cover art wastes space in our cache and will likely
+    // uncache a lot of the small covers we need in the library
+    // table.
+    // Full size covers are used in the Skin Widgets, which are
+    // loaded with an artificial delay anyway and an additional
+    // re-load delay can be accepted.
+
+    // Create pixmap, GUI thread only
+    QPixmap pixmap = QPixmap::fromImage(res.cover.image);
+    if (!pixmap.isNull() && res.cover.resizedToWidth != 0) {
+        // we have to be sure that res.cover.hash is unique
+        // because insert replaces the images with the same key
+        QString cacheKey = pixmapCacheKey(
+                res.cover.hash, res.cover.resizedToWidth);
         QPixmapCache::insert(cacheKey, pixmap);
     }
-    m_runningRequests.remove(qMakePair(res.pRequestor, res.requestReference));
+
+    m_runningRequests.remove(qMakePair(res.pRequestor, res.cover.hash));
 
     if (res.signalWhenDone) {
-        emit(coverFound(res.pRequestor, res.requestReference,
-                        res.cover.info, pixmap, false));
+        emit(coverFound(res.pRequestor, res.cover, pixmap, false));
     }
 }
 
@@ -165,7 +184,8 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 
 void CoverArtCache::guessCover(TrackPointer pTrack) {
     if (pTrack) {
-        pTrack->setCoverArt(CoverArtUtils::guessCoverArt(pTrack));
+        CoverInfo cover = CoverArtUtils::guessCoverInfo(*pTrack);
+        pTrack->setCoverInfo(cover);
     }
 }
 

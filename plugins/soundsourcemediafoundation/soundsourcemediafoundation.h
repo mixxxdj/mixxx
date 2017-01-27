@@ -1,112 +1,97 @@
-/**
- * \file soundsourcemediafoundation.h
- * \class SoundSourceMediaFoundation
- * \brief Decodes MPEG4/AAC audio using the SourceReader interface of the
- * Media Foundation framework included in Windows 7.
- * \author Bill Good <bkgood at gmail dot com>
- * \author Albert Santoni <alberts at mixxx dot org>
- * \date Jan 10, 2011
- */
+#ifndef MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H
+#define MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 
-#ifndef SOUNDSOURCEMEDIAFOUNDATION_H
-#define SOUNDSOURCEMEDIAFOUNDATION_H
+#include <mfidl.h>
+#include <mfreadwrite.h>
 
-#include <QFile>
-#include <QString>
+#include "sources/soundsourceplugin.h"
+#include "util/singularsamplebuffer.h"
 
-#include "util/defs.h"
-#include "defs_version.h"
-#include "soundsource.h"
 
-#ifdef Q_OS_WIN
-#define MY_EXPORT __declspec(dllexport)
-#else
-#define MY_EXPORT
-#endif
+namespace mixxx {
 
-class IMFSourceReader;
-class IMFMediaType;
-class IMFMediaSource;
+class StreamUnitConverter final {
+    const static SINT kStreamUnitsPerSecond = 1000 * 1000 * 10; // frame length = 100 ns
 
-class SoundSourceMediaFoundation : public Mixxx::SoundSource {
   public:
-    explicit SoundSourceMediaFoundation(QString filename);
-    ~SoundSourceMediaFoundation();
-    Result open();
-    long seek(long filepos);
-    unsigned read(unsigned long size, const SAMPLE *buffer);
-    inline long unsigned length();
-    Result parseHeader();
-    QImage parseCoverArt();
-    static QList<QString> supportedFileExtensions();
+    StreamUnitConverter()
+        : m_streamUnitsPerFrame(0) {
+    }
+    explicit StreamUnitConverter(SINT frameRate)
+        : m_streamUnitsPerFrame(double(kStreamUnitsPerSecond) / double(frameRate)),
+          m_toFrameIndexBias(kStreamUnitsPerSecond / frameRate / 2) {
+        // The stream units should actually be much shorter
+        // than the frames to minimize jitter. Even a frame
+        // at 192 kHz has a length of about 5000 ns >> 100 ns.
+        DEBUG_ASSERT(m_streamUnitsPerFrame >= 50);
+        DEBUG_ASSERT(m_toFrameIndexBias > 0);
+    }
+
+    LONGLONG fromFrameIndex(SINT frameIndex) const {
+        // Used for seeking, so we need to round down to hit the
+        // corresponding stream unit where the given stream unit
+        // starts
+        return floor((frameIndex - AudioSource::getMinFrameIndex()) * m_streamUnitsPerFrame);
+    }
+
+    SINT toFrameIndex(LONGLONG streamPos) const {
+        // NOTE(uklotzde): Add m_toFrameIndexBias to account for rounding errors
+        return AudioSource::getMinFrameIndex() +
+                static_cast<SINT>(floor((streamPos + m_toFrameIndexBias) / m_streamUnitsPerFrame));
+    }
 
   private:
-    bool configureAudioStream();
-    bool readProperties();
-    void copyFrames(qint16 *dest, size_t *destFrames, const qint16 *src,
-        size_t srcFrames);
-    static inline qreal secondsFromMF(qint64 mf);
-    static inline qint64 mfFromSeconds(qreal sec);
-    static inline qint64 frameFromMF(qint64 mf);
-    static inline qint64 mfFromFrame(qint64 frame);
-    IMFSourceReader *m_pReader;
-    IMFMediaType *m_pAudioType;
-    wchar_t *m_wcFilename;
-    int m_nextFrame;
-    qint16 *m_leftoverBuffer;
-    size_t m_leftoverBufferSize;
-    size_t m_leftoverBufferLength;
-    int m_leftoverBufferPosition;
-    qint64 m_mfDuration;
-    long m_iCurrentPosition;
-    bool m_dead;
-    bool m_seeking;
+    double m_streamUnitsPerFrame;
+    SINT m_toFrameIndexBias;
 };
 
-extern "C" MY_EXPORT const char* getMixxxVersion()
-{
-    return VERSION;
-}
+class SoundSourceMediaFoundation : public mixxx::SoundSourcePlugin {
+public:
+    explicit SoundSourceMediaFoundation(const QUrl& url);
+    ~SoundSourceMediaFoundation() override;
 
-extern "C" MY_EXPORT int getSoundSourceAPIVersion()
-{
-    return MIXXX_SOUNDSOURCE_API_VERSION;
-}
+    void close() override;
 
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString filename)
-{
-    return new SoundSourceMediaFoundation(filename);
-}
+    SINT seekSampleFrame(SINT frameIndex) override;
 
-extern "C" MY_EXPORT char** supportedFileExtensions()
-{
-    QList<QString> exts = SoundSourceMediaFoundation::supportedFileExtensions();
-    //Convert to C string array.
-    char** c_exts = (char**)malloc((exts.count() + 1) * sizeof(char*));
-    for (int i = 0; i < exts.count(); i++)
-    {
-        QByteArray qba = exts[i].toUtf8();
-        c_exts[i] = strdup(qba.constData());
-        qDebug() << c_exts[i];
-    }
-    c_exts[exts.count()] = NULL; //NULL terminate the list
+    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
-    return c_exts;
-}
+private:
+    OpenResult tryOpen(const mixxx::AudioSourceConfig& audioSrcCfg) override;
 
-extern "C" MY_EXPORT void freeFileExtensions(char **exts)
-{
-    for (int i(0); exts[i]; ++i) free(exts[i]);
-    free(exts);
-}
+    bool configureAudioStream(const mixxx::AudioSourceConfig& audioSrcCfg);
+    bool readProperties();
 
-#endif // ifndef SOUNDSOURCEMEDIAFOUNDATION_H
+    HRESULT m_hrCoInitialize;
+    HRESULT m_hrMFStartup;
+
+    IMFSourceReader* m_pSourceReader;
+
+    StreamUnitConverter m_streamUnitConverter;
+
+    SINT m_currentFrameIndex;
+
+    SingularSampleBuffer m_sampleBuffer;
+};
+
+class SoundSourceProviderMediaFoundation: public SoundSourceProvider {
+public:
+    QString getName() const override;
+
+    QStringList getSupportedFileExtensions() const override;
+
+    SoundSourcePointer newSoundSource(const QUrl& url) override;
+};
+
+} // namespace mixxx
+
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*);
+
+
+#endif // MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H

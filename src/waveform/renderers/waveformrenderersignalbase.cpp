@@ -4,8 +4,8 @@
 
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
@@ -20,6 +20,7 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
       m_pMidKillControlObject(NULL),
       m_pHighKillControlObject(NULL),
       m_alignment(Qt::AlignCenter),
+      m_orientation(Qt::Horizontal),
       m_pColors(NULL),
       m_axesColor_r(0),
       m_axesColor_g(0),
@@ -73,19 +74,19 @@ bool WaveformRendererSignalBase::init() {
     deleteControls();
 
     //create controls
-    m_pEQEnabled = new ControlObjectSlave(
+    m_pEQEnabled = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterWaveformEnable");
-    m_pLowFilterControlObject = new ControlObjectSlave(
+    m_pLowFilterControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterLow");
-    m_pMidFilterControlObject = new ControlObjectSlave(
+    m_pMidFilterControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterMid");
-    m_pHighFilterControlObject = new ControlObjectSlave(
+    m_pHighFilterControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterHigh");
-    m_pLowKillControlObject = new ControlObjectSlave(
+    m_pLowKillControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterLowKill");
-    m_pMidKillControlObject = new ControlObjectSlave(
+    m_pMidKillControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterMidKill");
-    m_pHighKillControlObject = new ControlObjectSlave(
+    m_pHighKillControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterHighKill");
 
     return onInit();
@@ -93,13 +94,30 @@ bool WaveformRendererSignalBase::init() {
 
 void WaveformRendererSignalBase::setup(const QDomNode& node,
                                        const SkinContext& context) {
-    QString alignString = context.selectString(node, "Align").toLower();
-    if (alignString == "bottom") {
-        m_alignment = Qt::AlignBottom;
-    } else if (alignString == "top") {
-        m_alignment = Qt::AlignTop;
+    QString orientationString = context.selectString(node, "Orientation").toLower();
+    if (orientationString == "vertical") {
+        m_orientation = Qt::Vertical;
     } else {
-        m_alignment = Qt::AlignCenter;
+        m_orientation = Qt::Horizontal;
+    }
+
+    QString alignString = context.selectString(node, "Align").toLower();
+    if (m_orientation == Qt::Horizontal) {
+        if (alignString == "bottom") {
+            m_alignment = Qt::AlignBottom;
+        } else if (alignString == "top") {
+            m_alignment = Qt::AlignTop;
+        } else {
+            m_alignment = Qt::AlignCenter;
+        }
+    } else {
+        if (alignString == "left") {
+            m_alignment = Qt::AlignLeft;
+        } else if (alignString == "right") {
+            m_alignment = Qt::AlignRight;
+        } else {
+            m_alignment = Qt::AlignCenter;
+        }
     }
 
     m_pColors = m_waveformRenderer->getWaveformSignalColors();

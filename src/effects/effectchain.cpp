@@ -1,10 +1,11 @@
 #include "effects/effectchain.h"
-#include "effects/effectsmanager.h"
+
 #include "effects/effectchainmanager.h"
-#include "engine/effects/message.h"
-#include "engine/effects/engineeffectrack.h"
+#include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectchain.h"
-#include "sampleutil.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/message.h"
+#include "util/sample.h"
 #include "util/xml.h"
 
 EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
@@ -91,13 +92,10 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
 
     EffectChain* pClone = new EffectChain(
         pChain->m_pEffectsManager, pChain->id(), pChain);
-    pClone->setEnabled(pChain->enabled());
     pClone->setName(pChain->name());
-    pClone->setMix(pChain->mix());
-    foreach (const ChannelHandleAndGroup& handle_group, pChain->enabledChannels()) {
-        pClone->enableForChannel(handle_group);
-    }
-    foreach (EffectPointer pEffect, pChain->effects()) {
+    // Do not set the state of the chain because that information belongs
+    // to the EffectChainSlot. Leave that to EffectChainSlot::loadEffectChain.
+    for (const auto& pEffect : pChain->effects()) {
         EffectPointer pClonedEffect = pChain->m_pEffectsManager
                 ->instantiateEffect(pEffect->getManifest().id());
         pClone->addEffect(pClonedEffect);
@@ -211,7 +209,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
     if (m_bAddedToEngine) {
         pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1);
     }
-    emit(effectsChanged());
+    emit(effectChanged(m_effects.size() - 1));
 }
 
 void EffectChain::replaceEffect(unsigned int effectSlotNumber,
@@ -239,7 +237,7 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
         }
     }
 
-    emit(effectsChanged());
+    emit(effectChanged(effectSlotNumber));
 }
 
 void EffectChain::removeEffect(unsigned int effectSlotNumber) {

@@ -34,7 +34,7 @@ TagFetcher::TagFetcher(QObject* parent)
 }
 
 QString TagFetcher::getFingerprint(const TrackPointer tio) {
-    return ChromaPrinter(NULL).getFingerPrint(tio);
+    return ChromaPrinter(NULL).getFingerprint(tio);
 }
 
 void TagFetcher::startFetch(const TrackPointer track) {
@@ -85,7 +85,7 @@ void TagFetcher::fingerprintFound(int index) {
 
     emit(fetchProgress(tr("Identifying track")));
     // qDebug() << "start to look up the MBID";
-    m_AcoustidClient.start(index, fingerprint, ptrack->getDuration());
+    m_AcoustidClient.start(index, fingerprint, ptrack->getDurationInt());
 }
 
 void TagFetcher::mbidFound(int index, const QString& mbid) {
@@ -112,12 +112,11 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
     // qDebug() << "Tagfetcher got musicbrainz results and now parses them";
     const TrackPointer originalTrack = m_tracks[index];
     QList<TrackPointer> tracksGuessed;
-
     foreach (const MusicBrainzClient::Result& result, results) {
-        TrackPointer track(new TrackInfoObject(originalTrack->getLocation(),
-                                               originalTrack->getSecurityToken(),
-                                               false),
-                           &QObject::deleteLater);
+        TrackPointer track(
+                Track::newTemporary(
+                        originalTrack->getFileInfo(),
+                        originalTrack->getSecurityToken()));
         track->setTitle(result.m_title);
         track->setArtist(result.m_artist);
         track->setAlbum(result.m_album);

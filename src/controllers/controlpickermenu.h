@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QSignalMapper>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class ControlPickerMenu : public QMenu {
     Q_OBJECT
@@ -53,7 +53,7 @@ class ControlPickerMenu : public QMenu {
                                QMenu* pMenu, bool addReset=false);
     void addMicrophoneAndAuxControl(QString control, QString title,
                                     QString helpText, QMenu* pMenu,
-                                    bool microhoneControls, bool auxControls,
+                                    bool microphoneControls, bool auxControls,
                                     bool addReset=false);
     void addPrefixedControl(QString group, QString control, QString title,
                             QString menuDescription, QString descriptionPrefix,

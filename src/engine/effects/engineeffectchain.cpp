@@ -1,8 +1,8 @@
 #include "engine/effects/engineeffectchain.h"
 
 #include "engine/effects/engineeffect.h"
-#include "sampleutil.h"
 #include "util/defs.h"
+#include "util/sample.h"
 
 EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),
@@ -202,7 +202,7 @@ void EngineEffectChain::process(const ChannelHandle& handle,
                 if (pEffect == NULL || !pEffect->enabled()) {
                     continue;
                 }
-                const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
+                const CSAMPLE* pIntermediateInput = (anyProcessed) ?  m_pBuffer : pInOut;
                 CSAMPLE* pIntermediateOutput = m_pBuffer;
                 pEffect->process(handle, pIntermediateInput, pIntermediateOutput,
                                  numSamples, sampleRate,

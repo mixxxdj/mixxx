@@ -8,36 +8,32 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
           m_dCurrentAngle(140.0),
           m_dMinAngle(-230.0),
-          m_dMaxAngle(50.0) {
+          m_dMaxAngle(50.0),
+          m_dKnobCenterXOffset(0),
+          m_dKnobCenterYOffset(0) {
 }
 
-WKnobComposed::~WKnobComposed() {
-}
-
-void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
+void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     clear();
 
     // Set background pixmap if available
-    if (context.hasNode(node, "BackPath")) {
-        QDomElement backPathElement = context.selectElement(node, "BackPath");
+    QDomElement backPathElement = context.selectElement(node, "BackPath");
+    if (!backPathElement.isNull()) {
         setPixmapBackground(context.getPixmapSource(backPathElement),
                             context.selectScaleMode(backPathElement, Paintable::STRETCH));
     }
 
     // Set knob pixmap if available
-    if (context.hasNode(node, "Knob")) {
-        QDomElement knobNode = context.selectElement(node, "Knob");
+    QDomElement knobNode = context.selectElement(node, "Knob");
+    if (!knobNode.isNull()) {
         setPixmapKnob(context.getPixmapSource(knobNode),
                       context.selectScaleMode(knobNode, Paintable::STRETCH));
     }
 
-    if (context.hasNode(node, "MinAngle")) {
-        m_dMinAngle = context.selectDouble(node, "MinAngle");
-    }
-
-    if (context.hasNode(node, "MaxAngle")) {
-        m_dMaxAngle = context.selectDouble(node, "MaxAngle");
-    }
+    context.hasNodeSelectDouble(node, "MinAngle", &m_dMinAngle);
+    context.hasNodeSelectDouble(node, "MaxAngle", &m_dMaxAngle);
+    context.hasNodeSelectDouble(node, "KnobCenterXOffset", &m_dKnobCenterXOffset);
+    context.hasNodeSelectDouble(node, "KnobCenterYOffset", &m_dKnobCenterYOffset);
 }
 
 void WKnobComposed::clear() {
@@ -91,8 +87,8 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
 
     QTransform transform;
     if (!m_pKnob.isNull() && !m_pKnob->isNull()) {
-        qreal tx = width() / 2.0;
-        qreal ty = height() / 2.0;
+        qreal tx = m_dKnobCenterXOffset + width() / 2.0;
+        qreal ty = m_dKnobCenterYOffset + height() / 2.0;
         transform.translate(-tx, -ty);
         p.translate(tx, ty);
 

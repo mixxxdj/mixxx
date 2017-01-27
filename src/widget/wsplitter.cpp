@@ -2,7 +2,7 @@
 
 #include "widget/wsplitter.h"
 
-WSplitter::WSplitter(QWidget* pParent, ConfigObject<ConfigValue> *pConfig)
+WSplitter::WSplitter(QWidget* pParent, UserSettingsPointer pConfig)
         : QSplitter(pParent),
           WBaseWidget(this),
           m_pConfig(pConfig) {
@@ -10,18 +10,27 @@ WSplitter::WSplitter(QWidget* pParent, ConfigObject<ConfigValue> *pConfig)
             this, SLOT(slotSplitterMoved()));
 }
 
-WSplitter::~WSplitter() {
-}
-
-void WSplitter::setup(QDomNode node, const SkinContext& context) {
+void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
     // Load split sizes
     QString sizesJoined;
     QString msg;
     bool ok = false;
+
+    // Default orientation is horizontal. For vertical splitters, the orientation must be set
+    // before calling setSizes() for reloading the saved state to work.
+    QString layout;
+    if (context.hasNodeSelectString(node, "Orientation", &layout)) {
+        if (layout == "vertical") {
+            setOrientation(Qt::Vertical);
+        } else if (layout == "horizontal") {
+            setOrientation(Qt::Horizontal);
+        }
+    }
+
     // Try to load last values stored in mixxx.cfg
-    if (context.hasNode(node, "SplitSizesConfigKey")) {
-        m_configKey = ConfigKey::parseCommaSeparated(
-                    context.selectString(node, "SplitSizesConfigKey"));
+    QString splitSizesConfigKey;
+    if (context.hasNodeSelectString(node, "SplitSizesConfigKey", &splitSizesConfigKey)) {
+        m_configKey = ConfigKey::parseCommaSeparated(splitSizesConfigKey);
 
         if (m_pConfig->exists(m_configKey)) {
             sizesJoined = m_pConfig->getValueString(m_configKey);
@@ -34,20 +43,21 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
             ok = true;
         }
     }
+
     // nothing in mixxx.cfg? Load default values
-    if (!ok && context.hasNode(node, "SplitSizes")) {
-        sizesJoined = context.selectString(node, "SplitSizes");
+    if (!ok && context.hasNodeSelectString(node, "SplitSizes", &sizesJoined)) {
         msg = "<SplitSizes> for <Splitter> ("
                 + sizesJoined
                 + ") does not match the number of children nodes:"
                 + QString::number(this->count());
     }
+
     // found some value for splitsizes?
-    if (sizesJoined != NULL) {
+    if (!sizesJoined.isEmpty()) {
         QStringList sizesSplit = sizesJoined.split(",");
         QList<int> sizesList;
         ok = false;
-        foreach (const QString& sizeStr, sizesSplit) {
+        for (const QString& sizeStr : sizesSplit) {
             sizesList.push_back(sizeStr.toInt(&ok));
             if (!ok) {
                 break;
@@ -62,13 +72,31 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
         }
     }
 
-    // Default orientation is horizontal.
-    if (context.hasNode(node, "Orientation")) {
-        QString layout = context.selectString(node, "Orientation");
-        if (layout == "vertical") {
-            setOrientation(Qt::Vertical);
-        } else if (layout == "horizontal") {
-            setOrientation(Qt::Horizontal);
+    // Which children can be collapsed?
+    QString collapsibleJoined;
+    if (context.hasNodeSelectString(node, "Collapsible", &collapsibleJoined)) {
+        QStringList collapsibleSplit = collapsibleJoined.split(",");
+        QList<bool> collapsibleList;
+        ok = false;
+        for (const QString& collapsibleStr : collapsibleSplit) {
+            collapsibleList.push_back(collapsibleStr.toInt(&ok)>0);
+            if (!ok) {
+                break;
+            }
+        }
+        if (collapsibleList.length() != this->count()) {
+            msg = "<Collapsible> for <Splitter> ("
+                            + collapsibleJoined
+                            + ") does not match the number of children nodes:"
+                            + QString::number(this->count());
+            SKIN_WARNING(node, context) << msg;
+            ok = false;
+        }
+        if (ok) {
+            int i = 0;
+            for (bool collapsible : collapsibleList) {
+                setCollapsible(i++, collapsible);
+            }
         }
     }
 }
@@ -76,7 +104,7 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
 void WSplitter::slotSplitterMoved() {
     if (!m_configKey.group.isEmpty() && !m_configKey.item.isEmpty()) {
         QStringList sizeStrList;
-        foreach (const int& sizeInt, sizes()) {
+        for (const int& sizeInt : sizes()) {
             sizeStrList.push_back(QString::number(sizeInt));
         }
         QString sizesStr = sizeStrList.join(",");

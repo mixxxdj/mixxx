@@ -25,7 +25,7 @@
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
 
-EngineSync::EngineSync(ConfigObject<ConfigValue>* pConfig)
+EngineSync::EngineSync(UserSettingsPointer pConfig)
         : BaseSyncableListener(pConfig) {
 }
 
@@ -95,6 +95,10 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     //qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     if (bEnabled) {
+        // Already enabled?  Do nothing.
+        if (pSyncable->getSyncMode() != SYNC_NONE) {
+            return;
+        }
         bool foundPlayingDeck = false;
         if (m_pMasterSyncable == NULL) {
             // There is no master. If any other deck is playing we will match
@@ -166,6 +170,10 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             pSyncable->requestSyncPhase();
         }
     } else {
+        // Already disabled?  Do nothing.
+        if (pSyncable->getSyncMode() == SYNC_NONE) {
+            return;
+        }
         deactivateSync(pSyncable);
     }
     checkUniquePlayingSyncable();
@@ -252,7 +260,7 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
         return;
     }
 
-    // EngineSyncTest.SlaveRateChange dictates this must not happen in general,
+    // EngineSyncTest.FollowerRateChange dictates this must not happen in general,
     // but it is required when the file BPM changes because it's not a true BPM
     // change, so we set the follower back to the master BPM.
     if (syncMode == SYNC_FOLLOWER && fileChanged) {
@@ -388,4 +396,20 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
     // No playing decks have a BPM. Go with the first deck that was stopped but
     // had a BPM.
     return pFirstNonplayingDeck;
+}
+
+bool EngineSync::otherSyncedPlaying(const QString& group) {
+    bool othersInSync = false;
+    for (Syncable* theSyncable : m_syncables) {
+        if (theSyncable->getGroup() == group) {
+            if (theSyncable->getSyncMode() == SYNC_NONE) {
+                return false;
+            }
+            continue;
+        }
+        if (theSyncable->isPlaying() && (theSyncable->getSyncMode() != SYNC_NONE)) {
+            othersInSync = true;
+        }
+    }
+    return othersInSync;
 }

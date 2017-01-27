@@ -23,12 +23,14 @@
 #include <QList>
 #include <QString>
 #include <QList>
-#include <QWidget>
+#include <QObject>
 #include <QSqlDatabase>
 #include <QStringList>
 #include <QRegExp>
 #include <QFileInfo>
 #include <QLinkedList>
+#include <QSemaphore>
+#include <QScopedPointer>
 
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -40,23 +42,27 @@
 #include "library/scanner/scannerglobal.h"
 #include "library/scanner/scannertask.h"
 #include "util/sandbox.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
+#include <gtest/gtest.h>
 
+class LibraryScannerDlg;
 class TrackCollection;
 
 class LibraryScanner : public QThread {
+    FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);
     Q_OBJECT
   public:
-    LibraryScanner(QWidget* pParent, TrackCollection* collection);
+    LibraryScanner(TrackCollection* collection,
+                   UserSettingsPointer pConfig);
     virtual ~LibraryScanner();
 
+  public slots:
     // Call from any thread to start a scan. Does nothing if a scan is already
     // in progress.
     void scan();
 
-  public slots:
     // Call from any thread to cancel the scan.
-    void cancel();
+    void slotCancel();
 
   signals:
     void scanStarted();
@@ -65,8 +71,8 @@ class LibraryScanner : public QThread {
     void progressLoading(QString path);
     void progressCoverArt(QString file);
     void trackAdded(TrackPointer pTrack);
-    void tracksMoved(QSet<int> oldTrackIds, QSet<int> newTrackIds);
-    void tracksChanged(QSet<int> changedTrackIds);
+    void tracksMoved(QSet<TrackId> oldTrackIds, QSet<TrackId> newTrackIds);
+    void tracksChanged(QSet<TrackId> changedTrackIds);
 
     // Emitted by scan() to invoke slotStartScan in the scanner thread's event
     // loop.
@@ -80,17 +86,40 @@ class LibraryScanner : public QThread {
 
   private slots:
     void slotStartScan();
-    void slotFinishScan();
+    void slotFinishHashedScan();
+    void slotFinishUnhashedScan();
 
     // ScannerTask signal handlers.
-    void taskDone(bool success);
-    void directoryHashed(const QString& directoryPath, bool newDirectory,
-                         int hash);
-    void directoryUnchanged(const QString& directoryPath);
-    void trackExists(const QString& trackPath);
-    void addNewTrack(TrackPointer pTrack);
+    void slotDirectoryHashedAndScanned(const QString& directoryPath,
+                                   bool newDirectory, int hash);
+    void slotDirectoryUnchanged(const QString& directoryPath);
+    void slotTrackExists(const QString& trackPath);
+    void slotAddNewTrack(const QString& trackPath);
 
   private:
+    enum ScannerState {
+        IDLE,
+        STARTING,
+        SCANNING,
+        CANCELING,
+        FINISHED
+    };
+
+    void cancelAndQuit();
+    void cancel();
+
+    // Allowed State transitions:
+    // IDLE -> STARTING
+    // STARTING -> IDLE
+    // STARTING -> SCANNING
+    // SCANNING -> FINISHED
+    // FINISHED -> IDLE
+    // every state can change to CANCELING
+    // CANCELING -> IDLE
+    bool changeScannerState(LibraryScanner::ScannerState newState);
+
+    void cleanUpScan();
+
     // The library trackcollection. Do not touch this from the library scanner
     // thread.
     TrackCollection* m_pCollection;
@@ -112,6 +141,16 @@ class LibraryScanner : public QThread {
 
     // Global scanner state for scan currently in progress.
     ScannerGlobalPointer m_scannerGlobal;
+
+    // The Semaphore guards the state transitions queued to the
+    // Qt even Queue in the way, that you cannot start a
+    // new scan while the old one is canceled
+    QSemaphore m_stateSema;
+    // this is accessed main and LibraryScanner thread
+    volatile ScannerState m_state;
+
+    QStringList m_libraryRootDirs;
+    QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
 };
 
 #endif

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="nl-nl" Codepage="1252"
+                 xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+  <!-- ..................................................... -->
+  <!-- This wxl file has been auto generated from a po file  -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools        -->
+  <!-- Source File: po/nl-NL.po                              -->
+  <!-- ..................................................... -->
+
+  <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
+  <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
+  <String Id="Language">1043</String>
+
+
+  <!-- Programm informations -->
+  <String Id="ApplicationName">Mixxx</String>
+  <String Id="ManufacturerName">Mixxx</String>
+  <String Id="ManufacturerFullName">Het Mixxx ontwikkellingsteam</String>
+  <String Id="ProductDescription">Open-source Digitale DJ software</String>
+  <String Id="Comments">Installeert Mixxx</String>
+
+  <!-- Error messages -->
+  <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
+  <String Id="OS2Old">Dit product vereist Windows XP of hoger.</String>
+  <String Id="NewerInstalled">Dezelfde of een nieuwere versie van dit product is reeds geïnstalleerd.</String>
+  <String Id="x64VersionRequired">Je moet de 64-bits versie van dit product installeren op een 64-bits versie van Windows.</String>
+  <String Id="x86VersionRequired">Je moet de 32-bits versie van dit product installeren op een 32-bits versie van Windows.</String>
+  <String Id="x86VersionWarning">Je staat op het punt om de 32-bits versie te installeren op een 64-bits besturingssysteem.&#13;&#10;We raden aan om de 64-bits versie te gebruiken voor betere prestaties.&#13;&#10;Je kunt het 64-bits installatiepakket downloaden van http://mixxx.org/download/</String>
+  <String Id="XPWarning">Je wilt Mixxx installeren op een verouderd besturingssysteem. Sommige functies werken mogelijk niet goed of helemaal niet. We raden je aan om je besturingssysteem te upgraden.</String>
+  <String Id="bitWidthMismatch32">Je wilt de 32-bits versie installeren maar een 64-bits is reeds geïnstalleerd. Dit kan leiden tot ongewenste effecten. Gelieve eerst de bestaande Mixxx te verwijderen, of het 64-bits installatiepakket te downloaden en te upgraden (Tenzij je exact weet waar je aan begint)</String>
+  <String Id="bitWidthMismatch64">Je wilt de 64-bits versie installeren maar een 32-bits is reeds geïnstalleerd. Dit kan leiden tot ongewenste effecten. Gelieve eerst de bestaande Mixxx te verwijderen, of het 32-bits installatiepakket te downloaden en te upgraden (Tenzij je exact weet waar je aan begint)</String>
+  <String Id="OlderVersionFound">Een oudere versie van Mixxx is gedetecteerd. Door wijziging van de installer is een vlotte bijwerking niet mogelijk. Verwijder de oudere versie voordat u deze versie installeert.</String>
+
+  <!-- Custom Warning Dialog -->
+  <String Id="WarningDlgTitle">{\WixUI_Font_Title}Waarschuwing</String>
+
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">Start Mixxx na de installatie.</String>
+
+  <!-- Features translations -->
+  <String Id="FeatureCompleteDescription">Het volledige pakket.</String>
+  <String Id="FeatureMainProgramTitle">Kerntoepassing</String>
+  <String Id="FeatureMainProgramDescription">De Mixxx-kerntoepassing inclusief voorinstellingen voor controllers.</String>
+  <String Id="FeaturePDBTitle">PDB debug-bestanden</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
+  <String Id="FeatureDesktopShortcutTitle">Snelkoppeling op het bureaublad</String>
+  <String Id="FeatureDesktopShortcutDescription">Voeg een snelkoppeling naar Mixxx toe op je bureaublad</String>
+  <String Id="FeatureManualTitle">Gebruikershandleiding</String>
+  <String Id="FeatureManualDescription">De Mixxx gebruikershandleiding in PDF-formaat, ook beschikbaar op http://mixxx.org/manual/</String>
+  <String Id="FeatureTranslationsTitle">Vertalingen</String>
+  <String Id="FeatureTranslationsDescription">Hulpbestanden die Mixxx toelaten om te werken met andere talen dan Amerikaans Engels</String>
+</WixLocalization>

@@ -19,13 +19,13 @@
 #ifndef ENGINESYNC_H
 #define ENGINESYNC_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/sync/syncable.h"
 #include "engine/sync/basesyncablelistener.h"
 
 class EngineSync : public BaseSyncableListener {
   public:
-    explicit EngineSync(ConfigObject<ConfigValue>* pConfig);
+    explicit EngineSync(UserSettingsPointer pConfig);
     virtual ~EngineSync();
 
     // Used by Syncables to tell EngineSync it wants to be enabled in a
@@ -49,6 +49,10 @@ class EngineSync : public BaseSyncableListener {
 
     // Used to pick a sync target for non-master-sync mode.
     EngineChannel* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;
+
+    // Used to test whether changing the rate of a Syncable would change the rate
+    // of other Syncables that are playing
+    bool otherSyncedPlaying(const QString& group);
 
   private:
     // Activate a specific syncable as master.

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QRunnable>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/scanner/scannerglobal.h"
 
 class LibraryScanner;
@@ -21,11 +21,11 @@ class ScannerTask : public QObject, public QRunnable {
   signals:
     void taskDone(bool success);
     void queueTask(ScannerTask* pTask);
-    void directoryHashed(const QString& directoryPath, bool newDirectory,
-                         int hash);
+    void directoryHashedAndScanned(const QString& directoryPath,
+                                   bool newDirectory, int hash);
     void directoryUnchanged(const QString& directoryPath);
     void trackExists(const QString& filePath);
-    void addNewTrack(TrackPointer pTrack);
+    void addNewTrack(const QString& filePath);
 
     // Feedback to GUI
     void progressLoading(const QString& fileName);

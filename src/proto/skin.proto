@@ -1,3 +1,5 @@
+syntax = "proto2";
+
 package mixxx.skin;
 
 option optimize_for = LITE_RUNTIME;
@@ -13,6 +15,7 @@ message SkinManifest {
   message Attribute {
     optional string config_key = 1;
     optional string value = 2;
+    optional bool persist = 3;
   }
   repeated Attribute attribute = 7;
 }

@@ -12,11 +12,12 @@ QString GraphicEQEffect::getId() {
 EffectManifest GraphicEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Graphic EQ"));
+    manifest.setName(QObject::tr("Graphic Equalizer"));
+    manifest.setShortName(QObject::tr("Graphic EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "An 8 band Graphic EQ based on Biquad Filters"));
+        "An 8-band graphic equalizer based on biquad filters"));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsMasterEQ(true);
 
@@ -27,7 +28,7 @@ EffectManifest GraphicEQEffect::getManifest() {
     EffectManifestParameter* low = manifest.addParameter();
     low->setId(QString("low"));
     low->setName(QString("%1 Hz").arg(centerFrequencies[0]));
-    low->setDescription(QString("Gain for Low Filter"));
+    low->setDescription(QObject::tr("Gain for Low Filter"));
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -47,7 +48,7 @@ EffectManifest GraphicEQEffect::getManifest() {
         EffectManifestParameter* mid = manifest.addParameter();
         mid->setId(QString("mid%1").arg(i));
         mid->setName(paramName);
-        mid->setDescription(QString("Gain for Band Filter %1").arg(i));
+        mid->setDescription(QObject::tr("Gain for Band Filter %1").arg(i));
         mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
         mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
         mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -60,7 +61,7 @@ EffectManifest GraphicEQEffect::getManifest() {
     EffectManifestParameter* high = manifest.addParameter();
     high->setId(QString("high"));
     high->setName(QString("%1 kHz").arg(centerFrequencies[7] / 1000));
-    high->setDescription(QString("Gain for High Filter"));
+    high->setDescription(QObject::tr("Gain for High Filter"));
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);

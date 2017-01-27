@@ -1,16 +1,15 @@
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "engine/enginetalkoverducking.h"
 
 #define DUCK_THRESHOLD 0.1
 
 EngineTalkoverDucking::EngineTalkoverDucking(
-        ConfigObject<ConfigValue>* pConfig, const char* group)
+        UserSettingsPointer pConfig, const char* group)
     : EngineSideChainCompressor(group),
       m_pConfig(pConfig),
       m_group(group) {
-    m_pMasterSampleRate = new ControlObjectSlave(m_group, "samplerate");
-    m_pMasterSampleRate->connectValueChanged(this,
-                                             SLOT(slotSampleRateChanged(double)),
+    m_pMasterSampleRate = new ControlProxy(m_group, "samplerate", this);
+    m_pMasterSampleRate->connectValueChanged(SLOT(slotSampleRateChanged(double)),
                                              Qt::DirectConnection);
 
     m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);

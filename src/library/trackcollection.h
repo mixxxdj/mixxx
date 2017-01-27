@@ -23,7 +23,7 @@
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cratedao.h"
@@ -38,7 +38,7 @@ typedef struct sqlite3_context sqlite3_context;
 typedef struct Mem sqlite3_value;
 #endif
 
-class TrackInfoObject;
+class Track;
 
 #define AUTODJ_TABLE "Auto DJ"
 
@@ -52,7 +52,7 @@ class TrackCollection : public QObject {
   public:
     static const int kRequiredSchemaVersion;
 
-    TrackCollection(ConfigObject<ConfigValue>* pConfig);
+    TrackCollection(UserSettingsPointer pConfig);
     virtual ~TrackCollection();
     bool checkForTables();
 
@@ -63,13 +63,18 @@ class TrackCollection : public QObject {
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
     DirectoryDAO& getDirectoryDAO();
+    AnalysisDao& getAnalysisDAO() {
+        return m_analysisDao;
+    }
     QSharedPointer<BaseTrackCache> getTrackSource();
     void setTrackSource(QSharedPointer<BaseTrackCache> trackSource);
     void cancelLibraryScan();
 
-    ConfigObject<ConfigValue>* getConfig() {
+    UserSettingsPointer getConfig() {
         return m_pConfig;
     }
+
+    void relocateDirectory(QString oldDir, QString newDir);
 
   protected:
 #ifdef __SQLITE3__
@@ -94,7 +99,7 @@ class TrackCollection : public QObject {
 #endif // __SQLITE3__
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QSqlDatabase m_db;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;
     PlaylistDAO m_playlistDao;

@@ -1,13 +1,12 @@
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection,
                                        const char* settingsNamespace,
                                        bool showAll)
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
-          m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_iPlaylistId(-1),
           m_showAll(showAll) {
 }
@@ -56,15 +55,17 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     }
 
     columns[0] = LIBRARYTABLE_ID;
+    // columns[1] = PLAYLISTTRACKSTABLE_POSITION from above
+    // columns[2] = PLAYLISTTRACKSTABLE_DATETIMEADDED from above
     columns[3] = LIBRARYTABLE_PREVIEW;
     columns[4] = LIBRARYTABLE_COVERART;
-    setTable(playlistTableName, columns[0], columns,
+    setTable(playlistTableName, LIBRARYTABLE_ID, columns,
             m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 
-    connect(&m_playlistDao, SIGNAL(changed(int)),
+    connect(&m_pTrackCollection->getPlaylistDAO(), SIGNAL(changed(int)),
             this, SLOT(playlistChanged(int)));
 }
 
@@ -90,9 +91,9 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         }
     }
 
-    QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_trackDAO.addMultipleTracks(fileInfoList, true);
 
-    int tracksAdded = m_playlistDao.insertTracksIntoPlaylist(
+    int tracksAdded = m_pTrackCollection->getPlaylistDAO().insertTracksIntoPlaylist(
         trackIds, m_iPlaylistId, position);
 
     if (locations.size() - tracksAdded > 0) {
@@ -103,25 +104,25 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     return tracksAdded;
 }
 
-bool PlaylistTableModel::appendTrack(int trackId) {
-    if (trackId < 0) {
+bool PlaylistTableModel::appendTrack(TrackId trackId) {
+    if (!trackId.isValid()) {
         return false;
     }
-    return m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
+    return m_pTrackCollection->getPlaylistDAO().appendTrackToPlaylist(trackId, m_iPlaylistId);
 }
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index) {
-    if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
+    if (m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId)) {
         return;
     }
 
     const int positionColumnIndex = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
-    m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
+    m_pTrackCollection->getPlaylistDAO().removeTrackFromPlaylist(m_iPlaylistId, position);
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
-    if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
+    if (m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId)) {
         return;
     }
 
@@ -133,7 +134,7 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         trackPositions.append(trackPosition);
     }
 
-    m_playlistDao.removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
+    m_pTrackCollection->getPlaylistDAO().removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
@@ -155,20 +156,20 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         // or no move at all
         return;
     } else if (newPosition == 0) {
-        //Dragged out of bounds, which is past the end of the rows...
-        newPosition = rowCount();
+        // Dragged out of bounds, which is past the end of the rows...
+        newPosition = m_pTrackCollection->getPlaylistDAO().getMaxPosition(m_iPlaylistId);
     }
 
-    m_playlistDao.moveTrack(m_iPlaylistId, oldPosition, newPosition);
+    m_pTrackCollection->getPlaylistDAO().moveTrack(m_iPlaylistId, oldPosition, newPosition);
 }
 
 bool PlaylistTableModel::isLocked() {
-    return m_playlistDao.isPlaylistLocked(m_iPlaylistId);
+    return m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
 }
 
 void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude) {
     QList<int> positions;
-    QHash<int,int> allIds;
+    QHash<int,TrackId> allIds;
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     const int idColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID);
     int excludePos = -1;
@@ -198,10 +199,10 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     int numOfTracks = rowCount();
     for (int i = 0; i < numOfTracks; i++) {
         int position = index(i, positionColumn).data().toInt();
-        int id = index(i, idColumn).data().toInt();
-        allIds.insert(position, id);
+        TrackId trackId(index(i, idColumn).data());
+        allIds.insert(position, trackId);
     }
-    m_playlistDao.shuffleTracks(m_iPlaylistId, positions, allIds);
+    m_pTrackCollection->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
@@ -248,10 +249,10 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RESETPLAYED;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
-    if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE)) {
+    if (m_iPlaylistId != m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE)) {
         caps |= TRACKMODELCAPS_ADDTOAUTODJ;
     }
-    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
+    bool locked = m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {
         caps |= TRACKMODELCAPS_LOCKED;
     }

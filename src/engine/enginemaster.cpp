@@ -1,59 +1,42 @@
-/***************************************************************************
-                          enginemaster.cpp  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+#include "engine/enginemaster.h"
 
 #include <QtDebug>
 #include <QList>
 #include <QPair>
 
-#include "controlpushbutton.h"
-#include "configobject.h"
-#include "controlaudiotaperpot.h"
-#include "controlpotmeter.h"
-#include "controlaudiotaperpot.h"
+#include "preferences/usersettings.h"
+#include "control/controlaudiotaperpot.h"
+#include "control/controlaudiotaperpot.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
+#include "effects/effectsmanager.h"
+#include "engine/channelmixer.h"
+#include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
-#include "engine/engineworkerscheduler.h"
-#include "engine/enginedeck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
+#include "engine/enginedeck.h"
+#include "engine/enginedelay.h"
 #include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
+#include "engine/engineworkerscheduler.h"
 #include "engine/enginexfader.h"
-#include "engine/enginedelay.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
-#include "sampleutil.h"
-#include "engine/effects/engineeffectsmanager.h"
-#include "effects/effectsmanager.h"
+#include "mixer/playermanager.h"
+#include "util/defs.h"
+#include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "util/defs.h"
-#include "playermanager.h"
-#include "engine/channelmixer.h"
 
-
-
-EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
+EngineMaster::EngineMaster(UserSettingsPointer pConfig,
                            const char* group,
                            EffectsManager* pEffectsManager,
                            bool bEnableSidechain,
                            bool bRampingGain)
         : m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_bRampingGain(bRampingGain),
+          m_ppSidechain(&m_pTalkover),
           m_masterGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
           m_headphoneGainOld(1.0),
@@ -87,14 +70,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pAudioLatencyUsage = new ControlPotmeter(ConfigKey(group, "audio_latency_usage"), 0.0, 0.25);
     m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"), 0.0, 1.0);
 
-    // Master rate
-    m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
-
     // Master sync controller
-    m_pMasterSync = new EngineSync(_config);
+    m_pMasterSync = new EngineSync(pConfig);
 
     // The last-used bpm value is saved in the destructor of EngineSync.
-    double default_bpm = _config->getValueString(ConfigKey("[InternalClock]", "bpm"),
+    double default_bpm = pConfig->getValueString(ConfigKey("[InternalClock]", "bpm"),
                                                  "124.0").toDouble();
     ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
 
@@ -136,7 +116,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pHeadSplitEnabled->set(0.0);
 
-    m_pTalkoverDucking = new EngineTalkoverDucking(_config, group);
+    m_pTalkoverDucking = new EngineTalkoverDucking(pConfig, group);
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -152,24 +132,27 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
         SampleUtil::clear(m_pOutputBusBuffers[o], MAX_BUFFER_LEN);
     }
 
-    // Starts a thread for recording and shoutcast
-    m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
+    // Starts a thread for recording and broadcast
+    m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(pConfig) : NULL;
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPushButton(
-            ConfigKey("[Mixer Profile]", "xFaderMode"));
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"));
     m_pXFaderMode->setButtonMode(ControlPushButton::TOGGLE);
+
     m_pXFaderCurve = new ControlPotmeter(
-            ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
+            EngineXfader::kTransformMin, EngineXfader::kTransformMax);
     m_pXFaderCalibration = new ControlPotmeter(
-            ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCalibration"),
+            0.3, 1., true);
     m_pXFaderReverse = new ControlPushButton(
-            ConfigKey("[Mixer Profile]", "xFaderReverse"));
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"));
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"),
                                          true, false, true);
-    m_pKeylockEngine->set(_config->getValueString(
+    m_pKeylockEngine->set(pConfig->getValueString(
             ConfigKey(group, "keylock_engine")).toDouble());
 
     m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),
@@ -179,7 +162,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pMasterTalkoverMix = new ControlObject(ConfigKey(group, "talkover_mix"),
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
-
+    m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "sidechainEnabled"));
 
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }
@@ -195,7 +178,7 @@ EngineMaster::~EngineMaster() {
     delete m_pHeadGain;
     delete m_pTalkoverDucking;
     delete m_pVumeter;
-    delete m_pSideChain;
+    delete m_pEngineSideChain;
     delete m_pMasterDelay;
     delete m_pHeadDelay;
 
@@ -208,7 +191,6 @@ EngineMaster::~EngineMaster() {
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
     delete m_pMasterAudioBufferSize;
-    delete m_pMasterRate;
     delete m_pAudioLatencyOverloadCount;
     delete m_pAudioLatencyUsage;
     delete m_pAudioLatencyOverload;
@@ -243,6 +225,10 @@ const CSAMPLE* EngineMaster::getMasterBuffer() const {
 
 const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
     return m_pHead;
+}
+
+const CSAMPLE* EngineMaster::getSidechainBuffer() const {
+    return *m_ppSidechain;
 }
 
 void EngineMaster::processChannels(int iBufferSize) {
@@ -415,7 +401,7 @@ void EngineMaster::process(const int iBufferSize) {
     double c1_gain, c2_gain;
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
-                                m_pXFaderMode->get() == MIXXX_XFADER_CONSTPWR,
+                                m_pXFaderMode->get(),
                                 m_pXFaderReverse->toBool(),
                                 &c1_gain, &c2_gain);
 
@@ -483,6 +469,8 @@ void EngineMaster::process(const int iBufferSize) {
             if (m_pVumeter != NULL) {
                 m_pVumeter->collectFeatures(&masterFeatures);
             }
+            masterFeatures.has_gain = true;
+            masterFeatures.gain = m_pMasterGain->get();
             m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
                                              iBufferSize, iSampleRate,
                                              masterFeatures);
@@ -511,24 +499,30 @@ void EngineMaster::process(const int iBufferSize) {
         // Perform balancing on main out
         SampleUtil::applyAlternatingGain(m_pMaster, balleft, balright, iBufferSize);
 
-        // Submit master samples to the side chain to do shoutcasting, recording,
+        // Submit master samples to the side chain to do broadcasting, recording,
         // etc. (cpu intensive non-realtime tasks)
-        CSAMPLE* pSidechain = m_pMaster;
-        if (m_pSideChain != NULL) {
+        if (m_pEngineSideChain != NULL) {
             if (m_pMasterTalkoverMix->toBool()) {
-                // Add Talkover to Sidechain output, re-use the talkover buffer
+                // Add Master and Talkover to Sidechain output, re-use the
+                // talkover buffer
+                // Note: m_ppSidechain = &m_pTalkover;
                 SampleUtil::addWithGain(m_pTalkover,
                         m_pMaster, 1.0,
                         iBufferSize);
-                pSidechain = m_pTalkover;
+            } else {
+                // Just Copy Master to Sidechain since we have already added
+                // Talkover above
+                SampleUtil::copy(*m_ppSidechain,
+                        m_pMaster,
+                        iBufferSize);
             }
-            m_pSideChain->writeSamples(pSidechain, iBufferSize);
+            m_pEngineSideChain->writeSamples(*m_ppSidechain, iBufferSize);
         }
 
         // Update VU meter (it does not return anything). Needs to be here so that
         // master balance and talkover is reflected in the VU meter.
         if (m_pVumeter != NULL) {
-            m_pVumeter->process(pSidechain, iBufferSize);
+            m_pVumeter->process(*m_ppSidechain, iBufferSize);
         }
 
         // Add master to headphone with appropriate gain
@@ -675,6 +669,9 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
     case AudioOutput::DECK:
         return getDeckBuffer(output.getIndex());
         break;
+    case AudioOutput::SIDECHAIN:
+        return getSidechainBuffer();
+        break;
     default:
         return NULL;
     }
@@ -695,6 +692,9 @@ void EngineMaster::onOutputConnected(AudioOutput output) {
         case AudioOutput::DECK:
             // We don't track enabled decks.
             break;
+        case AudioOutput::SIDECHAIN:
+            // We don't track enabled sidechain.
+            break;
         default:
             break;
     }
@@ -707,13 +707,16 @@ void EngineMaster::onOutputDisconnected(AudioOutput output) {
             // and recording/broadcasting as well
             break;
         case AudioOutput::HEADPHONES:
-            m_pHeadphoneEnabled->set(1.0);
+            m_pHeadphoneEnabled->set(0.0);
             break;
         case AudioOutput::BUS:
             m_bBusOutputConnected[output.getIndex()] = false;
             break;
         case AudioOutput::DECK:
             // We don't track enabled decks.
+            break;
+        case AudioOutput::SIDECHAIN:
+            // We don't track enabled sidechain.
             break;
         default:
             break;

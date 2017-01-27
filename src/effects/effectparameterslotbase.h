@@ -5,9 +5,9 @@
 #include <QVariant>
 #include <QString>
 
-#include "util.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "effects/effect.h"
+#include "util/class.h"
 
 class ControlObject;
 class ControlPushButton;
@@ -22,17 +22,13 @@ class EffectParameterSlotBase : public QObject {
     virtual ~EffectParameterSlotBase();
 
     QString name() const;
+    QString shortName() const;
     QString description() const;
     const EffectManifestParameter getManifest();
 
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.
     void updated();
-
-  protected slots:
-    // Solely for handling control changes
-    void slotLoaded(double v);
-    void slotValueType(double v);
 
   protected:
     const unsigned int m_iParameterSlotNumber;

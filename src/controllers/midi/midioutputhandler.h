@@ -11,7 +11,7 @@
 #ifndef MIDIOUTPUTHANDLER_H
 #define MIDIOUTPUTHANDLER_H
 
-#include "controlobjectthread.h"
+#include "control/controlproxy.h"
 #include "controllers/midi/midimessage.h"
 
 class MidiController;
@@ -32,8 +32,8 @@ class MidiOutputHandler : QObject {
   private:
     MidiController* m_pController;
     const MidiOutputMapping m_mapping;
-    ControlObjectThread m_cot;
-    double m_lastVal;
+    ControlProxy m_cos;
+    int m_lastVal;
 };
 
 #endif

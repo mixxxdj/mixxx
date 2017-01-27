@@ -1,12 +1,12 @@
 #include "engine/effects/engineeffect.h"
-#include "sampleutil.h"
 
+#include "util/sample.h"
 
 EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<ChannelHandleAndGroup>& registeredChannels,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
-          m_enableState(EffectProcessor::ENABLING),
+          m_enableState(EffectProcessor::DISABLED),
           m_parameters(manifest.parameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
     for (int i = 0; i < parameters.size(); ++i) {

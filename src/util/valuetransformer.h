@@ -9,6 +9,7 @@
 class TransformNode {
   public:
     TransformNode() {}
+    virtual ~TransformNode() {}
 
     virtual double transform(double argument) const = 0;
     virtual double transformInverse(double argument) const = 0;
@@ -56,8 +57,30 @@ class TransformNot : public TransformNode {
     }
 };
 
+class TransformIsEqual : public TransformNode {
+  public:
+    TransformIsEqual(double compareValue) :
+        m_compareValue(compareValue) {
+    }
+
+    double transform(double argument) const {
+        return argument == m_compareValue;
+    }
+
+    double transformInverse(double argument) const {
+        if (argument > 0.0) {
+            return m_compareValue;
+        }
+        return 0.0;
+    }
+
+  private:
+    double m_compareValue;
+};
+
 class ValueTransformer {
   public:
+    ~ValueTransformer();
     double transform(double argument) const;
     double transformInverse(double argument) const;
 

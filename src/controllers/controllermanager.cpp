@@ -12,6 +12,7 @@
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "util/cmdlineargs.h"
+#include "util/time.h"
 
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
@@ -26,6 +27,7 @@
 #include "controllers/bulk/bulkenumerator.h"
 #endif
 
+namespace {
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
 // Poll every 1ms (where possible) for good controller response
@@ -36,6 +38,8 @@ const int kPollIntervalMillis = 5;
 #else
 const int kPollIntervalMillis = 1;
 #endif
+
+} // anonymous namespace
 
 QString firstAvailableFilename(QSet<QString>& filenames,
                                const QString originalFilename) {
@@ -53,14 +57,15 @@ bool controllerCompare(Controller *a,Controller *b) {
     return a->getName() < b->getName();
 }
 
-ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
+ControllerManager::ControllerManager(UserSettingsPointer pConfig)
         : QObject(),
           m_pConfig(pConfig),
           // WARNING: Do not parent m_pControllerLearningEventFilter to
           // ControllerManager because the CM is moved to its own thread and runs
           // its own event loop.
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
-          m_pollTimer(this) {
+          m_pollTimer(this),
+          m_skipPoll(false) {
     qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
 
     // Create controller mapping paths in the user's home directory.
@@ -69,27 +74,6 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
         qDebug() << "Creating user controller presets directory:" << userPresets;
         QDir().mkpath(userPresets);
     }
-    QString localPresets = localPresetsPath(m_pConfig);
-    if (!QDir(localPresets).exists()) {
-        qDebug() << "Creating local controller presets directory:" << localPresets;
-        QDir().mkpath(localPresets);
-    }
-
-    // Initialize preset info parsers. This object is only for use in the main
-    // thread. Do not touch it from within ControllerManager.
-    m_pMainThreadPresetEnumerator = new PresetInfoEnumerator(m_pConfig);
-
-    // Instantiate all enumerators
-    m_enumerators.append(new PortMidiEnumerator());
-#ifdef __HSS1394__
-    m_enumerators.append(new Hss1394Enumerator());
-#endif
-#ifdef __BULK__
-    m_enumerators.append(new BulkEnumerator());
-#endif
-#ifdef __HID__
-    m_enumerators.append(new HidEnumerator());
-#endif
 
     m_pollTimer.setInterval(kPollIntervalMillis);
     connect(&m_pollTimer, SIGNAL(timeout()),
@@ -105,12 +89,18 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
     // audio directly, like when scratching
     m_pThread->start(QThread::HighPriority);
 
+    connect(this, SIGNAL(requestInitialize()),
+            this, SLOT(slotInitialize()));
     connect(this, SIGNAL(requestSetUpDevices()),
             this, SLOT(slotSetUpDevices()));
     connect(this, SIGNAL(requestShutdown()),
             this, SLOT(slotShutdown()));
     connect(this, SIGNAL(requestSave(bool)),
             this, SLOT(slotSavePresets(bool)));
+
+    // Signal that we should run slotInitialize once our event loop has started
+    // up.
+    emit(requestInitialize());
 }
 
 ControllerManager::~ControllerManager() {
@@ -118,11 +108,35 @@ ControllerManager::~ControllerManager() {
     m_pThread->wait();
     delete m_pThread;
     delete m_pControllerLearningEventFilter;
-    delete m_pMainThreadPresetEnumerator;
 }
 
 ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
     return m_pControllerLearningEventFilter;
+}
+
+void ControllerManager::slotInitialize() {
+    qDebug() << "ControllerManager:slotInitialize";
+
+    // Initialize preset info parsers. This object is only for use in the main
+    // thread. Do not touch it from within ControllerManager.
+    QStringList presetSearchPaths;
+    presetSearchPaths << userPresetsPath(m_pConfig)
+                      << resourcePresetsPath(m_pConfig);
+    m_pMainThreadPresetEnumerator = QSharedPointer<PresetInfoEnumerator>(
+        new PresetInfoEnumerator(presetSearchPaths));
+
+    // Instantiate all enumerators. Enumerators can take a long time to
+    // construct since they interact with host MIDI APIs.
+    m_enumerators.append(new PortMidiEnumerator());
+#ifdef __HSS1394__
+    m_enumerators.append(new Hss1394Enumerator());
+#endif
+#ifdef __BULK__
+    m_enumerators.append(new BulkEnumerator());
+#endif
+#ifdef __HID__
+    m_enumerators.append(new HidEnumerator());
+#endif
 }
 
 void ControllerManager::slotShutdown() {
@@ -191,14 +205,13 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
-int ControllerManager::slotSetUpDevices() {
+void ControllerManager::slotSetUpDevices() {
     qDebug() << "ControllerManager: Setting up devices";
 
     updateControllerList();
     QList<Controller*> deviceList = getControllerList(false, true);
 
     QSet<QString> filenames;
-    int error = 0;
 
     foreach (Controller* pController, deviceList) {
         QString name = pController->getName();
@@ -240,16 +253,12 @@ int ControllerManager::slotSetUpDevices() {
         int value = pController->open();
         if (value != 0) {
             qWarning() << "There was a problem opening" << name;
-            if (error == 0) {
-                error = value;
-            }
             continue;
         }
-        pController->applyPreset(getPresetPaths(m_pConfig));
+        pController->applyPreset(getPresetPaths(m_pConfig), true);
     }
 
     maybeStartOrStopPolling();
-    return error;
 }
 
 void ControllerManager::maybeStartOrStopPolling() {
@@ -284,17 +293,45 @@ void ControllerManager::stopPolling() {
 }
 
 void ControllerManager::pollDevices() {
-    Trace tracer("ControllerManager::pollDevices");
-    bool eventsProcessed(false);
-    // Continue to poll while any device returned data.
-    do {
-        eventsProcessed = false;
-        foreach (Controller* pDevice, m_controllers) {
-            if (pDevice->isOpen() && pDevice->isPolling()) {
-                eventsProcessed = pDevice->poll() || eventsProcessed;
-            }
+    // Note: this function is called from a high priority thread which
+    // may stall the GUI or may reduce the available CPU time for other
+    // High Priority threads like caching reader or broadcasting more
+    // then desired, if it is called endless loop like.
+    //
+    // This especially happens if a controller like the 3x Speed
+    // Stanton SCS.1D emits more massages than Mixxx is able to handle
+    // or a controller like Hercules RMX2 goes wild. In such a case the
+    // receive buffer is stacked up every call to insane values > 500 messages.
+    //
+    // To avoid this we pick here a strategies similar like the audio
+    // thread. In case pollDevice() takes longer than a call cycle
+    // we are cooperative a skip the next cycle to free at least some
+    // CPU time
+    //
+    // Some random test data form a i5-3317U CPU @ 1.70GHz Running
+    // Ubuntu Trusty:
+    // * Idle poll: ~5 µs.
+    // * 5 messages burst (full midi bandwidth): ~872 µs.
+
+    if (m_skipPoll) {
+        // skip poll in overload situation
+        m_skipPoll = false;
+        //qDebug() << "ControllerManager::pollDevices() skip";
+        return;
+    }
+
+    mixxx::Duration start = mixxx::Time::elapsed();
+    foreach (Controller* pDevice, m_controllers) {
+        if (pDevice->isOpen() && pDevice->isPolling()) {
+            pDevice->poll();
         }
-    } while (eventsProcessed);
+    }
+
+    mixxx::Duration duration = mixxx::Time::elapsed() - start;
+    if (duration > mixxx::Duration::fromMillis(kPollIntervalMillis)) {
+        m_skipPoll = true;
+    }
+    //qDebug() << "ControllerManager::pollDevices()" << duration << start;
 }
 
 void ControllerManager::openController(Controller* pController) {
@@ -310,10 +347,10 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the preset and save the
     // preference setting.
     if (result == 0) {
-        pController->applyPreset(getPresetPaths(m_pConfig));
+        pController->applyPreset(getPresetPaths(m_pConfig), true);
 
         // Update configuration to reflect controller is enabled.
-        m_pConfig->set(ConfigKey(
+        m_pConfig->setValue(ConfigKey(
             "[Controller]", presetFilenameFromName(pController->getName())), 1);
     }
 }
@@ -325,7 +362,7 @@ void ControllerManager::closeController(Controller* pController) {
     pController->close();
     maybeStartOrStopPolling();
     // Update configuration to reflect controller is disabled.
-    m_pConfig->set(ConfigKey(
+    m_pConfig->setValue(ConfigKey(
         "[Controller]", presetFilenameFromName(pController->getName())), 0);
 }
 
@@ -342,10 +379,6 @@ bool ControllerManager::loadPreset(Controller* pController,
                   presetFilenameFromName(pController->getName())),
         preset->filePath());
     return true;
-}
-
-PresetInfoEnumerator* ControllerManager::getMainThreadPresetEnumerator() {
-    return m_pMainThreadPresetEnumerator;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {
@@ -372,10 +405,9 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
 }
 
 // static
-QList<QString> ControllerManager::getPresetPaths(ConfigObject<ConfigValue>* pConfig) {
+QList<QString> ControllerManager::getPresetPaths(UserSettingsPointer pConfig) {
     QList<QString> scriptPaths;
     scriptPaths.append(userPresetsPath(pConfig));
-    scriptPaths.append(localPresetsPath(pConfig));
     scriptPaths.append(resourcePresetsPath(pConfig));
     return scriptPaths;
 }

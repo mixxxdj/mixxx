@@ -5,33 +5,32 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 
-#include "configobject.h"
-#include "trackinfoobject.h"
+#include "preferences/usersettings.h"
+#include "track/track.h"
 #include "widget/wlabel.h"
 
 class WTrackText : public WLabel {
     Q_OBJECT
   public:
-    WTrackText(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget *parent);
-    virtual ~WTrackText();
+    WTrackText(const char* group, UserSettingsPointer pConfig, QWidget *pParent);
 
   signals:
     void trackDropped(QString fileName, QString group);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
-    void slotTrackUnloaded(TrackPointer track);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private slots:
-    void updateLabel(TrackInfoObject*);
+    void updateLabel(Track*);
 
   private:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
     const char* m_pGroup;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
 };
 

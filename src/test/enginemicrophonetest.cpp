@@ -2,19 +2,19 @@
 
 #include <QtDebug>
 
-#include "util/types.h"
-#include "util/defs.h"
-#include "configobject.h"
-#include "controlobject.h"
-#include "sampleutil.h"
-#include "soundmanagerutil.h"
+#include "preferences/usersettings.h"
+#include "control/controlobject.h"
 #include "engine/enginemicrophone.h"
+#include "soundio/soundmanagerutil.h"
+#include "util/defs.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 namespace {
 
 class EngineMicrophoneTest : public testing::Test {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         inputLength = MAX_BUFFER_LEN;
         outputLength = MAX_BUFFER_LEN;
         input = SampleUtil::alloc(inputLength);
@@ -27,7 +27,7 @@ class EngineMicrophoneTest : public testing::Test {
         m_pTalkover = ControlObject::getControl(ConfigKey("[Microphone]", "talkover"));
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
         SampleUtil::free(input);
         SampleUtil::free(output);
         SampleUtil::free(test);

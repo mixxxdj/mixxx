@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QSqlDatabase>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class AnalysisDao : public DAO {
   public:
@@ -21,49 +21,51 @@ class AnalysisDao : public DAO {
     struct AnalysisInfo {
         AnalysisInfo()
                 : analysisId(-1),
-                  trackId(-1),
                   type(TYPE_UNKNOWN) {
         }
         int analysisId;
-        int trackId;
+        TrackId trackId;
         AnalysisType type;
         QString description;
         QString version;
         QByteArray data;
     };
 
-    AnalysisDao(QSqlDatabase& database, ConfigObject<ConfigValue>* pConfig);
+    AnalysisDao(QSqlDatabase& database, UserSettingsPointer pConfig);
     virtual ~AnalysisDao();
 
     virtual void initialize();
     void setDatabase(QSqlDatabase& database);
 
-    bool getWaveform(TrackInfoObject& tio);
-    bool saveWaveform(const TrackInfoObject& tio);
-    bool removeWaveform(const TrackInfoObject& tio);
+    bool getWaveform(Track& tio);
+    bool saveWaveform(const Track& tio);
+    bool removeWaveform(const Track& tio);
 
-    QList<AnalysisInfo> getAnalysesForTrackByType(const int trackId, AnalysisType type);
-    QList<AnalysisInfo> getAnalysesForTrack(const int trackId);
+    QList<AnalysisInfo> getAnalysesForTrackByType(TrackId trackId, AnalysisType type);
+    QList<AnalysisInfo> getAnalysesForTrack(TrackId trackId);
     bool saveAnalysis(AnalysisInfo* analysis);
     bool deleteAnalysis(const int analysisId);
-    void deleteAnalysises(const QList<int>& ids);
-    bool deleteAnalysesForTrack(const int trackId);
+    void deleteAnalyses(const QList<TrackId>& trackIds);
+    bool deleteAnalysesForTrack(TrackId trackId);
+    bool deleteAnalysesByType(AnalysisType type);
 
-    void saveTrackAnalyses(TrackInfoObject* pTrack);
+    void saveTrackAnalyses(const Track& track);
+
+    size_t getDiskUsageInBytes(AnalysisType type);
 
   private:
-    bool saveWaveform(const TrackInfoObject& tio,
+    bool saveWaveform(const Track& tio,
                       const Waveform& waveform,
                       AnalysisType type);
-    bool loadWaveform(const TrackInfoObject& tio,
+    bool loadWaveform(const Track& tio,
                       Waveform* waveform, AnalysisType type);
     QDir getAnalysisStoragePath() const;
     QByteArray loadDataFromFile(const QString& fileName) const;
     bool saveDataToFile(const QString& fileName, const QByteArray& data) const;
     bool deleteFile(const QString& filename) const;
-    QList<AnalysisInfo> loadAnalysesFromQuery(const int trackId, QSqlQuery* query);
+    QList<AnalysisInfo> loadAnalysesFromQuery(TrackId trackId, QSqlQuery* query);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QSqlDatabase m_db;
 };
 

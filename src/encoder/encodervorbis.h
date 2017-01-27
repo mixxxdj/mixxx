@@ -3,7 +3,7 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
+                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
  ***************************************************************************/
 
 /***************************************************************************
@@ -23,7 +23,7 @@
 
 #include "util/types.h"
 #include "encoder/encoder.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class EncoderCallback;
 
@@ -41,7 +41,7 @@ class EncoderVorbis : public Encoder {
     int getSerial();
     void initStream();
     bool metaDataHasChanged();
-    //Call this method in conjunction with shoutcast streaming
+    //Call this method in conjunction with broadcast streaming
     void writePage();
 
     bool m_bStreamInitialized;

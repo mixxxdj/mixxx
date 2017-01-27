@@ -9,12 +9,11 @@
 
 #include <vector>
 
-#include "configobject.h"
-#include "util.h"
-
-#include "waveformrendererabstract.h"
-#include "waveformmarkrange.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
+#include "util/class.h"
+#include "waveform/renderers/waveformmarkrange.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 
 class ConfigKey;
 class ControlObject;

@@ -14,28 +14,38 @@
 				<Layout>horizontal</Layout>
 				<Children>
 					<Splitter>
+                        <ObjectName>LibrarySplitter</ObjectName>
 						<Size>me,me</Size>
 						<SplitSizes>1,12</SplitSizes>
+                        <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<Children>
 							<WidgetGroup>
 								<Style>QGroupBox {}</Style>
 								<Layout>vertical</Layout>
 								<Children>
-									<!-- Preview Deck-->
-									<Template src="skin:preview_deck_container.xml"/>
 									<!--Search Input Field-->
 									<SearchBox></SearchBox>
-									<!--Library Tree View-->
-									<LibrarySidebar></LibrarySidebar>
-									<!--Cover Art-->
-									<CoverArt>
-										<SizePolicy>me,me</SizePolicy>
-										<MinimumSize>100,100</MinimumSize>
-										<Connection>
-											<ConfigKey persist="true" default="false">[Library],show_coverart</ConfigKey>
-											<BindProperty>visible</BindProperty>
-										</Connection>
-									</CoverArt>
+                                    <Splitter>
+                                        <ObjectName>CoverArtSplitter</ObjectName>
+                                        <Size>me,me</Size>
+                                        <SplitSizes>1,1</SplitSizes>
+                                        <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
+                                        <Orientation>vertical</Orientation>
+                                        <Collapsible>0,0</Collapsible>
+                                        <Children>
+                                            <!--Library Tree View-->
+                                            <LibrarySidebar></LibrarySidebar>
+                                            <!--Cover Art-->
+                                            <CoverArt>
+                                                <SizePolicy>me,me</SizePolicy>
+                                                <MinimumSize>40,40</MinimumSize>
+                                                <Connection>
+                                                    <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                                                    <BindProperty>visible</BindProperty>
+                                                </Connection>
+                                            </CoverArt>
+                                        </Children>
+                                    </Splitter>
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>

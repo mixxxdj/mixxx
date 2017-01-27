@@ -1,12 +1,12 @@
 // ratecontrol.cpp
 // Created 7/4/2009 by RJ Ryan (rryan@mit.edu)
 
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
-#include "controlttrotary.h"
-#include "controlobjectslave.h"
-#include "rotary.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlpotmeter.h"
+#include "control/controlttrotary.h"
+#include "control/controlproxy.h"
+#include "util/rotary.h"
 #include "util/math.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -31,8 +31,8 @@ const double RateControl::kPausedJogMultiplier = 18.0;
 enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
 
 RateControl::RateControl(QString group,
-                         ConfigObject<ConfigValue>* _config)
-    : EngineControl(group, _config),
+                         UserSettingsPointer pConfig)
+    : EngineControl(group, pConfig),
       m_pBpmControl(NULL),
       m_ePbCurrent(0),
       m_ePbPressed(0),
@@ -77,7 +77,7 @@ RateControl::RateControl(QString group,
             this, SLOT(slotReverseRollActivate(double)),
             Qt::DirectConnection);
 
-    m_pSlipEnabled = new ControlObjectSlave(group, "slip_enabled", this);
+    m_pSlipEnabled = new ControlProxy(group, "slip_enabled", this);
 
     m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
     m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
@@ -170,7 +170,7 @@ RateControl::RateControl(QString group,
     m_iRateRampSensitivity =
             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
-    m_pSyncMode = new ControlObjectSlave(group, "sync_mode", this);
+    m_pSyncMode = new ControlProxy(group, "sync_mode", this);
 }
 
 RateControl::~RateControl() {
@@ -208,12 +208,14 @@ void RateControl::setBpmControl(BpmControl* bpmcontrol) {
     m_pBpmControl = bpmcontrol;
 }
 
+//static
 void RateControl::setRateRamp(bool linearMode)
 {
     m_eRateRampMode = linearMode ?
             RateControl::RATERAMP_LINEAR : RateControl::RATERAMP_STEP;
 }
 
+//static
 void RateControl::setRateRampSensitivity(int sense)
 {
     // Reverse the actual sensitivity value passed.
@@ -228,18 +230,22 @@ void RateControl::setRateRampSensitivity(int sense)
     }
 }
 
+//static
 void RateControl::setTemp(double v) {
     m_dTemp = v;
 }
 
+//static
 void RateControl::setTempSmall(double v) {
     m_dTempSmall = v;
 }
 
+//static
 void RateControl::setPerm(double v) {
     m_dPerm = v;
 }
 
+//static
 void RateControl::setPermSmall(double v) {
     m_dPermSmall = v;
 }
@@ -275,9 +281,10 @@ void RateControl::slotControlFastBack(double v)
 void RateControl::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
-    if (buttonRatePermDown->get())
+    if (buttonRatePermDown->get()) {
         m_pRateSlider->set(m_pRateSlider->get() -
-                           m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+                           m_pRateDir->get() * m_dPerm / (100 * m_pRateRange->get()));
+    }
 }
 
 void RateControl::slotControlRatePermDownSmall(double)
@@ -365,22 +372,15 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
-void RateControl::trackLoaded(TrackPointer pTrack) {
-    if (m_pTrack) {
-        trackUnloaded(m_pTrack);
-    }
-    m_pTrack = pTrack;
+void RateControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
+    m_pTrack = pNewTrack;
 }
 
-void RateControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
-    m_pTrack.clear();
-}
-
-double RateControl::getRawRate() const {
-    return m_pRateSlider->get() *
-        m_pRateRange->get() *
-        m_pRateDir->get();
+double RateControl::calcRateRatio() const {
+    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
+            m_pRateSlider->get();
+    return rateRatio;
 }
 
 double RateControl::getWheelFactor() const {
@@ -574,36 +574,26 @@ double RateControl::process(const double rate,
     }
 
     if (m_eRateRampMode == RATERAMP_LINEAR) {
-
-        if (m_ePbCurrent)
-        {
+        if (m_ePbCurrent) {
             // apply ramped pitchbending
             if (m_ePbCurrent == RateControl::RATERAMP_UP) {
                 addRateTemp(m_dTempRateChange);
             } else if (m_ePbCurrent == RateControl::RATERAMP_DOWN) {
                 subRateTemp(m_dTempRateChange);
             }
-        }
-        else if ((m_bTempStarted) || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTemp != 0.0)))
-        {
+        } else if ((m_bTempStarted)
+                || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE)
+                        && (m_dRateTemp != 0.0))) {
             // No buttons pressed, so time to deinitialize
             m_bTempStarted = false;
 
-
-            if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0))
-            {
+            if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD)
+                    && (m_dRateTempRampbackChange == 0.0)) {
                 int period = 2;
-                if (period)
-                    m_dRateTempRampbackChange = fabs(m_dRateTemp / (double)period);
-                else {
-                    resetRateTemp();
-                    return kNoTrigger;
-                }
-
-            }
-            else if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTempRampbackChange == 0.0))
-            {
-
+                m_dRateTempRampbackChange = fabs(
+                        m_dRateTemp / period);
+            } else if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE)
+                    && (m_dRateTempRampbackChange == 0.0)) {
                 if (fabs(m_dRateTemp) < m_dRateTempRampbackChange) {
                     resetRateTemp();
                 } else if (m_dRateTemp > 0) {
@@ -615,9 +605,7 @@ double RateControl::process(const double rate,
                 resetRateTemp();
             }
         }
-    }
-    else if ((m_eRateRampMode == RATERAMP_STEP) && (m_bTempStarted))
-    {
+    } else if ((m_eRateRampMode == RATERAMP_STEP) && (m_bTempStarted)) {
         if (!m_ePbCurrent) {
             m_bTempStarted = false;
             resetRateTemp();
@@ -634,8 +622,9 @@ double RateControl::getTempRate() {
 void RateControl::setRateTemp(double v)
 {
     // Do not go backwards
-    if ((1. + getRawRate() + v) < 0)
+    if ((calcRateRatio() + v) < 0) {
         return;
+    }
 
     m_dRateTemp = v;
     if (m_dRateTemp < -1.0) {

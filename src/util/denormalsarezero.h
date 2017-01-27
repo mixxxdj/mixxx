@@ -11,14 +11,14 @@
 // start. Effected users can switch to a legacy i386 build.
 // See: https://software.intel.com/en-us/articles/x87-and-sse-floating-point-assists-in-ia-32-flush-to-zero-ftz-and-denormals-are-zero-daz
 
-#ifdef __SSE__
-
-#include <xmmintrin.h>
-
 /* Additional bits in the MXCSR.  */
 #define _MM_DENORMALS_ZERO_MASK     0x0040
 #define _MM_DENORMALS_ZERO_ON       0x0040
 #define _MM_DENORMALS_ZERO_OFF      0x0000
+
+#ifdef __SSE__
+
+#include <xmmintrin.h>
 
 #define _MM_SET_DENORMALS_ZERO_MODE(mode) \
   _mm_setcsr ((_mm_getcsr () & ~_MM_DENORMALS_ZERO_MASK) | (mode))

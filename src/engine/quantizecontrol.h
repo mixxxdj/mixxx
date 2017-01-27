@@ -3,28 +3,26 @@
 
 #include <QObject>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
 
 class ControlObject;
 class ControlPushButton;
-class ControlObjectThread;
 
 class QuantizeControl : public EngineControl {
     Q_OBJECT
   public:
-    QuantizeControl(QString group, ConfigObject<ConfigValue>* pConfig);
+    QuantizeControl(QString group, UserSettingsPointer pConfig);
     virtual ~QuantizeControl();
 
     virtual void setCurrentSample(const double dCurrentSample,
                                   const double dTotalSamples);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
     void slotBeatsUpdated();

@@ -1,10 +1,14 @@
 
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
-const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
+namespace {
+
+const QString kDefaultLibraryFilter =
         "mixxx_deleted=0 AND fs_deleted=0";
+
+} // anonymous namespace
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
@@ -32,7 +36,7 @@ void LibraryTableModel::setTableModel(int id) {
             "SELECT " + columns.join(", ") +
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+            "WHERE (" + kDefaultLibraryFilter + ")";
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -46,6 +50,10 @@ void LibraryTableModel::setTableModel(int id) {
              m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+
+    // Set tooltip for random sorting
+    int fi = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    setHeaderData(fi, Qt::Horizontal, tr("Sort items randomly"), Qt::ToolTipRole);
 }
 
 
@@ -56,7 +64,7 @@ int LibraryTableModel::addTracks(const QModelIndex& index,
     foreach (QString fileLocation, locations) {
         fileInfoList.append(QFileInfo(fileLocation));
     }
-    QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_trackDAO.addMultipleTracks(fileInfoList, true);
     select();
     return trackIds.size();
 }
@@ -65,7 +73,6 @@ bool LibraryTableModel::isColumnInternal(int column) {
     if ((column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_URL)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CUEPOINT)) ||
-            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED)) ||

@@ -1,12 +1,19 @@
 #ifndef COLUMNCACHE_H
 #define COLUMNCACHE_H
 
+#include <QObject>
 #include <QMap>
 #include <QStringList>
 
+#include "track/keyutils.h"
+#include "preferences/usersettings.h"
+
+class ControlProxy;
+
 // Caches the index of frequently used columns and provides a lookup-table of
 // column name to index.
-class ColumnCache {
+class ColumnCache : public QObject {
+  Q_OBJECT
   public:
 
     enum Column {
@@ -66,10 +73,7 @@ class ColumnCache {
         NUM_COLUMNS
     };
 
-    ColumnCache() { }
-    ColumnCache(const QStringList& columns) {
-        setColumns(columns);
-    }
+    explicit ColumnCache(const QStringList& columns = QStringList());
 
     void setColumns(const QStringList& columns);
 
@@ -84,22 +88,34 @@ class ColumnCache {
         return m_columnIndexByName.value(columnName, -1);
     }
 
-    inline Column columnForFieldIndex(int index) const {
-        if (index < 0) {
-            return COLUMN_LIBRARYTABLE_INVALID;
-        }
-        return m_columnByIndex[index];
-    }
-
     inline QString columnName(Column column) const {
-        return m_columnIndexByName.key(fieldIndex(column));
+        return columnNameForFieldIndex(fieldIndex(column));
     }
 
+    inline QString columnNameForFieldIndex(int index) const {
+        if (index < 0 || index >= m_columnsByIndex.size()) {
+            return QString();
+        }
+        return m_columnsByIndex.at(index);
+    }
+
+    inline QString columnSortForFieldIndex(int index) const {
+        // Check if there is a special sort clause
+        QString format = m_columnSortByIndex.value(index, "%1");
+        return format.arg(columnNameForFieldIndex(index));
+    }
+
+    QStringList m_columnsByIndex;
+    QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
-    // A mapping from logical index aka field index to Column enum.
-    QMap<int, Column> m_columnByIndex;
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
+
+  private:
+    ControlProxy* m_pKeyNotationCP;
+
+  private slots:
+    void slotSetKeySortOrder(double);
 };
 
 #endif /* COLUMNCACHE_H */

@@ -3,16 +3,16 @@
 
 #include <QMap>
 
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterlinkwitzriley8.h"
-#include "util.h"
-#include "util/types.h"
+#include "util/class.h"
 #include "util/defs.h"
-#include "sampleutil.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 class LinkwitzRiley8EQEffectGroupState {
   public:
@@ -31,7 +31,7 @@ class LinkwitzRiley8EQEffectGroupState {
     double old_high;
 
     CSAMPLE* m_pLowBuf;
-    CSAMPLE* m_pBandBuf;
+    CSAMPLE* m_pMidBuf;
     CSAMPLE* m_pHighBuf;
 
     unsigned int m_oldSampleRate;
@@ -69,8 +69,8 @@ class LinkwitzRiley8EQEffect : public PerChannelEffectProcessor<LinkwitzRiley8EQ
     EngineEffectParameter* m_pKillMid;
     EngineEffectParameter* m_pKillHigh;
 
-    ControlObjectSlave* m_pLoFreqCorner;
-    ControlObjectSlave* m_pHiFreqCorner;
+    ControlProxy* m_pLoFreqCorner;
+    ControlProxy* m_pHiFreqCorner;
 
     DISALLOW_COPY_AND_ASSIGN(LinkwitzRiley8EQEffect);
 };

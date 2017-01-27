@@ -4,9 +4,9 @@
 #include <QScopedPointer>
 
 #include "mixxxtest.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
-#include "controlpushbutton.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "widget/wpushbutton.h"
 #include "widget/controlwidgetconnection.h"
 
@@ -17,7 +17,7 @@ class WPushButtonTest : public MixxxTest {
     }
 
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pButton.reset(new WPushButton());
         m_pButton->setStates(2);
     }
@@ -38,7 +38,7 @@ TEST_F(WPushButtonTest, QuickPressNoLatchTest) {
     m_pButton->addLeftConnection(
         new ControlParameterWidgetConnection(
             m_pButton.data(),
-            new ControlObjectSlave(pPushControl->getKey()), NULL,
+            pPushControl->getKey(), NULL,
             ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET,
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
 
@@ -63,7 +63,7 @@ TEST_F(WPushButtonTest, LongPressLatchTest) {
     m_pButton->addLeftConnection(
         new ControlParameterWidgetConnection(
             m_pButton.data(),
-            new ControlObjectSlave(pPushControl->getKey()), NULL,
+            pPushControl->getKey(), NULL,
             ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET,
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
 

@@ -9,14 +9,14 @@
 
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/xml.h"
 #include "util/assert.h"
 
 // static
-const int TrackCollection::kRequiredSchemaVersion = 24;
+const int TrackCollection::kRequiredSchemaVersion = 27;
 
-TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
+TrackCollection::TrackCollection(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
           m_playlistDao(m_db),
@@ -30,7 +30,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
 
     m_db.setHostName("localhost");
-    m_db.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
+    m_db.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
     m_db.setUserName("mixxx");
     m_db.setPassword("mixxx");
     bool ok = m_db.open();
@@ -161,6 +161,24 @@ void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource)
         return;
     }
     m_defaultTrackSource = trackSource;
+}
+
+void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
+    // We only call this method if the user has picked a relocated directory via
+    // a file dialog. This means the system sandboxer (if we are sandboxed) has
+    // granted us permission to this folder. Create a security bookmark while we
+    // have permission so that we can access the folder on future runs. We need
+    // to canonicalize the path so we first wrap the directory string with a
+    // QDir.
+    QDir directory(newDir);
+    Sandbox::createSecurityToken(directory);
+
+    QSet<TrackId> movedIds(
+            m_directoryDao.relocateDirectory(oldDir, newDir));
+
+    // Clear cache to that all TIO with the old dir information get updated
+    m_trackDao.clearCache();
+    m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
 }
 
 #ifdef __SQLITE3__
@@ -376,7 +394,6 @@ int TrackCollection::likeCompareInner(
     }
     return iString == stringSize;
 }
-
 
 
 /*

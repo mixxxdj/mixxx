@@ -4,13 +4,15 @@
 #ifndef ENGINEMICROPHONE_H
 #define ENGINEMICROPHONE_H
 
-#include "controlobjectslave.h"
-#include "controlpushbutton.h"
+#include <QScopedPointer>
+
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
 #include "util/circularbuffer.h"
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class EffectsManager;
 class EngineEffectsManager;
@@ -53,9 +55,9 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
-    ControlObject* m_pEnabled;
+    QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
-    ControlObjectSlave* m_pSampleRate;
+    ControlProxy* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
 
     bool m_wasActive;

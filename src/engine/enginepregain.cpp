@@ -1,39 +1,23 @@
-/***************************************************************************
-                          enginepregain.cpp  -  description
-                             -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#include "engine/enginepregain.h"
 
 #include <QtDebug>
 
-#include "engine/enginepregain.h"
-#include "controlaudiotaperpot.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
-#include "configobject.h"
-#include "controlobject.h"
+#include "preferences/usersettings.h"
+#include "control/controlaudiotaperpot.h"
+#include "control/controlobject.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "util/math.h"
-#include "sampleutil.h"
+#include "util/sample.h"
 
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
 ControlPotmeter* EnginePregain::s_pDefaultBoost = NULL;
 ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
 
-/*----------------------------------------------------------------
-   A pregaincontrol is ... a pregain.
-   ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(QString group)
-        : m_dSpeed(0),
+        : m_dSpeed(1.0),
+          m_dOldSpeed(1.0),
+          m_scratching(false),
           m_fPrevGain(1.0),
           m_bSmoothFade(false) {
     m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, 12, 0.5);
@@ -63,7 +47,12 @@ EnginePregain::~EnginePregain() {
 }
 
 void EnginePregain::setSpeed(double speed) {
+    m_dOldSpeed = m_dSpeed;
     m_dSpeed = speed;
+}
+
+void EnginePregain::setScratching(bool scratching) {
+    m_scratching = scratching;
 }
 
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
@@ -83,7 +72,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         m_bSmoothFade = true;
         m_timer.restart();
     } else {
-        // Here is the point, when ReplayGain Analyser takes its action,
+        // Here is the point, when ReplayGain Analyzer takes its action,
         // suggested gain changes from 0 to a nonzero value
         // We want to smoothly fade to this last.
         // Anyway we have some the problem that code cannot block the
@@ -98,7 +87,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         const double kFadeSeconds = 1.0;
 
         if (m_bSmoothFade) {
-            double seconds = static_cast<double>(m_timer.elapsed()) / 1e9;
+            double seconds = m_timer.elapsed().toDoubleSeconds();
             if (seconds < kFadeSeconds) {
                 // Fade smoothly
                 double fadeFrac = seconds / kFadeSeconds;
@@ -126,17 +115,28 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // As the speed approaches zero, hearing small bursts of sound at full volume
     // is distracting and doesn't mimic the way that vinyl sounds when played slowly.
     // Instead, reduce gain to provide a soft rolloff.
+    // This is also applied for for fading from and to pause
     const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
     if (fabs(m_dSpeed) < kThresholdSpeed) {
         totalGain *= fabs(m_dSpeed) / kThresholdSpeed;
     }
 
-    if (totalGain != m_fPrevGain) {
+    if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
+        // direction changed, go though zero if scratching
+        SampleUtil::applyRampingGain(&pInOut[0], m_fPrevGain, 0, iBufferSize / 2);
+        SampleUtil::applyRampingGain(&pInOut[iBufferSize / 2], 0, totalGain, iBufferSize / 2);
+    } else if (totalGain != m_fPrevGain) {
         // Prevent sound wave discontinuities by interpolating from old to new gain.
         SampleUtil::applyRampingGain(pInOut, m_fPrevGain, totalGain, iBufferSize);
-        m_fPrevGain = totalGain;
     } else {
         // SampleUtil deals with aliased buffers and gains of 1 or 0.
         SampleUtil::applyGain(pInOut, totalGain, iBufferSize);
     }
+    m_fPrevGain = totalGain;
 }
+
+void EnginePregain::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    pGroupFeatures->gain = m_pPotmeterPregain->get();
+    pGroupFeatures->has_gain = true;
+}
+

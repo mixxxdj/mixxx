@@ -6,9 +6,9 @@
 #include <QPaintEvent>
 #include <QPainter>
 
-#include "util.h"
-#include "waveformrendererabstract.h"
 #include "skin/skincontext.h"
+#include "util/class.h"
+#include "waveformrendererabstract.h"
 
 class WaveformWidgetRenderer;
 

@@ -20,7 +20,6 @@ EffectManifest FilterEffect::getManifest() {
                                         "music by allowing only high or low "
                                         "frequencies to pass through."));
     manifest.setEffectRampsFromDry(true);
-    manifest.setIsForFilterKnob(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
@@ -37,7 +36,8 @@ EffectManifest FilterEffect::getManifest() {
 
     EffectManifestParameter* q = manifest.addParameter();
     q->setId("q");
-    q->setName(QObject::tr("Q"));
+    q->setName(QObject::tr("Resonance"));
+    q->setShortName(QObject::tr("Q"));
     q->setDescription(QObject::tr("Resonance of the filters, default = Flat top"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -164,7 +164,10 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
                 pOutput, numSamples);
     } else if (pLpfInput == pInput) {
         // Both disabled
-        SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
+        if (pOutput != pInput) {
+            // We need to copy pInput pOutput
+            SampleUtil::copy(pOutput, pInput, numSamples);
+        }
     }
 
     pState->m_loFreq = lpf;

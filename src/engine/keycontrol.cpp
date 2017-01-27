@@ -3,17 +3,17 @@
 
 #include "engine/keycontrol.h"
 
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlpotmeter.h"
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"
 
-static const double kLockOriginalKey = 0;
+//static const double kLockOriginalKey = 0;
 static const double kLockCurrentKey = 1;
 
 KeyControl::KeyControl(QString group,
-                       ConfigObject<ConfigValue>* pConfig)
+                       UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     m_pitchRateInfo.pitchRatio = 1.0;
     m_pitchRateInfo.tempoRatio = 1.0;
@@ -134,6 +134,7 @@ KeyControl::~KeyControl() {
     delete m_pFileKey;
     delete m_pEngineKey;
     delete m_pEngineKeyDistance;
+    delete m_keylockMode;
 }
 
 KeyControl::PitchTempoRatio KeyControl::getPitchTempoRatio() {

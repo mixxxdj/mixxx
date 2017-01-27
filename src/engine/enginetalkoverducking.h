@@ -1,9 +1,9 @@
 #include "engine/enginesidechaincompressor.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 
 class ConfigValue;
-class ControlObjectSlave;
+class ControlProxy;
 
 class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
   Q_OBJECT
@@ -15,7 +15,7 @@ class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
         MANUAL,
     };
 
-    EngineTalkoverDucking(ConfigObject<ConfigValue>* pConfig, const char* group);
+    EngineTalkoverDucking(UserSettingsPointer pConfig, const char* group);
     virtual ~EngineTalkoverDucking();
 
     TalkoverDuckSetting getMode() const {
@@ -30,10 +30,10 @@ class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
     void slotDuckModeChanged(double);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     const char* m_group;
 
-    ControlObjectSlave* m_pMasterSampleRate;
+    ControlProxy* m_pMasterSampleRate;
     ControlPotmeter* m_pDuckStrength;
     ControlPushButton* m_pTalkoverDucking;
 };

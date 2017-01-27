@@ -1,7 +1,7 @@
 #include "library/baseexternalplaylistmodel.h"
 
 #include "library/queryutil.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
                                                      TrackCollection* pTrackCollection,
@@ -129,6 +129,35 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
                    Qt::AscendingOrder);
     setSearch("");
+}
+
+void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
+    if (group == m_previewDeckGroup) {
+        // If there was a previously loaded track, refresh its rows so the
+        // preview state will update.
+        if (m_previewDeckTrackId.isValid()) {
+            const int numColumns = columnCount();
+            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
+            m_previewDeckTrackId = TrackId(); // invalidate
+            foreach (int row, rows) {
+                QModelIndex left = index(row, 0);
+                QModelIndex right = index(row, numColumns);
+                emit(dataChanged(left, right));
+            }
+        }
+        if (pTrack) {
+            // The external table has foreign Track IDs, so we need to compare
+            // by location
+            for (int row = 0; row < rowCount(); ++row) {
+                QString location = index(row, fieldIndex("location")).data().toString();
+                if (location == pTrack->getLocation()) {
+                    m_previewDeckTrackId = TrackId(index(row, 0).data());
+                    //Debug() << "foreign track id" << m_previewDeckTrackId;
+                    break;
+                }
+            }
+        }
+    }
 }
 
 TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const {

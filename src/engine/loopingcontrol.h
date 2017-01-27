@@ -7,10 +7,11 @@
 
 #include <QObject>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
+#include "control/controlvalue.h"
 
 #define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples
 
@@ -26,7 +27,7 @@ class LoopingControl : public EngineControl {
   public:
     static QList<double> getBeatSizes();
 
-    LoopingControl(QString group, ConfigObject<ConfigValue>* _config);
+    LoopingControl(QString group, UserSettingsPointer pConfig);
     virtual ~LoopingControl();
 
     // process() updates the internal state of the LoopingControl to reflect the
@@ -64,8 +65,7 @@ class LoopingControl : public EngineControl {
     void slotReloopExit(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
     void slotUpdatedTrackBeats();
 
     // Generate a loop of 'beats' length. It can also do fractions for a
@@ -87,6 +87,12 @@ class LoopingControl : public EngineControl {
     void slotLoopHalve(double);
 
   private:
+
+    struct LoopSamples {
+        int start;
+        int end;
+    };
+
     void setLoopingEnabled(bool enabled);
     void clearActiveBeatLoop();
     // When a loop changes size such that the playposition is outside of the loop,
@@ -109,14 +115,14 @@ class LoopingControl : public EngineControl {
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
-    int m_iLoopEndSample;
-    int m_iLoopStartSample;
-    int m_iCurrentSample;
+    // TODO(DSC) Make the following values double
+    ControlValueAtomic<LoopSamples> m_loopSamples;
+    QAtomicInt m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
     ControlObject* m_pTrackSamples;
-    BeatLoopingControl* m_pActiveBeatLoop;
+    QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;

@@ -3,16 +3,16 @@
 
 #include <QMap>
 
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbiquad1.h"
-#include "util.h"
-#include "util/types.h"
+#include "util/class.h"
 #include "util/defs.h"
-#include "sampleutil.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 class GraphicEQEffectGroupState {
   public:

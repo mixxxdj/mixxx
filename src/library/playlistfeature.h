@@ -12,7 +12,7 @@
 #include <QPoint>
 
 #include "library/baseplaylistfeature.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class TrackCollection;
 class TreeItem;
@@ -21,7 +21,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
   public:
     PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection,
-                    ConfigObject<ConfigValue>* pConfig);
+                    UserSettingsPointer pConfig);
     virtual ~PlaylistFeature();
 
     QVariant title();
@@ -36,6 +36,8 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private slots:
     void slotPlaylistTableChanged(int playlistId);
+    void slotPlaylistContentChanged(int playlistId);
+    void slotPlaylistTableRenamed(int playlistId, QString a_strName);
 
  protected:
     void buildPlaylistList();

@@ -5,7 +5,7 @@
 #include <QPair>
 #include <QMetaType>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 // The second value of each OpCode will be the channel number the message
 // corresponds to.  So 0xB0 is a CC on the first channel, and 0xB1 is a CC
@@ -176,12 +176,12 @@ typedef QList<MidiInputMapping> MidiInputMappings;
 
 struct MidiOutputMapping {
     bool operator==(const MidiOutputMapping& other) const {
-        return output == other.output && control == other.control &&
+        return output == other.output && controlKey == other.controlKey &&
                 description == other.description;
     }
 
     MidiOutput output;
-    ConfigKey control;
+    ConfigKey controlKey;
     QString description;
 };
 typedef QList<MidiOutputMapping> MidiOutputMappings;

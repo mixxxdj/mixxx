@@ -4,11 +4,10 @@
  * @date April 15, 2011
  */
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
-#include "controlobjectthread.h"
-#include "playermanager.h"
-#include "soundmanager.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "mixer/playermanager.h"
+#include "soundio/soundmanager.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrol.h"
@@ -18,7 +17,7 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 
 VinylControlManager::VinylControlManager(QObject* pParent,
-                                         ConfigObject<ConfigValue>* pConfig,
+                                         UserSettingsPointer pConfig,
                                          SoundManager* pSoundManager)
         : QObject(pParent),
           m_pConfig(pConfig),
@@ -30,8 +29,11 @@ VinylControlManager::VinylControlManager(QObject* pParent,
     // VinylControlProcessor.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, 0, i), m_pProcessor);
+            AudioInput(AudioInput::VINYLCONTROL, 0, 2, i), m_pProcessor);
     }
+
+    connect(&m_vinylControlEnabledMapper, SIGNAL(mapped(int)),
+            this, SLOT(slotVinylControlEnabledChanged(int)));
 }
 
 VinylControlManager::~VinylControlManager() {
@@ -41,7 +43,7 @@ VinylControlManager::~VinylControlManager() {
     // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_pConfig->set(ConfigKey(group, "vinylcontrol_enabled"), false);
+        m_pConfig->setValue(ConfigKey(group, "vinylcontrol_enabled"), false);
         m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
             ConfigValue(static_cast<int>(ControlObject::get(
                 ConfigKey(group, "vinylcontrol_cueing")))));
@@ -52,9 +54,18 @@ VinylControlManager::~VinylControlManager() {
 }
 
 void VinylControlManager::init() {
-    m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
     slotNumDecksChanged(m_pNumDecks->get());
+}
+
+void VinylControlManager::toggleVinylControl(int deck) {
+    if (deck < 0 || deck >= m_pVcEnabled.size()) {
+        return;
+    }
+
+    ControlProxy* pEnabled = m_pVcEnabled[deck];
+    pEnabled->set(!pEnabled->toBool());
 }
 
 void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
@@ -75,8 +86,10 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_pVcEnabled.push_back(new ControlObjectThread(group, "vinylcontrol_enabled", this));
-        m_pVcEnabled.back()->set(0);
+        ControlProxy* pEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
+        m_pVcEnabled.push_back(pEnabled);
+        pEnabled->connectValueChanged(&m_vinylControlEnabledMapper, SLOT(map()));
+        m_vinylControlEnabledMapper.setMapping(pEnabled, i);
 
         // Default cueing should be off.
         ControlObject::set(ConfigKey(group, "vinylcontrol_cueing"),
@@ -91,6 +104,16 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
                                    QString("mode_ch%1").arg(i + 1)), kDefaultMode).toDouble());
     }
     m_iNumConfiguredDecks = num_decks;
+}
+
+void VinylControlManager::slotVinylControlEnabledChanged(int deck) {
+    if (deck < 0 || deck >= m_pVcEnabled.size()) {
+        DEBUG_ASSERT(false);
+        return;
+    }
+
+    ControlProxy* pEnabled = m_pVcEnabled.at(deck);
+    emit(vinylControlDeckEnabled(deck, pEnabled->toBool()));
 }
 
 void VinylControlManager::requestReloadConfig() {

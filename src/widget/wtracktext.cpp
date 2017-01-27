@@ -2,39 +2,37 @@
 #include <QDebug>
 #include <QUrl>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "widget/wtracktext.h"
 #include "util/dnd.h"
 
-WTrackText::WTrackText(const char *group, ConfigObject<ConfigValue> *pConfig, QWidget* pParent)
+WTrackText::WTrackText(const char *group, UserSettingsPointer pConfig, QWidget* pParent)
         : WLabel(pParent),
           m_pGroup(group),
           m_pConfig(pConfig) {
     setAcceptDrops(true);
 }
 
-WTrackText::~WTrackText() {
-}
-
 void WTrackText::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
-        connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-                this, SLOT(updateLabel(TrackInfoObject*)));
-        updateLabel(track.data());
+        connect(track.get(), SIGNAL(changed(Track*)),
+                this, SLOT(updateLabel(Track*)));
+        updateLabel(track.get());
     }
 }
 
-void WTrackText::slotTrackUnloaded(TrackPointer track) {
-    Q_UNUSED(track);
+void WTrackText::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
     if (m_pCurrentTrack) {
-        disconnect(m_pCurrentTrack.data(), 0, this, 0);
+        disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
-    m_pCurrentTrack.clear();
+    m_pCurrentTrack.reset();
     setText("");
 }
 
-void WTrackText::updateLabel(TrackInfoObject*) {
+void WTrackText::updateLabel(Track* /*unused*/) {
     if (m_pCurrentTrack) {
         setText(m_pCurrentTrack->getInfo());
     }
@@ -62,7 +60,7 @@ void WTrackText::dropEvent(QDropEvent *event) {
                 *event->mimeData(), m_pGroup, true, false);
         if (!files.isEmpty()) {
             event->accept();
-            emit(trackDropped(files.at(0).canonicalFilePath(), m_pGroup));
+            emit(trackDropped(files.at(0).absoluteFilePath(), m_pGroup));
             return;
         }
     }

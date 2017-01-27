@@ -1,3 +1,4 @@
+#include <effects/native/threebandbiquadeqeffect.h>
 #include <QtDebug>
 
 #include "effects/native/nativebackend.h"
@@ -13,6 +14,9 @@
 #include "effects/native/reverbeffect.h"
 #endif
 #include "effects/native/echoeffect.h"
+#include "effects/native/autopaneffect.h"
+#include "effects/native/phasereffect.h"
+#include "effects/native/loudnesscontoureffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -21,18 +25,22 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<Bessel4LVMixEQEffect>();
     registerEffect<Bessel8LVMixEQEffect>();
     registerEffect<LinkwitzRiley8EQEffect>();
+    registerEffect<ThreeBandBiquadEQEffect>();
     // Compensations EQs    
     registerEffect<GraphicEQEffect>();
-    // Fading Effcts
+    registerEffect<LoudnessContourEffect>();
+    // Fading Effects
     registerEffect<FilterEffect>();
     registerEffect<MoogLadder4FilterEffect>();
     registerEffect<BitCrusherEffect>();
     // Fancy effects    
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();
+    registerEffect<AutoPanEffect>();
 #ifndef __MACAPPSTORE__
     registerEffect<ReverbEffect>();
 #endif
+    registerEffect<PhaserEffect>();
 }
 
 NativeBackend::~NativeBackend() {

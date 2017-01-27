@@ -5,10 +5,10 @@
 
 class WOverviewRGB : public WOverview {
   public:
-    WOverviewRGB(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent);
+    WOverviewRGB(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent);
 
   private:
-    virtual bool drawNextPixmapPart();
+    bool drawNextPixmapPart() override;
 };
 
 #endif // WOVERVIEWRGB_H

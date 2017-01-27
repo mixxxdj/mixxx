@@ -9,29 +9,31 @@ Import('build')
 Import('mixxxminimal_depends')
 
 mixxxminimal_sources = [
-	"dsp/ChangeDetectionFunction.cpp",
-	"dsp/DownBeat.cpp",
-	"dsp/PeakPicking.cpp",
-	"dsp/Chromagram.cpp",
-	"dsp/FFT.cpp",
-	"dsp/PhaseVocoder.cpp",
-	"dsp/ConstantQ.cpp",
-	"dsp/Filter.cpp",
-	"dsp/Pitch.cpp",
-	"dsp/Correlation.cpp",
-	"dsp/FiltFilt.cpp",
-	"dsp/TCSgram.cpp",
-	"dsp/CQprecalc.cpp",
-	"dsp/Framer.cpp",
-	"dsp/TempoTrack.cpp",
-	"dsp/Decimator.cpp",
-	"dsp/GetKeyMode.cpp",
-	"dsp/TempoTrackV2.cpp",
-	"dsp/DetectionFunction.cpp",
-	"dsp/KLDivergence.cpp",
-	"dsp/TonalEstimator.cpp",
-	"dsp/DFProcess.cpp",
-	"dsp/MathUtilities.cpp",
+	"base/Pitch.cpp",
+	"dsp/chromagram/Chromagram.cpp",
+	"dsp/chromagram/ConstantQ.cpp",
+	"dsp/chromagram/CQprecalc.cpp",
+	"dsp/keydetection/GetKeyMode.cpp",
+	"dsp/onsets/DetectionFunction.cpp",
+	"dsp/onsets/PeakPicking.cpp",
+	"dsp/phasevocoder/PhaseVocoder.cpp",
+	"dsp/rateconversion/Decimator.cpp",
+	"dsp/signalconditioning/DFProcess.cpp",
+	"dsp/signalconditioning/Filter.cpp",
+	"dsp/signalconditioning/FiltFilt.cpp",
+	"dsp/signalconditioning/Framer.cpp",
+	"dsp/tempotracking/DownBeat.cpp",
+	"dsp/tempotracking/TempoTrack.cpp",
+	"dsp/tempotracking/TempoTrackV2.cpp",
+	"dsp/tonal/ChangeDetectionFunction.cpp",
+	"dsp/tonal/TCSgram.cpp",
+	"dsp/tonal/TonalEstimator.cpp",
+	"dsp/transforms/FFT.cpp",
+	"ext/kissfft/kiss_fft.c",
+	"ext/kissfft/kiss_fftr.c",
+	"maths/Correlation.cpp",
+	"maths/KLDivergence.cpp",
+	"maths/MathUtilities.cpp",
 	"plugins/BarBeatTrack.cpp",
 	"plugins/KeyDetect.cpp",
 	"plugins/BeatTrack.cpp",
@@ -49,7 +51,7 @@ if int(build.flags['vamp']):
     # If there is no system vamp-hostdk installed, then we'll directly link
     # the vamp-hostsdk.
     if not conf.CheckLib('vamp-sdk'):
-        INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
+        INTERNAL_VAMP_PATH = '#lib/vamp-2.6'
         # For header includes
         env.Append(CPPPATH=[INTERNAL_VAMP_PATH])
         sdk_src_path = '%s/src/vamp-sdk' % INTERNAL_VAMP_PATH
