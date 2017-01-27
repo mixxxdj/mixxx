@@ -347,7 +347,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     launchProgress(100);
 
     // Check direct rendering and warn user if they don't have it
-    checkDirectRendering();
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+        checkDirectRendering();
+    }
 
     // Install an event filter to catch certain QT events, such as tooltips.
     // This allows us to turn off tooltips.
