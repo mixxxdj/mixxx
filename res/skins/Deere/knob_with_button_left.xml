@@ -27,7 +27,7 @@
 
           <PushButton>
             <TooltipId><Variable name="button_TooltipId"/></TooltipId>
-            <ObjectName>KnobButton</ObjectName>
+            <ObjectName>CircleButton</ObjectName>
             <Size>15f,15f</Size>
             <NumberStates>2</NumberStates>
             <State>

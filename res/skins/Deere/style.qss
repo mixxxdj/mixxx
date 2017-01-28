@@ -959,7 +959,7 @@ WNumberRate {
   qproperty-layoutSpacing: 5;
 }
 
-#KnobButton {
+#CircleButton {
   border: 3px solid #333333;
   border-radius: 2px;
 }
