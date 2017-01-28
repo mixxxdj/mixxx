@@ -55,7 +55,7 @@ EffectsManager::~EffectsManager() {
 
 bool alphabetizeEffectManifests(const EffectManifest& manifest1,
                                 const EffectManifest& manifest2) {
-    return QString::localeAwareCompare(manifest1.displayName(), manifest2.displayName()) < 0;
+    return QString::localeAwareCompare(manifest1.shortName(), manifest2.shortName()) < 0;
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {

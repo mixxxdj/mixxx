@@ -48,14 +48,6 @@ class EffectManifest final {
         m_shortName = shortName;
     }
 
-    virtual const QString& displayName() const {
-        if (!m_shortName.isEmpty()) {
-            return m_shortName;
-        } else {
-            return m_name;
-        }
-    }
-
     virtual const QString& author() const {
         return m_author;
     }
@@ -129,3 +121,5 @@ class EffectManifest final {
 };
 
 #endif /* EFFECTMANIFEST_H */
+
+
