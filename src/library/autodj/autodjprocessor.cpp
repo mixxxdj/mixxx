@@ -180,7 +180,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
 
 void AutoDJProcessor::fadeNow() {
     // Auto-DJ needs at least two decks
-    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+    VERIFY_OR_DEBUG_ASSERT(m_decks.length() > 1) {
         return;
     }
     if (m_eState != ADJ_IDLE) {
@@ -221,7 +221,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     }
 
     // Auto-DJ needs at least two decks
-    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+    VERIFY_OR_DEBUG_ASSERT(m_decks.length() > 1) {
         return ADJ_NOT_TWO_DECKS;
     }
 
@@ -405,7 +405,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     }
 
     // Auto-DJ needs at least two decks
-    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+    VERIFY_OR_DEBUG_ASSERT(m_decks.length() > 1) {
         return;
     }
 
@@ -830,7 +830,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
     }
 
     // Auto-DJ needs at least two decks
-    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+    VERIFY_OR_DEBUG_ASSERT(m_decks.length() > 1) {
         return;
     }
 

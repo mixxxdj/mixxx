@@ -59,7 +59,7 @@ bool alphabetizeEffectManifests(const EffectManifest& manifest1,
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
-    DEBUG_ASSERT_AND_HANDLE(pBackend) {
+    VERIFY_OR_DEBUG_ASSERT(pBackend) {
         return;
     }
     m_effectsBackends.append(pBackend);

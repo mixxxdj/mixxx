@@ -220,7 +220,7 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
 }
 
 void Library::addFeature(LibraryFeature* feature) {
-    DEBUG_ASSERT_AND_HANDLE(feature) {
+    VERIFY_OR_DEBUG_ASSERT(feature) {
         return;
     }
     m_features.push_back(feature);
@@ -244,7 +244,7 @@ void Library::addFeature(LibraryFeature* feature) {
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
     emit(showTrackModel(model));

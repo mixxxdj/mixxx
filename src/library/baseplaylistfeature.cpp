@@ -324,7 +324,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 
     if (m_lastRightClickedIndex.isValid()) {
-        DEBUG_ASSERT_AND_HANDLE(playlistId >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
             return;
         }
 

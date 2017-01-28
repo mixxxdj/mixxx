@@ -63,10 +63,10 @@ void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
     if (m_iDelay > 0) {
         int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
 
-        DEBUG_ASSERT_AND_HANDLE(iDelaySourcePos >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(iDelaySourcePos >= 0) {
             return;
         }
-        DEBUG_ASSERT_AND_HANDLE(iDelaySourcePos <= kiMaxDelay) {
+        VERIFY_OR_DEBUG_ASSERT(iDelaySourcePos <= kiMaxDelay) {
             return;
         }
 

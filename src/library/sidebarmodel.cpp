@@ -315,7 +315,7 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
      */
 
     const QAbstractItemModel* model = dynamic_cast<QAbstractItemModel*>(sender());
-    DEBUG_ASSERT_AND_HANDLE(model != NULL) {
+    VERIFY_OR_DEBUG_ASSERT(model != NULL) {
         return QModelIndex();
     }
 

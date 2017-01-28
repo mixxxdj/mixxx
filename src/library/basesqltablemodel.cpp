@@ -542,7 +542,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                 int ccColumn = sc.m_column - m_tableColumns.size() + 1;
                 sort_field = m_trackSource->columnSortForFieldIndex(ccColumn);
             }
-            DEBUG_ASSERT_AND_HANDLE(!sort_field.isEmpty()) {
+            VERIFY_OR_DEBUG_ASSERT(!sort_field.isEmpty()) {
                 continue;
             }
 
@@ -953,7 +953,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setBpmLocked(value.toBool());
     } else {
         // We never should get up to this point!
-        DEBUG_ASSERT_AND_HANDLE(false) {
+        VERIFY_OR_DEBUG_ASSERT(false) {
             qWarning() << "Column"
                     << m_tableColumnCache.columnNameForFieldIndex(column)
                     << "is not editable!";
