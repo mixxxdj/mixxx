@@ -201,10 +201,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
-    DEBUG_ASSERT_AND_HANDLE(model) {
+    VERIFY_OR_DEBUG_ASSERT(model) {
         return;
     }
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
 

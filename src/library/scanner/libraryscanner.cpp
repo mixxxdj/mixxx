@@ -234,7 +234,7 @@ void LibraryScanner::slotStartScan() {
 // is called when all tasks of the first stage are done (threads are finished)
 void LibraryScanner::slotFinishHashedScan() {
     qDebug() << "LibraryScanner::slotFinishHashedScan";
-    DEBUG_ASSERT_AND_HANDLE(!m_scannerGlobal.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_scannerGlobal.isNull()) {
         qWarning() << "No scanner global state exists in LibraryScanner::slotFinishHashedScan";
         return;
     }
@@ -348,7 +348,7 @@ void LibraryScanner::cleanUpScan() {
 // is called when all tasks of the second stage are done (threads are finished)
 void LibraryScanner::slotFinishUnhashedScan() {
     qDebug() << "LibraryScanner::slotFinishUnhashedScan";
-    DEBUG_ASSERT_AND_HANDLE(!m_scannerGlobal.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_scannerGlobal.isNull()) {
         qWarning() << "No scanner global state exists in LibraryScanner::slotFinishUnhashedScan";
         return;
     }

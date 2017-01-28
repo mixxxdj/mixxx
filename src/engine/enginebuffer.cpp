@@ -374,7 +374,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
     // Write the position before the seek type, to reduce a possible race
     // condition effect
-    DEBUG_ASSERT_AND_HANDLE(seekType != SEEK_PHASE) {
+    VERIFY_OR_DEBUG_ASSERT(seekType != SEEK_PHASE) {
         // SEEK_PHASE with a position is not supported
         // use SEEK_STANDARD for that
         seekType = SEEK_STANDARD;
@@ -715,7 +715,7 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
 
 void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // Bail if we receive a buffer size with incomplete sample frames. Assert in debug builds.
-    DEBUG_ASSERT_AND_HANDLE((iBufferSize % kSamplesPerFrame) == 0) {
+    VERIFY_OR_DEBUG_ASSERT((iBufferSize % kSamplesPerFrame) == 0) {
         return;
     }
     m_pReader->process();
