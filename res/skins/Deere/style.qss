@@ -798,7 +798,7 @@ WWidget, QLabel {
 }
 
 #EffectHighlightable[highlight="1"] {
-  border: 2px solid #b0b0b0;
+  border: 2px solid #0081bd;
   padding: 2px;
 }
 
