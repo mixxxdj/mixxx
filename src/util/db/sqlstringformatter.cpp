@@ -10,7 +10,7 @@ QString SqlStringFormatter::format(
         const QSqlDatabase& database,
         const QString& value) {
     QSqlDriver* pDriver = database.driver();
-    DEBUG_ASSERT_AND_HANDLE(pDriver != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pDriver != nullptr) {
         return value; // unformatted
     }
     QSqlField stringField(QString(), QVariant::String);

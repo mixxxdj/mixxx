@@ -147,7 +147,7 @@ int likeCompareInner(
 void sqliteLike(sqlite3_context *context,
                                 int aArgc,
                                 sqlite3_value **aArgv) {
-    DEBUG_ASSERT_AND_HANDLE(aArgc == 2 || aArgc == 3) {
+    VERIFY_OR_DEBUG_ASSERT(aArgc == 2 || aArgc == 3) {
         return;
     }
 
@@ -212,14 +212,14 @@ DbConnection::DbConnection(const QString& dirPath)
     }
 
     QVariant v = m_database.driver()->handle();
-    DEBUG_ASSERT_AND_HANDLE(v.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(v.isValid()) {
         return; // early exit
     }
 #ifdef __SQLITE3__
     if (strcmp(v.typeName(), "sqlite3*") == 0) {
         // v.data() returns a pointer to the handle
         sqlite3* handle = *static_cast<sqlite3**>(v.data());
-        DEBUG_ASSERT_AND_HANDLE(handle != nullptr) {
+        VERIFY_OR_DEBUG_ASSERT(handle != nullptr) {
             qWarning() << "Could not get sqlite3 handle";
             m_database.close();
             DEBUG_ASSERT(!*this); // failure
@@ -232,7 +232,7 @@ DbConnection::DbConnection(const QString& dirPath)
                         SQLITE_UTF16,
                         nullptr,
                         sqliteStringCompareUTF16);
-        DEBUG_ASSERT_AND_HANDLE(result == SQLITE_OK) {
+        VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
             qWarning() << "Failed to install string collation function:" << result;
         }
 
@@ -244,7 +244,7 @@ DbConnection::DbConnection(const QString& dirPath)
                         nullptr,
                         sqliteLike,
                         nullptr, nullptr);
-        DEBUG_ASSERT_AND_HANDLE(result == SQLITE_OK) {
+        VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
             qWarning() << "Failed to install like 2 function:" << result;
         }
 
@@ -256,7 +256,7 @@ DbConnection::DbConnection(const QString& dirPath)
                         nullptr,
                         sqliteLike,
                         nullptr, nullptr);
-        DEBUG_ASSERT_AND_HANDLE(result == SQLITE_OK) {
+        VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
             qWarning() << "Failed to install like 3 function:" << result;
         }
 
@@ -268,7 +268,7 @@ DbConnection::DbConnection(const QString& dirPath)
 }
 
 DbConnection::~DbConnection() {
-    DEBUG_ASSERT_AND_HANDLE(*this) {
+    VERIFY_OR_DEBUG_ASSERT(*this) {
         qWarning()
             << "Database connection has already been closed:"
             << *this;
@@ -277,7 +277,7 @@ DbConnection::~DbConnection() {
     // There should never be an outstanding transaction when this code is
     // called. If there is, it means we probably aren't committing a
     // transaction somewhere that should be.
-    DEBUG_ASSERT_AND_HANDLE(!m_database.rollback()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_database.rollback()) {
         qWarning()
             << "Rolled back open transaction before closing database connection:"
             << *this;

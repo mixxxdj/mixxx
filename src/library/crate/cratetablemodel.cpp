@@ -169,7 +169,7 @@ int CrateTableModel::addTracks(const QModelIndex& index,
 }
 
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {
-    DEBUG_ASSERT_AND_HANDLE(m_selectedCrate.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(m_selectedCrate.isValid()) {
         return;
     }
     if (indices.empty()) {
@@ -182,7 +182,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
         return;
     }
 
-    DEBUG_ASSERT_AND_HANDLE(!crate.isLocked()) {
+    VERIFY_OR_DEBUG_ASSERT(!crate.isLocked()) {
         return;
     }
 

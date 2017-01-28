@@ -62,7 +62,7 @@ DbFieldIndex FwdSqlQuery::fieldIndex(const QString& fieldName) const {
     DEBUG_ASSERT(!hasError());
     DEBUG_ASSERT(isSelect());
     DbFieldIndex fieldIndex(record().indexOf(fieldName));
-    DEBUG_ASSERT_AND_HANDLE(fieldIndex.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(fieldIndex.isValid()) {
         qCritical() << "Field named"
                 << fieldName
                 << "not found in record of SQL query"
@@ -84,10 +84,10 @@ namespace {
     bool toBoolean(const QVariant& variant) {
         bool ok = false;
         int value = variant.toInt(&ok);
-        DEBUG_ASSERT_AND_HANDLE(ok) {
+        VERIFY_OR_DEBUG_ASSERT(ok) {
             qWarning() << "Invalid boolean value in database:" << variant;
         }
-        DEBUG_ASSERT_AND_HANDLE(
+        VERIFY_OR_DEBUG_ASSERT(
                 (value == FwdSqlQuery::BOOLEAN_FALSE) ||
                 (value == FwdSqlQuery::BOOLEAN_TRUE)) {
             qWarning() << "Invalid boolean value in database:" << value;

@@ -209,7 +209,7 @@ void CrateStorage::detachDatabase() {
 
 
 void CrateStorage::createViews() {
-    DEBUG_ASSERT_AND_HANDLE(FwdSqlQuery(m_database, kCrateSummaryViewQuery).execPrepared()) {
+    VERIFY_OR_DEBUG_ASSERT(FwdSqlQuery(m_database, kCrateSummaryViewQuery).execPrepared()) {
         qCritical() << "Failed to create database view for crate summaries!";
     }
 }
@@ -238,7 +238,7 @@ bool CrateStorage::readCrateById(CrateId id, Crate* pCrate) const {
     if (query.execPrepared()) {
         CrateSelectResult crates(std::move(query));
         if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
-            DEBUG_ASSERT_AND_HANDLE(!crates.next()) {
+            VERIFY_OR_DEBUG_ASSERT(!crates.next()) {
                 qWarning() << "Ambiguous crate id:" << id;
             }
             return true;
@@ -259,7 +259,7 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
     if (query.execPrepared()) {
         CrateSelectResult crates(std::move(query));
         if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
-            DEBUG_ASSERT_AND_HANDLE(!crates.next()) {
+            VERIFY_OR_DEBUG_ASSERT(!crates.next()) {
                 qWarning() << "Ambiguous crate name:" << name;
             }
             return true;
@@ -364,7 +364,7 @@ bool CrateStorage::readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary)
     if (query.execPrepared()) {
         CrateSummarySelectResult crateSummaries(std::move(query));
         if ((pCrateSummary != nullptr) ? crateSummaries.populateNext(pCrateSummary) : crateSummaries.next()) {
-            DEBUG_ASSERT_AND_HANDLE(!crateSummaries.next()) {
+            VERIFY_OR_DEBUG_ASSERT(!crateSummaries.next()) {
                 qWarning() << "Ambiguous crate id:" << id;
             }
             return true;
@@ -453,7 +453,7 @@ bool CrateStorage::onInsertingCrate(
         const Crate& crate,
         CrateId* pCrateId) {
     DEBUG_ASSERT(transaction);
-    DEBUG_ASSERT_AND_HANDLE(!crate.getId().isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(!crate.getId().isValid()) {
         qWarning() << "Cannot insert crate with a valid id:" << crate.getId();
         return false;
     }
@@ -463,14 +463,14 @@ bool CrateStorage::onInsertingCrate(
                     CRATETABLE_NAME,
                     CRATETABLE_LOCKED,
                     CRATETABLE_AUTODJ_SOURCE));
-    DEBUG_ASSERT_AND_HANDLE(query.isPrepared()) {
+    VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
         return false;
     }
     CrateQueryBinder queryBinder(query);
     queryBinder.bindName(":name", crate);
     queryBinder.bindLocked(":locked", crate);
     queryBinder.bindAutoDjSource(":autoDjSource", crate);
-    DEBUG_ASSERT_AND_HANDLE(query.execPrepared()) {
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
         return false;
     }
     if (query.numRowsAffected() > 0) {
@@ -490,7 +490,7 @@ bool CrateStorage::onUpdatingCrate(
         SqlTransaction& transaction,
         const Crate& crate) {
     DEBUG_ASSERT(transaction);
-    DEBUG_ASSERT_AND_HANDLE(crate.getId().isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(crate.getId().isValid()) {
         qWarning() << "Cannot update crate without a valid id";
         return false;
     }
@@ -501,7 +501,7 @@ bool CrateStorage::onUpdatingCrate(
                     CRATETABLE_LOCKED,
                     CRATETABLE_AUTODJ_SOURCE,
                     CRATETABLE_ID));
-    DEBUG_ASSERT_AND_HANDLE(query.isPrepared()) {
+    VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
         return false;
     }
     CrateQueryBinder queryBinder(query);
@@ -509,11 +509,11 @@ bool CrateStorage::onUpdatingCrate(
     queryBinder.bindName(":name", crate);
     queryBinder.bindLocked(":locked", crate);
     queryBinder.bindAutoDjSource(":autoDjSource", crate);
-    DEBUG_ASSERT_AND_HANDLE(query.execPrepared()) {
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
         return false;
     }
     if (query.numRowsAffected() > 0) {
-        DEBUG_ASSERT_AND_HANDLE(query.numRowsAffected() <= 1) {
+        VERIFY_OR_DEBUG_ASSERT(query.numRowsAffected() <= 1) {
             qWarning() << "Updated multiple crates with the same id" << crate.getId();
         }
         return true;
@@ -527,10 +527,10 @@ bool CrateStorage::onUpdatingCrate(
 bool CrateStorage::onDeletingCrate(
         SqlTransaction& transaction,
         CrateId crateId) {
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         qWarning() << "Cannot delete crate without a valid id";
         return false;
     }
@@ -539,11 +539,11 @@ bool CrateStorage::onDeletingCrate(
                 "DELETE FROM %1 WHERE %2=:id").arg(
                         CRATE_TRACKS_TABLE,
                         CRATETRACKSTABLE_CRATEID));
-        DEBUG_ASSERT_AND_HANDLE(query.isPrepared()) {
+        VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
             return false;
         }
         query.bindValue(":id", crateId);
-        DEBUG_ASSERT_AND_HANDLE(query.execPrepared()) {
+        VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
             return false;
         }
         if (query.numRowsAffected() <= 0) {
@@ -555,15 +555,15 @@ bool CrateStorage::onDeletingCrate(
                 "DELETE FROM %1 WHERE %2=:id").arg(
                         CRATE_TABLE,
                         CRATETABLE_ID));
-        DEBUG_ASSERT_AND_HANDLE(query.isPrepared()) {
+        VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
             return false;
         }
         query.bindValue(":id", crateId);
-        DEBUG_ASSERT_AND_HANDLE(query.execPrepared()) {
+        VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
             return false;
         }
         if (query.numRowsAffected() > 0) {
-            DEBUG_ASSERT_AND_HANDLE(query.numRowsAffected() <= 1) {
+            VERIFY_OR_DEBUG_ASSERT(query.numRowsAffected() <= 1) {
                 qWarning() << "Deleted multiple crates with the same id" << crateId;
             }
             return true;
@@ -579,7 +579,7 @@ bool CrateStorage::onAddingCrateTracks(
         SqlTransaction& transaction,
         CrateId crateId,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
     FwdSqlQuery query(m_database, QString(
@@ -613,7 +613,7 @@ bool CrateStorage::onRemovingCrateTracks(
         const QList<TrackId>& trackIds) {
     // NOTE(uklotzde): We remove tracks in a transaction and loop
     // analogously to adding tracks (see above).
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
     FwdSqlQuery query(m_database, QString(

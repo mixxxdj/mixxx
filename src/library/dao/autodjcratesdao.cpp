@@ -47,7 +47,7 @@ AutoDJCratesDAO::~AutoDJCratesDAO() {
 void AutoDJCratesDAO::initialize() {
     // Save the ID of the auto-DJ playlist.
     m_iAutoDjPlaylistId = m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
-    DEBUG_ASSERT_AND_HANDLE(m_iAutoDjPlaylistId >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(m_iAutoDjPlaylistId >= 0) {
     	qWarning() << "Auto DJ playlist not found!";
     }
 }
@@ -442,7 +442,7 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
         " WHERE " AUTODJCRATESTABLE_TIMESPLAYED
         " = 0 UNION ALL SELECT COUNT(*) AS count FROM "
         AUTODJACTIVETRACKS_TABLE);
-    DEBUG_ASSERT_AND_HANDLE(oQuery.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
         return TrackId();
     }
@@ -515,7 +515,7 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
     oQuery.prepare("SELECT " AUTODJCRATESTABLE_TRACKID " FROM "
         AUTODJACTIVETRACKS_TABLE " LIMIT 1 OFFSET ABS (RANDOM() % :active)");
     oQuery.bindValue (":active", iActiveTracks);
-    DEBUG_ASSERT_AND_HANDLE(oQuery.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
         return TrackId();
     }
@@ -937,7 +937,7 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
                    " WHERE fs_deleted == 1 )"
                    " AND mixxx_deleted != 1" );
     oQuery.bindValue(":id",iPlaylistId);
-    DEBUG_ASSERT_AND_HANDLE(oQuery.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
         return TrackId();
     }
@@ -998,7 +998,7 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
                    " OFFSET :offset");
     oQuery.bindValue(":id", iPlaylistId);
     oQuery.bindValue(":offset", offset);
-    DEBUG_ASSERT_AND_HANDLE(oQuery.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
         return TrackId();
     }

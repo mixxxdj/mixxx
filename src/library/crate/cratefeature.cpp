@@ -255,7 +255,7 @@ void CrateFeature::activate() {
 
 void CrateFeature::activateChild(const QModelIndex& index) {
     CrateId crateId(crateIdFromIndex(index));
-    DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
     }
     m_crateTableModel.selectCrate(crateId);
@@ -265,11 +265,11 @@ void CrateFeature::activateChild(const QModelIndex& index) {
 
 bool CrateFeature::activateCrate(CrateId crateId) {
     //qDebug() << "CrateFeature::activateCrate()" << crateId;
-    DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
     }
     QModelIndex index = indexFromCrateId(crateId);
-    DEBUG_ASSERT_AND_HANDLE(index.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return false;
     }
     m_crateTableModel.selectCrate(crateId);
@@ -283,10 +283,10 @@ bool CrateFeature::activateCrate(CrateId crateId) {
 
 bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
     CrateId crateId(crateIdFromIndex(m_lastRightClickedIndex));
-    DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(m_pTrackCollection->crates().readCrateById(crateId, pCrate)) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackCollection->crates().readCrateById(crateId, pCrate)) {
         return false;
     }
     return true;
@@ -578,7 +578,7 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
 
 QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     TreeItem* pRootItem = m_childModel.getRootItem();
-    DEBUG_ASSERT_AND_HANDLE(pRootItem != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
         return QModelIndex();
     }
     m_childModel.removeRows(0, pRootItem->childRows());
@@ -617,11 +617,11 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
     const CrateStorage& crateStorage = m_pTrackCollection->crates();
     for (const CrateId& crateId: updatedCrateIds) {
         QModelIndex index = indexFromCrateId(crateId);
-        DEBUG_ASSERT_AND_HANDLE(index.isValid()) {
+        VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
             continue;
         }
         CrateSummary crateSummary;
-        DEBUG_ASSERT_AND_HANDLE(crateStorage.readCrateSummaryById(crateId, &crateSummary)) {
+        VERIFY_OR_DEBUG_ASSERT(crateStorage.readCrateSummaryById(crateId, &crateSummary)) {
             continue;
         }
         updateTreeItem(m_childModel.getItem(index), crateSummary);
@@ -641,7 +641,7 @@ CrateId CrateFeature::crateIdFromIndex(const QModelIndex& index) const {
 }
 
 QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) const {
-    DEBUG_ASSERT_AND_HANDLE(crateId.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return QModelIndex();
     }
     for (int row = 0; row < m_childModel.rowCount(); ++row) {
@@ -887,7 +887,7 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
 
     TreeItem* pRootItem = m_childModel.getRootItem();
-    DEBUG_ASSERT_AND_HANDLE(pRootItem != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
         return;
     }
 

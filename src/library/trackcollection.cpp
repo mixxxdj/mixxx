@@ -145,13 +145,13 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     // Transactional
     SqlTransaction transaction(database());
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(m_trackDao.onHidingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onHidingTracks(transaction, trackIds)) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
 
@@ -171,13 +171,13 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     // Transactional
     SqlTransaction transaction(database());
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(m_trackDao.onUnhidingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onUnhidingTracks(transaction, trackIds)) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
 
@@ -199,16 +199,16 @@ bool TrackCollection::purgeTracks(
         const QList<TrackId>& trackIds) {
     // Transactional
     SqlTransaction transaction(database());
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(m_trackDao.onPurgingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onPurgingTracks(transaction, trackIds)) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(m_crates.onPurgingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(transaction, trackIds)) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
     // TODO(XXX): Move reversible actions inside transaction
@@ -236,15 +236,15 @@ bool TrackCollection::insertCrate(
         CrateId* pCrateId) {
     // Transactional
     SqlTransaction transaction(database());
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
     CrateId crateId;
-    DEBUG_ASSERT_AND_HANDLE(m_crates.onInsertingCrate(transaction, crate, &crateId)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onInsertingCrate(transaction, crate, &crateId)) {
         return false;
     }
     DEBUG_ASSERT(crateId.isValid());
-    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
 
@@ -261,13 +261,13 @@ bool TrackCollection::updateCrate(
         const Crate& crate) {
     // Transactional
     SqlTransaction transaction(database());
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(m_crates.onUpdatingCrate(transaction, crate)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onUpdatingCrate(transaction, crate)) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
 
@@ -281,13 +281,13 @@ bool TrackCollection::deleteCrate(
         CrateId crateId) {
     // Transactional
     SqlTransaction transaction(database());
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(m_crates.onDeletingCrate(transaction, crateId)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onDeletingCrate(transaction, crateId)) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
 
@@ -302,13 +302,13 @@ bool TrackCollection::addCrateTracks(
         const QList<TrackId>& trackIds) {
     // Transactional
     SqlTransaction transaction(database());
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(m_crates.onAddingCrateTracks(transaction, crateId, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onAddingCrateTracks(transaction, crateId, trackIds)) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
 
@@ -323,13 +323,13 @@ bool TrackCollection::removeCrateTracks(
         const QList<TrackId>& trackIds) {
     // Transactional
     SqlTransaction transaction(database());
-    DEBUG_ASSERT_AND_HANDLE(transaction) {
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(m_crates.onRemovingCrateTracks(transaction, crateId, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onRemovingCrateTracks(transaction, crateId, trackIds)) {
         return false;
     }
-    DEBUG_ASSERT_AND_HANDLE(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
 
@@ -343,7 +343,7 @@ bool TrackCollection::updateAutoDjCrate(
         CrateId crateId,
         bool isAutoDjSource) {
     Crate crate;
-    DEBUG_ASSERT_AND_HANDLE(crates().readCrateById(crateId, &crate)) {
+    VERIFY_OR_DEBUG_ASSERT(crates().readCrateById(crateId, &crate)) {
         return false; // inexistent or failure
     }
     if (crate.isAutoDjSource() == isAutoDjSource) {
