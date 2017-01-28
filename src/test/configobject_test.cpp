@@ -119,7 +119,7 @@ TEST_F(ConfigObjectTest, GetValueString) {
     auto ck2 = ConfigKey("[Test]", "bar");
     config()->setValue(ck, 5);
     EXPECT_QSTRING_EQ("5", config()->getValueString(ck));
-    EXPECT_QSTRING_EQ("6", config()->getValueString(ck2, "6"));
+    EXPECT_QSTRING_EQ("6", config()->getValue(ck2, "6"));
 }
 
 TEST_F(ConfigObjectTest, Save) {

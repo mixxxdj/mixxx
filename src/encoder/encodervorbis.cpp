@@ -98,7 +98,11 @@ void EncoderVorbis::writePage() {
             result = ogg_stream_flush(&m_oggs, &m_oggpage);
             if (result == 0)
                 break;
-            m_pCallback->write(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
+            m_pCallback->write(
+                    m_oggpage.header,
+                    m_oggpage.body,
+                    m_oggpage.header_len,
+                    m_oggpage.body_len);
         }
         m_header_write = false;
     }
