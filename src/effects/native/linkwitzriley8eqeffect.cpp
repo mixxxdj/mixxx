@@ -14,7 +14,9 @@ QString LinkwitzRiley8EQEffect::getId() {
 EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
+    //: Long name
     manifest.setName(QObject::tr("LinkwitzRiley8 Isolator"));
+    //: Short name
     manifest.setShortName(QObject::tr("LR8 ISO"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");

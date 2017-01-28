@@ -10,7 +10,9 @@ QString Bessel8LVMixEQEffect::getId() {
 EffectManifest Bessel8LVMixEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
+    //: Long name
     manifest.setName(QObject::tr("Bessel8 LV-Mix Isolator"));
+    //: Short name
     manifest.setShortName(QObject::tr("Bessel8 ISO"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");

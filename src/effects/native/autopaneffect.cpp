@@ -18,7 +18,10 @@ QString AutoPanEffect::getId() {
 EffectManifest AutoPanEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
+    //: Long name
     manifest.setName(QObject::tr("AutoPan"));
+    //: Short name
+    manifest.setShortName(QObject::tr("AutoPan"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Bounce the sound from a channel "

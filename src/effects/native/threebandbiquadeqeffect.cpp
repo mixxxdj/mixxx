@@ -38,8 +38,10 @@ QString ThreeBandBiquadEQEffect::getId() {
 EffectManifest ThreeBandBiquadEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
+    //: Long name
     manifest.setName(QObject::tr("Biquad Equalizer"));
-    manifest.setShortName(QObject::tr("BQ EQ"));
+    //: Short name
+    manifest.setShortName(QObject::tr("Biquad EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(

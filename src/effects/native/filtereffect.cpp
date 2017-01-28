@@ -13,7 +13,10 @@ QString FilterEffect::getId() {
 EffectManifest FilterEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
+    //: Long name
     manifest.setName(QObject::tr("Filter"));
+    //: Short name
+    manifest.setShortName(QObject::tr("Filter"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("The filter changes the tone of the "

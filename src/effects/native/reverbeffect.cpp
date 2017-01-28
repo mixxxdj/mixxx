@@ -13,7 +13,10 @@ QString ReverbEffect::getId() {
 EffectManifest ReverbEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
+    //: Long name
     manifest.setName(QObject::tr("Reverb"));
+    //: Short name
+    manifest.setShortName(QObject::tr("Reverb"));
     manifest.setAuthor("The Mixxx Team, CAPS Plugins");
     manifest.setVersion("1.0");
     manifest.setDescription("This is a port of the GPL'ed CAPS Reverb plugin, "
