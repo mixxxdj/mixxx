@@ -99,16 +99,20 @@ double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
 #define positionrange (maxPosition - minPosition)
 
 ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, false),
-          m_minDB(minDB),
-          m_minOffset(db2ratio(minDB)) {
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
+    if (minDB >= 0) {
+        qWarning() << "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() minDB must be negative";
+        m_minDB = -1;
+    } else {
+        m_minDB = minDB;
+    }
+    m_minOffset = db2ratio(m_minDB);
 }
 
 ControlLogPotmeterBehavior::~ControlLogPotmeterBehavior() {
 }
 
 double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
-    // Calc linear parameter fist
     if (m_dValueRange == 0.0) {
         return 0;
     }
@@ -118,8 +122,6 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
         dValue = m_dMinValue;
     }
     double linPrameter = (dValue - m_dMinValue) / m_dValueRange;
-
-    // now bend to a logarithmic scale
     double dbParamter = ratio2db(linPrameter + m_minOffset * (1 - linPrameter));
     return 1 - (dbParamter / m_minDB);
 }
@@ -159,7 +161,7 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
     } else if (dValue < 1.0) {
         // db + linear overlay to reach
         // m_minDB = 0
-        // 0 dB = m_neutralParame;
+        // 0 dB = m_neutralParameter
         double overlay = m_offset * (1 - dValue);
         if (m_minDB) {
             dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
@@ -170,7 +172,7 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
         dParam = m_neutralParameter;
     } else if (dValue < m_dMaxValue) {
         // m_maxDB = 1
-        // 0 dB = m_neutralParame;
+        // 0 dB = m_neutralParameter
         dParam = (ratio2db(dValue) / m_maxDB * (1 - m_neutralParameter)) + m_neutralParameter;
     }
     //qDebug() << "ControlAudioTaperPotBehavior::valueToParameter" << "value =" << dValue << "dParam =" << dParam;
@@ -184,7 +186,7 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
     } else if (dParam < m_neutralParameter) {
         // db + linear overlay to reach
         // m_minDB = 0
-        // 0 dB = m_neutralParame;
+        // 0 dB = m_neutralParameter;
         if (m_minDB) {
             double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
             dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;
@@ -286,13 +288,14 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
 
     // This block makes push-buttons act as power window buttons.
     if (m_buttonMode == POWERWINDOW && m_iNumStates == 2) {
+        auto* timer = getTimer();
         if (pressed) {
             // Toggle on press
             double value = pControl->get();
             pControl->set(!value, NULL);
-            m_pushTimer.setSingleShot(true);
-            m_pushTimer.start(kPowerWindowTimeMillis);
-        } else if (!m_pushTimer.isActive()) {
+            timer->setSingleShot(true);
+            timer->start(kPowerWindowTimeMillis);
+        } else if (!timer->isActive()) {
             // Disable after releasing a long press
             pControl->set(0., NULL);
         }
@@ -308,13 +311,14 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
                 value = (int)(value + 1.) % m_iNumStates;
                 pControl->set(value, NULL);
                 if (m_buttonMode == LONGPRESSLATCHING) {
-                    m_pushTimer.setSingleShot(true);
-                    m_pushTimer.start(kLongPressLatchingTimeMillis);
+                    auto* timer = getTimer();
+                    timer->setSingleShot(true);
+                    timer->start(kLongPressLatchingTimeMillis);
                 }
             } else {
                 double value = pControl->get();
                 if (m_buttonMode == LONGPRESSLATCHING &&
-                        m_pushTimer.isActive() && value >= 1.) {
+                        getTimer()->isActive() && value >= 1.) {
                     // revert toggle if button is released too early
                     value = (int)(value - 1.) % m_iNumStates;
                     pControl->set(value, NULL);

@@ -10,3 +10,10 @@ artist.mp3
 
 TOAL_TPE2.mp3
     id3v2 --artist "TITLE2" --TPE2 "TITLE" --TOAL "ARTIST" TOAL_TPE2.mp3
+
+cover-test.aiff
+cover-test.flac
+cover-test.mp3
+cover-test.ogg
+cover-test.wav
+    this is a exception because id3v2 can't set a cover. This was created using easytag

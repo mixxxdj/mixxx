@@ -8,71 +8,40 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <!-- I don't now why this works but a WidgetGroup wrapper around a
-         WidgetStack with a 'fixed' size policy makes the group track the
-         minimum size of the current stack widget. -->
-    <SizePolicy>me,f</SizePolicy>
     <ObjectName>EffectRackContainer</ObjectName>
     <Children>
-      <WidgetStack currentpage="[EffectRack1],current" persist="true">
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <!-- Expanded EffectRack -->
-          <WidgetGroup trigger="[EffectRack1],show">
-            <ObjectName>EffectRackExpanded</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">HideShowButton</SetVariable>
-                <SetVariable name="control">[EffectRack1],show</SetVariable>
-                <SetVariable name="button_text">Effects</SetVariable>
+        <WidgetGroup trigger="[EffectRack1],show">
+          <ObjectName>EffectRackExpanded</ObjectName>
+          <SizePolicy>me,min</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+            <WidgetGroup>
+              <Layout>horizontal</Layout>
+              <SizePolicy>me,min</SizePolicy>
+              <Children>
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">1</SetVariable>
               </Template>
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <Children>
-	              <Template src="skin:effect_unit.xml">
-	                <SetVariable name="EffectRack">1</SetVariable>
-	                <SetVariable name="EffectUnit">1</SetVariable>
-	              </Template>
 
-	              <Template src="skin:effect_unit.xml">
-	                <SetVariable name="EffectRack">1</SetVariable>
-	                <SetVariable name="EffectUnit">2</SetVariable>
-	              </Template>
-
-	              <Template src="skin:effect_unit.xml">
-	                <SetVariable name="EffectRack">1</SetVariable>
-	                <SetVariable name="EffectUnit">3</SetVariable>
-	              </Template>
-
-	              <Template src="skin:effect_unit.xml">
-	                <SetVariable name="EffectRack">1</SetVariable>
-	                <SetVariable name="EffectUnit">4</SetVariable>
-	              </Template>
-                </Children>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup>
-
-          <!-- Collapsed EffectRack -->
-          <WidgetGroup>
-            <ObjectName>EffectRackCollapsed</ObjectName>
-            <Layout>horizontal</Layout>
-            <MinimumSize>-1,20</MinimumSize>
-            <MaximumSize>-1,20</MaximumSize>
-            <SizePolicy>me,min</SizePolicy>
-            <Children>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">HideShowButton</SetVariable>
-                <SetVariable name="control">[EffectRack1],show</SetVariable>
-                <SetVariable name="button_text">Effects</SetVariable>
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">2</SetVariable>
               </Template>
-            </Children>
-          </WidgetGroup>
-        </Children>
-      </WidgetStack>
+
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">3</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">4</SetVariable>
+              </Template>
+              </Children>
+            </WidgetGroup>
+          </Children>
+        </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

@@ -4,16 +4,20 @@
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
 
-#include "configobject.h"
-#include "trackinfoobject.h"
+#include "preferences/usersettings.h"
+#include "control/controlproxy.h"
+#include "library/coverart.h"
+#include "library/dlgtagfetcher.h"
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
+#include "track/track.h"
+#include "util/duration.h"
 #include "widget/wlibrarytableview.h"
-#include "dlgtagfetcher.h"
 
-class ControlObjectThread;
+class ControlProxy;
 class DlgTrackInfo;
 class TrackCollection;
+class WCoverArtMenu;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
@@ -22,30 +26,26 @@ const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) f
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
-    WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+    WTrackTableView(QWidget* parent, UserSettingsPointer pConfig,
                     TrackCollection* pTrackCollection, bool sorting = true);
-    virtual ~WTrackTableView();
-    void contextMenuEvent(QContextMenuEvent * event);
-    void onSearchStarting();
-    void onSearchCleared();
-    void onSearch(const QString& text);
-    void onShow();
-    virtual void keyPressEvent(QKeyEvent* event);
-    virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group, bool play);
-
-    enum BPMScale {
-        DOUBLE,
-        HALVE,
-        TWOTHIRDS,
-        THREEFOURTHS,
-    };
+    ~WTrackTableView() override;
+    void contextMenuEvent(QContextMenuEvent * event) override;
+    void onSearch(const QString& text) override;
+    void onShow() override;
+    bool hasFocus() const override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void loadSelectedTrack() override;
+    void loadSelectedTrackToGroup(QString group, bool play) override;
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
+    void onSearchStarting();
+    void onSearchCleared();
+    void slotSendToAutoDJ() override;
+    void slotSendToAutoDJTop() override;
 
   private slots:
     void slotRemove();
@@ -57,8 +57,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotNextDlgTagFetcher();
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
-    void slotSendToAutoDJ();
-    void slotSendToAutoDJTop();
+    void slotShowTrackInTagFetcher(TrackPointer track);
     void slotReloadTrackMetadata();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
@@ -67,43 +66,58 @@ class WTrackTableView : public WLibraryTableView {
     void doSortByColumn(int headerSection);
     void slotLockBpm();
     void slotUnlockBpm();
-    void slotScaleBpm(int); 
+    void slotScaleBpm(int);
     void slotClearBeats();
+    void slotReplayGainReset();
+    // Signalled 20 times per second (every 50ms) by GuiTick.
+    void slotGuiTick50ms(double);
+    void slotScrollValueChanged(int);
+    void slotCoverInfoSelected(const CoverInfo& coverInfo);
+    void slotReloadCoverArt();
+
+    void slotTrackInfoClosed();
+    void slotTagFetcherClosed();
 
   private:
     void sendToAutoDJ(bool bTop);
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
     void createActions();
-    void dragMoveEvent(QDragMoveEvent * event);
-    void dragEnterEvent(QDragEnterEvent * event);
-    void dropEvent(QDropEvent * event);
+    void dragMoveEvent(QDragMoveEvent * event) override;
+    void dragEnterEvent(QDragEnterEvent * event) override;
+    void dropEvent(QDropEvent * event) override;
     void lockBpm(bool lock);
+
+    void enableCachedOnly();
+    void selectionChanged(const QItemSelection &selected,
+                          const QItemSelection &deselected) override;
 
     // Mouse move event, implemented to hide the text and show an icon instead
     // when dragging.
-    void mouseMoveEvent(QMouseEvent *pEvent);
+    void mouseMoveEvent(QMouseEvent *pEvent) override;
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel();
-    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capability);
+    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities);
 
-    ConfigObject<ConfigValue> * m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
 
     QSignalMapper m_loadTrackMapper;
 
-    DlgTrackInfo* m_pTrackInfo;
-    DlgTagFetcher m_DlgTagFetcher;
+    QScopedPointer<DlgTrackInfo> m_pTrackInfo;
+    QScopedPointer<DlgTagFetcher> m_pTagFetcher;
+
     QModelIndex currentTrackInfoIndex;
 
 
-    ControlObjectThread* m_pNumSamplers;
-    ControlObjectThread* m_pNumDecks;
-    ControlObjectThread* m_pNumPreviewDecks;
+    ControlProxy* m_pNumSamplers;
+    ControlProxy* m_pNumDecks;
+    ControlProxy* m_pNumPreviewDecks;
 
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
+    WCoverArtMenu* m_pCoverMenu;
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
@@ -138,11 +152,30 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;
     QAction *m_pBpmThreeFourthsAction;
+    QAction *m_pBpmFourThirdsAction;
+    QAction *m_pBpmThreeHalvesAction;
 
     // Clear track beats
     QAction* m_pClearBeatsAction;
 
+    // Replay Gain feature
+    QAction *m_pReplayGainResetAction;
+
     bool m_sorting;
+
+    // Column numbers
+    int m_iCoverSourceColumn; // cover art source
+    int m_iCoverTypeColumn; // cover art type
+    int m_iCoverLocationColumn; // cover art location
+    int m_iCoverHashColumn; // cover art hash
+    int m_iCoverColumn; // visible cover art
+    int m_iTrackLocationColumn;
+
+    // Control the delay to load a cover art.
+    mixxx::Duration m_lastUserAction;
+    bool m_selectionChangedSinceLastGuiTick;
+    bool m_loadCachedOnly;
+    ControlProxy* m_pCOTGuiTick;
 };
 
 #endif

@@ -2,6 +2,7 @@
 #define ENGINEBUFFERSCALERUBBERBAND_H
 
 #include "engine/enginebufferscale.h"
+#include "util/memory.h"
 
 namespace RubberBand {
 class RubberBandStretcher;
@@ -9,40 +10,44 @@ class RubberBandStretcher;
 
 class ReadAheadManager;
 
-// Uses librubberband to scale audio.
+// Uses librubberband to scale audio.  This class is not thread safe.
 class EngineBufferScaleRubberBand : public EngineBufferScale {
     Q_OBJECT
   public:
-    EngineBufferScaleRubberBand(ReadAheadManager* pReadAheadManager);
-    virtual ~EngineBufferScaleRubberBand();
+    explicit EngineBufferScaleRubberBand(
+            ReadAheadManager* pReadAheadManager);
+    ~EngineBufferScaleRubberBand() override;
 
-    void setScaleParameters(int iSampleRate,
-                            double base_rate,
-                            bool speed_affects_pitch,
-                            double* speed_adjust,
-                            double* pitch_adjust);
+    void setScaleParameters(double base_rate,
+                            double* pTempoRatio,
+                            double* pPitchRatio) override;
 
-    // Read and scale buf_size samples from the provided RAMAN.
-    CSAMPLE* getScaled(unsigned long buf_size);
+    void setSampleRate(SINT iSampleRate) override;
+
+    double scaleBuffer(
+            CSAMPLE* pOutputBuffer,
+            SINT iOutputBufferSize) override;
 
     // Flush buffer.
-    void clear();
+    void clear() override;
 
   private:
-    void initializeRubberBand(int iSampleRate);
-    void deinterleaveAndProcess(const CSAMPLE* pBuffer, size_t frames, bool flush);
-    size_t retrieveAndDeinterleave(CSAMPLE* pBuffer, size_t frames);
+    // Reset RubberBand library with new audio signal
+    void initRubberBand();
 
-    // Holds the playback direction
-    bool m_bBackwards;
+    void deinterleaveAndProcess(const CSAMPLE* pBuffer, SINT frames, bool flush);
+    SINT retrieveAndDeinterleave(CSAMPLE* pBuffer, SINT frames);
+
+    // The read-ahead manager that we use to fetch samples
+    ReadAheadManager* m_pReadAheadManager;
+
+    std::unique_ptr<RubberBand::RubberBandStretcher> m_pRubberBand;
 
     CSAMPLE* m_retrieve_buffer[2];
     CSAMPLE* m_buffer_back;
 
-    RubberBand::RubberBandStretcher* m_pRubberBand;
-
-    // The read-ahead manager that we use to fetch samples
-    ReadAheadManager* m_pReadAheadManager;
+    // Holds the playback direction
+    bool m_bBackwards;
 };
 
 

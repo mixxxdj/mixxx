@@ -5,18 +5,11 @@
 
 #include "library/queryutil.h"
 
-class QueryUtilTest : public testing::Test {
-  protected:
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-};
+class QueryUtilTest : public testing::Test {};
 
 TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {
     QTemporaryFile databaseFile("mixxxdb.sqlite");
-    Q_ASSERT(databaseFile.open());
+    ASSERT_TRUE(databaseFile.open());
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setHostName("localhost");
@@ -24,7 +17,7 @@ TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {
     db.setPassword("mixxx");
     qDebug() << "Temp file is" << databaseFile.fileName();
     db.setDatabaseName(databaseFile.fileName());
-    Q_ASSERT(db.open());
+    ASSERT_TRUE(db.open());
     FieldEscaper f(db);
 
 
@@ -36,7 +29,7 @@ TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {
 
 TEST_F(QueryUtilTest, FieldEscaperEscapesForLike) {
     QTemporaryFile databaseFile("mixxxdb.sqlite");
-    Q_ASSERT(databaseFile.open());
+    ASSERT_TRUE(databaseFile.open());
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setHostName("localhost");
@@ -44,7 +37,7 @@ TEST_F(QueryUtilTest, FieldEscaperEscapesForLike) {
     db.setPassword("mixxx");
     qDebug() << "Temp file is" << databaseFile.fileName();
     db.setDatabaseName(databaseFile.fileName());
-    Q_ASSERT(db.open());
+    ASSERT_TRUE(db.open());
     FieldEscaper f(db);
 
     EXPECT_STREQ(qPrintable(QString("xx44xx4%yy4_yy")),

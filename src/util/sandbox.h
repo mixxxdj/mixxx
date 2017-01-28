@@ -8,7 +8,7 @@
 #include <QHash>
 #include <QMutex>
 
-#include "configobject.h"
+#include "preferences/configobject.h"
 
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CFURL.h>
@@ -76,7 +76,7 @@ class Sandbox {
 
     static QMutex s_mutex;
     static bool s_bInSandbox;
-    static ConfigObject<ConfigValue>* s_pSandboxPermissions;
+    static QSharedPointer<ConfigObject<ConfigValue>> s_pSandboxPermissions;
     static QHash<QString, SecurityTokenWeakPointer> s_activeTokens;
 };
 

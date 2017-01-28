@@ -7,18 +7,14 @@
 
 class EffectManifestParameter {
   public:
-    enum ValueHint {
-        VALUE_UNKNOWN = 0,
-        VALUE_BOOLEAN,
-        VALUE_INTEGRAL,
-        VALUE_FLOAT
-    };
-
     enum ControlHint {
         CONTROL_UNKNOWN = 0,
         CONTROL_KNOB_LINEAR,
         CONTROL_KNOB_LOGARITHMIC,
-        CONTROL_TOGGLE
+        CONTROL_KNOB_STEPPING,   // A step rotary, steps given by m_steps
+                                 // are arranged with equal distance on scale
+        CONTROL_TOGGLE_STEPPING  // For button and enum controls, not accessible
+                                 // form many controllers, no linking to super knob
     };
 
     enum SemanticHint {
@@ -44,13 +40,22 @@ class EffectManifestParameter {
         NUM_LINK_TYPES
     };
 
+    enum class LinkInversion {
+        NOT_INVERTED = 0,
+        INVERTED = 1
+    };
+
     EffectManifestParameter()
             : m_controlHint(CONTROL_UNKNOWN),
-              m_valueHint(VALUE_UNKNOWN),
               m_semanticHint(SEMANTIC_UNKNOWN),
               m_unitsHint(UNITS_UNKNOWN),
               m_defaultLinkType(LINK_NONE),
-              m_neutralPointOnScale(0.0) {
+              m_defaultLinkInversion(LinkInversion::NOT_INVERTED),
+              m_neutralPointOnScale(0.0),
+              m_default(0),
+              m_minimum(0),
+              m_maximum(1.0),
+              m_showInParametertSlot(true) {
     }
 
     virtual ~EffectManifestParameter() {
@@ -75,6 +80,13 @@ class EffectManifestParameter {
         m_name = name;
     }
 
+    virtual const QString& shortName() const {
+        return m_shortName;
+    }
+    virtual void setShortName(const QString& shortName) {
+        m_shortName = shortName;
+    }
+
     virtual const QString& description() const {
         return m_description;
     }
@@ -91,13 +103,6 @@ class EffectManifestParameter {
     }
     virtual void setControlHint(ControlHint controlHint) {
         m_controlHint = controlHint;
-    }
-
-    virtual ValueHint valueHint() const {
-        return m_valueHint;
-    }
-    virtual void setValueHint(ValueHint valueHint) {
-        m_valueHint = valueHint;
     }
 
     virtual SemanticHint semanticHint() const {
@@ -117,9 +122,17 @@ class EffectManifestParameter {
     virtual LinkType defaultLinkType() const {
         return m_defaultLinkType;
     }
-    virtual void setDefaultLinkType(LinkType linkType) {
+    virtual void setDefaultLinkType(const LinkType linkType) {
         m_defaultLinkType = linkType;
     }
+
+    virtual LinkInversion defaultLinkInversion() const {
+        return m_defaultLinkInversion;
+    }
+    virtual void setDefaultLinkInversion(const LinkInversion linkInversion) {
+        m_defaultLinkInversion = linkInversion;
+    }
+
 
     // Neutral Point On Scale is the parameter in the range 0 .. 1 on the knob that
     // is adopted as neutral when controlled by the super knob.
@@ -136,38 +149,48 @@ class EffectManifestParameter {
         m_neutralPointOnScale = neutralPoint;
     }
 
+
+    // These store the mapping between the parameter slot and
+    // the effective parameter which is loaded onto the slot.
+    // This is required because we have only 8 parameter slots, but
+    // LV2 or VST effects can have more then 8.
+    virtual bool showInParameterSlot() const {
+        return m_showInParametertSlot;
+    }
+    virtual void setShowInParameterSlot(double show) {
+        m_showInParametertSlot = show;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
     // Value Settings
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual bool hasDefault() const {
-        return m_default.isValid();
-    }
-    virtual const QVariant& getDefault() const {
+    virtual const double& getDefault() const {
         return m_default;
     }
-    virtual void setDefault(const QVariant& defaultValue) {
+    virtual void setDefault(const double& defaultValue) {
         m_default = defaultValue;
     }
 
-    virtual bool hasMinimum() const {
-        return m_minimum.isValid();
-    }
-    virtual const QVariant& getMinimum() const {
+    virtual const double& getMinimum() const {
         return m_minimum;
     }
-    virtual void setMinimum(const QVariant& minimum) {
+    virtual void setMinimum(const double& minimum) {
         m_minimum = minimum;
     }
 
-    virtual bool hasMaximum() const {
-        return m_maximum.isValid();
-    }
-    virtual const QVariant& getMaximum() const {
+    virtual const double& getMaximum() const {
         return m_maximum;
     }
-    virtual void setMaximum(const QVariant& maximum) {
+    virtual void setMaximum(const double& maximum) {
         m_maximum = maximum;
+    }
+
+    virtual void appendStep(const QPair<QString, double>& step) {
+        m_steps.append(step);
+    }
+    virtual const QList<QPair<QString, double> >& getSteps() const {
+        return m_steps;
     }
 
   private:
@@ -177,18 +200,28 @@ class EffectManifestParameter {
 
     QString m_id;
     QString m_name;
+    QString m_shortName;
     QString m_description;
 
     ControlHint m_controlHint;
-    ValueHint m_valueHint;
     SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
     LinkType m_defaultLinkType;
+    LinkInversion m_defaultLinkInversion;
     double m_neutralPointOnScale;
 
-    QVariant m_default;
-    QVariant m_minimum;
-    QVariant m_maximum;
+    double m_default;
+    double m_minimum;
+    double m_maximum;
+
+    // Used to describe steps of
+    // CONTROL_KNOB_STEPPING and CONTROL_TOGGLE_STEPPING
+    // effect parameters
+    // Each pair has the following form:
+    // name - value
+    QList<QPair<QString, double> > m_steps;
+
+    bool m_showInParametertSlot;
 };
 
 QDebug operator<<(QDebug dbg, const EffectManifestParameter& parameter);

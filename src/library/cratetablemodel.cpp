@@ -7,14 +7,13 @@
 #include "library/cratetablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
                             "mixxx.db.model.crate"),
-          m_iCrateId(-1),
-          m_crateDAO(pTrackCollection->getCrateDAO()) {
+          m_iCrateId(-1) {
 }
 
 CrateTableModel::~CrateTableModel() {
@@ -33,8 +32,11 @@ void CrateTableModel::setTableModel(int crateId) {
     FieldEscaper escaper(m_database);
     QString filter = "library.mixxx_deleted = 0";
     QStringList columns;
-    columns << "crate_tracks." + CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
-            << "'' as preview";
+    columns << "crate_tracks." + CRATETRACKSTABLE_TRACKID + " AS " + LIBRARYTABLE_ID
+            << "'' AS " + LIBRARYTABLE_PREVIEW
+            // For sorting the cover art column we give LIBRARYTABLE_COVERART
+            // the same value as the cover hash.
+            << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
@@ -58,7 +60,8 @@ void CrateTableModel::setTableModel(int crateId) {
 
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = LIBRARYTABLE_PREVIEW;
-    setTable(tableName, columns[0], columns,
+    columns[2] = LIBRARYTABLE_COVERART;
+    setTable(tableName, LIBRARYTABLE_ID, columns,
              m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
@@ -66,27 +69,43 @@ void CrateTableModel::setTableModel(int crateId) {
 
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     Q_UNUSED(index);
-    // If a track is dropped but it isn't in the library, then add it because
-    // the user probably dropped a file from outside Mixxx into this playlist.
+
+    // This will only succeed if the file actually exist.
     QFileInfo fileInfo(location);
-
-    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    int iTrackId = trackDao.addTrack(fileInfo, true);
-
-    bool success = false;
-    if (iTrackId >= 0) {
-        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId, m_iCrateId);
+    if (!fileInfo.exists()) {
+        qDebug() << "CrateTableModel::addTrack:"
+                << "File"
+                << location
+                << "not found";
+        return false;
     }
 
-    if (success) {
+    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+    // If a track is dropped but it isn't in the library, then add it because
+    // the user probably dropped a file from outside Mixxx into this crate.
+    // If the track is already contained in the library it will not insert
+    // a duplicate. It also handles unremoving logic if the track has been
+    // removed from the library recently and re-adds it.
+    const TrackPointer pTrack(trackDao.addSingleTrack(fileInfo, true));
+    if (!pTrack) {
+        qDebug() << "CrateTableModel::addTrack:"
+                << "Failed to add track"
+                << location
+                << "to library";
+        return false;
+    }
+
+    const TrackId trackId(pTrack->getId());
+    if (m_pTrackCollection->getCrateDAO().addTrackToCrate(trackId, m_iCrateId)) {
         // TODO(rryan) just add the track dont select
         select();
         return true;
     } else {
-        qDebug() << "CrateTableModel::addTrack could not add track"
-                 << fileInfo.absoluteFilePath() << "to crate" << m_iCrateId;
+        qDebug() << "CrateTableModel::addTrack:"
+                << "Failed to add track"
+                << location
+                << "to crate"
+                << m_iCrateId;
         return false;
     }
 }
@@ -98,12 +117,15 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     // the user probably dropped a file from outside Mixxx into this crate.
     QList<QFileInfo> fileInfoList;
     foreach(QString fileLocation, locations) {
-        fileInfoList.append(QFileInfo(fileLocation));
+        QFileInfo fileInfo(fileLocation);
+        if (fileInfo.exists()) {
+            fileInfoList.append(fileInfo);
+        }
     }
 
-    QList<int> trackIDs = m_trackDAO.addTracks(fileInfoList, true);
+    QList<TrackId> trackIds(m_trackDAO.addMultipleTracks(fileInfoList, true));
 
-    int tracksAdded = m_crateDAO.addTracksToCrate(m_iCrateId, &trackIDs);
+    int tracksAdded = m_pTrackCollection->getCrateDAO().addTracksToCrate(m_iCrateId, &trackIds);
     if (tracksAdded > 0) {
         select();
     }
@@ -117,14 +139,14 @@ int CrateTableModel::addTracks(const QModelIndex& index,
 }
 
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {
-    bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
+    bool locked = m_pTrackCollection->getCrateDAO().isCrateLocked(m_iCrateId);
 
     if (!locked) {
-        QList<int> trackIds;
+        QList<TrackId> trackIds;
         foreach (QModelIndex index, indices) {
             trackIds.append(getTrackId(index));
         }
-        m_crateDAO.removeTracksFromCrate(trackIds, m_iCrateId);
+        m_pTrackCollection->getCrateDAO().removeTracksFromCrate(trackIds, m_iCrateId);
         select();
     }
 }
@@ -138,14 +160,13 @@ bool CrateTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
             (PlayerManager::numPreviewDecks() == 0 &&
-             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
+             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
         return true;
     }
-    return false;
-}
-
-bool CrateTableModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
     return false;
 }
 
@@ -164,7 +185,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
 
-    bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
+    bool locked = m_pTrackCollection->getCrateDAO().isCrateLocked(m_iCrateId);
     if (locked) {
         caps |= TRACKMODELCAPS_LOCKED;
     }

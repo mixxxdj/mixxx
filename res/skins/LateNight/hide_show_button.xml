@@ -27,7 +27,7 @@
 	      <Alignment>left</Alignment>
 	    </State>
 	    <Connection>
-	      <ConfigKey persist="true"><Variable name="control"/></ConfigKey>
+	      <ConfigKey><Variable name="control"/></ConfigKey>
 	      <ButtonState>LeftButton</ButtonState>
 	    </Connection>
 	  </PushButton>

@@ -6,12 +6,10 @@
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbiquad1.h"
-#include "sampleutil.h"
-#include "util.h"
+#include "util/class.h"
 #include "util/defs.h"
+#include "util/sample.h"
 #include "util/types.h"
-
-
 
 struct FilterGroupState {
     FilterGroupState();
@@ -28,7 +26,7 @@ struct FilterGroupState {
 
 };
 
-class FilterEffect : public GroupEffectProcessor<FilterGroupState> {
+class FilterEffect : public PerChannelEffectProcessor<FilterGroupState> {
   public:
     FilterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~FilterEffect();
@@ -37,12 +35,13 @@ class FilterEffect : public GroupEffectProcessor<FilterGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      FilterGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE *pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const GroupFeatureState& groupFeatures);
+    void processChannel(const ChannelHandle& handle,
+                        FilterGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

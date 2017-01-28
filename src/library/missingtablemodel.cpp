@@ -4,7 +4,11 @@
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
 
-const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
+namespace {
+
+const QString kMissingFilter = "mixxx_deleted=0 AND fs_deleted=1";
+
+} // anonymous namespace
 
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
@@ -29,7 +33,7 @@ void MissingTableModel::setTableModel(int id) {
                   " FROM library "
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
-                  "WHERE " + MissingTableModel::MISSINGFILTER);
+                  "WHERE " + kMissingFilter);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
@@ -53,11 +57,10 @@ MissingTableModel::~MissingTableModel() {
 
 
 void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
 
     foreach (QModelIndex index, indices) {
-        int trackId = getTrackId(index);
-        trackIds.append(trackId);
+        trackIds.append(getTrackId(index));
     }
 
     m_trackDAO.purgeTracks(trackIds);
@@ -74,14 +77,13 @@ bool MissingTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
-            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED)) {
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
         return true;
     }
-    return false;
-}
-
-bool MissingTableModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
     return false;
 }
 

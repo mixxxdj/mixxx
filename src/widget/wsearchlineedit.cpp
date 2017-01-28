@@ -10,26 +10,27 @@
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QLineEdit(pParent),
           WBaseWidget(this) {
+    setAcceptDrops(false);
     m_clearButton = new QToolButton(this);
-    QPixmap pixmap(":/skins/cross.png");
+    QPixmap pixmap(":/images/library/cross.png");
     m_clearButton->setIcon(QIcon(pixmap));
     m_clearButton->setIconSize(pixmap.size());
     m_clearButton->setCursor(Qt::ArrowCursor);
+    m_clearButton->setToolTip(tr("Clear input" , "Clear the search bar input field"));
     m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     m_clearButton->hide();
 
     m_place = true;
     showPlaceholder();
 
+    setFocusPolicy(Qt::ClickFocus);
     QShortcut *setFocusShortcut = new QShortcut(
         QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
     connect(setFocusShortcut, SIGNAL(activated()),
             this, SLOT(setFocus()));
-    QShortcut *clearTextShortcut = new QShortcut(
-        QKeySequence(tr("Esc", "Search|Clear")), this, 0, 0,
-        Qt::WidgetShortcut);
-    connect(clearTextShortcut, SIGNAL(activated()),
-            this, SLOT(clear()));
+
+    connect(this, SIGNAL(textChanged(const QString&)),
+            this, SLOT(slotTextChanged(const QString&)));
 
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
@@ -45,7 +46,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             this, SLOT(triggerSearch()));
 
     connect(m_clearButton, SIGNAL(clicked()),
-            this, SLOT(clear()));
+            this, SLOT(onSearchTextCleared()));
     // Forces immediate update of tracktable
     connect(m_clearButton, SIGNAL(clicked()),
             this, SLOT(triggerSearch()));
@@ -61,14 +62,12 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
                   arg(m_clearButton->sizeHint().width() + frameWidth + 1));
 }
 
-WSearchLineEdit::~WSearchLineEdit() {
-}
-
-void WSearchLineEdit::setup(QDomNode node, const SkinContext& context) {
+void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     // Background color
     QColor bgc(255,255,255);
-    if (context.hasNode(node, "BgColor")) {
-        bgc.setNamedColor(context.selectString(node, "BgColor"));
+    QString bgColorStr;
+    if (context.hasNodeSelectString(node, "BgColor", &bgColorStr)) {
+        bgc.setNamedColor(bgColorStr);
         setAutoFillBackground(true);
     }
     QPalette pal = palette();
@@ -76,8 +75,9 @@ void WSearchLineEdit::setup(QDomNode node, const SkinContext& context) {
 
     // Foreground color
     m_fgc = QColor(0,0,0);
-    if (context.hasNode(node, "FgColor")) {
-        m_fgc.setNamedColor(context.selectString(node, "FgColor"));
+    QString fgColorStr;
+    if (context.hasNodeSelectString(node, "FgColor", &fgColorStr)) {
+        m_fgc.setNamedColor(fgColorStr);
     }
     bgc = WSkinColor::getCorrectColor(bgc);
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
@@ -172,7 +172,13 @@ void WSearchLineEdit::showPlaceholder() {
     //Must block signals here so that we don't emit a search() signal via
     //textChanged().
     blockSignals(true);
-    setText(tr("Search..."));
+    setText(tr("Search..." , "noun"));
+    setToolTip(tr("Search" , "noun") + "\n" + tr("Enter a string to search for") + "\n\n"
+                  + tr("Shortcut")+ ": \n"
+                  + tr("Ctrl+F") + "  " + tr("Focus" , "Give search bar input focus") + "\n"
+                  + tr("Ctrl+Backspace") + "  "+ tr("Clear input" , "Clear the search bar input field") + "\n"
+                  + tr("Esc") + "  " + tr("Exit search" , "Exit search bar and leave focus")
+                  );
     blockSignals(false);
     QPalette pal = palette();
     pal.setColor(foregroundRole(), Qt::lightGray);
@@ -189,4 +195,16 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
         updateTooltip();
     }
     return QLineEdit::event(pEvent);
+}
+
+void WSearchLineEdit::onSearchTextCleared() {
+    QLineEdit::clear();
+    emit(searchCleared());
+}
+
+void WSearchLineEdit::slotTextChanged(const QString& text) {
+    if (text.isEmpty()) {
+        triggerSearch();
+        emit(searchCleared());
+    }
 }

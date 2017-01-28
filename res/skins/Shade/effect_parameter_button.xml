@@ -1,0 +1,74 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect parameter knob.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+    EffectParameter: the parameter
+-->
+<Template>
+	<WidgetGroup>
+		<ObjectName>EffectParameterButton</ObjectName>
+		<Layout>vertical</Layout>
+		<SizePolicy>me,f</SizePolicy>
+		<MinimumSize>-1,45</MinimumSize>
+		<MaximumSize>-1,45</MaximumSize> 
+		<Children>
+			<EffectButtonParameterName>
+			<Style>
+				WEffectButtonParameter { 
+					font: 10px/8px sans-serif;
+					font-family: "Open Sans";
+					background-color: transparent; 
+					color: #191F24; 
+					padding-left: 1px; 
+				}
+				QLabel { qproperty-alignment: AlignCenter; }
+			</Style>
+			<ObjectName>ButtonLabel</ObjectName>
+			<EffectRack>1</EffectRack>
+			<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
+			<Effect><Variable name="effectnum"/></Effect>
+			<EffectButtonParameter><Variable name="effectparameternum"/></EffectButtonParameter>
+		</EffectButtonParameterName>
+		<WidgetGroup>
+			<Layout>vertical</Layout>
+			<Size>38,26</Size>
+			<Children>
+				<EffectPushButton>
+					<TooltipId></TooltipId>
+					<Style></Style>
+					
+					<EffectRack>1</EffectRack>
+					<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
+					<Effect><Variable name="effectnum"/></Effect>
+					<EffectButtonParameter><Variable name="effectparameternum"/></EffectButtonParameter>
+	
+					<NumberStates>2</NumberStates>
+					<State>
+						<Number>0</Number>
+						<Pressed>btn_kill_down.png</Pressed>
+						<Unpressed>btn_kill.png</Unpressed>
+					</State>
+					<State>
+						<Number>1</Number>
+						<Pressed>btn_kill_overdown.png</Pressed>
+						<Unpressed>btn_kill_over.png</Unpressed>
+					</State>
+					<Pos>11,57</Pos>
+					<Connection>
+						<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],button_parameter<Variable name="effectparameternum"/></ConfigKey>
+						<ButtonState>LeftButton</ButtonState>
+					</Connection>
+				</EffectPushButton>
+			</Children>
+		</WidgetGroup>
+    	</Children>
+    	<Connection>
+      		<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],button_parameter<Variable name="effectparameternum"/>_loaded</ConfigKey>
+      		<BindProperty>visible</BindProperty>
+    	</Connection>
+  	</WidgetGroup>
+</Template>

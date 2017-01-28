@@ -9,23 +9,22 @@
 #include <QColor>
 #include <QEvent>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
-    WSearchLineEdit(QWidget* pParent);
-    virtual ~WSearchLineEdit();
+    explicit WSearchLineEdit(QWidget* pParent);
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   protected:
-    void resizeEvent(QResizeEvent*);
-    virtual void focusInEvent(QFocusEvent*);
-    virtual void focusOutEvent(QFocusEvent*);
-    bool event(QEvent* pEvent);
+    void resizeEvent(QResizeEvent* /*unused*/) override;
+    void focusInEvent(QFocusEvent* /*unused*/) override;
+    void focusOutEvent(QFocusEvent* /*unused*/) override;
+    bool event(QEvent* pEvent) override;
 
   signals:
     void search(const QString& text);
@@ -34,11 +33,13 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
 
   public slots:
     void restoreSearch(const QString& text);
+    void slotTextChanged(const QString& text);
 
   private slots:
     void updateCloseButton(const QString& text);
     void slotSetupTimer(const QString& text);
     void triggerSearch();
+    void onSearchTextCleared();
 
   private:
     void showPlaceholder();

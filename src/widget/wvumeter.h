@@ -21,56 +21,63 @@
 #include <QPixmap>
 #include <QString>
 #include <QPaintEvent>
-#include <QTime>
 #include <QWidget>
 #include <QDomNode>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 #include "skin/skincontext.h"
+#include "util/performancetimer.h"
 
 class WVuMeter : public WWidget  {
    Q_OBJECT
   public:
-    WVuMeter(QWidget *parent=0);
-    virtual ~WVuMeter();
+    explicit WVuMeter(QWidget *parent=nullptr);
 
-    void setup(QDomNode node, const SkinContext& context);
-    void setPixmapBackground(const QString& filename);
-    void setPixmaps(const QString &vuFilename,
-                    bool bHorizontal=false);
-    void onConnectedControlChanged(double dParameter, double dValue);
+    void setup(const QDomNode& node, const SkinContext& context);
+    void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
+    void setPixmaps(PixmapSource source,
+                    bool bHorizontal,
+                    Paintable::DrawMode mode);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected slots:
-    void updateState(int msecsElapsed);
+    void updateState(mixxx::Duration elapsed);
     void maybeUpdate();
 
   private:
-    /** Set position number to zero and deallocate pixmaps */
-    void resetPositions();
-    void paintEvent(QPaintEvent *);
-    void setPeak(int pos);
+    void paintEvent(QPaintEvent * /*unused*/) override;
+    void setPeak(double parameter);
 
-    /** Current position */
-    int m_iPos;
-    /** Number of positions associated with this knob */
-    int m_iNoPos;
-    /** Associated pixmaps */
+    // Current parameter and peak parameter.
+    double m_dParameter;
+    double m_dPeakParameter;
+
+    // The last parameter and peak parameter values at the time of
+    // rendering. Used to check whether the widget state has changed since the
+    // last render in maybeUpdate.
+    double m_dLastParameter;
+    double m_dLastPeakParameter;
+
+    // Length of the VU-meter pixmap along the relevant axis.
+    int m_iPixmapLength;
+
+    // Associated pixmaps
     PaintablePointer m_pPixmapBack;
     PaintablePointer m_pPixmapVu;
-    /** True if it's a horizontal vu meter */
+
+    // True if it's a horizontal vu meter
     bool m_bHorizontal;
 
     int m_iPeakHoldSize;
     int m_iPeakFallStep;
     int m_iPeakHoldTime;
     int m_iPeakFallTime;
-    int m_iPeakPos;
-    int m_iPeakHoldCountdown;
-    int m_iLastPos;
-    int m_iLastPeakPos;
 
-    QTime m_lastUpdate;
+    // The peak hold time remaining in milliseconds.
+    double m_dPeakHoldCountdownMs;
+
+    PerformanceTimer m_timer;
 };
 
 #endif

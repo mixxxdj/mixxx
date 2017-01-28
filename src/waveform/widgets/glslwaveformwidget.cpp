@@ -11,19 +11,32 @@
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 
 #include "util/performancetimer.h"
 
-GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent)
+GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(const char* group,
+                                                       QWidget* parent)
+        : GLSLWaveformWidget(group, parent, false) {
+}
+
+GLSLRGBWaveformWidget::GLSLRGBWaveformWidget(const char* group, QWidget* parent)
+        : GLSLWaveformWidget(group, parent, true) {
+}
+
+GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent,
+                                       bool rgbRenderer)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
-
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-    signalRenderer_ = addRenderer<GLSLWaveformRendererSignal>();
+    if (rgbRenderer) {
+        signalRenderer_ = addRenderer<GLSLWaveformRendererRGBSignal>();
+    } else {
+        signalRenderer_ = addRenderer<GLSLWaveformRendererFilteredSignal>();
+    }
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 
@@ -43,7 +56,7 @@ GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent)
     m_initSuccess = init();
 }
 
-GLSLWaveformWidget::~GLSLWaveformWidget(){
+GLSLWaveformWidget::~GLSLWaveformWidget() {
     makeCurrent();
 }
 
@@ -55,10 +68,10 @@ void GLSLWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 
-int GLSLWaveformWidget::render() {
+mixxx::Duration GLSLWaveformWidget::render() {
     PerformanceTimer timer;
-    int t1;
-    //int t2, t3;
+    mixxx::Duration t1;
+    //mixxx::Duration t2, t3;
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
@@ -69,7 +82,7 @@ int GLSLWaveformWidget::render() {
     //glFinish();
     //t3 = timer.restart();
     //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
-    return t1 / 1000; // return timer for painter setup
+    return t1; // return timer for painter setup
 }
 
 void GLSLWaveformWidget::resize(int width, int height) {

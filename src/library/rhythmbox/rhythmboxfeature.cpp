@@ -33,6 +33,14 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection,
                     tableName, idColumn, columns, false));
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album"
+                  << "location"
+                  << "comment"
+                  << "title"
+                  << "genre";
+    m_trackSource->setSearchColumns(searchColumns);
 
     m_pRhythmboxTrackModel = new BaseExternalTrackModel(
         this, m_pTrackCollection,
@@ -121,6 +129,7 @@ void RhythmboxFeature::activate() {
     }
 
     emit(showTrackModel(m_pRhythmboxTrackModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {
@@ -129,6 +138,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 TreeItem* RhythmboxFeature::importMusicCollection() {
@@ -136,10 +146,11 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
      // Try and open the Rhythmbox DB. An API call which tells us where
      // the file is would be nice.
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml");
-    if ( ! db.exists()) {
+    if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
-        if ( ! db.exists())
+        if (!db.exists()) {
             return NULL;
+        }
     }
 
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -190,10 +201,11 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
 
 TreeItem* RhythmboxFeature::importPlaylists() {
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml");
-    if ( ! db.exists()) {
+    if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/playlists.xml");
-        if (!db.exists())
+        if (!db.exists()) {
             return NULL;
+        }
     }
     //Open file
      if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -205,10 +217,10 @@ TreeItem* RhythmboxFeature::importPlaylists() {
 
     QSqlQuery query_insert_to_playlist_tracks(m_database);
     query_insert_to_playlist_tracks.prepare(
-        "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
-        "VALUES (:playlist_id, :track_id, :position)");
+            "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
+            "VALUES (:playlist_id, :track_id, :position)");
     //The tree structure holding the playlists
-    TreeItem* rootItem = new TreeItem();
+    TreeItem* rootItem = new TreeItem(this);
 
     QXmlStreamReader xml(&db);
     while (!xml.atEnd() && !m_cancelImport) {
@@ -221,8 +233,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
                 QString playlist_name = attr.value("name").toString();
 
                 //Construct the childmodel
-                TreeItem * item = new TreeItem(playlist_name, playlist_name, this, rootItem);
-                rootItem->appendChild(item);
+                rootItem->appendChild(playlist_name);
 
                 //Execute SQL statement
                 query_insert_to_playlists.bindValue(":name", playlist_name);
@@ -246,6 +257,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
         // do error handling
         qDebug() << "Cannot process Rhythmbox music collection";
         qDebug() << "XML ERROR: " << xml.errorString();
+        delete rootItem;
         return NULL;
     }
     db.close();
@@ -312,7 +324,7 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 continue;
             }
             if (xml.name() == "location") {
-                locationUrl = QUrl::fromEncoded( xml.readElementText().toUtf8());
+                locationUrl = QUrl::fromEncoded(xml.readElementText().toUtf8());
                 continue;
             }
         }
@@ -422,9 +434,9 @@ void RhythmboxFeature::clearTable(QString table_name) {
 }
 
 void RhythmboxFeature::onTrackCollectionLoaded() {
-    TreeItem* root = m_track_future.result();
+    std::unique_ptr<TreeItem> root(m_track_future.result());
     if (root) {
-        m_childModel.setRootItem(root);
+        m_childModel.setRootItem(std::move(root));
 
         // Tell the rhythmbox track source that it should re-build its index.
         m_trackSource->buildIndex();

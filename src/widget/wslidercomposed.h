@@ -26,6 +26,7 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 
+#include "widget/slidereventhandler.h"
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 #include "skin/skincontext.h"
@@ -39,46 +40,46 @@
 class WSliderComposed : public WWidget  {
     Q_OBJECT
   public:
-    WSliderComposed(QWidget* parent = 0);
-    virtual ~WSliderComposed();
+    explicit WSliderComposed(QWidget* parent = nullptr);
+    ~WSliderComposed() override;
 
-    void setup(QDomNode node, const SkinContext& context);
-    void setSliderPixmap(const QString& filenameSlider);
-    void setHandlePixmap(bool bHorizontal, const QString& filenameHandle);
+    void setup(const QDomNode& node, const SkinContext& context);
+    void setSliderPixmap(PixmapSource sourceSlider, Paintable::DrawMode drawMode);
+    void setHandlePixmap(bool bHorizontal, PixmapSource sourceHandle,
+                         Paintable::DrawMode mode);
     inline bool isHorizontal() const { return m_bHorizontal; };
 
   public slots:
-    void onConnectedControlChanged(double dParameter, double dValue);
-    void fillDebugTooltip(QStringList* debug);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
+    void fillDebugTooltip(QStringList* debug) override;
 
   protected:
-    virtual void mouseMoveEvent(QMouseEvent* e);
-    virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual void mousePressEvent(QMouseEvent* e);
-    virtual void paintEvent(QPaintEvent* e);
-    virtual void wheelEvent(QWheelEvent* e);
-    virtual void resizeEvent(QResizeEvent* e);
+    void mouseMoveEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+    void mousePressEvent(QMouseEvent* e) override;
+    void paintEvent(QPaintEvent* e) override;
+    void wheelEvent(QWheelEvent* e) override;
+    void resizeEvent(QResizeEvent* pEvent) override;
 
   private:
+    double calculateHandleLength();
     void unsetPixmaps();
 
-    double m_dOldValue;
     // True if right mouse button is pressed.
     bool m_bRightButtonPressed;
-    // Internal storage of slider position in pixels
-    int m_iPos, m_iStartHandlePos, m_iStartMousePos;
     // Length of handle in pixels
-    int m_iHandleLength;
+    double m_dHandleLength;
+    // Length of the slider in pixels.
+    double m_dSliderLength;
     // True if it's a horizontal slider
     bool m_bHorizontal;
-    // Is true if events is emitted while the slider is dragged
-    bool m_bEventWhileDrag;
-    // True if slider is dragged. Only used when m_bEventWhileDrag is false
-    bool m_bDrag;
     // Pointer to pixmap of the slider
     PaintablePointer m_pSlider;
     // Pointer to pixmap of the handle
     PaintablePointer m_pHandle;
+    SliderEventHandler<WSliderComposed> m_handler;
+
+    friend class SliderEventHandler<WSliderComposed>;
 };
 
 #endif

@@ -5,12 +5,14 @@
 #include <QTime>
 //#include <QLinearGradient>
 
-#include "util.h"
-#include "waveformrendererabstract.h"
 #include "skin/skincontext.h"
+#include "util/class.h"
+#include "waveform/renderers/waveformrendererabstract.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "util/performancetimer.h"
 
 class ControlObject;
-class ControlObjectThread;
+class ControlProxy;
 
 class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
   public:
@@ -25,17 +27,18 @@ class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:
-    ControlObjectThread*  m_pEndOfTrackControl;
-    bool m_endOfTrackEnabled;
+    void generateBackRects();
 
-    ControlObjectThread* m_pTrackSampleRate;
-    ControlObjectThread* m_pPlayControl;
-    ControlObjectThread* m_pLoopControl;
+    ControlProxy* m_pEndOfTrackControl;
+    bool m_endOfTrackEnabled;
+    ControlProxy* m_pTrackSampleRate;
+    ControlProxy* m_pPlayControl;
+    ControlProxy* m_pLoopControl;
 
     QColor m_color;
-    QTime m_timer;
+    PerformanceTimer m_timer;
+    int m_remainingTimeTriggerSeconds;
     int m_blinkingPeriodMillis;
-    double m_remainingTimeTriggerSeconds;
 
     QVector<QRect> m_backRects;
     QPen m_pen;

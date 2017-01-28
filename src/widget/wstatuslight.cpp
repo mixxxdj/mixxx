@@ -30,9 +30,6 @@ WStatusLight::WStatusLight(QWidget * parent)
     setNoPos(0);
 }
 
-WStatusLight::~WStatusLight() {
-}
-
 void WStatusLight::setNoPos(int iNoPos) {
     // If pixmap array is already allocated, delete it.
     if (!m_pixmaps.empty()) {
@@ -47,17 +44,7 @@ void WStatusLight::setNoPos(int iNoPos) {
     m_pixmaps.resize(iNoPos);
 }
 
-WStatusLight::SizeMode WStatusLight::SizeModeFromString(QString str) {
-    if (str.toUpper() == "FIXED" ) {
-        return FIXED;
-    } else if (str.toUpper() == "RESIZE") {
-        return RESIZE;
-    }
-    qWarning() << "Unknown status light size mode " << str << ", using FIXED";
-    return FIXED;
-}
-
-void WStatusLight::setup(QDomNode node, const SkinContext& context) {
+void WStatusLight::setup(const QDomNode& node, const SkinContext& context) {
     // Number of states. Add one to account for the background.
     setNoPos(context.selectInt(node, "NumberPos") + 1);
 
@@ -65,53 +52,33 @@ void WStatusLight::setup(QDomNode node, const SkinContext& context) {
     for (int i = 0; i < m_pixmaps.size(); ++i) {
         // Accept either PathStatusLight or PathStatusLight1 for value 1,
         QString nodeName = QString("PathStatusLight%1").arg(i);
-        if (context.hasNode(node, nodeName)) {
-            QString mode = context.selectAttributeString(
-                context.selectElement(node, nodeName), "sizemode", "FIXED");
-            setPixmap(i, context.getPixmapPath(context.selectNode(node, nodeName)),
-                                             SizeModeFromString(mode));
-        } else if (i == 0 && context.hasNode(node, "PathBack")) {
-            QString mode = context.selectAttributeString(
-                context.selectElement(node, "PathBack"), "sizemode", "FIXED");
-            setPixmap(i, context.getPixmapPath(context.selectNode(node, "PathBack")),
-                                             SizeModeFromString(mode));
-        } else if (i == 1 && context.hasNode(node, "PathStatusLight")) {
-            QString mode = context.selectAttributeString(
-                context.selectElement(node, "PathStatusLight"), "sizemode", "FIXED");
-            setPixmap(i, context.getPixmapPath(context.selectNode(node, "PathStatusLight")),
-                                             SizeModeFromString(mode));
+
+        QDomElement statusLightNode;
+        if (context.hasNodeSelectElement(node, nodeName, &statusLightNode) ||
+                (i == 0 && context.hasNodeSelectElement(node, "PathBack", &statusLightNode)) ||
+                (i == 1 && context.hasNodeSelectElement(node, "PathStatusLight", &statusLightNode))) {
+            setPixmap(i, context.getPixmapSource(statusLightNode),
+                      context.selectScaleMode(statusLightNode, Paintable::FIXED));
         } else {
             m_pixmaps[i].clear();
         }
     }
 }
 
-void WStatusLight::setPixmap(int iState, const QString& filename, SizeMode mode) {
+void WStatusLight::setPixmap(int iState, PixmapSource source,
+                             Paintable::DrawMode mode) {
     if (iState < 0 || iState >= m_pixmaps.size()) {
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
-                                                          Paintable::STRETCH);
-
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode);
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
         m_pixmaps[iState] = pPixmap;
-
-        switch (mode) {
-            case RESIZE:
-                // Allow the pixmap to stretch or tile.
-                setBaseSize(pPixmap->size());
-                break;
-            case FIXED:
-                // Set size of widget equal to pixmap size
-                setFixedSize(pPixmap->size());
-                break;
-            default:
-                setFixedSize(pPixmap->size());
-                break;
+        if (mode == Paintable::FIXED) {
+            setFixedSize(pPixmap->size());
         }
     } else {
-        qDebug() << "WStatusLight: Error loading pixmap:" << filename << iState;
+        qDebug() << "WStatusLight: Error loading pixmap:" << source.getPath() << iState;
         m_pixmaps[iState].clear();
     }
 }
@@ -139,7 +106,7 @@ void WStatusLight::onConnectedControlChanged(double dParameter, double dValue) {
     }
 }
 
-void WStatusLight::paintEvent(QPaintEvent *) {
+void WStatusLight::paintEvent(QPaintEvent * /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);
@@ -155,5 +122,5 @@ void WStatusLight::paintEvent(QPaintEvent *) {
         return;
     }
 
-    pPixmap->draw(0, 0, &p);
+    pPixmap->draw(rect(), &p);
 }

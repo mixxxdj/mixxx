@@ -37,7 +37,7 @@
 								<ConfigKey>[Microphone],show_microphone</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Tab- Show/hide Sampler widget group
@@ -62,7 +62,7 @@
 								<ConfigKey>[Samplers],show_samplers</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Tab- Show/hide Vinyl Control widget group
@@ -90,7 +90,7 @@
 								<ConfigKey>[EffectRack1],show</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Slider- Channel Volume
@@ -120,7 +120,7 @@
 								<EmitOnDownPress>false</EmitOnDownPress>
 							</Connection>
 						</SliderComposed>
-	
+
 						<!--
 						**********************************************
 						Slider- Crossfader
@@ -138,7 +138,7 @@
 								<EmitOnDownPress>false</EmitOnDownPress>
 							</Connection>
 						</SliderComposed>
-	
+
 						<!--
 						****************************************
 						 Button- Play
@@ -198,7 +198,7 @@
 								<ConfigKey>[Channel2],play_indicator</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Button- Cue
@@ -230,7 +230,8 @@
 								<ButtonState>RightButton</ButtonState>
 							</Connection>
 							<Connection>
-								<ConfigKey>[Channel1],cue_indicator</ConfigKey>							</Connection>
+								<ConfigKey>[Channel1],cue_indicator</ConfigKey>
+							</Connection>
 						</PushButton>
 						<PushButton>
 							<TooltipId>cue_default_cue_gotoandstop</TooltipId>
@@ -261,7 +262,7 @@
 								<ConfigKey>[Channel2],cue_indicator</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Button- Prelisten / Monitoring
@@ -305,7 +306,7 @@
 								<ConfigKey>[Channel2],pfl</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						FX Button
@@ -331,7 +332,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
-					    
+
 						<PushButton>
 							<TooltipId></TooltipId>
 							<Style></Style>
@@ -352,7 +353,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
-					    
+
 						<!--
 						**********************************************
 						PLF FX Button
@@ -378,7 +379,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
-					    
+
 						<PushButton>
 							<TooltipId></TooltipId>
 							<Style></Style>
@@ -400,7 +401,7 @@
 							</Connection>
 						</PushButton>
 
-	
+
 						<!--
 						**********************************************
 						Button- Frequency Kill
@@ -426,6 +427,10 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel1],filterHighKill_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</PushButton>
 						<PushButton>
 							<TooltipId>filterMidKill</TooltipId>
@@ -447,6 +452,10 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel1],filterMidKill_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</PushButton>
 						<PushButton>
 							<TooltipId>filterLowKill</TooltipId>
@@ -468,8 +477,12 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+								<ConfigKey>[Channel1],filterLowKill_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
 						</PushButton>
-	
+
 						<PushButton>
 							<TooltipId>filterHighKill</TooltipId>
 							<Style></Style>
@@ -489,6 +502,10 @@
 								<ConfigKey>[Channel2],filterHighKill</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
+							</Connection>
+							<Connection>
+								<ConfigKey>[Channel2],filterHighKill_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
 							</Connection>
 						</PushButton>
 						<PushButton>
@@ -511,6 +528,10 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+								<Connection>
+						        	<ConfigKey>[Channel2],filterMidKill_loaded</ConfigKey>
+						        	<BindProperty>visible</BindProperty>
+					        	</Connection>
 						</PushButton>
 						<PushButton>
 							<TooltipId>filterLowKill</TooltipId>
@@ -532,8 +553,12 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+								<ConfigKey>[Channel2],filterLowKill_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Text- Clock display
@@ -542,29 +567,98 @@
 						<Time>
 							<TooltipId>time</TooltipId>
 							<Style>
-								QLabel { 
-									font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-									background-color: transparent; color: #191F24; text-align:center; 
+								QLabel {
+									font: bold 9px sans-serif;
+									font-family: "Open Sans";
+									background-color: transparent;
+									color: #191F24;
+									text-align:center;
 								}
 							</Style>
-							<Pos>113,15</Pos>
+							<Pos>114,15</Pos>
+							<CustomFormat>hh:mm</CustomFormat>
 							<ShowSeconds>false</ShowSeconds>
-							<ClockFormat>24</ClockFormat>
 						</Time>
-	
+
+						<StatusLight>
+							<Pos>113,27</Pos>
+							<TooltipId>audio_latency_usage</TooltipId>
+							<Style>
+							</Style>
+							<PathStatusLight>audio_latency/audio_latency_overload.png</PathStatusLight>
+							<PathBack>audio_latency/audio_latency_overload_back.png</PathBack>
+							<Connection>
+								<ConfigKey>[Master],audio_latency_overload</ConfigKey>
+							</Connection>
+						</StatusLight>
+
+						<VuMeter>
+				            <Pos>113,28</Pos>
+				            <Style>
+								WVuMeter {
+									background-color: #626f87;
+								}
+							</Style>
+							<TooltipId>audio_latency_usage</TooltipId>
+							<MinimumSize>26,1</MinimumSize>
+							<MaximumSize>26,1</MaximumSize>
+							<PathVu>audio_latency/audio_latency_usage.png</PathVu>
+							<PeakHoldSize>26</PeakHoldSize>
+							<PeakHoldTime>500</PeakHoldTime>
+							<PeakFallTime>50</PeakFallTime>
+							<PeakFallStep>1</PeakFallStep>
+							<Horizontal>true</Horizontal>
+							<Connection>
+								<ConfigKey>[Master],audio_latency_usage</ConfigKey>
+							</Connection>
+						</VuMeter>
+						
+					    <PushButton>
+							<Style></Style>
+							<NumberStates>4</NumberStates>
+							<State>
+								<Number>0</Number>
+								<Pressed>btn_broadcast_unconnected.png</Pressed>
+								<Unpressed>btn_broadcast_unconnected.png</Unpressed>
+							</State>
+							<State>
+								<Number>1</Number>
+								<Pressed>btn_broadcast_connecting.png</Pressed>
+								<Unpressed>btn_broadcast_connecting.png</Unpressed>
+							</State>
+							<State>
+								<Number>2</Number>
+								<Pressed>btn_broadcast_connected.png</Pressed>
+								<Unpressed>btn_broadcast_connected.png</Unpressed>
+							</State>
+							<State>
+								<Number>3</Number>
+								<Pressed>btn_broadcast_failure.png</Pressed>
+								<Unpressed>btn_broadcast_failure.png</Unpressed>
+							</State>
+							<Pos>113,30</Pos>
+							<Connection>
+								<ConfigKey>[Shoutcast],enabled</ConfigKey>
+								<ButtonState>LeftButton</ButtonState>
+							</Connection>
+							<Connection>
+								<ConfigKey>[Shoutcast],status</ConfigKey>
+							</Connection>
+						</PushButton>
+
 						<!--
 						**********************************************
-						RotaryFader- Master volume & balance
+						RotaryFader- Master gain & balance
 						**********************************************
 						-->
 						<Knob>
-							<TooltipId>master_volume</TooltipId>
+							<TooltipId>master_gain</TooltipId>
 							<Style></Style>
 							<NumberStates>64</NumberStates>
-							<Path>knobs_no_center/knob_rotary_s%1.png</Path>
+							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>208,15</Pos>
 							<Connection>
-								<ConfigKey>[Master],volume</ConfigKey>
+								<ConfigKey>[Master],gain</ConfigKey>
 							</Connection>
 						</Knob>
 						<Knob>
@@ -577,20 +671,20 @@
 								<ConfigKey>[Master],balance</ConfigKey>
 							</Connection>
 						</Knob>
-	
+
 						<!--
 						**********************************************
 						RotaryFader- Headphone volume and mix
 						**********************************************
 						-->
 						<Knob>
-							<TooltipId>headphone_volume</TooltipId>
+							<TooltipId>headphone_gain</TooltipId>
 							<Style></Style>
 							<NumberStates>64</NumberStates>
 							<Path>knobs_no_center/knob_rotary_s%1.png</Path>
 							<Pos>20,15</Pos>
 							<Connection>
-								<ConfigKey>[Master],headVolume</ConfigKey>
+								<ConfigKey>[Master],headGain</ConfigKey>
 							</Connection>
 						</Knob>
 						<Knob>
@@ -603,7 +697,7 @@
 								<ConfigKey>[Master],headMix</ConfigKey>
 							</Connection>
 						</Knob>
-	
+
 						<Knob>
 							<TooltipId></TooltipId>
 							<Style></Style>
@@ -621,7 +715,7 @@
 							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>65,51</Pos>
 							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit1],parameter</ConfigKey>
+								<ConfigKey>[EffectRack1_EffectUnit1],super1</ConfigKey>
 							</Connection>
 						</Knob>
 						<Knob>
@@ -631,7 +725,7 @@
 							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>163,51</Pos>
 							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit2],parameter</ConfigKey>
+								<ConfigKey>[EffectRack1_EffectUnit2],super1</ConfigKey>
 							</Connection>
 						</Knob>
 						<Knob>
@@ -644,7 +738,7 @@
 								<ConfigKey>[EffectRack1_EffectUnit2],mix</ConfigKey>
 							</Connection>
 						</Knob>
-	
+
 						<!--
 						**********************************************
 						RotaryFader- Channel filter and gain
@@ -669,6 +763,10 @@
 							<Connection>
 								<ConfigKey>[Channel1],filterHigh</ConfigKey>
 							</Connection>
+								<Connection>
+						        	<ConfigKey>[Channel1],filterHigh_loaded</ConfigKey>
+						        	<BindProperty>visible</BindProperty>
+					        	</Connection>
 						</Knob>
 						<Knob>
 							<TooltipId>filterMid</TooltipId>
@@ -679,6 +777,10 @@
 							<Connection>
 								<ConfigKey>[Channel1],filterMid</ConfigKey>
 							</Connection>
+							<Connection>
+						        	<ConfigKey>[Channel1],filterMid_loaded</ConfigKey>
+						        	<BindProperty>visible</BindProperty>
+					        	</Connection>
 						</Knob>
 						<Knob>
 							<TooltipId>filterLow</TooltipId>
@@ -689,8 +791,12 @@
 							<Connection>
 								<ConfigKey>[Channel1],filterLow</ConfigKey>
 							</Connection>
+							<Connection>
+								<ConfigKey>[Channel1],filterLow_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
 						</Knob>
-	
+
 						<Knob>
 							<TooltipId>pregain</TooltipId>
 							<Style></Style>
@@ -710,6 +816,10 @@
 							<Connection>
 								<ConfigKey>[Channel2],filterHigh</ConfigKey>
 							</Connection>
+							<Connection>
+						        	<ConfigKey>[Channel2],filterHigh_loaded</ConfigKey>
+						        	<BindProperty>visible</BindProperty>
+					        	</Connection>
 						</Knob>
 						<Knob>
 							<TooltipId>filterMid</TooltipId>
@@ -720,6 +830,10 @@
 							<Connection>
 								<ConfigKey>[Channel2],filterMid</ConfigKey>
 							</Connection>
+							<Connection>
+						        	<ConfigKey>[Channel2],filterMid_loaded</ConfigKey>
+						        	<BindProperty>visible</BindProperty>
+					        	</Connection>
 						</Knob>
 						<Knob>
 							<TooltipId>filterLow</TooltipId>
@@ -730,8 +844,12 @@
 							<Connection>
 								<ConfigKey>[Channel2],filterLow</ConfigKey>
 							</Connection>
+							<Connection>
+								<ConfigKey>[Channel2],filterLow_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
 						</Knob>
-	
+
 						<!--
 						**********************************************
 						Visual - Volume level display
@@ -767,7 +885,7 @@
 								<ConfigKey>[Channel2],VuMeter</ConfigKey>
 							</Connection>
 						</VuMeter>
-	
+
 						<VuMeter>
 							<TooltipId>master_VuMeterL</TooltipId>
 							<Style></Style>
@@ -796,14 +914,14 @@
 								<ConfigKey>[Master],VuMeterR</ConfigKey>
 							</Connection>
 						</VuMeter>
-	
+
 						<!--
 						**********************************************
 						Visual- Volume peak indicator
 						**********************************************
 						-->
 						<StatusLight>
-							<TooltipId>PeakIndicator</TooltipId>
+							<TooltipId>channel_PeakIndicator</TooltipId>
 							<Style></Style>
 							<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 							<PathBack>btn_clipping1.png</PathBack>
@@ -813,7 +931,7 @@
 							</Connection>
 						</StatusLight>
 						<StatusLight>
-							<TooltipId>PeakIndicator</TooltipId>
+							<TooltipId>channel_PeakIndicator</TooltipId>
 							<Style></Style>
 							<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 							<PathBack>btn_clipping2.png</PathBack>
@@ -823,19 +941,29 @@
 							</Connection>
 						</StatusLight>
 						<StatusLight>
-							<TooltipId>master_PeakIndicator</TooltipId>
+							<TooltipId>master_PeakIndicatorL</TooltipId>
 							<Style></Style>
 							<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
 							<PathBack>btn_clipping_master.png</PathBack>
 							<Pos>122,93</Pos>
 							<Connection>
-								<ConfigKey>[Master],PeakIndicator</ConfigKey>
+								<ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+							</Connection>
+						</StatusLight>
+                        <StatusLight>
+							<TooltipId>master_PeakIndicatorR</TooltipId>
+							<Style></Style>
+							<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
+							<PathBack>btn_clipping_master.png</PathBack>
+							<Pos>128,93</Pos>
+							<Connection>
+								<ConfigKey>[Master],PeakIndicatorR</ConfigKey>
 							</Connection>
 						</StatusLight>
 					</Children>
 				</WidgetGroup>
-	
+
 			</Children>
 		</WidgetGroup>
-		
+
 </Template>

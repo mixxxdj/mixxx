@@ -3,10 +3,10 @@
 
 #include <QObject>
 
-#include "configobject.h"
-#include "trackinfoobject.h"
+#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
-#include "util.h"
+#include "track/track.h"
+#include "util/class.h"
 
 class QSqlDatabase;
 class TrackDAO;
@@ -28,7 +28,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     AutoDJCratesDAO(QSqlDatabase& a_rDatabase, TrackDAO& a_rTrackDAO,
                     CrateDAO& a_rCrateDAO, PlaylistDAO &a_rPlaylistDAO,
-                    ConfigObject<ConfigValue>* a_pConfig);
+                    UserSettingsPointer a_pConfig);
     virtual ~AutoDJCratesDAO();
 
     // A pure virtual method from the subclass.
@@ -36,6 +36,9 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     // Get the ID of a random track.
     int getRandomTrackId(void);
+
+    // Get random track Id from library
+    int getRandomTrackIdFromLibrary(const int iPlaylistId);
 
   private:
 
@@ -57,7 +60,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     // Update the number of auto-DJ-playlist references to the given track
     // in the auto-DJ-crates database.  Returns true if successful.
-    bool updateAutoDjPlaylistReferencesForTrack(int trackId);
+    bool updateAutoDjPlaylistReferencesForTrack(TrackId trackId);
 
     // Update the last-played date/time for each track in the
     // auto-DJ-crates database.  Returns true if successful.
@@ -65,11 +68,11 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     // Update the last-played date/time for the given track in the
     // auto-DJ-crates database.  Returns true if successful.
-    bool updateLastPlayedDateTimeForTrack(int trackId);
+    bool updateLastPlayedDateTimeForTrack(TrackId trackId);
 
   private slots:
     // Signaled by the track DAO when a track's information is updated.
-    void slotTrackDirty(int trackId);
+    void slotTrackDirty(TrackId trackId);
 
     // Signaled by the crate DAO when a crate is added.
     void slotCrateAdded(int crateId);
@@ -81,10 +84,10 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     void slotCrateAutoDjChanged(int crateId, bool added);
 
     // Signaled by the crate DAO when a track is added to a crate.
-    void slotCrateTrackAdded(int crateId, int trackId);
+    void slotCrateTrackAdded(int crateId, TrackId trackId);
 
     // Signaled by the crate DAO when a track is removed from a crate.
-    void slotCrateTrackRemoved(int crateId, int trackId);
+    void slotCrateTrackRemoved(int crateId, TrackId trackId);
 
     // Signaled by the playlist DAO when a playlist is added.
     void slotPlaylistAdded(int playlistId);
@@ -93,11 +96,11 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     void slotPlaylistDeleted(int playlistId);
 
     // Signaled by the playlist DAO when a track is added to a playlist.
-    void slotPlaylistTrackAdded(int playlistId, int trackId,
+    void slotPlaylistTrackAdded(int playlistId, TrackId trackId,
                                 int position);
 
     // Signaled by the playlist DAO when a track is removed from a playlist.
-    void slotPlaylistTrackRemoved(int playlistId, int trackId,
+    void slotPlaylistTrackRemoved(int playlistId, TrackId trackId,
                                   int position);
 
     // Signaled by the PlayerInfo singleton when a track is loaded to, or
@@ -124,7 +127,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     PlaylistDAO& m_rPlaylistDAO;
 
     // The source of our configuration.
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
 
     // The ID of every set-log playlist.
     QList<int> m_lstSetLogPlaylistIds;

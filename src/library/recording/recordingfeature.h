@@ -7,29 +7,30 @@
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
 #include "recording/recordingmanager.h"
 
+class Library;
 class TrackCollection;
 
 class RecordingFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    RecordingFeature(QObject* parent,
-                  ConfigObject<ConfigValue>* pConfig,
-                  TrackCollection* pTrackCollection,
-                  RecordingManager* pRecordingManager);
+    RecordingFeature(Library* parent,
+                     UserSettingsPointer pConfig,
+                     TrackCollection* pTrackCollection,
+                     RecordingManager* pRecordingManager);
     virtual ~RecordingFeature();
 
     QVariant title();
     QIcon getIcon();
 
     void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+                    KeyboardEventFilter* keyboard);
 
     TreeItemModel* getChildModel();
 
@@ -42,7 +43,8 @@ class RecordingFeature : public LibraryFeature {
     void refreshBrowseModel();
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
+    Library* m_pLibrary;
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     const static QString m_sRecordingViewName;

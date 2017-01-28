@@ -62,8 +62,8 @@ class RateIIFilter {
     double m_last_rate;
 };
 
-PositionScratchController::PositionScratchController(const char* pGroup)
-    : m_group(pGroup),
+PositionScratchController::PositionScratchController(QString group)
+    : m_group(group),
       m_bScratching(false),
       m_bEnableInertia(false),
       m_dLastPlaypos(0),
@@ -73,8 +73,8 @@ PositionScratchController::PositionScratchController(const char* pGroup)
       m_dRate(0),
       m_dMoveDelay(0),
       m_dMouseSampeTime(0) {
-    m_pScratchEnable = new ControlObject(ConfigKey(pGroup, "scratch_position_enable"));
-    m_pScratchPosition = new ControlObject(ConfigKey(pGroup, "scratch_position"));
+    m_pScratchEnable = new ControlObject(ConfigKey(group, "scratch_position_enable"));
+    m_pScratchPosition = new ControlObject(ConfigKey(group, "scratch_position"));
     m_pMasterSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
     m_pVelocityController = new VelocityController();
     m_pRateIIFilter = new RateIIFilter;

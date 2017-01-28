@@ -10,7 +10,7 @@
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
 #include "library/columncache.h"
-#include "util.h"
+#include "util/class.h"
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
 // caches the contents of the table and supports lightweight updates.
@@ -20,85 +20,98 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     BaseSqlTableModel(QObject* pParent,
                       TrackCollection* pTrackCollection,
                       const char* settingsNamespace);
-    virtual ~BaseSqlTableModel();
-
-    ///////////////////////////////////////////////////////////////////////////
-    //  Functions that have to/can be reimplemented
-    ///////////////////////////////////////////////////////////////////////////
-    //  This class also has protected variables that should be used in children
-    //  m_database, m_pTrackCollection, m_trackDAO
-
-    virtual bool isColumnInternal(int column) = 0;
-    virtual bool isColumnHiddenByDefault(int column) = 0;
-    virtual TrackModel::CapabilitiesFlags getCapabilities() const = 0;
-
-    // functions that can be implemented
-    // function to reimplement for external libraries
-    virtual TrackPointer getTrack(const QModelIndex& index) const;
-    // calls readWriteFlags() by default, reimplement this if the child calls
-    // should be readOnly
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Other public methods
-    ////////////////////////////////////////////////////////////////////////////
+    ~BaseSqlTableModel() override;
 
     // Returns true if the BaseSqlTableModel has been initialized. Calling data
     // access methods on a BaseSqlTableModel which is not initialized is likely
     // to cause instability / crashes.
-    bool initialized() const { return m_bInitialized; }
-    int getTrackId(const QModelIndex& index) const;
-    void search(const QString& searchText, const QString& extraFilter = QString());
+    bool initialized() const {
+        return m_bInitialized;
+    }
+
     void setSearch(const QString& searchText, const QString& extraFilter = QString());
-    const QString currentSearch() const;
     void setSort(int column, Qt::SortOrder order);
-    void hideTracks(const QModelIndexList& indices);
 
     int fieldIndex(ColumnCache::Column column) const;
-    int fieldIndex(const QString& fieldName) const;
 
-    void select();
-    QString getTrackLocation(const QModelIndex& index) const;
-    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
+    ///////////////////////////////////////////////////////////////////////////
+    // Inherited from TrackModel
+    ///////////////////////////////////////////////////////////////////////////
+    int fieldIndex(const QString& fieldName) const final;
 
-    // Methods reimplemented from QAbstractItemModel
-    void sort(int column, Qt::SortOrder order);
-    int rowCount(const QModelIndex& parent=QModelIndex()) const;
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-    int columnCount(const QModelIndex& parent = QModelIndex()) const;
+    ///////////////////////////////////////////////////////////////////////////
+    // Inherited from QAbstractItemModel
+    ///////////////////////////////////////////////////////////////////////////
+    void sort(int column, Qt::SortOrder order) final;
+    int rowCount(const QModelIndex& parent=QModelIndex()) const final;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const final;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const final;
     bool setHeaderData(int section, Qt::Orientation orientation,
-                       const QVariant &value, int role = Qt::EditRole);
+                       const QVariant &value, int role = Qt::DisplayRole) final;
     QVariant headerData(int section, Qt::Orientation orientation,
-                        int role=Qt::DisplayRole) const;
-    virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
+                        int role=Qt::DisplayRole) const final;
+    QMimeData* mimeData(const QModelIndexList &indexes) const final;
+
+    ///////////////////////////////////////////////////////////////////////////
+    //  Functions that might be reimplemented/overridden in derived classes
+    ///////////////////////////////////////////////////////////////////////////
+    //  This class also has protected variables that should be used in children
+    //  m_database, m_pTrackCollection, m_trackDAO
+
+    // calls readWriteFlags() by default, reimplement this if the child calls
+    // should be readOnly
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Inherited from TrackModel
+    ///////////////////////////////////////////////////////////////////////////
+    bool isColumnHiddenByDefault(int column) override;
+    TrackPointer getTrack(const QModelIndex& index) const override;
+    TrackId getTrackId(const QModelIndex& index) const override;
+    const QLinkedList<int> getTrackRows(TrackId trackId) const override;
+    QString getTrackLocation(const QModelIndex& index) const override;
+    void hideTracks(const QModelIndexList& indices) override;
+    void search(const QString& searchText, const QString& extraFilter = QString()) override;
+    const QString currentSearch() const override;
+    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Inherited from QAbstractItemModel
+    ///////////////////////////////////////////////////////////////////////////
+    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
+
+  public slots:
+    void select();
 
   protected:
-    // Returns the row of trackId in this result set. If trackId is not present,
-    // returns -1.
-    const QLinkedList<int> getTrackRows(int trackId) const;
     void setTable(const QString& tableName, const QString& trackIdColumn,
                   const QStringList& tableColumns,
                   QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderData();
 
     // Use this if you want a model that is read-only.
-    Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
+    virtual Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
     // Use this if you want a model that can be changed
-    Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
+    virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
 
     QString m_previewDeckGroup;
-    int m_iPreviewDeckTrackId;
+    TrackId m_previewDeckTrackId;
+    QString m_tableOrderBy;
 
   private slots:
-    virtual void tracksChanged(QSet<int> trackIds);
+    virtual void tracksChanged(QSet<TrackId> trackIds);
     virtual void trackLoaded(QString group, TrackPointer pTrack);
+    void refreshCell(int row, int column);
 
   private:
+    // A simple helper function for initializing header title and width.  Note
+    // that the ideal width of a column is based on the width of its data,
+    // not the title string itself.
+    void setHeaderProperties(ColumnCache::Column column, QString title, int defaultWidth);
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
     QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
     // Set the columns used for searching. Names must correspond to the column
@@ -108,9 +121,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QSqlDatabase database() const;
 
     struct RowInfo {
-        int trackId;
+        TrackId trackId;
         int order;
-        QHash<int, QVariant> metadata;
+        QVector<QVariant> metadata;
 
         bool operator<(const RowInfo& other) const {
             // -1 is greater than anything
@@ -122,6 +135,14 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
             return order < other.order;
         }
     };
+
+    typedef QHash<TrackId, QLinkedList<int>> TrackId2Rows;
+
+    void clearRows();
+    void replaceRows(
+            QVector<RowInfo>&& rows,
+            TrackId2Rows&& trackIdToRows);
+
     QVector<RowInfo> m_rowInfo;
 
     QString m_tableName;
@@ -130,15 +151,15 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QStringList m_tableColumns;
     QString m_tableColumnsJoined;
     ColumnCache m_tableColumnCache;
-    int m_iSortColumn;
-    Qt::SortOrder m_eSortOrder;
+    QList<SortColumn> m_sortColumns;
     bool m_bInitialized;
     QSqlRecord m_queryRecord;
-    QHash<int, int> m_trackSortOrder;
-    QHash<int, QLinkedList<int> > m_trackIdToRows;
+    QHash<TrackId, int> m_trackSortOrder;
+    TrackId2Rows m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant> > m_headerInfo;
+    QString m_trackSourceOrderBy;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };

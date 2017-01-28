@@ -17,25 +17,25 @@
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT
   public:
-    WLibrarySidebar(QWidget* parent = 0);
-    virtual ~WLibrarySidebar();
+    explicit WLibrarySidebar(QWidget* parent = nullptr);
 
-    void contextMenuEvent(QContextMenuEvent * event);
-    void dragMoveEvent(QDragMoveEvent * event);
-    void dragEnterEvent(QDragEnterEvent * event);
-    void dropEvent(QDropEvent * event);
-    void keyPressEvent(QKeyEvent* event);
-    void timerEvent(QTimerEvent* event);
+    void contextMenuEvent(QContextMenuEvent * event) override;
+    void dragMoveEvent(QDragMoveEvent * event) override;
+    void dragEnterEvent(QDragEnterEvent * event) override;
+    void dropEvent(QDropEvent * event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void timerEvent(QTimerEvent* event) override;
     void toggleSelectedItem();
 
   public slots:
     void selectIndex(const QModelIndex&);
+    void slotSetFont(const QFont& font);
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
 
   protected:
-    bool event(QEvent* pEvent);
+    bool event(QEvent* pEvent) override;
 
   private:
     QBasicTimer m_expandTimer;

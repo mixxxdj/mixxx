@@ -5,16 +5,11 @@
 WKey::WKey(const char* group, QWidget* pParent)
         : WLabel(pParent),
           m_dOldValue(0),
-          m_preferencesUpdated(ConfigKey("[Preferences]", "updated")),
-          m_engineKeyDistance(ConfigKey(group, "visual_key_distance")) {
+          m_preferencesUpdated("[Preferences]", "updated", this),
+          m_engineKeyDistance(group, "visual_key_distance", this) {
     setValue(m_dOldValue);
-    connect(&m_preferencesUpdated, SIGNAL(valueChanged(double)),
-            this, SLOT(preferencesUpdated(double)));
-    connect(&m_engineKeyDistance, SIGNAL(valueChanged(double)),
-            this, SLOT(setCents()));
-}
-
-WKey::~WKey() {
+    m_preferencesUpdated.connectValueChanged(SLOT(preferencesUpdated(double)));
+    m_engineKeyDistance.connectValueChanged(SLOT(setCents()));
 }
 
 void WKey::onConnectedControlChanged(double dParameter, double dValue) {
@@ -24,7 +19,7 @@ void WKey::onConnectedControlChanged(double dParameter, double dValue) {
     setValue(dValue);
 }
 
-void WKey::setup(QDomNode node, const SkinContext& context) {
+void WKey::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     m_displayCents = context.selectBool(node, "DisplayCents", false);
 }

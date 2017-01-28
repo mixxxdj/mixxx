@@ -9,11 +9,14 @@
 
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
-#include "soundsourceproxy.h"
-#include "trackinfoobject.h"
-#include "xmlparse.h"
+#include "track/track.h"
+#include "util/xml.h"
+#include "util/assert.h"
 
-TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
+// static
+const int TrackCollection::kRequiredSchemaVersion = 27;
+
+TrackCollection::TrackCollection(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
           m_playlistDao(m_db),
@@ -21,15 +24,13 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_cueDao(m_db),
           m_directoryDao(m_db),
           m_analysisDao(m_db, pConfig),
+          m_libraryHashDao(m_db),
           m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao,
-                     m_analysisDao, m_directoryDao, pConfig),
-          m_supportedFileExtensionsRegex(
-              SoundSourceProxy::supportedFileExtensionsRegex(),
-              Qt::CaseInsensitive) {
+                     m_analysisDao, m_libraryHashDao, pConfig) {
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
 
     m_db.setHostName("localhost");
-    m_db.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
+    m_db.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
     m_db.setUserName("mixxx");
     m_db.setPassword("mixxx");
     bool ok = m_db.open();
@@ -78,36 +79,48 @@ bool TrackCollection::checkForTables() {
     installSorting(m_db);
 #endif
 
-    int requiredSchemaVersion = 23;
-    QString schemaFilename = m_pConfig->getResourcePath();
-    schemaFilename.append("schema.xml");
+    // The schema XML is baked into the binary via Qt resources.
+    QString schemaFilename(":/schema.xml");
     QString okToExit = tr("Click OK to exit.");
     QString upgradeFailed = tr("Cannot upgrade database schema");
-    QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
-            .arg(QString::number(requiredSchemaVersion));
-    int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, m_db, requiredSchemaVersion);
-    if (result < 0) {
-        if (result == -1) {
-            QMessageBox::warning(0, upgradeFailed,
-                                upgradeToVersionFailed + "\n" +
-                                tr("Your %1 file may be outdated.").arg(schemaFilename) +
-                                "\n\n" + okToExit,
-                                QMessageBox::Ok);
-        } else if (result == -2) {
-            QMessageBox::warning(0, upgradeFailed,
-                                upgradeToVersionFailed + "\n" +
-                                tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
-                                tr("Try renaming it and restarting Mixxx.") +
-                                "\n\n" + okToExit,
-                                QMessageBox::Ok);
-        } else { // -3
-            QMessageBox::warning(0, upgradeFailed,
-                                upgradeToVersionFailed + "\n" +
-                                tr("Your %1 file may be missing or invalid.").arg(schemaFilename) +
-                                "\n\n" + okToExit,
-                                QMessageBox::Ok);
-        }
-        return false;
+    QString upgradeToVersionFailed =
+            tr("Unable to upgrade your database schema to version %1")
+            .arg(QString::number(kRequiredSchemaVersion));
+    QString helpEmail = tr("For help with database issues contact:") + "\n" +
+                           "mixxx-devel@lists.sourceforge.net";
+
+    SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
+            schemaFilename, m_db, kRequiredSchemaVersion);
+    switch (result) {
+        case SchemaManager::RESULT_BACKWARDS_INCOMPATIBLE:
+            QMessageBox::warning(
+                    0, upgradeFailed,
+                    upgradeToVersionFailed + "\n" +
+                    tr("Your mixxxdb.sqlite file was created by a newer "
+                       "version of Mixxx and is incompatible.") +
+                    "\n\n" + okToExit,
+                    QMessageBox::Ok);
+            return false;
+        case SchemaManager::RESULT_UPGRADE_FAILED:
+            QMessageBox::warning(
+                    0, upgradeFailed,
+                    upgradeToVersionFailed + "\n" +
+                    tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
+                    tr("Try renaming it and restarting Mixxx.") + "\n" +
+                    helpEmail + "\n\n" + okToExit,
+                    QMessageBox::Ok);
+            return false;
+        case SchemaManager::RESULT_SCHEMA_ERROR:
+            QMessageBox::warning(
+                    0, upgradeFailed,
+                    upgradeToVersionFailed + "\n" +
+                    tr("The database schema file is invalid.") + "\n" +
+                    helpEmail + "\n\n" + okToExit,
+                    QMessageBox::Ok);
+            return false;
+        case SchemaManager::RESULT_OK:
+        default:
+            break;
     }
 
     m_trackDao.initialize();
@@ -115,7 +128,7 @@ bool TrackCollection::checkForTables() {
     m_crateDao.initialize();
     m_cueDao.initialize();
     m_directoryDao.initialize();
-
+    m_libraryHashDao.initialize();
     return true;
 }
 
@@ -144,8 +157,28 @@ QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource() {
 }
 
 void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource) {
-    Q_ASSERT(m_defaultTrackSource.isNull());
+    DEBUG_ASSERT_AND_HANDLE(m_defaultTrackSource.isNull()) {
+        return;
+    }
     m_defaultTrackSource = trackSource;
+}
+
+void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
+    // We only call this method if the user has picked a relocated directory via
+    // a file dialog. This means the system sandboxer (if we are sandboxed) has
+    // granted us permission to this folder. Create a security bookmark while we
+    // have permission so that we can access the folder on future runs. We need
+    // to canonicalize the path so we first wrap the directory string with a
+    // QDir.
+    QDir directory(newDir);
+    Sandbox::createSecurityToken(directory);
+
+    QSet<TrackId> movedIds(
+            m_directoryDao.relocateDirectory(oldDir, newDir));
+
+    // Clear cache to that all TIO with the old dir information get updated
+    m_trackDao.clearCache();
+    m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
 }
 
 #ifdef __SQLITE3__
@@ -203,9 +236,8 @@ void TrackCollection::installSorting(QSqlDatabase &db) {
 // than the second, respectively.
 //static
 int TrackCollection::sqliteLocaleAwareCompare(void* pArg,
-                                    int len1, const void* data1,
-                                    int len2, const void* data2 )
-{
+                                              int len1, const void* data1,
+                                              int len2, const void* data2) {
     Q_UNUSED(pArg);
     // Construct a QString without copy
     QString string1 = QString::fromRawData(reinterpret_cast<const QChar*>(data1),
@@ -222,7 +254,9 @@ int TrackCollection::sqliteLocaleAwareCompare(void* pArg,
 void TrackCollection::sqliteLike(sqlite3_context *context,
                                 int aArgc,
                                 sqlite3_value **aArgv) {
-    Q_ASSERT(aArgc == 2 || aArgc == 3);
+    DEBUG_ASSERT_AND_HANDLE(aArgc == 2 || aArgc == 3) {
+        return;
+    }
 
     const char* b = reinterpret_cast<const char*>(
             sqlite3_value_text(aArgv[0]));
@@ -287,7 +321,7 @@ int TrackCollection::likeCompareInner(
   const QChar* string, // The string to compare against
   int stringSize,
   const QChar esc // The escape character
-){
+) {
     static const QChar MATCH_ONE = QChar('_');
     static const QChar MATCH_ALL = QChar('%');
 
@@ -360,7 +394,6 @@ int TrackCollection::likeCompareInner(
     }
     return iString == stringSize;
 }
-
 
 
 /*

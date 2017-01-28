@@ -1,0 +1,121 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>VinylControls</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>VinylControls2</ObjectName>
+        <TooltipId>vinylcontrol_enabled</TooltipId>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Size>,50</Size>
+        <Children>
+          <PushButton>
+          <Size>60f,22f</Size>
+          <ObjectName>VinylToggleButtonUL</ObjectName>
+          <NumberStates>2</NumberStates>
+          <State>
+            <Number>0</Number>
+            <Text>VINYL OFF</Text>
+          </State>
+          <State>
+            <Number>1</Number>
+            <Text>VINYL ON</Text>
+          </State>
+          <Connection>
+            <ConfigKey>[Channel<Variable name="channum" />],vinylcontrol_enabled</ConfigKey>
+            <ButtonState>LeftButton</ButtonState>
+          </Connection>
+          <Connection>
+            <ConfigKey>[Channel<Variable name="channum" />],vinylcontrol_enabled</ConfigKey>
+          </Connection>
+        </PushButton>
+        <PushButton>
+          <Size>60f,22f</Size>
+          <ObjectName>VinylToggleButtonLL</ObjectName>
+          <TooltipId>passthrough_enabled</TooltipId>
+          <NumberStates>2</NumberStates>
+          <State>
+            <Number>0</Number>
+            <Text>PASS OFF</Text>
+          </State>
+          <State>
+            <Number>1</Number>
+            <Text>PASS ON</Text>
+          </State>
+          <Connection>
+            <ConfigKey>[Channel<Variable name="channum" />],passthrough</ConfigKey>
+            <ButtonState>LeftButton</ButtonState>
+          </Connection>
+          <Connection>
+            <ConfigKey>[Channel<Variable name="channum" />],passthrough</ConfigKey>
+          </Connection>
+        </PushButton>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>VinylControls2</ObjectName>
+        <TooltipId>vinylcontrol_mode</TooltipId>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Size>,50</Size>
+        <Children>
+          <PushButton>
+            <Size>60f,22f</Size>
+            <ObjectName>TristateButton</ObjectName>
+            <NumberStates>3</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>ABS</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>REL</Text>
+            </State>
+            <State>
+              <Number>2</Number>
+              <Text>CONST</Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Channel<Variable name="channum" />],vinylcontrol_mode</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey persist="true">[Channel<Variable name="channum" />],vinylcontrol_mode</ConfigKey>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <Size>60f,22f</Size>
+            <TooltipId>vinylcontrol_cueing</TooltipId>
+            <ObjectName>VinylCueButton</ObjectName>
+            <NumberStates>3</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>CUE OFF</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>CUE ON</Text>
+            </State>
+            <State>
+              <Number>2</Number>
+              <Text>HOTCUE</Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Channel<Variable name="channum" />],vinylcontrol_cueing</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey persist="true">[Channel<Variable name="channum" />],vinylcontrol_cueing</ConfigKey>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

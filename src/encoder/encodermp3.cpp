@@ -3,7 +3,7 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 2009 by Phillip Whelan (rewritten for mp3)
-                           (C) 2010 by Tobias Rafreider (fixes for shoutcast, dynamic loading of lame_enc.dll, etc)
+                           (C) 2010 by Tobias Rafreider (fixes for broadcast, dynamic loading of lame_enc.dll, etc)
  ***************************************************************************/
 
 /***************************************************************************
@@ -42,8 +42,8 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
      * m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
      * m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
      *
-     * This has solved many segfaults when using and even closing shoutcast
-     * along with LAME.  This bug was detected by using Valgrind memory analyser
+     * This has solved many segfaults when using and even closing broadcast
+     * along with LAME.  This bug was detected by using Valgrind memory analyzer
      *
      */
     m_bufferInSize(0),
@@ -122,7 +122,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     get_lame_version__ get_lame_version = (get_lame_version__)m_library->resolve("get_lame_version");
 
 
-    //initalize function pointers
+    // initialize function pointers
     lame_init                   = (lame_init__)m_library->resolve("lame_init");
     lame_set_num_channels       = (lame_set_num_channels__)m_library->resolve("lame_set_num_channels");
     lame_set_in_samplerate      = (lame_set_in_samplerate__)m_library->resolve("lame_set_in_samplerate");
@@ -147,7 +147,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
      * Otherwise, the lame_enc.dll, libmp3lame.so or libmp3lame.mylib do not comply with the official header lame.h
      * Indicates a modified lame version
      *
-     * Should not happend on Linux, but many lame binaries for Windows are modified.
+     * Should not happen on Linux, but many lame binaries for Windows are modified.
      */
     if(!lame_init ||
        !lame_set_num_channels ||
@@ -269,17 +269,17 @@ int EncoderMp3::bufferInGrow(int size) {
 }
 
 //Using this method requires to call method 'write()' or 'sendPackages()'
-//depending on which context you use the class (shoutcast or recording to HDD)
+//depending on which context you use the class (broadcast or recording to HDD)
 void EncoderMp3::flush() {
     if (m_library == NULL || !m_library->isLoaded())
         return;
     int rc = 0;
     /**Flush also writes ID3 tags **/
     rc = lame_encode_flush(m_lameFlags, m_bufferOut, m_bufferOutSize);
-    if (rc < 0 ){
+    if (rc < 0) {
         return;
     }
-    //end encoded audio to shoutcast or file
+    //end encoded audio to broadcast or file
     m_pCallback->write(NULL, m_bufferOut, 0, rc);
 }
 
@@ -303,10 +303,10 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
 
     rc = lame_encode_buffer_float(m_lameFlags, m_bufferIn[0], m_bufferIn[1],
                                   size/2, m_bufferOut, m_bufferOutSize);
-    if (rc < 0 ){
+    if (rc < 0) {
         return;
     }
-    //write encoded audio to shoutcast stream or file
+    //write encoded audio to broadcast stream or file
     m_pCallback->write(NULL, m_bufferOut, 0, rc);
 }
 
@@ -362,7 +362,7 @@ int EncoderMp3::initEncoder(int bitrate, int samplerate) {
     return 0;
 }
 
-void EncoderMp3::updateMetaData(char* artist, char* title, char* album){
+void EncoderMp3::updateMetaData(char* artist, char* title, char* album) {
     m_metaDataTitle = title;
     m_metaDataArtist = artist;
     m_metaDataAlbum = album;

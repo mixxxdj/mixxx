@@ -11,7 +11,7 @@ class GLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     GLWaveformWidget(const char* group, QWidget* parent);
     virtual ~GLWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLWaveform; }
+    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLFilteredWaveform; }
 
     static inline QString getWaveformWidgetName() { return tr("Filtered"); }
     static inline bool useOpenGl() { return true; }
@@ -21,7 +21,7 @@ class GLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
   protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
-    virtual int render();
+    virtual mixxx::Duration render();
 
   private:
     friend class WaveformWidgetFactory;

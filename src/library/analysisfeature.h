@@ -13,18 +13,18 @@
 #include <QList>
 
 #include "library/libraryfeature.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "treeitemmodel.h"
-#include "dlganalysis.h"
+#include "library/dlganalysis.h"
 
-class AnalyserQueue;
+class AnalyzerQueue;
 class TrackCollection;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AnalysisFeature(QObject* parent,
-                    ConfigObject<ConfigValue>* pConfig,
+                    UserSettingsPointer pConfig,
                     TrackCollection* pTrackCollection);
     virtual ~AnalysisFeature();
 
@@ -34,7 +34,7 @@ class AnalysisFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+                    KeyboardEventFilter* keyboard);
 
     TreeItemModel* getChildModel();
     void refreshLibraryModels();
@@ -45,20 +45,26 @@ class AnalysisFeature : public LibraryFeature {
 
   public slots:
     void activate();
-    void analyzeTracks(QList<int> trackIds);
+    void analyzeTracks(QList<TrackId> trackIds);
 
   private slots:
     void slotProgressUpdate(int num_left);
     void stopAnalysis();
-    void cleanupAnalyser();
+    void cleanupAnalyzer();
 
   private:
-    void setTitleDefault();		// Set title to tr("Analyze")
-    void setTitleProgress(int trackNum, int totalNum);	// Set title to "Analyze (x out of y)"
+    // Sets the title of this feature to the default name, given by
+    // m_sAnalysisTitleName
+    void setTitleDefault();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    // Sets the title of this feature to the default name followed by (x / y)
+    // where x is the current track being analyzed and y is the total number of
+    // tracks in the job
+    void setTitleProgress(int trackNum, int totalNum);
+
+    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
-    AnalyserQueue* m_pAnalyserQueue;
+    AnalyzerQueue* m_pAnalyzerQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyse
     int m_iOldBpmEnabled;
     // The title returned by title()

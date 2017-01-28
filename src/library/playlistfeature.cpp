@@ -12,22 +12,23 @@
 #include "library/playlisttablemodel.h"
 #include "library/treeitem.h"
 #include "library/queryutil.h"
-#include "mixxxkeyboard.h"
-#include "soundsourceproxy.h"
+#include "library/parser.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
-#include "util/time.h"
+#include "util/duration.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
-                                 ConfigObject<ConfigValue>* pConfig)
+                                 UserSettingsPointer pConfig)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
                               "PLAYLISTHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.playlist");
 
     //construct child model
-    TreeItem *rootItem = new TreeItem();
-    m_childModel.setRootItem(rootItem);
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_childModel.setRootItem(std::move(pRootItem));
     constructChildModel(-1);
 }
 
@@ -48,6 +49,8 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     //Create the right-click menu
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
+    menu.addSeparator();
+    menu.addAction(m_pCreateImportPlaylistAction);
     menu.exec(globalPos);
 }
 
@@ -78,18 +81,18 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
+    menu.addAction(m_pExportTrackFilesAction);
     menu.exec(globalPos);
 }
 
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                      QObject* pSource){
-    //TODO: Filter by supported formats regex and reject anything that doesn't match.
+                                      QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
 
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
         m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
@@ -98,13 +101,13 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
         // library, then add the track to the library before adding it to the
         // playlist.
         // Adds track, does not insert duplicates, handles unremoving logic.
-        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+        trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
     }
 
     // remove tracks that could not be added
-    for (int trackId =0; trackId<trackIds.size() ; trackId++) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
+    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); ++trackIdIndex) {
+        if (!trackIds.at(trackIdIndex).isValid()) {
+            trackIds.removeAt(trackIdIndex--);
         }
     }
 
@@ -113,14 +116,11 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
 }
 
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    //TODO: Filter by supported formats regex and reject anything that doesn't match.
     int playlistId = playlistIdFromIndex(index);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
-    QFileInfo file(url.toLocalFile());
-    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName()) ||
-            file.fileName().endsWith(".m3u") || file.fileName().endsWith(".m3u8") ||
-            file.fileName().endsWith(".pls");
+    bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
     return !locked && formatSupported;
 }
 
@@ -130,10 +130,11 @@ void PlaylistFeature::buildPlaylistList() {
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
         "AS SELECT "
-        "  Playlists.id as id, "
-        "  Playlists.name as name, "
-        "  COUNT(library.id) as count, "
-        "  SUM(library.duration) as durationSeconds "
+        "  Playlists.id AS id, "
+        "  Playlists.name AS name, "
+        "  LOWER(Playlists.name) AS sort_name, "
+        "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) AS count, "
+        "  SUM(case library.mixxx_deleted when 0 then library.duration else 0 end) AS durationSeconds "
         "FROM Playlists "
         "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
         "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
@@ -147,7 +148,7 @@ void PlaylistFeature::buildPlaylistList() {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
     playlistTableModel.setTable("PlaylistsCountsDurations");
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("name"),
+    playlistTableModel.setSort(playlistTableModel.fieldIndex("sort_name"),
                                Qt::AscendingOrder);
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
@@ -170,7 +171,7 @@ void PlaylistFeature::buildPlaylistList() {
             playlistTableModel.index(row, durationColumn)).toInt();
         m_playlistList.append(qMakePair(id, QString("%1 (%2) %3")
                                         .arg(name, QString::number(count),
-                                             Time::formatSeconds(duration, false))));
+                                                mixxx::Duration::formatSeconds(duration))));
     }
 }
 
@@ -193,12 +194,38 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
+    }
+}
 
+void PlaylistFeature::slotPlaylistContentChanged(int playlistId) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistContentChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        updateChildModel(playlistId);
+    }
+}
+
+
+
+void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
+                                               QString /* a_strName */) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        clearChildModel();
+        m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            // Switch the view to the playlist.
-            m_pPlaylistTableModel->setTableModel(playlistId);
-            // Update selection
-            emit(featureSelect(this, m_lastRightClickedIndex));
+            activatePlaylist(playlistId);
         }
     }
 }
@@ -219,10 +246,8 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append(QString("<p>%1 %2</p>").arg(playlistsSummary3,
                                             playlistsSummary4));
     html.append("</td></tr>");
-    html.append(
-        QString("<tr><td><a href=\"create\">%1</a>")
-        .arg(createPlaylistLink)
-    );
+    html.append(QString("<tr><td><a href=\"create\">%1</a>")
+                .arg(createPlaylistLink));
     html.append("</td></tr></table>");
     return html;
 }

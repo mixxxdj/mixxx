@@ -3,7 +3,7 @@
 
 #include <QTime>
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/steadypitch.h"
 #include "util/types.h"
@@ -22,7 +22,7 @@ extern "C" {
 
 class VinylControlXwax : public VinylControl {
   public:
-    VinylControlXwax(ConfigObject<ConfigValue> *pConfig, QString group);
+    VinylControlXwax(UserSettingsPointer pConfig, QString group);
     virtual ~VinylControlXwax();
 
     static void freeLUTs();
@@ -46,6 +46,7 @@ class VinylControlXwax : public VinylControl {
     void enableConstantMode(double rate);
     bool uiUpdateTime(double time);
     void establishQuality(bool quality_sample);
+    double calcRateRatio() const;
 
     // Cache the position of the end of record
     unsigned int m_uiSafeZone;
@@ -86,6 +87,9 @@ class VinylControlXwax : public VinylControl {
     // The approximate duration used to tell if a new track is loaded.
     double m_dOldDurationInaccurate;
 
+    // Was the reverse button pressed last go-round?
+    bool m_bWasReversed;
+
     // The pitch ring buffer.
     // TODO(XXX): Replace with CircularBuffer instead of handling the ring logic
     // in VinylControlXwax.
@@ -100,7 +104,9 @@ class VinylControlXwax : public VinylControl {
     // A smoothed pitch value to show to the user.
     double m_dDisplayPitch;
 
-    // Steady pitch trackers.
+    // Steady pitch trackers.  "Subtle" will be more likely to return true,
+    // so it is used to set the play button.  "Gross" is more likely to return
+    // false, so it is used to trigger the "scratching" CO.
     SteadyPitch* m_pSteadySubtle;
     SteadyPitch* m_pSteadyGross;
 
@@ -111,8 +117,8 @@ class VinylControlXwax : public VinylControl {
     bool m_bTrackSelectMode;
 
     // Controls for manipulating the library.
-    ControlObjectThread* m_pControlTrackSelector;
-    ControlObjectThread* m_pControlTrackLoader;
+    ControlProxy* m_pControlTrackSelector;
+    ControlProxy* m_pControlTrackLoader;
 
     // The previous and current track select position. Used for track selection
     // using the control region.

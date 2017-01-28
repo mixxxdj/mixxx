@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxControllerPreset mixxxVersion="1.12.0+" schemaVersion="1">
+<MixxxControllerPreset mixxxVersion="2.0.0+" schemaVersion="1">
 	<info>
 		<name>Denon MC6000MK2</name>
 		<author>Uwe Klotz a/k/a tapir</author>
 		<forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=6251</forums>
-		<wiki></wiki>
+		<wiki>http://www.mixxx.org/wiki/doku.php/denon_mc6000mk2</wiki>
 	</info>
 	<controller id="Denon MC6000MK2">
 		<scriptfiles>
@@ -15,42 +15,130 @@
 			<control>
 				<midino>0x45</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onXfaderContour</key>
+				<key>DenonMC6000MK2.recvXfaderContourKnob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x64</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.recvPanelButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x64</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.recvPanelButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x65</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.recvListButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x65</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.recvListButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x4C</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.recvViewButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x4C</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.recvViewButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x4D</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.recvAreaButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x4D</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.recvAreaButton</key>
 				<options>
 					<script-binding/>
 				</options>
 			</control>
 			<!-- left filter efx (deck 1+3) -->
 			<control>
-				<group>[EffectRack1_EffectUnit2]</group>
 				<midino>0x16</midino>
-				<status>0x90</status>
-				<key>enabled</key>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.leftSide.recvFilterButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit2]</group>
+				<midino>0x16</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.leftSide.recvFilterButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
 				<midino>0x66</midino>
 				<status>0xB0</status>
-				<key>parameter</key>
+				<key>DenonMC6000MK2.leftSide.recvFilterKnob</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<!-- right filter efx (deck 2+4) -->
 			<control>
-				<group>[EffectRack1_EffectUnit3]</group>
 				<midino>0x1E</midino>
-				<status>0x90</status>
-				<key>enabled</key>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.rightSide.recvFilterButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit3]</group>
+				<midino>0x1E</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.rightSide.recvFilterButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
 				<midino>0x67</midino>
 				<status>0xB0</status>
-				<key>parameter</key>
+				<key>DenonMC6000MK2.rightSide.recvFilterKnob</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<!-- left efx unit -->
 			<control>
 				<midino>0x15</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.leftSide.onEfx1Button</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -58,7 +146,7 @@
 			<control>
 				<midino>0x15</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.leftSide.onEfx1Button</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -66,7 +154,7 @@
 			<control>
 				<midino>0x55</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.leftSide.onEfx1Knob</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust1Knob</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -74,7 +162,7 @@
 			<control>
 				<midino>0x12</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.leftSide.onEfx2Button</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -82,7 +170,7 @@
 			<control>
 				<midino>0x12</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.leftSide.onEfx2Button</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -90,7 +178,15 @@
 			<control>
 				<midino>0x56</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.leftSide.onEfx2Knob</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust2Knob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x13</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -98,7 +194,7 @@
 			<control>
 				<midino>0x13</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.leftSide.onEfx3Button</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -106,7 +202,7 @@
 			<control>
 				<midino>0x57</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.leftSide.onEfx3Knob</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust3Knob</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -114,7 +210,15 @@
 			<control>
 				<midino>0x58</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.leftSide.onEfxBeatsKnob</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvBeatsKnob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x40</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvBeatsButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -122,7 +226,7 @@
 			<control>
 				<midino>0x46</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.leftSide.onEfxTapButton</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvTapButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -130,8 +234,16 @@
 			<!-- right efx unit -->
 			<control>
 				<midino>0x55</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x55</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.rightSide.onEfx1Button</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -139,7 +251,15 @@
 			<control>
 				<midino>0x59</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.rightSide.onEfx1Knob</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust1Knob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x52</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -147,7 +267,7 @@
 			<control>
 				<midino>0x52</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.rightSide.onEfx2Button</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -155,7 +275,15 @@
 			<control>
 				<midino>0x5A</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.rightSide.onEfx2Knob</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust2Knob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x53</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -163,7 +291,7 @@
 			<control>
 				<midino>0x53</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.rightSide.onEfx3Button</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -171,7 +299,7 @@
 			<control>
 				<midino>0x5B</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.rightSide.onEfx3Knob</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust3Knob</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -179,7 +307,15 @@
 			<control>
 				<midino>0x5C</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.rightSide.onEfxBeatsKnob</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvBeatsKnob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x41</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvBeatsButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -187,7 +323,7 @@
 			<control>
 				<midino>0x47</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.rightSide.onEfxTapButton</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvTapButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -197,7 +333,7 @@
 			<control>
 				<midino>0x54</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onTrackSelectKnob</key>
+				<key>DenonMC6000MK2.recvTrackSelectKnob</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -260,7 +396,7 @@
 				<group>[Sampler1]</group>
 				<midino>0x21</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -269,7 +405,7 @@
 				<group>[Sampler1]</group>
 				<midino>0x21</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -278,7 +414,7 @@
 				<group>[Sampler2]</group>
 				<midino>0x22</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -287,7 +423,7 @@
 				<group>[Sampler2]</group>
 				<midino>0x22</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -296,7 +432,7 @@
 				<group>[Sampler3]</group>
 				<midino>0x23</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -305,7 +441,7 @@
 				<group>[Sampler3]</group>
 				<midino>0x23</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -314,7 +450,7 @@
 				<group>[Sampler4]</group>
 				<midino>0x24</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -323,7 +459,7 @@
 				<group>[Sampler4]</group>
 				<midino>0x24</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -334,7 +470,7 @@
 				<group>[Sampler5]</group>
 				<midino>0x21</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -343,7 +479,7 @@
 				<group>[Sampler5]</group>
 				<midino>0x21</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -352,7 +488,7 @@
 				<group>[Sampler6]</group>
 				<midino>0x22</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -361,7 +497,7 @@
 				<group>[Sampler6]</group>
 				<midino>0x22</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -370,7 +506,7 @@
 				<group>[Sampler7]</group>
 				<midino>0x23</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -379,7 +515,7 @@
 				<group>[Sampler7]</group>
 				<midino>0x23</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -388,7 +524,7 @@
 				<group>[Sampler8]</group>
 				<midino>0x24</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -397,7 +533,7 @@
 				<group>[Sampler8]</group>
 				<midino>0x24</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onSamplerButton</key>
+				<key>DenonMC6000MK2.recvSamplerButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -408,7 +544,7 @@
 				<group>[Channel1]</group>
 				<midino>0x01</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onCueMixButton</key>
+				<key>DenonMC6000MK2.recvCueMixButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -420,22 +556,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel1]</group>
-				<midino>0x02</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel1]</group>
-				<midino>0x03</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel1]</group>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
 				<midino>0x04</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<midino>0x03</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<midino>0x02</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -444,22 +580,28 @@
 				<key>volume</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit1]</group>
+				<group>[Channel1]</group>
 				<midino>0x58</midino>
 				<status>0x90</status>
-				<key>group_[Channel1]_enable</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4]</group>
+				<group>[Channel1]</group>
 				<midino>0x5C</midino>
 				<status>0x90</status>
-				<key>group_[Channel1]_enable</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x31</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignLeftButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignLeftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -468,7 +610,7 @@
 				<group>[Channel1]</group>
 				<midino>0x32</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignThruButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignThruButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -477,7 +619,7 @@
 				<group>[Channel1]</group>
 				<midino>0x33</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignRightButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignRightButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -486,9 +628,18 @@
 			<!-- [Channel1] - MIDI Ch0 Controls -->
 			<control>
 				<group>[Channel1]</group>
+				<midino>0x03</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.leftSide.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
 				<midino>0x04</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onVinylButton</key>
+				<key>DenonMC6000MK2.recvVinylButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -497,7 +648,7 @@
 				<group>[Channel1]</group>
 				<midino>0x06</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onKeyLockButton</key>
+				<key>DenonMC6000MK2.recvKeyLockButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -506,7 +657,7 @@
 				<group>[Channel1]</group>
 				<midino>0x42</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onCueButton</key>
+				<key>DenonMC6000MK2.recvCueButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -515,7 +666,7 @@
 				<group>[Channel1]</group>
 				<midino>0x42</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onCueButton</key>
+				<key>DenonMC6000MK2.recvCueButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -524,7 +675,7 @@
 				<group>[Channel1]</group>
 				<midino>0x43</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onPlayButton</key>
+				<key>DenonMC6000MK2.recvPlayButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -533,7 +684,7 @@
 				<group>[Channel1]</group>
 				<midino>0x0C</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onBendPlusButton</key>
+				<key>DenonMC6000MK2.recvBendPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -542,7 +693,7 @@
 				<group>[Channel1]</group>
 				<midino>0x0C</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onBendPlusButton</key>
+				<key>DenonMC6000MK2.recvBendPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -551,7 +702,7 @@
 				<group>[Channel1]</group>
 				<midino>0x0D</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onBendMinusButton</key>
+				<key>DenonMC6000MK2.recvBendMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -560,7 +711,7 @@
 				<group>[Channel1]</group>
 				<midino>0x0D</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onBendMinusButton</key>
+				<key>DenonMC6000MK2.recvBendMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -586,7 +737,7 @@
 				<group>[Channel1]</group>
 				<midino>0x56</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onJogTouch</key>
+				<key>DenonMC6000MK2.recvJogTouch</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -595,7 +746,7 @@
 				<group>[Channel1]</group>
 				<midino>0x56</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onJogTouch</key>
+				<key>DenonMC6000MK2.recvJogTouch</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -604,7 +755,7 @@
 				<group>[Channel1]</group>
 				<midino>0x51</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onJogTouchVinyl</key>
+				<key>DenonMC6000MK2.recvJogTouchVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -613,7 +764,7 @@
 				<group>[Channel1]</group>
 				<midino>0x51</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onJogTouchVinyl</key>
+				<key>DenonMC6000MK2.recvJogTouchVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -622,7 +773,7 @@
 				<group>[Channel1]</group>
 				<midino>0x52</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onJogSpin</key>
+				<key>DenonMC6000MK2.recvJogSpin</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -631,7 +782,7 @@
 				<group>[Channel1]</group>
 				<midino>0x51</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onJogSpinVinyl</key>
+				<key>DenonMC6000MK2.recvJogSpinVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -640,7 +791,7 @@
 				<group>[Channel1]</group>
 				<midino>0x17</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<key>DenonMC6000MK2.recvHotcue1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -649,7 +800,7 @@
 				<group>[Channel1]</group>
 				<midino>0x17</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<key>DenonMC6000MK2.recvHotcue1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -658,7 +809,7 @@
 				<group>[Channel1]</group>
 				<midino>0x18</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<key>DenonMC6000MK2.recvHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -667,7 +818,7 @@
 				<group>[Channel1]</group>
 				<midino>0x18</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<key>DenonMC6000MK2.recvHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -676,7 +827,7 @@
 				<group>[Channel1]</group>
 				<midino>0x19</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<key>DenonMC6000MK2.recvHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -685,7 +836,7 @@
 				<group>[Channel1]</group>
 				<midino>0x19</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<key>DenonMC6000MK2.recvHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -694,7 +845,7 @@
 				<group>[Channel1]</group>
 				<midino>0x20</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onHotcue4Button</key>
+				<key>DenonMC6000MK2.recvHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -703,7 +854,7 @@
 				<group>[Channel1]</group>
 				<midino>0x20</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onHotcue4Button</key>
+				<key>DenonMC6000MK2.recvHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -712,7 +863,7 @@
 				<group>[Channel1]</group>
 				<midino>0x1D</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onAutoLoopButton</key>
+				<key>DenonMC6000MK2.recvAutoLoopButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -721,7 +872,7 @@
 				<group>[Channel1]</group>
 				<midino>0x37</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onLoopInButton</key>
+				<key>DenonMC6000MK2.recvLoopInButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -730,7 +881,7 @@
 				<group>[Channel1]</group>
 				<midino>0x39</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onLoopOutButton</key>
+				<key>DenonMC6000MK2.recvLoopOutButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -739,7 +890,7 @@
 				<group>[Channel1]</group>
 				<midino>0x69</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onLoopCutMinusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -748,7 +899,7 @@
 				<group>[Channel1]</group>
 				<midino>0x69</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onLoopCutMinusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -757,7 +908,7 @@
 				<group>[Channel1]</group>
 				<midino>0x6A</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onLoopCutPlusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -766,7 +917,7 @@
 				<group>[Channel1]</group>
 				<midino>0x6A</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onLoopCutPlusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -775,7 +926,7 @@
 				<group>[Channel1]</group>
 				<midino>0x62</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onLoadButton</key>
+				<key>DenonMC6000MK2.recvLoadButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -784,7 +935,7 @@
 				<group>[Channel1]</group>
 				<midino>0x60</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onShiftButton</key>
+				<key>DenonMC6000MK2.recvShiftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -793,7 +944,7 @@
 				<group>[Channel1]</group>
 				<midino>0x60</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onShiftButton</key>
+				<key>DenonMC6000MK2.recvShiftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -802,7 +953,7 @@
 				<group>[Channel1]</group>
 				<midino>0x50</midino>
 				<status>0x80</status>
-				<key>DenonMC6000MK2.onCensorButton</key>
+				<key>DenonMC6000MK2.recvCensorButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -811,7 +962,7 @@
 				<group>[Channel1]</group>
 				<midino>0x50</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onCensorButton</key>
+				<key>DenonMC6000MK2.recvCensorButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -822,7 +973,7 @@
 				<group>[Channel2]</group>
 				<midino>0x02</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onCueMixButton</key>
+				<key>DenonMC6000MK2.recvCueMixButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -834,22 +985,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel2]</group>
-				<midino>0x08</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel2]</group>
-				<midino>0x09</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel2]</group>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
 				<midino>0x0A</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<midino>0x09</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<midino>0x08</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel2]</group>
@@ -858,22 +1009,28 @@
 				<key>volume</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit1]</group>
+				<group>[Channel2]</group>
 				<midino>0x59</midino>
 				<status>0x90</status>
-				<key>group_[Channel2]_enable</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4]</group>
+				<group>[Channel2]</group>
 				<midino>0x5D</midino>
 				<status>0x90</status>
-				<key>group_[Channel2]_enable</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x34</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignLeftButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignLeftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -882,7 +1039,7 @@
 				<group>[Channel2]</group>
 				<midino>0x35</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignThruButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignThruButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -891,7 +1048,7 @@
 				<group>[Channel2]</group>
 				<midino>0x36</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignRightButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignRightButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -900,9 +1057,18 @@
 			<!-- [Channel2] - MIDI Ch2 Controls -->
 			<control>
 				<group>[Channel2]</group>
+				<midino>0x08</midino>
+				<status>0x92</status>
+				<key>DenonMC6000MK2.rightSide.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
 				<midino>0x04</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onVinylButton</key>
+				<key>DenonMC6000MK2.recvVinylButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -911,7 +1077,7 @@
 				<group>[Channel2]</group>
 				<midino>0x06</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onKeyLockButton</key>
+				<key>DenonMC6000MK2.recvKeyLockButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -920,7 +1086,7 @@
 				<group>[Channel2]</group>
 				<midino>0x42</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onCueButton</key>
+				<key>DenonMC6000MK2.recvCueButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -929,7 +1095,7 @@
 				<group>[Channel2]</group>
 				<midino>0x42</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onCueButton</key>
+				<key>DenonMC6000MK2.recvCueButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -938,7 +1104,7 @@
 				<group>[Channel2]</group>
 				<midino>0x43</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onPlayButton</key>
+				<key>DenonMC6000MK2.recvPlayButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -947,7 +1113,7 @@
 				<group>[Channel2]</group>
 				<midino>0x0C</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onBendPlusButton</key>
+				<key>DenonMC6000MK2.recvBendPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -956,7 +1122,7 @@
 				<group>[Channel2]</group>
 				<midino>0x0C</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onBendPlusButton</key>
+				<key>DenonMC6000MK2.recvBendPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -965,7 +1131,7 @@
 				<group>[Channel2]</group>
 				<midino>0x0D</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onBendMinusButton</key>
+				<key>DenonMC6000MK2.recvBendMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -974,7 +1140,7 @@
 				<group>[Channel2]</group>
 				<midino>0x0D</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onBendMinusButton</key>
+				<key>DenonMC6000MK2.recvBendMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1000,7 +1166,7 @@
 				<group>[Channel2]</group>
 				<midino>0x56</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onJogTouch</key>
+				<key>DenonMC6000MK2.recvJogTouch</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1009,7 +1175,7 @@
 				<group>[Channel2]</group>
 				<midino>0x56</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onJogTouch</key>
+				<key>DenonMC6000MK2.recvJogTouch</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1018,7 +1184,7 @@
 				<group>[Channel2]</group>
 				<midino>0x51</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onJogTouchVinyl</key>
+				<key>DenonMC6000MK2.recvJogTouchVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1027,7 +1193,7 @@
 				<group>[Channel2]</group>
 				<midino>0x51</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onJogTouchVinyl</key>
+				<key>DenonMC6000MK2.recvJogTouchVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1036,7 +1202,7 @@
 				<group>[Channel2]</group>
 				<midino>0x52</midino>
 				<status>0xB2</status>
-				<key>DenonMC6000MK2.onJogSpin</key>
+				<key>DenonMC6000MK2.recvJogSpin</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1045,7 +1211,7 @@
 				<group>[Channel2]</group>
 				<midino>0x51</midino>
 				<status>0xB2</status>
-				<key>DenonMC6000MK2.onJogSpinVinyl</key>
+				<key>DenonMC6000MK2.recvJogSpinVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1054,7 +1220,7 @@
 				<group>[Channel2]</group>
 				<midino>0x17</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<key>DenonMC6000MK2.recvHotcue1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1063,7 +1229,7 @@
 				<group>[Channel2]</group>
 				<midino>0x17</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<key>DenonMC6000MK2.recvHotcue1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1072,7 +1238,7 @@
 				<group>[Channel2]</group>
 				<midino>0x18</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<key>DenonMC6000MK2.recvHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1081,7 +1247,7 @@
 				<group>[Channel2]</group>
 				<midino>0x18</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<key>DenonMC6000MK2.recvHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1090,7 +1256,7 @@
 				<group>[Channel2]</group>
 				<midino>0x19</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<key>DenonMC6000MK2.recvHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1099,7 +1265,7 @@
 				<group>[Channel2]</group>
 				<midino>0x19</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<key>DenonMC6000MK2.recvHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1108,7 +1274,7 @@
 				<group>[Channel2]</group>
 				<midino>0x20</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onHotcue4Button</key>
+				<key>DenonMC6000MK2.recvHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1117,7 +1283,7 @@
 				<group>[Channel2]</group>
 				<midino>0x20</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onHotcue4Button</key>
+				<key>DenonMC6000MK2.recvHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1126,7 +1292,7 @@
 				<group>[Channel2]</group>
 				<midino>0x1D</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onAutoLoopButton</key>
+				<key>DenonMC6000MK2.recvAutoLoopButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1135,7 +1301,7 @@
 				<group>[Channel2]</group>
 				<midino>0x37</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onLoopInButton</key>
+				<key>DenonMC6000MK2.recvLoopInButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1144,7 +1310,7 @@
 				<group>[Channel2]</group>
 				<midino>0x39</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onLoopOutButton</key>
+				<key>DenonMC6000MK2.recvLoopOutButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1153,7 +1319,7 @@
 				<group>[Channel2]</group>
 				<midino>0x69</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onLoopCutMinusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1162,7 +1328,7 @@
 				<group>[Channel2]</group>
 				<midino>0x69</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onLoopCutMinusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1171,7 +1337,7 @@
 				<group>[Channel2]</group>
 				<midino>0x6A</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onLoopCutPlusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1180,7 +1346,7 @@
 				<group>[Channel2]</group>
 				<midino>0x6A</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onLoopCutPlusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1189,7 +1355,7 @@
 				<group>[Channel2]</group>
 				<midino>0x63</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onLoadButton</key>
+				<key>DenonMC6000MK2.recvLoadButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1198,7 +1364,7 @@
 				<group>[Channel2]</group>
 				<midino>0x61</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onShiftButton</key>
+				<key>DenonMC6000MK2.recvShiftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1207,7 +1373,7 @@
 				<group>[Channel2]</group>
 				<midino>0x61</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onShiftButton</key>
+				<key>DenonMC6000MK2.recvShiftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1216,7 +1382,7 @@
 				<group>[Channel2]</group>
 				<midino>0x50</midino>
 				<status>0x82</status>
-				<key>DenonMC6000MK2.onCensorButton</key>
+				<key>DenonMC6000MK2.recvCensorButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1225,7 +1391,7 @@
 				<group>[Channel2]</group>
 				<midino>0x50</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onCensorButton</key>
+				<key>DenonMC6000MK2.recvCensorButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1236,7 +1402,7 @@
 				<group>[Channel3]</group>
 				<midino>0x05</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onCueMixButton</key>
+				<key>DenonMC6000MK2.recvCueMixButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1248,22 +1414,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel3]</group>
-				<midino>0x0D</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel3]</group>
-				<midino>0x0E</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel3]</group>
+				<group>[EqualizerRack1_[Channel3]_Effect1]</group>
 				<midino>0x0F</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel3]_Effect1]</group>
+				<midino>0x0E</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel3]_Effect1]</group>
+				<midino>0x0D</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel3]</group>
@@ -1272,22 +1438,28 @@
 				<key>volume</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit1]</group>
+				<group>[Channel3]</group>
 				<midino>0x5A</midino>
 				<status>0x90</status>
-				<key>group_[Channel3]_enable</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4]</group>
+				<group>[Channel3]</group>
 				<midino>0x5E</midino>
 				<status>0x90</status>
-				<key>group_[Channel3]_enable</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x3A</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignLeftButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignLeftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1296,7 +1468,7 @@
 				<group>[Channel3]</group>
 				<midino>0x3B</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignThruButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignThruButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1305,7 +1477,7 @@
 				<group>[Channel3]</group>
 				<midino>0x3C</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignRightButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignRightButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1314,9 +1486,18 @@
 			<!-- [Channel3] - MIDI Ch1 Controls -->
 			<control>
 				<group>[Channel3]</group>
+				<midino>0x09</midino>
+				<status>0x91</status>
+				<key>DenonMC6000MK2.leftSide.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel3]</group>
 				<midino>0x04</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onVinylButton</key>
+				<key>DenonMC6000MK2.recvVinylButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1325,7 +1506,7 @@
 				<group>[Channel3]</group>
 				<midino>0x06</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onKeyLockButton</key>
+				<key>DenonMC6000MK2.recvKeyLockButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1334,7 +1515,7 @@
 				<group>[Channel3]</group>
 				<midino>0x42</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onCueButton</key>
+				<key>DenonMC6000MK2.recvCueButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1343,7 +1524,7 @@
 				<group>[Channel3]</group>
 				<midino>0x42</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onCueButton</key>
+				<key>DenonMC6000MK2.recvCueButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1352,7 +1533,7 @@
 				<group>[Channel3]</group>
 				<midino>0x43</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onPlayButton</key>
+				<key>DenonMC6000MK2.recvPlayButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1361,7 +1542,7 @@
 				<group>[Channel3]</group>
 				<midino>0x0C</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onBendPlusButton</key>
+				<key>DenonMC6000MK2.recvBendPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1370,7 +1551,7 @@
 				<group>[Channel3]</group>
 				<midino>0x0C</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onBendPlusButton</key>
+				<key>DenonMC6000MK2.recvBendPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1379,7 +1560,7 @@
 				<group>[Channel3]</group>
 				<midino>0x0D</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onBendMinusButton</key>
+				<key>DenonMC6000MK2.recvBendMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1388,7 +1569,7 @@
 				<group>[Channel3]</group>
 				<midino>0x0D</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onBendMinusButton</key>
+				<key>DenonMC6000MK2.recvBendMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1414,7 +1595,7 @@
 				<group>[Channel3]</group>
 				<midino>0x56</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onJogTouch</key>
+				<key>DenonMC6000MK2.recvJogTouch</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1423,7 +1604,7 @@
 				<group>[Channel3]</group>
 				<midino>0x56</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onJogTouch</key>
+				<key>DenonMC6000MK2.recvJogTouch</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1432,7 +1613,7 @@
 				<group>[Channel3]</group>
 				<midino>0x51</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onJogTouchVinyl</key>
+				<key>DenonMC6000MK2.recvJogTouchVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1441,7 +1622,7 @@
 				<group>[Channel3]</group>
 				<midino>0x51</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onJogTouchVinyl</key>
+				<key>DenonMC6000MK2.recvJogTouchVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1450,7 +1631,7 @@
 				<group>[Channel3]</group>
 				<midino>0x52</midino>
 				<status>0xB1</status>
-				<key>DenonMC6000MK2.onJogSpin</key>
+				<key>DenonMC6000MK2.recvJogSpin</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1459,7 +1640,7 @@
 				<group>[Channel3]</group>
 				<midino>0x51</midino>
 				<status>0xB1</status>
-				<key>DenonMC6000MK2.onJogSpinVinyl</key>
+				<key>DenonMC6000MK2.recvJogSpinVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1468,7 +1649,7 @@
 				<group>[Channel3]</group>
 				<midino>0x17</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<key>DenonMC6000MK2.recvHotcue1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1477,7 +1658,7 @@
 				<group>[Channel3]</group>
 				<midino>0x17</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<key>DenonMC6000MK2.recvHotcue1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1486,7 +1667,7 @@
 				<group>[Channel3]</group>
 				<midino>0x18</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<key>DenonMC6000MK2.recvHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1495,7 +1676,7 @@
 				<group>[Channel3]</group>
 				<midino>0x18</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<key>DenonMC6000MK2.recvHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1504,7 +1685,7 @@
 				<group>[Channel3]</group>
 				<midino>0x19</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<key>DenonMC6000MK2.recvHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1513,7 +1694,7 @@
 				<group>[Channel3]</group>
 				<midino>0x19</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<key>DenonMC6000MK2.recvHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1522,7 +1703,7 @@
 				<group>[Channel3]</group>
 				<midino>0x20</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onHotcue4Button</key>
+				<key>DenonMC6000MK2.recvHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1531,7 +1712,7 @@
 				<group>[Channel3]</group>
 				<midino>0x20</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onHotcue4Button</key>
+				<key>DenonMC6000MK2.recvHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1540,7 +1721,7 @@
 				<group>[Channel3]</group>
 				<midino>0x1D</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onAutoLoopButton</key>
+				<key>DenonMC6000MK2.recvAutoLoopButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1549,7 +1730,7 @@
 				<group>[Channel3]</group>
 				<midino>0x37</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onLoopInButton</key>
+				<key>DenonMC6000MK2.recvLoopInButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1558,7 +1739,7 @@
 				<group>[Channel3]</group>
 				<midino>0x39</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onLoopOutButton</key>
+				<key>DenonMC6000MK2.recvLoopOutButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1567,7 +1748,7 @@
 				<group>[Channel3]</group>
 				<midino>0x69</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onLoopCutMinusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1576,7 +1757,7 @@
 				<group>[Channel3]</group>
 				<midino>0x69</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onLoopCutMinusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1585,7 +1766,7 @@
 				<group>[Channel3]</group>
 				<midino>0x6A</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onLoopCutPlusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1594,7 +1775,7 @@
 				<group>[Channel3]</group>
 				<midino>0x6A</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onLoopCutPlusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1603,7 +1784,7 @@
 				<group>[Channel3]</group>
 				<midino>0x62</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onLoadButton</key>
+				<key>DenonMC6000MK2.recvLoadButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1612,7 +1793,7 @@
 				<group>[Channel3]</group>
 				<midino>0x60</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onShiftButton</key>
+				<key>DenonMC6000MK2.recvShiftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1621,7 +1802,7 @@
 				<group>[Channel3]</group>
 				<midino>0x60</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onShiftButton</key>
+				<key>DenonMC6000MK2.recvShiftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1630,7 +1811,7 @@
 				<group>[Channel3]</group>
 				<midino>0x50</midino>
 				<status>0x81</status>
-				<key>DenonMC6000MK2.onCensorButton</key>
+				<key>DenonMC6000MK2.recvCensorButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1639,7 +1820,7 @@
 				<group>[Channel3]</group>
 				<midino>0x50</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onCensorButton</key>
+				<key>DenonMC6000MK2.recvCensorButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1650,7 +1831,7 @@
 				<group>[Channel4]</group>
 				<midino>0x07</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onCueMixButton</key>
+				<key>DenonMC6000MK2.recvCueMixButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1662,22 +1843,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel4]</group>
-				<midino>0x12</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel4]</group>
-				<midino>0x13</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel4]</group>
+				<group>[EqualizerRack1_[Channel4]_Effect1]</group>
 				<midino>0x14</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel4]_Effect1]</group>
+				<midino>0x13</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel4]_Effect1]</group>
+				<midino>0x12</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel4]</group>
@@ -1686,22 +1867,28 @@
 				<key>volume</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit1]</group>
+				<group>[Channel4]</group>
 				<midino>0x5B</midino>
 				<status>0x90</status>
-				<key>group_[Channel4]_enable</key>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4]</group>
+				<group>[Channel4]</group>
 				<midino>0x5F</midino>
 				<status>0x90</status>
-				<key>group_[Channel4]_enable</key>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x3D</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignLeftButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignLeftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1710,7 +1897,7 @@
 				<group>[Channel4]</group>
 				<midino>0x3E</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignThruButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignThruButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1719,7 +1906,7 @@
 				<group>[Channel4]</group>
 				<midino>0x3F</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onXfaderAssignRightButton</key>
+				<key>DenonMC6000MK2.recvXfaderAssignRightButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1728,9 +1915,18 @@
 			<!-- [Channel4] - MIDI Ch3 Controls -->
 			<control>
 				<group>[Channel4]</group>
+				<midino>0x0A</midino>
+				<status>0x93</status>
+				<key>DenonMC6000MK2.rightSide.recvDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel4]</group>
 				<midino>0x04</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onVinylButton</key>
+				<key>DenonMC6000MK2.recvVinylButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1739,7 +1935,7 @@
 				<group>[Channel4]</group>
 				<midino>0x06</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onKeyLockButton</key>
+				<key>DenonMC6000MK2.recvKeyLockButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1748,7 +1944,7 @@
 				<group>[Channel4]</group>
 				<midino>0x42</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onCueButton</key>
+				<key>DenonMC6000MK2.recvCueButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1757,7 +1953,7 @@
 				<group>[Channel4]</group>
 				<midino>0x42</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onCueButton</key>
+				<key>DenonMC6000MK2.recvCueButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1766,7 +1962,7 @@
 				<group>[Channel4]</group>
 				<midino>0x43</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onPlayButton</key>
+				<key>DenonMC6000MK2.recvPlayButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1775,7 +1971,7 @@
 				<group>[Channel4]</group>
 				<midino>0x0C</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onBendPlusButton</key>
+				<key>DenonMC6000MK2.recvBendPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1784,7 +1980,7 @@
 				<group>[Channel4]</group>
 				<midino>0x0C</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onBendPlusButton</key>
+				<key>DenonMC6000MK2.recvBendPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1793,7 +1989,7 @@
 				<group>[Channel4]</group>
 				<midino>0x0D</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onBendMinusButton</key>
+				<key>DenonMC6000MK2.recvBendMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1802,7 +1998,7 @@
 				<group>[Channel4]</group>
 				<midino>0x0D</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onBendMinusButton</key>
+				<key>DenonMC6000MK2.recvBendMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1828,7 +2024,7 @@
 				<group>[Channel4]</group>
 				<midino>0x56</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onJogTouch</key>
+				<key>DenonMC6000MK2.recvJogTouch</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1837,7 +2033,7 @@
 				<group>[Channel4]</group>
 				<midino>0x56</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onJogTouch</key>
+				<key>DenonMC6000MK2.recvJogTouch</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1846,7 +2042,7 @@
 				<group>[Channel4]</group>
 				<midino>0x51</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onJogTouchVinyl</key>
+				<key>DenonMC6000MK2.recvJogTouchVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1855,7 +2051,7 @@
 				<group>[Channel4]</group>
 				<midino>0x51</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onJogTouchVinyl</key>
+				<key>DenonMC6000MK2.recvJogTouchVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1864,7 +2060,7 @@
 				<group>[Channel4]</group>
 				<midino>0x52</midino>
 				<status>0xB3</status>
-				<key>DenonMC6000MK2.onJogSpin</key>
+				<key>DenonMC6000MK2.recvJogSpin</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1873,7 +2069,7 @@
 				<group>[Channel4]</group>
 				<midino>0x51</midino>
 				<status>0xB3</status>
-				<key>DenonMC6000MK2.onJogSpinVinyl</key>
+				<key>DenonMC6000MK2.recvJogSpinVinyl</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1882,7 +2078,7 @@
 				<group>[Channel4]</group>
 				<midino>0x17</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<key>DenonMC6000MK2.recvHotcue1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1891,7 +2087,7 @@
 				<group>[Channel4]</group>
 				<midino>0x17</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<key>DenonMC6000MK2.recvHotcue1Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1900,7 +2096,7 @@
 				<group>[Channel4]</group>
 				<midino>0x18</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<key>DenonMC6000MK2.recvHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1909,7 +2105,7 @@
 				<group>[Channel4]</group>
 				<midino>0x18</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<key>DenonMC6000MK2.recvHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1918,7 +2114,7 @@
 				<group>[Channel4]</group>
 				<midino>0x19</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<key>DenonMC6000MK2.recvHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1927,7 +2123,7 @@
 				<group>[Channel4]</group>
 				<midino>0x19</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<key>DenonMC6000MK2.recvHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1936,7 +2132,7 @@
 				<group>[Channel4]</group>
 				<midino>0x20</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onHotcue4Button</key>
+				<key>DenonMC6000MK2.recvHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1945,7 +2141,7 @@
 				<group>[Channel4]</group>
 				<midino>0x20</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onHotcue4Button</key>
+				<key>DenonMC6000MK2.recvHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1954,7 +2150,7 @@
 				<group>[Channel4]</group>
 				<midino>0x1D</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onAutoLoopButton</key>
+				<key>DenonMC6000MK2.recvAutoLoopButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1963,7 +2159,7 @@
 				<group>[Channel4]</group>
 				<midino>0x37</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onLoopInButton</key>
+				<key>DenonMC6000MK2.recvLoopInButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1972,7 +2168,7 @@
 				<group>[Channel4]</group>
 				<midino>0x39</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onLoopOutButton</key>
+				<key>DenonMC6000MK2.recvLoopOutButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1981,7 +2177,7 @@
 				<group>[Channel4]</group>
 				<midino>0x69</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onLoopCutMinusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1990,7 +2186,7 @@
 				<group>[Channel4]</group>
 				<midino>0x69</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onLoopCutMinusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutMinusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1999,7 +2195,7 @@
 				<group>[Channel4]</group>
 				<midino>0x6A</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onLoopCutPlusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -2008,7 +2204,7 @@
 				<group>[Channel4]</group>
 				<midino>0x6A</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onLoopCutPlusButton</key>
+				<key>DenonMC6000MK2.recvLoopCutPlusButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -2017,7 +2213,7 @@
 				<group>[Channel4]</group>
 				<midino>0x63</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onLoadButton</key>
+				<key>DenonMC6000MK2.recvLoadButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -2026,7 +2222,7 @@
 				<group>[Channel4]</group>
 				<midino>0x61</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onShiftButton</key>
+				<key>DenonMC6000MK2.recvShiftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -2035,7 +2231,7 @@
 				<group>[Channel4]</group>
 				<midino>0x61</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onShiftButton</key>
+				<key>DenonMC6000MK2.recvShiftButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -2044,7 +2240,7 @@
 				<group>[Channel4]</group>
 				<midino>0x50</midino>
 				<status>0x83</status>
-				<key>DenonMC6000MK2.onCensorButton</key>
+				<key>DenonMC6000MK2.recvCensorButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -2053,7 +2249,7 @@
 				<group>[Channel4]</group>
 				<midino>0x50</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onCensorButton</key>
+				<key>DenonMC6000MK2.recvCensorButton</key>
 				<options>
 					<script-binding/>
 				</options>

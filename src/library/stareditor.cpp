@@ -24,8 +24,10 @@
  * see http://doc.trolltech.com/4.5/itemviews-stardelegate.html            *
  ***************************************************************************/
 
-#include "stareditor.h"
-#include "starrating.h"
+#include <QStylePainter>
+
+#include "library/stareditor.h"
+#include "library/starrating.h"
 
 /*
  * We enable mouse tracking on the widget so we can follow the cursor even
@@ -33,68 +35,97 @@
  * QWidget's auto-fill background feature to obtain an opaque background.
  * (Without the call, the view's background would shine through the editor.)
  */
-StarEditor::StarEditor(QWidget *parent, const QStyleOptionViewItem &option)
-        : QWidget(parent)
-{
-    setPalette(option.palette);
+StarEditor::StarEditor(QWidget *parent, QTableView* pTableView,
+                       const QModelIndex& index,
+                       const QStyleOptionViewItemV4& option)
+        : QWidget(parent),
+          m_pTableView(pTableView),
+          m_index(index),
+          m_styleOption(option) {
     setMouseTracking(true);
-    setAutoFillBackground(true);
-    m_isSelected = option.state & QStyle::State_Selected;
 }
 
-QSize StarEditor::sizeHint() const
- {
+QSize StarEditor::sizeHint() const {
     return m_starRating.sizeHint();
- }
-/*
- * We simply call StarRating::paint() to draw the stars,
- * just like we did when implementing StarDelegate
- */
-void StarEditor::paintEvent(QPaintEvent *)
- {
+}
+
+// static
+void StarEditor::renderHelper(QPainter* painter,
+                              QTableView* pTableView,
+                              const QStyleOptionViewItemV4& option,
+                              StarRating* pStarRating) {
+    painter->save();
+    painter->setClipRect(option.rect);
+
+    if (pTableView != NULL) {
+        QStyle* style = pTableView->style();
+        if (style != NULL) {
+            style->drawControl(QStyle::CE_ItemViewItem, &option, painter,
+                               pTableView);
+        }
+    }
+
+    // Set the palette appropriately based on whether the row is selected or
+    // not. We also have to check if it is inactive or not and use the
+    // appropriate ColorGroup.
+    QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
+            ? QPalette::Normal : QPalette::Disabled;
+    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
+        cg = QPalette::Inactive;
+
+    if (option.state & QStyle::State_Selected) {
+        painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
+    } else {
+        painter->setBrush(option.palette.color(cg, QPalette::Text));
+    }
+
+    pStarRating->paint(painter, option.rect);
+    painter->restore();
+}
+
+void StarEditor::paintEvent(QPaintEvent*) {
+    // If a StarEditor is open, by definition the mouse is hovering over us.
+    m_styleOption.state |= QStyle::State_MouseOver;
+    m_styleOption.rect = rect();
+
+    if (m_pTableView) {
+        QItemSelectionModel* selectionModel = m_pTableView->selectionModel();
+        if (selectionModel && selectionModel->isSelected(m_index)) {
+            m_styleOption.state |= QStyle::State_Selected;
+        }
+    }
+
     QPainter painter(this);
-    m_starRating.paint(&painter, rect(), palette(), StarRating::Editable,
-                       m_isSelected);
- }
-/*
- * In the mouse event handler, we call setStarCount() on
- * the private data member m_starRating to reflect the current cursor position,
- * and we call QWidget::update() to force a repaint.
- */
- void StarEditor::mouseMoveEvent(QMouseEvent *event)
- {
+    renderHelper(&painter, m_pTableView, m_styleOption, &m_starRating);
+}
+
+void StarEditor::mouseMoveEvent(QMouseEvent *event) {
     int star = starAtPosition(event->x());
 
     if (star != m_starRating.starCount() && star != -1) {
-       m_starRating.setStarCount(star);
-       update();
+        m_starRating.setStarCount(star);
+        update();
     }
- }
+}
 
- void StarEditor::leaveEvent(QEvent *){
-     m_starRating.setStarCount(0);
-     update();
- }
-/*
- * When the user releases a mouse button, we simply emit the editingFinished() signal.
- */
- void StarEditor::mouseReleaseEvent(QMouseEvent * /* event */)
- {
+void StarEditor::leaveEvent(QEvent*) {
+    m_starRating.setStarCount(0);
+    update();
+}
+
+void StarEditor::mouseReleaseEvent(QMouseEvent* /* event */) {
     emit editingFinished();
- }
-/*
- * The method uses basic linear algebra to find out which star is under the cursor.
- */
- int StarEditor::starAtPosition(int x)
- {
-     // If the mouse is very close to the left edge, set 0 stars.
-     if (x < m_starRating.sizeHint().width() * 0.05) {
-         return 0;
-     }
-     int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
+}
 
-     if (star <= 0 || star > m_starRating.maxStarCount())
-         return 0;
+int StarEditor::starAtPosition(int x) {
+    // If the mouse is very close to the left edge, set 0 stars.
+    if (x < m_starRating.sizeHint().width() * 0.05) {
+        return 0;
+    }
+    int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
 
-     return star;
- }
+    if (star <= 0 || star > m_starRating.maxStarCount()) {
+        return 0;
+    }
+    return star;
+}

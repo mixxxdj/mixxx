@@ -1,0 +1,51 @@
+<Template>
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <MinimumSize>0,0</MinimumSize>
+        <Children>
+          <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Children>
+                  <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <Children>
+                          <Template src="skin:microphone_rack.xml"/>
+                      </Children>
+                      <Connection>
+                          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                      </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <Children>
+                          <Template src="skin:sampler_decks.xml"/>
+                      </Children>
+                      <Connection>
+                          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                      </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <Children>
+                          <Template src="skin:effect_rack.xml"/>
+                      </Children>
+                      <Connection>
+                          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                      </Connection>
+                  </WidgetGroup>
+              </Children>
+              <Connection>
+                  <ConfigKey>[Master],maximize_library</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform>
+                    <Not/>
+                  </Transform>
+              </Connection>
+          </WidgetGroup>
+        </Children>
+    </WidgetGroup>
+</Template>

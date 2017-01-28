@@ -1,19 +1,20 @@
 #ifndef CLOCKCONTROL_H
 #define CLOCKCONTROL_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
 
-class ControlObjectSlave;
+class ControlProxy;
+class ControlObject;
 
 class ClockControl: public EngineControl {
     Q_OBJECT
   public:
-    ClockControl(const char* pGroup,
-                 ConfigObject<ConfigValue>* pConfig);
+    ClockControl(QString group,
+                 UserSettingsPointer pConfig);
 
     virtual ~ClockControl();
 
@@ -21,13 +22,12 @@ class ClockControl: public EngineControl {
                    const double totalSamples, const int iBufferSize);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
     void slotBeatsUpdated();
 
   private:
     ControlObject* m_pCOBeatActive;
-    ControlObjectSlave* m_pCOSampleRate;
+    ControlProxy* m_pCOSampleRate;
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
 };

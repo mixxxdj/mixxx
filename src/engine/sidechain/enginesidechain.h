@@ -22,15 +22,16 @@
 #include <QWaitCondition>
 #include <QList>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "util/fifo.h"
+#include "util/mutex.h"
 #include "util/types.h"
 
 class EngineSideChain : public QThread {
     Q_OBJECT
   public:
-    EngineSideChain(ConfigObject<ConfigValue>* pConfig);
+    EngineSideChain(UserSettingsPointer pConfig);
     virtual ~EngineSideChain();
 
     // Not thread-safe, wait-free. Submit buffer of samples to the sidechain for
@@ -44,7 +45,7 @@ class EngineSideChain : public QThread {
   private:
     void run();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     // Indicates that the thread should exit.
     volatile bool m_bStopThread;
 
@@ -57,8 +58,8 @@ class EngineSideChain : public QThread {
     QWaitCondition m_waitForSamples;
 
     // Sidechain workers registered with EngineSideChain.
-    QMutex m_workerLock;
-    QList<SideChainWorker*> m_workers;
+    MMutex m_workerLock;
+    QList<SideChainWorker*> m_workers GUARDED_BY(m_workerLock);
 };
 
 #endif

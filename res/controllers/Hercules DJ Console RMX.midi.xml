@@ -83,6 +83,26 @@
             </control>
 
 
+<!-- Source Select -->
+            <control>
+                <group>[Channel1]</group>
+                <key>HerculesRMX.sourceSelect</key>
+                <status>0xB0</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>HerculesRMX.sourceSelect</key>
+                <status>0xB0</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
 <!-- Load Deck A/B -->
             <control>
                 <group>[Channel1]</group>

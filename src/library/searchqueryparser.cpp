@@ -2,6 +2,9 @@
 
 #include "track/keyutils.h"
 
+const char* kNegatePrefix = "-";
+const char* kFuzzyPrefix = "~";
+
 SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
         : m_database(database) {
     m_textFilters << "artist"
@@ -20,7 +23,11 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "rating"
                      << "bitrate";
     m_specialFilters << "key"
-                     << "duration";
+                     << "duration"
+	             << "added"
+	             << "dateadded"
+		     << "datetime_added"
+	             << "date_added";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -40,15 +47,16 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_fieldToSqlColumns["played"] << "timesplayed";
     m_fieldToSqlColumns["rating"] << "rating";
     m_fieldToSqlColumns["location"] << "location";
+    m_fieldToSqlColumns["datetime_added"] << "datetime_added";
 
     m_allFilters.append(m_textFilters);
     m_allFilters.append(m_numericFilters);
     m_allFilters.append(m_specialFilters);
 
     m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
-    m_textFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_textFilters.join("|")));
-    m_numericFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_numericFilters.join("|")));
-    m_specialFilterMatcher = QRegExp(QString("^~?(%1):(.*)$").arg(m_specialFilters.join("|")));
+    m_textFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
+    m_numericFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
+    m_specialFilterMatcher = QRegExp(QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
 }
 
 SearchQueryParser::~SearchQueryParser() {
@@ -109,56 +117,100 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         if (m_fuzzyMatcher.indexIn(token) != -1) {
             // TODO(XXX): implement this feature.
         } else if (m_textFilterMatcher.indexIn(token) != -1) {
+            bool negate = token.startsWith(kNegatePrefix);
             QString field = m_textFilterMatcher.cap(1);
             QString argument = getTextArgument(
                 m_textFilterMatcher.cap(2), &tokens).trimmed();
-            pQuery->addNode(new TextFilterNode(
-                m_database, m_fieldToSqlColumns[field], argument));
+
+            if (!argument.isEmpty()) {
+                std::unique_ptr<QueryNode> pNode(std::make_unique<TextFilterNode>(
+                    m_database, m_fieldToSqlColumns[field], argument));
+                if (negate) {
+                    pNode = std::make_unique<NotNode>(std::move(pNode));
+                }
+                pQuery->addNode(std::move(pNode));
+            }
         } else if (m_numericFilterMatcher.indexIn(token) != -1) {
+            bool negate = token.startsWith(kNegatePrefix);
             QString field = m_numericFilterMatcher.cap(1);
             QString argument = getTextArgument(
                 m_numericFilterMatcher.cap(2), &tokens).trimmed();
-            pQuery->addNode(new NumericFilterNode(
-                m_fieldToSqlColumns[field], argument));
+
+            if (!argument.isEmpty()) {
+                std::unique_ptr<QueryNode> pNode(
+                        std::make_unique<NumericFilterNode>(
+                                m_fieldToSqlColumns[field], argument));
+                if (negate) {
+                    pNode = std::make_unique<NotNode>(std::move(pNode));
+                }
+                pQuery->addNode(std::move(pNode));
+            }
         } else if (m_specialFilterMatcher.indexIn(token) != -1) {
+            bool negate = token.startsWith(kNegatePrefix);
+            bool fuzzy = token.startsWith(kFuzzyPrefix);
             QString field = m_specialFilterMatcher.cap(1);
             QString argument = getTextArgument(
                 m_specialFilterMatcher.cap(2), &tokens).trimmed();
-            if (field == "key") {
-                mixxx::track::io::key::ChromaticKey key =
-                        KeyUtils::guessKeyFromText(argument);
-                bool fuzzy = token.startsWith("~");
-                if (key == mixxx::track::io::key::INVALID) {
-                    pQuery->addNode(new TextFilterNode(
-                        m_database, m_fieldToSqlColumns[field], argument));
-                } else {
-                    pQuery->addNode(new KeyFilterNode(key, fuzzy));
+            std::unique_ptr<QueryNode> pNode;
+            if (!argument.isEmpty()) {
+                if (field == "key") {
+                    mixxx::track::io::key::ChromaticKey key =
+                            KeyUtils::guessKeyFromText(argument);
+                    if (key == mixxx::track::io::key::INVALID) {
+                        pNode = std::make_unique<TextFilterNode>(
+                                m_database, m_fieldToSqlColumns[field], argument);
+                    } else {
+                        pNode = std::make_unique<KeyFilterNode>(key, fuzzy);
+                    }
+                } else if (field == "duration") {
+                    pNode = std::make_unique<DurationFilterNode>(
+                            m_fieldToSqlColumns[field], argument);
+                } else if (field == "date_added" || field == "datetime_added" || field == "added" || field == "dateadded") {
+		    field = "datetime_added";
+		    pNode = std::make_unique<TextFilterNode>(
+			m_database, m_fieldToSqlColumns[field], argument);
+		}
+            }
+            if (pNode) {
+                if (negate) {
+                    pNode = std::make_unique<NotNode>(std::move(pNode));
                 }
-            } else if (field == "duration") {
-                pQuery->addNode(new DurationFilterNode(
-                    m_fieldToSqlColumns[field], argument));
+                pQuery->addNode(std::move(pNode));
             }
         } else {
-        // If no advanced search feature matched, treat it as a search term.
-            pQuery->addNode(new TextFilterNode(
-                m_database, searchColumns, token));
+            // If no advanced search feature matched, treat it as a search term.
+            bool negate = token.startsWith(kNegatePrefix);
+            if (negate) {
+                token = token.mid(1);
+            }
+
+            // Don't trigger on a lone minus sign.
+            if (!token.isEmpty()) {
+                std::unique_ptr<QueryNode> pNode(
+                        std::make_unique<TextFilterNode>(
+                                m_database, searchColumns, token));
+                if (negate) {
+                    pNode = std::make_unique<NotNode>(std::move(pNode));
+                }
+                pQuery->addNode(std::move(pNode));
+            }
         }
     }
 }
 
-QueryNode* SearchQueryParser::parseQuery(const QString& query,
+std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
                                          const QStringList& searchColumns,
                                          const QString& extraFilter) const {
-    AndNode* pQuery = new AndNode();
+    auto pQuery(std::make_unique<AndNode>());
 
     if (!extraFilter.isEmpty()) {
-        pQuery->addNode(new SqlNode(extraFilter));
+        pQuery->addNode(std::make_unique<SqlNode>(extraFilter));
     }
 
     if (!query.isEmpty()) {
         QStringList tokens = query.split(" ");
-        parseTokens(tokens, searchColumns, pQuery);
+        parseTokens(tokens, searchColumns, pQuery.get());
     }
 
-    return pQuery;
+    return std::move(pQuery);
 }

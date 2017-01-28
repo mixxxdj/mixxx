@@ -5,14 +5,14 @@
 #include "widget/wimagestore.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 #include "skin/imgsource.h"
 #include "skin/imgloader.h"
 #include "skin/imgcolor.h"
 #include "skin/imginvert.h"
 
 void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
-                                                ConfigObject<ConfigValue>* pConfig) {
+                                                UserSettingsPointer pConfig) {
     QDomNode colsch = docElem.namedItem("Schemes");
 
     if (!colsch.isNull() && colsch.isElement()) {
@@ -106,7 +106,7 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
             ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
                                   sfact, sconst, vfact, vconst);
         } else {
-            qDebug() << "Unkown image filter:" << name;
+            qDebug() << "Unknown image filter:" << name;
         }
         f = f.nextSibling();
     }

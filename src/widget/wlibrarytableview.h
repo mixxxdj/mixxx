@@ -6,10 +6,12 @@
 
 #include <QString>
 #include <QTableView>
+#include <QFont>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/libraryview.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
+#include "library/coverartcache.h"
 
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
@@ -17,24 +19,30 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   public:
     WLibraryTableView(QWidget* parent,
-                      ConfigObject<ConfigValue>* pConfig,
+                      UserSettingsPointer pConfig,
                       ConfigKey vScrollBarPosKey);
-    virtual ~WLibraryTableView();
-    virtual void moveSelection(int delta);
+    ~WLibraryTableView() override;
+    void moveSelection(int delta) override;
 
   signals:
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group,
+            bool play = false);
+    void trackSelected(TrackPointer pTrack);
+    void onlyCachedCoverArt(bool);
+    void scrollValueChanged(int);
 
   public slots:
     void saveVScrollBarPos();
     void restoreVScrollBarPos();
+    void setTrackTableFont(const QFont& font);
+    void setTrackTableRowHeight(int rowHeight);
 
   private:
     void loadVScrollBarPosState();
     void saveVScrollBarPosState();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     ConfigKey m_vScrollBarPosKey;
     // The position of the vertical scrollbar slider, eg. before a search is
     // executed

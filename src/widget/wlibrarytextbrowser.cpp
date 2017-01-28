@@ -7,5 +7,6 @@ WLibraryTextBrowser::WLibraryTextBrowser(QWidget* parent)
         : QTextBrowser(parent) {
 }
 
-WLibraryTextBrowser::~WLibraryTextBrowser() {
+bool WLibraryTextBrowser::hasFocus() const {
+    return QWidget::hasFocus();
 }

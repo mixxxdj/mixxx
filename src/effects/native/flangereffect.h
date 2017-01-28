@@ -3,13 +3,13 @@
 
 #include <QMap>
 
-#include "util.h"
-#include "util/defs.h"
-#include "util/types.h"
+#include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "effects/effectprocessor.h"
-#include "sampleutil.h"
+#include "util/class.h"
+#include "util/defs.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 struct FlangerGroupState {
     FlangerGroupState()
@@ -24,7 +24,7 @@ struct FlangerGroupState {
     unsigned int time;
 };
 
-class FlangerEffect : public GroupEffectProcessor<FlangerGroupState> {
+class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {
   public:
     FlangerEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~FlangerEffect();
@@ -33,12 +33,13 @@ class FlangerEffect : public GroupEffectProcessor<FlangerGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      FlangerGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const GroupFeatureState& groupFeatures);
+    void processChannel(const ChannelHandle& handle,
+                        FlangerGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

@@ -7,28 +7,34 @@
 #include <QHideEvent>
 #include <QEvent>
 
-#include "widget/wwidget.h"
-#include "vinylcontrol/vinylsignalquality.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
+#include "track/track.h"
+#include "vinylcontrol/vinylsignalquality.h"
 #include "widget/wbasewidget.h"
+#include "widget/wwidget.h"
 
-class ControlObjectThread;
+class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
 
 class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener {
     Q_OBJECT
   public:
-    WSpinny(QWidget* parent, VinylControlManager* pVCMan);
-    virtual ~WSpinny();
+    WSpinny(QWidget* parent, const QString& group,
+            UserSettingsPointer pConfig,
+            VinylControlManager* pVCMan);
+    ~WSpinny() override;
 
-    void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report);
+    void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) override;
 
-    void setup(QDomNode node, const SkinContext& context, QString group);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
+    void setup(const QDomNode& node, const SkinContext& context);
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
 
   public slots:
+    void slotLoadTrack(TrackPointer);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void updateVinylControlSpeed(double rpm);
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
@@ -36,40 +42,57 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
   protected slots:
     void maybeUpdate();
+    void slotCoverFound(const QObject* pRequestor,
+                        const CoverInfo& info, QPixmap pixmap, bool fromCache);
+    void slotTrackCoverArtUpdated();
+
 
   signals:
     void trackDropped(QString filename, QString group);
 
   protected:
     //QWidget:
-    void paintEvent(QPaintEvent*);
-    void mouseMoveEvent(QMouseEvent * e);
-    void mousePressEvent(QMouseEvent * e);
-    void mouseReleaseEvent(QMouseEvent * e);
-    void showEvent(QShowEvent* event);
-    void hideEvent(QHideEvent* event);
-    bool event(QEvent* pEvent);
+    void paintEvent(QPaintEvent* /*unused*/) override;
+    void mouseMoveEvent(QMouseEvent * e) override;
+    void mousePressEvent(QMouseEvent * e) override;
+    void mouseReleaseEvent(QMouseEvent * e) override;
+    void resizeEvent(QResizeEvent* /*unused*/) override;
+    void showEvent(QShowEvent* event) override;
+    void hideEvent(QHideEvent* event) override;
+    bool event(QEvent* pEvent) override;
 
     double calculateAngle(double playpos);
     int calculateFullRotations(double playpos);
     double calculatePositionFromAngle(double angle);
+    QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
+    QString m_group;
+    UserSettingsPointer m_pConfig;
     QImage* m_pBgImage;
+    QImage* m_pMaskImage;
     QImage* m_pFgImage;
+    QImage m_fgImageScaled;
     QImage* m_pGhostImage;
-    ControlObjectThread* m_pPlay;
-    ControlObjectThread* m_pPlayPos;
+    QImage m_ghostImageScaled;
+    ControlProxy* m_pPlay;
+    ControlProxy* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
-    ControlObjectThread* m_pTrackSamples;
-    ControlObjectThread* m_pTrackSampleRate;
-    ControlObjectThread* m_pScratchToggle;
-    ControlObjectThread* m_pScratchPos;
-    ControlObjectThread* m_pVinylControlSpeedType;
-    ControlObjectThread* m_pVinylControlEnabled;
-    ControlObjectThread* m_pSignalEnabled;
-    ControlObjectThread* m_pSlipEnabled;
-    ControlObjectThread* m_pSlipPosition;
+    ControlProxy* m_pTrackSamples;
+    ControlProxy* m_pTrackSampleRate;
+    ControlProxy* m_pScratchToggle;
+    ControlProxy* m_pScratchPos;
+    ControlProxy* m_pVinylControlSpeedType;
+    ControlProxy* m_pVinylControlEnabled;
+    ControlProxy* m_pSignalEnabled;
+    ControlProxy* m_pSlipEnabled;
+
+    TrackPointer m_loadedTrack;
+    QPixmap m_loadedCover;
+    QPixmap m_loadedCoverScaled;
+    CoverInfo m_lastRequestedCover;
+    bool m_bShowCover;
+
 
     VinylControlManager* m_pVCManager;
     double m_dInitialPos;
@@ -80,7 +103,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QImage m_qImage;
     int m_iVinylScopeSize;
 
-    QString m_group;
     float m_fAngle; //Degrees
     double m_dAngleCurrentPlaypos;
     double m_dAngleLastPlaypos;

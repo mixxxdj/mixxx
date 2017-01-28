@@ -6,9 +6,9 @@
 #include <QDir>
 
 #include "effects/effectsmanager.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 
-EffectChainManager::EffectChainManager(ConfigObject<ConfigValue>* pConfig,
+EffectChainManager::EffectChainManager(UserSettingsPointer pConfig,
                                        EffectsManager* pEffectsManager)
         : QObject(pEffectsManager),
           m_pConfig(pConfig),
@@ -19,31 +19,66 @@ EffectChainManager::~EffectChainManager() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void EffectChainManager::registerGroup(const QString& group) {
-    if (m_registeredGroups.contains(group)) {
-        qWarning() << debugString() << "WARNING: Group already registered:"
-                   << group;
+void EffectChainManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
+    if (m_registeredChannels.contains(handle_group)) {
+        qWarning() << debugString() << "WARNING: Channel already registered:"
+                   << handle_group.name();
         return;
     }
-    m_registeredGroups.insert(group);
+    m_registeredChannels.insert(handle_group);
 
-    foreach (EffectRackPointer pRack, m_effectRacks) {
-        pRack->registerGroup(group);
+    foreach (StandardEffectRackPointer pRack, m_standardEffectRacks) {
+        pRack->registerChannel(handle_group);
     }
 }
 
-EffectRackPointer EffectChainManager::addEffectRack() {
-    EffectRackPointer pRack = EffectRackPointer(new EffectRack(
-        m_pEffectsManager, this, m_effectRacks.size()));
-    m_effectRacks.append(pRack);
+StandardEffectRackPointer EffectChainManager::addStandardEffectRack() {
+    StandardEffectRackPointer pRack(new StandardEffectRack(
+        m_pEffectsManager, this, m_standardEffectRacks.size()));
+    m_standardEffectRacks.append(pRack);
+    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
     return pRack;
 }
 
-EffectRackPointer EffectChainManager::getEffectRack(int i) {
-    if (i < 0 || i >= m_effectRacks.size()) {
-        return EffectRackPointer();
+StandardEffectRackPointer EffectChainManager::getStandardEffectRack(int i) {
+    if (i < 0 || i >= m_standardEffectRacks.size()) {
+        return StandardEffectRackPointer();
     }
-    return m_effectRacks[i];
+    return m_standardEffectRacks[i];
+}
+
+EqualizerRackPointer EffectChainManager::addEqualizerRack() {
+    EqualizerRackPointer pRack(new EqualizerRack(
+        m_pEffectsManager, this, m_equalizerEffectRacks.size()));
+    m_equalizerEffectRacks.append(pRack);
+    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
+    return pRack;
+}
+
+EqualizerRackPointer EffectChainManager::getEqualizerRack(int i) {
+    if (i < 0 || i >= m_equalizerEffectRacks.size()) {
+        return EqualizerRackPointer();
+    }
+    return m_equalizerEffectRacks[i];
+}
+
+QuickEffectRackPointer EffectChainManager::addQuickEffectRack() {
+    QuickEffectRackPointer pRack(new QuickEffectRack(
+        m_pEffectsManager, this, m_quickEffectRacks.size()));
+    m_quickEffectRacks.append(pRack);
+    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
+    return pRack;
+}
+
+QuickEffectRackPointer EffectChainManager::getQuickEffectRack(int i) {
+    if (i < 0 || i >= m_quickEffectRacks.size()) {
+        return QuickEffectRackPointer();
+    }
+    return m_quickEffectRacks[i];
+}
+
+EffectRackPointer EffectChainManager::getEffectRack(const QString& group) {
+    return m_effectRacksByGroup.value(group);
 }
 
 void EffectChainManager::addEffectChain(EffectChainPointer pEffectChain) {

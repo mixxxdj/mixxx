@@ -7,12 +7,13 @@
 
 #include <QObject>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
+#include "control/controlvalue.h"
 
-#define MINIMUM_AUDIBLE_LOOP_SIZE   30  // In samples
+#define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples
 
 class ControlPushButton;
 class ControlObject;
@@ -26,36 +27,36 @@ class LoopingControl : public EngineControl {
   public:
     static QList<double> getBeatSizes();
 
-    LoopingControl(const char* _group, ConfigObject<ConfigValue>* _config);
+    LoopingControl(QString group, UserSettingsPointer pConfig);
     virtual ~LoopingControl();
 
     // process() updates the internal state of the LoopingControl to reflect the
     // correct current sample. If a loop should be taken LoopingControl returns
     // the sample that should be seeked to. Otherwise it returns currentSample.
-    double process(const double dRate,
+    virtual double process(const double dRate,
                    const double currentSample,
                    const double totalSamples,
                    const int iBufferSize);
 
     // nextTrigger returns the sample at which the engine will be triggered to
     // take a loop, given the value of currentSample and dRate.
-    double nextTrigger(const double dRate,
+    virtual double nextTrigger(const double dRate,
                        const double currentSample,
                        const double totalSamples,
                        const int iBufferSize);
 
     // getTrigger returns the sample that the engine will next be triggered to
     // loop to, given the value of currentSample and dRate.
-    double getTrigger(const double dRate,
+    virtual double getTrigger(const double dRate,
                       const double currentSample,
                       const double totalSamples,
                       const int iBufferSize);
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
-    void hintReader(QVector<Hint>* pHintList);
+    virtual void hintReader(HintVector* pHintList);
 
-    void notifySeek(double dNewPlaypos);
+    virtual void notifySeek(double dNewPlaypos);
 
   public slots:
     void slotLoopIn(double);
@@ -64,8 +65,7 @@ class LoopingControl : public EngineControl {
     void slotReloopExit(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
     void slotUpdatedTrackBeats();
 
     // Generate a loop of 'beats' length. It can also do fractions for a
@@ -87,6 +87,12 @@ class LoopingControl : public EngineControl {
     void slotLoopHalve(double);
 
   private:
+
+    struct LoopSamples {
+        int start;
+        int end;
+    };
+
     void setLoopingEnabled(bool enabled);
     void clearActiveBeatLoop();
     // When a loop changes size such that the playposition is outside of the loop,
@@ -109,14 +115,14 @@ class LoopingControl : public EngineControl {
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
-    int m_iLoopEndSample;
-    int m_iLoopStartSample;
-    int m_iCurrentSample;
+    // TODO(DSC) Make the following values double
+    ControlValueAtomic<LoopSamples> m_loopSamples;
+    QAtomicInt m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
     ControlObject* m_pTrackSamples;
-    BeatLoopingControl* m_pActiveBeatLoop;
+    QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;
@@ -140,7 +146,7 @@ class LoopingControl : public EngineControl {
 class LoopMoveControl : public QObject {
     Q_OBJECT
   public:
-    LoopMoveControl(const char* pGroup, double size);
+    LoopMoveControl(QString group, double size);
     virtual ~LoopMoveControl();
 
   signals:
@@ -161,7 +167,7 @@ class LoopMoveControl : public QObject {
 class BeatJumpControl : public QObject {
     Q_OBJECT
   public:
-    BeatJumpControl(const char* pGroup, double size);
+    BeatJumpControl(QString group, double size);
     virtual ~BeatJumpControl();
 
   signals:
@@ -182,7 +188,7 @@ class BeatJumpControl : public QObject {
 class BeatLoopingControl : public QObject {
     Q_OBJECT
   public:
-    BeatLoopingControl(const char* pGroup, double size);
+    BeatLoopingControl(QString group, double size);
     virtual ~BeatLoopingControl();
 
     void activate();

@@ -19,11 +19,12 @@
 // the no-argument constructor be non-explicit. All methods are left virtual to
 // allow a backend to replace the entire functionality with its own (for
 // example, a database-backed manifest)
-class EffectManifest {
+class EffectManifest final {
   public:
-    EffectManifest() { }
-    virtual ~EffectManifest() {
-        //qDebug() << debugString() << "deleted";
+    EffectManifest()
+        : m_isMixingEQ(false),
+          m_isMasterEQ(false),
+          m_effectRampsFromDry(false) {
     }
 
     virtual const QString& id() const {
@@ -38,6 +39,13 @@ class EffectManifest {
     }
     virtual void setName(const QString& name) {
         m_name = name;
+    }
+
+    virtual const QString& shortName() const {
+        return m_shortName;
+    }
+    virtual void setShortName(const QString& shortName) {
+        m_shortName = shortName;
     }
 
     virtual const QString& author() const {
@@ -57,6 +65,23 @@ class EffectManifest {
     virtual const QString& description() const {
         return m_description;
     }
+
+    virtual const bool& isMixingEQ() const {
+        return m_isMixingEQ;
+    }
+
+    virtual void setIsMixingEQ(const bool value) {
+        m_isMixingEQ = value;
+    }
+
+    virtual const bool& isMasterEQ() const {
+        return m_isMasterEQ;
+    }
+
+    virtual void setIsMasterEQ(const bool value) {
+        m_isMasterEQ = value;
+    }
+
     virtual void setDescription(const QString& description) {
         m_description = description;
     }
@@ -65,19 +90,16 @@ class EffectManifest {
         return m_parameters;
     }
 
-
     virtual EffectManifestParameter* addParameter() {
         m_parameters.append(EffectManifestParameter());
         return &m_parameters.last();
     }
 
-    virtual const QList<EffectManifestParameter>& buttonParameters() const {
-        return m_buttonParameters;
+    virtual bool effectRampsFromDry() const {
+        return m_effectRampsFromDry;
     }
-
-    virtual EffectManifestParameter* addButtonParameter() {
-        m_buttonParameters.append(EffectManifestParameter());
-        return &m_buttonParameters.last();
+    virtual void setEffectRampsFromDry(bool effectFadesFromDry) {
+        m_effectRampsFromDry = effectFadesFromDry;
     }
 
   private:
@@ -87,11 +109,15 @@ class EffectManifest {
 
     QString m_id;
     QString m_name;
+    QString m_shortName;
     QString m_author;
     QString m_version;
     QString m_description;
+    // This helps us at DlgPrefEQ's basic selection of Equalizers
+    bool m_isMixingEQ;
+    bool m_isMasterEQ;
     QList<EffectManifestParameter> m_parameters;
-    QList<EffectManifestParameter> m_buttonParameters;
+    bool m_effectRampsFromDry;
 };
 
 #endif /* EFFECTMANIFEST_H */

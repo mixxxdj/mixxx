@@ -6,7 +6,7 @@
 
 #include <QObject>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
 
@@ -21,7 +21,7 @@ class ControlTTRotary;
 class ControlObject;
 class ControlPotmeter;
 class ControlPushButton;
-class ControlObjectSlave;
+class ControlProxy;
 class EngineChannel;
 class PositionScratchController;
 
@@ -31,7 +31,7 @@ class PositionScratchController;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
+    RateControl(QString group, UserSettingsPointer pConfig);
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
@@ -44,9 +44,10 @@ public:
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
-    double calculateRate(double baserate, bool paused,
-                         int iSamplesPerBuffer, bool* reportScratching);
-    double getRawRate() const;
+    double calculateSpeed(double baserate, double speed, bool paused,
+                         int iSamplesPerBuffer, bool* pReportScratching,
+                         bool* pReportReverse);
+    double calcRateRatio() const;
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -56,9 +57,9 @@ public:
     static void setPerm(double v);
     // Set rate change when perm rate small button is pressed
     static void setPermSmall(double v);
-    /** Set Rate Ramp Mode */
+    // Set Rate Ramp Mode
     static void setRateRamp(bool);
-    /** Set Rate Ramp Sensitivity */
+    // Set Rate Ramp Sensitivity
     static void setRateRampSensitivity(int);
     virtual void notifySeek(double dNewPlaypos);
 
@@ -74,26 +75,25 @@ public:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private:
     double getJogFactor() const;
     double getWheelFactor() const;
     SyncMode getSyncMode() const;
 
-    /** Set rate change of the temporary pitch rate */
+    // Set rate change of the temporary pitch rate
     void setRateTemp(double v);
-    /** Add a value to the temporary pitch rate */
+    // Add a value to the temporary pitch rate
     void addRateTemp(double v);
-    /** Subtract a value from the temporary pitch rate */
+    // Subtract a value from the temporary pitch rate
     void subRateTemp(double v);
-    /** Reset the temporary pitch rate */
+    // Reset the temporary pitch rate
     void resetRateTemp(void);
-    /** Get the 'Raw' Temp Rate */
+    // Get the 'Raw' Temp Rate
     double getTempRate(void);
 
-    /** Values used when temp and perm rate buttons are pressed */
+    // Values used when temp and perm rate buttons are pressed
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
 
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
@@ -114,7 +114,6 @@ public:
 
     ControlPushButton* m_pScratch2Enable;
     ControlObject* m_pJog;
-    ControlObject* m_pVCRate;
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
     ControlObject* m_pVCMode;
@@ -128,8 +127,8 @@ public:
     // For Master Sync
     BpmControl* m_pBpmControl;
 
-    ControlObjectSlave* m_pSyncMode;
-    ControlObjectSlave* m_pSlipEnabled;
+    ControlProxy* m_pSyncMode;
+    ControlProxy* m_pSlipEnabled;
 
     // Enumerations which hold the state of the pitchbend buttons.
     // These enumerations can be used like a bitmask.

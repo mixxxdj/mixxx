@@ -2,7 +2,6 @@
 #define ENGINEWORKERSCHEDULER_H
 
 #include <QMutex>
-#include <QSet>
 #include <QThreadPool>
 #include <QWaitCondition>
 

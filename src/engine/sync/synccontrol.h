@@ -11,7 +11,7 @@ class EngineChannel;
 class BpmControl;
 class RateControl;
 class ControlObject;
-class ControlObjectSlave;
+class ControlProxy;
 class ControlPushButton;
 
 class SyncControl : public EngineControl, public Syncable {
@@ -20,7 +20,7 @@ class SyncControl : public EngineControl, public Syncable {
     static const double kBpmUnity;
     static const double kBpmHalve;
     static const double kBpmDouble;
-    SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
+    SyncControl(const QString& group, UserSettingsPointer pConfig,
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
     virtual ~SyncControl();
 
@@ -30,12 +30,14 @@ class SyncControl : public EngineControl, public Syncable {
 
     SyncMode getSyncMode() const;
     void notifySyncModeChanged(SyncMode mode);
+    void notifyOnlyPlayingSyncable();
     void requestSyncPhase();
     bool isPlaying() const;
 
     double getBeatDistance() const;
     void setBeatDistance(double beatDistance);
     double getBaseBpm() const;
+    void setLocalBpm(double local_bpm);
 
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
@@ -57,8 +59,7 @@ class SyncControl : public EngineControl, public Syncable {
     void reportPlayerSpeed(double speed, bool scratching);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
     // Fired by changes in play.
@@ -92,6 +93,7 @@ class SyncControl : public EngineControl, public Syncable {
     // should match against.
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
     void updateTargetBeatDistance();
+    double calcRateRatio();
 
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
@@ -113,22 +115,27 @@ class SyncControl : public EngineControl, public Syncable {
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
     double m_beatDistance;
+    double m_prevLocalBpm;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
     QScopedPointer<ControlObject> m_pSyncBeatDistance;
 
-    QScopedPointer<ControlObjectSlave> m_pPlayButton;
-    QScopedPointer<ControlObjectSlave> m_pBpm;
-    QScopedPointer<ControlObjectSlave> m_pFileBpm;
-    QScopedPointer<ControlObjectSlave> m_pRateSlider;
-    QScopedPointer<ControlObjectSlave> m_pRateDirection;
-    QScopedPointer<ControlObjectSlave> m_pRateRange;
-    QScopedPointer<ControlObjectSlave> m_pVCEnabled;
-    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
-    QScopedPointer<ControlObjectSlave> m_pEjectButton;
-    QScopedPointer<ControlObjectSlave> m_pSyncPhaseButton;
+    // These ControlProxys are created as parent to this and deleted by
+    // the Qt object tree. This helps that they are deleted by the creating
+    // thread, which is required to avoid segfaults.
+    ControlProxy* m_pPlayButton;
+    ControlProxy* m_pBpm;
+    ControlProxy* m_pLocalBpm;
+    ControlProxy* m_pFileBpm;
+    ControlProxy* m_pRateSlider;
+    ControlProxy* m_pRateDirection;
+    ControlProxy* m_pRateRange;
+    ControlProxy* m_pVCEnabled;
+    ControlProxy* m_pPassthroughEnabled;
+    ControlProxy* m_pEjectButton;
+    ControlProxy* m_pSyncPhaseButton;
 };
 
 

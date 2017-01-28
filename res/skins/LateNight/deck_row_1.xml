@@ -5,71 +5,37 @@
 		<SizePolicy>me,min</SizePolicy>
 		<MinimumSize>180,-1</MinimumSize>
 		<Children>
-		    <WidgetGroup>
-		        <ObjectName>VinylControls</ObjectName>
-                <Layout>Horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <MinimumSize>-1,48</MinimumSize>
-                <Children>
-					<PushButton>
-						<TooltipId>vinylcontrol_mode</TooltipId>
-						<Style></Style>
-						<NumberStates>3</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_vinylcontrol_mode_abs2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_abs2.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_vinylcontrol_mode_rel2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_rel2.png</Unpressed>
-						</State>
-						<State>
-							<Number>2</Number>
-							<Pressed>btn_vinylcontrol_mode_const2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_const2.png</Unpressed>
-						</State>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],vinylcontrol_mode</ConfigKey>
-						</Connection>
-					</PushButton>
-					<PushButton>
-					    <Pos>60,0</Pos>
-						<TooltipId>vinylcontrol_cueing</TooltipId>
-						<Style></Style>
-						<NumberStates>3</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_vinylcontrol_cueing_off2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_off2.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_vinylcontrol_cueing_one2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_one2.png</Unpressed>
-						</State>
-						<State>
-							<Number>2</Number>
-							<Pressed>btn_vinylcontrol_cueing_hot2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_hot2.png</Unpressed>
-						</State>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],vinylcontrol_cueing</ConfigKey>
-						</Connection>
-					</PushButton>
-				</Children>
-                <Connection>
-                    <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                </Connection>
-			</WidgetGroup>
-            <WidgetGroup>
+		        <Template src="skin:vinyl_controls.xml"/>
+            <WidgetGroup>  <!-- spacer -->
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children></Children>
             </WidgetGroup>
-			<WidgetGroup>
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <ObjectName>EffectKnob</ObjectName>
+                <Children>
+                     <WidgetGroup>
+                         <ObjectName>AlignCenterTop</ObjectName>
+                         <Layout>horizontal</Layout>
+                         <SizePolicy>min,min</SizePolicy>
+                         <Children>
+                             <Template src="skin:knob_textless.xml">
+                                <SetVariable name="group">[QuickEffectRack1_[Channel<Variable name="channum"/>]]</SetVariable>
+                                <SetVariable name="control">super1</SetVariable>
+                             </Template>
+                         </Children>
+                     </WidgetGroup>
+                     <EffectName>
+                         <ObjectName>KnobLabel</ObjectName>
+                         <EffectRackGroup>[QuickEffectRack1]</EffectRackGroup>
+                         <EffectUnitGroup>[QuickEffectRack1_[Channel<Variable name="channum"/>]]</EffectUnitGroup>
+                         <Effect>1</Effect>
+                     </EffectName>
+                 </Children>
+            </WidgetGroup>
+		      	<WidgetGroup>
                 <ObjectName>Hotcues</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>

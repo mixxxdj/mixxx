@@ -17,7 +17,7 @@ import util
 
 class MixxxBuild(object):
 
-    def __init__(self, target, machine, build, toolchain, available_features=[]):
+    def __init__(self, target, machine, build, toolchain, available_features):
         self.available_features = available_features
         self.host_platform = self.detect_platform()
         self.host_machine = self.detect_machine()
@@ -48,12 +48,14 @@ class MixxxBuild(object):
         if machine.lower() not in ['x86_64', 'x86', 'i686', 'i586',
                                    'alpha', 'hppa', 'mips', 'mipsel', 's390',
                                    'sparc', 'ia64', 'armel', 'armhf', 'hurd-i386',
+                                   'armv5tel', 'armv5tejl', 'armv6l', 'armv6hl',
+                                   'armv7l', 'armv7hl', 'armv7hnl',
                                    'sh3', 'sh4',
                                    'kfreebsd-amd64', 'kfreebsd-i386',
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
                                    'powerpc64', 'powerpcspe', 's390x',
                                    'amd64', 'em64t', 'intel64', 'arm64',
-                                   'ppc64el']:
+                                   'ppc64el', 'm68k', 'mips64', 'mips64el', 'mipsn32', 'mipsn32el']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -111,6 +113,7 @@ class MixxxBuild(object):
 
         # Currently this only works for Windows
         self.static_dependencies = int(Script.ARGUMENTS.get('staticlibs', 0))
+        self.static_qt = int(Script.ARGUMENTS.get('staticqt', 0))
 
         logging.info("Target Platform: %s" % self.platform)
         logging.info("Target Machine: %s" % self.machine)
@@ -119,8 +122,12 @@ class MixxxBuild(object):
         logging.info(
             "Crosscompile: %s" % ("YES" if self.crosscompile else "NO"))
         if self.platform_is_windows:
+            self.winlib_path = Script.ARGUMENTS.get('winlib', '')
+            logging.info("Winlib Path: %s" % self.winlib_path)
             logging.info("Static dependencies: %s" % (
                 "YES" if self.static_dependencies else "NO"))
+            logging.info("Static Qt: %s" % (
+                "YES" if self.static_qt else "NO"))
 
         if self.crosscompile:
             logging.info("Host Platform: %s" % self.host_platform)
@@ -147,12 +154,21 @@ class MixxxBuild(object):
             default_qtdir = depends.Qt.DEFAULT_QT4DIRS.get(self.platform, '')
         tools.append('protoc')
 
+        # Try fallback to pkg-config on Linux
+        if not os.path.isdir(default_qtdir) and self.platform == 'linux':
+            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
+                import subprocess
+                try:
+                    default_qtdir = subprocess.Popen(["pkg-config", "--variable=includedir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                finally:
+                    pass
+
         # Ugly hack to check the qtdir argument
         qtdir = Script.ARGUMENTS.get('qtdir',
                                      os.environ.get('QTDIR', default_qtdir))
 
         # Validate the specified qtdir exists
-        if not os.path.exists(qtdir):
+        if not os.path.isdir(qtdir):
             logging.error("QT path does not exist or QT4 is not installed.")
             logging.error(
                 "Please specify your QT path by running 'scons qtdir=[path]'")
@@ -311,40 +327,42 @@ class MixxxBuild(object):
 
             print 'Automatically detecting Mac OS X SDK.'
 
-            # SDK versions in order of precedence.
-            sdk_versions = ( '10.9', '10.8', '10.7', '10.6', '10.5', )
-            clang_sdk_versions = ( '10.9', '10.8', '10.7', )
-            valid_cpp_lib_versions = ( 'libstdc++', 'libc++', )
 
-            # By default use old gcc C++ library version
-            osx_stdlib = Script.ARGUMENTS.get('stdlib', 'libstdc++')
-            if osx_stdlib not in valid_cpp_lib_versions:
-                raise Exception('Unsupported C++ stdlib version')
-
-            if osx_stdlib == 'libc++':
-                sdk_version_default = '10.9'
-            else:
-                sdk_version_default = '10.5'
-
-            min_sdk_version = Script.ARGUMENTS.get('osx_sdk_version_min', sdk_version_default)
-            if min_sdk_version not in sdk_versions:
-                raise Exception('Unsupported osx_sdk_version_min value')
-
-            if osx_stdlib == 'libc++' and min_sdk_version not in clang_sdk_versions:
-                raise Exception('stdlib=libc++ requires osx_sdk_version_min >= 10.7')
+            # Returns a version like "10.8.0". We strip off the last ".0".
+            osx_min_version = util.get_osx_min_version()
+            assert osx_min_version.endswith('.0')
+            osx_min_version = osx_min_version[:len(osx_min_version) - 2]
+            osx_stdlib = 'libc++'
 
             print "XCode developer directory:", os.popen('xcode-select -p').readline().strip()
-            for sdk in sdk_versions:
+
+            available_sdks = []
+            macosx_matcher = re.compile(r'^MacOSX\d+\.\d+\.sdk.*\((.*)\)$')
+            for line in os.popen('xcodebuild -version -sdk'):
+                match = macosx_matcher.match(line)
+                if not match:
+                    continue
+                version = match.group(1)
+                print "Found OS X SDK:", version
+                available_sdks.append(version)
+
+            def version_sorter(version):
+                assert version.startswith('macosx')
+                major_version, minor_version = version.replace('macosx', '').split('.')
+                return int(major_version), int(minor_version)
+
+            # Use the latest SDK.
+            for sdk in sorted(available_sdks, reverse=True, key=version_sorter):
                 sdk_path = os.popen(
-                    'xcodebuild -version -sdk macosx%s Path' % sdk).readline().strip()
+                    'xcodebuild -version -sdk %s Path' % sdk).readline().strip()
                 if sdk_path:
                     print "Automatically selected OS X SDK:", sdk_path
 
                     common_flags = ['-isysroot', sdk_path,
-                                    '-mmacosx-version-min=%s' % min_sdk_version]
+                                    '-mmacosx-version-min=%s' % osx_min_version,
+                                    '-stdlib=%s' % osx_stdlib]
                     link_flags = [
                         '-Wl,-syslibroot,' + sdk_path,
-                        '-stdlib=%s' % osx_stdlib
                     ]
                     self.env.Append(CCFLAGS=common_flags)
                     self.env.Append(LINKFLAGS=common_flags + link_flags)
@@ -423,6 +441,8 @@ class MixxxBuild(object):
         vars.Add('force32', 'Force a 32-bit compile', 0)
         vars.Add('force64', 'Force a 64-bit compile', 0)
         vars.Add('sysroot', 'Specify a custom sysroot', '')
+        vars.Add('debug_assertions_fatal',
+                 'Whether debug assertions are fatal.', False)
 
         for feature_class in self.available_features:
             # Instantiate the feature

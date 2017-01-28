@@ -2,7 +2,7 @@
 #define DIRECTORYDAO_H
 
 #include <QSqlDatabase>
-#include "library/dao/dao.h"
+#include "library/dao/trackdao.h"
 
 const QString DIRECTORYDAO_DIR = "directory";
 const QString DIRECTORYDAO_TABLE = "directories";
@@ -23,7 +23,7 @@ class DirectoryDAO : public DAO {
     void setDatabase(QSqlDatabase& database) { m_database = database; }
     int addDirectory(const QString& dir);
     int removeDirectory(const QString& dir);
-    QSet<int> relocateDirectory(const QString& oldFolder, const QString& newFolder);
+    QSet<TrackId> relocateDirectory(const QString& oldFolder, const QString& newFolder);
     QStringList getDirs();
 
   private:

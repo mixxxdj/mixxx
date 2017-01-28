@@ -30,7 +30,7 @@ bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
         return true;
     }
-    return false;
+    return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
 TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
@@ -47,7 +47,7 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
         return true;
     }
-    return false;
+    return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection)
@@ -72,8 +72,16 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
             << "bpm"
             << "key";
     m_trackSource = QSharedPointer<BaseTrackCache>(
-        new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
+            new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
                            columns, false));
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album"
+                  << "location"
+                  << "comment"
+                  << "title"
+                  << "genre";
+    m_trackSource->setSearchColumns(searchColumns);
 
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection, m_trackSource);
@@ -150,6 +158,7 @@ void TraktorFeature::activate() {
     }
 
     emit(showTrackModel(m_pTraktorTableModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {
@@ -159,10 +168,11 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     //access underlying TreeItem object
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
-    if (item->isPlaylist()) {
-        qDebug() << "Activate Traktor Playlist: " << item->dataPath().toString();
-        m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
+    if (!item->hasChildren()) {
+        qDebug() << "Activate Traktor Playlist: " << item->getData().toString();
+        m_pTraktorPlaylistModel->setPlaylist(item->getData().toString());
         emit(showTrackModel(m_pTraktorPlaylistModel));
+        emit(enableCoverArtDisplay(false));
     }
 }
 
@@ -206,7 +216,7 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
                 inCollectionTag = true;
             }
             // Each "ENTRY" tag in <COLLECTION> represents a track
-            if (inCollectionTag && xml.name() == "ENTRY" ) {
+            if (inCollectionTag && xml.name() == "ENTRY") {
                 //parse track
                 parseTrack(xml, query);
                 ++nAudioFiles; //increment number of files in the music collection
@@ -372,7 +382,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
     QString delimiter = "-->";
 
-    TreeItem *rootItem = new TreeItem();
+    TreeItem *rootItem = new TreeItem(this);
     TreeItem * parent = rootItem;
 
     QSqlQuery query_insert_to_playlists(m_database);
@@ -398,19 +408,16 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                if (type == "FOLDER") {
                     current_path += delimiter;
                     current_path += name;
-                    //qDebug() << "Folder: " +current_path << " has parent " << parent->data().toString();
+                    //qDebug() << "Folder: " +current_path << " has parent " << parent->getData().toString();
                     map.insert(current_path, "FOLDER");
-                    TreeItem * item = new TreeItem(name,current_path, this, parent);
-                    parent->appendChild(item);
-                    parent = item;
+                    parent = parent->appendChild(name, current_path);
                } else if (type == "PLAYLIST") {
                     current_path += delimiter;
                     current_path += name;
-                    //qDebug() << "Playlist: " +current_path << " has parent " << parent->data().toString();
+                    //qDebug() << "Playlist: " +current_path << " has parent " << parent->getData().toString();
                     map.insert(current_path, "PLAYLIST");
 
-                    TreeItem * item = new TreeItem(name,current_path, this, parent);
-                    parent->appendChild(item);
+                    parent->appendChild(name, current_path);
                     // process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml, current_path,
                                          query_insert_to_playlists,
@@ -591,9 +598,9 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 }
 
 void TraktorFeature::onTrackCollectionLoaded() {
-    TreeItem* root = m_future.result();
+    std::unique_ptr<TreeItem> root(m_future.result());
     if (root) {
-        m_childModel.setRootItem(root);
+        m_childModel.setRootItem(std::move(root));
         // Tell the traktor track source that it should re-build its index.
         m_trackSource->buildIndex();
 

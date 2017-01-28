@@ -1,21 +1,17 @@
 #include <QtDebug>
 
-#include "controleffectknob.h"
+#include "control/controleffectknob.h"
 #include "effects/effectparameterslotbase.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 
-EffectParameterSlotBase::EffectParameterSlotBase(const unsigned int iRackNumber,
-                                         const unsigned int iChainNumber,
-                                         const unsigned int iSlotNumber,
-                                         const unsigned int iParameterNumber)
-        : m_iRackNumber(iRackNumber),
-          m_iChainNumber(iChainNumber),
-          m_iSlotNumber(iSlotNumber),
-          m_iParameterNumber(iParameterNumber),
-          m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
-                                    m_iSlotNumber)),
+EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
+                                                 const unsigned int iParameterSlotNumber)
+        : m_iParameterSlotNumber(iParameterSlotNumber),
+          m_group(group),
           m_pEffectParameter(NULL),
+          m_pControlLoaded(NULL),
+          m_pControlType(NULL),
           m_dChainParameter(0.0) {
 
 }
@@ -34,6 +30,13 @@ QString EffectParameterSlotBase::name() const {
     return QString();
 }
 
+QString EffectParameterSlotBase::shortName() const {
+    if (m_pEffectParameter) {
+        return m_pEffectParameter->shortName();
+    }
+    return QString();
+}
+
 QString EffectParameterSlotBase::description() const {
     if (m_pEffectParameter) {
         return m_pEffectParameter->description();
@@ -41,21 +44,9 @@ QString EffectParameterSlotBase::description() const {
     return tr("No effect loaded.");
 }
 
-void EffectParameterSlotBase::slotLoaded(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotLoaded" << v;
-    qWarning() << "WARNING: loaded is a read-only control.";
-}
-
-void EffectParameterSlotBase::slotValueChanged(double v) {
-    //qDebug() << debugString() << "slotValueChanged" << v;
+const EffectManifestParameter EffectParameterSlotBase::getManifest() {
     if (m_pEffectParameter) {
-        m_pEffectParameter->setValue(v);
+        return m_pEffectParameter->manifest();
     }
-}
-
-void EffectParameterSlotBase::slotValueType(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotValueType" << v;
-    qWarning() << "WARNING: value_type is a read-only control.";
+    return EffectManifestParameter();
 }

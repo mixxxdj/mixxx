@@ -1,6 +1,5 @@
 #include <QtAlgorithms>
 #include <QtDebug>
-#include <QTime>
 
 #include "library/banshee/bansheeplaylistmodel.h"
 #include "library/banshee/bansheedbconnection.h"
@@ -9,7 +8,7 @@
 #include "library/previewbuttondelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 #define BANSHEE_TABLE "banshee"
 #define CLM_VIEW_ORDER "position"
@@ -34,7 +33,6 @@
 
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
-          m_pTrackCollection(pTrackCollection),
           m_pConnection(pConnection),
           m_playlistId(-1) {
 }
@@ -134,7 +132,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         if (!list.isEmpty()) {
             beginInsertRows(QModelIndex(), 0, list.size() - 1);
 
-            foreach (struct BansheeDbConnection::PlaylistEntry entry, list){
+            foreach (struct BansheeDbConnection::PlaylistEntry entry, list) {
                 query.bindValue(":" CLM_VIEW_ORDER, entry.viewOrder + 1);
                 query.bindValue(":" CLM_ARTIST, entry.pArtist->name);
                 query.bindValue(":" CLM_TITLE, entry.pTrack->title);
@@ -247,7 +245,7 @@ Qt::ItemFlags BansheePlaylistModel::readOnlyFlags(const QModelIndex &index) cons
     return defaultFlags;
 }
 
-void BansheePlaylistModel::tracksChanged(QSet<int> trackIds) {
+void BansheePlaylistModel::tracksChanged(QSet<TrackId> trackIds) {
     Q_UNUSED(trackIds);
 }
 
@@ -255,9 +253,10 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
-        if (m_iPreviewDeckTrackId > -1) {
+        if (m_previewDeckTrackId.isValid()) {
             const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_iPreviewDeckTrackId);
+            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
+            m_previewDeckTrackId = TrackId(); // invalidate
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
@@ -265,10 +264,11 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
             }
         }
         if (pTrack) {
-            for (int row = 0; row < rowCount(); ++row ) {
+            for (int row = 0; row < rowCount(); ++row) {
                 QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
                 if (rowUrl.toLocalFile() == pTrack->getLocation()) {
-                    m_iPreviewDeckTrackId = getFieldString(index(row, 0), CLM_VIEW_ORDER).toInt();
+                    m_previewDeckTrackId =
+                            TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
                     break;
                 }
             }
@@ -276,11 +276,14 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
     }
 }
 
+QVariant BansheePlaylistModel::getFieldVariant(const QModelIndex& index,
+        const QString& fieldName) const {
+    return index.sibling(index.row(), fieldIndex(fieldName)).data();
+}
+
 QString BansheePlaylistModel::getFieldString(const QModelIndex& index,
         const QString& fieldName) const {
-    return index.sibling(
-            index.row(), fieldIndex(fieldName)
-            ).data().toString();
+    return getFieldVariant(index, fieldName).toString();
 }
 
 TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
@@ -291,29 +294,17 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         return TrackPointer();
     }
 
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-    int track_id = track_dao.getTrackId(location);
-    bool track_already_in_library = track_id >= 0;
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(location, true);
-    }
-
-    TrackPointer pTrack;
-    if (track_id < 0) {
-        // Add Track to library failed, create a transient TrackInfoObject
-        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-    } else {
-        pTrack = track_dao.getTrack(track_id);
-    }
+    bool track_already_in_library = false;
+    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
+            .getOrAddTrack(location, true, &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
     // saved with the metadata from Banshee. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
-    if (!track_already_in_library) {
+    if (pTrack && !track_already_in_library) {
         pTrack->setArtist(getFieldString(index, CLM_ARTIST));
         pTrack->setTitle(getFieldString(index, CLM_TITLE));
-        pTrack->setDuration(getFieldString(index, CLM_DURATION).toInt());
+        pTrack->setDuration(getFieldString(index, CLM_DURATION).toDouble());
         pTrack->setAlbum(getFieldString(index, CLM_ALBUM));
         pTrack->setAlbumArtist(getFieldString(index, CLM_ALBUM_ARTIST));
         pTrack->setYear(getFieldString(index, CLM_YEAR));
@@ -322,13 +313,13 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         pTrack->setRating(getFieldString(index, CLM_RATING).toInt());
         pTrack->setTrackNumber(getFieldString(index, CLM_TRACKNUMBER));
         double bpm = getFieldString(index, CLM_BPM).toDouble();
-        pTrack->setBpm(bpm);
+        bpm = pTrack->setBpm(bpm);
         pTrack->setBitrate(getFieldString(index, CLM_BITRATE).toInt());
         pTrack->setComment(getFieldString(index, CLM_COMMENT));
         pTrack->setComposer(getFieldString(index, CLM_COMPOSER));
         // If the track has a BPM, then give it a static beatgrid.
         if (bpm > 0) {
-            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0);
+            BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0.0);
             pTrack->setBeats(pBeats);
         }
 
@@ -374,12 +365,6 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
 }
 
 bool BansheePlaylistModel::isColumnInternal(int column) {
-    Q_UNUSED(column);
-    return false;
-}
-
-// if no header state exists, we may hide some columns so that the user can reactivate them
-bool BansheePlaylistModel::isColumnHiddenByDefault(int column) {
     Q_UNUSED(column);
     return false;
 }

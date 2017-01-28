@@ -3,16 +3,15 @@
 
 #include <QMap>
 
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbiquad1.h"
-#include "util.h"
 #include "util/types.h"
 #include "util/defs.h"
-#include "sampleutil.h"
+
 
 class PeakingFilterEffectGroupState {
   public:
@@ -27,7 +26,8 @@ class PeakingFilterEffectGroupState {
     double m_oldCenter;
 };
 
-class PeakingFilterEffect : public GroupEffectProcessor<PeakingFilterEffectGroupState> {
+class PeakingFilterEffect
+        : public PerChannelEffectProcessor<PeakingFilterEffectGroupState> {
   public:
     PeakingFilterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~PeakingFilterEffect();
@@ -36,12 +36,14 @@ class PeakingFilterEffect : public GroupEffectProcessor<PeakingFilterEffectGroup
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      PeakingFilterEffectGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE *pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const GroupFeatureState& groupFeatureState);
+    void processChannel(
+            const ChannelHandle& handle,
+            PeakingFilterEffectGroupState* channelState,
+            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const unsigned int numSamples,
+            const unsigned int sampleRate,
+            const EffectProcessor::EnableState enableState,
+            const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

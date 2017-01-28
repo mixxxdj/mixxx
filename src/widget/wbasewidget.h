@@ -10,7 +10,7 @@ class ControlParameterWidgetConnection;
 
 class WBaseWidget {
   public:
-    WBaseWidget(QWidget* pWidget);
+    explicit WBaseWidget(QWidget* pWidget);
     virtual ~WBaseWidget();
 
     virtual void Init();
@@ -79,7 +79,6 @@ class WBaseWidget {
     void updateTooltip();
     virtual void fillDebugTooltip(QStringList* debug);
 
-  protected:
     QList<ControlParameterWidgetConnection*> m_connections;
     ControlParameterWidgetConnection* m_pDisplayConnection;
     QList<ControlParameterWidgetConnection*> m_leftConnections;

@@ -4,20 +4,20 @@
 #include <QScopedPointer>
 
 #include "mixxxtest.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
-#include "controlpushbutton.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "widget/wpushbutton.h"
 #include "widget/controlwidgetconnection.h"
 
 class WPushButtonTest : public MixxxTest {
   public:
     WPushButtonTest()
-          : m_pGroup("[Channel1]"){
+          : m_pGroup("[Channel1]") {
     }
 
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pButton.reset(new WPushButton());
         m_pButton->setStates(2);
     }
@@ -38,12 +38,14 @@ TEST_F(WPushButtonTest, QuickPressNoLatchTest) {
     m_pButton->addLeftConnection(
         new ControlParameterWidgetConnection(
             m_pButton.data(),
-            new ControlObjectSlave(pPushControl->getKey()), NULL,
+            pPushControl->getKey(), NULL,
             ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET,
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
 
+    // This test can be flaky if the event simulator takes too long to deliver
+    // the event.
     m_Events.addMousePress(Qt::LeftButton);
-    m_Events.addMouseRelease(Qt::LeftButton, 0, QPoint(), 100);
+    m_Events.addMouseRelease(Qt::LeftButton, 0, QPoint(), 1);
 
     m_Events.simulate(m_pButton.data());
 
@@ -61,7 +63,7 @@ TEST_F(WPushButtonTest, LongPressLatchTest) {
     m_pButton->addLeftConnection(
         new ControlParameterWidgetConnection(
             m_pButton.data(),
-            new ControlObjectSlave(pPushControl->getKey()), NULL,
+            pPushControl->getKey(), NULL,
             ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET,
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
 

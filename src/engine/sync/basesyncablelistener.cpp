@@ -6,7 +6,7 @@
 
 static const char* kInternalClockGroup = "[InternalClock]";
 
-BaseSyncableListener::BaseSyncableListener(ConfigObject<ConfigValue>* pConfig)
+BaseSyncableListener::BaseSyncableListener(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
           m_pMasterSyncable(NULL) {
@@ -160,5 +160,27 @@ void BaseSyncableListener::setMasterParams(Syncable* pSource, double beat_distan
             continue;
         }
         pSyncable->setMasterParams(beat_distance, base_bpm, bpm);
+    }
+}
+
+void BaseSyncableListener::checkUniquePlayingSyncable() {
+    int playing_sync_decks = 0;
+    Syncable* unique_syncable = NULL;
+    foreach (Syncable* pSyncable, m_syncables) {
+        SyncMode sync_mode = pSyncable->getSyncMode();
+        if (sync_mode == SYNC_NONE) {
+            continue;
+        }
+
+        if (pSyncable->isPlaying()) {
+            if (playing_sync_decks > 0) {
+                return;
+            }
+            unique_syncable = pSyncable;
+            ++playing_sync_decks;
+        }
+    }
+    if (playing_sync_decks == 1) {
+        unique_syncable->notifyOnlyPlayingSyncable();
     }
 }

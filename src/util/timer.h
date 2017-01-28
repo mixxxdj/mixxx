@@ -1,9 +1,14 @@
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef UTIL_TIMER_H
+#define UTIL_TIMER_H
 
+#include <QObject>
+#include <QScopedPointer>
+
+#include "control/controlproxy.h"
 #include "util/stat.h"
 #include "util/performancetimer.h"
 #include "util/cmdlineargs.h"
+#include "util/duration.h"
 
 const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
         Stat::MAX | Stat::MIN | Stat::SAMPLE_VARIANCE;
@@ -17,14 +22,14 @@ class Timer {
           Stat::ComputeFlags compute = kDefaultComputeFlags);
     void start();
 
-    // Restart the timer returning the nanoseconds since it was last
+    // Restart the timer returning the time duration since it was last
     // started/restarted. If report is true, reports the elapsed time to the
     // associated Stat key.
-    int restart(bool report);
+    mixxx::Duration restart(bool report);
 
-    // Returns nanoseconds since start/restart was called. If report is true,
+    // Returns time duration since start/restart was called. If report is true,
     // reports the elapsed time to the associated Stat key.
-    int elapsed(bool report);
+    mixxx::Duration elapsed(bool report);
 
   protected:
     QString m_key;
@@ -38,12 +43,12 @@ class SuspendableTimer : public Timer {
     SuspendableTimer(const QString& key,
             Stat::ComputeFlags compute = kDefaultComputeFlags);
     void start();
-    int suspend();
+    mixxx::Duration suspend();
     void go();
-    int elapsed(bool report);
+    mixxx::Duration elapsed(bool report);
 
   private:
-    int m_leapTime;
+    mixxx::Duration m_leapTime;
 };
 
 class ScopedTimer {
@@ -53,7 +58,7 @@ class ScopedTimer {
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initalize(QString(key), QString::number(i), compute);
+            initialize(QString(key), QString::number(i), compute);
         }
     }
 
@@ -62,7 +67,7 @@ class ScopedTimer {
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initalize(QString(key), arg ? QString(arg) : QString(), compute);
+            initialize(QString(key), arg ? QString(arg) : QString(), compute);
         }
     }
 
@@ -71,7 +76,7 @@ class ScopedTimer {
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initalize(QString(key), arg, compute);
+            initialize(QString(key), arg, compute);
         }
     }
 
@@ -84,7 +89,7 @@ class ScopedTimer {
         }
     }
 
-    inline void initalize(const QString& key, const QString& arg,
+    inline void initialize(const QString& key, const QString& arg,
                 Stat::ComputeFlags compute = kDefaultComputeFlags) {
         QString strKey;
         if (arg.isEmpty()) {
@@ -105,4 +110,28 @@ class ScopedTimer {
     bool m_cancel;
 };
 
-#endif /* TIMER_H */
+// A timer that provides a similar API to QTimer but uses the GuiTick 50ms
+// signal provided by the VsyncThread.
+class GuiTickTimer : public QObject {
+    Q_OBJECT
+  public:
+    GuiTickTimer(QObject* pParent);
+    virtual ~GuiTickTimer();
+
+    void start(mixxx::Duration interval);
+    void stop();
+
+  signals:
+    void timeout();
+
+  private slots:
+    void slotGuiTick50ms(double v);
+
+  private:
+    QScopedPointer<ControlProxy> m_pGuiTick50ms;
+    mixxx::Duration m_interval;
+    mixxx::Duration m_elapsed;
+    bool m_bActive;
+};
+
+#endif /* UTIL_TIMER_H */

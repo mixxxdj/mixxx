@@ -20,10 +20,10 @@ class BansheePlaylistModel;
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig);
+    BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, UserSettingsPointer pConfig);
     virtual ~BansheeFeature();
     static bool isSupported();
-    static void prepareDbPath(ConfigObject<ConfigValue>* pConfig);
+    static void prepareDbPath(UserSettingsPointer pConfig);
 
     virtual QVariant title();
     virtual QIcon getIcon();
@@ -35,7 +35,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     virtual void activateChild(const QModelIndex& index);
 
   private:
-    virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist);
+    virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
     TreeItemModel m_childModel;

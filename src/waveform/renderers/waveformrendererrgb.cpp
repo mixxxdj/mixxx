@@ -5,42 +5,19 @@
 #include "waveform/waveformwidgetfactory.h"
 
 #include "widget/wskincolor.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "widget/wwidget.h"
 #include "util/math.h"
 
 WaveformRendererRGB::WaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase( waveformWidgetRenderer) {
+        : WaveformRendererSignalBase(waveformWidgetRenderer) {
 }
 
 WaveformRendererRGB::~WaveformRendererRGB() {
 }
 
 void WaveformRendererRGB::onSetup(const QDomNode& /* node */) {
-}
-
-void WaveformRendererRGB::setup(const QDomNode& node,
-                                       const SkinContext& context) {
-    WaveformRendererSignalBase::setup(node, context);
-
-    m_lowColor.setNamedColor(context.selectString(node, "SignalLowColor"));
-    if (!m_lowColor.isValid()) {
-        m_lowColor.setRgb(255,0,0);
-    }
-    m_lowColor  = WSkinColor::getCorrectColor(m_lowColor);
-
-    m_midColor.setNamedColor(context.selectString(node, "SignalMidColor"));
-    if (!m_midColor.isValid()) {
-        m_midColor.setRgb(0,255,0);
-    }
-    m_midColor  = WSkinColor::getCorrectColor(m_midColor);
-
-    m_highColor.setNamedColor(context.selectString(node, "SignalHighColor"));
-    if (!m_highColor.isValid()) {
-        m_highColor.setRgb(0,0,255);
-    }
-    m_highColor = WSkinColor::getCorrectColor(m_highColor);
 }
 
 void WaveformRendererRGB::draw(QPainter* painter,
@@ -50,8 +27,8 @@ void WaveformRendererRGB::draw(QPainter* painter,
         return;
     }
 
-    const Waveform* waveform = trackInfo->getWaveform();
-    if (waveform == NULL) {
+    ConstWaveformPointer waveform = trackInfo->getWaveform();
+    if (waveform.isNull()) {
         return;
     }
 
@@ -72,6 +49,11 @@ void WaveformRendererRGB::draw(QPainter* painter,
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
 
+    // Rotate if drawing vertical waveforms
+    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+        painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
+    }
+
     const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
     const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
 
@@ -79,22 +61,24 @@ void WaveformRendererRGB::draw(QPainter* painter,
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+            (double)m_waveformRenderer->getLength();
 
-    float allGain(1.0);
-    getGains(&allGain, NULL, NULL, NULL);
+    // Per-band gain from the EQ knobs.
+    float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     QColor color;
 
-    const float halfHeight = (float)m_waveformRenderer->getHeight()/2.0;
+    const int breadth = m_waveformRenderer->getBreadth();
+    const float halfBreadth = (float)breadth / 2.0;
 
-    const float heightFactor = allGain*halfHeight/255.0;
+    const float heightFactor = allGain * halfBreadth / 255.0;
 
     // Draw reference line
     painter->setPen(m_pColors->getAxesColor());
-    painter->drawLine(0,halfHeight,m_waveformRenderer->getWidth(),halfHeight);
+    painter->drawLine(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth);
 
-    for (int x = 0; x < m_waveformRenderer->getWidth(); ++x) {
+    for (int x = 0; x < m_waveformRenderer->getLength(); ++x) {
         // Width of the x position in visual indices.
         const double xSampleWidth = gain * x;
 
@@ -143,12 +127,16 @@ void WaveformRendererRGB::draw(QPainter* painter,
             maxAllB = math_max(maxAllB, waveformDataNext.filtered.all);
         }
 
-        int red   = maxLow * m_lowColor.red()   + maxMid * m_midColor.red()   + maxHigh * m_highColor.red();
-        int green = maxLow * m_lowColor.green() + maxMid * m_midColor.green() + maxHigh * m_highColor.green();
-        int blue  = maxLow * m_lowColor.blue()  + maxMid * m_midColor.blue()  + maxHigh * m_highColor.blue();
+        qreal maxLowF = maxLow * lowGain;
+        qreal maxMidF = maxMid * midGain;
+        qreal maxHighF = maxHigh * highGain;
+
+        qreal red   = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r + maxHighF * m_rgbHighColor_r;
+        qreal green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g + maxHighF * m_rgbHighColor_g;
+        qreal blue  = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b + maxHighF * m_rgbHighColor_b;
 
         // Compute maximum (needed for value normalization)
-        float max = (float) math_max3(red, green, blue);
+        qreal max = math_max3(red, green, blue);
 
         // Prevent division by zero
         if (max > 0.0f) {
@@ -158,19 +146,21 @@ void WaveformRendererRGB::draw(QPainter* painter,
             painter->setPen(color);
             switch (m_alignment) {
                 case Qt::AlignBottom :
+                case Qt::AlignRight :
                     painter->drawLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*(float)math_max(maxAllA,maxAllB)));
+                        x, breadth,
+                        x, breadth - (int)(heightFactor * (float)math_max(maxAllA, maxAllB)));
                     break;
                 case Qt::AlignTop :
+                case Qt::AlignLeft :
                     painter->drawLine(
                         x, 0,
-                        x, (int)(heightFactor*(float)math_max(maxAllA,maxAllB)));
+                        x, (int)(heightFactor * (float)math_max(maxAllA, maxAllB)));
                     break;
                 default :
                     painter->drawLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxAllA),
-                        x, (int)(halfHeight+heightFactor*(float)maxAllB));
+                        x, (int)(halfBreadth - heightFactor * (float)maxAllA),
+                        x, (int)(halfBreadth + heightFactor * (float)maxAllB));
             }
         }
     }

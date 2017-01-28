@@ -6,16 +6,21 @@
 #include <QScopedPointer>
 #include <QSharedPointer>
 
-#include "util/pa_ringbuffer.h"
-#include "util/reference.h"
+#include "pa_ringbuffer.h"
+#include "util/class.h"
 #include "util/math.h"
-#include "util.h"
+#include "util/reference.h"
 
 template <class DataType>
 class FIFO {
   public:
-    explicit FIFO(int size) {
+    explicit FIFO(int size)
+            : m_data(NULL) {
         size = roundUpToPowerOf2(size);
+        // If we can't represent the next higher power of 2 then bail.
+        if (size < 0) {
+            return;
+        }
         m_data = new DataType[size];
         memset(m_data, 0, sizeof(DataType) * size);
         PaUtil_InitializeRingBuffer(
@@ -62,6 +67,11 @@ class FIFO {
     int releaseReadRegions(int count) {
         return PaUtil_AdvanceRingBufferReadIndex(&m_ringBuffer, count);
     }
+    int flushReadData(int count) {
+        int flush = math_min(readAvailable(), count);
+        return PaUtil_AdvanceRingBufferReadIndex(&m_ringBuffer, flush);
+    }
+
   private:
     DataType* m_data;
     PaUtilRingBuffer m_ringBuffer;

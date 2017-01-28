@@ -10,11 +10,15 @@
 #include <QList>
 #include <QObject>
 #include <QAbstractItemModel>
+#include <QFont>
 
-#include "configobject.h"
-#include "trackinfoobject.h"
+#include "preferences/usersettings.h"
+#include "track/track.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
+#include "library/coverartcache.h"
+#include "library/setlogfeature.h"
+#include "library/scanner/libraryscanner.h"
 
 class TrackModel;
 class TrackCollection;
@@ -28,18 +32,20 @@ class MixxxLibraryFeature;
 class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
-class MixxxKeyboard;
+class KeyboardEventFilter;
+class PlayerManagerInterface;
 
 class Library : public QObject {
     Q_OBJECT
 public:
     Library(QObject* parent,
-            ConfigObject<ConfigValue>* pConfig,
+            UserSettingsPointer pConfig,
+            PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
 
     void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* pKeyboard);
+                    KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
     void addFeature(LibraryFeature* feature);
@@ -53,6 +59,14 @@ public:
         return m_pTrackCollection;
     }
 
+    inline int getTrackTableRowHeight() const {
+        return m_iTrackTableRowHeight;
+    }
+
+    inline const QFont& getTrackTableFont() const {
+        return m_trackTableFont;
+    }
+
     //static Library* buildDefaultLibrary();
 
     enum RemovalType {
@@ -60,6 +74,8 @@ public:
         HideTracks,
         PurgeTracks
     };
+
+    static const int kDefaultRowHeightPx;
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
@@ -75,6 +91,12 @@ public:
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
+    void slotSetTrackTableFont(const QFont& font);
+    void slotSetTrackTableRowHeight(int rowHeight);
+
+    void scan() {
+        m_scanner.scan();
+    }
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
@@ -85,9 +107,19 @@ public:
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
+    // emit this signal to enable/disable the cover art widget
+    void enableCoverArtDisplay(bool);
+    void trackSelected(TrackPointer pTrack);
+
+    void setTrackTableFont(const QFont& font);
+    void setTrackTableRowHeight(int rowHeight);
+
+    // Emitted when a library scan starts and finishes.
+    void scanStarted();
+    void scanFinished();
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;
@@ -99,6 +131,10 @@ public:
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
+    LibraryScanner m_scanner;
+    QFont m_trackTableFont;
+    int m_iTrackTableRowHeight;
+    QScopedPointer<ControlObject> m_pKeyNotation;
 };
 
 #endif /* LIBRARY_H */

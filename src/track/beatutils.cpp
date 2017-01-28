@@ -35,11 +35,12 @@ void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate
     QMap<double, int> frequency;
 
     for (int i = N; i < beats.size(); i += 1) {
-        double beat_start = beats.at(i-N);
+        double beat_start = beats.at(i - N);
         double beat_end = beats.at(i);
 
         // Time needed to count a bar (N beats)
-        const double time = (beat_end - beat_start)/SampleRate;
+        const double time = (beat_end - beat_start) / SampleRate;
+        if (time == 0) continue;
         double local_bpm = 60.0 * N / time;
 
         qDebug() << "Beat" << i << "local BPM:" << local_bpm;
@@ -67,15 +68,15 @@ double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
     // When there are an even number of elements, the sample median is the mean
     // of the middle 2 elements.
     if (sortedItems.size() % 2 == 0) {
-        int item_position = sortedItems.size()/2;
+        int item_position = sortedItems.size() / 2;
         double item_value1 = sortedItems.at(item_position - 1);
         double item_value2 = sortedItems.at(item_position);
-        return (item_value1 + item_value2)/2.0;
+        return (item_value1 + item_value2) / 2.0;
     }
 
     // When there are an odd number of elements, find the {(n+1)/2}th item in
     // the sorted list.
-    int item_position = (sortedItems.size() + 1)/2;
+    int item_position = (sortedItems.size() + 1) / 2;
     return sortedItems.at(item_position - 1);
 }
 
@@ -89,7 +90,8 @@ QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
         double end_sample = beats.at(i);
 
         // Time needed to count a bar (4 beats)
-        double time = (end_sample - start_sample)/sampleRate;
+        double time = (end_sample - start_sample) / sampleRate;
+        if (time == 0) continue;
         double localBpm = 60.0 * windowSize / time;
 
         // round BPM to have two decimal places
@@ -139,7 +141,8 @@ double BeatUtils::computeFilteredWeightedAverage(
     return filterWeightedAverage / static_cast<double>(filterSum);
 }
 
-double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int min_bpm, int max_bpm){
+double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
+                               int min_bpm, int max_bpm) {
     /*
      * Let's compute the average local
      * BPM for N subsequent beats.
@@ -245,7 +248,8 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
          double beat_end = beats.at(i);
 
          // Time needed to count a bar (N beats)
-         double time = (beat_end - beat_start)/SampleRate;
+         double time = (beat_end - beat_start) / SampleRate;
+         if (time == 0) continue;
          double local_bpm = 60.0 * N / time;
          // round BPM to have two decimal places
          local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
@@ -257,7 +261,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
              firstCorrectBeatSample = beat_start;
              foundFirstCorrectBeat = true;
              if (sDebug) {
-                 qDebug() << "Beat #" << (i-N)
+                 qDebug() << "Beat #" << (i - N)
                           << "is considered as reference beat with BPM:"
                           << local_bpm;
              }
@@ -268,7 +272,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
              } else {
                  counter += 1;
              }
-             double time2 = (beat_end - firstCorrectBeatSample)/SampleRate;
+             double time2 = (beat_end - firstCorrectBeatSample) / SampleRate;
              double correctedBpm = 60 * counter / time2;
 
              if (fabs(correctedBpm - filterWeightedAverageBpm) <= BPM_ERROR) {
@@ -411,7 +415,7 @@ double BeatUtils::calculateFixedTempoFirstBeat(
     }
 
     /*
-     * calculateOffset compares the beats from the analyser and the
+     * calculateOffset compares the beats from the analyzer and the
      * beats from the beat grid constructed above in corrbeats.
      */
     // qDebug() << "Calculating best offset";

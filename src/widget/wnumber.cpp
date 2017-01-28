@@ -22,16 +22,12 @@ WNumber::WNumber(QWidget* pParent)
           m_iNoDigits(2) {
 }
 
-WNumber::~WNumber() {
-}
-
-void WNumber::setup(QDomNode node, const SkinContext& context) {
+void WNumber::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 
     // Number of digits after the decimal.
-    if (context.hasNode(node, "NumberOfDigits")) {
-        m_iNoDigits = context.selectInt(node, "NumberOfDigits");
-    }
+    context.hasNodeSelectInt(node, "NumberOfDigits", &m_iNoDigits);
+
     setValue(0.);
 }
 
@@ -42,9 +38,9 @@ void WNumber::onConnectedControlChanged(double dParameter, double dValue) {
 }
 
 void WNumber::setValue(double dValue) {
-    if (m_qsText.contains("%1")) {
-        setText(m_qsText.arg(QString::number(dValue, 'f', m_iNoDigits)));
+    if (m_skinText.contains("%1")) {
+        setText(m_skinText.arg(QString::number(dValue, 'f', m_iNoDigits)));
     } else {
-        setText(m_qsText + QString::number(dValue, 'f', m_iNoDigits));
+        setText(m_skinText + QString::number(dValue, 'f', m_iNoDigits));
     }
 }

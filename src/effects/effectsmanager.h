@@ -6,24 +6,30 @@
 #include <QList>
 #include <QSet>
 #include <QScopedPointer>
+#include <QPair>
 
-#include "configobject.h"
-#include "util.h"
-#include "util/fifo.h"
+#include "preferences/usersettings.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "effects/effect.h"
-#include "effects/effectsbackend.h"
-#include "effects/effectchainslot.h"
 #include "effects/effectchain.h"
+#include "effects/effectchainmanager.h"
+#include "effects/effectchainslot.h"
 #include "effects/effectrack.h"
+#include "effects/effectsbackend.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/message.h"
+#include "util/class.h"
+#include "util/fifo.h"
 
 class EngineEffectsManager;
-class EffectChainManager;
 
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
-    EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig);
+    typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
+
+    EffectsManager(QObject* pParent, UserSettingsPointer pConfig);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {
@@ -38,20 +44,33 @@ class EffectsManager : public QObject {
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
-    void registerGroup(const QString& group);
-    const QSet<QString>& registeredGroups() const;
+    void registerChannel(const ChannelHandleAndGroup& handle_group);
+    const QSet<ChannelHandleAndGroup>& registeredChannels() const;
 
-    EffectRackPointer addEffectRack();
-    EffectRackPointer getEffectRack(int rack);
+    StandardEffectRackPointer addStandardEffectRack();
+    StandardEffectRackPointer getStandardEffectRack(int rack);
+
+    EqualizerRackPointer addEqualizerRack();
+    EqualizerRackPointer getEqualizerRack(int rack);
+
+    QuickEffectRackPointer addQuickEffectRack();
+    QuickEffectRackPointer getQuickEffectRack(int rack);
+
+    EffectRackPointer getEffectRack(const QString& group);
 
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
 
-    const QSet<QString> getAvailableEffects() const;
+    const QList<QString> getAvailableEffects() const;
+    // Each entry of the set is a pair containing the effect id and its name
+    const QList<QPair<QString, QString> > getEffectNamesFiltered(EffectManifestFilterFnc filter) const;
+    bool isEQ(const QString& effectId) const;
+    QPair<EffectManifest, EffectsBackend*> getEffectManifestAndBackend(
+            const QString& effectId) const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
-    // Temporary, but for setting up all the default EffectChains and EffectRack
+    // Temporary, but for setting up all the default EffectChains and EffectRacks
     void setupDefaults();
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
@@ -76,6 +95,12 @@ class EffectsManager : public QObject {
     QScopedPointer<EffectsRequestPipe> m_pRequestPipe;
     qint64 m_nextRequestId;
     QHash<qint64, EffectsRequest*> m_activeRequests;
+
+    // We need to create Control Objects for Equalizers' frequencies
+    ControlPotmeter* m_pLoEqFreq;
+    ControlPotmeter* m_pHiEqFreq;
+
+    bool m_underDestruction;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

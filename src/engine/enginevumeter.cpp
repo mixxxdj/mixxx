@@ -15,24 +15,31 @@
  ***************************************************************************/
 
 #include "engine/enginevumeter.h"
-#include "controlpotmeter.h"
-#include "controlobjectslave.h"
-#include "sampleutil.h"
-#include "util/math.h"
 
-EngineVuMeter::EngineVuMeter(const char* group) {
+#include "control/controlproxy.h"
+#include "control/controlpotmeter.h"
+#include "util/math.h"
+#include "util/sample.h"
+
+EngineVuMeter::EngineVuMeter(QString group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
     m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
     // left channel VU meter
-    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
+    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterL"), 0., 1.);
     // right channel VU meter
-    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterL"), 0., 1.);
+    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
 
-    // Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
-    m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, "PeakIndicator"), 0., 1.);
+    // Used controlpotmeter as the example used it :/ perhaps someone with more
+    // knowledge could use something more suitable...
+    m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, "PeakIndicator"),
+                                              0., 1.);
+    m_ctrlPeakIndicatorL = new ControlPotmeter(ConfigKey(group, "PeakIndicatorL"),
+                                              0., 1.);
+    m_ctrlPeakIndicatorR = new ControlPotmeter(ConfigKey(group, "PeakIndicatorR"),
+                                              0., 1.);
 
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
 
     // Initialize the calculation:
     reset();
@@ -44,6 +51,8 @@ EngineVuMeter::~EngineVuMeter()
     delete m_ctrlVuMeterL;
     delete m_ctrlVuMeterR;
     delete m_ctrlPeakIndicator;
+    delete m_ctrlPeakIndicatorL;
+    delete m_ctrlPeakIndicatorR;
 }
 
 void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
@@ -51,16 +60,21 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     int sampleRate = (int)m_pSampleRate->get();
 
-    bool clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
+    SampleUtil::CLIP_STATUS clipped = SampleUtil::sumAbsPerChannel(&fVolSumL,
+            &fVolSumR, pIn, iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
-    m_iSamplesCalculated += iBufferSize/2;
+    m_iSamplesCalculated += iBufferSize / 2;
 
     // Are we ready to update the VU meter?:
-    if (m_iSamplesCalculated > (sampleRate/VU_UPDATE_RATE)) {
-        doSmooth(m_fRMSvolumeL, log10(SHRT_MAX * m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1));
-        doSmooth(m_fRMSvolumeR, log10(SHRT_MAX * m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1));
+    if (m_iSamplesCalculated > (sampleRate / VU_UPDATE_RATE)) {
+        doSmooth(m_fRMSvolumeL,
+                log10(SHRT_MAX * m_fRMSvolumeSumL
+                                / (m_iSamplesCalculated * 1000) + 1));
+        doSmooth(m_fRMSvolumeR,
+                log10(SHRT_MAX * m_fRMSvolumeSumR
+                                / (m_iSamplesCalculated * 1000) + 1));
 
         const double epsilon = .0001;
 
@@ -83,14 +97,25 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
         m_fRMSvolumeSumR = 0;
     }
 
-    if (clipped) {
-        m_ctrlPeakIndicator->set(1.);
-        m_peakDuration = PEAK_DURATION * sampleRate / iBufferSize / 2000;
-    } else if (m_peakDuration <= 0) {
-        m_ctrlPeakIndicator->set(0.);
+    if (clipped & SampleUtil::CLIPPING_LEFT) {
+        m_ctrlPeakIndicatorL->set(1.);
+        m_peakDurationL = PEAK_DURATION * sampleRate / iBufferSize / 2000;
+    } else if (m_peakDurationL <= 0) {
+        m_ctrlPeakIndicatorL->set(0.);
     } else {
-        --m_peakDuration;
+        --m_peakDurationL;
     }
+
+    if (clipped & SampleUtil::CLIPPING_RIGHT) {
+        m_ctrlPeakIndicatorR->set(1.);
+        m_peakDurationR = PEAK_DURATION * sampleRate / iBufferSize / 2000;
+    } else if (m_peakDurationR <= 0) {
+        m_ctrlPeakIndicatorR->set(0.);
+    } else {
+        --m_peakDurationR;
+    }
+
+    m_ctrlPeakIndicator->set(m_ctrlPeakIndicatorR->get() || m_ctrlPeakIndicatorL->get());
 }
 
 void EngineVuMeter::collectFeatures(GroupFeatureState* pGroupFeatures) const {
@@ -115,11 +140,14 @@ void EngineVuMeter::reset() {
     m_ctrlVuMeterL->set(0);
     m_ctrlVuMeterR->set(0);
     m_ctrlPeakIndicator->set(0);
+    m_ctrlPeakIndicatorL->set(0);
+    m_ctrlPeakIndicatorR->set(0);
 
     m_iSamplesCalculated = 0;
     m_fRMSvolumeL = 0;
     m_fRMSvolumeSumL = 0;
     m_fRMSvolumeR = 0;
     m_fRMSvolumeSumR = 0;
-    m_peakDuration = 0;
+    m_peakDurationL = 0;
+    m_peakDurationR = 0;
 }

@@ -22,7 +22,6 @@ EffectManifest PeakingFilterEffect::getManifest() {
     q->setName(QString("Q"));
     q->setDescription(QString("Q"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    q->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     q->setDefault(1);
@@ -34,7 +33,6 @@ EffectManifest PeakingFilterEffect::getManifest() {
     gain->setName(QString("Gain"));
     gain->setDescription(QString("Gain"));
     gain->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    gain->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     gain->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     gain->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     gain->setDefault(0);
@@ -46,7 +44,6 @@ EffectManifest PeakingFilterEffect::getManifest() {
     center->setName(QString("Center"));
     center->setDescription(QString("Center frequency"));
     center->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    center->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     center->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     center->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     center->setDefault(0.022675737); // 1000 Hz @ 44100
@@ -56,7 +53,8 @@ EffectManifest PeakingFilterEffect::getManifest() {
     return manifest;
 }
 
-PeakingFilterEffectGroupState::PeakingFilterEffectGroupState() {
+PeakingFilterEffectGroupState::PeakingFilterEffectGroupState()
+        : m_oldCenter(0.022675737) {
     m_filter = new EngineFilterBiquad1Peaking(1, 0.022675737, 1); 
 }
 
@@ -75,38 +73,41 @@ PeakingFilterEffect::PeakingFilterEffect(EngineEffect* pEffect,
 PeakingFilterEffect::~PeakingFilterEffect() {
 }
 
-void PeakingFilterEffect::processGroup(const QString& group,
-                                   PeakingFilterEffectGroupState* pState,
-                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                   const unsigned int numSamples,
-                                   const unsigned int sampleRate,
-                                   const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+void PeakingFilterEffect::processChannel(
+        const ChannelHandle& handle,
+        PeakingFilterEffectGroupState* channelState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const EffectProcessor::EnableState enableState,
+        const GroupFeatureState& groupFeatures) {
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
+    Q_UNUSED(sampleRate);
 
 
-    float q = m_pPotQ->value().toDouble();
-    float gain = m_pPotGain->value().toDouble();
-    float center = m_pPotCenter->value().toDouble();;
+    double q = m_pPotQ->value();
+    double gain = m_pPotGain->value();
+    double center = m_pPotCenter->value();
 
-    if (q != pState->m_oldQ ||
-            gain != pState->m_oldGain ||
-            center != pState->m_oldCenter) {
-        pState->m_filter->setFrequencyCorners(1, center, q, gain); 
+    if (q != channelState->m_oldQ ||
+            gain != channelState->m_oldGain ||
+            center != channelState->m_oldCenter) {
+        channelState->m_filter->setFrequencyCorners(1, center, q, gain);
     }
 
     if (gain) {
-        pState->m_filter->process(pInput, pOutput, numSamples);
+        channelState->m_filter->process(pInput, pOutput, numSamples);
     } else {
         memcpy(pOutput, pInput, numSamples * sizeof(CSAMPLE));
-        pState->m_filter->pauseFilter();
+        channelState->m_filter->pauseFilter();
     }
 
     for (unsigned int i = 0; i < numSamples; i++) {
         pOutput[i] = tanhf(pOutput[i]); 
     }
 
-    pState->m_oldQ = q; 
-    pState->m_oldGain = gain; 
-    pState->m_oldCenter = center; 
+    channelState->m_oldQ = q;
+    channelState->m_oldGain = gain;
+    channelState->m_oldCenter = center;
 }

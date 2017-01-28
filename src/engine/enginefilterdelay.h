@@ -1,9 +1,9 @@
 #ifndef ENGINEFILTERDELAY_H
 #define ENGINEFILTERDELAY_H
 
-#include <string.h>
-
 #include "engine/engineobject.h"
+#include "util/assert.h"
+#include "util/sample.h"
 
 template<unsigned int SIZE>
 class EngineFilterDelay : public EngineObjectConstIn {
@@ -35,12 +35,18 @@ class EngineFilterDelay : public EngineObjectConstIn {
     }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
-                                     const int iBufferSize) {
+                         const int iBufferSize) {
         if (!m_doRamping) {
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples) % SIZE;
 
-            Q_ASSERT(delaySourcePos >= 0);
-            Q_ASSERT(delaySourcePos <= SIZE);
+            DEBUG_ASSERT_AND_HANDLE(delaySourcePos >= 0) {
+                SampleUtil::copy(pOutput, pIn, iBufferSize);
+                return;
+            }
+            DEBUG_ASSERT_AND_HANDLE(delaySourcePos <= static_cast<int>(SIZE)) {
+                SampleUtil::copy(pOutput, pIn, iBufferSize);
+                return;
+            }
 
             for (int i = 0; i < iBufferSize; ++i) {
                 // put sample into delay buffer:
@@ -55,8 +61,22 @@ class EngineFilterDelay : public EngineObjectConstIn {
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) % SIZE;
             int oldDelaySourcePos = (m_delayPos + SIZE - m_oldDelaySamples) % SIZE;
 
-            Q_ASSERT(delaySourcePos >= 0);
-            Q_ASSERT(delaySourcePos <= SIZE);
+            DEBUG_ASSERT_AND_HANDLE(delaySourcePos >= 0) {
+                SampleUtil::copy(pOutput, pIn, iBufferSize);
+                return;
+            }
+            DEBUG_ASSERT_AND_HANDLE(delaySourcePos <= static_cast<int>(SIZE)) {
+                SampleUtil::copy(pOutput, pIn, iBufferSize);
+                return;
+            }
+            DEBUG_ASSERT_AND_HANDLE(oldDelaySourcePos >= 0) {
+                SampleUtil::copy(pOutput, pIn, iBufferSize);
+                return;
+            }
+            DEBUG_ASSERT_AND_HANDLE(oldDelaySourcePos <= static_cast<int>(SIZE)) {
+                SampleUtil::copy(pOutput, pIn, iBufferSize);
+                return;
+            }
 
             double cross_mix = 0.0;
             double cross_inc = 2 / static_cast<double>(iBufferSize);
@@ -94,4 +114,4 @@ class EngineFilterDelay : public EngineObjectConstIn {
     bool m_doStart;
 };
 
-#endif // ENGINEFILTERIIR_H
+#endif // ENGINEFILTERDELAY_H

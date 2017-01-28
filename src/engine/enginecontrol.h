@@ -7,17 +7,16 @@
 #include <QObject>
 #include <QList>
 
-#include "configobject.h"
-#include "controlobjectthread.h"
-#include "trackinfoobject.h"
+#include "preferences/usersettings.h"
+#include "track/track.h"
 #include "control/controlvalue.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/cachingreader.h"
 
 class EngineMaster;
 class EngineBuffer;
-struct Hint;
 
-const double kNoTrigger = -1;
+const int kNoTrigger = -1;
 
 /**
  * EngineControl is an abstract base class for objects which implement
@@ -35,8 +34,8 @@ const double kNoTrigger = -1;
 class EngineControl : public QObject {
     Q_OBJECT
   public:
-    EngineControl(const char* _group,
-                  ConfigObject<ConfigValue>* _config);
+    EngineControl(QString group,
+                  UserSettingsPointer pConfig);
     virtual ~EngineControl();
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -63,14 +62,15 @@ class EngineControl : public QObject {
     // hintReader allows the EngineControl to provide hints to the reader to
     // indicate that the given portion of a song is a potential imminent seek
     // target.
-    virtual void hintReader(QVector<Hint>* pHintList);
+    virtual void hintReader(HintVector* pHintList);
 
     virtual void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
     virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
-    const char* getGroup() const;
+    bool atEndPosition() const;
+    QString getGroup() const;
 
     // Called to collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {
@@ -81,8 +81,7 @@ class EngineControl : public QObject {
     virtual void notifySeek(double dNewPlaypo);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   protected:
     void seek(double fractionalPosition);
@@ -91,19 +90,22 @@ class EngineControl : public QObject {
     void seekExact(double sample);
     EngineBuffer* pickSyncTarget();
 
-    ConfigObject<ConfigValue>* getConfig();
+    UserSettingsPointer getConfig();
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
 
-    const char* m_pGroup;
-    ConfigObject<ConfigValue>* m_pConfig;
+    QString m_group;
+    UserSettingsPointer m_pConfig;
 
   private:
-    ControlValueAtomic<double> m_dCurrentSample;
-    double m_dTotalSamples;
+    struct SampleOfTrack {
+        double current;
+        double total;
+    };
+
+    ControlValueAtomic<SampleOfTrack> m_sampleOfTrack;
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pEngineBuffer;
-    ControlObjectThread m_numDecks;
 };
 
 #endif /* ENGINECONTROL_H */

@@ -11,6 +11,7 @@
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
 #include "effects/effectinstantiator.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -18,7 +19,7 @@
 class EngineEffect : public EffectsRequestHandler {
   public:
     EngineEffect(const EffectManifest& manifest,
-                 const QSet<QString>& registeredGroups,
+                 const QSet<ChannelHandleAndGroup>& registeredChannels,
                  EffectInstantiatorPointer pInstantiator);
     virtual ~EngineEffect();
 
@@ -30,22 +31,19 @@ class EngineEffect : public EffectsRequestHandler {
         return m_parametersById.value(id, NULL);
     }
 
-    EngineEffectParameter* getButtonParameterById(const QString& id) {
-        return m_buttonParametersById.value(id, NULL);
-    }
-
     bool processEffectsRequest(
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const QString& group,
+    void process(const ChannelHandle& handle,
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
+                 const EffectProcessor::EnableState enableState,
                  const GroupFeatureState& groupFeatures);
 
     bool enabled() const {
-        return m_bEnabled;
+        return m_enableState != EffectProcessor::DISABLED;
     }
 
   private:
@@ -55,12 +53,13 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
-    bool m_bEnabled;
+    EffectProcessor::EnableState m_enableState;
+    bool m_effectRampsFromDry;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
-    QVector<EngineEffectParameter*> m_buttonParameters;
     QMap<QString, EngineEffectParameter*> m_parametersById;
-    QMap<QString, EngineEffectParameter*> m_buttonParametersById;
+
+    DISALLOW_COPY_AND_ASSIGN(EngineEffect);
 };
 
 #endif /* ENGINEEFFECT_H */

@@ -1,24 +1,26 @@
 // recordingfeature.cpp
 // Created 03/26/2010 by Tobias Rafreider
 
-#include "dlgrecording.h"
-#include "trackinfoobject.h"
+#include "library/recording/dlgrecording.h"
+#include "track/track.h"
 #include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
+#include "library/library.h"
 #include "library/trackcollection.h"
 #include "widget/wlibrary.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 
 const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
 
-RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+RecordingFeature::RecordingFeature(Library* pLibrary,
+                                   UserSettingsPointer pConfig,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : LibraryFeature(parent),
+        : LibraryFeature(pLibrary),
           m_pConfig(pConfig),
+          m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager){
-
+          m_pRecordingManager(pRecordingManager) {
 }
 
 RecordingFeature::~RecordingFeature() {
@@ -36,17 +38,18 @@ QIcon RecordingFeature::getIcon() {
 TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
-void RecordingFeature::bindWidget(WLibrary *libraryWidget,
-                                  MixxxKeyboard *keyboard) {
+void RecordingFeature::bindWidget(WLibrary* pLibraryWidget,
+                                  KeyboardEventFilter *keyboard) {
     //The view will be deleted by LibraryWidget
-    DlgRecording* pRecordingView = new DlgRecording(libraryWidget,
-                                                      m_pConfig,
-                                                      m_pTrackCollection,
-                                                      m_pRecordingManager,
-                                                      keyboard);
+    DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,
+                                                    m_pConfig,
+                                                    m_pLibrary,
+                                                    m_pTrackCollection,
+                                                    m_pRecordingManager,
+                                                    keyboard);
 
     pRecordingView->installEventFilter(keyboard);
-    libraryWidget->registerView(m_sRecordingViewName, pRecordingView);
+    pLibraryWidget->registerView(m_sRecordingViewName, pRecordingView);
     connect(pRecordingView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -65,4 +68,5 @@ void RecordingFeature::activate() {
     emit(switchToView(m_sRecordingViewName));
     // Ask the view to emit a restoreSearch signal.
     emit(requestRestoreSearch());
+    emit(enableCoverArtDisplay(false));
 }

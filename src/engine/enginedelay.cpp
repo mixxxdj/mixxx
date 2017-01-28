@@ -15,9 +15,11 @@
 ***************************************************************************/
 
 #include "enginedelay.h"
-#include "controlpotmeter.h"
-#include "controlobjectslave.h"
-#include "sampleutil.h"
+
+#include "control/controlproxy.h"
+#include "control/controlpotmeter.h"
+#include "util/assert.h"
+#include "util/sample.h"
 
 const int kiMaxDelay = 40000; // 208 ms @ 96 kb/s
 const double kdMaxDelayPot = 200; // 200 ms
@@ -32,7 +34,7 @@ EngineDelay::EngineDelay(const char* group, ConfigKey delayControl)
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
             SLOT(slotDelayChanged()), Qt::DirectConnection);
 
-    m_pSampleRate = new ControlObjectSlave(group, "samplerate", this);
+    m_pSampleRate = new ControlProxy(group, "samplerate", this);
     m_pSampleRate->connectValueChanged(SLOT(slotDelayChanged()), Qt::DirectConnection);
 }
 
@@ -61,8 +63,12 @@ void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
     if (m_iDelay > 0) {
         int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
 
-        Q_ASSERT(iDelaySourcePos >= 0);
-        Q_ASSERT(iDelaySourcePos <= kiMaxDelay);
+        DEBUG_ASSERT_AND_HANDLE(iDelaySourcePos >= 0) {
+            return;
+        }
+        DEBUG_ASSERT_AND_HANDLE(iDelaySourcePos <= kiMaxDelay) {
+            return;
+        }
 
         for (int i = 0; i < iBufferSize; ++i) {
             // put sample into delay buffer:

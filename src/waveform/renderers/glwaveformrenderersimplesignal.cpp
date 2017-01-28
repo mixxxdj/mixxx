@@ -14,10 +14,10 @@ GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
 
 }
 
-GLWaveformRendererSimpleSignal::~GLWaveformRendererSimpleSignal(){
+GLWaveformRendererSimpleSignal::~GLWaveformRendererSimpleSignal() {
 }
 
-void GLWaveformRendererSimpleSignal::onSetup(const QDomNode &node){
+void GLWaveformRendererSimpleSignal::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }
 
@@ -26,15 +26,14 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
     point.setY(y);
 }
 
-void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/){
-
+void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
     }
 
-    const Waveform* waveform = pTrack->getWaveform();
-    if (waveform == NULL) {
+    ConstWaveformPointer waveform = pTrack->getWaveform();
+    if (waveform.isNull()) {
         return;
     }
 
@@ -60,6 +59,8 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     // Reset device for native painting
     painter->beginNativePainting();
 
+#ifndef __OPENGLES__
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -72,6 +73,10 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
+        if (m_orientation == Qt::Vertical) {
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glScalef(-1.0f, 1.0f, 1.0f);
+        }
         glOrtho(firstVisualIndex, lastVisualIndex, -255.0, 255.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);
@@ -118,7 +123,11 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
-        if (m_alignment == Qt::AlignBottom)
+        if (m_orientation == Qt::Vertical) {
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glScalef(-1.0f, 1.0f, 1.0f);
+        }
+        if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignRight)
             glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
         else
             glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
@@ -155,5 +164,8 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
+
+#endif
+
     painter->endNativePainting();
 }

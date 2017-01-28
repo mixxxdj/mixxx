@@ -57,7 +57,7 @@ KeyDetector::getIdentifier() const
 string
 KeyDetector::getName() const
 {
-    return "Queen Mary Key Detector";
+    return "Key Detector";
 }
 
 string

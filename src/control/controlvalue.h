@@ -7,8 +7,9 @@
 #include <QObject>
 
 #include "util/compatibility.h"
+#include "util/assert.h"
 
-// for look free access, this value has to be >= the number of value using threads
+// for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
 const int cRingSize = 8;
 // there are basicly unlimited readers allowed at each ring element
@@ -91,7 +92,7 @@ class ControlValueAtomicBase {
             index = (unsigned int)m_writeIndex.fetchAndAddAcquire(1)
                     % (cRingSize);
             // This will be repeated if the value is locked
-            // 1) by an other writer writing at the same time or
+            // 1) by another writer writing at the same time or
             // 2) a delayed reader is still blocking the formerly current value
             // In both cases writing to the next value will fix it.
         } while (!m_ring[index].trySet(value));
@@ -104,7 +105,7 @@ class ControlValueAtomicBase {
           m_writeIndex(1) {
         // NOTE(rryan): Wrapping max with parentheses avoids conflict with the
         // max macro defined in windows.h.
-        Q_ASSERT(((std::numeric_limits<unsigned int>::max)() % cRingSize) == (cRingSize - 1));
+        DEBUG_ASSERT(((std::numeric_limits<unsigned int>::max)() % cRingSize) == (cRingSize - 1));
     }
 
   private:

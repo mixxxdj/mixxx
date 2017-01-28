@@ -18,94 +18,73 @@
 
 #include <QtDebug>
 
-#include "stardelegate.h"
-#include "stareditor.h"
-#include "starrating.h"
+#include "library/stardelegate.h"
+#include "library/stareditor.h"
+#include "library/starrating.h"
 
-StarDelegate::StarDelegate(QObject *pParent)
+StarDelegate::StarDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent),
+          m_pTableView(qobject_cast<QTableView*>(pParent)),
           m_isOneCellInEditMode(false) {
-    m_pTableView = qobject_cast<QTableView *>(pParent);
     connect(pParent, SIGNAL(entered(QModelIndex)),
             this, SLOT(cellEntered(QModelIndex)));
 }
 
-void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    //let the editor to the painting if this is true
-    if(index==m_currentEditedCellIndex){
+void StarDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
+                         const QModelIndex& index) const {
+    // let the editor do the painting if this cell is currently being edited
+    if (index == m_currentEditedCellIndex) {
         return;
     }
 
     // Populate the correct colors based on the styling
-    QStyleOptionViewItem newOption = option;
+    QStyleOptionViewItemV4 newOption = option;
     initStyleOption(&newOption, index);
 
-    // Set the palette appropriately based on whether the row is selected or
-    // not. We also have to check if it is inactive or not and use the
-    // appropriate ColorGroup.
-    if (newOption.state & QStyle::State_Selected) {
-        QPalette::ColorGroup colorGroup =
-                newOption.state & QStyle::State_Active ?
-                QPalette::Active : QPalette::Inactive;
-        painter->fillRect(newOption.rect,
-            newOption.palette.color(colorGroup, QPalette::Highlight));
-        painter->setBrush(newOption.palette.color(
-            colorGroup, QPalette::HighlightedText));
-    } else {
-        painter->fillRect(newOption.rect, newOption.palette.base());
-        painter->setBrush(newOption.palette.text());
-    }
-
     StarRating starRating = qVariantValue<StarRating>(index.data());
-    starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly,
-                     newOption.state & QStyle::State_Selected);
+    StarEditor::renderHelper(painter, m_pTableView, option, &starRating);
 }
 
-QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
+QSize StarDelegate::sizeHint(const QStyleOptionViewItem& option,
+                             const QModelIndex& index) const {
     Q_UNUSED(option);
     StarRating starRating = qVariantValue<StarRating>(index.data());
     return starRating.sizeHint();
 }
 
-QWidget *StarDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,const QModelIndex &index) const
-{
+QWidget* StarDelegate::createEditor(QWidget* parent,
+                                    const QStyleOptionViewItem& option,
+                                    const QModelIndex& index) const {
     // Populate the correct colors based on the styling
-    QStyleOptionViewItem newOption = option;
+    QStyleOptionViewItemV4 newOption = option;
     initStyleOption(&newOption, index);
 
-    StarEditor *editor = new StarEditor(parent, newOption);
+    StarEditor* editor = new StarEditor(parent, m_pTableView, index, newOption);
     connect(editor, SIGNAL(editingFinished()),
             this, SLOT(commitAndCloseEditor()));
     return editor;
 }
 
-void StarDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
-{
+void StarDelegate::setEditorData(QWidget* editor,
+                                 const QModelIndex& index) const {
     StarRating starRating = qVariantValue<StarRating>(index.data());
-    StarEditor *starEditor = qobject_cast<StarEditor *>(editor);
+    StarEditor* starEditor = qobject_cast<StarEditor*>(editor);
     starEditor->setStarRating(starRating);
 }
 
-void StarDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
-{
-    StarEditor *starEditor = qobject_cast<StarEditor *>(editor);
+void StarDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
+                                const QModelIndex& index) const {
+    StarEditor* starEditor = qobject_cast<StarEditor*>(editor);
     model->setData(index, qVariantFromValue(starEditor->starRating()));
 }
 
-/*
- * When the user is done editing, we emit commitData() and closeEditor() (both declared in QAbstractItemDelegate),
- * to tell the model that there is edited data and to inform the view that the editor is no longer needed.
- */
 void StarDelegate::commitAndCloseEditor() {
-    StarEditor *editor = qobject_cast<StarEditor *>(sender());
+    StarEditor* editor = qobject_cast<StarEditor*>(sender());
     emit commitData(editor);
     emit closeEditor(editor);
 }
 
-//cellEntered
-void StarDelegate::cellEntered(const QModelIndex &index) {
+void StarDelegate::cellEntered(const QModelIndex& index) {
     // This slot is called if the mouse pointer enters ANY cell on the
     // QTableView but the code should only be executed on a column with a
     // StarRating.

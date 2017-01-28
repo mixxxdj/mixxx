@@ -20,11 +20,10 @@
 
 #include <QtSql>
 #include <QList>
-#include <QRegExp>
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cratedao.h"
@@ -32,13 +31,14 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/directorydao.h"
+#include "library/dao/libraryhashdao.h"
 
 #ifdef __SQLITE3__
 typedef struct sqlite3_context sqlite3_context;
 typedef struct Mem sqlite3_value;
 #endif
 
-class TrackInfoObject;
+class Track;
 
 #define AUTODJ_TABLE "Auto DJ"
 
@@ -47,12 +47,13 @@ class BpmDetector;
 /**
    @author Albert Santoni
 */
-class TrackCollection : public QObject
-{
+class TrackCollection : public QObject {
     Q_OBJECT
   public:
-    TrackCollection(ConfigObject<ConfigValue>* pConfig);
-    ~TrackCollection();
+    static const int kRequiredSchemaVersion;
+
+    TrackCollection(UserSettingsPointer pConfig);
+    virtual ~TrackCollection();
     bool checkForTables();
 
     void resetLibaryCancellation();
@@ -62,13 +63,18 @@ class TrackCollection : public QObject
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
     DirectoryDAO& getDirectoryDAO();
+    AnalysisDao& getAnalysisDAO() {
+        return m_analysisDao;
+    }
     QSharedPointer<BaseTrackCache> getTrackSource();
     void setTrackSource(QSharedPointer<BaseTrackCache> trackSource);
     void cancelLibraryScan();
 
-    ConfigObject<ConfigValue>* getConfig() {
+    UserSettingsPointer getConfig() {
         return m_pConfig;
     }
+
+    void relocateDirectory(QString oldDir, QString newDir);
 
   protected:
 #ifdef __SQLITE3__
@@ -93,7 +99,7 @@ class TrackCollection : public QObject
 #endif // __SQLITE3__
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QSqlDatabase m_db;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;
     PlaylistDAO m_playlistDao;
@@ -101,8 +107,8 @@ class TrackCollection : public QObject
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
+    LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
-    const QRegExp m_supportedFileExtensionsRegex;
 };
 
 #endif // TRACKCOLLECTION_H

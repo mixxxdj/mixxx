@@ -29,18 +29,18 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "skin/skincontext.h"
-#include "controlwidgetconnection.h"
+#include "widget/controlwidgetconnection.h"
+#include "util/math.h"
 
 class WPushButton : public WWidget {
     Q_OBJECT
   public:
-    WPushButton(QWidget* pParent = NULL);
+    explicit WPushButton(QWidget* pParent = nullptr);
     // Used by WPushButtonTest.
     WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
                 ControlPushButton::ButtonMode rightButtonMode);
-    virtual ~WPushButton();
 
     Q_PROPERTY(bool pressed READ isPressed);
 
@@ -52,37 +52,46 @@ class WPushButton : public WWidget {
     // The declaration #MyButton[displayValue="0"] { } will define the style
     // when the widget is in state 0.  This allows for effects like reversing
     // background and foreground colors to indicate enabled/disabled state.
-    Q_PROPERTY(int displayValue READ readDisplayValue)
+    Q_PROPERTY(int displayValue READ readDisplayValue NOTIFY displayValueChanged)
 
     int readDisplayValue() const {
         double value = getControlParameterDisplay();
-        int idx = static_cast<int>(value) % m_iNoStates;
-        return idx;
+        if (!isnan(value) && m_iNoStates > 0) {
+            return static_cast<int>(value) % m_iNoStates;
+        }
+        return 0;
     }
 
-    void setup(QDomNode node, const SkinContext& context);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
 
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.
-    void setStates(int iStatesW);
+    void setStates(int iStates);
+
+  signals:
+    void displayValueChanged(int value);
 
   public slots:
-    void onConnectedControlChanged(double dParameter, double dValue);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected:
-    virtual void paintEvent(QPaintEvent*);
-    virtual void mousePressEvent(QMouseEvent* e);
-    virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual void focusOutEvent(QFocusEvent* e);
-    void fillDebugTooltip(QStringList* debug);
+    void paintEvent(QPaintEvent* /*unused*/) override;
+    void mousePressEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+    void focusOutEvent(QFocusEvent* e) override;
+    void fillDebugTooltip(QStringList* debug) override;
 
-  private:
+  protected:
+    void restyleAndRepaint();
+
     // Associates a pixmap of a given state of the button with the widget
-    void setPixmap(int iState, bool bPressed, const QString &filename);
+    void setPixmap(int iState, bool bPressed, PixmapSource source,
+                   Paintable::DrawMode mode);
 
     // Associates a background pixmap with the widget. This is only needed if
     // the button pixmaps contains alpha channel values.
-    void setPixmapBackground(const QString &filename, Paintable::DrawMode mode);
+    void setPixmapBackground(PixmapSource source,
+                            Paintable::DrawMode mode);
 
     // True, if the button is currently pressed
     bool m_bPressed;

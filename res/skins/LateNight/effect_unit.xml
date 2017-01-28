@@ -11,8 +11,8 @@
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
-    <MinimumSize>300,60</MinimumSize>
-    <MaximumSize>350,-1</MaximumSize>
+    <MinimumSize>300,85</MinimumSize>
+    <MaximumSize>350,85</MaximumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitNameRow</ObjectName>
@@ -37,11 +37,13 @@
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <PushButton>
+                <ObjectName>EffectUnitButton</ObjectName>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>⏏</Text>
+                  <Unpressed>btn_clear.png</Unpressed>
+                  <Pressed>btn_clear_down.png</Pressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,clear</ConfigKey>
@@ -49,11 +51,13 @@
               </PushButton>
 
               <PushButton>
+                <ObjectName>EffectUnitButton</ObjectName>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>◀</Text>
+                  <Unpressed>btn_prev_chain.png</Unpressed>
+                  <Pressed>btn_prev_chain_down.png</Pressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,prev_chain</ConfigKey>
@@ -62,11 +66,13 @@
               </PushButton>
 
               <PushButton>
+                <ObjectName>EffectUnitButton</ObjectName>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>▶</Text>
+                  <Unpressed>btn_next_chain.png</Unpressed>
+                  <Pressed>btn_next_chain_down.png</Pressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,next_chain</ConfigKey>
@@ -87,11 +93,8 @@
                   <Text>ON</Text>
                 </State>
                 <Connection>
-                  <ConfigKey persist="true"><Variable name="group"/>,enabled</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey persist="true"><Variable name="group"/>,enabled</ConfigKey>
+                  <!-- FIXME: Quick hack until effect chains are implemented. -->
+                  <ConfigKey persist="true">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect1],enabled</ConfigKey>
                 </Connection>
               </PushButton>
             </Children>
@@ -148,8 +151,8 @@
                 <SizePolicy>max,min</SizePolicy>
                 <Children>
                   <!-- <Template src="skin:knob.xml">
-                    <SetVariable name="control">parameter</SetVariable>
-                    <SetVariable name="label">Parameter</SetVariable>
+                    <SetVariable name="control">super1</SetVariable>
+                    <SetVariable name="label">SuperKnob</SetVariable>
                   </Template>-->
                   <Template src="skin:knob.xml">
                     <SetVariable name="control">mix</SetVariable>
@@ -168,11 +171,11 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:effect_unit_group_control_button.xml">
-                        <SetVariable name="group_name">Master</SetVariable>
+                        <SetVariable name="group_name">MASTER</SetVariable>
                         <SetVariable name="group_group">[Master]</SetVariable>
                       </Template>
                       <Template src="skin:effect_unit_group_control_button.xml">
-                        <SetVariable name="group_name">Head</SetVariable>
+                        <SetVariable name="group_name">HEAD</SetVariable>
                         <SetVariable name="group_group">[Headphone]</SetVariable>
                       </Template>
                     </Children>

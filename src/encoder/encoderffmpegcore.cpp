@@ -1,21 +1,3 @@
-/****************************************************************************
-                   encoderffmpegcore.cpp  -  FFMPEG encoder for mixxx
-                             -------------------
-    copyright            : (C) 2012-2013 by Tuukka Pasanen
-                           (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 //
 //   FFMPEG encoder class..
 //     - Supports what FFMPEG is compiled to supported
@@ -109,11 +91,7 @@ EncoderFfmpegCore::~EncoderFfmpegCore() {
     delete m_pResample;
 }
 
-unsigned int EncoderFfmpegCore::reSample(AVFrame *inframe) {
-    return m_pResample->reSample(inframe);
-}
-
-//call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
+//call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
 void EncoderFfmpegCore::flush() {
 }
 
@@ -211,7 +189,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
     free(l_fNormalizedSamples);
 }
 
-// Originally called from engineshoutcast.cpp to update metadata information
+// Originally called from enginebroadcast.cpp to update metadata information
 // when streaming, however, this causes pops
 //
 // Currently this method is used before init() once to save artist, title and album
@@ -295,9 +273,14 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
                                        AVStream *stream) {
     AVCodecContext *l_SCodecCtx = NULL;;
     AVPacket l_SPacket;
+#if LIBAVCODEC_VERSION_INT < 3617792
     AVFrame *l_SFrame = avcodec_alloc_frame();
+#else
+    AVFrame *l_SFrame = av_frame_alloc();
+#endif
     int l_iGotPacket;
     int l_iRet;
+    uint8_t *l_iOut = NULL;
 #ifdef av_make_error_string
     char l_strErrorBuff[256];
 #endif // av_make_error_string
@@ -344,16 +327,27 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     // to something that fits..
     if (l_SCodecCtx->sample_fmt != AV_SAMPLE_FMT_FLT) {
 
-        reSample(l_SFrame);
+        m_pResample->reSampleMixxx(l_SFrame, &l_iOut);
         // After we have turned our samples to destination
         // Format we must re-alloc l_SFrame.. it easier like this..
-#if LIBAVCODEC_VERSION_INT > 3544932
-        avcodec_free_frame(&l_SFrame);
-#else
+        // FFMPEG 2.2 3561060 anb beyond
+#if LIBAVCODEC_VERSION_INT >= 3561060
+        av_frame_unref(l_SFrame);
+        av_frame_free(&l_SFrame);
+// FFMPEG 0.11 and below
+#elif LIBAVCODEC_VERSION_INT <= 3544932
         av_free(l_SFrame);
-#endif // LIBAVCODEC_VERSION_INT > 3544932
+// FFMPEG 1.0 - 2.1
+#else
+        avcodec_free_frame(&l_SFrame);
+#endif
         l_SFrame = NULL;
+
+#if LIBAVCODEC_VERSION_INT < 3617792
         l_SFrame = avcodec_alloc_frame();
+#else
+        l_SFrame = av_frame_alloc();
+#endif
         l_SFrame->nb_samples = m_iAudioInputFrameSize;
         l_SFrame->format = l_SCodecCtx->sample_fmt;
 #ifndef __FFMPEGOLDAPI__
@@ -362,9 +356,12 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
 
         l_iRet = avcodec_fill_audio_frame(l_SFrame, l_SCodecCtx->channels,
                                           l_SCodecCtx->sample_fmt,
-                                          (const uint8_t *)m_pResample->getBuffer(),
+                                          l_iOut,
                                           m_iAudioCpyLen,
                                           1);
+
+        free(l_iOut);
+        l_iOut = NULL;
 
         if (l_iRet != 0) {
 #ifdef av_make_error_string
@@ -403,12 +400,14 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     l_SPacket.dts = m_lDts;
     l_SPacket.pts = m_lDts;
 
+#if LIBAVCODEC_VERSION_INT < 3617792
     // Some times den is zero.. so 0 dived by 0 is
     // Something?
     if (m_pEncoderAudioStream->pts.den == 0) {
         qDebug() << "Time hack!";
         m_pEncoderAudioStream->pts.den = 1;
     }
+#endif
 
     // Write the compressed frame to the media file. */
     l_iRet = av_interleaved_write_frame(formatctx, &l_SPacket);
@@ -419,7 +418,11 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     }
 
     av_free_packet(&l_SPacket);
+#if LIBAVCODEC_VERSION_INT < 3617792
     av_destruct_packet(&l_SPacket);
+#else
+    av_free_packet(&l_SPacket);
+#endif
     av_free(l_SFrame);
 
     return 0;
@@ -514,7 +517,7 @@ AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx,
         l_SCodecCtx->sample_rate = 44100;
         l_SCodecCtx->channels    = 2;
 
-        m_pResample->open(AV_SAMPLE_FMT_FLT, l_SCodecCtx->sample_fmt);
+        m_pResample->openMixxx(AV_SAMPLE_FMT_FLT, l_SCodecCtx->sample_fmt);
         break;
 
     default:

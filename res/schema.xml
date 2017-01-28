@@ -40,7 +40,7 @@ METADATA
         genre varchar(32), tracknumber varchar(3),
         location varchar(512) REFERENCES track_locations(location),
         comment varchar(20), url varchar(256),
-        duration integer,
+        duration float,
         bitrate integer, samplerate integer,
         cuepoint integer, bpm float,
         wavesummaryhex blob,
@@ -113,7 +113,7 @@ METADATA
         location integer REFERENCES track_locations(location),
         comment varchar(256),
         url varchar(256),
-        duration integer,
+        duration float,
         bitrate integer,
         samplerate integer,
         cuepoint integer,
@@ -381,6 +381,49 @@ METADATA
       CREATE TABLE IF NOT EXISTS directories (
         directory TEXT UNIQUE
       );
+    </sql>
+  </revision>
+  <revision version="24" min_compatible="3">
+    <description>
+      Add cover art support. Default source is UNKNOWN and default type is NONE.
+      See library/coverart.h.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN coverart_source INTEGER DEFAULT 0;
+      ALTER TABLE library ADD COLUMN coverart_type INTEGER DEFAULT 0;
+      ALTER TABLE library ADD COLUMN coverart_location TEXT DEFAULT "";
+      ALTER TABLE library ADD COLUMN coverart_hash INTEGER DEFAULT 0;
+    </sql>
+  </revision>
+  <revision version="25" min_compatible="3">
+    <description>
+      Add full replay gain support including peak amplitude. The default
+      value for the peak amplitude is "undefined", represented by any
+      negative value. The internal constant for "undefined" is -1.0.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN replaygain_peak REAL DEFAULT -1.0;
+    </sql>
+  </revision>
+  <revision version="26" min_compatible="3">
+    <description>
+      Add new column "tracktotal" column that stores the total number of
+      tracks as a string. The total number of tracks will be reloaded
+      from the corresponding file upon first access when encountering
+      the default value.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN tracktotal TEXT DEFAULT '//';
+    </sql>
+  </revision>
+  <revision version="27" min_compatible="3">
+    <description>
+      Add cue color support. Default color is #FF0000.
+      See library/dao/cue.h.
+    </description>
+    <sql>
+      <!-- Default color is #FFFF0000 (in base 10) -->
+      ALTER TABLE cues ADD COLUMN color INTEGER DEFAULT 4294901760 NOT NULL;
     </sql>
   </revision>
 </schema>

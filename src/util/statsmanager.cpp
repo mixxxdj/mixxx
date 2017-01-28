@@ -43,9 +43,31 @@ StatsManager::~StatsManager() {
     wait();
     qDebug() << "StatsManager shutdown report:";
     qDebug() << "=====================================";
+    qDebug() << "ALL STATS";
+    qDebug() << "=====================================";
     for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
          it != m_stats.end(); ++it) {
         qDebug() << it.value();
+    }
+
+    if (!m_baseStats.isEmpty()) {
+        qDebug() << "=====================================";
+        qDebug() << "BASE STATS";
+        qDebug() << "=====================================";
+        for (QMap<QString, Stat>::const_iterator it = m_baseStats.begin();
+             it != m_baseStats.end(); ++it) {
+            qDebug() << it.value();
+        }
+    }
+
+    if (!m_experimentStats.isEmpty()) {
+        qDebug() << "=====================================";
+        qDebug() << "EXPERIMENT STATS";
+        qDebug() << "=====================================";
+        for (QMap<QString, Stat>::const_iterator it = m_experimentStats.begin();
+             it != m_experimentStats.end(); ++it) {
+            qDebug() << it.value();
+        }
     }
     qDebug() << "=====================================";
 
@@ -96,7 +118,7 @@ void StatsManager::writeTimeline(const QString& filename) {
     // Sort by time.
     qSort(m_events.begin(), m_events.end(), OrderByTime());
 
-    qint64 last_time = m_events[0].m_time;
+    mixxx::Duration last_time = m_events[0].m_time;
 
     QMap<QString, qint64> startTimes;
     QMap<QString, qint64> endTimes;
@@ -107,26 +129,28 @@ void StatsManager::writeTimeline(const QString& filename) {
         qint64 last_start = startTimes.value(event.m_tag, -1);
         qint64 last_end = endTimes.value(event.m_tag, -1);
 
-        qint64 duration_since_last_start = last_start == -1 ? 0 : event.m_time - last_start;
-        qint64 duration_since_last_end = last_end == -1 ? 0 : event.m_time - last_end;
+        qint64 duration_since_last_start = last_start == -1 ? 0 :
+                event.m_time.toIntegerNanos() - last_start;
+        qint64 duration_since_last_end = last_end == -1 ? 0 :
+                event.m_time.toIntegerNanos() - last_end;
 
         if (event.m_type == Stat::EVENT_START) {
             // We last saw a start and we just saw another start.
             if (last_start > last_end) {
                 qDebug() << "Mismatched start/end pair" << event.m_tag;
             }
-            startTimes[event.m_tag] = event.m_time;
+            startTimes[event.m_tag] = event.m_time.toIntegerNanos();
         } else if (event.m_type == Stat::EVENT_END) {
             // We last saw an end and we just saw another end.
             if (last_end > last_start) {
                 qDebug() << "Mismatched start/end pair" << event.m_tag;
             }
-            endTimes[event.m_tag] = event.m_time;
+            endTimes[event.m_tag] = event.m_time.toIntegerNanos();
         }
 
         // TODO(rryan): CSV escaping
-        qint64 elapsed = event.m_time - last_time;
-        out << event.m_time << ","
+        qint64 elapsed = (event.m_time - last_time).toIntegerNanos();
+        out << event.m_time.toIntegerNanos() << ","
             << "+" << humanizeNanos(elapsed) << ","
             << "+" << humanizeNanos(duration_since_last_start) << ","
             << "+" << humanizeNanos(duration_since_last_end) << ","
@@ -180,6 +204,20 @@ void StatsManager::processIncomingStatReports() {
             info.processReport(report);
             emit(statUpdated(info));
 
+            if (report.compute & Stat::STATS_EXPERIMENT) {
+                Stat& experiment = m_experimentStats[tag];
+                experiment.m_tag = tag;
+                experiment.m_type = report.type;
+                experiment.m_compute = report.compute;
+                experiment.processReport(report);
+            } else if (report.compute & Stat::STATS_BASE) {
+                Stat& base = m_baseStats[tag];
+                base.m_tag = tag;
+                base.m_type = report.type;
+                base.m_compute = report.compute;
+                base.processReport(report);
+            }
+
             if (CmdlineArgs::Instance().getTimelineEnabled() &&
                     (report.type == Stat::EVENT ||
                      report.type == Stat::EVENT_START ||
@@ -187,7 +225,7 @@ void StatsManager::processIncomingStatReports() {
                 Event event;
                 event.m_tag = tag;
                 event.m_type = report.type;
-                event.m_time = report.time;
+                event.m_time = mixxx::Duration::fromNanos(report.time);
                 m_events.append(event);
             }
             free(report.tag);

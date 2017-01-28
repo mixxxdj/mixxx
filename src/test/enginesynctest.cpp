@@ -10,12 +10,15 @@
 
 #include <QtDebug>
 
-#include "configobject.h"
-#include "controlobject.h"
+#include "preferences/usersettings.h"
+#include "control/controlobject.h"
+#include "engine/bpmcontrol.h"
 #include "engine/sync/synccontrol.h"
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"
 #include "track/beatfactory.h"
+#include "mixer/basetrackplayer.h"
+#include "util/memory.h"
 
 
 class EngineSyncTest : public MockedEngineBackendTest {
@@ -28,7 +31,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
         return "";
     }
     void assertIsMaster(QString group) {
-        if (group == m_sInternalClockGroup){
+        if (group == m_sInternalClockGroup) {
             ASSERT_EQ(1,
                       ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                           "sync_master"))->get());
@@ -79,40 +82,38 @@ TEST_F(EngineSyncTest, ControlObjectsExist) {
 TEST_F(EngineSyncTest, SetMasterSuccess) {
     // If we set the first channel to master, EngineSync should get that message.
 
-    // Throughout these tests we use ControlObjectThreads so that we can trigger ValueChanged,
+    // Throughout these tests we use ControlProxys so that we can trigger ValueChanged,
     // and not just ValueChangedFromEngine.
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_MASTER);
     ProcessBuffer();
 
     // The master sync should now be channel 1.
     assertIsMaster(m_sGroup1);
 
-    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_mode")));
-    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
+    pButtonMasterSync2->set(SYNC_FOLLOWER);
     ProcessBuffer();
 
     assertIsFollower(m_sGroup2);
 
     // Now set channel 2 to be master.
-    pButtonMasterSync2->slotSet(SYNC_MASTER);
+    pButtonMasterSync2->set(SYNC_MASTER);
     ProcessBuffer();
 
-    // Now channel 2 should be master, and channel 1 should be a slave.
+    // Now channel 2 should be master, and channel 1 should be a follower.
     assertIsMaster(m_sGroup2);
     assertIsFollower(m_sGroup1);
 
     // Now back again.
-    pButtonMasterSync1->slotSet(SYNC_MASTER);
+    pButtonMasterSync1->set(SYNC_MASTER);
     ProcessBuffer();
 
-    // Now channel 1 should be master, and channel 2 should be a slave.
+    // Now channel 1 should be master, and channel 2 should be a follower.
     assertIsMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
-    // Now set channel 1 to slave, internal will be master because no track loaded.
+    // Now set channel 1 to follower, internal will be master because no track loaded.
     pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
@@ -124,25 +125,19 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
 TEST_F(EngineSyncTest, SetMasterWhilePlaying) {
     // Make sure we don't get two master lights if we change masters while playing.
 
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
-    QScopedPointer<ControlObjectThread> pFileBpm3(getControlObjectThread(
-        ConfigKey(m_sGroup3, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    auto pFileBpm3 = std::make_unique<ControlProxy>(m_sGroup3, "file_bpm");
 
     pFileBpm1->set(120.0);
     pFileBpm2->set(124.0);
     pFileBpm3->set(128.0);
 
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(SYNC_MASTER);
-    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_mode")));
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
+    pButtonMasterSync1->set(SYNC_MASTER);
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
     pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
-    QScopedPointer<ControlObjectThread> pButtonMasterSync3(getControlObjectThread(
-            ConfigKey(m_sGroup3, "sync_mode")));
+    auto pButtonMasterSync3 = std::make_unique<ControlProxy>(m_sGroup3, "sync_mode");
     pButtonMasterSync3->slotSet(SYNC_FOLLOWER);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
@@ -161,9 +156,8 @@ TEST_F(EngineSyncTest, SetMasterWhilePlaying) {
 }
 
 TEST_F(EngineSyncTest, SetEnabledBecomesMaster) {
-    // If we set the first channel to slave, it should be master.
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+    // If we set the first channel to follower, it should be master.
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
@@ -172,11 +166,9 @@ TEST_F(EngineSyncTest, SetEnabledBecomesMaster) {
 }
 
 TEST_F(EngineSyncTest, DisableInternalMasterWhilePlaying) {
-    QScopedPointer<ControlObjectThread> pButtonMasterSync(getControlObjectThread(
-            ConfigKey(m_sInternalClockGroup, "sync_master")));
+    auto pButtonMasterSync = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
     pButtonMasterSync->slotSet(1.0);
-    QScopedPointer<ControlObjectThread> pButtonSyncMode1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+    auto pButtonSyncMode1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonSyncMode1->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
@@ -184,8 +176,7 @@ TEST_F(EngineSyncTest, DisableInternalMasterWhilePlaying) {
     assertIsMaster(m_sInternalClockGroup);
 
     // Make sure deck 1 is playing.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(80.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
@@ -201,20 +192,17 @@ TEST_F(EngineSyncTest, DisableInternalMasterWhilePlaying) {
 
 TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     // Channel 1 follower, channel 2 master.
-    QScopedPointer<ControlObjectThread> pButtonSyncMode1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+    auto pButtonSyncMode1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonSyncMode1->slotSet(SYNC_FOLLOWER);
 
-    QScopedPointer<ControlObjectThread> pButtonSyncMaster2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_master")));
+    auto pButtonSyncMaster2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_master");
     pButtonSyncMaster2->slotSet(1.0);
 
     assertIsFollower(m_sGroup1);
     assertIsMaster(m_sGroup2);
 
     // Unset enabled on channel2, it should work.
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_enabled")));
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->slotSet(0.0);
 
     assertIsFollower(m_sGroup1);
@@ -222,22 +210,18 @@ TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
 }
 
-TEST_F(EngineSyncTest, InternalMasterSetSlaveSliderMoves) {
-    // If internal is master, and we turn on a slave, the slider should move.
-    QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
-            ConfigKey(m_sInternalClockGroup, "sync_master")));
+TEST_F(EngineSyncTest, InternalMasterSetFollowerSliderMoves) {
+    // If internal is master, and we turn on a follower, the slider should move.
+    auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
     pButtonMasterSyncInternal->slotSet(1);
-    QScopedPointer<ControlObjectThread> pMasterSyncSlider(getControlObjectThread(
-            ConfigKey(m_sInternalClockGroup, "bpm")));
+    auto pMasterSyncSlider = std::make_unique<ControlProxy>(m_sInternalClockGroup, "bpm");
     pMasterSyncSlider->set(100.0);
 
     // Set the file bpm of channel 1 to 160bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(80.0);
 
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
@@ -250,22 +234,18 @@ TEST_F(EngineSyncTest, AnySyncDeckSliderStays) {
     // If there exists a sync deck, even if it's not playing, don't change the
     // master BPM if a new deck enables sync.
 
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(80.0);
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     pButtonSyncEnabled1->set(1.0);
 
     // After setting up the first deck, the internal BPM should be 80.
     EXPECT_FLOAT_EQ(80.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(100.0);
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_enabled")));
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->set(1.0);
 
     // After the second one, though, the internal BPM should still be 80.
@@ -275,34 +255,26 @@ TEST_F(EngineSyncTest, AnySyncDeckSliderStays) {
 
 TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     // Same as above, except we use the midi lights to change state.
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
-    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_mode")));
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pButtonSyncMaster1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_master")));
-    QScopedPointer<ControlObjectThread> pButtonSyncMaster2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_master")));
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+    auto pButtonSyncMaster1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_master");
+    auto pButtonSyncMaster2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_master");
 
     // Set up decks so they can be playing, and start deck 1.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(100.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(130.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
     ProcessBuffer();
 
     // Set channel 1 to be enabled
-    pButtonSyncEnabled1->slotSet(1.0);
+    pButtonSyncEnabled1->set(1.0);
     ProcessBuffer();
 
     // The master sync should now be internal and the speed should match deck 1.
@@ -312,7 +284,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 
     // Set channel 2 to be enabled.
-    pButtonSyncEnabled2->slotSet(1);
+    pButtonSyncEnabled2->set(1);
     ProcessBuffer();
 
     assertIsFollower(m_sGroup2);
@@ -335,7 +307,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     assertIsFollower(m_sGroup2);
 
     // Now disable sync on channel 1.
-    pButtonSyncEnabled1->slotSet(0);
+    pButtonSyncEnabled1->set(0);
     ProcessBuffer();
 
     // Rate should now match channel 2.
@@ -346,18 +318,12 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
 
 TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     // Same as above, except we use the midi lights to change state.
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
-    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_mode")));
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pButtonSyncMaster1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_master")));
-    QScopedPointer<ControlObjectThread> pButtonSyncMaster2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_master")));
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+    auto pButtonSyncMaster1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_master");
+    auto pButtonSyncMaster2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_master");
 
     // Set channel 1 to be master.
     pButtonSyncMaster1->slotSet(1.0);
@@ -366,7 +332,7 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     // The master sync should now be channel 1.
     assertIsMaster(m_sGroup1);
 
-    // Set channel 2 to be slave.
+    // Set channel 2 to be follower.
     pButtonSyncEnabled2->slotSet(1);
 
     assertIsFollower(m_sGroup2);
@@ -374,14 +340,14 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     // Now set channel 2 to be master.
     pButtonSyncMaster2->slotSet(1);
 
-    // Now channel 2 should be master, and channel 1 should be a slave.
+    // Now channel 2 should be master, and channel 1 should be a follower.
     assertIsFollower(m_sGroup1);
     assertIsMaster(m_sGroup2);
 
     // Now back again.
     pButtonSyncMaster1->slotSet(1);
 
-    // Now channel 1 should be master, and channel 2 should be a slave.
+    // Now channel 1 should be master, and channel 2 should be a follower.
     assertIsMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
@@ -394,17 +360,14 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
 }
 
 TEST_F(EngineSyncTest, RateChangeTest) {
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_MASTER);
-    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_mode")));
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
     pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
     // Set the file bpm of channel 1 to 160bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(160.0);
     EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
     EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
@@ -419,8 +382,7 @@ TEST_F(EngineSyncTest, RateChangeTest) {
     EXPECT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 
     // Set the file bpm of channel 2 to 120bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(120.0);
     EXPECT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->get());
 
@@ -432,23 +394,19 @@ TEST_F(EngineSyncTest, RateChangeTest) {
 
 TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     // This is like the test above, but the user loads the track after the slider has been tweaked.
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_MASTER);
-    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_mode")));
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
     pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
     // Set the file bpm of channel 1 to 160bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(160.0);
     EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 
     // Set the file bpm of channel 2 to 120bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(120.0);
 
     // Set the rate slider of channel 1 to 1.2.
@@ -465,31 +423,27 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
 
 TEST_F(EngineSyncTest, RateChangeTestOrder3) {
     // Set the file bpm of channel 1 to 160bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(160.0);
     EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
 
     // Set the file bpm of channel 2 to 120bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(120.0);
     EXPECT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->get());
 
-    // Turn on Master and Slave.
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+    // Turn on Master and Follower.
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_MASTER);
     ProcessBuffer();
 
     assertIsMaster(m_sGroup1);
 
-    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_mode")));
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
     pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
-    // Slave should immediately set its slider.
+    // Follower should immediately set its slider.
     EXPECT_FLOAT_EQ(getRateSliderValue(1.3333333333),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
     EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
@@ -497,24 +451,20 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 }
 
-TEST_F(EngineSyncTest, SlaveRateChange) {
-    // Confirm that slaves can change master sync rate as well.
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+TEST_F(EngineSyncTest, FollowerRateChange) {
+    // Confirm that followers can change master sync rate as well.
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_MASTER);
-    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_mode")));
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
     pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
     // Set the file bpm of channel 1 to 160bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(160.0);
 
     // Set the file bpm of channel 2 to 120bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(120.0);
 
     // Set the rate slider of channel 1 to 1.2.
@@ -526,12 +476,11 @@ TEST_F(EngineSyncTest, SlaveRateChange) {
     EXPECT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 
     // Try to twiddle the rate slider on channel 2.
-    QScopedPointer<ControlObjectThread> pSlider2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "rate")));
+    auto pSlider2 = std::make_unique<ControlProxy>(m_sGroup2, "rate");
     pSlider2->slotSet(getRateSliderValue(0.8));
     ProcessBuffer();
 
-    // Rates should still be changed even though it's a slave.
+    // Rates should still be changed even though it's a follower.
     EXPECT_FLOAT_EQ(getRateSliderValue(0.8),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
     EXPECT_FLOAT_EQ(96.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
@@ -541,14 +490,11 @@ TEST_F(EngineSyncTest, SlaveRateChange) {
 }
 
 TEST_F(EngineSyncTest, InternalRateChangeTest) {
-    QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
-            ConfigKey(m_sInternalClockGroup, "sync_master")));
+    auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
     pButtonMasterSyncInternal->slotSet(SYNC_MASTER);
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
-    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_mode")));
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
     pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
@@ -557,20 +503,17 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     assertIsFollower(m_sGroup2);
 
     // Set the file bpm of channel 1 to 160bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(160.0);
     EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
 
     // Set the file bpm of channel 2 to 120bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(120.0);
     EXPECT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->get());
 
     // Set the internal rate to 150.
-    QScopedPointer<ControlObjectThread> pMasterSyncSlider(getControlObjectThread(
-            ConfigKey(m_sInternalClockGroup, "bpm")));
+    auto pMasterSyncSlider = std::make_unique<ControlProxy>(m_sInternalClockGroup, "bpm");
     pMasterSyncSlider->set(150.0);
     EXPECT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     // Set decks playing, and process a buffer to update all the COs.
@@ -611,29 +554,23 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
 
 TEST_F(EngineSyncTest, MasterStopSliderCheck) {
     // If the master is playing, and stop is pushed, the sliders should stay the same.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(120.0);
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(128.0);
 
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_MASTER);
-    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_mode")));
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
     pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
     assertIsMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
-    QScopedPointer<ControlObjectThread> pChannel1Play(getControlObjectThread(
-            ConfigKey(m_sGroup1, "play")));
+    auto pChannel1Play = std::make_unique<ControlProxy>(m_sGroup1, "play");
     pChannel1Play->set(1.0);
-    QScopedPointer<ControlObjectThread> pChannel2Play(getControlObjectThread(
-            ConfigKey(m_sGroup2, "play")));
+    auto pChannel2Play = std::make_unique<ControlProxy>(m_sGroup2, "play");
     pChannel2Play->set(1.0);
 
     ProcessBuffer();
@@ -659,10 +596,8 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
     // If Internal is master, and we turn sync on a playing deck, the playing deck sets the
     // internal master and the beat distances are now aligned.
 
-    QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
-            ConfigKey(m_sInternalClockGroup, "sync_master")));
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
 
     // Set internal to master and give it a beat distance.
     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->set(124.0);
@@ -693,7 +628,8 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
                                                         "beat_distance"))->get());
 
     // Enable second deck, beat distance should still match original setting.
-    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(140.0);
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    pFileBpm2->set(140.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
     ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.2);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
@@ -713,13 +649,10 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
 TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
     // If we turn sync on a playing deck, the playing deck initializes the internal clock master.
 
-    QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
-            ConfigKey(m_sInternalClockGroup, "sync_master")));
-    QScopedPointer<ControlObjectThread> pButtonSyncMasterEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_master")));
+    auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
+    auto pButtonSyncMasterEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_master");
 
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
 
     // Set the deck to play.
     pFileBpm1->set(130.0);
@@ -743,13 +676,162 @@ TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
                                                         "beat_distance"))->get());
 }
 
+TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
+    // If master sync is on when a track gets loaded, the internal clock
+    // may or may not get synced to the new track depending on the state
+    // of other decks and whether they have tracks loaded as well.
+
+    // First eject the fake tracks that come with the testing framework.
+    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+    m_pChannel2->getEngineBuffer()->slotEjectTrack(1.0);
+    m_pChannel3->getEngineBuffer()->slotEjectTrack(1.0);
+
+    // If sync is on and we load a track, that should initialize master.
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    pButtonSyncEnabled1->slotSet(1.0);
+
+    m_pMixerDeck1->loadFakeTrack(false, 140.0);
+
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    // If sync is on two decks and we load a track, that should still initialize
+    // master.
+    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+    pButtonSyncEnabled2->slotSet(1.0);
+
+    m_pMixerDeck1->loadFakeTrack(false, 128.0);
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    // If sync is on two decks and one deck is loaded but not playing, we should
+    // still initialize to that deck.
+    m_pMixerDeck2->loadFakeTrack(false, 110.0);
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+}
+
+TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
+    // Make sure playing decks with master sync enabled do not change tempo when
+    // the "Reset Speed/Tempo" preference is set and a track is loaded to another
+    // deck with master sync enabled.
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+                   ConfigValue(BaseTrackPlayer::RESET_SPEED));
+
+    // Enable sync on two stopped decks
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    pButtonSyncEnabled1->slotSet(1.0);
+
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+    pButtonSyncEnabled2->slotSet(1.0);
+
+    // If sync is on and we load a track, that should initialize master.
+    TrackPointer track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
+
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    // If sync is on two decks and we load a track while one is playing,
+    // that should not change the playing deck.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+
+    TrackPointer track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
+
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Repeat with RESET_PITCH_AND_SPEED
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+                   ConfigValue(BaseTrackPlayer::RESET_PITCH_AND_SPEED));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    m_pMixerDeck1->slotLoadTrack(track1, true);
+    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    m_pMixerDeck2->slotLoadTrack(track2, false);
+    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Repeat with RESET_NONE
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+                   ConfigValue(BaseTrackPlayer::RESET_NONE));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
+    m_pMixerDeck1->slotLoadTrack(track1, true);
+    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    m_pMixerDeck2->slotLoadTrack(track2, false);
+    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Load two tracks with sync off and RESET_SPEED
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+                   ConfigValue(BaseTrackPlayer::RESET_SPEED));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.5));
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.5));
+    pButtonSyncEnabled1->slotSet(0.0);
+    pButtonSyncEnabled2->slotSet(0.0);
+    m_pMixerDeck1->slotLoadTrack(track1, true);
+    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    m_pMixerDeck2->slotLoadTrack(track2, false);
+    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Load two tracks with sync off and RESET_PITCH_AND_SPEED
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+                   ConfigValue(BaseTrackPlayer::RESET_PITCH_AND_SPEED));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.5));
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.5));
+    pButtonSyncEnabled1->slotSet(0.0);
+    pButtonSyncEnabled2->slotSet(0.0);
+    m_pMixerDeck1->slotLoadTrack(track1, true);
+    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    m_pMixerDeck2->slotLoadTrack(track2, false);
+    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+}
+
 TEST_F(EngineSyncTest, EnableOneDeckSliderUpdates) {
     // If we enable a deck to be master, the internal slider should immediately update.
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
 
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(130.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
 
@@ -769,18 +851,14 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     // If deck 1 is playing, and deck 2 presses sync, deck 2 should sync to deck 1 even if
     // deck 1 is not a sync deck.
 
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_enabled")));
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
 
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(130.0);
     ProcessBuffer();
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(100.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
 
@@ -848,19 +926,15 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
     // Like it says -- if the current deck is playing, and the target deck is
     // playing, they should sync even if there's no sync mode enabled.
 
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_enabled")));
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
 
     // Set up decks so they can be playing, and start deck 1.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(100.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(130.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
@@ -924,17 +998,13 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
 }
 
 TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
-    QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
-            ConfigKey(m_sInternalClockGroup, "sync_master")));
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pButtonEject1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "eject")));
+    auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    auto pButtonEject1 = std::make_unique<ControlProxy>(m_sGroup1, "eject");
 
     pButtonMasterSyncInternal->slotSet(1.0);
 
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(120.0);
     pButtonSyncEnabled1->slotSet(1.0);
 
@@ -949,19 +1019,15 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
 
 TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {
     // If filebpm changes, don't treat it like a rate change.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(100.0);
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     pButtonSyncEnabled1->set(1.0);
     ProcessBuffer();
 
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(120.0);
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_enabled")));
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->set(1.0);
     ProcessBuffer();
 
@@ -974,10 +1040,8 @@ TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {
 TEST_F(EngineSyncTest, ExplicitMasterPostProcessed) {
     // Regression test thanks to a bug.  Make sure that an explicit master
     // channel gets post-processed.
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_mode")));
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pButtonMasterSync1->slotSet(SYNC_MASTER);
     pFileBpm1->set(160.0);
     ProcessBuffer();
@@ -990,20 +1054,16 @@ TEST_F(EngineSyncTest, ExplicitMasterPostProcessed) {
 TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
     // If a track isn't loaded (0 bpm), but the deck has sync enabled,
     // don't pay attention to rate changes.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(0.0);
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     pButtonSyncEnabled1->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
     ProcessBuffer();
 
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(120.0);
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_enabled")));
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->set(1.0);
     ProcessBuffer();
 
@@ -1034,11 +1094,13 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
 TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
     // Confirm that a rate change in an explicit master is instantly communicated
     // to followers.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(128.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(128.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 128, 0.0);
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    pFileBpm1->set(128.0);
+    pFileBpm2->set(128.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 128, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 128, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1068,11 +1130,13 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
 }
 
 TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
-    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(70);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    pFileBpm1->set(70);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 70, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(140);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 140, 0.0);
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    pFileBpm2->set(140);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1102,7 +1166,7 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
 
-    // Now switch master and slave and check again.
+    // Now switch master and follower and check again.
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_FOLLOWER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_MASTER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
@@ -1130,23 +1194,19 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
 TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     // If a deck plays that had its multiplier set, we need to reset the
     // internal clock.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(80.0);
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(175.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 80, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 80, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 175, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 175, 0.0);
     m_pTrack2->setBeats(pBeats2);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
 
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     pButtonSyncEnabled1->slotSet(1.0);
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_enabled")));
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->slotSet(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
@@ -1189,15 +1249,13 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
 
 TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
     // If we set the file_bpm CO's directly, the correct signals aren't fired.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(70.0);
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(140.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 70, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 140, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1220,23 +1278,19 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     // If we press play on a sync deck, we will only sync phase to a non-sync
     // deck if there are no sync decks and the non-sync deck is playing.
 
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
     pFileBpm1->set(130.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 130, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
     m_pTrack1->setBeats(pBeats1);
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
 
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.8);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 130, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 100, 0.0);
     m_pTrack2->setBeats(pBeats2);
     pFileBpm2->set(100.0);
 
@@ -1269,13 +1323,11 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     // But if there is a third deck that is sync-enabled, we match that.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled3(getControlObjectThread(
-            ConfigKey(m_sGroup3, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pFileBpm3(getControlObjectThread(
-        ConfigKey(m_sGroup3, "file_bpm")));
+    auto pButtonSyncEnabled3 = std::make_unique<ControlProxy>(m_sGroup3, "sync_enabled");
+    auto pFileBpm3 = std::make_unique<ControlProxy>(m_sGroup3, "file_bpm");
     ControlObject::getControl(ConfigKey(m_sGroup3, "beat_distance"))->set(0.6);
     ControlObject::getControl(ConfigKey(m_sGroup3, "rate"))->set(getRateSliderValue(1.0));
-    BeatsPointer pBeats3 = BeatFactory::makeBeatGrid(m_pTrack3.data(), 140, 0.0);
+    BeatsPointer pBeats3 = BeatFactory::makeBeatGrid(*m_pTrack3, 140, 0.0);
     m_pTrack3->setBeats(pBeats3);
     pFileBpm3->set(140.0);
     pButtonSyncEnabled1->set(0.0);
@@ -1301,16 +1353,14 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
 TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     // If a deck has a user tweak, and another deck stops such that the first
     // is used to reseed the master beat distance, make sure the user offset
-    // is taken in to account.  Sigh.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup1, "file_bpm")));
+    // is reset.
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(128.0);
-    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(128.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 128, 0.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 128, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 128, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1321,7 +1371,7 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
     // Spin the wheel, causing the useroffset for group1 to get set.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0.2);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0.4);
     for (int i = 0; i < 10; ++i) {
         ProcessBuffer();
     }
@@ -1332,7 +1382,7 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     }
 
     // Stop the second deck.  This causes the master beat distance to get
-    // seeded with the beta distance from deck 1.
+    // seeded with the beat distance from deck 1.
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
 
     // Play a buffer, which is enough to see if the beat distances align.
@@ -1344,4 +1394,38 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
                              - ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                               "beat_distance"))->get());
     EXPECT_LT(difference, .00001);
+
+    EXPECT_FLOAT_EQ(0.0, m_pChannel1->getEngineBuffer()->m_pBpmControl->m_dUserOffset);
+}
+
+TEST_F(EngineSyncTest, MasterBpmNeverZero) {
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    pFileBpm1->set(128.0);
+
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    pButtonSyncEnabled1->set(1.0);
+
+    pFileBpm1->set(0.0);
+    EXPECT_EQ(128.0,
+              ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+}
+
+TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
+    // If a track has a zero bpm and a bad beatgrid, make sure the rate
+    // doesn't end up something crazy when sync is enabled..
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    pFileBpm1->set(0.0);
+    // Maybe the beatgrid ended up at zero also.
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 0.0, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    pButtonSyncEnabled1->set(1.0);
+
+    ProcessBuffer();
+
+    // 0 bpm is what we want, the sync code will play the track back at rate
+    // 1.0.
+    EXPECT_EQ(0.0,
+              ControlObject::getControl(ConfigKey(m_sGroup1, "local_bpm"))->get());
 }

@@ -13,32 +13,28 @@
                     <WidgetGroup>
                         <ObjectName>AlignLeftTop</ObjectName>
                         <Layout>horizontal</Layout>
-                        <SizePolicy>max,min</SizePolicy>
-                        <Children>
-        					<TrackProperty>
-                                <ObjectName>TextColor<Variable name="channum" /></ObjectName>
-                                <Alignment>Left</Alignment>
-        						<TooltipId>track_title</TooltipId>
-        						<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
-        							Unicode, Arial, Verdana, sans-serif; text-align: left;}
-        						</Style>
-        						<Property>title</Property>
-        						<Channel>
-        							<Variable name="channum" />
-        						</Channel>
-        					</TrackProperty>
-                        </Children>
-                    </WidgetGroup>
-					<WidgetGroup>
-                        <ObjectName>TimeGutter</ObjectName>
-                        <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
-                        <Children/>
+                        <Children>
+        					        <TrackProperty>
+                            <ObjectName>TextColor<Variable name="channum" /></ObjectName>
+                            <Alignment>Left</Alignment>
+                						<TooltipId>track_title</TooltipId>
+                						<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
+                							Unicode, Arial, Verdana, sans-serif; text-align: left;}
+                						</Style>
+                						<Property>title</Property>
+                            <Elide>right</Elide>
+                            <SizePolicy>me,min</SizePolicy>
+                						<Channel>
+                							<Variable name="channum" />
+                						</Channel>
+                					</TrackProperty>
+                        </Children>
                     </WidgetGroup>
                     <WidgetGroup>
                         <ObjectName>AlignRightTop</ObjectName>
                         <Layout>horizontal</Layout>
-                        <SizePolicy>me,min</SizePolicy>
+                        <SizePolicy>f,min</SizePolicy>
                         <MinimumSize>100,</MinimumSize>
                         <MaximumSize>100,</MaximumSize>
                         <Children>
@@ -77,6 +73,8 @@
 									Unicode, Arial, Verdana, sans-serif;}
 								</Style>
 								<Property>artist</Property>
+                <Elide>right</Elide>
+                <SizePolicy>me,min</SizePolicy>
 								<Channel>
 									<Variable name="channum" />
 								</Channel>
@@ -86,7 +84,7 @@
 					<WidgetGroup>
                         <ObjectName>DurationGutter</ObjectName>
                         <Layout>horizontal</Layout>
-                        <SizePolicy>me,min</SizePolicy>
+                        <SizePolicy>max,min</SizePolicy>
                         <Children>
                             <TrackProperty>
                                 <ObjectName>TextColor<Variable name="channum" /></ObjectName>

@@ -10,10 +10,6 @@ WNumberDb::WNumberDb(QWidget* pParent)
         : WNumber(pParent) {
 }
 
-WNumberDb::~WNumberDb() {
-}
-
-
 void WNumberDb::setValue(double dValue) {
     QString strDb;
     if (dValue != 0.0) {
@@ -23,9 +19,9 @@ void WNumberDb::setValue(double dValue) {
         strDb = "-" + QString(QChar(0x221E));
     }
 
-    if (m_qsText.contains("%1")) {
-        setText(m_qsText.arg(strDb));
+    if (m_skinText.contains("%1")) {
+        setText(m_skinText.arg(strDb));
     } else {
-        setText(m_qsText + strDb + " dB");
+        setText(m_skinText + strDb + " dB");
     }
 }

@@ -2,14 +2,14 @@
 #define CONTROL_H
 
 #include <QHash>
-#include <QMutex>
 #include <QString>
 #include <QObject>
 #include <QAtomicPointer>
 
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
+#include "util/mutex.h"
 
 class ControlObject;
 
@@ -20,11 +20,14 @@ class ControlDoublePrivate : public QObject {
 
     // Used to implement control persistence. All controls that are marked
     // "persist in user config" get and set their value on creation/deletion
-    // using this ConfigObject.
-    static void setUserConfig(ConfigObject<ConfigValue>* pConfig) {
+    // using this UserSettings.
+    static void setUserConfig(UserSettingsPointer pConfig) {
         s_pUserConfig = pConfig;
     }
 
+    // Adds a ConfigKey for 'alias' to the control for 'key'. Can be used for
+    // supporting a legacy / deprecated control. The 'key' control must exist
+    // for this to work.
     static void insertAlias(const ConfigKey& alias, const ConfigKey& key);
 
     // Gets the ControlDoublePrivate matching the given ConfigKey. If pCreatorCO
@@ -33,10 +36,12 @@ class ControlDoublePrivate : public QObject {
     static QSharedPointer<ControlDoublePrivate> getControl(
             const ConfigKey& key, bool warn = true,
             ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false,
-            bool bPersist = false);
+            bool bPersist = false, double defaultValue = 0.0);
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
     static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
+
+    static QHash<ConfigKey, ConfigKey> getControlAliases();
 
     const QString& name() const {
         return m_name;
@@ -121,8 +126,9 @@ class ControlDoublePrivate : public QObject {
 
   private:
     ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO,
-                         bool bIgnoreNops, bool bTrack, bool bPersist);
-    void initialize();
+                         bool bIgnoreNops, bool bTrack, bool bPersist,
+                         double defaultValue);
+    void initialize(double defaultValue);
     void setInner(double value, QObject* pSender);
 
     ConfigKey m_key;
@@ -163,16 +169,16 @@ class ControlDoublePrivate : public QObject {
     // should be passed it explicitly. However, the Control system is so
     // pervasive that updating every control creation to include the
     // configuration object would be arduous.
-    static ConfigObject<ConfigValue>* s_pUserConfig;
+    static UserSettingsPointer s_pUserConfig;
 
     // Hash of ControlDoublePrivate instantiations.
     static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOHash;
-    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOAliasHash;
+    // Hash of aliases between ConfigKeys. Solely used for looking up the first
+    // alias associated with a key.
+    static QHash<ConfigKey, ConfigKey> s_qCOAliasHash;
 
-    // Mutex guarding access to the ControlDoublePrivate hash.
-    static QMutex s_qCOHashMutex;
-    // Mutex guarding access to the ControlDoublePrivate aliases hash.
-    static QMutex s_qCOAliasHashMutex;
+    // Mutex guarding access to s_qCOHash and s_qCOAliasHash.
+    static MMutex s_qCOHashMutex;
 };
 
 

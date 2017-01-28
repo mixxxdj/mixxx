@@ -2,12 +2,12 @@
 #include <QDebug>
 #include <QUrl>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "widget/wtrackproperty.h"
 #include "util/dnd.h"
 
 WTrackProperty::WTrackProperty(const char* group,
-                               ConfigObject<ConfigValue>* pConfig,
+                               UserSettingsPointer pConfig,
                                QWidget* pParent)
         : WLabel(pParent),
           m_pGroup(group),
@@ -15,10 +15,7 @@ WTrackProperty::WTrackProperty(const char* group,
     setAcceptDrops(true);
 }
 
-WTrackProperty::~WTrackProperty() {
-}
-
-void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
+void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 
     m_property = context.selectString(node, "Property");
@@ -27,22 +24,23 @@ void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
 void WTrackProperty::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
-        connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-                this, SLOT(updateLabel(TrackInfoObject*)));
-        updateLabel(track.data());
+        connect(track.get(), SIGNAL(changed(Track*)),
+                this, SLOT(updateLabel(Track*)));
+        updateLabel(track.get());
     }
 }
 
-void WTrackProperty::slotTrackUnloaded(TrackPointer track) {
-    Q_UNUSED(track);
+void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
     if (m_pCurrentTrack) {
-        disconnect(m_pCurrentTrack.data(), 0, this, 0);
+        disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
-    m_pCurrentTrack.clear();
+    m_pCurrentTrack.reset();
     setText("");
 }
 
-void WTrackProperty::updateLabel(TrackInfoObject*) {
+void WTrackProperty::updateLabel(Track* /*unused*/) {
     if (m_pCurrentTrack) {
         QVariant property = m_pCurrentTrack->property(m_property.toAscii().constData());
         if (property.isValid() && qVariantCanConvert<QString>(property)) {
@@ -53,34 +51,27 @@ void WTrackProperty::updateLabel(TrackInfoObject*) {
 
 void WTrackProperty::mouseMoveEvent(QMouseEvent *event) {
     if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
-        DragAndDropHelper::dragTrack(m_pCurrentTrack, this);
+        DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_pGroup);
     }
 }
 
 void WTrackProperty::dragEnterEvent(QDragEnterEvent *event) {
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
-        if ((!ControlObject::get(ConfigKey(m_pGroup, "play")) ||
-             m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt())) {
-            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
-            if (!files.isEmpty()) {
-                event->acceptProposedAction();
-                return;
-            }
-        }
+    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
+            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
+                                               true, false)) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }
 
 void WTrackProperty::dropEvent(QDropEvent *event) {
-    if (event->mimeData()->hasUrls()) {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
+    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
+        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                *event->mimeData(), m_pGroup, true, false);
         if (!files.isEmpty()) {
             event->accept();
-            emit(trackDropped(files.at(0).canonicalFilePath(), m_pGroup));
+            emit(trackDropped(files.at(0).absoluteFilePath(), m_pGroup));
             return;
         }
     }

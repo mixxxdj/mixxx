@@ -6,8 +6,9 @@
 #include <QList>
 #include <QDomDocument>
 
-#include "util.h"
 #include "effects/effect.h"
+#include "engine/channelhandle.h"
+#include "util/class.h"
 
 class EffectsManager;
 class EngineEffectRack;
@@ -36,11 +37,11 @@ class EffectChain : public QObject {
     bool enabled() const;
     void setEnabled(bool enabled);
 
-    // Activates EffectChain processing for the provided group.
-    void enableForGroup(const QString& group);
-    bool enabledForGroup(const QString& group) const;
-    const QSet<QString>& enabledGroups() const;
-    void disableForGroup(const QString& group);
+    // Activates EffectChain processing for the provided channel.
+    void enableForChannel(const ChannelHandleAndGroup& handle_group);
+    bool enabledForChannel(const ChannelHandleAndGroup& handle_group) const;
+    const QSet<ChannelHandleAndGroup>& enabledChannels() const;
+    void disableForChannel(const ChannelHandleAndGroup& handle_group);
 
     EffectChainPointer prototype() const;
 
@@ -85,9 +86,8 @@ class EffectChain : public QObject {
     void setInsertionType(InsertionType type);
 
     void addEffect(EffectPointer pEffect);
-    void removeEffect(EffectPointer pEffect);
-    void replaceEffect(unsigned int iEffectNumber, EffectPointer pEffect);
-    EffectPointer getEffect(unsigned int i) const;
+    void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
+    void removeEffect(unsigned int effectSlotNumber);
     const QList<EffectPointer>& effects() const;
     unsigned int numEffects() const;
 
@@ -100,14 +100,13 @@ class EffectChain : public QObject {
 
   signals:
     // Signal that indicates that an effect has been added or removed.
-    void effectAdded();
-    void effectRemoved();
+    void effectChanged(unsigned int effectSlotNumber);
     void nameChanged(const QString& name);
     void descriptionChanged(const QString& name);
     void enabledChanged(bool enabled);
     void mixChanged(double v);
     void insertionTypeChanged(EffectChain::InsertionType type);
-    void groupStatusChanged(const QString& group, bool enabled);
+    void channelStatusChanged(const QString& group, bool enabled);
 
   private:
     QString debugString() const {
@@ -126,7 +125,7 @@ class EffectChain : public QObject {
     InsertionType m_insertionType;
     double m_dMix;
 
-    QSet<QString> m_enabledGroups;
+    QSet<ChannelHandleAndGroup> m_enabledChannels;
     QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
     bool m_bAddedToEngine;

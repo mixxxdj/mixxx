@@ -1,11 +1,12 @@
 #include "effects/effectchain.h"
-#include "effects/effectsmanager.h"
+
 #include "effects/effectchainmanager.h"
-#include "engine/effects/message.h"
-#include "engine/effects/engineeffectrack.h"
+#include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectchain.h"
-#include "sampleutil.h"
-#include "xmlparse.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/message.h"
+#include "util/sample.h"
+#include "util/xml.h"
 
 EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
                          EffectChainPointer pPrototype)
@@ -17,15 +18,19 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
           m_name(""),
           m_insertionType(EffectChain::INSERT),
           m_dMix(0),
-          m_pEngineEffectChain(new EngineEffectChain(m_id)),
+          m_pEngineEffectChain(NULL),
           m_bAddedToEngine(false) {
 }
 
 EffectChain::~EffectChain() {
-    //qDebug() << debugString() << "destroyed";
+    // Remove all effects.
+    for (int i = 0; i < m_effects.size(); ++i) {
+        removeEffect(i);
+    }
 }
 
 void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
+    m_pEngineEffectChain = new EngineEffectChain(m_id);
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::ADD_CHAIN_TO_RACK;
     pRequest->pTargetRack = pRack;
@@ -60,6 +65,8 @@ void EffectChain::removeFromEngine(EngineEffectRack* pRack, int iIndex) {
     pRequest->RemoveChainFromRack.iIndex = iIndex;
     m_pEffectsManager->writeRequest(pRequest);
     m_bAddedToEngine = false;
+
+    m_pEngineEffectChain = NULL;
 }
 
 void EffectChain::updateEngineState() {
@@ -85,13 +92,10 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
 
     EffectChain* pClone = new EffectChain(
         pChain->m_pEffectsManager, pChain->id(), pChain);
-    pClone->setEnabled(pChain->enabled());
     pClone->setName(pChain->name());
-    pClone->setMix(pChain->mix());
-    foreach (const QString& group, pChain->enabledGroups()) {
-        pClone->enableForGroup(group);
-    }
-    foreach (EffectPointer pEffect, pChain->effects()) {
+    // Do not set the state of the chain because that information belongs
+    // to the EffectChainSlot. Leave that to EffectChainSlot::loadEffectChain.
+    for (const auto& pEffect : pChain->effects()) {
         EffectPointer pClonedEffect = pChain->m_pEffectsManager
                 ->instantiateEffect(pEffect->getManifest().id());
         pClone->addEffect(pClonedEffect);
@@ -135,37 +139,37 @@ void EffectChain::setEnabled(bool enabled) {
     emit(enabledChanged(enabled));
 }
 
-void EffectChain::enableForGroup(const QString& group) {
-    if (!m_enabledGroups.contains(group)) {
-        m_enabledGroups.insert(group);
+void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
+    if (!m_enabledChannels.contains(handle_group)) {
+        m_enabledChannels.insert(handle_group);
 
         EffectsRequest* request = new EffectsRequest();
-        request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP;
+        request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
-        request->group = group;
+        request->channel = handle_group.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit(groupStatusChanged(group, true));
+        emit(channelStatusChanged(handle_group.name(), true));
     }
 }
 
-bool EffectChain::enabledForGroup(const QString& group) const {
-    return m_enabledGroups.contains(group);
+bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
+    return m_enabledChannels.contains(handle_group);
 }
 
-const QSet<QString>& EffectChain::enabledGroups() const {
-    return m_enabledGroups;
+const QSet<ChannelHandleAndGroup>& EffectChain::enabledChannels() const {
+    return m_enabledChannels;
 }
 
-void EffectChain::disableForGroup(const QString& group) {
-    if (m_enabledGroups.remove(group)) {
+void EffectChain::disableForChannel(const ChannelHandleAndGroup& handle_group) {
+    if (m_enabledChannels.remove(handle_group)) {
         EffectsRequest* request = new EffectsRequest();
-        request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP;
+        request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
-        request->group = group;
+        request->channel = handle_group.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit(groupStatusChanged(group, false));
+        emit(channelStatusChanged(handle_group.name(), false));
     }
 }
 
@@ -205,43 +209,39 @@ void EffectChain::addEffect(EffectPointer pEffect) {
     if (m_bAddedToEngine) {
         pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1);
     }
-    emit(effectAdded());
+    emit(effectChanged(m_effects.size() - 1));
 }
 
-void EffectChain::replaceEffect(unsigned int iEffectNumber,
+void EffectChain::replaceEffect(unsigned int effectSlotNumber,
                                 EffectPointer pEffect) {
     //qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
-    while (iEffectNumber >= static_cast<unsigned int>(m_effects.size())) {
+    while (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
+        if (pEffect.isNull()) {
+            return;
+        }
         m_effects.append(EffectPointer());
     }
 
-    EffectPointer pOldEffect = m_effects[iEffectNumber];
-    if (pOldEffect) {
+
+    EffectPointer pOldEffect = m_effects[effectSlotNumber];
+    if (!pOldEffect.isNull()) {
         if (m_bAddedToEngine) {
-            pOldEffect->removeFromEngine(m_pEngineEffectChain, iEffectNumber);
+            pOldEffect->removeFromEngine(m_pEngineEffectChain, effectSlotNumber);
         }
     }
 
-    m_effects.replace(iEffectNumber, pEffect);
-    if (pEffect) {
+    m_effects.replace(effectSlotNumber, pEffect);
+    if (!pEffect.isNull()) {
         if (m_bAddedToEngine) {
-            pEffect->addToEngine(m_pEngineEffectChain, iEffectNumber);
+            pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber);
         }
     }
 
-    // TODO(rryan): Replaced signal?
-    emit(effectAdded());
+    emit(effectChanged(effectSlotNumber));
 }
 
-void EffectChain::removeEffect(EffectPointer pEffect) {
-    //qDebug() << debugString() << "removeEffect" << pEffect;
-    for (int i = 0; i < m_effects.size(); ++i) {
-        if (m_effects.at(i) == pEffect) {
-            pEffect->removeFromEngine(m_pEngineEffectChain, i);
-            m_effects.replace(i, EffectPointer());
-            emit(effectRemoved());
-        }
-    }
+void EffectChain::removeEffect(unsigned int effectSlotNumber) {
+    replaceEffect(effectSlotNumber, EffectPointer());
 }
 
 unsigned int EffectChain::numEffects() const {
@@ -250,13 +250,6 @@ unsigned int EffectChain::numEffects() const {
 
 const QList<EffectPointer>& EffectChain::effects() const {
     return m_effects;
-}
-
-EffectPointer EffectChain::getEffect(unsigned int effectNumber) const {
-    if (effectNumber >= static_cast<unsigned int>(m_effects.size())) {
-        qWarning() << debugString() << "WARNING: list index out of bounds for getEffect";
-    }
-    return m_effects[effectNumber];
 }
 
 EngineEffectChain* EffectChain::getEngineEffectChain() {

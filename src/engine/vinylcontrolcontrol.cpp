@@ -4,14 +4,14 @@
 #include "library/dao/cue.h"
 #include "util/math.h"
 
-VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(pGroup, pConfig),
+VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig),
           m_bSeekRequested(false) {
-    m_pControlVinylStatus = new ControlObject(ConfigKey(pGroup, "vinylcontrol_status"));
-    m_pControlVinylSpeedType = new ControlObject(ConfigKey(pGroup, "vinylcontrol_speed_type"));
+    m_pControlVinylStatus = new ControlObject(ConfigKey(group, "vinylcontrol_status"));
+    m_pControlVinylSpeedType = new ControlObject(ConfigKey(group, "vinylcontrol_speed_type"));
 
     //Convert the ConfigKey's value into a double for the CO (for fast reads).
-    QString strVinylSpeedType = pConfig->getValueString(ConfigKey(pGroup,
+    QString strVinylSpeedType = pConfig->getValueString(ConfigKey(group,
                                                       "vinylcontrol_speed_type"));
     if (strVinylSpeedType == MIXXX_VINYL_SPEED_33) {
         m_pControlVinylSpeedType->set(MIXXX_VINYL_SPEED_33_NUM);
@@ -21,32 +21,32 @@ VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<Config
         m_pControlVinylSpeedType->set(MIXXX_VINYL_SPEED_33_NUM);
     }
 
-    m_pControlVinylSeek = new ControlObject(ConfigKey(pGroup, "vinylcontrol_seek"));
+    m_pControlVinylSeek = new ControlObject(ConfigKey(group, "vinylcontrol_seek"));
     connect(m_pControlVinylSeek, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlVinylSeek(double)),
             Qt::DirectConnection);
 
-    m_pControlVinylRate = new ControlObject(ConfigKey(pGroup, "vinylcontrol_rate"));
-    m_pControlVinylScratching = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_scratching"));
+    m_pControlVinylRate = new ControlObject(ConfigKey(group, "vinylcontrol_rate"));
+    m_pControlVinylScratching = new ControlPushButton(ConfigKey(group, "vinylcontrol_scratching"));
     m_pControlVinylScratching->set(0);
     m_pControlVinylScratching->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlVinylEnabled = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_enabled"));
+    m_pControlVinylEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_enabled"));
     m_pControlVinylEnabled->set(0);
     m_pControlVinylEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlVinylWantEnabled = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_wantenabled"));
+    m_pControlVinylWantEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_wantenabled"));
     m_pControlVinylWantEnabled->set(0);
     m_pControlVinylWantEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlVinylMode = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_mode"));
+    m_pControlVinylMode = new ControlPushButton(ConfigKey(group, "vinylcontrol_mode"));
     m_pControlVinylMode->setStates(3);
     m_pControlVinylMode->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlVinylCueing = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_cueing"));
+    m_pControlVinylCueing = new ControlPushButton(ConfigKey(group, "vinylcontrol_cueing"));
     m_pControlVinylCueing->setStates(3);
     m_pControlVinylCueing->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlVinylSignalEnabled = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_signal_enabled"));
+    m_pControlVinylSignalEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_signal_enabled"));
     m_pControlVinylSignalEnabled->set(1);
     m_pControlVinylSignalEnabled->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pPlayEnabled = new ControlObjectSlave(pGroup, "play", this);
+    m_pPlayEnabled = new ControlProxy(group, "play", this);
 }
 
 VinylControlControl::~VinylControlControl() {
@@ -62,13 +62,9 @@ VinylControlControl::~VinylControlControl() {
     delete m_pControlVinylStatus;
 }
 
-void VinylControlControl::trackLoaded(TrackPointer pTrack) {
-    m_pCurrentTrack = pTrack;
-}
-
-void VinylControlControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
-    m_pCurrentTrack.clear();
+void VinylControlControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
+    m_pCurrentTrack = pNewTrack;
 }
 
 void VinylControlControl::notifySeekQueued() {
@@ -82,19 +78,20 @@ void VinylControlControl::notifySeekQueued() {
     }
 }
 
-void VinylControlControl::slotControlVinylSeek(double change) {
+void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
     // Prevent NaN's from sneaking into the engine.
-    if (isnan(change)) {
+    if (isnan(fractionalPos)) {
         return;
     }
-
-    double total_samples = getTotalSamples();
-    double new_playpos = round(change*total_samples);
 
     // Do nothing if no track is loaded.
     if (!m_pCurrentTrack) {
         return;
     }
+
+
+    double total_samples = getTotalSamples();
+    double new_playpos = round(fractionalPos * total_samples);
 
     if (m_pControlVinylEnabled->get() > 0.0 && m_pControlVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
         int cuemode = (int)m_pControlVinylCueing->get();
@@ -123,16 +120,16 @@ void VinylControlControl::slotControlVinylSeek(double change) {
         double shortest_distance = 0;
         int nearest_playpos = -1;
 
-        QList<Cue*> cuePoints = m_pCurrentTrack->getCuePoints();
-        QListIterator<Cue*> it(cuePoints);
+        const QList<CuePointer> cuePoints(m_pCurrentTrack->getCuePoints());
+        QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
-            Cue* pCue = it.next();
+            CuePointer pCue(it.next());
             if (pCue->getType() != Cue::CUE || pCue->getHotCue() == -1) {
                 continue;
             }
 
             int cue_position = pCue->getPosition();
-            //pick cues closest to new_playpos
+            // pick cues closest to new_playpos
             if ((nearest_playpos == -1) ||
                 (fabs(new_playpos - cue_position) < shortest_distance)) {
                 nearest_playpos = cue_position;

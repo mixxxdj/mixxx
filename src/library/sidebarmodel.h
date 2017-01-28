@@ -29,10 +29,10 @@ class SidebarModel : public QAbstractItemModel {
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     QVariant data(const QModelIndex& index,
-                  int role = Qt::DisplayRole ) const;
+                  int role = Qt::DisplayRole) const;
     bool dropAccept(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
-    virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
+    virtual bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
 
   public slots:
     void clicked(const QModelIndex& index);
@@ -42,10 +42,10 @@ class SidebarModel : public QAbstractItemModel {
 
     // Slots for every single QAbstractItemModel signal
     // void slotColumnsAboutToBeInserted(const QModelIndex& parent, int start, int end);
-    // void slotColumnsAboutToBeRemoved(const QModelIndex & parent, int start, int end);
-    // void slotColumnsInserted(const QModelIndex & parent, int start, int end);
-    // void slotColumnsRemoved(const QModelIndex & parent, int start, int end);
-    void slotDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
+    // void slotColumnsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
+    // void slotColumnsInserted(const QModelIndex& parent, int start, int end);
+    // void slotColumnsRemoved(const QModelIndex& parent, int start, int end);
+    void slotDataChanged(const QModelIndex& topLeft, const QModelIndex & bottomRight);
     //void slotHeaderDataChanged(Qt::Orientation orientation, int first, int last);
     // void slotLayoutAboutToBeChanged();
     // void slotLayoutChanged();

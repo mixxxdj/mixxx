@@ -5,12 +5,14 @@
 #ifndef ENGINEAUX_H
 #define ENGINEAUX_H
 
-#include "controlobjectslave.h"
-#include "controlpushbutton.h"
+#include <QScopedPointer>
+
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
 #include "util/circularbuffer.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class EffectsManager;
 class EngineEffectsManager;
@@ -21,7 +23,7 @@ class ControlAudioTaperPot;
 class EngineAux : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineAux(const char* pGroup, EffectsManager* pEffectsManager);
+    EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager);
     virtual ~EngineAux();
 
     bool isActive();
@@ -49,10 +51,9 @@ class EngineAux : public EngineChannel, public AudioDestination {
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
-    ControlObject* m_pEnabled;
-    ControlPushButton* m_pPassing;
+    QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
-    ControlObjectSlave* m_pSampleRate;
+    ControlProxy* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_wasActive;
 };

@@ -34,25 +34,18 @@
 class WStatusLight : public WWidget  {
    Q_OBJECT
   public:
-    enum SizeMode {
-        FIXED,
-        RESIZE,
-    };
+    explicit WStatusLight(QWidget *parent=nullptr);
 
-    WStatusLight(QWidget *parent=0);
-    virtual ~WStatusLight();
-
-    void setup(QDomNode node, const SkinContext& context);
-    static SizeMode SizeModeFromString(QString str);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   public slots:
-    void onConnectedControlChanged(double dParameter, double dValue);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent * /*unused*/) override;
 
   private:
-    void setPixmap(int iState, const QString &filename, SizeMode mode);
+    void setPixmap(int iState, PixmapSource source, Paintable::DrawMode mode);
     void setNoPos(int iNoPos);
 
     // Current position

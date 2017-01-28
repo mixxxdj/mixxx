@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <QLocale>
 #include "engine/enginefilterbiquad1.h"
 
 EngineFilterBiquad1LowShelving::EngineFilterBiquad1LowShelving(int sampleRate,
@@ -48,7 +47,9 @@ void EngineFilterBiquad1HighShelving::setFrequencyCorners(int sampleRate,
 
 EngineFilterBiquad1Low::EngineFilterBiquad1Low(int sampleRate,
                                                double centerFreq,
-                                               double Q) {
+                                               double Q,
+                                               bool startFromDry) {
+    m_startFromDry = startFromDry;
     setFrequencyCorners(sampleRate, centerFreq, Q);
 }
 
@@ -74,7 +75,9 @@ void EngineFilterBiquad1Band::setFrequencyCorners(int sampleRate,
 
 EngineFilterBiquad1High::EngineFilterBiquad1High(int sampleRate,
                                                  double centerFreq,
-                                                 double Q) {
+                                                 double Q,
+                                                 bool startFromDry) {
+    m_startFromDry = startFromDry;
     setFrequencyCorners(sampleRate, centerFreq, Q);
 }
 
