@@ -3,7 +3,7 @@ REM @ECHO OFF
 SET BUILDENVBASEDIR=C:\MIXXX-BUILDSERVER
 
 REM Build envs to install. You can specify more than one separated by spaces (no quotes)
-SET BUILDENVS=2.0-%1-%2-minimal
+SET BUILDENVS=2.0.1-%1-%2-minimal
 
 REM precompiled compressed build env base URL
 SET BASEURL=https://downloads.mixxx.org/builds/appveyor/environments/2.0
@@ -14,7 +14,7 @@ REM main()
 
 REM uncomment the following line if you want to empty cache and
 REM force buildenv (and build script) download
-REM RMDIR /S /Q %BUILDENVBASEDIR%
+RMDIR /S /Q %BUILDENVBASEDIR%
 
 REM Install build env base dir
 IF NOT EXIST %BUILDENVBASEDIR% MKDIR %BUILDENVBASEDIR%
