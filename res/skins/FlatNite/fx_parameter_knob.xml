@@ -16,13 +16,13 @@ Variables:
 <Template>
 	<WidgetGroup>
 		<Layout>stacked</Layout>
-		<Size>58f,39f</Size>
+		<Size>52f,39f</Size>
 		<Children>
 
 			<WidgetGroup><!-- EffectParameterKnob -->
 				<Layout>vertical</Layout>
 				<ObjectName>EffectParameterKnob</ObjectName>
-				<Size>58f,30f</Size>
+				<Size>51f,30f</Size>
 				<Children>
 					<Template src="skin:knob_textless.xml">
         				<SetVariable name="ToolTipId">EffectSlot_parameter</SetVariable>
@@ -37,12 +37,12 @@ Variables:
 			<Template src="skin:button_5state.xml">
 				<SetVariable name="ObjectName">EffectLinkTypeButton</SetVariable>
 				<SetVariable name="ToolTipID">EffectSlot_parameter_link_type</SetVariable>
-				<SetVariable name="Size">58f,38f</SetVariable>
+				<SetVariable name="Size">51f,38f</SetVariable>
 				<SetVariable name="ConfigKey">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
 			</Template>
 			
 			<EffectParameterName><!-- Label -->
-				<Size>56f,1min</Size>
+				<Size>51f,1min</Size>
 				<ObjectName>EffectParameterName</ObjectName>
 				<EffectRack><Variable name="EffectRack"/></EffectRack>
 				<EffectUnit><Variable name="EffectUnit"/></EffectUnit>
@@ -53,7 +53,7 @@ Variables:
 		
 			<Template src="skin:button_5state.xml">
 				<SetVariable name="ObjectName">EffectLinkTypeButtonUnderlay</SetVariable>
-				<SetVariable name="Size">56f,38f</SetVariable>
+				<SetVariable name="Size">51f,38f</SetVariable>
 				<SetVariable name="ConfigKey">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
 			</Template>
 		</Children>

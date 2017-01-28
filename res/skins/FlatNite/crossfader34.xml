@@ -1,9 +1,11 @@
 <Template>
-	<WidgetGroup><!-- Toolbar Top-->
+	<WidgetGroup><!-- Skin Controls -->
 		<Layout>vertical</Layout>
-		<Size>110f,136min</Size>
+		<ObjectName>SkinControls</ObjectName>
+		<SizePolicy>min,min</SizePolicy>
 		<Children>
-			<WidgetGroup><Size>1me,34f</Size></WidgetGroup>
+		
+			<WidgetGroup><Size>1min,34f</Size></WidgetGroup>
 			
 			<WidgetStack currentpage="[FlatNite],crossfader_logo" persist="true"><!-- CrossfaderBox 4 Decks-->
 				<Layout>horizontal</Layout>
@@ -31,12 +33,13 @@
 				</Children>
 			</WidgetStack><!-- /LogoCrossfaderBox 4 Decks -->
 			
-			<WidgetGroup><Size>1me,1me</Size></WidgetGroup>
+			<WidgetGroup><Size>1min,1me</Size></WidgetGroup>
 			
 			<WidgetGroup>
 				<ObjectName>Logo</ObjectName>
 				<Size>104f,26f</Size>
 			</WidgetGroup>
+			
 		</Children>
-	</WidgetGroup><!-- /Toolbar Top -->
+	</WidgetGroup>
 </Template>

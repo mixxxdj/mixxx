@@ -9,9 +9,10 @@ Variables:
 	<WidgetGroup>
 		<ObjectName>VUMeterFloating</ObjectName>
 		<Layout>horizontal</Layout>
-		<Size>18f,1me</Size>
+		<SizePolicy>min,me</SizePolicy>
 		<Children>
-			<WidgetGroup><!-- Left -->
+			
+			<WidgetGroup><!-- Left VU -->
 				<ObjectName>VUMeter</ObjectName>
 				<Layout>stacked</Layout>
 				<Size>4f,1me</Size>
@@ -36,8 +37,9 @@ Variables:
 						</Connection>
 					</VuMeter>
 				</Children>
-			</WidgetGroup><!-- /Left -->
-			<WidgetGroup><!-- Right -->
+			</WidgetGroup><!-- /Left VU -->
+			
+			<WidgetGroup><!-- Right VU -->
 				<ObjectName>VUMeter</ObjectName>
 				<Layout>stacked</Layout>
 				<Size>4f,1me</Size>
@@ -62,7 +64,8 @@ Variables:
 						</Connection>
 					</VuMeter>
 				</Children>
-			</WidgetGroup><!-- /Right -->
+			</WidgetGroup><!-- /Right VU -->
+			
 		</Children>
 		<Connection>
 			<ConfigKey persist="true">[FlatNite],vumeter</ConfigKey>

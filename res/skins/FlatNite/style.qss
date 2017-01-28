@@ -4,7 +4,7 @@
   AlignRight just for testing, to attach SkinSettings to right edge.
   Not working. See https://bugs.launchpad.net/mixxx/+bug/1623997 */
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  background-color: #0f0f0f;
+  background-color: #151515;
   font-family: Ubuntu, "Open Sans", Arial, Verdana, sans-serif;
   font-weight: normal;
 }
@@ -30,7 +30,7 @@ WWidget, QLabel {
 #WaveformSplitter::handle:vertical {
   height: 4px;
   image: url(skin:/graphics/splitterVert_handle.png);
-  background-color: #0e0e0e;
+  background-color: #0f0f0f;
 }
 #WaveformSplitter::handle:vertical:hover, #WaveformSplitter::handle:vertical:pressed {
   image: url(skin:/graphics/splitterVert_handle_pressed.png);
@@ -144,7 +144,7 @@ WWidget, QLabel {
   color: #d2d2d2;
 }
     #SkinSettingsButton:hover {
-      background: #222222;
+      background: #151515;
     }
 
 
@@ -274,10 +274,10 @@ are still drawn full-size.
     margin-bottom: 1px;	*/
   }
   #VinylTogglerLeft[displayValue="0"] {
-    border-left: 1px solid #0f0f0f;
+    border-left: 1px solid #151515;
     }
   #VinylTogglerRight[displayValue="0"] {
-    border-right: 1px solid #0f0f0f;
+    border-right: 1px solid #151515;
     }
   #VinylTogglerLeft[displayValue="0"], #VinylTogglerRight[displayValue="1"] {
     background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat top center;
@@ -294,7 +294,7 @@ are still drawn full-size.
   #VinylControls {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
     padding-left: 1px;
-    background-color: #0f0f0f;
+    background-color: #151515;
     }
   #VinylButton, #VinylModeButton {
     font-size: 11px/11px;
@@ -510,9 +510,9 @@ are still drawn full-size.
 		background-color: #333333;
 		border-radius: 2px;
 	}
-	#LoopBeatJumpButton:hover {
-		background-color: #151515;  /*
-		border: 1px solid #333333;  */
+	#LoopBeatJumpButton:hover {  /*
+		background-color: #151515;  */
+		border: 1px solid #888888;
 	}
 	#LoopBeatJumpButton[displayValue="1"], #LoopBeatJumpButton[displayValue="1"]:hover {
 		border: 1px solid #FF8F00;
@@ -525,9 +525,11 @@ are still drawn full-size.
 #SpinnyCoverSmall {
 }
 #SpinnyCoverBig {
-    margin: 0px 3px 0px 3px;	/*
-    background-color: #451278;	*/
-    background-color: #0f0f0f;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
+  margin: 0px 3px 25px 3px;
+  background-color: #451278;
+  background-color: #151515;
+  background-color: #333333;	*/
 }
 
 /*################################################################
@@ -536,21 +538,21 @@ are still drawn full-size.
 
 
 #RateContainer1, #RateContainer2, #RateContainer3, #RateContainer4, #BpmContainer {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-    background-color: #451212;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
+  background-color: #451212;	*/
 }
 
 #BpmContainer {	/*
-    background-color: #451212;	*/
+  background-color: #451212;	*/
 }
 
 #Bpm {
-    qproperty-alignment: 'AlignHCenter | AlignVCenter';
-    font-size: 16px/16px;
-    font-weight: bold;
-    text-align: center;
-    padding-top: 1px;	/*
-    background-color: #999111;	*/
+  qproperty-alignment: 'AlignHCenter | AlignVCenter';
+  font-size: 16px/16px;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 1px;	/*
+  background-color: #999111;	*/
   }
   #SyncButtonOverlay:hover, #KeyReset:hover, 
   #KeyUp:hover, #KeyDown:hover {
@@ -587,9 +589,9 @@ are still drawn full-size.
       }
   
 #PitchSliderContainer {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-    margin: 0 9px 0 9px;	/*
-    background-color: #987111;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin: 0 9px 0 9px;	/*
+  background-color: #987111;	*/
   }
   #PitchSlider:hover, #Crossfader:hover {
     background-color: #000000;
@@ -601,34 +603,34 @@ are still drawn full-size.
 ################################################################ */
     
 #MixerMaster {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #MixerHeadphone {
-    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 #MixerChannelLeft {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    margin: 0px 0px 0px 1px;
-    background-color: #333333;		/*
-    background-color: #546981;	*/
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  margin: 0px 0px 0px 1px;
+  background-color: #333333;		/*
+  background-color: #546981;	*/
 }
 #MixerChannelRight {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-    margin: 0px 1px 0px 0px;
-    background-color: #333333;	/*
-    background-color: #546981;		*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin: 0px 1px 0px 0px;
+  background-color: #333333;	/*
+  background-color: #546981;		*/
 }
 
 #EQKnobs {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-    padding: 4px 4px 0px 4px;	/*
-    background-color: #411223;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding: 4px 4px 0px 4px;	/*
+  background-color: #411223;	*/
   }
   #EQKnob {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
     background-color: #976939;	*/
-  }
+    }
   #EQKillButton {
     border-radius: 1px;
     }
@@ -659,61 +661,60 @@ are still drawn full-size.
     }
 
 #PflButton {
-    border-radius: 2px;	/*
-    background-color: #136461;	*/
+  border-radius: 2px;	/*
+  background-color: #136461;	*/
   }
 #PflButton:hover {
   background-color: #666666;
   }
         
 #VolumeSliderGain {
-    margin-top: 2px;	/*
-    background-color: #774512;	*/
-  }
+  margin-top: 2px;	/*
+  background-color: #774512;	*/
+}
 #VolumeSlider {	/*
   background-color: #977451;	*/
-  }
+}
 #GainKnob {	/*
   background-color: #411223;	*/
-  }
+}
 
 #VUMeterFloating {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-    background-color: #411223;	*/
-  }
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';	/*
+  background-color: #411223;	*/
+}
 #VUMeterMixer {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-    margin not respected!
-    margin-top: 4px;
-    background-color: #411223;	*/
-  }
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
+  margin not respected!
+  margin-top: 4px;
+  background-color: #411223;	*/
+}
 #VUMeter {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-    background-color: #134112;	*/
-  }
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
+  background-color: #134112;	*/
+}
 
 /*################################################################
 ####### Skin Controls / Crossfader / Clock  ####################
 ################################################################ */
 
 #SkinControls {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-    border: 0px solid #585858;
-    padding: 0px;
-    margin: 0px 3px 0 3px;	/*
-    background-color: #321679;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding: 0px;
+  margin: 0px 5px 0px 5px;	/*
+  background-color: #321679;	*/
   }
   #SkinControlsRow {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
     margin-bottom: 1px;	/*
     background-color: #921679;	*/
-    }
+  }
 
 #GuiToggleButton, #GuiToggleButton2, #RecordingButton {
-    text-align: center;
-    border-radius: 2px;
-    font-size: 12px/12px;
-    font-weight: bold;
+  text-align: center;
+  border-radius: 2px;
+  font-size: 12px/12px;
+  font-weight: bold;
   }
   #GuiToggleButton:hover, #GuiToggleButton2:hover {
     border: 1px solid #eeeeee;	/*
@@ -743,13 +744,13 @@ are still drawn full-size.
     }
 
 #ClockBox {
-    qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';	
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';	
   }		
   #ClockBox WLabel, #Clock {
     font-size: 13px/13px;
     color: #999999;
     text-align: center;
-    }
+  }
 
   #BroadcastButton, #SkinSettingsToggler {
     border-radius: 2px;
@@ -807,7 +808,8 @@ are still drawn full-size.
   }
   #EffectUnit1, #EffectUnit3 {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    margin-top: 3px;
+    margin: 3px 1px 0px 0px;
+    
     }
   #EffectUnit2, #EffectUnit4 {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -821,27 +823,28 @@ are still drawn full-size.
 
 #EffectSlotLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  background-color: #333333;	/*
   padding-right: 5px;
-  background-color: #333333;	/*	
   border-radius: 2px;
   background-color: #321654;	*/
-  }
+}
 #EffectSlotRight {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   margin-left: 1px;
-  padding-left: 5px;
   background-color: #333333;	/*
+  padding-left: 5px;
   border-radius: 2px;
   background-color: #321654;	*/
-  }
+}
 #EffectSlotParameters {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';	/*
   background-color: #313539;			*/
-  }
+}
 #EffectParameterKnob {
-  qproperty-layoutAlignment: 'AlignCenter';		/*
+  qproperty-layoutAlignment: 'AlignCenter';
+  margin-right: 1px;		/*
   background-color: #457812;	*/
-  }
+}
 #EffectParameterName {
   qproperty-alignment: 'AlignHCenter | AlignTop';
   font-size: 10px/10px;
@@ -850,9 +853,10 @@ are still drawn full-size.
   text-align: center;
   margin-top: 23px;	/*
   background-color: #124578;	*/
-  }
+}
 #EffectParameterButton {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';		/*
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin-right: 1px;		/*
   margin-top: 6px;
   background-color: #457812;	*/
   }
@@ -1077,7 +1081,7 @@ are still drawn full-size.
 }
 
 #SamplerButtonGrid {	/*
-  border-left: 1px solid #0f0f0f;
+  border-left: 1px solid #151515;
   margin-left: 1px;
   background-color: #334679;	*/
 }
@@ -1187,10 +1191,6 @@ are still drawn full-size.
 ####### Misc  ##################################################
 ################################################################ */
 
-#BackSpacer {
-  background-color: #0f0f0f;
-}
-
 #KnobTextless {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';	/*
   background-color: #129999;	*/
@@ -1233,22 +1233,17 @@ are still drawn full-size.
     qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
-#Spacer333333 {
-  background-color: #333333;
+#Spacer0f {
+  background-color: #151515;
 }
-#Spacer0f0f0f {
-  background-color: #0f0f0f;
-}
-#SpacerTrans {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  background: none;
-  background-color: #123456;
-}
-#Spacer333border {
-  background-color: #222222;
+#Spacer22border {
+  background-color: #151515;
   border-width: 0px 1px 0px 1px;
   border-style: solid;
-  border-color: #0f0f0f;
+  border-color: #151515;
+}
+#Spacer33 {
+  background-color: #333333;
 }
 #FadeRight {
   background: none url(skin:/graphics/fadeRight.png) repeat-y;

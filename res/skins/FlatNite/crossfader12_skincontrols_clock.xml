@@ -2,7 +2,7 @@
 	<WidgetGroup><!-- Skin Controls -->
 		<Layout>vertical</Layout>
 		<ObjectName>SkinControls</ObjectName>
-		<Size>110f,136min</Size>
+		<SizePolicy>min,min</SizePolicy>
 		<Children>
 		
 			<WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
@@ -192,5 +192,5 @@
 			</WidgetStack><!-- /LogoCrossfaderBox 2 Decks -->
 			
 		</Children>
-	</WidgetGroup><!-- /Skin Controls -->
+	</WidgetGroup>
 </Template>

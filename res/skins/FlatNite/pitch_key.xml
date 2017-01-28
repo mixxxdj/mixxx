@@ -17,7 +17,7 @@ Variables:
 	<WidgetGroup><!-- RateContainer -->
 		<ObjectName>RateContainer<Variable name="channum" /></ObjectName>
 		<Layout>vertical</Layout>
-		<Size>50f,136f</Size><!-- 28 + 107 -->
+		<Size>50f,136f</Size>
 		<Children>
 			
 			<WidgetGroup><!-- BpmContainer -->

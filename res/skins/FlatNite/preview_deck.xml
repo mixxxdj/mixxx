@@ -136,7 +136,7 @@ Variables:
 					<Template src="skin:preview_deck_hotcues.xml"/>
 			
 					<WidgetGroup>
-						<ObjectName>Spacer333333</ObjectName>
+						<ObjectName>Spacer33</ObjectName>
 						<Size>0me,1me</Size>
 						<Children/>
 					</WidgetGroup>

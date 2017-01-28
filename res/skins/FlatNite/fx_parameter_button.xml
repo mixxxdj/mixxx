@@ -18,16 +18,16 @@ Variables:
 		<!-- working around AlignVCenter of fx_parameter_row...
 			Available height is 38px, button is 18px & we want it
 			in the same height as the knobs -->
-		<Size>58f,26f</Size>
+		<Size>52f,26f</Size>
 		<Children>
 			<Template src="skin:button_2state.xml">
 				<SetVariable name="ObjectName">EffectParameterButtonOverlay</SetVariable>
-				<SetVariable name="Size">56f,18f</SetVariable>
+				<SetVariable name="Size">51f,18f</SetVariable>
 				<SetVariable name="ConfigKey">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectButtonParameter"/></SetVariable>
 			</Template>
 			
 			<EffectButtonParameterName><!-- Label -->
-				<Size>58f,18f</Size>
+				<Size>51f,18f</Size>
 				<ObjectName>EffectParameterButtonName</ObjectName>
 				<EffectRack><Variable name="EffectRack"/></EffectRack>
 				<EffectUnit><Variable name="EffectUnit"/></EffectUnit>
@@ -38,7 +38,7 @@ Variables:
 			
 			<Template src="skin:button_2state.xml">
 				<SetVariable name="ObjectName">EffectParameterButtonUnderlay</SetVariable>
-				<SetVariable name="Size">56f,18f</SetVariable>
+				<SetVariable name="Size">51f,18f</SetVariable>
 				<SetVariable name="ConfigKey">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectButtonParameter"/></SetVariable>
 			</Template>
 		</Children>

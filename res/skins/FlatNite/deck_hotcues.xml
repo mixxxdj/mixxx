@@ -12,7 +12,7 @@ Variables:
 			<WidgetGroup><!-- DeckHotcues -->
 				<Layout>horizontal</Layout>
 				<SizePolicy>max,max</SizePolicy>
-				<ObjectNAme>DeckHotcues</ObjectNAme>
+				<ObjectName>DeckHotcues</ObjectName>
 				<Children>
 					<Template src="skin:button_hotcue.xml">
 						<SetVariable name="HotCue">1</SetVariable>

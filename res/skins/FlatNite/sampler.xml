@@ -96,7 +96,7 @@ Variables:
 									</Overview>
 									
 									<WidgetGroup>
-									    <ObjectName>Spacer0f0f0f</ObjectName>
+									    <ObjectName>Spacer0f</ObjectName>
 									    <Size>1f,0me</Size>
 									    <Children/>
 									</WidgetGroup>

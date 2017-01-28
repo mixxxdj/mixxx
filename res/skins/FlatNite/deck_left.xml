@@ -2,8 +2,7 @@
   <WidgetGroup>
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <!-- fix size, otherwise artist/title won't expand when comment is hidden -->
-    <Size>250me,136min</Size><!-- 136px Deck1/3 + 3px margin-top -->
+    <Size>578me,136min</Size><!-- 136px Deck1/3 + 3px margin-top -->
     <Children>
 
       <WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
@@ -58,9 +57,11 @@
       
       <WidgetGroup><!-- [Mixer/Spinny + VUMeter + Pitch] + expanding spacer-->
         <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
-          <WidgetGroup>
+          <WidgetGroup><!-- [Mixer/Spinny + VUMeter + Pitch] -->
             <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
               <!-- Mixer / CoverArt / empty -->
               <WidgetStack currentpage="[FlatNite],mixer_spinnyCover" persist="true">
@@ -90,7 +91,14 @@
                             <Layout>horizontal</Layout>
                             <SizePolicy>min,min</SizePolicy>
                             <Children>
+			
+                                <WidgetGroup>
+                                  <Size>3f,1min</Size>
+                                  <Children/>
+                                </WidgetGroup>
+                                
                                 <Template src="skin:spinnyCover_big.xml"/>
+                                
                             </Children>
                             <Connection>
                               <ConfigKey persist="true">[FlatNite],spinnyCoverBIG</ConfigKey>
@@ -103,6 +111,15 @@
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>
+			
+                      <WidgetGroup>
+                        <Size>3f,1me</Size>
+                        <Children/>
+                        <Connection>
+                          <ConfigKey>[FlatNite],vumeter</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
                       
                       <Template src="skin:vumeter_floating.xml"/>
                         
@@ -111,13 +128,25 @@
                     
                 </Children>
               </WidgetStack><!-- /Mixer / CoverArt / empty  -->
+			
+              <WidgetGroup><!-- Pitch slider & key controls -->
+                <Size>3f,1me</Size>
+                <Children/>
+                <Connection>
+                  <ConfigKey>[FlatNite],pitch_slider</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Pitch slider & key controls -->
       
               <Template src="skin:pitch_key.xml"/>
             
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- /[Mixer/Spinny + VUMeter + Pitch] -->
           
-          <!-- expanding spacer, necessary because obviously WidgetStack breaks
+          <!-- This was working and somehow necessary, but now (v38++) causes left decks
+          to grow by 3px (right decks shrink by 3px) when enabling extra deck buttons.
+          
+          Expanding spacer, necessary because obviously WidgetStack breaks
           qproperty-layoutAlignment of parent Widget -->
           <WidgetGroup><SizePolicy>min,me</SizePolicy><Children/></WidgetGroup>
           

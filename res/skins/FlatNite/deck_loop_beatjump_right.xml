@@ -11,7 +11,10 @@
 				<Layout>horizontal</Layout>
 				<Children>
 				    <Template src="skin:beatjump_sizes.xml"/>
-				        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+				        <WidgetGroup>
+				        	<ObjectName>Spacer22border</ObjectName>
+				        	<Size>0me,1min</Size>
+				        </WidgetGroup>
 				    <Template src="skin:loop_basics.xml"/>
 				        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 				    <Template src="skin:loop_sizes.xml"/>
@@ -20,12 +23,12 @@
 				        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 				    <Template src="skin:loop_move_sizes.xml"/>
 				        <WidgetGroup>
-				        	<ObjectName>Spacer333border</ObjectName>
+				        	<ObjectName>Spacer22border</ObjectName>
 				        	<Size>0me,1min</Size>
 				        </WidgetGroup>
 				    <Template src="skin:loop_roll.xml"/>
 				        <WidgetGroup>
-				        	<ObjectName>Spacer333border</ObjectName>
+				        	<ObjectName>Spacer22border</ObjectName>
 				        	<Size>0me,1min</Size>
 				        </WidgetGroup>
 				</Children>
