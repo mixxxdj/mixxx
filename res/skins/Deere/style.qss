@@ -844,6 +844,18 @@ WWidget, QLabel {
   border: none;
 }
 
+WEffectSelector {
+  color: #c1cabe;
+  background-color: #444342;
+  /* TODO: use a linear gradient for the background color */
+}
+
+WEffectSelector QAbstractItemView {
+  color: #c1cabe;
+  background-color: #201f1f;
+  selection-background-color: #184880;
+}
+
 #EffectKnob {
 }
 
