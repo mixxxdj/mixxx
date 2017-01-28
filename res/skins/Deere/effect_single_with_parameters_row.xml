@@ -51,13 +51,11 @@ Variables:
 
           <!-- Allow up to 8 parameters, needed to control the graphic eq effect-->
 
-          <EffectName>
-            <MinimumSize>80,-1</MinimumSize>
-            <MaximumSize>80,-1</MaximumSize>
+          <EffectSelector>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
-          </EffectName>
+          </EffectSelector>
 
           <Template src="skin:effect_parameter_knob.xml">
             <SetVariable name="EffectParameter">1</SetVariable>
