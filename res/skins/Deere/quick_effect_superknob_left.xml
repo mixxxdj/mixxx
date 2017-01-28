@@ -30,7 +30,7 @@
           <EffectPushButton>
             <TooltipId><Variable name="button_TooltipId"/></TooltipId>
             <Size>15f,15f</Size>
-            <ObjectName>KnobButton</ObjectName>
+            <ObjectName>CircleButton</ObjectName>
             <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
             <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
             <Effect><Variable name="QuickEffect"/></Effect>

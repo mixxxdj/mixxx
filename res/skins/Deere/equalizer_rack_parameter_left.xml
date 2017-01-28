@@ -33,7 +33,7 @@
           <EffectPushButton>
             <TooltipId><Variable name="button_TooltipId"/></TooltipId>
             <Size>15f,15f</Size>
-            <ObjectName>KnobButton</ObjectName>
+            <ObjectName>CircleButton</ObjectName>
             <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
             <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
             <Effect><Variable name="EffectNumber"/></Effect>
