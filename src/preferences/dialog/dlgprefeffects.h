@@ -24,7 +24,6 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
                             QListWidgetItem* pPrevious);
 
   private:
-    void addEffectToList(const QString& id);
     void clear();
 
     UserSettingsPointer m_pConfig;
