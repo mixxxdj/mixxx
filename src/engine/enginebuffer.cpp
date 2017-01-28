@@ -562,6 +562,8 @@ void EngineBuffer::ejectTrack() {
     doSeekFractional(0.0, SEEK_EXACT);
     m_pause.unlock();
 
+    m_pReader->newTrack(m_pCurrentTrack);
+
     if (pTrack) {
         emit(trackLoaded(TrackPointer(), pTrack));
     }
