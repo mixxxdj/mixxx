@@ -13,8 +13,8 @@ Variables:
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
     <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.-->
-    <MinimumSize>-1,55</MinimumSize>
-    <MaximumSize>-1,65</MaximumSize>
+    <MinimumSize>-1,65</MinimumSize>
+    <MaximumSize>-1,75</MaximumSize>
     <Children>
 
       <WidgetGroup>

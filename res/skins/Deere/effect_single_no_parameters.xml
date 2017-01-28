@@ -17,8 +17,8 @@ Variables:
         <ObjectName>EffectHighlightable</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>max,f</SizePolicy>
-        <MinimumSize>-1,55</MinimumSize>
-        <MaximumSize>-1,55</MaximumSize>
+        <MinimumSize>-1,65</MinimumSize>
+        <MaximumSize>-1,65</MaximumSize>
         <Children>
 
           <WidgetGroup>
@@ -32,11 +32,11 @@ Variables:
             </Children>
           </WidgetGroup>
 
-          <EffectName>
+          <EffectSelector>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
-          </EffectName>
+          </EffectSelector>
 
         </Children>
         <Connection>
@@ -64,8 +64,8 @@ Variables:
         <ObjectName>EffectNotHighlightable</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,f</SizePolicy>
-        <MinimumSize>-1,55</MinimumSize>
-        <MaximumSize>-1,55</MaximumSize>
+        <MinimumSize>-1,65</MinimumSize>
+        <MaximumSize>-1,65</MaximumSize>
         <Children>
 
           <WidgetGroup>
@@ -79,11 +79,11 @@ Variables:
             </Children>
           </WidgetGroup>
 
-          <EffectName>
+          <EffectSelector>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
-          </EffectName>
+          </EffectSelector>
 
         </Children>
       </WidgetGroup>
