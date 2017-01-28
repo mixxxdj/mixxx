@@ -1,20 +1,3 @@
-/***************************************************************************
-                          dlgpreflibrary.cpp  -  description
-                             -------------------
-    begin                : Thu Apr 17 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
@@ -29,13 +12,15 @@
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
-DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
-                               UserSettingsPointer  config, Library *pLibrary)
-        : DlgPreferencePage(parent),
+DlgPrefLibrary::DlgPrefLibrary(
+        QWidget* pParent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary)
+        : DlgPreferencePage(pParent),
           m_dirListModel(),
-          m_pconfig(config),
+          m_pConfig(pConfig),
           m_pLibrary(pLibrary),
-          m_baddedDirectory(false),
+          m_bAddedDirectory(false),
           m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
 
@@ -95,15 +80,12 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
     slotUpdate();
 }
 
-DlgPrefLibrary::~DlgPrefLibrary() {
-}
-
 void DlgPrefLibrary::slotShow() {
-    m_baddedDirectory = false;
+    m_bAddedDirectory = false;
 }
 
 void DlgPrefLibrary::slotHide() {
-    if (!m_baddedDirectory) {
+    if (!m_bAddedDirectory) {
         return;
     }
 
@@ -167,22 +149,22 @@ void DlgPrefLibrary::slotResetToDefaults() {
 
 void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
-    checkBox_library_scan->setChecked(m_pconfig->getValue(
+    checkBox_library_scan->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","RescanOnStartup"), false));
     checkBox_SyncTrackMetadataExport->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","SyncTrackMetadataExport"), false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
-    checkBox_show_rhythmbox->setChecked(m_pconfig->getValue(
+    checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowRhythmboxLibrary"), true));
-    checkBox_show_banshee->setChecked(m_pconfig->getValue(
+    checkBox_show_banshee->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowBansheeLibrary"), true));
-    checkBox_show_itunes->setChecked(m_pconfig->getValue(
+    checkBox_show_itunes->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowITunesLibrary"), true));
-    checkBox_show_traktor->setChecked(m_pconfig->getValue(
+    checkBox_show_traktor->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
 
-    switch (m_pconfig->getValue<int>(
+    switch (m_pConfig->getValue<int>(
             ConfigKey("[Library]","TrackLoadAction"), LOAD_TRACK_DECK)) {
     case ADD_TRACK_BOTTOM:
             radioButton_dbclick_bottom->setChecked(true);
@@ -214,7 +196,7 @@ void DlgPrefLibrary::slotAddDir() {
     if (!fd.isEmpty()) {
         emit(requestAddDir(fd));
         slotUpdate();
-        m_baddedDirectory = true;
+        m_bAddedDirectory = true;
     }
 }
 
@@ -300,19 +282,19 @@ void DlgPrefLibrary::slotRelocateDir() {
 }
 
 void DlgPrefLibrary::slotApply() {
-    m_pconfig->set(ConfigKey("[Library]","RescanOnStartup"),
+    m_pConfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","SyncTrackMetadataExport"),
                 ConfigValue((int)checkBox_SyncTrackMetadataExport->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
+    m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","ShowBansheeLibrary"),
+    m_pConfig->set(ConfigKey("[Library]","ShowBansheeLibrary"),
                 ConfigValue((int)checkBox_show_banshee->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","ShowITunesLibrary"),
+    m_pConfig->set(ConfigKey("[Library]","ShowITunesLibrary"),
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
+    m_pConfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
@@ -322,23 +304,23 @@ void DlgPrefLibrary::slotApply() {
     } else {
             dbclick_status = LOAD_TRACK_DECK;
     }
-    m_pconfig->set(ConfigKey("[Library]","TrackLoadAction"),
+    m_pConfig->set(ConfigKey("[Library]","TrackLoadAction"),
                 ConfigValue(dbclick_status));
 
     QFont font = m_pLibrary->getTrackTableFont();
     if (m_originalTrackTableFont != font) {
-        m_pconfig->set(ConfigKey("[Library]", "Font"),
+        m_pConfig->set(ConfigKey("[Library]", "Font"),
                        ConfigValue(font.toString()));
     }
 
     int rowHeight = spinBoxRowHeight->value();
     if (m_iOriginalTrackTableRowHeight != rowHeight) {
-        m_pconfig->set(ConfigKey("[Library]","RowHeight"),
+        m_pConfig->set(ConfigKey("[Library]","RowHeight"),
                        ConfigValue(rowHeight));
     }
 
     // TODO(rryan): Don't save here.
-    m_pconfig->save();
+    m_pConfig->save();
 }
 
 void DlgPrefLibrary::slotRowHeightValueChanged(int height) {
