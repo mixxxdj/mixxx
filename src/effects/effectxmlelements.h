@@ -25,16 +25,8 @@ const QString EffectVersion("Version");
 
 const QString ParametersRoot("Parameters");
 const QString Parameter("Parameter");
-
-const QString KnobParametersRoot("KnobParameters");
-const QString KnobParameter("KnobParameter");
-const QString KnobParameterId("Id");
-const QString KnobParameterValue("Value");
-const QString KnobParameterLinkType("LinkType");
-const QString KnobParameterLinkInversion("LinkInversion");
-
-const QString ButtonParametersRoot("ButtonParameters");
-const QString ButtonParameter("ButtonParameter");
-const QString ButtonParameterId("Id");
-const QString ButtonParameterValue("Value");
+const QString ParameterId("Id");
+const QString ParameterValue("Value");
+const QString ParameterLinkType("LinkType");
+const QString ParameterLinkInversion("LinkInversion");
 }

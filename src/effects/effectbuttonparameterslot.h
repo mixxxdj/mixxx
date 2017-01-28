@@ -32,8 +32,8 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     // Clear the currently loaded effect
     void clear();
 
-    QDomElement toXML(QDomDocument* doc) const;
-    void loadValuesFromXml(const QDomElement& buttonParameterElement);
+    QDomElement toXML(QDomDocument* doc) const override;
+    void loadValuesFromXml(const QDomElement& parameterElement) override;
 
   private slots:
     // Solely for handling control changes

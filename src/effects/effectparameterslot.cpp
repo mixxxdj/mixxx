@@ -248,32 +248,32 @@ void EffectParameterSlot::slotValueChanged(double v) {
 }
 
 QDomElement EffectParameterSlot::toXML(QDomDocument* doc) const {
-    QDomElement knobParameterElement;
+    QDomElement parameterElement;
     if (m_pEffectParameter != nullptr) {
-        knobParameterElement = doc->createElement(EffectXml::KnobParameter);
-        XmlParse::addElement(*doc, knobParameterElement,
-                             EffectXml::KnobParameterId,
+        parameterElement = doc->createElement(EffectXml::Parameter);
+        XmlParse::addElement(*doc, parameterElement,
+                             EffectXml::ParameterId,
                              m_pEffectParameter->id());
         // TODO(rryan): Do smarter QVariant formatting?
-        XmlParse::addElement(*doc, knobParameterElement,
-                             EffectXml::KnobParameterValue,
+        XmlParse::addElement(*doc, parameterElement,
+                             EffectXml::ParameterValue,
                              QString::number(m_pControlValue->getParameter()));
-        XmlParse::addElement(*doc, knobParameterElement,
-                             EffectXml::KnobParameterLinkType,
+        XmlParse::addElement(*doc, parameterElement,
+                             EffectXml::ParameterLinkType,
                              QString::number(m_pControlLinkType->get()));
-        XmlParse::addElement(*doc, knobParameterElement,
-                             EffectXml::KnobParameterLinkInversion,
+        XmlParse::addElement(*doc, parameterElement,
+                             EffectXml::ParameterLinkInversion,
                              QString::number(m_pControlLinkInverse->get()));
     }
 
-    return knobParameterElement;
+    return parameterElement;
 }
 
-void EffectParameterSlot::loadValuesFromXml(const QDomElement& knobParameterElement) {
+void EffectParameterSlot::loadValuesFromXml(const QDomElement& parameterElement) {
     if (m_pEffectParameter == nullptr) {
         return;
     }
-    if (knobParameterElement.text().isEmpty()) {
+    if (parameterElement.text().isEmpty()) {
         m_pControlValue->reset();
         m_pControlLinkType->set(
             static_cast<double>(m_pEffectParameter->getDefaultLinkType()));
@@ -283,14 +283,14 @@ void EffectParameterSlot::loadValuesFromXml(const QDomElement& knobParameterElem
         // Need to use setParameterFrom(..., nullptr) here to
         // trigger valueChanged() signal emission and execute slotValueChanged()
         m_pControlValue->setParameterFrom(
-            XmlParse::selectNodeDouble(knobParameterElement,
-                                       EffectXml::KnobParameterValue),
+            XmlParse::selectNodeDouble(parameterElement,
+                                       EffectXml::ParameterValue),
             nullptr);
         m_pControlLinkType->set(
-            XmlParse::selectNodeDouble(knobParameterElement,
-                                       EffectXml::KnobParameterLinkType));
+            XmlParse::selectNodeDouble(parameterElement,
+                                       EffectXml::ParameterLinkType));
         m_pControlLinkInverse->set(
-            XmlParse::selectNodeDouble(knobParameterElement,
-                                       EffectXml::KnobParameterLinkInversion));
+            XmlParse::selectNodeDouble(parameterElement,
+                                       EffectXml::ParameterLinkInversion));
     }
 }

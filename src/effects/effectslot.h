@@ -113,6 +113,7 @@ class EffectSlot : public QObject {
     ControlPotmeter* m_pControlMetaParameter;
     QList<EffectParameterSlotPointer> m_parameters;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;
+    QMap<QString, EffectParameterSlotBasePointer> m_parametersById;
 
     SoftTakeover* m_pSoftTakeover;
 

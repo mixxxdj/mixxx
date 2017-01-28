@@ -111,31 +111,31 @@ void EffectButtonParameterSlot::slotValueChanged(double v) {
 }
 
 QDomElement EffectButtonParameterSlot::toXML(QDomDocument* doc) const {
-    QDomElement buttonParameterElement;
+    QDomElement parameterElement;
     if (m_pEffectParameter != nullptr) {
-        buttonParameterElement = doc->createElement(EffectXml::ButtonParameter);
-        XmlParse::addElement(*doc, buttonParameterElement,
-                             EffectXml::ButtonParameterId,
+        parameterElement = doc->createElement(EffectXml::Parameter);
+        XmlParse::addElement(*doc, parameterElement,
+                             EffectXml::ParameterId,
                              m_pEffectParameter->id());
         // TODO(rryan): Do smarter QVariant formatting?
-        XmlParse::addElement(*doc, buttonParameterElement,
-                             EffectXml::ButtonParameterValue,
+        XmlParse::addElement(*doc, parameterElement,
+                             EffectXml::ParameterValue,
                              QString::number(m_pControlValue->get()));
     }
 
-    return buttonParameterElement;
+    return parameterElement;
 }
 
 void EffectButtonParameterSlot::loadValuesFromXml(const QDomElement&
-                                                  buttonParameterElement) {
+                                                  parameterElement) {
     if (m_pEffectParameter == nullptr) {
         return;
     }
-    if (buttonParameterElement.text().isEmpty()) {
+    if (parameterElement.text().isEmpty()) {
         m_pControlValue->reset();
     } else {
         m_pControlValue->set(
-            XmlParse::selectNodeDouble(buttonParameterElement,
-                                       EffectXml::ButtonParameterValue));
+            XmlParse::selectNodeDouble(parameterElement,
+                                       EffectXml::ParameterValue));
     }
 }
