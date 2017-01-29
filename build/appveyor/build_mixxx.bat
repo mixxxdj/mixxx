@@ -1,10 +1,10 @@
 @echo off
 
 REM set this to the folder where you build the dependencies
-set WINLIB_PATH64D=C:\mixxx-buildserver\2.0-x64-debug-minimal
-set WINLIB_PATH64R=C:\mixxx-buildserver\2.0-x64-release-minimal
-set WINLIB_PATH32D=C:\mixxx-buildserver\2.0-x86-debug-minimal
-set WINLIB_PATH32R=C:\mixxx-buildserver\2.0-x86-release-minimal
+set WINLIB_PATH64D=C:\mixxx-buildserver\2.0.1-x64-debug-minimal
+set WINLIB_PATH64R=C:\mixxx-buildserver\2.0.1-x64-release-minimal
+set WINLIB_PATH32D=C:\mixxx-buildserver\2.0.1-x86-debug-minimal
+set WINLIB_PATH32R=C:\mixxx-buildserver\2.0.1-x86-release-minimal
 
 REM XP Compatibility requires the v7.1A SDK
 set MSSDK_DIR="c:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A"
