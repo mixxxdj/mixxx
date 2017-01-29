@@ -72,6 +72,9 @@
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
+#ifdef __VAMP__
+#include "analyzer/vamp/vampanalyzer.h"
+#endif
 
 // static
 const int MixxxMainWindow::kMicrophoneCount = 4;
@@ -163,6 +166,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     QString resourcePath = pConfig->getResourcePath();
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
+#ifdef __VAMP__
+    //This call sets the environment variable so that the plugins can be found.
+    VampAnalyzer::initializePluginPaths();
+#endif
 
     launchProgress(2);
 

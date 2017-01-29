@@ -10,6 +10,8 @@
 #include "track/track.h"
 #include "waveform/waveformfactory.h"
 
+QMutex AnalyzerWaveform::s_mutex;
+
 AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig, bool forceAnalysis) :
         m_skipProcessing(false),
         m_forceAnalysis(forceAnalysis),
@@ -25,6 +27,7 @@ AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig, bool forceAnalys
     m_filter[1] = 0;
     m_filter[2] = 0;
 
+    QMutexLocker lock(&s_mutex);
     static int i = 0;
     m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
     if (!m_database.isOpen()) {

@@ -8,7 +8,6 @@
 #ifdef __VAMP__
 #include "analyzer/analyzerbeats.h"
 #include "analyzer/analyzerkey.h"
-#include "analyzer/vamp/vampanalyzer.h"
 #endif
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerebur128.h"
@@ -36,7 +35,7 @@ namespace {
 // 1 to display the text "finalizing"
 // 100 for 10% step after finalize
 // NOTE: If this is changed, change woverview.cpp slotAnalyzerProgress().
-#define FINALIZE_PROMILLE 1
+#define FINALIZE_PROMILLE 1.0
 
 // --- CONSTRUCTOR ---
 AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool priorized) :
@@ -148,7 +147,7 @@ bool AnalyzerWorker::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAud
         DEBUG_ASSERT(pAudioSource->isValidFrameIndex(frameIndex));
         const double frameProgress =
                 double(frameIndex) / double(pAudioSource->getMaxFrameIndex());
-        int progressPromille = frameProgress * (1000 - FINALIZE_PROMILLE);
+        int progressPromille = frameProgress * (1000.0 - FINALIZE_PROMILLE);
 
         if (m_progressInfo.track_progress != progressPromille &&
                 progressUpdateInhibitTimer.elapsed() > 60) {
@@ -290,7 +289,6 @@ void AnalyzerWorker::createAnalyzers() {
     m_analyzelist.append(new AnalyzerGain(m_pConfig));
     m_analyzelist.append(new AnalyzerEbur128(m_pConfig));
 #ifdef __VAMP__
-    VampAnalyzer::initializePluginPaths();
     m_analyzelist.append(new AnalyzerBeats(m_pConfig, !m_priorizedJob));
     m_analyzelist.append(new AnalyzerKey(m_pConfig));
 #endif

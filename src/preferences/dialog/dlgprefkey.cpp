@@ -20,7 +20,6 @@
 #include <QLineEdit>
 #include <QMessageBox>
 
-#include "analyzer/vamp/vampanalyzer.h"
 #include "analyzer/vamp/vamppluginloader.h"
 #include "control/controlproxy.h"
 #include "track/key_preferences.h"
@@ -279,7 +278,6 @@ void DlgPrefKey::slotUpdate() {
 }
 
 void DlgPrefKey::populate() {
-   VampAnalyzer::initializePluginPaths();
    m_listIdentifier.clear();
    m_listName.clear();
    m_listLibrary.clear();

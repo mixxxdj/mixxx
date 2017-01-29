@@ -162,7 +162,7 @@ void DlgAnalysis::trackAnalysisFinished(int size) {
 void DlgAnalysis::trackAnalysisProgress(int worker, int progress) {
     if (m_bAnalysisActive) {
         m_percentages[worker] = progress;
-        //This is a bit cumbersome, yes, I just avoided to change the tranlating text.
+        //This is a bit cumbersome, yes, I just avoided to change the translating text.
         QString perc;
         bool add = false;
         foreach(int percentage, m_percentages) {

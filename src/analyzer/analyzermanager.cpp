@@ -201,10 +201,6 @@ void AnalyzerManager::slotNextTrack(AnalyzerWorker* worker) {
             m_defaultWorkers.append(otherworker);
         }
     }
-    //Check if background workers are empty.
-    if (!isDefaultQueueActive()) {
-        emit(queueEmpty());
-    }
 }
 void AnalyzerManager::slotWorkerFinished(AnalyzerWorker* worker) {
     m_endingWorkers.removeAll(worker);

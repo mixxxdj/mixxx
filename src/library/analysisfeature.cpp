@@ -81,10 +81,21 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
     connect(this, SIGNAL(trackAnalysisStarted(int)),
             m_pAnalysisView, SLOT(trackAnalysisStarted(int)));
 
+    connect(m_pAnalyzerManager, SIGNAL(trackProgress(int, int)),
+            m_pAnalysisView, SLOT(trackAnalysisProgress(int, int)));
+    connect(m_pAnalyzerManager, SIGNAL(trackFinished(int)),
+            this, SLOT(slotProgressUpdate(int)));
+    connect(m_pAnalyzerManager, SIGNAL(trackFinished(int)),
+            m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
+
+    connect(m_pAnalyzerManager, SIGNAL(queueEmpty()),
+        this, SLOT(cleanupAnalyzer()));
+
     m_pAnalysisView->installEventFilter(keyboard);
 
     // Let the DlgAnalysis know whether or not analysis is active.
     bool bAnalysisActive = m_pAnalyzerManager->isDefaultQueueActive();
+    qDebug() << "AnalysisFeature::bindWidget " << bAnalysisActive;
     emit(analysisActive(bAnalysisActive));
 
     libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
@@ -111,16 +122,6 @@ void AnalysisFeature::activate() {
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 
-    connect(m_pAnalyzerManager, SIGNAL(trackProgress(int, int)),
-            m_pAnalysisView, SLOT(trackAnalysisProgress(int, int)));
-    connect(m_pAnalyzerManager, SIGNAL(trackFinished(int)),
-            this, SLOT(slotProgressUpdate(int)));
-    connect(m_pAnalyzerManager, SIGNAL(trackFinished(int)),
-            m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
-
-    connect(m_pAnalyzerManager, SIGNAL(queueEmpty()),
-        this, SLOT(cleanupAnalyzer()));
-
     emit(analysisActive(true));
 
     for (const auto& trackId: trackIds) {
@@ -145,14 +146,12 @@ void AnalysisFeature::slotProgressUpdate(int num_left) {
 }
 
 void AnalysisFeature::stopAnalysis() {
-    //qDebug() << this << "stopAnalysis()";
     m_pAnalyzerManager->stop(false);
 }
 
 void AnalysisFeature::cleanupAnalyzer() {
     setTitleDefault();
     emit(analysisActive(false));
-
 }
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {

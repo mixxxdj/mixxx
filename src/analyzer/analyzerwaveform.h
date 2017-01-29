@@ -177,7 +177,7 @@ class AnalyzerWaveform : public Analyzer {
     PerformanceTimer m_timer;
     QSqlDatabase m_database;
     std::unique_ptr<AnalysisDao> m_pAnalysisDao;
-
+    static QMutex s_mutex;
 #ifdef TEST_HEAT_MAP
     QImage* test_heatMap;
 #endif
