@@ -173,17 +173,18 @@ Variables:
 							<WidgetGroup>
 								<ObjectName>SamplerSyncGainPfl</ObjectName>
 								<Layout>horizontal</Layout>
-								<Size>1me,1me</Size>
+								<SizePolicy>min,min</SizePolicy>
 								<Children>
+                    <WidgetGroup><Size>0me,1min</Size><Children/></WidgetGroup>
 									<Template src="skin:button_1state.xml">
 										<SetVariable name="ToolTipId">beatsync_beatsync_tempo</SetVariable>
 										<SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
-										<SetVariable name="Size">38f,22f</SetVariable>
+										<SetVariable name="Size">35f,22f</SetVariable>
 										<SetVariable name="state_0_text">SYNC</SetVariable>
 										<SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],beatsync</SetVariable>
 										<SetVariable name="ConfigKeyRight">[Sampler<Variable name="samplernum"/>],beatsync_tempo</SetVariable>
 									</Template>
-										<WidgetGroup><Size>0me,1me</Size><Children/></WidgetGroup>
+										<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 									<Template src="skin:button_2state.xml">
 										<SetVariable name="ToolTipID">pfl</SetVariable>
 										<SetVariable name="ObjectName">PflButton</SetVariable>
@@ -194,7 +195,7 @@ Variables:
 										<SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
 										<SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],pfl</SetVariable>
 									</Template>
-										<WidgetGroup><Size>1f,1me</Size><Children/></WidgetGroup>
+										<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 									<Template src="skin:knob_textless.xml">
 										<SetVariable name="ToolTipID">pregain</SetVariable>
 										<SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
@@ -215,7 +216,7 @@ Variables:
 			<WidgetGroup><!-- SamplerVU   79 x 21-->
 				<ObjectName>SamplerVU</ObjectName>
 				<Layout>stacked</Layout>
-				<Size>20f,79f</Size><!-- 20px + 1px margin-left -->
+				<Size>12f,79f</Size>
 				<Children><!-- 71 x 6 -->
 					<StatusLight>
 						<TooltipId>sampler_PeakIndicator</TooltipId>

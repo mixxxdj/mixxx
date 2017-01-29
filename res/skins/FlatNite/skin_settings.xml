@@ -386,7 +386,7 @@ Description:
 										<SetVariable name="state_0_text">          HotCues</SetVariable>
 										<SetVariable name="state_1_text">     &#10003; HotCues   4&#9668; 8</SetVariable>
 										<SetVariable name="state_2_text">     &#10003; HotCues   4 &#9658;8</SetVariable>
-										<SetVariable name="ConfigKeyPerm">[FlatNite],preview_hotcues</SetVariable>
+										<SetVariable name="ConfigKeyPerm">[FlatNite],hotcues_preview</SetVariable>
 									</Template>
 								</Children>
 								<Connection>

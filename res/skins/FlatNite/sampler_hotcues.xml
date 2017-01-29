@@ -9,7 +9,8 @@ Variables:
 		<Layout>horizontal</Layout>
 		<SizePolicy>max,max</SizePolicy>
 		<Children>
-			<WidgetGroup><!-- DeckHotcues -->
+		
+			<WidgetGroup><!-- DeckHotcues 1-4 -->
 				<Layout>horizontal</Layout>
 				<SizePolicy>max,max</SizePolicy>
 				<ObjectNAme>DeckHotcues</ObjectNAme>
@@ -31,8 +32,9 @@ Variables:
 					<ConfigKey persist="true">[FlatNite],hotcues_samplers</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
-			</WidgetGroup><!-- /DeckHotcues -->
-			<WidgetGroup><!-- DeckHotcues -->
+			</WidgetGroup><!-- /DeckHotcues 1-4 -->
+			
+			<WidgetGroup><!-- SamplerHotcues 5-8 -->
 				<Layout>horizontal</Layout>
 				<SizePolicy>max,max</SizePolicy>
 				<ObjectNAme>DeckHotcues</ObjectNAme>
@@ -53,11 +55,10 @@ Variables:
 				<Connection>
 					<ConfigKey persist="true">[FlatNite],hotcues_samplers</ConfigKey>
 					<BindProperty>visible</BindProperty>
-					<Transform>
-					  <IsEqual>2</IsEqual>
-					</Transform>
+					<Transform><Add>-1</Add></Transform>
 				</Connection>
-			</WidgetGroup><!-- /DeckHotcues -->
+			</WidgetGroup><!-- /SamplerHotcues 5-8 -->
+			
 		</Children>
 	</WidgetGroup>
 </Template>

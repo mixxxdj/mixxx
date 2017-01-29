@@ -1,43 +1,35 @@
 <Template>
-    <WidgetGroup>
+  <WidgetGroup>
     <ObjectName>DeckLoopBeatjump</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-        	<WidgetGroup><Size>1me,1f</Size></WidgetGroup>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+    
+      <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
-			<WidgetGroup>
-				<SizePolicy>min,min</SizePolicy>
-				<Layout>horizontal</Layout>
-				<Children>
-				    <Template src="skin:beatjump_sizes.xml"/>
-				        <WidgetGroup>
-				        	<ObjectName>Spacer22border</ObjectName>
-				        	<Size>0me,1min</Size>
-				        </WidgetGroup>
-				    <Template src="skin:loop_basics.xml"/>
-				        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-				    <Template src="skin:loop_sizes.xml"/>
-				        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-				    <Template src="skin:loop_scale.xml"/>
-				        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-				    <Template src="skin:loop_move_sizes.xml"/>
-				        <WidgetGroup>
-				        	<ObjectName>Spacer22border</ObjectName>
-				        	<Size>0me,1min</Size>
-				        </WidgetGroup>
-				    <Template src="skin:loop_roll.xml"/>
-				        <WidgetGroup>
-				        	<ObjectName>Spacer22border</ObjectName>
-				        	<Size>0me,1min</Size>
-				        </WidgetGroup>
-				</Children>
-			</WidgetGroup>
-        
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:beatjump_sizes.xml"/>
+            <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
+          <Template src="skin:loop_basics.xml"/>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:loop_sizes.xml"/>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:loop_scale.xml"/>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:loop_move_sizes.xml"/>
+            <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
+          <Template src="skin:loop_roll.xml"/>
+            <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
         </Children>
-        <Connection>
-            <ConfigKey persist="true">[FlatNite],loop_beatjump_controls</ConfigKey>
-            <BindProperty>visible</BindProperty>
-        </Connection>
-    </WidgetGroup>
+      </WidgetGroup>
+      
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[FlatNite],loop_beatjump_controls</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
 </Template>

@@ -1,45 +1,45 @@
 <Template>
-	<WidgetGroup><!-- Skin Controls -->
-		<Layout>vertical</Layout>
-		<ObjectName>SkinControls</ObjectName>
-		<SizePolicy>min,min</SizePolicy>
-		<Children>
-		
-			<WidgetGroup><Size>1min,34f</Size></WidgetGroup>
-			
-			<WidgetStack currentpage="[FlatNite],crossfader_logo" persist="true"><!-- CrossfaderBox 4 Decks-->
-				<Layout>horizontal</Layout>
-				<Size>104f,26f</Size>
-				<Children>
-					<WidgetGroup>
-						<Size>1me,26f</Size>
-						<Children/>
-					</WidgetGroup>
-					
-					<SliderComposed trigger="[FlatNite],crossfader" persist="true" on-hide-select="0">
-					    <ObjectName>Crossfader</ObjectName>
-						<TooltipId>crossfader</TooltipId>
-						<Handle>skin:/knobs_sliders/crossfader_handle.svg</Handle>
-						<Slider>skin:/knobs_sliders/crossfader_slider.svg</Slider>
-						<Horizontal>true</Horizontal>
-						<Connection>
-							<ConfigKey>[Master],crossfader</ConfigKey>
-						</Connection>
-						<Connection>
-							<ConfigKey persist="true">[FlatNite],crossfader</ConfigKey>
-							<BindProperty>visible</BindProperty>
-						</Connection>
-					</SliderComposed>
-				</Children>
-			</WidgetStack><!-- /LogoCrossfaderBox 4 Decks -->
-			
-			<WidgetGroup><Size>1min,1me</Size></WidgetGroup>
-			
-			<WidgetGroup>
-				<ObjectName>Logo</ObjectName>
-				<Size>104f,26f</Size>
-			</WidgetGroup>
-			
-		</Children>
-	</WidgetGroup>
+  <WidgetGroup><!-- Skin Controls -->
+    <Layout>vertical</Layout>
+    <ObjectName>SkinControls</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+    
+      <WidgetGroup><Size>1min,34f</Size></WidgetGroup>
+      
+      <WidgetStack currentpage="[FlatNite],crossfader_logo" persist="true"><!-- CrossfaderBox 4 Decks-->
+        <Layout>horizontal</Layout>
+        <Size>104f,26f</Size>
+        <Children>
+          <WidgetGroup>
+            <Size>1me,26f</Size>
+            <Children/>
+          </WidgetGroup>
+          
+          <SliderComposed trigger="[FlatNite],crossfader" persist="true" on-hide-select="0">
+              <ObjectName>Crossfader</ObjectName>
+            <TooltipId>crossfader</TooltipId>
+            <Handle>skin:/knobs_sliders/crossfader_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/crossfader_slider.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <Connection>
+              <ConfigKey>[Master],crossfader</ConfigKey>
+            </Connection>
+            <Connection>
+              <ConfigKey persist="true">[FlatNite],crossfader</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </SliderComposed>
+        </Children>
+      </WidgetStack><!-- /LogoCrossfaderBox 4 Decks -->
+      
+      <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
+      
+      <WidgetGroup>
+        <ObjectName>Logo</ObjectName>
+        <Size>104f,26f</Size>
+      </WidgetGroup>
+      
+    </Children>
+  </WidgetGroup>
 </Template>

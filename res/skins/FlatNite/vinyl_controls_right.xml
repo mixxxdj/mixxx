@@ -15,7 +15,7 @@ Variables:
 			<WidgetGroup>
 				<TooltipId>vinylcontrol_enabled</TooltipId>
 				<Layout>vertical</Layout>
-		        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
 				<Children>
 					<Template src="skin:button_2state_persist.xml">
 						<SetVariable name="ToolTipID">vinylcontrol_enabled</SetVariable>
@@ -25,7 +25,7 @@ Variables:
 						<SetVariable name="state_1_text">VINYL</SetVariable>
 						<SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_enabled</SetVariable>
 					</Template>
-					    <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+            <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
 					<Template src="skin:button_3state_persist.xml">
 						<SetVariable name="ToolTipID">vinylcontrol_mode</SetVariable>
 						<SetVariable name="ObjectName">VinylModeButton</SetVariable>
@@ -36,21 +36,21 @@ Variables:
 						<SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_mode</SetVariable>
 					</Template>
 					<WidgetGroup>
-					    <Size>1min,1f</Size>
-					    <Children>
-					    </Children>
-					    <Connection>
-					        <ConfigKey>[FlatNite],trackComment</ConfigKey>
-					        <BindProperty>visible</BindProperty>
-                        </Connection>
-                    </WidgetGroup>
+            <Size>1min,1f</Size>
+            <Children>
+            </Children>
+            <Connection>
+              <ConfigKey>[FlatNite],trackComment</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 				</Children>
 			</WidgetGroup>
 			
 			<WidgetGroup>
 				<TooltipId>vinylcontrol_enabled</TooltipId>
 				<Layout>vertical</Layout>
-		        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
 				<Children>
 					<Template src="skin:button_2state_persist.xml">
 						<SetVariable name="ToolTipID">passthrough_enabled</SetVariable>
@@ -60,7 +60,7 @@ Variables:
 						<SetVariable name="state_1_text">PASS</SetVariable>
 						<SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],passthrough</SetVariable>
 					</Template>
-					    <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+            <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
 					<Template src="skin:button_3state_persist.xml">
 						<SetVariable name="ToolTipID">vinylcontrol_cueing</SetVariable>
 						<SetVariable name="ObjectName">VinylButton</SetVariable>
@@ -71,14 +71,13 @@ Variables:
 						<SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_cueing</SetVariable>
 					</Template>
 					<WidgetGroup>
-					    <Size>1min,1f</Size>
-					    <Children>
-					    </Children>
-					    <Connection>
-					        <ConfigKey>[FlatNite],trackComment</ConfigKey>
-					        <BindProperty>visible</BindProperty>
-                        </Connection>
-                    </WidgetGroup>
+            <Size>1min,1f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey>[FlatNite],trackComment</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 				</Children>
 			</WidgetGroup>
 		</Children>

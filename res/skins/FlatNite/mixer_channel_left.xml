@@ -24,8 +24,9 @@ Variables:
 	<WidgetGroup>
 		<ObjectName>MixerChannelLeft</ObjectName>
 		<Layout>horizontal</Layout>
-		<Size>100min,136f</Size><!-- 101 = 1margin + 44 + 4 + 36 + 16 -->
+		<SizePolicy>min,me</SizePolicy>
 		<Children>
+		
 			<WidgetGroup><!-- EQs --><!-- 4 + 36px + 4 -->
 				<ObjectName>EQKnobs</ObjectName>
 				<Layout>vertical</Layout>

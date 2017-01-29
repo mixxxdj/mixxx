@@ -57,7 +57,7 @@ Variables:
 		</State>
 		<Connection>
 			<ConfigKey><Variable name="ConfigKey"/></ConfigKey>
-      		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>

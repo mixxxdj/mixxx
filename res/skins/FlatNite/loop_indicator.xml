@@ -11,31 +11,31 @@ Variables:
 		<SizePolicy>max,min</SizePolicy>
 		<Layout>horizontal</Layout>
 		<Children>
-	        <WidgetGroup>
-		        <SizePolicy>max,min</SizePolicy>
-		        <Layout>horizontal</Layout>
-		        <Children>
-			        <Template src="skin:button_2state_display.xml">
-				        <SetVariable name="ObjectName">LoopIndicator</SetVariable>
-				        <SetVariable name="Size">50f,44me</SetVariable>
-				        <SetVariable name="state_0_pressed">loop_indicator.svg</SetVariable>
-				        <SetVariable name="state_0_unpressed">loop_indicator.svg</SetVariable>
-				        <SetVariable name="state_1_pressed">loop_indicator.svg</SetVariable>
-				        <SetVariable name="state_1_unpressed">loop_indicator.svg</SetVariable>
-				        <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],reloop_exit</SetVariable>
-						<SetVariable name="ConfigKeyDisp">[Channel<Variable name="channum"/>],loop_enabled</SetVariable>
-			        </Template>
-		        </Children>
-		        <Connection>
-			        <ConfigKey>[Channel<Variable name="channum"/>],loop_enabled</ConfigKey>
-			        <BindProperty>visible</BindProperty>
-		        </Connection>
-	        </WidgetGroup>
+      <WidgetGroup>
+        <SizePolicy>max,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:button_2state_display.xml">
+            <SetVariable name="ObjectName">LoopIndicator</SetVariable>
+            <SetVariable name="Size">50f,44me</SetVariable>
+            <SetVariable name="state_0_pressed">loop_indicator.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">loop_indicator.svg</SetVariable>
+            <SetVariable name="state_1_pressed">loop_indicator.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">loop_indicator.svg</SetVariable>
+            <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],reloop_exit</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Channel<Variable name="channum"/>],loop_enabled</SetVariable>
+          </Template>
         </Children>
         <Connection>
-            <ConfigKey persist="true">[FlatNite],loop_beatjump_controls</ConfigKey>
-            <BindProperty>visible</BindProperty>
-            <Transform><Not/></Transform>
+          <ConfigKey>[Channel<Variable name="channum"/>],loop_enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
         </Connection>
-    </WidgetGroup>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[FlatNite],loop_beatjump_controls</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform><Not/></Transform>
+    </Connection>
+  </WidgetGroup>
 </Template>

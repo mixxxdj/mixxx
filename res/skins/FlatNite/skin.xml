@@ -440,21 +440,17 @@
 							    <Children>
 								    <WidgetGroup><!-- Load/Save buttons -->
 									    <Layout>vertical</Layout>
-									    <Size>31f,82f</Size>
+									    <Size>22f,82f</Size>
 									    <Children>
 										    <Template src="skin:button_1state.xml">
-											    <SetVariable name="ObjectName">LoadSaveSamplers</SetVariable>
-											    <SetVariable name="Size">31f,38f</SetVariable>
-											    <SetVariable name="state_0_pressed">loadSamplers.svg</SetVariable>
-											    <SetVariable name="state_0_unpressed">loadSamplers.svg</SetVariable>
+											    <SetVariable name="ObjectName">SamplersLoadButton</SetVariable>
+											    <SetVariable name="Size">22f,38f</SetVariable>
 											    <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
 										    </Template>
 											    <WidgetGroup><Size>1me,3f</Size></WidgetGroup>
 										    <Template src="skin:button_1state.xml">
-											    <SetVariable name="ObjectName">LoadSaveSamplers</SetVariable>
-											    <SetVariable name="Size">31f,38f</SetVariable>
-											    <SetVariable name="state_0_pressed">saveSamplers.svg</SetVariable>
-											    <SetVariable name="state_0_unpressed">saveSamplers.svg</SetVariable>
+											    <SetVariable name="ObjectName">SamplersSaveButton</SetVariable>
+											    <SetVariable name="Size">22f,38f</SetVariable>
 											    <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
 										    </Template>
 											    <WidgetGroup><Size>1me,3f</Size></WidgetGroup>
@@ -502,9 +498,7 @@
 							    </Children>
 							    <Connection>
 								    <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-								    <Transform>
-								      <IsEqual>2</IsEqual>
-								    </Transform>
+								    <Transform><Add>-1</Add></Transform>
 								    <BindProperty>visible</BindProperty>
 							    </Connection>
 						    </WidgetGroup><!-- /Samplers 5-8 -->

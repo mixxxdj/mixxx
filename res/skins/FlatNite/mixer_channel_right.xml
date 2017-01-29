@@ -24,7 +24,7 @@ Variables:
 	<WidgetGroup>
 		<ObjectName>MixerChannelRight</ObjectName>
 		<Layout>horizontal</Layout>
-		<SizePolicy>max,me</SizePolicy>
+		<SizePolicy>min,me</SizePolicy>
 		<Children>
 			
 		<!-- No matter if VUMeter is visible, make sure there's 4px padding on the left -->

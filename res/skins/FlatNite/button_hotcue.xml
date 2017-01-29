@@ -13,7 +13,7 @@ Variables:
 			<Template src="skin:button_2state_display.xml">
 				<SetVariable name="ToolTipId">hotcue</SetVariable>
 				<SetVariable name="ObjectName">HotcueButton</SetVariable>
-				<SetVariable name="Size">24f,24f</SetVariable>
+				<SetVariable name="Size">23f,24f</SetVariable>
 				<SetVariable name="state_0_text"><Variable name="HotCue"/></SetVariable>
 				<SetVariable name="state_1_text"><Variable name="HotCue"/></SetVariable>
 				<SetVariable name="ConfigKey"><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_activate</SetVariable>

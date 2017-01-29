@@ -21,12 +21,12 @@ Variables:
 				<Layout>horizontal</Layout>
 				<SizePolicy>me,min</SizePolicy>
 				<Children>
-				    <!-- Together with expanding spacer at the far right, this
-				        centers MixerBar when Library is hidden -->
+        <!-- Together with expanding spacer at the far right, this
+          centers MixerBar when Library is hidden -->
 					<WidgetGroup>
 						<Layout>horizontal</Layout>
 						<Children>
-                            <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 							<WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 						</Children>
 						<Connection>
@@ -36,301 +36,301 @@ Variables:
 						</Connection>
 					</WidgetGroup>
 			
-					<WidgetGroup><!-- Master Mixer -->
-						<ObjectName>MixerBarSection</ObjectName>
-						<Layout>horizontal</Layout>
-						<SizePolicy>min,min</SizePolicy>
-						<Children>
-							<WidgetGroup>
-								<ObjectName>MasterLabel</ObjectName>
-								<Size>32f,32f</Size>
-							</WidgetGroup>
-							    <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-							<SliderComposed>
-								<TooltipId></TooltipId>
-								<ObjectName>MixerBarSlider</ObjectName>
-								<Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-								<Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
-								<Horizontal>true</Horizontal>
-								<Connection>
-									<ConfigKey>[Master],volume</ConfigKey>
-								</Connection>
-							</SliderComposed>
-							    <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-							<SliderComposed>
-								<TooltipId>balance</TooltipId>
-								<ObjectName>MixerBarSlider</ObjectName>
-								<Handle>skin:/knobs_sliders/balance_handle.svg</Handle>
-								<Slider>skin:/knobs_sliders/balance_slider.svg</Slider>
-								<Horizontal>true</Horizontal>
-								<Connection>
-									<ConfigKey>[Master],balance</ConfigKey>
-								</Connection>
-							</SliderComposed>
-						</Children>
-					</WidgetGroup><!-- Master Mixer -->
+          <WidgetGroup><!-- Master Mixer -->
+            <ObjectName>MixerBarSection</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>MasterLabel</ObjectName>
+                <Size>32f,32f</Size>
+              </WidgetGroup>
+                <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <SliderComposed>
+                <TooltipId></TooltipId>
+                <ObjectName>MixerBarSlider</ObjectName>
+                <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
+                <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],volume</ConfigKey>
+                </Connection>
+              </SliderComposed>
+                  <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <SliderComposed>
+                <TooltipId>balance</TooltipId>
+                <ObjectName>MixerBarSlider</ObjectName>
+                <Handle>skin:/knobs_sliders/balance_handle.svg</Handle>
+                <Slider>skin:/knobs_sliders/balance_slider.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],balance</ConfigKey>
+                </Connection>
+              </SliderComposed>
+            </Children>
+          </WidgetGroup><!-- Master Mixer -->
 			
-					<WidgetGroup><!-- Headphone Mixer -->
-						<Layout>horizontal</Layout>
-						<SizePolicy>min,min</SizePolicy>
-						<Children>
-							<WidgetGroup>
-								<ObjectName>MixerBarSection</ObjectName>
-								<Layout>horizontal</Layout>
-								<SizePolicy>min,min</SizePolicy>
-								<Children>
-									<WidgetGroup>
-										<ObjectName>HeadLabel</ObjectName>
-								        <Size>32f,32f</Size>
-									</WidgetGroup>
-			                        
-			                            <!-- All spacers left of MixerBarSliders are necessary
-			                            because margin/padding won't give a proper offset to neighbours,
-			                            just a shift of border/background while maintaining hover area.
-			                            This looks odd. -->
-									    <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									    
-									<SliderComposed>
-										<TooltipId></TooltipId>
-										<ObjectName>MixerBarSlider</ObjectName>
-										<Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-										<Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
-										<Horizontal>true</Horizontal>
-										<Connection>
-											<ConfigKey>[Master],headVolume</ConfigKey>
-										</Connection>
-									</SliderComposed>
-									    <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									<SliderComposed>
-										<TooltipId>headMix</TooltipId>
-										<ObjectName>MixerBarSlider</ObjectName>
-										<Handle>skin:/knobs_sliders/headMix_handle.svg</Handle>
-										<Slider>skin:/knobs_sliders/headMix_slider.svg</Slider>
-										<Horizontal>true</Horizontal>
-										<Connection>
-											<ConfigKey>[Master],headMix</ConfigKey>
-										</Connection>
-									</SliderComposed>
-									    <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									<Template src="skin:button_2state.xml">
-										<SetVariable name="ToolTipID">headSplit</SetVariable>
-										<SetVariable name="ObjectName">MixerBarButton</SetVariable>
-										<SetVariable name="Size">48f,32f</SetVariable><!-- 43 + 1 margin -->
-										<SetVariable name="state_0_unpressed">headSplit_off.svg</SetVariable>
-										<SetVariable name="state_0_pressed">headSplit_off.svg</SetVariable>
-										<SetVariable name="state_1_unpressed">headSplit_on.svg</SetVariable>
-										<SetVariable name="state_1_pressed">headSplit_on.svg</SetVariable>
-										<SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
-									</Template>
-								</Children>
-							</WidgetGroup>
-						</Children>
-						<Connection>
-							<ConfigKey persist="true">[FlatNite],mixerbar_headphone</ConfigKey>
-							<BindProperty>visible</BindProperty>
-						</Connection>
-					</WidgetGroup><!-- Headphone Mixer -->
+          <WidgetGroup><!-- Headphone Mixer -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>MixerBarSection</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>HeadLabel</ObjectName>
+                    <Size>32f,32f</Size>
+                  </WidgetGroup>
+                              
+                    <!-- All spacers left of MixerBarSliders are necessary
+                    because margin/padding won't give a proper offset to neighbours,
+                    just a shift of border/background while maintaining hover area.
+                    This looks odd. -->
+                    <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                      
+                  <SliderComposed>
+                    <TooltipId></TooltipId>
+                    <ObjectName>MixerBarSlider</ObjectName>
+                    <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
+                    <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey>[Master],headVolume</ConfigKey>
+                    </Connection>
+                  </SliderComposed>
+                    <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                  <SliderComposed>
+                    <TooltipId>headMix</TooltipId>
+                    <ObjectName>MixerBarSlider</ObjectName>
+                    <Handle>skin:/knobs_sliders/headMix_handle.svg</Handle>
+                    <Slider>skin:/knobs_sliders/headMix_slider.svg</Slider>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey>[Master],headMix</ConfigKey>
+                    </Connection>
+                  </SliderComposed>
+                    <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ToolTipID">headSplit</SetVariable>
+                    <SetVariable name="ObjectName">MixerBarButton</SetVariable>
+                    <SetVariable name="Size">48f,32f</SetVariable><!-- 43 + 1 margin -->
+                    <SetVariable name="state_0_unpressed">headSplit_off.svg</SetVariable>
+                    <SetVariable name="state_0_pressed">headSplit_off.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">headSplit_on.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">headSplit_on.svg</SetVariable>
+                    <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[FlatNite],mixerbar_headphone</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- Headphone Mixer -->
 			
-					<WidgetGroup><!-- Microphone Mixer -->
-						<Layout>horizontal</Layout>
-						<SizePolicy>min,min</SizePolicy>
-						<Children>
-					        <WidgetGroup><!-- MIC 1 -->
-						        <Layout>horizontal</Layout>
-						        <SizePolicy>min,min</SizePolicy>
-						        <Children>
-							        <WidgetGroup>
-								        <ObjectName>MixerBarSection</ObjectName>
-								        <Layout>horizontal</Layout>
-								        <Size>-1min,38f</Size>
-								        <Children>
-									        <WidgetGroup>
-										        <ObjectName>Mic1Label</ObjectName>
-								                <Size>32f,32f</Size>
-									        </WidgetGroup>
-										        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									        <Template src="skin:knob_textless.xml">
-										        <SetVariable name="ToolTipID"></SetVariable>
-										        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
-										        <SetVariable name="Size">32f,32f</SetVariable>
-										        <SetVariable name="group">[Microphone]</SetVariable>
-										        <SetVariable name="ConfigKey">pregain</SetVariable>
-										        <SetVariable name="Color">red</SetVariable>
-									        </Template>
-										        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									        <SliderComposed>
-										        <TooltipId></TooltipId>
-										        <ObjectName>MixerBarSlider</ObjectName>
-										        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-										        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
-										        <Horizontal>true</Horizontal>
-										        <Connection>
-											        <ConfigKey>[Microphone],volume</ConfigKey>
-										        </Connection>
-									        </SliderComposed>
-								        </Children>
-								    </WidgetGroup>
-								</Children>
-								<Connection>
-									<ConfigKey>[Microphone],enabled</ConfigKey>
-									<BindProperty>visible</BindProperty>
-								</Connection>
-							</WidgetGroup><!-- /MIC 1 -->
+          <WidgetGroup><!-- Microphone Mixer -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup><!-- MIC 1 -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>MixerBarSection</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>-1min,38f</Size>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>Mic1Label</ObjectName>
+                        <Size>32f,32f</Size>
+                      </WidgetGroup>
+                        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="ToolTipID"></SetVariable>
+                        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
+                        <SetVariable name="Size">32f,32f</SetVariable>
+                        <SetVariable name="group">[Microphone]</SetVariable>
+                        <SetVariable name="ConfigKey">pregain</SetVariable>
+                        <SetVariable name="Color">red</SetVariable>
+                      </Template>
+                        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                      <SliderComposed>
+                        <TooltipId></TooltipId>
+                        <ObjectName>MixerBarSlider</ObjectName>
+                        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
+                        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                        <Horizontal>true</Horizontal>
+                        <Connection>
+                          <ConfigKey>[Microphone],volume</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Microphone],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /MIC 1 -->
 							
-							<WidgetGroup><!-- MIC 2 -->
-						        <Layout>horizontal</Layout>
-						        <SizePolicy>min,min</SizePolicy>
-						        <Children>
-							        <WidgetGroup>
-								        <ObjectName>MixerBarSection</ObjectName>
-								        <Layout>horizontal</Layout>
-								        <Size>-1min,38f</Size>
-								        <Children>
-									        <WidgetGroup>
-										        <ObjectName>Mic2Label</ObjectName>
-								                <Size>32f,32f</Size>
-									        </WidgetGroup>
-										        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									        <Template src="skin:knob_textless.xml">
-										        <SetVariable name="ToolTipID"></SetVariable>
-										        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
-										        <SetVariable name="Size">32f,32f</SetVariable>
-										        <SetVariable name="group">[Microphone2]</SetVariable>
-										        <SetVariable name="ConfigKey">pregain</SetVariable>
-										        <SetVariable name="Color">red</SetVariable>
-									        </Template>
-										        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									        <SliderComposed>
-										        <TooltipId></TooltipId>
-										        <ObjectName>MixerBarSlider</ObjectName>
-										        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-										        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
-										        <Horizontal>true</Horizontal>
-										        <Connection>
-											        <ConfigKey>[Microphone2],volume</ConfigKey>
-										        </Connection>
-									        </SliderComposed>
-								        </Children>
-								    </WidgetGroup>
-								</Children>
-								<Connection>
-									<ConfigKey>[Microphone2],enabled</ConfigKey>
-									<BindProperty>visible</BindProperty>
-								</Connection>
-							</WidgetGroup><!-- /MIC2 -->
-						</Children>
-						<Connection>
-							<ConfigKey persist="true">[FlatNite],mixerbar_mic</ConfigKey>
-							<BindProperty>visible</BindProperty>
-						</Connection>
-					</WidgetGroup><!-- /Microphone Mixer -->
+              <WidgetGroup><!-- MIC 2 -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>MixerBarSection</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>-1min,38f</Size>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>Mic2Label</ObjectName>
+                        <Size>32f,32f</Size>
+                      </WidgetGroup>
+                        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="ToolTipID"></SetVariable>
+                        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
+                        <SetVariable name="Size">32f,32f</SetVariable>
+                        <SetVariable name="group">[Microphone2]</SetVariable>
+                        <SetVariable name="ConfigKey">pregain</SetVariable>
+                        <SetVariable name="Color">red</SetVariable>
+                      </Template>
+                        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                      <SliderComposed>
+                        <TooltipId></TooltipId>
+                        <ObjectName>MixerBarSlider</ObjectName>
+                        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
+                        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                        <Horizontal>true</Horizontal>
+                        <Connection>
+                          <ConfigKey>[Microphone2],volume</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Microphone2],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /MIC2 -->
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[FlatNite],mixerbar_mic</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Microphone Mixer -->
 			
-					<WidgetGroup><!-- Auxiliary Mixer -->
-						<Layout>horizontal</Layout>
-						<SizePolicy>min,min</SizePolicy>
-						<Children>
-					        <WidgetGroup><!-- AUX 1 -->
-						        <Layout>horizontal</Layout>
-						        <SizePolicy>min,min</SizePolicy>
-						        <Children>
-							        <WidgetGroup>
-								        <ObjectName>MixerBarSection</ObjectName>
-								        <Layout>horizontal</Layout>
-								        <Size>-1min,38f</Size>
-								        <Children>
-									        <WidgetGroup>
-										        <ObjectName>Aux1Label</ObjectName>
-								                <Size>32f,32f</Size>
-									        </WidgetGroup>
-										        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									        <Template src="skin:knob_textless.xml">
-										        <SetVariable name="ToolTipID"></SetVariable>
-										        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
-										        <SetVariable name="Size">32f,32f</SetVariable>
-										        <SetVariable name="group">[Auxiliary1]</SetVariable>
-										        <SetVariable name="ConfigKey">pregain</SetVariable>
-										        <SetVariable name="Color">red</SetVariable>
-									        </Template>
-										        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									        <SliderComposed>
-										        <TooltipId></TooltipId>
-										        <ObjectName>MixerBarSlider</ObjectName>
-										        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-										        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
-										        <Horizontal>true</Horizontal>
-										        <Connection>
-											        <ConfigKey>[Auxiliary1],volume</ConfigKey>
-										        </Connection>
-									        </SliderComposed>
-								        </Children>
-								    </WidgetGroup>
-								</Children>
-								<Connection>
-									<ConfigKey>[Auxiliary1],enabled</ConfigKey>
-									<BindProperty>visible</BindProperty>
-								</Connection>
-							</WidgetGroup><!-- /AUX 1 -->
-							
-							<WidgetGroup><!-- AUX 2 -->
-						        <Layout>horizontal</Layout>
-						        <SizePolicy>min,min</SizePolicy>
-						        <Children>
-							        <WidgetGroup>
-								        <ObjectName>MixerBarSection</ObjectName>
-								        <Layout>horizontal</Layout>
-								        <Size>-1min,38f</Size>
-								        <Children>
-									        <WidgetGroup>
-										        <ObjectName>Aux2Label</ObjectName>
-								                <Size>32f,32f</Size>
-									        </WidgetGroup>
-										        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									        <Template src="skin:knob_textless.xml">
-										        <SetVariable name="ToolTipID"></SetVariable>
-										        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
-										        <SetVariable name="Size">32f,32f</SetVariable>
-										        <SetVariable name="group">[Auxiliary2]</SetVariable>
-										        <SetVariable name="ConfigKey">pregain</SetVariable>
-										        <SetVariable name="Color">red</SetVariable>
-									        </Template>
-										        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-									        <SliderComposed>
-										        <TooltipId></TooltipId>
-										        <ObjectName>MixerBarSlider</ObjectName>
-										        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-										        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
-										        <Horizontal>true</Horizontal>
-										        <Connection>
-											        <ConfigKey>[Auxiliary2],volume</ConfigKey>
-										        </Connection>
-									        </SliderComposed>
-								        </Children>
-								    </WidgetGroup>
-								</Children>
-								<Connection>
-									<ConfigKey>[Auxiliary2],enabled</ConfigKey>
-									<BindProperty>visible</BindProperty>
-								</Connection>
-							</WidgetGroup><!-- /AUX 2 -->
-						</Children>
-						<Connection>
-							<ConfigKey persist="true">[FlatNite],mixerbar_aux</ConfigKey>
-							<BindProperty>visible</BindProperty>
-						</Connection>
-					</WidgetGroup><!-- /Auxiliary Mixer -->
+          <WidgetGroup><!-- Auxiliary Mixer -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup><!-- AUX 1 -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>MixerBarSection</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>-1min,38f</Size>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>Aux1Label</ObjectName>
+                        <Size>32f,32f</Size>
+                      </WidgetGroup>
+                        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="ToolTipID"></SetVariable>
+                        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
+                        <SetVariable name="Size">32f,32f</SetVariable>
+                        <SetVariable name="group">[Auxiliary1]</SetVariable>
+                        <SetVariable name="ConfigKey">pregain</SetVariable>
+                        <SetVariable name="Color">red</SetVariable>
+                      </Template>
+                        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                      <SliderComposed>
+                        <TooltipId></TooltipId>
+                        <ObjectName>MixerBarSlider</ObjectName>
+                        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
+                        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                        <Horizontal>true</Horizontal>
+                        <Connection>
+                          <ConfigKey>[Auxiliary1],volume</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary1],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /AUX 1 -->
+              
+              <WidgetGroup><!-- AUX 2 -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>MixerBarSection</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>-1min,38f</Size>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>Aux2Label</ObjectName>
+                        <Size>32f,32f</Size>
+                      </WidgetGroup>
+                        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="ToolTipID"></SetVariable>
+                        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
+                        <SetVariable name="Size">32f,32f</SetVariable>
+                        <SetVariable name="group">[Auxiliary2]</SetVariable>
+                        <SetVariable name="ConfigKey">pregain</SetVariable>
+                        <SetVariable name="Color">red</SetVariable>
+                      </Template>
+                        <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+                      <SliderComposed>
+                        <TooltipId></TooltipId>
+                        <ObjectName>MixerBarSlider</ObjectName>
+                        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
+                        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                        <Horizontal>true</Horizontal>
+                        <Connection>
+                          <ConfigKey>[Auxiliary2],volume</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary2],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /AUX 2 -->
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[FlatNite],mixerbar_aux</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Auxiliary Mixer -->
 
-					<WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 					
-				</Children>
-		        <Connection>
-			        <ConfigKey persist="true">[FlatNite],mixerbar</ConfigKey>
-			        <BindProperty>visible</BindProperty>
-		        </Connection>
-			</WidgetGroup>			
-		</Children>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[FlatNite],mixerbar</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>			
+    </Children>
 		<Connection>
-		    <!-- Order of this and the Children's connections doesn't actually matter
-		    if top WidgetGroup's size is set to me,min -->
+      <!-- Order of this and the Children's connections doesn't actually matter
+      if top WidgetGroup's size is set to me,min -->
 			<ConfigKey persist="true">[Master],show_mixer</ConfigKey>
 			<BindProperty>visible</BindProperty>
 		</Connection>

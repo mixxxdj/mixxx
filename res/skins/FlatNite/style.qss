@@ -419,25 +419,25 @@ are still drawn full-size.
   #SyncModeButton {
   	color: #888888;
     }
-  #SyncModeButton:hover {
-  	color: #888888;
-    background-color: #151515;
-    border-radius: 2px;	/*
-    border: 1px solid #cccccc;	*/
+    #SyncModeButton:hover {
+    	color: #888888;
+      background-color: #151515;
+      border-radius: 2px;	/*
+      border: 1px solid #cccccc;	*/
+      }
+    #SyncModeButton[displayValue="1"], #SyncModeButton[displayValue="2"] {
+      background-color: #151515;
+      border-radius: 2px;
     }
-  #SyncModeButton[displayValue="1"], #SyncModeButton[displayValue="2"] {
-    background-color: #151515;
-    border-radius: 2px;
-  }
-  #SyncModeButton[displayValue="1"] {
-    color: #c66d00;
-  }
-  #SyncModeButton[displayValue="2"] {
-    color: #00D613;
-  }
-  #SyncModeButton[displayValue="1"]:hover, #SyncModeButton[displayValue="2"]:hover {
-  	border: 1px solid #888888;
-  }
+    #SyncModeButton[displayValue="1"] {
+      color: #c66d00;
+    }
+    #SyncModeButton[displayValue="2"] {
+      color: #00D613;
+    }
+    #SyncModeButton[displayValue="1"]:hover, #SyncModeButton[displayValue="2"]:hover {
+    	border: 1px solid #888888;
+    }
   #DeckStars:hover {
     background-color: #151515;
     border-radius: 2px;
@@ -1050,11 +1050,15 @@ are still drawn full-size.
     margin-bottom: 3px;
   }
 
-#LoadSaveSamplers {
-  background-color: #333333;
+#SamplersLoadButton {
+  background: #333333 url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;
   border-radius: 2px;
 }
-    #LoadSaveSamplers:hover {
+#SamplersSaveButton {
+  background: #333333 url(skin:/buttons/btn_samplers_save.svg) no-repeat center center;
+  border-radius: 2px;
+}
+    #SamplersLoadButton:hover, #SamplersSaveButton:hover {
       background-color: #666666;
     }
 
@@ -1107,7 +1111,7 @@ are still drawn full-size.
 }
 
 #SamplerVU {
-  padding: 4px 7px 4px 7px;
+  padding: 4px 3px 4px 3px;
 }
 #SamplerPitchSlider {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';	/*
@@ -1126,7 +1130,7 @@ are still drawn full-size.
   font-size: 11px/13px;
   font-weight: bold;
   border-radius: 2px;
-  text-align: center;
+  text-align: left;
   background-color: #0f0f0f;
 }
   #SamplerSyncButton:hover {
@@ -1206,10 +1210,7 @@ are still drawn full-size.
 }
 
 #TEST {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   background-color: #451278;
-  margin: 0px;
-  padding: 0px;
 }
 #TEST321 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';

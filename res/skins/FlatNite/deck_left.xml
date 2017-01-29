@@ -91,7 +91,7 @@
                             <Layout>horizontal</Layout>
                             <SizePolicy>min,min</SizePolicy>
                             <Children>
-			
+      
                                 <WidgetGroup>
                                   <Size>3f,1min</Size>
                                   <Children/>
@@ -111,7 +111,7 @@
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>
-			
+      
                       <WidgetGroup>
                         <Size>3f,1me</Size>
                         <Children/>
@@ -128,7 +128,7 @@
                     
                 </Children>
               </WidgetStack><!-- /Mixer / CoverArt / empty  -->
-			
+      
               <WidgetGroup><!-- Pitch slider & key controls -->
                 <Size>3f,1me</Size>
                 <Children/>

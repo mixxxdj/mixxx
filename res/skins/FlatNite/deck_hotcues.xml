@@ -53,9 +53,7 @@ Variables:
 				<Connection>
 					<ConfigKey persist="true">[FlatNite],hotcues_deck</ConfigKey>
 					<BindProperty>visible</BindProperty>
-					<Transform>
-					  <IsEqual>2</IsEqual>
-					</Transform>
+					<Transform><Add>-1</Add></Transform>
 				</Connection>
 			</WidgetGroup><!-- /DeckHotcues -->
 		</Children>

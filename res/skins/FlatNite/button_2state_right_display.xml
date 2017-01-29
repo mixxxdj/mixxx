@@ -46,7 +46,7 @@ Variables:
 		</Connection>
 		<Connection>
 			<ConfigKey><Variable name="ConfigKeyDisp"/></ConfigKey>
-      		<ConnectValueFromWidget>false</ConnectValueFromWidget>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 </Template>

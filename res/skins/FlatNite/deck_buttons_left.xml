@@ -87,47 +87,46 @@
 							<BindProperty>visible</BindProperty>
 						</Connection>
 					</WidgetGroup><!-- /Extra Deck Buttons -->
+
+          <SizeAwareStack><!-- Show Starrating depending on available space -->
+            <Children>
+              <!-- when there is not enough space for stars (max 82px) show spacer. -->
+              <WidgetGroup><!-- Spacer -->
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>82,22</MaximumSize>
+                <Children/>
+              </WidgetGroup>
+
+              <!-- when there is enough space for stars (min 83px) show them. -->
+              <WidgetGroup trigger="[FlatNite],stars" persist="true">
+                <MinimumSize>83,22</MinimumSize>
+                <MaximumSize>i,22</MaximumSize>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <StarRating>
+                    <ObjectName>DeckStars</ObjectName>
+                    <TooltipId>starrating</TooltipId>
+                    <Size>83f,22f</Size>
+                    <Channel><Variable name="channum"/></Channel>
+                  </StarRating>
+                  <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- Stars -->
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[FlatNite],stars</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </SizeAwareStack>
 					
-					<SizeAwareStack><!-- Show Starrating depending on available space -->
-						<Children>
-							<!-- when there is not enough space for stars (max 82px) show spacer. -->
-							<WidgetGroup><!-- Spacer -->
-								<MinimumSize>0,0</MinimumSize>
-								<MaximumSize>82,22</MaximumSize>
-								<Children/>
-							</WidgetGroup>
-					
-							<!-- when there is enough space for stars (min 83px) show them. -->
-							<WidgetGroup trigger="[FlatNite],stars">
-								<MinimumSize>83,22</MinimumSize>
-								<MaximumSize>i,22</MaximumSize>
-								<Layout>horizontal</Layout>
-								<Children>
-									<StarRating>
-										<ObjectName>DeckStars</ObjectName>
-										<TooltipId>starrating</TooltipId>
-										<Size>83f,22f</Size>
-										<Channel><Variable name="channum"/></Channel>
-									</StarRating>
-									<!-- Expanding spacer pushing stars to the left -->
-									<WidgetGroup><Size>0me,1min</Size><Children/></WidgetGroup>
-								</Children>
-							</WidgetGroup><!-- Stars -->
-						</Children>
-                        <Connection>
-                            <ConfigKey persist="true">[FlatNite],stars</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                        </Connection>
-					</SizeAwareStack><!-- /Show Starrating depending on available space -->
-					
-					<!-- Expanding spacer to to push extra deck buttons to the left,
-                    since qss Alignment has no effect here. -->
-                    <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
+          <!-- Expanding spacer to to push extra deck buttons to the left,
+          since qss Alignment has no effect here. -->
+          <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
                     
 				</Children>
 			</WidgetGroup><!-- /Deck Buttons -->
 			
-            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 				
 			<Template src="skin:deck_hotcues.xml"/>
 			

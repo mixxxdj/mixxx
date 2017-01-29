@@ -1,71 +1,71 @@
 <!--
 Description:
-	Container for Vinyl control options next to waveform overview in decks.
-	Visibility is toggled by VinylTogglerLeft
+  Container for Vinyl control options next to waveform overview in decks.
+  Visibility is toggled by VinylTogglerLeft
 Variables:
   channum: channel number
   button graphics
 -->
 <Template>
-	<WidgetGroup>
-		<ObjectName>VinylControls</ObjectName>
-		<Layout>horizontal</Layout>
-		<SizePolicy>min,min</SizePolicy>
-		<Children>
-          <WidgetGroup><Size>1f,1me</Size><Children/></WidgetGroup>
-			<WidgetGroup>
-				<Layout>vertical</Layout>
-          <SizePolicy>min,min</SizePolicy>
-				<Children>
-					<Template src="skin:button_2state_persist.xml">
-						<SetVariable name="ToolTipID">vinylcontrol_enabled</SetVariable>
-						<SetVariable name="ObjectName">VinylButton</SetVariable>
-						<SetVariable name="Size">40f,24f</SetVariable>
-						<SetVariable name="state_0_text">VINYL</SetVariable>
-						<SetVariable name="state_1_text">VINYL</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_enabled</SetVariable>
-					</Template>
-            <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
-					<Template src="skin:button_3state_persist.xml">
-						<SetVariable name="ToolTipID">vinylcontrol_mode</SetVariable>
-						<SetVariable name="ObjectName">VinylModeButton</SetVariable>
-						<SetVariable name="Size">40f,24f</SetVariable>
-						<SetVariable name="state_0_text">ABS</SetVariable>
-						<SetVariable name="state_1_text">REL</SetVariable>
-						<SetVariable name="state_2_text">CONST</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_mode</SetVariable>
-					</Template>
-				</Children>
-			</WidgetGroup>
-			
-			<WidgetGroup>
-				<Layout>vertical</Layout>
+  <WidgetGroup>
+    <ObjectName>VinylControls</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup><Size>1f,1me</Size><Children/></WidgetGroup>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
-				<Children>
-					<Template src="skin:button_2state_persist.xml">
-						<SetVariable name="ToolTipID">passthrough_enabled</SetVariable>
-						<SetVariable name="ObjectName">VinylButton</SetVariable>
-						<SetVariable name="Size">40f,24f</SetVariable>
-						<SetVariable name="state_0_text">PASS</SetVariable>
-						<SetVariable name="state_1_text">PASS</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],passthrough</SetVariable>
-					</Template>
+        <Children>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ToolTipID">vinylcontrol_enabled</SetVariable>
+            <SetVariable name="ObjectName">VinylButton</SetVariable>
+            <SetVariable name="Size">40f,24f</SetVariable>
+            <SetVariable name="state_0_text">VINYL</SetVariable>
+            <SetVariable name="state_1_text">VINYL</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_enabled</SetVariable>
+          </Template>
             <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
-					<Template src="skin:button_3state_persist.xml">
-						<SetVariable name="ToolTipID">vinylcontrol_cueing</SetVariable>
-						<SetVariable name="ObjectName">VinylButton</SetVariable>
-						<SetVariable name="Size">40f,24f</SetVariable>
-						<SetVariable name="state_0_text">CUE</SetVariable>
-						<SetVariable name="state_1_text">CUE</SetVariable>
-						<SetVariable name="state_2_text">HOT</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_cueing</SetVariable>
-					</Template>
-				</Children>
-			</WidgetGroup>
-		</Children>
-		<Connection>
-			<ConfigKey persist="true">[FlatNite],vinylControlsDeck<Variable name="channum"/></ConfigKey>
-			<BindProperty>visible</BindProperty>
-		</Connection>
-	</WidgetGroup>
+          <Template src="skin:button_3state_persist.xml">
+            <SetVariable name="ToolTipID">vinylcontrol_mode</SetVariable>
+            <SetVariable name="ObjectName">VinylModeButton</SetVariable>
+            <SetVariable name="Size">40f,24f</SetVariable>
+            <SetVariable name="state_0_text">ABS</SetVariable>
+            <SetVariable name="state_1_text">REL</SetVariable>
+            <SetVariable name="state_2_text">CONST</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_mode</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+      
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ToolTipID">passthrough_enabled</SetVariable>
+            <SetVariable name="ObjectName">VinylButton</SetVariable>
+            <SetVariable name="Size">40f,24f</SetVariable>
+            <SetVariable name="state_0_text">PASS</SetVariable>
+            <SetVariable name="state_1_text">PASS</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],passthrough</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+          <Template src="skin:button_3state_persist.xml">
+            <SetVariable name="ToolTipID">vinylcontrol_cueing</SetVariable>
+            <SetVariable name="ObjectName">VinylButton</SetVariable>
+            <SetVariable name="Size">40f,24f</SetVariable>
+            <SetVariable name="state_0_text">CUE</SetVariable>
+            <SetVariable name="state_1_text">CUE</SetVariable>
+            <SetVariable name="state_2_text">HOT</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_cueing</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[FlatNite],vinylControlsDeck<Variable name="channum"/></ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
 </Template>

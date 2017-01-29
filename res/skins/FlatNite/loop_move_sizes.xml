@@ -5,74 +5,74 @@
     group: The group for the controls.
 -->
 <Template>
-    <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
-    <WidgetStack>
-    	<Size>45f,45f</Size>
-        <NextControl>[LoopMove],next</NextControl>
-        <PrevControl>[LoopMove],prev</PrevControl>
-        <Children>
-            <!-- Container with buttons for length choice and backward/forward buttons.
-            	4 beats is first to make it default, later user changes persist. -->
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">4</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">4</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">8</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">8</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">16</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">16</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">32</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">32</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">64</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">64</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">1/32</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">0.03125</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">1/16</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">0.0625</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">1/8</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">0.125</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">1/4</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">0.25</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">1/2</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">0.5</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">1</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">1</SetVariable>
-            </Template>
-            
-            <Template src="skin:button_loopmove.xml">
-                <SetVariable name="LoopMoveLength_Text">2</SetVariable>
-                <SetVariable name="LoopMoveLength_Control">2</SetVariable>
-            </Template>
-            
-        </Children>
-    </WidgetStack>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <WidgetStack>
+    <Size>45f,45f</Size>
+    <NextControl>[LoopMove],next</NextControl>
+    <PrevControl>[LoopMove],prev</PrevControl>
+    <Children>
+      <!-- Container with buttons for length choice and backward/forward buttons.
+      4 beats is first to make it default, later user changes persist. -->
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">4</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">4</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">8</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">8</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">16</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">16</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">32</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">32</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">64</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">64</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">1/32</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">0.03125</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">1/16</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">0.0625</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">1/8</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">0.125</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">1/4</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">0.25</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">1/2</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">0.5</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">1</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">1</SetVariable>
+      </Template>
+      
+      <Template src="skin:button_loopmove.xml">
+        <SetVariable name="LoopMoveLength_Text">2</SetVariable>
+        <SetVariable name="LoopMoveLength_Control">2</SetVariable>
+      </Template>
+        
+    </Children>
+  </WidgetStack>
 </Template>

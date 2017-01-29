@@ -14,7 +14,7 @@ Variables:
 			<!-- BUG: margin not respected, so we need a spacer here -->
 			<WidgetGroup><Size>1me,4f</Size><Children/></WidgetGroup>
 		
-			<WidgetGroup><!-- MarginBox -->
+			<WidgetGroup>
 				<Layout>horizontal</Layout>
 				<Size>12f,1me</Size>
 				<Children>
@@ -71,7 +71,7 @@ Variables:
 						</Children>
 					</WidgetGroup><!-- /Right -->
 				</Children>
-			</WidgetGroup><!-- /MarginBox -->
+			</WidgetGroup>
 		</Children>
 		<Connection>
 			<ConfigKey persist="true">[FlatNite],vumeter</ConfigKey>
