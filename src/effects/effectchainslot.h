@@ -147,7 +147,7 @@ class EffectChainSlot : public QObject {
     **/
     ControlPushButton* m_pControlChainShowFocus;
     ControlPushButton* m_pControlChainShowParameters;
-    ControlObject* m_pControlChainFocusedEffect;
+    ControlPushButton* m_pControlChainFocusedEffect;
 
     struct ChannelInfo {
         // Takes ownership of pEnabled.

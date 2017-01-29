@@ -79,9 +79,10 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
                                         true);
     m_pControlChainShowParameters->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pControlChainFocusedEffect = new ControlObject(
+    m_pControlChainFocusedEffect = new ControlPushButton(
                                        ConfigKey(m_group, "focused_effect"),
-                                       true, false, true);
+                                       true);
+    m_pControlChainFocusedEffect->setButtonMode(ControlPushButton::SELECTMULTI);
 }
 
 EffectChainSlot::~EffectChainSlot() {
