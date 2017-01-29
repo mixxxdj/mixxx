@@ -394,6 +394,10 @@ P32.Deck = function (deckNumbers, channel) {
 
     // ==================================== EFFECTS ==============================================
     this.effectUnit = new EffectUnit(deckNumbers[0]);
+    this.effectUnit.knobs[1].midi = [0xB0 + channel, 0x06];
+    this.effectUnit.knobs[2].midi = [0xB0 + channel, 0x07];
+    this.effectUnit.knobs[3].midi = [0xB0 + channel, 0x08];
+    this.effectUnit.dryWetKnob.midi = [0xB0 + channel, 0x09];
     this.effectUnit.enableButtons[1].midi = [0x90 + channel, 0x03];
     this.effectUnit.enableButtons[2].midi = [0x90 + channel, 0x04];
     this.effectUnit.enableButtons[3].midi = [0x90 + channel, 0x05];
