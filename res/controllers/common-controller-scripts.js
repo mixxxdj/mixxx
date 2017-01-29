@@ -20,6 +20,10 @@ print = function(string) {
     engine.log(string);
 }
 
+var debugObj = function (obj) {
+    print(JSON.stringify(obj, null, 2));
+};
+
 // ----------------- Generic functions ---------------------
 
 function secondstominutes(secs)
