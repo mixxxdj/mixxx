@@ -140,6 +140,8 @@ int likeCompareInner(
 
 #ifdef __SQLITE3__
 
+const char* const kLexicographicalCollationFunc = "mixxxLexicographicalCollation";
+
 // This implements the like() SQL function. This is used by the LIKE operator.
 // The SQL statement 'A LIKE B' is implemented as 'like(B, A)', and if there is
 // an escape character, say E, it is implemented as 'like(B, A, E)'
@@ -184,14 +186,6 @@ void sqliteLike(sqlite3_context *context,
 
 } // anonymous namespace
 
-//static
-
-#ifdef __SQLITE3__
-const char* const DbConnection::kStringCollationFunc = "mixxxStringCollation";
-#else
-const char* const DbConnection::kStringCollationFunc = nullptr;
-#endif
-
 DbConnection::DbConnection(const QString& dirPath)
     : m_filePath(QDir(dirPath).filePath(kDatabaseFileName)),
       m_database(QSqlDatabase::addDatabase(kDatabaseType)) {
@@ -228,12 +222,12 @@ DbConnection::DbConnection(const QString& dirPath)
 
         int result = sqlite3_create_collation(
                         handle,
-                        kStringCollationFunc,
+                        kLexicographicalCollationFunc,
                         SQLITE_UTF16,
                         nullptr,
                         sqliteStringCompareUTF16);
         VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
-            qWarning() << "Failed to install string collation function:" << result;
+            qWarning() << "Failed to install lexicographical collation function:" << result;
         }
 
         result = sqlite3_create_function(
@@ -295,6 +289,15 @@ QDebug operator<<(QDebug debug, const DbConnection& dbConnection) {
 }
 
 //static
+QString DbConnection::collateLexicographically(const QString& orderByQuery) {
+#ifdef __SQLITE3__
+        return orderByQuery + QString(" COLLATE %1").arg(kLexicographicalCollationFunc);
+#else
+        return orderByQuery;
+#endif //  __SQLITE3__
+}
+
+//static
 int DbConnection::likeCompareLatinLow(
         QString* pattern,
         QString* string,
@@ -302,8 +305,7 @@ int DbConnection::likeCompareLatinLow(
     makeLatinLow(pattern->data(), pattern->length());
     makeLatinLow(string->data(), string->length());
     return likeCompareInner(
-        pattern->data(), pattern->length(),
-         string->data(), string->length(),
-         esc);
+            pattern->data(), pattern->length(),
+            string->data(), string->length(),
+            esc);
 }
-

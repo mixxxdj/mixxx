@@ -20,8 +20,11 @@ class DbConnection final {
         return m_database;
     }
 
-    // SQLite3 collation function or nullptr if not supported
-    static const char* const kStringCollationFunc;
+    // Order string fields lexicographically with a
+    // custom collation function if available (SQLite3).
+    // Otherwise the query is returned unmodified.
+    static QString collateLexicographically(
+            const QString& orderByQuery);
 
     static int likeCompareLatinLow(
         QString* pattern,
