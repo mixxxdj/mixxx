@@ -1022,10 +1022,10 @@ EffectUnit = function (unitNumber) {
                 this.input = function (channel, control, value, status, group) {
                     if (value > 0) {
                         if (engine.getValue(eu.group, "focused_effect") === this.number) {
-                            // focus this effect
+                            // unfocus and make knobs control metaknobs
                             engine.setValue(eu.group, "focused_effect", 0);
                         } else {
-                            // unfocus and make knobs control metaknobs
+                            // focus this effect
                             engine.setValue(eu.group, "focused_effect", this.number);
                         }
                     }
