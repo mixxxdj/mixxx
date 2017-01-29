@@ -998,7 +998,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopToggleEncoderPress</key>
+                <key>P32.leftDeck.loopEncoderManualLoopPress</key>
                 <status>0x94</status>
                 <midino>0x01</midino>
                 <options>
@@ -1241,7 +1241,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopToggleEncoderPress</key>
+                <key>P32.rightDeck.loopEncoderManualLoopPress</key>
                 <status>0x95</status>
                 <midino>0x01</midino>
                 <options>
