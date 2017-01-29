@@ -92,9 +92,20 @@ void AnalyzerManager::analyseTrackNow(TrackPointer tio) {
     //being analyzed by the background worker. We cannot reuse the background worker, but we should discard its work.
     if (!m_prioTrackQueue.contains(tio)) {
         m_prioTrackQueue.append(tio);
-        if (m_priorityWorkers.size() < m_MaxThreads) {
+        if (m_priorityWorkers.isEmpty() && m_defaultWorkers.size() > 0) {
+            //In order to keep the application responsive, and ensure that a priority worker is
+            //not slowed down by default workers (because they have the same OS thread priority),
+            //we stop one additional default worker
+            AnalyzerWorker * backwork = m_defaultWorkers.first();
+            backwork->pause();
+            //Ideally i would have done this on the slotPaused slot, but then i cannot 
+            //ensure i won't call pause twice for the same worker.
+            m_pausedWorkers.append(backwork);
+            m_defaultWorkers.removeAll(backwork);
+        }
+        if (m_priorityWorkers.size() < m_MaxThreads-1) {
             createNewWorker(WorkerType::priorityWorker);
-            if (m_priorityWorkers.size() + m_defaultWorkers.size() > m_MaxThreads) {
+            if (m_priorityWorkers.size() + m_defaultWorkers.size() > m_MaxThreads-1) {
                 AnalyzerWorker * backwork = m_defaultWorkers.first();
                 backwork->pause();
                 //Ideally i would have done this on the slotPaused slot, but then i cannot 
@@ -107,9 +118,11 @@ void AnalyzerManager::analyseTrackNow(TrackPointer tio) {
 }
 // This is called from the GUI for the analysis feature of the library.
 void AnalyzerManager::queueAnalyseTrack(TrackPointer tio) {
+    //See notes on analyseTrackNow of why we reduce the number of threads in this case.
+    int maxDefThreads = (m_priorityWorkers.isEmpty()) ? m_MaxThreads : m_MaxThreads-1;
     if (!m_defaultTrackQueue.contains(tio)) {
         m_defaultTrackQueue.append(tio);
-        if (m_pausedWorkers.size() + m_defaultWorkers.size() < m_MaxThreads) {
+        if (m_pausedWorkers.size() + m_defaultWorkers.size() < maxDefThreads) {
             createNewWorker(WorkerType::defaultWorker);
         }
     }
@@ -185,12 +198,7 @@ void AnalyzerManager::slotNextTrack(AnalyzerWorker* worker) {
             AnalyzerWorker* otherworker = m_pausedWorkers.first();
             otherworker->resume();
             m_pausedWorkers.removeOne(otherworker);
-            if (otherworker->isPriorized()) {
-                m_priorityWorkers.append(otherworker);
-            }
-            else {
-                m_defaultWorkers.append(otherworker);
-            }
+            m_defaultWorkers.append(otherworker);
         }
     }
     //Check if background workers are empty.
@@ -218,11 +226,13 @@ void AnalyzerManager::slotErrorString(QString errMsg) {
 
 
 void AnalyzerManager::slotMaxThreadsChanged(int threads) {
+    //See notes on analyseTrackNow of why we reduce the number of threads in this case.
+    int maxDefThreads = (m_priorityWorkers.isEmpty()) ? threads : threads-1;
     // If it is Active, adapt the amount of workers. If it is not active, it will just update the variable.
     if (threads < m_MaxThreads) {
         //Pause workers
         while (!m_defaultWorkers.isEmpty() 
-            && m_priorityWorkers.size() + m_defaultWorkers.size() > threads) {
+            && m_priorityWorkers.size() + m_defaultWorkers.size() > maxDefThreads) {
                 AnalyzerWorker * backwork = m_defaultWorkers.first();
                 backwork->pause();
                 //Ideally i would have done this on the slotPaused slot, but then i cannot 
@@ -249,6 +259,9 @@ void AnalyzerManager::slotMaxThreadsChanged(int threads) {
                 m_priorityWorkers.append(worker);
                 --pendingworkers;
             }
+        }
+        if (!m_priorityWorkers.isEmpty() && pendingworkers > 0) {
+            pendingworkers--;
         }
         foreach(AnalyzerWorker* worker, m_pausedWorkers) {
             if (!worker->isPriorized() && pendingworkers > 0) {
