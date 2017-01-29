@@ -265,8 +265,6 @@ void WPushButton::setPixmapBackground(PixmapSource source,
 }
 
 void WPushButton::restyleAndRepaint() {
-    emit(displayValueChanged(readDisplayValue()));
-
     // According to http://stackoverflow.com/a/3822243 this is the least
     // expensive way to restyle just this widget.
     // Since we expect button connections to not change at high frequency we
