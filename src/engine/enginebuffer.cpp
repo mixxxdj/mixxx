@@ -562,6 +562,9 @@ void EngineBuffer::ejectTrack() {
     doSeekFractional(0.0, SEEK_EXACT);
     m_pause.unlock();
 
+    // Close open file handles by unloading the current track
+    m_pReader->newTrack(TrackPointer());
+
     if (pTrack) {
         emit(trackLoaded(TrackPointer(), pTrack));
     }
