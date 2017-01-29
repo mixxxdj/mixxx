@@ -103,7 +103,7 @@ SINT SoundSourceSndFile::seekSampleFrame(
 
 SINT SoundSourceSndFile::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    DEBUG_ASSERT_AND_HANDLE(numberOfFrames >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(numberOfFrames >= 0) {
         return 0;
     }
     if (numberOfFrames == 0) {

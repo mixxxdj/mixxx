@@ -105,7 +105,7 @@ SINT AudioSource::readSampleFramesStereo(
 bool AudioSource::verifyReadable() const {
     bool result = AudioSignal::verifyReadable();
     if (hasBitrate()) {
-        DEBUG_ASSERT_AND_HANDLE(isValidBitrate(m_bitrate)) {
+        VERIFY_OR_DEBUG_ASSERT(isValidBitrate(m_bitrate)) {
             qWarning() << "Invalid bitrate [kbps]:"
                     << getBitrate();
             // Don't set the result to false, because bitrate is only

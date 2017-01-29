@@ -122,10 +122,6 @@ template <class ValueType> class ConfigObject {
     // returns QString().
     QString getValueString(const ConfigKey& key) const;
 
-    // Returns the string value associated with key. If key is not present,
-    // returns default_string.
-    QString getValueString(const ConfigKey& key, const QString& default_string) const;
-
     // Sets the value for key to ValueType(value), over-writing pre-existing
     // values. ResultType is serialized to string on a per-type basis.
     template <class ResultType>
@@ -137,11 +133,15 @@ template <class ValueType> class ConfigObject {
     ResultType getValue(const ConfigKey& key) const {
         return getValue<ResultType>(key, ResultType());
     }
+    QString getValue(const ConfigKey& key) const {
+        return getValueString(key);
+    }
 
     // Returns the value for key, converted to ResultType. If key is not present
     // or the value cannot be converted to ResultType, returns default_value.
     template <class ResultType>
     ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
+    QString getValue(const ConfigKey& key, const char* default_value) const;
 
     QMultiHash<ValueType, ConfigKey> transpose() const;
 

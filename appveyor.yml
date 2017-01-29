@@ -18,9 +18,12 @@ skip_commits:
     - CODE_OF_CONDUCT.md
 
 configuration:
-  - release
+  - release-fastbuild
+#  - release
 #  - debug
 environment:
+  ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.1.x-windows/
+  ENVIRONMENTS_PATH: C:\mixxx-buildserver
   matrix:
     - platform: x64
       distdir: dist64
@@ -31,17 +34,20 @@ matrix:
 cache:
   - C:\mixxx-buildserver
 install:
+  - set /P ENVIRONMENT_NAME=<build/windows/golden_environment
+  - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
+  - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
   - cd %TEMP%
   - echo *** Patching NSIS
   - cd %APPVEYOR_BUILD_FOLDER%
   - patch "C:\Program Files (x86)\NSIS\Include\MultiUser.nsh" < build\appveyor\NSIS.patch
   - echo *** Downloading precompiled build environment if not in build-cache
   - cd %APPVEYOR_BUILD_FOLDER%
-  - build\appveyor\install_buildenv.bat https://downloads.mixxx.org/builds/appveyor/environments/2.1 2.1-20170118-%platform%-%configuration%-fastbuild-static-5e57821-minimal
+  - build\windows\install_buildenv.bat %ENVIRONMENTS_URL% %ENVIRONMENT_NAME% %ENVIRONMENTS_PATH%
 before_build:
   - cd %APPVEYOR_BUILD_FOLDER%
 build_script:
-  - build\appveyor\build_mixxx.bat %platform% %configuration% c:\mixxx-buildserver\2.1-20170118-%platform%-%configuration%-fastbuild-static-5e57821-minimal
+  - build\appveyor\build_mixxx.bat %platform% %configuration% %ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%
 test_script:
   - echo *** Testing
   # Calling mixxx-test under bash to have standard output

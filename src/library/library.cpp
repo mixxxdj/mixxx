@@ -97,21 +97,21 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey("[Library]","ShowRhythmboxLibrary"), true)) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
     }
-    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
+    if (pConfig->getValue(ConfigKey("[Library]","ShowBansheeLibrary"), true)) {
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
         }
     }
     if (ITunesFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey("[Library]","ShowITunesLibrary"), true)) {
         addFeature(new ITunesFeature(this, m_pTrackCollection));
     }
     if (TraktorFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey("[Library]","ShowTraktorLibrary"), true)) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
     }
 
@@ -127,9 +127,8 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
     }
 
-    m_iTrackTableRowHeight = m_pConfig->getValueString(
-            ConfigKey("[Library]", "RowHeight"),
-            QString::number(kDefaultRowHeightPx)).toInt();
+    m_iTrackTableRowHeight = m_pConfig->getValue(
+            ConfigKey("[Library]", "RowHeight"), kDefaultRowHeightPx);
     QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);
@@ -223,7 +222,7 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
 }
 
 void Library::addFeature(LibraryFeature* feature) {
-    DEBUG_ASSERT_AND_HANDLE(feature) {
+    VERIFY_OR_DEBUG_ASSERT(feature) {
         return;
     }
     m_features.push_back(feature);
@@ -247,7 +246,7 @@ void Library::addFeature(LibraryFeature* feature) {
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
     emit(showTrackModel(model));

@@ -1,11 +1,11 @@
-#
+# 
 # Translators:
-# Sebastien BLAISOT <sebastien@blaisot.org>, 2016
+# Sebastien BLAISOT <sebastien@blaisot.org>, 2016-2017
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-06-13 16:19+0000\n"
+"PO-Revision-Date: 2017-01-22 20:15+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: French (France) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/fr_FR/)\n"
 "MIME-Version: 1.0\n"
@@ -116,7 +116,7 @@ msgstr "Le programme et l'ensemble de ses dépendances."
 
 msgctxt "FeaturePDBTitle"
 msgid "PDB debug files"
-msgstr "Fichiers de debug PDB"
+msgstr "Fichiers PDB de debug "
 
 msgctxt "FeaturePDBDescription"
 msgid ""

@@ -39,9 +39,8 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    bool beatDetectionEnabled = m_forceBeatDetection || static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED)).toInt());
+    bool beatDetectionEnabled = m_forceBeatDetection ||  m_pConfig->getValue<bool>(
+            ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED));
     if (!beatDetectionEnabled) {
         qDebug() << "Beat calculation is deactivated";
         return false;
@@ -53,8 +52,8 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    bool allow_above = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED)).toInt());
+    bool allow_above = m_pConfig->getValue<bool>(
+        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED));
     if (allow_above) {
         m_iMinBpm = 0;
         m_iMaxBpm = 9999;
@@ -63,23 +62,19 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         m_iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
     }
 
-    m_bPreferencesFixedTempo = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION)).toInt());
-    m_bPreferencesOffsetCorrection = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION)).toInt());
-    m_bPreferencesReanalyzeOldBpm = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
-    m_bPreferencesFastAnalysis = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
+    m_bPreferencesFixedTempo = m_pConfig->getValue<bool>(
+            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION));
+    m_bPreferencesOffsetCorrection = m_pConfig->getValue<bool>(
+            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION));
+    m_bPreferencesReanalyzeOldBpm = m_pConfig->getValue<bool>(
+            ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE));
+    m_bPreferencesFastAnalysis = m_pConfig->getValue<bool>(
+            ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED));
 
     QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_LIBRARY));
+            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_LIBRARY));
     QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
+            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
 
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
@@ -111,8 +106,8 @@ bool AnalyzerBeats::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     int iMinBpm;
     int iMaxBpm;
 
-    bool allow_above = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED)).toInt());
+    bool allow_above = m_pConfig->getValue<bool>(
+        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED));
     if (allow_above) {
         iMinBpm = 0;
         iMaxBpm = 9999;

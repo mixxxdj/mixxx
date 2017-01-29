@@ -39,11 +39,11 @@ class EngineFilterDelay : public EngineObjectConstIn {
         if (!m_doRamping) {
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples) % SIZE;
 
-            DEBUG_ASSERT_AND_HANDLE(delaySourcePos >= 0) {
+            VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
-            DEBUG_ASSERT_AND_HANDLE(delaySourcePos <= static_cast<int>(SIZE)) {
+            VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(SIZE)) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
@@ -61,19 +61,19 @@ class EngineFilterDelay : public EngineObjectConstIn {
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) % SIZE;
             int oldDelaySourcePos = (m_delayPos + SIZE - m_oldDelaySamples) % SIZE;
 
-            DEBUG_ASSERT_AND_HANDLE(delaySourcePos >= 0) {
+            VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
-            DEBUG_ASSERT_AND_HANDLE(delaySourcePos <= static_cast<int>(SIZE)) {
+            VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(SIZE)) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
-            DEBUG_ASSERT_AND_HANDLE(oldDelaySourcePos >= 0) {
+            VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos >= 0) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
-            DEBUG_ASSERT_AND_HANDLE(oldDelaySourcePos <= static_cast<int>(SIZE)) {
+            VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos <= static_cast<int>(SIZE)) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }

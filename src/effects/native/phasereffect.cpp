@@ -23,17 +23,16 @@ EffectManifest PhaserEffect::getManifest() {
                 " with a copy passed through a series of all-pass filters."));
     manifest.setEffectRampsFromDry(true);
 
-    EffectManifestParameter* depth = manifest.addParameter();
-    depth->setId("depth");
-    depth->setName(QObject::tr("Depth"));
-    depth->setDescription("Controls the intensity of the effect.");
-    depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
-    depth->setDefault(0.0);
-    depth->setMinimum(0.0);
-    depth->setMaximum(1.0);
+    EffectManifestParameter* frequency = manifest.addParameter();
+    frequency->setId("lfo_frequency");
+    frequency->setName(QObject::tr("Rate"));
+    frequency->setDescription(QObject::tr("Controls the speed of the low frequency oscilator."));
+    frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    frequency->setMinimum(0.0);
+    frequency->setMaximum(5.0);
+    frequency->setDefault(2.5);
 
     EffectManifestParameter* range = manifest.addParameter();
     range->setId("range");
@@ -42,21 +41,9 @@ EffectManifest PhaserEffect::getManifest() {
     range->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     range->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     range->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    range->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
-    range->setDefault(0.5);
     range->setMinimum(0.05);
     range->setMaximum(0.95);
-
-    EffectManifestParameter* fb = manifest.addParameter();
-    fb->setId("feedback");
-    fb->setName(QObject::tr("Feedback"));
-    fb->setDescription(QObject::tr("Controls how much of the output signal is looped"));
-    fb->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    fb->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    fb->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    fb->setDefault(0.0);
-    fb->setMinimum(-0.95);
-    fb->setMaximum(0.95);
+    range->setDefault(0.05);
 
     EffectManifestParameter* stages = manifest.addParameter();
     stages->setId("stages");
@@ -65,20 +52,32 @@ EffectManifest PhaserEffect::getManifest() {
     stages->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     stages->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     stages->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    stages->setDefault(3.5);
     stages->setMinimum(1.0);
     stages->setMaximum(6.0);
+    stages->setDefault(3.5);
 
-    EffectManifestParameter* frequency = manifest.addParameter();
-    frequency->setId("lfo_frequency");
-    frequency->setName(QObject::tr("Rate"));
-    frequency->setDescription(QObject::tr("Controls the speed of the low frequency oscilator."));
-    frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    frequency->setDefault(0.5);
-    frequency->setMinimum(0.0);
-    frequency->setMaximum(5.0);
+    EffectManifestParameter* fb = manifest.addParameter();
+    fb->setId("feedback");
+    fb->setName(QObject::tr("Feedback"));
+    fb->setDescription(QObject::tr("Controls how much of the output signal is looped"));
+    fb->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    fb->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    fb->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    fb->setMinimum(-0.95);
+    fb->setMaximum(0.95);
+    fb->setDefault(0.0);
+
+    EffectManifestParameter* depth = manifest.addParameter();
+    depth->setId("depth");
+    depth->setName(QObject::tr("Depth"));
+    depth->setDescription("Controls the intensity of the effect.");
+    depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    depth->setMinimum(0.5);
+    depth->setMaximum(1.0);
+    depth->setDefault(0.0);
 
     EffectManifestParameter* stereo = manifest.addParameter();
     stereo->setId("stereo");
@@ -87,9 +86,9 @@ EffectManifest PhaserEffect::getManifest() {
     stereo->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
     stereo->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     stereo->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    stereo->setDefault(0);
     stereo->setMinimum(0);
     stereo->setMaximum(1);
+    stereo->setDefault(0);
 
     return manifest;
 }
