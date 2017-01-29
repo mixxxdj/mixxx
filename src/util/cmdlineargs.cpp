@@ -24,6 +24,7 @@ CmdlineArgs::CmdlineArgs()
 }
 
 bool CmdlineArgs::Parse(int &argc, char **argv) {
+    bool logLevelSet = false;
     for (int i = 0; i < argc; ++i) {
         if (   argv[i] == QString("-h")
             || argv[i] == QString("--h")
@@ -54,6 +55,7 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
             m_timelinePath = QString::fromLocal8Bit(argv[i+1]);
             i++;
         } else if (argv[i] == QString("--logLevel") && i+1 < argc) {
+            logLevelSet = true;
             auto level = QLatin1String(argv[i+1]);
             if (level == "debug") {
                 m_logLevel = mixxx::Logging::LogLevel::Debug;
@@ -79,6 +81,13 @@ warnings and errors to the console unless this is set properly.\n", stdout);
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
     }
+
+    // If --logLevel was unspecified and --developer is enabled then set
+    // logLevel to debug.
+    if (m_developer && !logLevelSet) {
+        m_logLevel = mixxx::Logging::LogLevel::Debug;
+    }
+
     return true;
 }
 
