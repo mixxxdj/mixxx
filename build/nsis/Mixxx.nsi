@@ -352,6 +352,8 @@ Section "Uninstall"
   ; Remove midi mappings/scripts that we may have installed
   ; TODO: Only delete files that were not changed since install
   ; Get this list with dir /b /s <build_dir>\res\controllers >> filestodelete.txt  and creative search & replace
+  Delete "$INSTDIR\controllers\lib\lodash.mixxx.js"
+  Delete "$INSTDIR\controllers\lib\midi-controls-0.js"
   Delete "$INSTDIR\controllers\Akai MPD24.midi.xml"
   Delete "$INSTDIR\controllers\Akai-LPD8-RK-scripts.js"
   Delete "$INSTDIR\controllers\Akai-LPD8-RK.midi.xml"
@@ -458,7 +460,6 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Korg nanoPAD2.midi.xml"
   Delete "$INSTDIR\controllers\Korg-nanoKONTROL-2-scripts.js"
   Delete "$INSTDIR\controllers\Korg-nanoPAD2-scripts.js"
-  Delete "$INSTDIR\controllers\lodash.mixxx.js"
   Delete "$INSTDIR\controllers\M-Audio-Xponent-scripts.js"
   Delete "$INSTDIR\controllers\M-Audio_Xponent.midi.xml"
   Delete "$INSTDIR\controllers\korg_nanokontrol2.mixco.output.js"
