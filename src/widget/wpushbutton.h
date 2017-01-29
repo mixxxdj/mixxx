@@ -61,6 +61,7 @@ class WPushButton : public WWidget {
         }
         return 0;
     }
+    double getControlParameterDisplay() const override;
 
     virtual void setup(const QDomNode& node, const SkinContext& context);
 
@@ -98,6 +99,7 @@ class WPushButton : public WWidget {
 
     // Array of associated pixmaps
     int m_iNoStates;
+    int m_iSelectionIndex;
     QVector<QString> m_text;
     QVector<PaintablePointer> m_pressedPixmaps;
     QVector<PaintablePointer> m_unpressedPixmaps;

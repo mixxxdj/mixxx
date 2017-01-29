@@ -53,6 +53,8 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
     int iNumStates = context.selectInt(node, "NumberStates");
     setStates(iNumStates);
 
+    m_iSelectionIndex = context.selectInt(node, "SelectionIndex");
+
     // Set background pixmap if available
 
     QDomElement backPathNode = context.selectElement(node, "BackPath");
@@ -155,6 +157,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
                     break;
                 case ControlPushButton::TOGGLE:
                 case ControlPushButton::TRIGGER:
+                case ControlPushButton::SELECTMULTI:
                 default:
                     leftConnection->setEmitOption(
                             ControlParameterWidgetConnection::EMIT_ON_PRESS);
@@ -276,6 +279,19 @@ void WPushButton::restyleAndRepaint() {
     repaint();
 }
 
+double WPushButton::getControlParameterDisplay() const {
+    double value = WBaseWidget::getControlParameterDisplay();
+    if (!isnan(value) && m_iNoStates > 0) {
+        if (m_leftButtonMode == ControlPushButton::SELECTMULTI) {
+            return static_cast<int>(
+                value == static_cast<double>(m_iSelectionIndex));
+        } else {
+            return static_cast<int>(value) % m_iNoStates;
+        }
+    }
+    return 0.0;
+}
+
 void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dParameter);
     // Enums are not currently represented using parameter space so it doesn't
@@ -312,7 +328,7 @@ void WPushButton::paintEvent(QPaintEvent* e) {
         return;
     }
 
-    int idx = readDisplayValue();
+    int idx = getControlParameterDisplay();
     // Just in case m_iNoStates is somehow different from pixmaps.size().
     if (idx < 0) {
         idx = 0;
@@ -365,11 +381,18 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
 
     if (leftClick) {
         double emitValue;
+
         if (m_leftButtonMode == ControlPushButton::PUSH
                 || m_iNoStates == 1) {
             // This is either forced to behave like a push button on left-click
             // or this is a push button.
             emitValue = 1.0;
+        } else if (m_leftButtonMode == ControlPushButton::SELECTMULTI) {
+            if (getControlParameterLeft() != static_cast<double>(m_iSelectionIndex)) {
+                emitValue = static_cast<double>(m_iSelectionIndex);
+            } else {
+                emitValue = 0.0;
+            }
         } else {
             // Toggle thru the states
             emitValue = getControlParameterLeft();
