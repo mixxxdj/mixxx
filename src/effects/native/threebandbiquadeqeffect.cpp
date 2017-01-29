@@ -121,13 +121,13 @@ EffectManifest ThreeBandBiquadEQEffect::getManifest() {
     return manifest;
 }
 
-ThreeBandKillEQEffectGroupState::ThreeBandKillEQEffectGroupState()
+ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState()
         : m_oldLowBoost(0),
           m_oldMidBoost(0),
           m_oldHighBoost(0),
-          m_oldLowKill(0),
-          m_oldMidKill(0),
-          m_oldHighKill(0),
+          m_oldLowCut(0),
+          m_oldMidCut(0),
+          m_oldHighCut(0),
           m_loFreqCorner(0),
           m_highFreqCorner(0),
           m_oldSampleRate(kStartupSamplerate) {
@@ -139,16 +139,16 @@ ThreeBandKillEQEffectGroupState::ThreeBandKillEQEffectGroupState()
     m_lowBoost = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupLoFreq, kQBoost);
     m_midBoost = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupMidFreq, kQBoost);
     m_highBoost = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupHiFreq, kQBoost);
-    m_lowKill = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupLoFreq, kQKill);
-    m_midKill = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupMidFreq, kQKill);
-    m_highKill = std::make_unique<EngineFilterBiquad1HighShelving>(kStartupSamplerate , kStartupHiFreq / 2, kQKillShelve);
+    m_lowCut = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupLoFreq, kQKill);
+    m_midCut = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupMidFreq, kQKill);
+    m_highCut = std::make_unique<EngineFilterBiquad1HighShelving>(kStartupSamplerate , kStartupHiFreq / 2, kQKillShelve);
 }
 
-ThreeBandKillEQEffectGroupState::~ThreeBandKillEQEffectGroupState() {
+ThreeBandBiquadEQEffectGroupState::~ThreeBandBiquadEQEffectGroupState() {
     SampleUtil::free(m_pBuf);
 }
 
-void ThreeBandKillEQEffectGroupState::setFilters(
+void ThreeBandBiquadEQEffectGroupState::setFilters(
         int sampleRate, double lowFreqCorner, double highFreqCorner) {
 
     double lowCenter = getCenterFrequency(kMinimumFrequency, lowFreqCorner);
@@ -162,12 +162,12 @@ void ThreeBandKillEQEffectGroupState::setFilters(
             sampleRate, midCenter, kQBoost, m_oldMidBoost);
     m_highBoost->setFrequencyCorners(
             sampleRate, highCenter, kQBoost, m_oldHighBoost);
-    m_lowKill->setFrequencyCorners(
-            sampleRate, lowCenter, kQKill, m_oldLowKill);
-    m_midKill->setFrequencyCorners(
-            sampleRate, midCenter, kQKill, m_oldMidKill);
-    m_highKill->setFrequencyCorners(
-            sampleRate, highCenter / 2, kQKillShelve, m_oldHighKill);
+    m_lowCut->setFrequencyCorners(
+            sampleRate, lowCenter, kQKill, m_oldLowCut);
+    m_midCut->setFrequencyCorners(
+            sampleRate, midCenter, kQKill, m_oldMidCut);
+    m_highCut->setFrequencyCorners(
+            sampleRate, highCenter / 2, kQKillShelve, m_oldHighCut);
 
 }
 
@@ -189,7 +189,7 @@ ThreeBandBiquadEQEffect::~ThreeBandBiquadEQEffect() {
 
 void ThreeBandBiquadEQEffect::processChannel(
         const ChannelHandle& handle,
-        ThreeBandKillEQEffectGroupState* pState,
+        ThreeBandBiquadEQEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const unsigned int numSamples,
@@ -278,20 +278,20 @@ void ThreeBandBiquadEQEffect::processChannel(
                 sampleRate, highCenter, kQBoost, fHighBoost);
         pState->m_oldHighBoost = fHighBoost;
     }
-    if (fLowKill != pState->m_oldLowKill) {
-        pState->m_lowKill->setFrequencyCorners(
+    if (fLowKill != pState->m_oldLowCut) {
+        pState->m_lowCut->setFrequencyCorners(
                 sampleRate, lowCenter, kQKill, fLowKill);
-        pState->m_oldLowKill = fLowKill;
+        pState->m_oldLowCut = fLowKill;
     }
-    if (fMidKill != pState->m_oldMidKill) {
-        pState->m_midKill->setFrequencyCorners(
+    if (fMidKill != pState->m_oldMidCut) {
+        pState->m_midCut->setFrequencyCorners(
                 sampleRate, midCenter, kQKill, fMidKill);
-        pState->m_oldMidKill = fMidKill;
+        pState->m_oldMidCut = fMidKill;
     }
-    if (fHighKill != pState->m_oldHighKill) {
-        pState->m_highKill->setFrequencyCorners(
+    if (fHighKill != pState->m_oldHighCut) {
+        pState->m_highCut->setFrequencyCorners(
                 sampleRate, highCenter / 2, kQKillShelve , fHighKill);
-        pState->m_oldHighKill = fHighKill;
+        pState->m_oldHighCut = fHighKill;
     }
 
     int activeFilters = 0;
@@ -357,24 +357,24 @@ void ThreeBandBiquadEQEffect::processChannel(
     }
 
     if (fLowKill) {
-        pState->m_lowKill->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        pState->m_lowCut->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
         ++bufIndex;
     } else {
-        pState->m_lowKill->pauseFilter();
+        pState->m_lowCut->pauseFilter();
     }
 
     if (fMidKill) {
-        pState->m_midKill->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        pState->m_midCut->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
         ++bufIndex;
     } else {
-        pState->m_midKill->pauseFilter();
+        pState->m_midCut->pauseFilter();
     }
 
     if (fHighKill) {
-        pState->m_highKill->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        pState->m_highCut->process(inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
         ++bufIndex;
     } else {
-        pState->m_highKill->pauseFilter();
+        pState->m_highCut->pauseFilter();
     }
 
     if (activeFilters == 0) {
@@ -385,8 +385,8 @@ void ThreeBandBiquadEQEffect::processChannel(
         pState->m_lowBoost->pauseFilter();
         pState->m_midBoost->pauseFilter();
         pState->m_highBoost->pauseFilter();
-        pState->m_lowKill->pauseFilter();
-        pState->m_midKill->pauseFilter();
-        pState->m_highKill->pauseFilter();
+        pState->m_lowCut->pauseFilter();
+        pState->m_midCut->pauseFilter();
+        pState->m_highCut->pauseFilter();
     }
 }
