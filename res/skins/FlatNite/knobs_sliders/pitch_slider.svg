@@ -12,7 +12,7 @@
    id="svg3068"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   width="32"
+   width="50"
    height="107"
    sodipodi:docname="pitch_slider.svg"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/pitch_slider.png"
@@ -51,9 +51,9 @@
      inkscape:snap-intersection-paths="true"
      inkscape:object-nodes="true"
      inkscape:snap-smooth-nodes="true"
-     inkscape:zoom="32"
-     inkscape:cx="23.133185"
-     inkscape:cy="52.977986"
+     inkscape:zoom="4"
+     inkscape:cx="42.060366"
+     inkscape:cy="68.324744"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -62,51 +62,7 @@
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:snap-object-midpoints="true"
      inkscape:bbox-paths="true"
-     inkscape:bbox-nodes="true">
-    <sodipodi:guide
-       orientation="1,0"
-       position="2,105"
-       id="guide3134" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="26,53"
-       id="guide3136" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="12,77.5"
-       id="guide3138" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="8,67"
-       id="guide3160" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="24,79"
-       id="guide3162" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="19,79"
-       id="guide3164" />
-    <inkscape:grid
-       type="xygrid"
-       id="grid2992"
-       empspacing="5"
-       visible="true"
-       enabled="true"
-       snapvisiblegridlinesonly="true" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="24,105"
-       id="guide3043" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="18,53.5"
-       id="guide3115" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="16,56.656"
-       id="guide3139" />
-  </sodipodi:namedview>
+     inkscape:bbox-nodes="true" />
   <g
      inkscape:groupmode="layer"
      id="layer4"
@@ -114,7 +70,8 @@
      style="display:inline">
     <path
        style="fill:#6e6e6e;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
-       d="M 16 2 C 15.447715 2 15 2.447715 15 3 L 15 50 C 15 51.380712 13.880712 52.5 12.5 52.5 L 7 52.5 C 6.4477152 52.5 6 52.947715 6 53.5 C 6 54.052285 6.4477152 54.5 7 54.5 L 12.5 54.5 C 13.880712 54.5 15 55.619288 15 57 L 15 104 C 15 104.55228 15.447715 105 16 105 C 16.552285 105 17 104.55228 17 104 L 17 57 C 17 55.619288 18.119288 54.5 19.5 54.5 L 25 54.5 C 25.552285 54.5 26 54.052285 26 53.5 C 26 52.947715 25.552285 52.5 25 52.5 L 19.5 52.5 C 18.119288 52.5 17 51.380712 17 50 L 17 3 C 17 2.447715 16.552285 2 16 2 z M 16 52.5 C 16.552285 52.5 17 52.947715 17 53.5 C 17 54.052285 16.552285 54.5 16 54.5 C 15.447715 54.5 15 54.052285 15 53.5 C 15 52.947715 15.447715 52.5 16 52.5 z "
-       id="rect4849-3" />
+       d="m 25,2 c -0.552285,0 -1,0.447715 -1,1 l 0,47 c 0,1.380712 -1.119288,2.5 -2.5,2.5 l -5.5,0 c -0.552285,0 -1,0.447715 -1,1 0,0.552285 0.447715,1 1,1 l 5.5,0 c 1.380712,0 2.5,1.119288 2.5,2.5 l 0,47 c 0,0.55228 0.447715,1 1,1 0.552285,0 1,-0.44772 1,-1 l 0,-47 c 0,-1.380712 1.119288,-2.5 2.5,-2.5 l 5.5,0 c 0.552285,0 1,-0.447715 1,-1 0,-0.552285 -0.447715,-1 -1,-1 l -5.5,0 C 27.119288,52.5 26,51.380712 26,50 L 26,3 C 26,2.447715 25.552285,2 25,2 z m 0,50.5 c 0.552285,0 1,0.447715 1,1 0,0.552285 -0.447715,1 -1,1 -0.552285,0 -1,-0.447715 -1,-1 0,-0.552285 0.447715,-1 1,-1 z"
+       id="rect4849-3"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

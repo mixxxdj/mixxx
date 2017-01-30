@@ -4,7 +4,7 @@
   AlignRight just for testing, to attach SkinSettings to right edge.
   Not working. See https://bugs.launchpad.net/mixxx/+bug/1623997 */
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  background-color: #151515;
+  background-color: #1e1e1e;
   font-family: Ubuntu, "Open Sans", Arial, Verdana, sans-serif;
   font-weight: normal;
 }
@@ -170,7 +170,7 @@ WWidget, QLabel {
   border-width: 1px 0px 0px 1px;
   border-style: solid;
   border-color: #585858;
-  background-color: #151515;	/*
+  background-color: #0F0F0F;	/*
   background-color: #333333;	*/
 }
 #MixerBarLabel {
@@ -527,9 +527,7 @@ are still drawn full-size.
 #SpinnyCoverBig {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
   margin: 0px 3px 25px 3px;
-  background-color: #451278;
-  background-color: #151515;
-  background-color: #333333;	*/
+  background-color: #451278;	*/
 }
 
 /*################################################################
@@ -589,12 +587,12 @@ are still drawn full-size.
       }
   
 #PitchSliderContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin: 0 9px 0 9px;	/*
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
+  margin: 0 9px 0 9px;
   background-color: #987111;	*/
   }
   #PitchSlider:hover, #Crossfader:hover {
-    background-color: #000000;
+    background-color: #0f0f0f;
     border-radius: 2px;
   }
 
@@ -1235,13 +1233,7 @@ are still drawn full-size.
 }
 
 #Spacer0f {
-  background-color: #151515;
-}
-#Spacer22border {
-  background-color: #151515;
-  border-width: 0px 1px 0px 1px;
-  border-style: solid;
-  border-color: #151515;
+  background-color: #0f0f0f;
 }
 #Spacer33 {
   background-color: #333333;
@@ -1259,7 +1251,7 @@ are still drawn full-size.
 }
 
 #Library {
-  background-color: #0e0e0e;
+  background-color: #0f0f0f;
 }
 
 QTableView, QTextBrowser, QTreeView {
@@ -1276,8 +1268,8 @@ QTreeView {
   border-width: 1px 1px 0px 0px;
   border-style: solid;
   border-color: #585858;
-  show-decoration-selected: 1;
-  background-color: #151515;	/*
+  show-decoration-selected: 1;	/*
+  background-color: #151515;
   Don't define top margin here, it won't shift ScrollBar.
   Defined by SearchBox	*/ 
   margin: 0px;
@@ -1341,7 +1333,7 @@ QHeaderView {
   font-size: 13px/13px;
   font-weight: bold;
   color: #CFCFCF;
-  background-color: #0f0f0f;	/*
+  background-color: #1e1e1e;	/*
   border-top: 1px solid #585858;
   margin-top: -1px;
   background-color: #0f0f0f;	*/
@@ -1410,7 +1402,6 @@ QScrollBar:horizontal {
 #LibrarySplitter::handle:horizontal {
   image: url(skin:/graphics/splitterHori_handle.png);
   width: 4px;
-  background: #0e0e0e;
   }
   #LibrarySplitter::handle:horizontal:hover, #LibrarySplitter::handle:horizontal:pressed {
     image: url(skin:/graphics/splitterHori_handle_pressed.png);
@@ -1418,12 +1409,11 @@ QScrollBar:horizontal {
   /* splitter between coverArt and tree view */
   #LibrarySplitter::handle:vertical {
     height: 4px;
-    background-color: #0e0e0e;
     image: url(skin:/graphics/splitterVert_handle.png);
     }
     #LibrarySplitter::handle:vertical:hover, #LibrarySplitter::handle:vertical:pressed {
       image: url(skin:/graphics/splitterVert_handle_pressed.png);
-      background-color: #0e0e0e;
+      background-color: #0f0f0f;
     }
 
 /* Pushbuttons, a lot of them...	*/
@@ -1556,14 +1546,13 @@ QSpinBox {
 WSearchLineEdit {
   padding: 2px;
   border: 1px solid #656565;
-  background: #181818;
+  background: #0f0f0f;
   color: #CFCFCF;
   margin-bottom: 5px;
   }
   WSearchLineEdit:focus {
     padding: 2px;
     border: 2px solid #FF6600;
-    background: #0f0f0f;
     color: #eeeeee;	/* grey	*/
     }
 
