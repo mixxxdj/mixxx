@@ -60,9 +60,8 @@ Control.prototype = {
     },
     // map input in the XML file, not inValueScale
     input: function (channel, control, value, status, group) {
-        this.setParameter(this.inValueScale(value));
+        this.inSetParameter(this.inValueScale(value));
     },
-    max: 127, // for MIDI. When adapting for HID this may change.
     outValueScale: function (value) {return value * this.max;},
     output: function (value, group, control) {
         this.send(this.outValueScale(value));
@@ -70,41 +69,49 @@ Control.prototype = {
     outConnect: true,
     outTrigger: true,
 
+    max: 127, // for MIDI. When adapting for HID this may change.
+
     // common functions
     // In most cases, you should not overwrite these.
-    setValue: function (value) {
-        engine.setValue(this.group, this.inCo, value);
-    },
-    setParameter: function (value) {
-        print (this.inCo);
-        engine.setParameter(this.group, this.inCo, value);
-    },
-    // outCo value generally shouldn't be set directly,
-    // only by the output() callback when its value changes,
-    // or by calling trigger()
-    // so don't provide separate setValueIn/setValueOut functions.
-    getValueIn: function () {
-        return engine.getValue(this.group, this.inCo);
-    },
-    getValueOut: function () {
-        return engine.getValue(this.group, this.outCo);
-    },
-    getParameterIn: function () {
+    inGetParameter: function () {
         return engine.getParameter(this.group, this.inCo);
     },
-    getParameterOut: function () {
+    inSetParameter: function (value) {
+        engine.setParameter(this.group, this.inCo, value);
+    },
+    inGetValue: function () {
+        return engine.getValue(this.group, this.inCo);
+    },
+    inSetValue: function (value) {
+        engine.setValue(this.group, this.inCo, value);
+    },
+    inToggle: function () {
+        this.inSetValue( ! this.inGetValue());
+    },
+
+    outGetParameter: function () {
         return engine.getParameter(this.group, this.outCo);
     },
-    toggle: function () {
-        this.setValue( ! this.getValueIn());
+    outSetParameter: function (value) {
+        engine.setParameter(this.group, this.outCo, value);
     },
+    outGetValue: function () {
+        return engine.getValue(this.group, this.outCo);
+    },
+    outSetValue: function (value) {
+        engine.setValue(this.group, this.outCo, value);
+    },
+    outToggle: function () {
+        this.outSetValue( ! this.outGetValue());
+    },
+
     connect: function () {
         /**
         Override this method with a custom one to connect multiple Mixxx COs for a single Control.
         Add the connection objects to the this.connections array so they all get disconnected just
         by calling this.disconnect(). This can be helpful for multicolor LEDs that show a
-        different color depending on the state of different Mixxx COs. See SamplerButton.connect()
-        and SamplerButton.output() for an example.
+        different color depending on the state of different Mixxx COs. Refer to
+        SamplerButton.connect() and SamplerButton.output() for an example.
         **/
         if (undefined !== this.group &&
             undefined !== this.outCo &&
@@ -149,7 +156,7 @@ Button.prototype = new Control({
     onlyOnPress: true,
     on: 127,
     off: 0,
-    inValueScale: function () { return ! this.getValueIn(); },
+    inValueScale: function () { return ! this.inGetValue(); },
     separateNoteOnOff: false,
     input: function (channel, control, value, status, group) {
         if (this.onlyOnPress) {
@@ -162,14 +169,14 @@ Button.prototype = new Control({
                 pressed = value > 0;
             }
             if (pressed) {
-                this.setValue(this.inValueScale(value));
+                this.inSetValue(this.inValueScale(value));
             }
         } else {
-            this.setValue(this.inValueScale(value));
+            this.inSetValue(this.inValueScale(value));
         }
     },
     outValueScale: function() {
-        return (this.getValueOut()) ? this.on : this.off;
+        return (this.outGetValue()) ? this.on : this.off;
     },
 });
 
@@ -183,7 +190,7 @@ PlayButton.prototype = new Button({
     shift: function () {
         this.inCo = 'start_stop';
     },
-    outCo: 'play_indicator'
+    outCo: 'play_indicator',
 });
 
 var CueButton = function (options) {
@@ -192,7 +199,7 @@ var CueButton = function (options) {
 CueButton.prototype = new Button({
     inCo: 'cue_default',
     outCo: 'cue_indicator',
-    onlyOnPress: false
+    onlyOnPress: false,
 });
 
 var SyncButton = function (options) {
@@ -205,7 +212,7 @@ SyncButton.prototype = new Button({
     shift: function () {
         this.inCo = 'sync_enabled';
     },
-    outCo: 'sync_enabled'
+    outCo: 'sync_enabled',
 });
 
 var LoopToggleButton = function (options) {
@@ -219,7 +226,7 @@ LoopToggleButton.prototype = new Button({
     outCo: 'loop_enabled',
     outValueScale: function (value) {
         return (value) ? this.on : this.off;
-    }
+    },
 });
 
 var HotcueButton = function (options) {
@@ -237,7 +244,7 @@ HotcueButton.prototype = new Button({
     shift: function () {
         this.inCo = 'hotcue_' + this.number + '_clear';
     },
-    onlyOnPress: false
+    onlyOnPress: false,
 });
 
 var SamplerButton = function (options) {
@@ -304,7 +311,7 @@ var Pot = function (options) {
 Pot.prototype = new Control({
     inValueScale: function (value) { return value / this.max; },
     input: function (channel, control, value, status, group) {
-        this.setParameter(this.inValueScale(value));
+        this.inSetParameter(this.inValueScale(value));
         if (! this.firstValueReceived) {
             this.firstValueReceived = true;
             this.connect();
@@ -323,8 +330,7 @@ Pot.prototype = new Control({
 
 /**
 The generic Control code provides everything to implement a RingEncoder. This RingEncoder Control
-to be able to use instanceof to separate RingEncoders from other Controls and make code more
-self-documenting.
+exists so instanceof can be used to separate RingEncoders from other Controls.
 **/
 var RingEncoder = function (options) {
     Control.call(this, options);
