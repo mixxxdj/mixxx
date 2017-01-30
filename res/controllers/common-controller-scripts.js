@@ -365,6 +365,12 @@ bpm.tapButton = function(deck) {
 //     print("Script: BPM="+average+" setting to "+fRateScale);
 }
 
+// ----------------- Common regular expressions --------------------------
+script.samplerRegEx = /\[Sampler(\d+)\]/ ;
+script.channelRegEx = /\[Channel(\d+)\]/ ;
+script.eqRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/ ;
+script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/ ;
+
 // ----------------- Object definitions --------------------------
 
 

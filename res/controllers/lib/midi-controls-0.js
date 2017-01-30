@@ -418,11 +418,6 @@ ControlContainer.prototype = {
     },
 };
 
-script.samplerRegEx = /\[Sampler(\d+)\]/ ;
-script.channelRegEx = /\[Channel(\d+)\]/ ;
-script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/ ;
-script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/ ;
-
 var Deck = function (deckNumbers) {
     if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
         // These must be unique to each instance, so they cannot be in the prototype.
@@ -436,7 +431,7 @@ Deck.prototype = new ControlContainer({
         this.reconnectControls(function (control) {
             if (control.group.search(script.channelRegEx) !== -1) {
                 control.group = this.currentDeck;
-            } else if (control.group.search(script.eqKnobRegEx) !== -1) {
+            } else if (control.group.search(script.eqRegEx) !== -1) {
                 control.group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
             } else if (control.group.search(script.quickEffectRegEx) !== -1) {
                 control.group = '[QuickEffectRack1_' + this.currentDeck + ']';
