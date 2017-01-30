@@ -20,7 +20,7 @@ print = function(string) {
     engine.log(string);
 }
 
-var debugObj = function (obj) {
+var printObj = function (obj) {
     print(JSON.stringify(obj, null, 2));
 };
 
