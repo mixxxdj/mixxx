@@ -1184,6 +1184,25 @@ void MixxxMainWindow::initActions()
     m_pFileQuit->setMenuRole(QAction::QuitRole);
     connect(m_pFileQuit, SIGNAL(triggered()), this, SLOT(slotFileQuit()));
 
+    
+    QString player3LoadStatusText = loadTrackStatusText.arg(QString::number(3));
+    m_pFileLoadSongPlayer3 = new QAction(loadTrackText.arg(QString::number(3)), this);
+    m_pFileLoadSongPlayer3->setShortcutContext(Qt::ApplicationShortcut);
+    m_pFileLoadSongPlayer3->setStatusTip(player3LoadStatusText);
+    m_pFileLoadSongPlayer3->setWhatsThis(
+        buildWhatsThis(openText, player3LoadStatusText));
+    connect(m_pFileLoadSongPlayer3, SIGNAL(triggered()),
+            this, SLOT(slotFileLoadSongPlayer3()));
+    
+    QString player4LoadStatusText = loadTrackStatusText.arg(QString::number(4));
+    m_pFileLoadSongPlayer4 = new QAction(loadTrackText.arg(QString::number(4)), this);
+    m_pFileLoadSongPlayer4->setShortcutContext(Qt::ApplicationShortcut);
+    m_pFileLoadSongPlayer4->setStatusTip(player4LoadStatusText);
+    m_pFileLoadSongPlayer4->setWhatsThis(
+        buildWhatsThis(openText, player4LoadStatusText));
+    connect(m_pFileLoadSongPlayer4, SIGNAL(triggered()),
+            this, SLOT(slotFileLoadSongPlayer4()));
+    
     QString rescanTitle = tr("&Rescan Library");
     QString rescanText = tr("Rescans library folders for changes to tracks.");
     m_pLibraryRescan = new QAction(rescanTitle, this);
@@ -1664,6 +1683,8 @@ void MixxxMainWindow::populateMenuBar() {
     // space for the whole menu
     m_pFileMenu->addAction(m_pFileLoadSongPlayer1);
     m_pFileMenu->addAction(m_pFileLoadSongPlayer2);
+    m_pFileMenu->addAction(m_pFileLoadSongPlayer3);
+    m_pFileMenu->addAction(m_pFileLoadSongPlayer4);
     m_pFileMenu->addSeparator();
     m_pFileMenu->addAction(m_pFileQuit);
 
@@ -1781,6 +1802,14 @@ void MixxxMainWindow::slotFileLoadSongPlayer1() {
 
 void MixxxMainWindow::slotFileLoadSongPlayer2() {
     slotFileLoadSongPlayer(2);
+}
+
+void MixxxMainWindow::slotFileLoadSongPlayer3() {
+    slotFileLoadSongPlayer(3);
+}
+
+void MixxxMainWindow::slotFileLoadSongPlayer4() {
+    slotFileLoadSongPlayer(4);
 }
 
 void MixxxMainWindow::slotFileQuit()
