@@ -33,23 +33,34 @@ var samplerCrossfaderAssign = true;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
-
 var P32 = {};
 
 P32.init = function () {
-    Control.prototype.shiftOffset = 3;
-    Control.prototype.shiftChannel = true;
-    Button.prototype.sendShifted = true;
+      var time = 20;
+    for (var channel = 0; channel <= 5; channel++) {
+        for (var button = 1; button <= 0x63; button++) {
+            midi.sendShortMsg(0x90 + channel, button, 0);
+            engine.beginTimer(time, function () {
+                print(channel);
+                print(button);
+                midi.sendShortMsg(0x90 + channel, button, 0);
+            }, true);
+            time = time + 5;
+        }
+    }
+    controls.Control.prototype.shiftOffset = 3;
+    controls.Control.prototype.shiftChannel = true;
+    controls.Button.prototype.sendShifted = true;
 
     /**
     The P32 has encoders for changing tempo, so the actual tempo getting out of sync with a hardware
     fader and dealing with soft takeover in that situation is not an issue. So, make toggling master
     sync the default unshifted behavior and momentary sync the shifted behavior.
     **/
-    SyncButton.prototype.unshift = function () {
+    controls.SyncButton.prototype.unshift = function () {
         this.inCo = 'sync_enabled';
     };
-    SyncButton.prototype.shift = function () {
+    controls.SyncButton.prototype.shift = function () {
         this.inCo = 'beatsync';
     };
 
@@ -103,7 +114,7 @@ P32.headMixEncoder = function (channel, control, value, status, group) {
     engine.setValue('[Master]', 'headMix', engine.getValue('[Master]', 'headMix') + (0.25 * direction));
 };
 
-P32.recordButton = new Button({
+P32.recordButton = new controls.Button({
     midi: [0x90, 0x02],
     group: '[Recording]',
     inCo: 'toggle_recording',
@@ -112,7 +123,7 @@ P32.recordButton = new Button({
     sendShifted: false,
 });
 
-P32.slipButton = new Button({
+P32.slipButton = new controls.Button({
     midi: [0x90, 0x03],
     input: function (channel, control, value, status, group) {
         if (P32.leftDeck.isShifted) {
@@ -148,7 +159,7 @@ P32.slipButton = new Button({
 });
 
 P32.Deck = function (deckNumbers, channel) {
-    Deck.call(this, deckNumbers);
+    controls.Deck.call(this, deckNumbers);
 
     var loopSize = defaultLoopSize;
     var beatJumpSize = defaultBeatJumpSize;
@@ -163,26 +174,27 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     // ===================================== TRANSPORT =========================================
-    this.sync = new SyncButton([0x90 + channel, 0x08]);
-    this.cue = new CueButton([0x90 + channel, 0x09]);
-    this.play = new PlayButton([0x90 + channel, 0x0A]);
+    this.sync = new controls.SyncButton([0x90 + channel, 0x08]);
+    this.cue = new controls.CueButton([0x90 + channel, 0x09]);
+    this.play = new controls.PlayButton([0x90 + channel, 0x0A]);
 
     // ===================================== MIXER ==============================================
     this.eqKnob = [];
     for (var k = 1; k <= 3; k++) {
-        this.eqKnob[k] = new Pot({
+        this.eqKnob[k] = new controls.Pot({
             midi: [0xB0 + channel, 0x02 + k],
             group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
             inCo: 'parameter' + k,
         });
     }
 
-    this.pfl = new Button({
+    this.pfl = new controls.Button({
         midi: [0x90 + channel, 0x10],
         co: 'pfl',
+        sendShifted: false,
     });
 
-    this.volume = new Pot({
+    this.volume = new controls.Pot({
         midi: [0xB0 + channel, 0x01],
         inCo: 'volume',
     });
@@ -194,14 +206,14 @@ P32.Deck = function (deckNumbers, channel) {
     this.hotcueButton = [];
     this.samplerButton = [];
     for (var i = 1; i <= 16; i++) {
-        this.hotcueButton[i] = new HotcueButton({
+        this.hotcueButton[i] = new controls.HotcueButton({
             midi: [0x90 + channel,
                    P32.PadNumToMIDIControl(i, 3)],
             number: i,
             on: P32.padColors.red
         });
         var samplerNumber = i + (channel - 1) * 16;
-        this.samplerButton[samplerNumber] = new SamplerButton({
+        this.samplerButton[samplerNumber] = new controls.SamplerButton({
             midi: [0x90 + channel, P32.PadNumToMIDIControl(i, 0)],
             number: samplerNumber,
             on: P32.padColors.red,
@@ -216,15 +228,15 @@ P32.Deck = function (deckNumbers, channel) {
         }
     }
 
-    this.loopIn = new Button({
+    this.loopIn = new controls.Button({
         midi: [0x90 + channel, 0x50],
         inCo: 'loop_in',
     });
-    this.loopOut = new Button({
+    this.loopOut = new controls.Button({
         midi: [0x90 + channel, 0x51],
         inCo: 'loop_out',
     });
-    this.loopTogglePad = new LoopToggleButton({
+    this.loopTogglePad = new controls.LoopToggleButton({
         midi: [0x90 + channel, 0x52],
         on: P32.padColors.red,
         off: P32.padColors.blue,
@@ -232,21 +244,21 @@ P32.Deck = function (deckNumbers, channel) {
     this.loopIn.send(P32.padColors.purple);
     this.loopOut.send(P32.padColors.purple);
 
-    this.tempSlow = new Button({
+    this.tempSlow = new controls.Button({
         midi: [0x90 + channel, 0x44],
         inCo: 'rate_temp_down',
         onlyOnPress: false,
     });
-    this.tempFast = new Button({
+    this.tempFast = new controls.Button({
         midi: [0x90 + channel, 0x45],
         inCo: 'rate_temp_down',
         onlyOnPress: false,
     });
-    this.alignBeats = new Button({
+    this.alignBeats = new controls.Button({
         midi: [0x90 + channel, 0x46],
         inCo: 'beats_translate_curpos',
     });
-    this.quantize = new Button({
+    this.quantize = new controls.Button({
         midi: [0x90 + channel, 0x47],
         co: 'quantize',
         on: P32.padColors.red,
@@ -257,7 +269,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.alignBeats.send(P32.padColors.blue);
 
     // =================================== ENCODERS ==============================================
-    this.loopSizeEncoder = new Control({
+    this.loopSizeEncoder = new controls.Control({
         midi: [0xB0 + channel, 0x1B], // Note: these are the MIDI bytes for the LED readout, not
                                       // input from the encoder.
         input: function (channel, control, value, status, group) {
@@ -401,7 +413,7 @@ P32.Deck = function (deckNumbers, channel) {
     });
 
     // ==================================== EFFECTS ==============================================
-    this.effectUnit = new EffectUnit(deckNumbers[0]);
+    this.effectUnit = new controls.EffectUnit(deckNumbers[0]);
     this.effectUnit.knobs[1].midi = [0xB0 + channel, 0x06];
     this.effectUnit.knobs[2].midi = [0xB0 + channel, 0x07];
     this.effectUnit.knobs[3].midi = [0xB0 + channel, 0x08];
@@ -424,4 +436,4 @@ P32.Deck = function (deckNumbers, channel) {
     });
     this.effectUnit.init();
 };
-P32.Deck.prototype = new Deck();
+P32.Deck.prototype = new controls.Deck();
