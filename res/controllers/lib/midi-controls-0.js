@@ -259,8 +259,7 @@ SamplerButton.prototype = new Button({
     unshift: function () {
         this.input = function (channel, control, value, status, group) {
             if (value > 0) {
-                // track_samples is 0 when the sampler is empty and > 0 when a sample is loaded
-                if (engine.getValue(this.group, 'track_samples') === 0) {
+                if (engine.getValue(this.group, 'track_loaded') === 0) {
                     engine.setValue(this.group, 'LoadSelectedTrack', 1);
                 } else {
                     engine.setValue(this.group, 'cue_gotoandplay', 1);
@@ -280,7 +279,7 @@ SamplerButton.prototype = new Button({
         };
     },
     output: function (value, group, control) {
-        if (engine.getValue(this.group, 'track_samples') > 0) {
+        if (engine.getValue(this.group, 'track_loaded') === 1) {
             if (this.playing === undefined) {
                 this.send(this.on);
             } else {
@@ -295,7 +294,7 @@ SamplerButton.prototype = new Button({
         }
     },
     connect: function() {
-        this.connections[0] = engine.connectControl(this.group, 'track_samples', this.output);
+        this.connections[0] = engine.connectControl(this.group, 'track_loaded', this.output);
         if (this.playing !== undefined) {
             this.connections[1] = engine.connectControl(this.group, 'play', this.output);
         }
