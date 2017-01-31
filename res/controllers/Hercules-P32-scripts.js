@@ -36,18 +36,6 @@ var samplerCrossfaderAssign = true;
 var P32 = {};
 
 P32.init = function () {
-      var time = 20;
-    for (var channel = 0; channel <= 5; channel++) {
-        for (var button = 1; button <= 0x63; button++) {
-            midi.sendShortMsg(0x90 + channel, button, 0);
-            engine.beginTimer(time, function () {
-                print(channel);
-                print(button);
-                midi.sendShortMsg(0x90 + channel, button, 0);
-            }, true);
-            time = time + 5;
-        }
-    }
     controls.Control.prototype.shiftOffset = 3;
     controls.Control.prototype.shiftChannel = true;
     controls.Button.prototype.sendShifted = true;
@@ -269,7 +257,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.alignBeats.send(P32.padColors.blue);
 
     // =================================== ENCODERS ==============================================
-    this.loopSizeEncoder = new controls.Control({
+    this.loopSizeEncoder = new controls.Encoder({
         midi: [0xB0 + channel, 0x1B], // Note: these are the MIDI bytes for the LED readout, not
                                       // input from the encoder.
         input: function (channel, control, value, status, group) {

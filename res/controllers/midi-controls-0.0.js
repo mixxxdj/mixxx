@@ -329,13 +329,13 @@
     });
 
     /**
-    The generic Control code provides everything to implement a RingEncoder. This RingEncoder Control
-    exists so instanceof can be used to separate RingEncoders from other Controls.
+    The generic Control code provides everything to implement an Encoder. This Encoder Control
+    exists so instanceof can be used to separate Encoders from other Controls.
     **/
-    var RingEncoder = function (options) {
+    var Encoder = function (options) {
         Control.call(this, options);
     };
-    RingEncoder.prototype = new Control();
+    Encoder.prototype = new Control();
 
     var ControlContainer = function (initialLayer) {
         if (typeof initialLayer === 'object') {
@@ -661,6 +661,7 @@
     exports.HotcueButton = HotcueButton;
     exports.SamplerButton = SamplerButton;
     exports.Pot = Pot;
+    exports.Encoder = Encoder;
     exports.ControlContainer = ControlContainer;
     exports.Deck = Deck;
     exports.EffectUnit = EffectUnit;
