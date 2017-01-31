@@ -46,10 +46,10 @@ P32.init = function () {
     sync the default unshifted behavior and momentary sync the shifted behavior.
     **/
     controls.SyncButton.prototype.unshift = function () {
-        this.inCo = 'sync_enabled';
+        this.inKey = 'sync_enabled';
     };
     controls.SyncButton.prototype.shift = function () {
-        this.inCo = 'beatsync';
+        this.inKey = 'beatsync';
     };
 
     P32.leftDeck = new P32.Deck([1,3], 1);
@@ -105,9 +105,9 @@ P32.headMixEncoder = function (channel, control, value, status, group) {
 P32.recordButton = new controls.Button({
     midi: [0x90, 0x02],
     group: '[Recording]',
-    inCo: 'toggle_recording',
+    inKey: 'toggle_recording',
     onlyOnPress: false,
-    outCo: 'status',
+    outKey: 'status',
     sendShifted: false,
 });
 
@@ -141,7 +141,7 @@ P32.slipButton = new controls.Button({
         }
         this.send(slipEnabledOnAnyDeck ? this.on : this.off);
     },
-    co: 'slip_enabled',
+    key: 'slip_enabled',
     sendShifted: false,
     group: null // hack to get Control constructor to call this.connect()
 });
@@ -172,19 +172,19 @@ P32.Deck = function (deckNumbers, channel) {
         this.eqKnob[k] = new controls.Pot({
             midi: [0xB0 + channel, 0x02 + k],
             group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
-            inCo: 'parameter' + k,
+            inKey: 'parameter' + k,
         });
     }
 
     this.pfl = new controls.Button({
         midi: [0x90 + channel, 0x10],
-        co: 'pfl',
+        key: 'pfl',
         sendShifted: false,
     });
 
     this.volume = new controls.Pot({
         midi: [0xB0 + channel, 0x01],
-        inCo: 'volume',
+        inKey: 'volume',
     });
 
     // ==================================== PAD GRID ============================================
@@ -218,11 +218,11 @@ P32.Deck = function (deckNumbers, channel) {
 
     this.loopIn = new controls.Button({
         midi: [0x90 + channel, 0x50],
-        inCo: 'loop_in',
+        inKey: 'loop_in',
     });
     this.loopOut = new controls.Button({
         midi: [0x90 + channel, 0x51],
-        inCo: 'loop_out',
+        inKey: 'loop_out',
     });
     this.loopTogglePad = new controls.LoopToggleButton({
         midi: [0x90 + channel, 0x52],
@@ -234,21 +234,21 @@ P32.Deck = function (deckNumbers, channel) {
 
     this.tempSlow = new controls.Button({
         midi: [0x90 + channel, 0x44],
-        inCo: 'rate_temp_down',
+        inKey: 'rate_temp_down',
         onlyOnPress: false,
     });
     this.tempFast = new controls.Button({
         midi: [0x90 + channel, 0x45],
-        inCo: 'rate_temp_down',
+        inKey: 'rate_temp_down',
         onlyOnPress: false,
     });
     this.alignBeats = new controls.Button({
         midi: [0x90 + channel, 0x46],
-        inCo: 'beats_translate_curpos',
+        inKey: 'beats_translate_curpos',
     });
     this.quantize = new controls.Button({
         midi: [0x90 + channel, 0x47],
-        co: 'quantize',
+        key: 'quantize',
         on: P32.padColors.red,
         off: P32.padColors.blue,
     });
@@ -301,7 +301,7 @@ P32.Deck = function (deckNumbers, channel) {
             }
             this.trigger();
         },
-        outCo: 'loop_enabled',
+        outKey: 'loop_enabled',
         output: function (value, group, control) {
             if (loopEnabledDot && value) {
                 this.send(5 - Math.log(loopSize) / Math.log(2));

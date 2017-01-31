@@ -41,12 +41,12 @@
         this.isShifted = false;
         this.connections = [];
 
-        if (options !== undefined && typeof options.co === 'string') {
-            this.inCo = options.co;
-            this.outCo = options.co;
+        if (options !== undefined && typeof options.key === 'string') {
+            this.inKey = options.key;
+            this.outKey = options.key;
         }
 
-        if (this.outConnect && this.group !== undefined && this.outCo !== undefined) {
+        if (this.outConnect && this.group !== undefined && this.outKey !== undefined) {
             this.connect();
             if (this.outTrigger) {
                 this.trigger();
@@ -75,32 +75,32 @@
         // common functions
         // In most cases, you should not overwrite these.
         inGetParameter: function () {
-            return engine.getParameter(this.group, this.inCo);
+            return engine.getParameter(this.group, this.inKey);
         },
         inSetParameter: function (value) {
-            engine.setParameter(this.group, this.inCo, value);
+            engine.setParameter(this.group, this.inKey, value);
         },
         inGetValue: function () {
-            return engine.getValue(this.group, this.inCo);
+            return engine.getValue(this.group, this.inKey);
         },
         inSetValue: function (value) {
-            engine.setValue(this.group, this.inCo, value);
+            engine.setValue(this.group, this.inKey, value);
         },
         inToggle: function () {
             this.inSetValue( ! this.inGetValue());
         },
 
         outGetParameter: function () {
-            return engine.getParameter(this.group, this.outCo);
+            return engine.getParameter(this.group, this.outKey);
         },
         outSetParameter: function (value) {
-            engine.setParameter(this.group, this.outCo, value);
+            engine.setParameter(this.group, this.outKey, value);
         },
         outGetValue: function () {
-            return engine.getValue(this.group, this.outCo);
+            return engine.getValue(this.group, this.outKey);
         },
         outSetValue: function (value) {
-            engine.setValue(this.group, this.outCo, value);
+            engine.setValue(this.group, this.outKey, value);
         },
         outToggle: function () {
             this.outSetValue( ! this.outGetValue());
@@ -115,10 +115,10 @@
             SamplerButton.connect() and SamplerButton.output() for an example.
             **/
             if (undefined !== this.group &&
-                undefined !== this.outCo &&
+                undefined !== this.outKey &&
                 undefined !== this.output &&
                 typeof this.output === 'function') {
-                this.connections[0] = engine.connectControl(this.group, this.outCo, this.output);
+                this.connections[0] = engine.connectControl(this.group, this.outKey, this.output);
             }
         },
         disconnect: function () {
@@ -129,7 +129,7 @@
             }
         },
         trigger: function() {
-            engine.trigger(this.group, this.outCo);
+            engine.trigger(this.group, this.outKey);
         },
         shiftOffset: 0,
         sendShifted: false,
@@ -186,20 +186,20 @@
     };
     PlayButton.prototype = new Button({
         unshift: function () {
-            this.inCo = 'play';
+            this.inKey = 'play';
         },
         shift: function () {
-            this.inCo = 'start_stop';
+            this.inKey = 'start_stop';
         },
-        outCo: 'play_indicator',
+        outKey: 'play_indicator',
     });
 
     var CueButton = function (options) {
         Button.call(this, options);
     };
     CueButton.prototype = new Button({
-        inCo: 'cue_default',
-        outCo: 'cue_indicator',
+        inKey: 'cue_default',
+        outKey: 'cue_indicator',
         onlyOnPress: false,
     });
 
@@ -208,23 +208,23 @@
     };
     SyncButton.prototype = new Button({
         unshift: function () {
-            this.inCo = 'beatsync';
+            this.inKey = 'beatsync';
         },
         shift: function () {
-            this.inCo = 'sync_enabled';
+            this.inKey = 'sync_enabled';
         },
-        outCo: 'sync_enabled',
+        outKey: 'sync_enabled',
     });
 
     var LoopToggleButton = function (options) {
         Button.call(this, options);
     };
     LoopToggleButton.prototype = new Button({
-        inCo: 'reloop_exit',
+        inKey: 'reloop_exit',
         inValueScale: function () {
             return 1;
         },
-        outCo: 'loop_enabled',
+        outKey: 'loop_enabled',
         outValueScale: function (value) {
             return (value) ? this.on : this.off;
         },
@@ -235,15 +235,15 @@
             print('WARNING: No hotcue number specified for new HotcueButton.');
         }
         this.number = options.number;
-        this.outCo = 'hotcue_' + this.number + '_enabled';
+        this.outKey = 'hotcue_' + this.number + '_enabled';
         Button.call(this, options);
     };
     HotcueButton.prototype = new Button({
         unshift: function () {
-            this.inCo = 'hotcue_' + this.number + '_activate';
+            this.inKey = 'hotcue_' + this.number + '_activate';
         },
         shift: function () {
-            this.inCo = 'hotcue_' + this.number + '_clear';
+            this.inKey = 'hotcue_' + this.number + '_clear';
         },
         onlyOnPress: false,
     });
@@ -300,7 +300,7 @@
                 this.connections[1] = engine.connectControl(this.group, 'play', this.output);
             }
         },
-        outCo: null, // hack to get Control constructor to call connect()
+        outKey: null, // hack to get Control constructor to call connect()
     });
 
     var Pot = function (options) {
@@ -319,11 +319,11 @@
         },
         connect: function () {
             if (this.firstValueReceived) {
-                engine.softTakeover(this.group, this.inCo, true);
+                engine.softTakeover(this.group, this.inKey, true);
             }
         },
         disconnect: function () {
-            engine.softTakeoverIgnoreNextValue(this.group, this.inCo);
+            engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
         },
         trigger: function () {},
     });
@@ -461,13 +461,13 @@
         this.dryWetKnob = new Pot({
             group: this.group,
             unshift: function () {
-                this.inCo = 'mix';
+                this.inKey = 'mix';
                 // for soft takeover
                 this.disconnect();
                 this.connect();
             },
             shift: function () {
-                this.inCo = 'super1';
+                this.inKey = 'super1';
                 // for soft takeover
                 this.disconnect();
                 this.connect();
@@ -480,7 +480,7 @@
         this.enableOnChannelButtons.addButton = function (channel) {
             this[channel] = new Button({
                 group: eu.group,
-                co: 'group_[' + channel + ']_enable',
+                key: 'group_[' + channel + ']_enable',
                 outConnect: false,
             });
         };
@@ -500,17 +500,17 @@
         this.EffectUnitKnob.prototype = new Pot({
             onParametersHide: function () {
                 this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.number + ']';
-                this.inCo = 'meta';
+                this.inKey = 'meta';
             },
             onParametersShow: function () {
-                var focused_effect = engine.getValue(eu.group, "focused_effect");
-                if (focused_effect === 0) {
+                var focusedEffect = engine.getValue(eu.group, "focused_effect");
+                if (focusedEffect === 0) {
                     // manipulate metaknobs
                     this.onParametersHide();
                 } else {
                     this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' +
-                                  focused_effect + ']';
-                    this.inCo = 'parameter' + this.number;
+                                  focusedEffect + ']';
+                    this.inKey = 'parameter' + this.number;
                 }
             },
         });
@@ -523,15 +523,15 @@
         this.EffectEnableButton.prototype = new Button({
             onParametersHide: function () {
                 this.input = Button.prototype.input;
-                this.outCo = 'enabled';
+                this.outKey = 'enabled';
                 this.unshift = function () {
                     this.isShifted = false;
-                    this.inCo = 'enabled';
+                    this.inKey = 'enabled';
                     this.onlyOnPress = true;
                 };
                 this.shift = function () {
                     this.isShifted = true;
-                    this.inCo = 'next_effect';
+                    this.inKey = 'next_effect';
                     this.onlyOnPress = false;
                 };
                 if (this.isShifted) {
@@ -541,8 +541,8 @@
                 }
             },
             onParametersShow: function () {
-                this.inCo = 'enabled';
-                this.outCo = 'enabled';
+                this.inKey = 'enabled';
+                this.outKey = 'enabled';
                 this.unshift = function () {
                     this.isShifted = false;
                     this.input = Button.prototype.input;
@@ -600,7 +600,7 @@
 
         this.showParametersButton = new Button({
             group: this.group,
-            co: 'show_parameters',
+            key: 'show_parameters',
             output: function (value, group, control) {
                 this.send((value > 0) ? this.on : this.off);
                 if (value === 0) {
