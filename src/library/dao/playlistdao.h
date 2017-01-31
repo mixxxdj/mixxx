@@ -63,8 +63,6 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool setPlaylistLocked(const int playlistId, const bool locked);
     // Find out the state of a playlist lock
     bool isPlaylistLocked(const int playlistId) const;
-    // Replace all tracks in a playlist by a new list of tracks
-    bool replaceTracksInPlaylist(const QList<TrackId>& trackIds, const int playlistId);
     // Append a list of tracks to a playlist
     bool appendTracksToPlaylist(const QList<TrackId>& trackIds, const int playlistId);
     // Append a track to a playlist
@@ -128,7 +126,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void lockChanged(int playlistId);
 
   private:
-    bool clearPlaylist(const int playlistId);
+    bool removeTracksFromPlaylist(const int playlistId, const int startIndex);
     void removeTracksFromPlaylistsInner(const QStringList& idList);
     void searchForDuplicateTrack(const int fromPosition,
                                  const int toPosition,
