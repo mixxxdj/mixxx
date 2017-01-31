@@ -96,9 +96,6 @@
         </Connection>
       </WidgetGroup><!-- DeckArtistTitle -->
       
-      <!-- zero-sized [index0] to prevent [index1] from being visible by default -->
-      <WidgetGroup><Size>0f,0f</Size><Children/></WidgetGroup><!-- /Passthrough -->
-      
       <!-- Show alternate Artist/Title when (Vinyl) Passthrough is enabled on deck -->
       <WidgetGroup>
         <ObjectName>DeckTitlePassthroughLeft</ObjectName>

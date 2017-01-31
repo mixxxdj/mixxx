@@ -8,6 +8,7 @@
 -->
 <Template>
   <WidgetGroup>
+    <ObjectName>LoopBeatJumpContainer</ObjectName>
     <Layout>vertical</Layout>
     <Children>
     

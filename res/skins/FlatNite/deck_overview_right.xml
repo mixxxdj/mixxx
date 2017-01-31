@@ -9,13 +9,13 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,f</SizePolicy>
         <Children>
-    
+
           <WidgetGroup><!-- Spinny / CoverArt -->
             <Layout>vertical</Layout>
             <!-- Do not declare Size/Policy here. Otherwise this widget will always occupy 50x50px,
                 even when set invible. Maybe too many Connections... WidgetStack was buggy. -->
             <Children>
-              
+
               <WidgetGroup><!-- show when Spinny/Cover is ON,  small version selected -->
                 <Layout>horizontal</Layout>
                 <Size>50f,50f</Size>
@@ -28,7 +28,7 @@
                   <Transform><Not/></Transform>
                 </Connection>
               </WidgetGroup><!-- small -->
-              
+
               <WidgetGroup><!-- show when Spinny/Cover is actually BIG but MIXER is ON -->
                 <Layout>horizontal</Layout>
                 <Children>

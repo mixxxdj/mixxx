@@ -54,6 +54,19 @@ WWidget, QLabel {
   color: #d910f0;	/* SignalColor: #df4df0		> decks_right.xml */
 }
 
+#Waveform1 {
+  background-color: #001D33;
+}
+#Waveform2 {
+  background-color: #2F290a;
+}
+#Waveform3 {
+  background-color: #032603;
+}
+#Waveform4 {
+  background-color: #3A0440;
+}
+
 /*	Define background-color here since
   <Variable name="SignalBgColor"> in *.xml doesn't work */
 #DeckOverview1 {
@@ -149,7 +162,52 @@ WWidget, QLabel {
 
 
 /*################################################################
- ######## Mixer Bar #############################################
+####### Waveforms ##############################################
+################################################################ */
+
+#WaveformContainer {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  }
+
+#Waveform1, #Waveform2, #Waveform3, #Waveform4 {
+/* this will shift waveforms' center position to the left.
+  Useful to 'look ahead' further (who cares about history, ha?)
+  margin-left: -350px;	*/
+}
+
+#BeatgridButtonToggler {
+  border-left: 1px solid #1e1e1e;
+}
+  #BeatgridButtonToggler[displayValue="0"] {
+    background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat top center;
+  }
+  #BeatgridButtonToggler[displayValue="0"]:hover {
+    background: transparent url(skin:/buttons/btn_left_thin_hover.svg) no-repeat top center;
+  }
+#BeatgridButtonToggler[displayValue="1"] {
+  background: transparent url(skin:/buttons/btn_right_thin.svg) no-repeat top center;
+}
+  #BeatgridButtonToggler[displayValue="1"]:hover {
+    background: transparent url(skin:/buttons/btn_right_thin_hover.svg) no-repeat top center;
+  }
+
+#BeatgridButtons {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  padding-left: 1px;
+  }
+  #BeatgridButton {
+    background-color: #333333;
+    border-radius: 2px;
+    color: #eeeeee;
+    }
+  #BeatgridButton:hover {
+    background-color: #666666;
+    }
+
+
+
+/*################################################################
+######## Mixer Bar #############################################
 ################################################################ */
 
 #MixerBar { /*
@@ -215,32 +273,6 @@ are still drawn full-size.
   border: 1px solid #666666;
   background-color: #000000;
   }
-
-/*################################################################
-####### Waveforms ##############################################
-################################################################ */
-
-#WaveformContainer {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  }
-#BeatgridButtons {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  padding-left: 1px;
-  }
-#BeatgridButton {
-  background-color: #333333;
-  border-radius: 2px;
-  color: #eeeeee;
-  }
-#BeatgridButton:hover {
-  background-color: #666666; 
-  }
-
-#Waveform1, #Waveform2, #Waveform3, #Waveform4 {
-/* this will shift waveforms' center position to the left.
-  Useful to 'look ahead' further (who cares about history, ha?)
-  margin-left: -350px;	*/
-}
 
 /*################################################################
 ####### Decks  #################################################
@@ -321,7 +353,7 @@ are still drawn full-size.
   font-size: 12px/12px;
   }
 #TrackCommentLeft {
-  margin-bottom: 1px;
+  border-bottom: 1px solid 0f0f0f;
   }	
   #TrackCommentLeft WLabel, #TrackCommentRight WLabel {
   /* defining font-size here breaks top alignment	*/
@@ -336,8 +368,9 @@ are still drawn full-size.
   }
 #DeckArtistTitleLoopRight, #DeckTitlePassthroughRight {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    background-color: #333333;
-    margin-bottom: 1px;
+    background-color: #333333;  /*
+    margin-bottom: 1px; */
+    border-bottom: 1px solid #0f0f0f;
   }
   #TitleTimeRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
@@ -374,57 +407,58 @@ are still drawn full-size.
   #LoopIndicator {
     border-radius: 2px;
     }
-		#LoopIndicator:hover {
-		  border: 1px solid #ffffff;
-		}
-		#LoopIndicator[displayValue="0"] {
-		  background-color: #333333;
-		}
-		#LoopIndicator[displayValue="1"] {
-		  background-color: #FF8F00;
-		}
+    #LoopIndicator:hover {
+      border: 1px solid #ffffff;
+    }
+    #LoopIndicator[displayValue="0"] {
+      background-color: #333333;
+    }
+    #LoopIndicator[displayValue="1"] {
+      background-color: #FF8F00;
+    }
     
 #DeckButtonsPlay {
-  margin-top: 1px
+  border-top: 1px solid #0f0f0f;
+  background-color: #0f0f0f;
 }
 #DeckButtonsLeft {
-    qproperty-layoutAlignment: 'Alignleft | AlignVCenter';
-    padding: 1px 0px 1px 1px;
-    background-color: #333333;	/*
-    background-color: #667712;	*/
-  }
+  qproperty-layoutAlignment: 'Alignleft | AlignVCenter';
+  padding: 1px 0px 1px 1px;
+  background-color: #333333;	/*
+  background-color: #667712;	*/
+}
 #DeckButtonsRight {
-    qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-    padding: 1px 1px 1px 0px;
-    border-radius: 2px;
-    background-color: #333333;
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  padding: 1px 1px 1px 0px;
+  border-radius: 2px;
+  background-color: #333333;
   }
   #DeckButtonTogglerLeft[displayValue="0"], #DeckButtonTogglerRight[displayValue="1"] {
     background: transparent url(skin:/buttons/btn_right_thin.svg) no-repeat center center;
-    }
+  }
   #DeckButtonTogglerLeft[displayValue="0"]:hover, #DeckButtonTogglerRight[displayValue="1"]:hover {
     background: transparent url(skin:/buttons/btn_right_thin_hover.svg) no-repeat center center;
-    }
+  }
   #DeckButtonTogglerLeft[displayValue="1"], #DeckButtonTogglerRight[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat center center;
-    }
+  }
   #DeckButtonTogglerLeft[displayValue="1"]:hover, #DeckButtonTogglerRight[displayValue="0"]:hover {
     background: transparent url(skin:/buttons/btn_left_thin_hover.svg) no-repeat center center;
-    }
+  }
   #DeckButton:hover {
     background-color: #151515;
     border-radius: 2px;	/*
     border: 1px solid #cccccc;	*/
-    }
+  }
   #SyncModeButton {
-  	color: #888888;
+    color: #888888;
     }
     #SyncModeButton:hover {
-    	color: #888888;
+      color: #888888;
       background-color: #151515;
       border-radius: 2px;	/*
       border: 1px solid #cccccc;	*/
-      }
+    }
     #SyncModeButton[displayValue="1"], #SyncModeButton[displayValue="2"] {
       background-color: #151515;
       border-radius: 2px;
@@ -436,7 +470,7 @@ are still drawn full-size.
       color: #00D613;
     }
     #SyncModeButton[displayValue="1"]:hover, #SyncModeButton[displayValue="2"]:hover {
-    	border: 1px solid #888888;
+      border: 1px solid #888888;
     }
   #DeckStars:hover {
     background-color: #151515;
@@ -451,7 +485,7 @@ are still drawn full-size.
     }
 
 #Hotcues {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
   #HotcueButton {
     font-size: 13px/15px;
@@ -500,24 +534,27 @@ are still drawn full-size.
     }
     
 #DeckLoopBeatjump {
-	margin: 0px;
-	padding: 0px;
-	qproperty-layoutSpacing: 0px;
+  margin: 0px;
+  padding: 0px;
+  qproperty-layoutSpacing: 0px;
 }
-	#LoopBeatJumpButton {
-		font-weight: bold;
-		color: #888888;
-		background-color: #333333;
-		border-radius: 2px;
-	}
-	#LoopBeatJumpButton:hover {  /*
-		background-color: #151515;  */
-		border: 1px solid #888888;
-	}
-	#LoopBeatJumpButton[displayValue="1"], #LoopBeatJumpButton[displayValue="1"]:hover {
-		border: 1px solid #FF8F00;
-	}
-	/* See also #LoopIndicator near DeckButtons */
+#LoopBeatJumpContainer {
+  background-color: #0f0f0f
+}
+  #LoopBeatJumpButton {
+    font-weight: bold;
+    color: #888888;
+    background-color: #333333;
+    border-radius: 2px;
+  }
+  #LoopBeatJumpButton:hover {  /*
+    background-color: #151515;  */
+    border: 1px solid #888888;
+  }
+  #LoopBeatJumpButton[displayValue="1"], #LoopBeatJumpButton[displayValue="1"]:hover {
+    border: 1px solid #FF8F00;
+  }
+  /* See also #LoopIndicator near DeckButtons */
 
 #MixerCoverStack {
 }
@@ -558,7 +595,8 @@ are still drawn full-size.
     border-radius: 2px;	/*	*/
   }
   #KeyDisplay {
-    margin-top: 1px;
+    font-size: 12px/12px; /*
+    margin-top: 1px;  */
   }
   #KeyDown, #KeyUp, #KeyReset {
     font-size: 16px/13px;
@@ -609,13 +647,13 @@ are still drawn full-size.
 }
 #MixerChannelLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  margin: 0px 0px 0px 1px;
+  border-left: 1px solid #0f0f0f;
   background-color: #333333;		/*
   background-color: #546981;	*/
 }
 #MixerChannelRight {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin: 0px 1px 0px 0px;
+  border-right: 1px solid #0f0f0f;
   background-color: #333333;	/*
   background-color: #546981;		*/
 }
@@ -704,7 +742,7 @@ are still drawn full-size.
   }
   #SkinControlsRow {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-    margin-bottom: 1px;	/*
+    background-color:  #0f0f0f;	/*
     background-color: #921679;	*/
   }
 
@@ -814,9 +852,20 @@ are still drawn full-size.
     margin-top: 3px;
     }
 
-#EffectUnitControls {
+#EffectSlots {
+  background-color: #0f0f0f;
+}
+
+#EffectUnitControlsLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';	/*
   background-color: #197355;	*/
+  background-color: #0f0f0f;
+}
+#EffectUnitControlsRight {
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';	/*
+  background-color: #197355;	*/
+  background-color: #0f0f0f;
+  border-left: 1px solid #1e1e1e;
 }
 
 #EffectSlotLeft {
@@ -828,7 +877,7 @@ are still drawn full-size.
 }
 #EffectSlotRight {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  margin-left: 1px;
+  border-left: 1px solid #0f0f0f;;
   background-color: #333333;	/*
   padding-left: 5px;
   border-radius: 2px;

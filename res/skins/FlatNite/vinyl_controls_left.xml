@@ -12,7 +12,6 @@ Variables:
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <WidgetGroup><Size>1f,1me</Size><Children/></WidgetGroup>
       <WidgetGroup>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>

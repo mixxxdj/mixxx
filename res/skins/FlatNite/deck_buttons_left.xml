@@ -1,92 +1,92 @@
 <Template>
-	<SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
-	<WidgetGroup>
-        <ObjectName>DeckButtonsPlay</ObjectName>
-		<Size>1me,25f</Size>
-		<Layout>horizontal</Layout>
-		<Children>
-			<WidgetGroup><!-- Deck Buttons -->
-				<ObjectName>DeckButtonsLeft</ObjectName>
-				<Layout>horizontal</Layout>
-				<Size>1me,24f</Size>
-				<Children>
-					<Template src="skin:button_2state_persist.xml"><!-- Keylock -->
-						<SetVariable name="ObjectName">DeckButton</SetVariable>
-						<SetVariable name="Size">22f,22f</SetVariable>
-						<SetVariable name="ToolTipID">keylock</SetVariable>
-						<SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
-						<SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
-						<SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
-						<SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],keylock</SetVariable>
-					</Template>
-			
-					<Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
-						<SetVariable name="ObjectName">DeckButtonTogglerLeft</SetVariable>
-						<SetVariable name="Size">11f,22f</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[FlatNite],extra_deckbuttons</SetVariable>
-					</Template>
-			
-					<WidgetGroup><!-- Extra Deck Buttons -->
-						<Layout>horizontal</Layout>
-						<SizePolicy>min,min</SizePolicy>
-						<Children>
-							<Template src="skin:button_2state.xml">
-								<SetVariable name="ObjectName">DeckButton</SetVariable>
-								<SetVariable name="Size">22f,22f</SetVariable>
-								<SetVariable name="ToolTipID">eject</SetVariable>
-								<SetVariable name="state_0_pressed">eject.svg</SetVariable>
-								<SetVariable name="state_0_unpressed">eject.svg</SetVariable>
-								<SetVariable name="state_1_pressed">eject_down.svg</SetVariable>
-								<SetVariable name="state_1_unpressed">eject_down.svg</SetVariable>
-								<SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],eject</SetVariable>
-							</Template>
-							<Template src="skin:button_2state.xml">
-								<SetVariable name="ObjectName">DeckButton</SetVariable>
-								<SetVariable name="Size">22f,22f</SetVariable>
-								<SetVariable name="ToolTipID">slip_mode</SetVariable>
-								<SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
-								<SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
-								<SetVariable name="state_1_pressed">slipmode_on.svg</SetVariable>
-								<SetVariable name="state_1_unpressed">slipmode_on.svg</SetVariable>
-								<SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],slip_enabled</SetVariable>
-							</Template>
-							<Template src="skin:button_2state.xml">
-								<SetVariable name="ObjectName">DeckButton</SetVariable>
-								<SetVariable name="Size">22f,22f</SetVariable>
-								<SetVariable name="ToolTipID">repeat</SetVariable>
-								<SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
-								<SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
-								<SetVariable name="state_1_pressed">repeat_on.svg</SetVariable>
-								<SetVariable name="state_1_unpressed">repeat_on.svg</SetVariable>
-								<SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],repeat</SetVariable>
-							</Template>
-							<Template src="skin:button_2state_persist.xml">
-								<SetVariable name="ObjectName">DeckButton</SetVariable>
-								<SetVariable name="Size">22f,22f</SetVariable>
-								<SetVariable name="ToolTipID">quantize</SetVariable>
-								<SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
-								<SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
-								<SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
-								<SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
-								<SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],quantize</SetVariable>
-							</Template>
-								<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-							<Template src="skin:button_3state.xml">
-								<SetVariable name="ObjectName">SyncModeButton</SetVariable>
-								<SetVariable name="Size">40f,22f</SetVariable>
-								<SetVariable name="ToolTipID">quantize</SetVariable>
-								<SetVariable name="state_0_text">SYNC</SetVariable>
-								<SetVariable name="state_1_text">FLW</SetVariable>
-								<SetVariable name="state_2_text">MST</SetVariable>
-								<SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],sync_mode</SetVariable>
-							</Template>
-						</Children>
-						<Connection>
-							<ConfigKey persist="true">[FlatNite],extra_deckbuttons</ConfigKey>
-							<BindProperty>visible</BindProperty>
-						</Connection>
-					</WidgetGroup><!-- /Extra Deck Buttons -->
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckButtonsPlay</ObjectName>
+    <Size>1me,25f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup><!-- Deck Buttons -->
+        <ObjectName>DeckButtonsLeft</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>1me,24f</Size>
+        <Children>
+          <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
+            <SetVariable name="ObjectName">DeckButton</SetVariable>
+            <SetVariable name="Size">22f,22f</SetVariable>
+            <SetVariable name="ToolTipID">keylock</SetVariable>
+            <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],keylock</SetVariable>
+          </Template>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
+            <SetVariable name="ObjectName">DeckButtonTogglerLeft</SetVariable>
+            <SetVariable name="Size">11f,22f</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[FlatNite],extra_deckbuttons</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Extra Deck Buttons -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="ToolTipID">eject</SetVariable>
+                <SetVariable name="state_0_pressed">eject.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
+                <SetVariable name="state_1_pressed">eject_down.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">eject_down.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],eject</SetVariable>
+              </Template>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="ToolTipID">slip_mode</SetVariable>
+                <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">slipmode_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">slipmode_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],slip_enabled</SetVariable>
+              </Template>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="ToolTipID">repeat</SetVariable>
+                <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">repeat_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">repeat_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],repeat</SetVariable>
+              </Template>
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="ToolTipID">quantize</SetVariable>
+                <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],quantize</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:button_3state.xml">
+                <SetVariable name="ObjectName">SyncModeButton</SetVariable>
+                <SetVariable name="Size">40f,22f</SetVariable>
+                <SetVariable name="ToolTipID">quantize</SetVariable>
+                <SetVariable name="state_0_text">SYNC</SetVariable>
+                <SetVariable name="state_1_text">FLW</SetVariable>
+                <SetVariable name="state_2_text">MST</SetVariable>
+                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],sync_mode</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[FlatNite],extra_deckbuttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Extra Deck Buttons -->
 
           <SizeAwareStack><!-- Show Starrating depending on available space -->
             <Children>
@@ -118,38 +118,38 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </SizeAwareStack>
-					
+
           <!-- Expanding spacer to to push extra deck buttons to the left,
           since qss Alignment has no effect here. -->
           <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
-                    
-				</Children>
-			</WidgetGroup><!-- /Deck Buttons -->
-			
-      <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-				
-			<Template src="skin:deck_hotcues.xml"/>
-			
-			<WidgetGroup><!-- Play button -->
-				<Layout>stacked</Layout>
-				<Size>50f,24f</Size>
-				<Children>
-					<Template src="skin:button_2state_display.xml"><!-- Play -->
-						<SetVariable name="ObjectName">PlayCue</SetVariable>
-						<SetVariable name="Size">50f,24f</SetVariable>
-						<SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],play</SetVariable>
-						<SetVariable name="ConfigKeyRight">[Channel<Variable name="channum"/>],cue_default</SetVariable>
-						<SetVariable name="ConfigKeyDisp">[Channel<Variable name="channum"/>],play_indicator</SetVariable>
-					</Template>
-			<!--	Turns Orange when playing from Cue/HotCue position.
-					Only visible when play_indicator above is zero0, otherwise it's covered. -->
-					<Template src="skin:button_2state.xml">
-						<SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
-						<SetVariable name="Size">50f,24f</SetVariable>
-						<SetVariable name="ConfigKey">[Channel<Variable name="channum" />],play</SetVariable>
-					</Template>
-				</Children>
-			</WidgetGroup><!-- /Play button -->
-		</Children>
-	</WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- /Deck Buttons -->
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+
+      <Template src="skin:deck_hotcues.xml"/>
+
+      <WidgetGroup><!-- Play button -->
+        <Layout>stacked</Layout>
+        <Size>50f,24f</Size>
+        <Children>
+          <Template src="skin:button_2state_right_display.xml"><!-- Play -->
+            <SetVariable name="ObjectName">PlayCue</SetVariable>
+            <SetVariable name="Size">50f,24f</SetVariable>
+            <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],play</SetVariable>
+            <SetVariable name="ConfigKeyRight">[Channel<Variable name="channum"/>],cue_default</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Channel<Variable name="channum"/>],play_indicator</SetVariable>
+          </Template>
+      <!--	Turns Orange when playing from Cue/HotCue position.
+          Only visible when play_indicator above is zero0, otherwise it's covered. -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
+            <SetVariable name="Size">50f,24f</SetVariable>
+            <SetVariable name="ConfigKey">[Channel<Variable name="channum" />],play</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- /Play button -->
+    </Children>
+  </WidgetGroup>
 </Template>

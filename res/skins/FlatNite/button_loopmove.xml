@@ -8,6 +8,7 @@
 -->
 <Template>
   <WidgetGroup>
+    <ObjectName>LoopBeatJumpContainer</ObjectName>
     <Layout>vertical</Layout>
     <!-- For some reason this button expands when SizePolicy is 'min,min',
       although it's identical to button_beatjump.xml -->

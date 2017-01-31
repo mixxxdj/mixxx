@@ -1,47 +1,47 @@
 <Template>
-	<WidgetGroup><!-- Skin Controls -->
-		<Layout>vertical</Layout>
-		<ObjectName>SkinControls</ObjectName>
-		<SizePolicy>min,min</SizePolicy>
-		<Children>
-		
-			<WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
-				<Layout>horizontal</Layout>
-				<ObjectName>SkinControlsRow</ObjectName>
-				<Size>104f,21f</Size>
-				<Children>
-					<Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
-						<SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
-						<SetVariable name="Size">20f,20f</SetVariable>
-						<SetVariable name="ToolTipID">toggle_4decks</SetVariable>
-						<SetVariable name="state_0_pressed">2decks.svg</SetVariable>
-						<SetVariable name="state_0_unpressed">2decks.svg</SetVariable>
-						<SetVariable name="state_1_pressed">4decks.svg</SetVariable>
-						<SetVariable name="state_1_unpressed">4decks.svg</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[Master],show_4decks</SetVariable>
-					</Template>
-						<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-					<Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
-						<SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-						<SetVariable name="Size">20f,20f</SetVariable>
-						<SetVariable name="state_0_pressed">wave_off.svg</SetVariable>
-						<SetVariable name="state_0_unpressed">wave_off.svg</SetVariable>
-						<SetVariable name="state_1_pressed">wave_on.svg</SetVariable>
-						<SetVariable name="state_1_unpressed">wave_on.svg</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[FlatNite],stacked_waveforms</SetVariable>
-					</Template>
-						<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-					<Template src="skin:button_2state_persist.xml"><!-- Spinny -->
-						<SetVariable name="ToolTipID">show_spinny</SetVariable>
-						<SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
-						<SetVariable name="Size">20f,20f</SetVariable>
-						<SetVariable name="state_0_pressed">coverart_off.svg</SetVariable>
-						<SetVariable name="state_0_unpressed">coverart_off.svg</SetVariable>
-						<SetVariable name="state_1_pressed">spinny_off.svg</SetVariable>
-						<SetVariable name="state_1_unpressed">spinny_off.svg</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[FlatNite],spinny0_cover1</SetVariable>
-					</Template>
-						<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+  <WidgetGroup><!-- Skin Controls -->
+    <Layout>vertical</Layout>
+    <ObjectName>SkinControls</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
+        <Layout>horizontal</Layout>
+        <ObjectName>SkinControlsRow</ObjectName>
+        <Size>104f,21f</Size>
+        <Children>
+          <Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
+            <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="ToolTipID">toggle_4decks</SetVariable>
+            <SetVariable name="state_0_pressed">2decks.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">2decks.svg</SetVariable>
+            <SetVariable name="state_1_pressed">4decks.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">4decks.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Master],show_4decks</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">wave_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">wave_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">wave_on.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">wave_on.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[FlatNite],stacked_waveforms</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <Template src="skin:button_2state_persist.xml"><!-- Spinny -->
+            <SetVariable name="ToolTipID">show_spinny</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">coverart_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">coverart_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">spinny_off.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">spinny_off.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[FlatNite],spinny0_cover1</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
           <Template src="skin:button_3state_persist.xml">
               <SetVariable name="ToolTipID"></SetVariable>
               <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -55,142 +55,135 @@
               <SetVariable name="state_2_pressed">hotcues_on.svg</SetVariable>
               <SetVariable name="ConfigKeyPerm">[FlatNite],hotcues_deck</SetVariable>
           </Template>
-						<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-					<Template src="skin:button_2state_persist.xml"><!-- Mixer -->
-						<SetVariable name="ToolTipID">show_mixer</SetVariable>
-						<SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-						<SetVariable name="Size">20f,20f</SetVariable>	
-						<SetVariable name="state_0_pressed">mixer_off.svg</SetVariable>
-						<SetVariable name="state_0_unpressed">mixer_off.svg</SetVariable>
-						<SetVariable name="state_1_pressed">mixer_on.svg</SetVariable>
-						<SetVariable name="state_1_unpressed">mixer_on.svg</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[Master],show_mixer</SetVariable>
-					</Template>
-				</Children>
-			</WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
-			
-			<WidgetGroup><!-- Lib / FX / Sampler-->
-				<Layout>horizontal</Layout>
-				<ObjectName>SkinControlsRow</ObjectName>
-				<Size>104f,21f</Size>
-				<Children>
-					<Template src="skin:button_2state_persist.xml"><!-- Library -->
-						<SetVariable name="ToolTipID">show_library</SetVariable>
-						<SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-						<SetVariable name="Size">34f,20f</SetVariable>
-						<SetVariable name="state_0_text">LIB</SetVariable>
-						<SetVariable name="state_1_text">LIB</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[Library],show_library</SetVariable>
-					</Template>
-						<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-					<Template src="skin:button_2state_persist.xml"><!-- FX -->
-						<SetVariable name="ToolTipID">show_effects</SetVariable>
-						<SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-						<SetVariable name="Size">34f,20f</SetVariable>
-						<SetVariable name="state_0_text">FX</SetVariable>
-						<SetVariable name="state_1_text">FX</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[EffectRack1],show</SetVariable>
-					</Template>
-						<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-					<Template src="skin:button_3state_persist.xml"><!-- Samplers -->
-						<SetVariable name="ToolTipID">show_samplers</SetVariable>
-						<SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-						<SetVariable name="Size">34f,20f</SetVariable>
-						<SetVariable name="state_0_text">SAM</SetVariable>
-						<SetVariable name="state_1_text">SAM</SetVariable>
-						<SetVariable name="state_2_text">SAM</SetVariable>
-						<SetVariable name="ConfigKeyPerm">[Samplers],show_samplers</SetVariable>
-					</Template>
-				</Children>
-			</WidgetGroup><!-- Lib / FX / Sampler-->
-			
-			<WidgetGroup><!-- Recording -->
-				<Layout>horizontal</Layout>
-				<ObjectName>SkinControlsRow</ObjectName>
-				<Size>104f,21f</Size>
-				<Children>
-					<Template src="skin:button_3state_display.xml">
-						<SetVariable name="ToolTipID">toggle_recording</SetVariable>
-						<SetVariable name="ObjectName">RecordingButton</SetVariable>
-						<SetVariable name="Size">104f,20f</SetVariable>
-						<SetVariable name="state_0_text">START REC</SetVariable>
-						<SetVariable name="state_1_text">. . .</SetVariable>
-						<SetVariable name="state_2_text">RECORDING</SetVariable>
-						<SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
-						<SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
-					</Template>
-				</Children>
-			</WidgetGroup><!-- Recording -->
-			
-			<WidgetGroup><!-- Clock -->
-				<ObjectName>ClockBox</ObjectName>
-				<Layout>horizontal</Layout>
-				<Size>104f,30me</Size>
-				<Children>
-					<Template src="skin:button_4state_display.xml"><!-- Recording -->
-						<SetVariable name="ToolTipID">broadcast_enabled</SetVariable>
-						<SetVariable name="ObjectName">BroadcastButton</SetVariable>
-						<SetVariable name="Size">24f,34f</SetVariable>
-						<SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
-						<SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
-					</Template>
-					<WidgetGroup><Size>0me,0me</Size><Children/></WidgetGroup>
-					<Time>
-						<TooltipId>time</TooltipId>
-						<ObjectName>Clock</ObjectName>
-						<Size>30min,20me</Size>
-						<ShowSeconds>false</ShowSeconds>
-						<!-- This has no effect, neither has 'text-align' in qss.
-						     Therefore set hSize to '30min' and frame with expanding spacers.
-						<Align>center</Align>   -->
-					</Time>
-					  <WidgetGroup><Size>0me,0me</Size><Children/></WidgetGroup>
-					<Template src="skin:button_2state.xml">
-						<SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
-						<SetVariable name="Size">24f,24f</SetVariable>
-						<SetVariable name="ConfigKey">[FlatNite],skin_settings</SetVariable>
-					</Template>
-				</Children>
-			</WidgetGroup><!-- /Clock -->
-			
-			<WidgetStack currentpage="[FlatNite],crossfader_logo" persist="true"><!-- LogoCrossfaderBox 2 Decks-->
-				<Layout>horizontal</Layout>
-				<Size>104f,26f</Size>
-				<Children>
-					<WidgetGroup>
-						<SizePolicy>min,min</SizePolicy>
-						<Layout>horizontal</Layout>
-						<Children>
-							<WidgetGroup>
-								<Size>104f,26f</Size>
-								<ObjectName>Logo</ObjectName>
-								<Children/>
-							</WidgetGroup>
-						</Children>
-					</WidgetGroup>
-					
-					<SliderComposed trigger="[FlatNite],crossfader" persist="true" on-hide-select="0">
-					    <ObjectName>Crossfader</ObjectName>
-						<TooltipId>crossfader</TooltipId>
-						<Handle>skin:/knobs_sliders/crossfader_handle.svg</Handle>
-						<Slider>skin:/knobs_sliders/crossfader_slider.svg</Slider>
-						<Horizontal>true</Horizontal>
-						<Connection>
-							<ConfigKey>[Master],crossfader</ConfigKey>
-						</Connection>
-						<Connection>
-							<ConfigKey persist="true">[FlatNite],crossfader</ConfigKey>
-							<BindProperty>visible</BindProperty>
-						</Connection>
-					</SliderComposed>
-				</Children>
-				<Connection>
-					<ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-					<Transform><Not/></Transform>
-					<BindProperty>visible</BindProperty>
-				</Connection>
-			</WidgetStack><!-- /LogoCrossfaderBox 2 Decks -->
-			
-		</Children>
-	</WidgetGroup>
+            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <Template src="skin:button_2state_persist.xml"><!-- Mixer -->
+            <SetVariable name="ToolTipID">show_mixer</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">mixer_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">mixer_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">mixer_on.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">mixer_on.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Master],show_mixer</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
+
+      <WidgetGroup><!-- Lib / FX / Sampler-->
+        <Layout>horizontal</Layout>
+        <ObjectName>SkinControlsRow</ObjectName>
+        <Size>104f,21f</Size>
+        <Children>
+          <Template src="skin:button_2state_persist.xml"><!-- Library -->
+            <SetVariable name="ToolTipID">show_library</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">34f,20f</SetVariable>
+            <SetVariable name="state_0_text">LIB</SetVariable>
+            <SetVariable name="state_1_text">LIB</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Library],show_library</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <Template src="skin:button_2state_persist.xml"><!-- FX -->
+            <SetVariable name="ToolTipID">show_effects</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">34f,20f</SetVariable>
+            <SetVariable name="state_0_text">FX</SetVariable>
+            <SetVariable name="state_1_text">FX</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[EffectRack1],show</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <Template src="skin:button_3state_persist.xml"><!-- Samplers -->
+            <SetVariable name="ToolTipID">show_samplers</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">34f,20f</SetVariable>
+            <SetVariable name="state_0_text">SAM</SetVariable>
+            <SetVariable name="state_1_text">SAM</SetVariable>
+            <SetVariable name="state_2_text">SAM</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Samplers],show_samplers</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- Lib / FX / Sampler-->
+
+      <Template src="skin:button_3state_display.xml">
+        <SetVariable name="ToolTipID">toggle_recording</SetVariable>
+        <SetVariable name="ObjectName">RecordingButton</SetVariable>
+        <SetVariable name="Size">104f,20f</SetVariable>
+        <SetVariable name="state_0_text">START REC</SetVariable>
+        <SetVariable name="state_1_text">. . .</SetVariable>
+        <SetVariable name="state_2_text">RECORDING</SetVariable>
+        <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+        <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
+      </Template>
+
+      <WidgetGroup><!-- Clock -->
+        <ObjectName>ClockBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>104f,30me</Size>
+        <Children>
+          <Template src="skin:button_4state_display.xml"><!-- Recording -->
+            <SetVariable name="ToolTipID">broadcast_enabled</SetVariable>
+            <SetVariable name="ObjectName">BroadcastButton</SetVariable>
+            <SetVariable name="Size">24f,34f</SetVariable>
+            <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
+          </Template>
+            <WidgetGroup><Size>0me,0me</Size><Children/></WidgetGroup>
+          <Time>
+            <TooltipId>time</TooltipId>
+            <ObjectName>Clock</ObjectName>
+            <Size>30min,20me</Size>
+            <ShowSeconds>false</ShowSeconds>
+            <!-- This has no effect, neither has 'text-align' in qss.
+                Therefore set hSize to '30min' and frame with expanding spacers.
+            <Align>center</Align>   -->
+          </Time>
+            <WidgetGroup><Size>0me,0me</Size><Children/></WidgetGroup>
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
+            <SetVariable name="Size">24f,24f</SetVariable>
+            <SetVariable name="ConfigKey">[FlatNite],skin_settings</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- /Clock -->
+
+      <WidgetStack currentpage="[FlatNite],crossfader_logo" persist="true"><!-- LogoCrossfaderBox 2 Decks-->
+        <Layout>horizontal</Layout>
+        <Size>104f,26f</Size>
+        <Children>
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <Size>104f,26f</Size>
+                <ObjectName>Logo</ObjectName>
+                <Children/>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <SliderComposed trigger="[FlatNite],crossfader" persist="true" on-hide-select="0">
+              <ObjectName>Crossfader</ObjectName>
+            <TooltipId>crossfader</TooltipId>
+            <Handle>skin:/knobs_sliders/crossfader_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/crossfader_slider.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <Connection>
+              <ConfigKey>[Master],crossfader</ConfigKey>
+            </Connection>
+            <Connection>
+              <ConfigKey persist="true">[FlatNite],crossfader</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </SliderComposed>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetStack><!-- /LogoCrossfaderBox 2 Decks -->
+
+    </Children>
+  </WidgetGroup>
 </Template>

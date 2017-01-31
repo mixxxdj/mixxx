@@ -14,11 +14,11 @@
           <Template src="skin:beatjump_sizes.xml"/>
             <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
           <Template src="skin:loop_basics.xml"/>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
           <Template src="skin:loop_sizes.xml"/>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
           <Template src="skin:loop_scale.xml"/>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
           <Template src="skin:loop_move_sizes.xml"/>
             <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
           <Template src="skin:loop_roll.xml"/>

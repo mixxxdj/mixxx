@@ -51,6 +51,7 @@
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:vinyl_controls_left.xml"/>
+
               <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
                 <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
                 <SetVariable name="Size">11f,50f</SetVariable>
