@@ -2,7 +2,7 @@
 
 #include <QFile>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -24,10 +24,9 @@ ov_callbacks SoundSourceOggVorbis::s_callbacks = {
     SoundSourceOggVorbis::TellCallback
 };
 
-SoundSourceOggVorbis::SoundSourceOggVorbis(QUrl url)
+SoundSourceOggVorbis::SoundSourceOggVorbis(const QUrl& url)
         : SoundSource(url, "ogg"),
-          m_curFrameIndex(0),
-          m_pFile(NULL) {
+          m_curFrameIndex(0) {
     memset(&m_vf, 0, sizeof(m_vf));
 }
 
@@ -35,27 +34,48 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
     close();
 }
 
-Result SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    m_pFile = new QFile(getLocalFileName());
+SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+    m_pFile = std::make_unique<QFile>(getLocalFileName());
     if(!m_pFile->open(QFile::ReadOnly)) {
-        qWarning() << "Failed to open OggVorbis file:" << getUrlString();
-        return ERR;
+        qWarning() << "SoundSourceOggVorbis:"
+                << "Failed to open file for"
+                << getUrlString();
+        return OpenResult::FAILED;
     }
-    if (ov_open_callbacks(m_pFile, &m_vf, NULL, 0, s_callbacks) < 0) {
-        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
-        return ERR;
+
+    const int initDecoderResult = ov_open_callbacks(m_pFile.get(), &m_vf, nullptr, 0, s_callbacks);
+    switch (initDecoderResult) {
+    case 0:
+        // success -> continue
+        break;
+    case OV_ENOTVORBIS:
+    case OV_EVERSION:
+        qWarning() << "SoundSourceOggVorbis:"
+            << "Unsupported format in"
+            << getUrlString();
+        return OpenResult::ABORTED;
+    default:
+        qWarning() << "SoundSourceOggVorbis:"
+            << "Failed to initialize decoder for"
+            << getUrlString();
+        return OpenResult::FAILED;
     }
 
     if (!ov_seekable(&m_vf)) {
-        qWarning() << "OggVorbis file is not seekable:" << getUrlString();
-        return ERR;
+        qWarning() << "SoundSourceOggVorbis:"
+                << "Stream in"
+                << getUrlString()
+                << "is not seekable";
+        return OpenResult::ABORTED;
     }
 
     // lookup the ogg's channels and sample rate
     const vorbis_info* vi = ov_info(&m_vf, kCurrentBitstreamLink);
     if (!vi) {
-        qWarning() << "Failed to read OggVorbis file:" << getUrlString();
-        return ERR;
+        qWarning() << "SoundSourceOggVorbis:"
+                << "Failed to read stream info from"
+                << getUrlString();
+        return OpenResult::FAILED;
     }
     setChannelCount(vi->channels);
     setSamplingRate(vi->rate);
@@ -71,11 +91,13 @@ Result SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (0 <= pcmTotal) {
         setFrameCount(pcmTotal);
     } else {
-        qWarning() << "Failed to read total length of OggVorbis file:" << getUrlString();
-        return ERR;
+        qWarning() << "SoundSourceOggVorbis:"
+                << "Failed to read read total length of"
+                << getUrlString();
+        return OpenResult::FAILED;
     }
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceOggVorbis::close() {
@@ -83,13 +105,22 @@ void SoundSourceOggVorbis::close() {
     if (0 != clearResult) {
         qWarning() << "Failed to close OggVorbis file" << clearResult;
     }
-    delete m_pFile;
+    m_pFile.reset();
 }
 
 SINT SoundSourceOggVorbis::seekSampleFrame(
         SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    if (frameIndex == m_curFrameIndex) {
+        return m_curFrameIndex;
+    }
 
     const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
     if (0 == seekResult) {
@@ -144,26 +175,28 @@ SINT SoundSourceOggVorbis::readSampleFrames(
                 numberOfFramesRemaining, &currentSection);
         if (0 < readResult) {
             m_curFrameIndex += readResult;
-            if (kChannelCountMono == getChannelCount()) {
-                if (readStereoSamples) {
+            if (pSampleBuffer != nullptr) {
+                if (kChannelCountMono == getChannelCount()) {
+                    if (readStereoSamples) {
+                        for (long i = 0; i < readResult; ++i) {
+                            *pSampleBuffer++ = pcmChannels[0][i];
+                            *pSampleBuffer++ = pcmChannels[0][i];
+                        }
+                    } else {
+                        for (long i = 0; i < readResult; ++i) {
+                            *pSampleBuffer++ = pcmChannels[0][i];
+                        }
+                    }
+                } else if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
                     for (long i = 0; i < readResult; ++i) {
                         *pSampleBuffer++ = pcmChannels[0][i];
-                        *pSampleBuffer++ = pcmChannels[0][i];
+                        *pSampleBuffer++ = pcmChannels[1][i];
                     }
                 } else {
                     for (long i = 0; i < readResult; ++i) {
-                        *pSampleBuffer++ = pcmChannels[0][i];
-                    }
-                }
-            } else if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
-                for (long i = 0; i < readResult; ++i) {
-                    *pSampleBuffer++ = pcmChannels[0][i];
-                    *pSampleBuffer++ = pcmChannels[1][i];
-                }
-            } else {
-                for (long i = 0; i < readResult; ++i) {
-                    for (SINT j = 0; j < getChannelCount(); ++j) {
-                        *pSampleBuffer++ = pcmChannels[j][i];
+                        for (SINT j = 0; j < getChannelCount(); ++j) {
+                            *pSampleBuffer++ = pcmChannels[j][i];
+                        }
                     }
                 }
             }
@@ -245,4 +278,4 @@ QStringList SoundSourceProviderOggVorbis::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

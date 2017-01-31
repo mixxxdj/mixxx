@@ -38,7 +38,7 @@ typedef struct sqlite3_context sqlite3_context;
 typedef struct Mem sqlite3_value;
 #endif
 
-class TrackInfoObject;
+class Track;
 
 #define AUTODJ_TABLE "Auto DJ"
 
@@ -63,6 +63,9 @@ class TrackCollection : public QObject {
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
     DirectoryDAO& getDirectoryDAO();
+    AnalysisDao& getAnalysisDAO() {
+        return m_analysisDao;
+    }
     QSharedPointer<BaseTrackCache> getTrackSource();
     void setTrackSource(QSharedPointer<BaseTrackCache> trackSource);
     void cancelLibraryScan();

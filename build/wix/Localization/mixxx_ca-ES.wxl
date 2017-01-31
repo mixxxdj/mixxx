@@ -2,11 +2,11 @@
 <WixLocalization Culture="ca-es" Codepage="1252"
                  xmlns="http://schemas.microsoft.com/wix/2006/localization">
 
-  <!-- .................................................... -->
-  <!-- This wxl file has been auto generated from a po file -->
-  <!-- using https://github.com/sblaisot/wxl-po-tools       -->
-  <!-- Source File: po/ca-ES.po                             -->
-  <!-- .................................................... -->
+  <!-- ..................................................... -->
+  <!-- This wxl file has been auto generated from a po file  -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools        -->
+  <!-- Source File: po/ca-ES.po                              -->
+  <!-- ..................................................... -->
 
   <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
   <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
@@ -23,26 +23,31 @@
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
   <String Id="OS2Old">Aquesta aplicació requereix Windows XP o una versió més recent.</String>
-  <String Id="NewerInstalled">Ja teniu instal·lada aquesta versió del Mixxx o una de més recent.</String>
+  <String Id="NewerInstalled">Ja teniu instal·lada aquesta versió del Mixxx o una més recent.</String>
   <String Id="x64VersionRequired">Heu d'instal·lar la versió de 64 bits d'aquest producte en un Windows de 64 bits.</String>
   <String Id="x86VersionRequired">Heu d'instal·lar la versió de 32 bits d'aquest producte en un Windows de 32 bits.</String>
-  <String Id="x86VersionWarning">Esteu apunt d'instal·lar la versió de 32 bits en un sistema operatiu de 64 bits.&#13;&#10;Recomanem utilitzar la versió de 64 bits per a un millor rendiment.&#13;&#10;Podeu descarregar l'instal·lador de la versió de 64 bits des de http://mixxx.org/download/</String>
-  <String Id="XPWarning">Esteu instal·lant el Mixxx en un sistema operatiu obsolet. Algunes de les funcionalitats poden no funcionar correctament. Recomanem actualitzar el sistema operatiu.</String>
-  <String Id="bitWidthMismatch32">Esteu a punt d'instal·lar la versió de 32 bits tot i que teniu instal·lada una versió de 64 bits. Això pot provocar un comportament no desitjat. Si us plau, desinstal·leu la versió existent del Mixxx primer, o bé descarregueu l'instal·lador de 64 bits per a actualitzar la versió (a no ser que sapigueu exactament el que esteu fent).</String>
-  <String Id="bitWidthMismatch64">Esteu a punt d'instal·lar la versió de 64 bits tot i que teniu instal·lada una versió de 32 bits. Això pot provocar un comportament no desitjat. Si us plau, desinstal·leu la versió existent del Mixxx primer, o bé descarregueu l'instal·lador de 32 bits per a actualitzar la versió (a no ser que sapigueu exactament el que esteu fent).</String>
-  <String Id="OlderVersionFound">Hem detectat una versió anterior del Mixxx. Degut a que hem canviat l'instal·lador, no podem portar a terme l'actualització. És necessari que desinstal·leu la versió anterior abans d'instal·lar aquesta nova versió.</String>
+  <String Id="x86VersionWarning">Esteu a punt d'instal·lar la versió de 32 bits en un sistema operatiu de 64 bits.&#13;&#10;Recomanem utilitzar la versió de 64 bits per a un millor rendiment.&#13;&#10;Podeu baixar l'instal·lador de la versió de 64 bits des de http://mixxx.org/download/</String>
+  <String Id="XPWarning">Esteu instal·lant el Mixxx en un sistema operatiu obsolet. Algunes funcionalitats poden no funcionar correctament. Recomanem actualitzar el sistema operatiu.</String>
+  <String Id="bitWidthMismatch32">Esteu a punt d'instal·lar la versió de 32 bits tot i que teniu instal·lada una versió de 64 bits. Això pot provocar un comportament no desitjat. Desinstal·leu primer la versió existent del Mixxx o baixeu l'instal·lador de 64 bits per actualitzar la versió (a no ser que sapigueu exactament què esteu fent).</String>
+  <String Id="bitWidthMismatch64">Esteu a punt d'instal·lar la versió de 64 bits tot i que teniu instal·lada una versió de 32 bits. Això pot provocar un comportament no desitjat. Desinstal·leu primer la versió existent del Mixxx o baixeu l'instal·lador de 32 bits per a actualitzar la versió (a no ser que sapigueu exactament què esteu fent).</String>
+  <String Id="OlderVersionFound">S'ha detectat una versió anterior del Mixxx. Atès la limitació de l'instal·lador, no és possible actualitzar automàticament. Desinstal·leu la versió existent abans d'instal·lar aquesta versió.</String>
 
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Avís</String>
 
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">Inicia el Mixxx en acabar la instal·lació.</String>
+
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">El paquet complet.</String>
   <String Id="FeatureMainProgramTitle">L'aplicació.</String>
-  <String Id="FeatureMainProgramDescription">L'aplicació Mixxx incloent les preconfiguracions de controladors.</String>
-  <String Id="FeatureDesktopShortcutTitle">Accés directe des de l'Escriptori</String>
-  <String Id="FeatureDesktopShortcutDescription">Afegeix un accés directe al Mixxx al vostre escriptori</String>
+  <String Id="FeatureMainProgramDescription">L'aplicació Mixxx incloent les configuracions per defecte de diversos controladors.</String>
+  <String Id="FeaturePDBTitle">PDB debug files</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
+  <String Id="FeatureDesktopShortcutTitle">Crea una icona a l'escriptori</String>
+  <String Id="FeatureDesktopShortcutDescription">Afegeix un accés directe al Mixxx a l'escriptori</String>
   <String Id="FeatureManualTitle">Manual d'usuari</String>
-  <String Id="FeatureManualDescription">El Manual d'usuari del Mixxx en format PDF, també disponible des de http://mixxx.org/manual/</String>
+  <String Id="FeatureManualDescription">El Manual d'usuari del Mixxx en format PDF i disponible a http://mixxx.org/manual/</String>
   <String Id="FeatureTranslationsTitle">Traduccions</String>
-  <String Id="FeatureTranslationsDescription">Fitxers de recursos addicionals que permeten mostrar el Mixxx en idiomes alternatius a l'anglès nordamericà.</String>
+  <String Id="FeatureTranslationsDescription">Fitxers de recursos addicionals que permeten mostrar el Mixxx en idiomes alternatius a l'anglès.</String>
 </WixLocalization>

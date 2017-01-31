@@ -8,9 +8,9 @@
 #include "mixer/playermanager.h"
 
 EngineControl::EngineControl(QString group,
-                             UserSettingsPointer _config)
+                             UserSettingsPointer pConfig)
         : m_group(group),
-          m_pConfig(_config),
+          m_pConfig(pConfig),
           m_pEngineMaster(NULL),
           m_pEngineBuffer(NULL) {
     setCurrentSample(0.0, 0.0);
@@ -19,24 +19,36 @@ EngineControl::EngineControl(QString group,
 EngineControl::~EngineControl() {
 }
 
-double EngineControl::process(const double,
-                              const double,
-                              const double,
-                              const int) {
+double EngineControl::process(const double dRate,
+                           const double dCurrentSample,
+                           const double dTotalSamples,
+                           const int iBufferSize) {
+    Q_UNUSED(dRate);
+    Q_UNUSED(dCurrentSample);
+    Q_UNUSED(dTotalSamples);
+    Q_UNUSED(iBufferSize);
     return kNoTrigger;
 }
 
-double EngineControl::nextTrigger(const double,
-                                  const double,
-                                  const double,
-                                  const int) {
+double EngineControl::nextTrigger(const double dRate,
+                                  const double currentSample,
+                                  const double totalSamples,
+                                  const int iBufferSize) {
+    Q_UNUSED(dRate);
+    Q_UNUSED(currentSample);
+    Q_UNUSED(totalSamples);
+    Q_UNUSED(iBufferSize);
     return kNoTrigger;
 }
 
-double EngineControl::getTrigger(const double,
-                                 const double,
-                                 const double,
-                                 const int) {
+double EngineControl::getTrigger(const double dRate,
+                                 const double currentSample,
+                                 const double totalSamples,
+                                 const int iBufferSize) {
+    Q_UNUSED(dRate);
+    Q_UNUSED(currentSample);
+    Q_UNUSED(totalSamples);
+    Q_UNUSED(iBufferSize);
     return kNoTrigger;
 }
 
@@ -92,9 +104,9 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
-void EngineControl::seekAbs(double playPosition) {
+void EngineControl::seekAbs(double samplePosition) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekAbs(playPosition);
+        m_pEngineBuffer->slotControlSeekAbs(samplePosition);
     }
 }
 

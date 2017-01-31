@@ -56,7 +56,9 @@ class ControllerEngineConnectionScriptValue : public QObject {
 
 /* comparison function for ControllerEngineConnection */
 inline bool operator==(const ControllerEngineConnection &c1, const ControllerEngineConnection &c2) {
-    return c1.id == c2.id && c1.key.group == c2.key.group && c1.key.item == c2.key.item;
+    return (c1.id == c2.id ||
+            (c1.function.isFunction() && c2.function.isFunction() && c1.function.strictlyEquals(c2.function))) &&
+            c1.key.group == c2.key.group && c1.key.item == c2.key.item;
 }
 
 class ControllerEngine : public QObject {
@@ -77,8 +79,8 @@ class ControllerEngine : public QObject {
         m_bPopups = bPopups;
     }
 
-    // Resolve a function name to a QScriptValue.
-    QScriptValue resolveFunction(const QString& function) const;
+    // Wrap a snippet of JS code in an anonymous function
+    QScriptValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
 
     // Look up registered script function prefixes
     const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
@@ -148,6 +150,7 @@ class ControllerEngine : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
   private:
+    bool syntaxIsValid(const QString& scriptCode);
     bool evaluate(const QString& scriptName, QList<QString> scriptPaths);
     bool internalExecute(QScriptValue thisObject, const QString& scriptCode);
     bool internalExecute(QScriptValue thisObject, QScriptValue functionObject,
@@ -193,7 +196,7 @@ class ControllerEngine : public QObject {
     QVarLengthArray<bool> m_ramp, m_brakeActive;
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
     QHash<int, int> m_scratchTimers;
-    mutable QHash<QString, QScriptValue> m_scriptValueCache;
+    QHash<QString, QScriptValue> m_scriptWrappedFunctionCache;
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
     QList<QString> m_lastScriptPaths;

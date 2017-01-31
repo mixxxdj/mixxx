@@ -32,22 +32,21 @@
 class WVuMeter : public WWidget  {
    Q_OBJECT
   public:
-    WVuMeter(QWidget *parent=0);
-    virtual ~WVuMeter();
+    explicit WVuMeter(QWidget *parent=nullptr);
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
     void setPixmaps(PixmapSource source,
                     bool bHorizontal,
                     Paintable::DrawMode mode);
-    void onConnectedControlChanged(double dParameter, double dValue);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected slots:
     void updateState(mixxx::Duration elapsed);
     void maybeUpdate();
 
   private:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent * /*unused*/) override;
     void setPeak(double parameter);
 
     // Current parameter and peak parameter.

@@ -4,14 +4,14 @@
 #include <QScopedPointer>
 
 #include "mixxxtest.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "engine/bpmcontrol.h"
 #include "track/beats.h"
 #include "track/beatfactory.h"
 #include "track/beatgrid.h"
 #include "track/beatmap.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class BpmControlTest : public MixxxTest {
 };
@@ -29,10 +29,10 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     const double bpm = 60.0;
     const int kFrameSize = 2;
     const double expectedBeatLength = (60.0 * sampleRate / bpm) * kFrameSize;
-    TrackPointer pTrack = TrackInfoObject::newTemporary();
+    TrackPointer pTrack = Track::newTemporary();
     pTrack->setSampleRate(sampleRate);
 
-    BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0);
+    BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0);
 
     // On a beat.
     double prevBeat, nextBeat, beatLength, beatPercentage;

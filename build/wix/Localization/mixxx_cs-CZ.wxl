@@ -2,11 +2,11 @@
 <WixLocalization Culture="cs-cz" Codepage="1250"
                  xmlns="http://schemas.microsoft.com/wix/2006/localization">
 
-  <!-- .................................................... -->
-  <!-- This wxl file has been auto generated from a po file -->
-  <!-- using https://github.com/sblaisot/wxl-po-tools       -->
-  <!-- Source File: po/cs-CZ.po                             -->
-  <!-- .................................................... -->
+  <!-- ..................................................... -->
+  <!-- This wxl file has been auto generated from a po file  -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools        -->
+  <!-- Source File: po/cs-CZ.po                              -->
+  <!-- ..................................................... -->
 
   <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
   <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
@@ -35,10 +35,15 @@
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Varování</String>
 
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">Launch Mixxx when setup exits.</String>
+
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">Úplný balíček.</String>
   <String Id="FeatureMainProgramTitle">Hlavní aplikace</String>
   <String Id="FeatureMainProgramDescription">Hlavní aplikace Mixxxu včetně přednastavení ovladačů.</String>
+  <String Id="FeaturePDBTitle">PDB debug files</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
   <String Id="FeatureDesktopShortcutTitle">Klávesová zkratka</String>
   <String Id="FeatureDesktopShortcutDescription">Přidat klávesovou zkratku pro Mixxx na pracovní plochu</String>
   <String Id="FeatureManualTitle">Uživatelská příručka</String>

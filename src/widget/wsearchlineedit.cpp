@@ -12,7 +12,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
           WBaseWidget(this) {
     setAcceptDrops(false);
     m_clearButton = new QToolButton(this);
-    QPixmap pixmap(":/skins/cross.png");
+    QPixmap pixmap(":/images/library/cross.png");
     m_clearButton->setIcon(QIcon(pixmap));
     m_clearButton->setIconSize(pixmap.size());
     m_clearButton->setCursor(Qt::ArrowCursor);
@@ -62,14 +62,12 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
                   arg(m_clearButton->sizeHint().width() + frameWidth + 1));
 }
 
-WSearchLineEdit::~WSearchLineEdit() {
-}
-
-void WSearchLineEdit::setup(QDomNode node, const SkinContext& context) {
+void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     // Background color
     QColor bgc(255,255,255);
-    if (context.hasNode(node, "BgColor")) {
-        bgc.setNamedColor(context.selectString(node, "BgColor"));
+    QString bgColorStr;
+    if (context.hasNodeSelectString(node, "BgColor", &bgColorStr)) {
+        bgc.setNamedColor(bgColorStr);
         setAutoFillBackground(true);
     }
     QPalette pal = palette();
@@ -77,8 +75,9 @@ void WSearchLineEdit::setup(QDomNode node, const SkinContext& context) {
 
     // Foreground color
     m_fgc = QColor(0,0,0);
-    if (context.hasNode(node, "FgColor")) {
-        m_fgc.setNamedColor(context.selectString(node, "FgColor"));
+    QString fgColorStr;
+    if (context.hasNodeSelectString(node, "FgColor", &fgColorStr)) {
+        m_fgc.setNamedColor(fgColorStr);
     }
     bgc = WSkinColor::getCorrectColor(bgc);
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());

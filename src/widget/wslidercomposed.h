@@ -40,26 +40,26 @@
 class WSliderComposed : public WWidget  {
     Q_OBJECT
   public:
-    WSliderComposed(QWidget* parent = 0);
-    virtual ~WSliderComposed();
+    explicit WSliderComposed(QWidget* parent = nullptr);
+    ~WSliderComposed() override;
 
-    void setup(QDomNode node, const SkinContext& context);
-    void setSliderPixmap(PixmapSource sourceSlider, Paintable::DrawMode mode);
+    void setup(const QDomNode& node, const SkinContext& context);
+    void setSliderPixmap(PixmapSource sourceSlider, Paintable::DrawMode drawMode);
     void setHandlePixmap(bool bHorizontal, PixmapSource sourceHandle,
                          Paintable::DrawMode mode);
     inline bool isHorizontal() const { return m_bHorizontal; };
 
   public slots:
-    void onConnectedControlChanged(double dParameter, double dValue);
-    void fillDebugTooltip(QStringList* debug);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
+    void fillDebugTooltip(QStringList* debug) override;
 
   protected:
-    virtual void mouseMoveEvent(QMouseEvent* e);
-    virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual void mousePressEvent(QMouseEvent* e);
-    virtual void paintEvent(QPaintEvent* e);
-    virtual void wheelEvent(QWheelEvent* e);
-    virtual void resizeEvent(QResizeEvent* e);
+    void mouseMoveEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+    void mousePressEvent(QMouseEvent* e) override;
+    void paintEvent(QPaintEvent* e) override;
+    void wheelEvent(QWheelEvent* e) override;
+    void resizeEvent(QResizeEvent* pEvent) override;
 
   private:
     double calculateHandleLength();

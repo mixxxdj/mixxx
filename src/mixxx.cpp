@@ -25,10 +25,10 @@
 #include <QtDebug>
 
 #include "analyzer/analyzerqueue.h"
-#include "dlgabout.h"
+#include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"
-#include "dlgdevelopertools.h"
+#include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"
@@ -36,15 +36,15 @@
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "controllers/controllermanager.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
-#include "shoutcast/shoutcastmanager.h"
+#include "broadcast/broadcastmanager.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
-#include "soundsourceproxy.h"
-#include "trackinfoobject.h"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/sharedglcontext.h"
 #include "util/debug.h"
@@ -52,7 +52,7 @@
 #include "util/timer.h"
 #include "util/time.h"
 #include "util/version.h"
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "util/compatibility.h"
 #include "util/sandbox.h"
 #include "mixer/playerinfo.h"
@@ -88,8 +88,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pSoundManager(nullptr),
           m_pPlayerManager(nullptr),
           m_pRecordingManager(nullptr),
-#ifdef __SHOUTCAST__
-          m_pShoutcastManager(nullptr),
+#ifdef __BROADCAST__
+          m_pBroadcastManager(nullptr),
 #endif
           m_pControllerManager(nullptr),
           m_pGuiTick(nullptr),
@@ -108,7 +108,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_cmdLineArgs(args),
           m_pTouchShift(nullptr) {
     m_runtime_timer.start();
-    Time::start();
+    mixxx::Time::start();
 
     Version::logBuildDetails();
 
@@ -120,6 +120,11 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
 
     initializeKeyboard();
+
+    // Menubar depends on translations.
+    mixxx::Translations::initializeTranslations(
+        m_pSettingsManager->settings(), pApp, args.getLocale());
+
     createMenuBar();
 
     initializeWindow();
@@ -129,8 +134,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
     m_pWidgetParent = (QWidget*)m_pLaunchImage;
     setCentralWidget(m_pWidgetParent);
-    // move the app in the center of the primary screen
-    slotToCenterOfPrimaryScreen();
 
     show();
 #if defined(Q_WS_X11)
@@ -152,22 +155,11 @@ MixxxMainWindow::~MixxxMainWindow() {
 void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     ScopedTimer t("MixxxMainWindow::initialize");
 
-    // Register custom data types for signal processing
-    qRegisterMetaType<TrackId>("TrackId");
-    qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
-    qRegisterMetaType<TrackPointer>("TrackPointer");
-    qRegisterMetaType<Mixxx::ReplayGain>("Mixxx::ReplayGain");
-    qRegisterMetaType<Mixxx::Bpm>("Mixxx::Bpm");
-    qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
-
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
     Sandbox::initialize(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
     QString resourcePath = pConfig->getResourcePath();
-
-    mixxx::Translations::initializeTranslations(
-        pConfig, pApp, args.getLocale());
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
 
@@ -175,7 +167,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
-        pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt());
+        pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
+                static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
 
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
@@ -206,8 +199,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
 
-#ifdef __SHOUTCAST__
-    m_pShoutcastManager = new ShoutcastManager(pConfig, m_pSoundManager);
+#ifdef __BROADCAST__
+    m_pBroadcastManager = new BroadcastManager(pConfig, m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -355,7 +348,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     launchProgress(100);
 
     // Check direct rendering and warn user if they don't have it
-    checkDirectRendering();
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+        checkDirectRendering();
+    }
 
     // Install an event filter to catch certain QT events, such as tooltips.
     // This allows us to turn off tooltips.
@@ -365,8 +360,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // If we were told to start in fullscreen mode on the command-line or if
     // user chose always starts in fullscreen mode, then turn on fullscreen
     // mode.
-    bool fullscreenPref = pConfig->getValueString(
-        ConfigKey("[Config]", "StartInFullscreen")).toInt()==1;
+    bool fullscreenPref = pConfig->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
     if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
@@ -377,8 +372,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pControllerManager->setUpDevices();
 
     // Scan the library for new files and directories
-    bool rescan = pConfig->getValueString(
-            ConfigKey("[Library]","RescanOnStartup")).toInt();
+    bool rescan = pConfig->getValue<bool>(
+            ConfigKey("[Library]","RescanOnStartup"));
     // rescan the library if we get a new plugin
     QSet<QString> prev_plugins = QSet<QString>::fromList(
             pConfig->getValueString(
@@ -397,27 +392,37 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Try open player device If that fails, the preference panel is opened.
-    int setupDevices = m_pSoundManager->setupDevices();
-    unsigned int numDevices = m_pSoundManager->getConfig().getOutputs().count();
-    // test for at least one out device, if none, display another dlg that
-    // says "mixxx will barely work with no outs"
-    while (setupDevices != OK || numDevices == 0) {
-        // Exit when we press the Exit button in the noSoundDlg dialog
-        // only call it if setupDevices != OK
-        if (setupDevices != OK) {
-            if (noSoundDlg() != 0) {
+    bool retryClicked;
+    do {
+        retryClicked = false;
+        SoundDeviceError result = m_pSoundManager->setupDevices();
+        if (result == SOUNDDEVICE_ERROR_DEVICE_COUNT ||
+                result == SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL) {
+            if (soundDeviceBusyDlg(&retryClicked) != QDialog::Accepted) {
                 exit(0);
             }
-        } else if (numDevices == 0) {
-            bool continueClicked = false;
-            int noOutput = noOutputDlg(&continueClicked);
-            if (continueClicked) break;
-            if (noOutput != 0) {
+        } else if (result != SOUNDDEVICE_ERROR_OK) {
+            if (soundDeviceErrorMsgDlg(result, &retryClicked) !=
+                    QDialog::Accepted) {
                 exit(0);
             }
         }
-        numDevices = m_pSoundManager->getConfig().getOutputs().count();
-    }
+    } while (retryClicked);
+
+    // test for at least one out device, if none, display another dlg that
+    // says "mixxx will barely work with no outs"
+    // In case persisting errors, the user has already received a message
+    // box from the preferences dialog above. So we can watch here just the
+    // output count.
+    while (m_pSoundManager->getConfig().getOutputs().count() == 0) {
+        // Exit when we press the Exit button in the noSoundDlg dialog
+        // only call it if result != OK
+        bool continueClicked = false;
+        if (noOutputDlg(&continueClicked) != QDialog::Accepted) {
+            exit(0);
+        }
+        if (continueClicked) break;
+   }
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -437,27 +442,59 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
     setCentralWidget(m_pWidgetParent);
-    // The old central widget is automatically disposed.
+    // The launch image widget is automatically disposed, but we still have a
+    // pointer to it.
+    m_pLaunchImage = nullptr;
 }
 
 void MixxxMainWindow::finalize() {
     Timer t("MixxxMainWindow::~finalize");
     t.start();
 
-    setCentralWidget(NULL);
+    // Save the current window state (position, maximized, etc)
+    m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
+        QString(saveGeometry().toBase64()));
+    m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "state"),
+        QString(saveState().toBase64()));
 
     qDebug() << "Destroying MixxxMainWindow";
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "saving configuration";
     m_pSettingsManager->save();
 
+    // GUI depends on KeyboardEventFilter, PlayerManager, Library
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
+    m_pWidgetParent = nullptr;
+    QPointer<QWidget> pSkin(centralWidget());
+    setCentralWidget(nullptr);
+    if (!pSkin.isNull()) {
+        QCoreApplication::sendPostedEvents(pSkin, QEvent::DeferredDelete);
+    }
+    // Our central widget is now deleted.
+    VERIFY_OR_DEBUG_ASSERT(pSkin.isNull()) {
+        qWarning() << "Central widget was not deleted by our sendPostedEvents trick.";
+    }
+
+    // TODO(rryan): WMainMenuBar holds references to controls so we need to delete it
+    // before MixxxMainWindow is destroyed. QMainWindow calls deleteLater() in
+    // setMenuBar() but we need to delete it now so we can ask for
+    // DeferredDelete events to be processed for it. Once Mixxx shutdown lives
+    // outside of MixxxMainWindow the parent relationship will directly destroy
+    // the WMainMenuBar and this will no longer be a problem.
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting menubar";
+    QPointer<QWidget> pMenuBar(menuBar());
+    setMenuBar(nullptr);
+    if (!pMenuBar.isNull()) {
+        QCoreApplication::sendPostedEvents(pMenuBar, QEvent::DeferredDelete);
+    }
+    // Our main menu is now deleted.
+    VERIFY_OR_DEBUG_ASSERT(pMenuBar.isNull()) {
+        qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
+    }
+
     // SoundManager depend on Engine and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
-
-    // GUI depends on MixxxKeyboard, PlayerManager, Library
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Skin";
-    delete m_pWidgetParent;
 
     // ControllerManager depends on Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ControllerManager";
@@ -487,10 +524,10 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
 
-#ifdef __SHOUTCAST__
-    // ShoutcastManager depends on config, engine
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ShoutcastManager";
-    delete m_pShoutcastManager;
+#ifdef __BROADCAST__
+    // BroadcastManager depends on config, engine
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting BroadcastManager";
+    delete m_pBroadcastManager;
 #endif
 
     // EngineMaster depends on Config and m_pEffectsManager.
@@ -582,6 +619,12 @@ void MixxxMainWindow::initializeWindow() {
     Pal.setColor(QPalette::Background, MenuBarBackground);
     m_pMenuBar->setPalette(Pal);
 
+    // Restore the current window state (position, maximized, etc)
+    restoreGeometry(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
+        ConfigKey("[MainWindow]", "geometry")).toUtf8()));
+    restoreState(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
+        ConfigKey("[MainWindow]", "state")).toUtf8()));
+
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     slotUpdateWindowTitle(TrackPointer());
 }
@@ -624,48 +667,29 @@ void MixxxMainWindow::initializeKeyboard() {
         m_pKbdConfig = new ConfigObject<ConfigValueKbd>(defaultKeyboard);
     }
 
-    // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
-    // initialization into MixxxKeyboard
-    // Workaround for today: MixxxKeyboard calls delete
-    bool keyboardShortcutsEnabled = pConfig->getValueString(
-        ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new MixxxKeyboard(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
+    // TODO(XXX) leak pKbdConfig, KeyboardEventFilter owns it? Maybe roll all keyboard
+    // initialization into KeyboardEventFilter
+    // Workaround for today: KeyboardEventFilter calls delete
+    bool keyboardShortcutsEnabled = pConfig->getValue<bool>(
+            ConfigKey("[Keyboard]", "Enabled"));
+    m_pKeyboard = new KeyboardEventFilter(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
-int MixxxMainWindow::noSoundDlg(void) {
+QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
+        const QString &title, const QString &text, bool* retryClicked) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
-    msgBox.setWindowTitle(tr("Sound Device Busy"));
-    msgBox.setText(
-        "<html>" +
-        tr("Mixxx was unable to access all the configured sound devices. "
-        "Another application is using a sound device Mixxx is configured to "
-        "use or a device is not plugged in.") +
-        "<ul>"
-            "<li>" +
-                tr("<b>Retry</b> after closing the other application "
-                "or reconnecting a sound device") +
-            "</li>"
-            "<li>" +
-                tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
-            "</li>"
-            "<li>" +
-                tr("Get <b>Help</b> from the Mixxx Wiki.") +
-            "</li>"
-            "<li>" +
-                tr("<b>Exit</b> Mixxx.") +
-            "</li>"
-        "</ul></html>"
-    );
+    msgBox.setWindowTitle(title);
+    msgBox.setText(text);
 
-    QPushButton *retryButton = msgBox.addButton(tr("Retry"),
-        QMessageBox::ActionRole);
-    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"),
-        QMessageBox::ActionRole);
-    QPushButton *wikiButton = msgBox.addButton(tr("Help"),
-        QMessageBox::ActionRole);
-    QPushButton *exitButton = msgBox.addButton(tr("Exit"),
-        QMessageBox::ActionRole);
+    QPushButton* retryButton =
+            msgBox.addButton(tr("Retry"), QMessageBox::ActionRole);
+    QPushButton* reconfigureButton =
+            msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton* wikiButton =
+            msgBox.addButton(tr("Help"), QMessageBox::ActionRole);
+    QPushButton* exitButton =
+            msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
 
     while (true)
     {
@@ -673,7 +697,8 @@ int MixxxMainWindow::noSoundDlg(void) {
 
         if (msgBox.clickedButton() == retryButton) {
             m_pSoundManager->clearAndQueryDevices();
-            return 0;
+            *retryClicked = true;
+            return QDialog::Accepted;
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(
                 "http://mixxx.org/wiki/doku.php/troubleshooting"
@@ -682,43 +707,102 @@ int MixxxMainWindow::noSoundDlg(void) {
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
 
+            m_pSoundManager->clearAndQueryDevices();
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
-                return 0;
+                return QDialog::Accepted;
             }
 
             msgBox.show();
-
         } else if (msgBox.clickedButton() == exitButton) {
-            return 1;
+            // Will finally quit Mixxx
+            return QDialog::Rejected;
         }
     }
 }
 
-int MixxxMainWindow::noOutputDlg(bool *continueClicked) {
+QDialog::DialogCode MixxxMainWindow::soundDeviceBusyDlg(bool* retryClicked) {
+    QString title(tr("Sound Device Busy"));
+    QString text(
+            "<html> <p>" %
+            tr("Mixxx was unable to open all the configured sound devices.") +
+            "</p> <p>" %
+            m_pSoundManager->getErrorDeviceName() %
+            " is used by another application or not plugged in."
+            "</p><ul>"
+                "<li>" %
+                    tr("<b>Retry</b> after closing the other application "
+                    "or reconnecting a sound device") %
+                "</li>"
+                "<li>" %
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") %
+                "</li>"
+                "<li>" %
+                    tr("Get <b>Help</b> from the Mixxx Wiki.") %
+                "</li>"
+                "<li>" %
+                    tr("<b>Exit</b> Mixxx.") %
+                "</li>"
+            "</ul></html>"
+    );
+    return soundDeviceErrorDlg(title, text, retryClicked);
+}
+
+
+QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
+        SoundDeviceError err, bool* retryClicked) {
+    QString title(tr("Sound Device Error"));
+    QString text(
+            "<html> <p>" %
+            tr("Mixxx was unable to open all the configured sound devices.") +
+            "</p> <p>" %
+            m_pSoundManager->getLastErrorMessage(err).replace("\n", "<br/>") %
+            "</p><ul>"
+                "<li>" %
+                    tr("<b>Retry</b> after fixing an issue") %
+                "</li>"
+                "<li>" %
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") %
+                "</li>"
+                "<li>" %
+                    tr("Get <b>Help</b> from the Mixxx Wiki.") %
+                "</li>"
+                "<li>" %
+                    tr("<b>Exit</b> Mixxx.") %
+                "</li>"
+            "</ul></html>"
+    );
+    return soundDeviceErrorDlg(title, text, retryClicked);
+}
+
+QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("No Output Devices"));
-    msgBox.setText( "<html>" + tr("Mixxx was configured without any output sound devices. "
-                    "Audio processing will be disabled without a configured output device.") +
-                    "<ul>"
-                        "<li>" +
-                            tr("<b>Continue</b> without any outputs.") +
-                        "</li>"
-                        "<li>" +
-                            tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
-                        "</li>"
-                        "<li>" +
-                            tr("<b>Exit</b> Mixxx.") +
-                        "</li>"
-                    "</ul></html>"
+    msgBox.setText(
+            "<html>" + tr("Mixxx was configured without any output sound devices. "
+            "Audio processing will be disabled without a configured output device.") +
+            "<ul>"
+                "<li>" +
+                    tr("<b>Continue</b> without any outputs.") +
+                "</li>"
+                "<li>" +
+                    tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
+                "</li>"
+                "<li>" +
+                    tr("<b>Exit</b> Mixxx.") +
+                "</li>"
+            "</ul></html>"
     );
 
-    QPushButton *continueButton = msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
-    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
-    QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
+    QPushButton* continueButton =
+            msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
+    QPushButton* reconfigureButton =
+            msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton* exitButton =
+            msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
 
     while (true)
     {
@@ -726,7 +810,7 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked) {
 
         if (msgBox.clickedButton() == continueButton) {
             *continueClicked = true;
-            return 0;
+            return QDialog::Accepted;
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
 
@@ -734,13 +818,14 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked) {
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
-                return 0;
+                return QDialog::Accepted;
             }
 
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            return 1;
+            // Will finally quit Mixxx
+            return QDialog::Rejected;
         }
     }
 }
@@ -776,8 +861,7 @@ void MixxxMainWindow::connectMenuBar() {
             m_pMenuBar, SLOT(onNewSkinLoaded()));
 
     // Misc
-    connect(m_pMenuBar, SIGNAL(quit()),
-            this, SLOT(slotFileQuit()));
+    connect(m_pMenuBar, SIGNAL(quit()), this, SLOT(close()));
     connect(m_pMenuBar, SIGNAL(showPreferences()),
             this, SLOT(slotOptionsPreferences()));
     connect(m_pMenuBar, SIGNAL(loadTrackToDeck(int)),
@@ -811,13 +895,13 @@ void MixxxMainWindow::connectMenuBar() {
         m_pMenuBar->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
     }
 
-#ifdef __SHOUTCAST__
-    if (m_pShoutcastManager) {
-        connect(m_pShoutcastManager, SIGNAL(shoutcastEnabled(bool)),
+#ifdef __BROADCAST__
+    if (m_pBroadcastManager) {
+        connect(m_pBroadcastManager, SIGNAL(broadcastEnabled(bool)),
                 m_pMenuBar, SLOT(onBroadcastingStateChange(bool)));
         connect(m_pMenuBar, SIGNAL(toggleBroadcasting(bool)),
-                m_pShoutcastManager, SLOT(setEnabled(bool)));
-        m_pMenuBar->onBroadcastingStateChange(m_pShoutcastManager->isEnabled());
+                m_pBroadcastManager, SLOT(setEnabled(bool)));
+        m_pMenuBar->onBroadcastingStateChange(m_pBroadcastManager->isEnabled());
     }
 #endif
 
@@ -892,13 +976,6 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
     }
 }
 
-void MixxxMainWindow::slotFileQuit() {
-    if (!confirmExit()) {
-        return;
-    }
-    hide();
-    qApp->quit();
-}
 
 void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
@@ -1113,20 +1190,12 @@ bool MixxxMainWindow::event(QEvent* e) {
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     if (!confirmExit()) {
         event->ignore();
-    }
-}
-
-void MixxxMainWindow::slotToCenterOfPrimaryScreen() {
-    if (!m_pWidgetParent)
         return;
-
-    QDesktopWidget* desktop = QApplication::desktop();
-    int primaryScreen = desktop->primaryScreen();
-    QRect primaryScreenRect = desktop->availableGeometry(primaryScreen);
-
-    move(primaryScreenRect.left() + (primaryScreenRect.width() - m_pWidgetParent->width()) / 2,
-         primaryScreenRect.top() + (primaryScreenRect.height() - m_pWidgetParent->height()) / 2);
+    }
+    finalize();
+    QMainWindow::closeEvent(event);
 }
+
 
 void MixxxMainWindow::checkDirectRendering() {
     // IF
@@ -1211,12 +1280,12 @@ bool MixxxMainWindow::confirmExit() {
         }
     }
 
-    finalize();
-
     return true;
 }
 
 void MixxxMainWindow::launchProgress(int progress) {
-    m_pLaunchImage->progress(progress);
+    if (m_pLaunchImage) {
+        m_pLaunchImage->progress(progress);
+    }
     qApp->processEvents();
 }

@@ -2,7 +2,7 @@
 
 #include <QMutexLocker>
 
-namespace Mixxx {
+namespace mixxx {
 
 /*static*/ QMutex SoundSourcePluginLibrary::s_loadedPluginLibrariesMutex;
 /*static*/ QMap<QString, SoundSourcePluginLibraryPointer> SoundSourcePluginLibrary::s_loadedPluginLibraries;
@@ -15,7 +15,7 @@ namespace Mixxx {
         return s_loadedPluginLibraries.value(libFilePath);
     } else {
         SoundSourcePluginLibraryPointer pPluginLibrary(
-                new SoundSourcePluginLibrary(libFilePath));
+                std::make_shared<SoundSourcePluginLibrary>(libFilePath));
         if (pPluginLibrary->init()) {
             s_loadedPluginLibraries.insert(libFilePath, pPluginLibrary);
             return pPluginLibrary;
@@ -27,9 +27,7 @@ namespace Mixxx {
 
 SoundSourcePluginLibrary::SoundSourcePluginLibrary(const QString& libFilePath)
     : m_library(libFilePath),
-      m_apiVersion(0),
-      m_createSoundSourceProviderFunc(nullptr),
-      m_destroySoundSourceProviderFunc(nullptr){
+      m_apiVersion(0) {
 }
 
 SoundSourcePluginLibrary::~SoundSourcePluginLibrary() {
@@ -48,50 +46,62 @@ bool SoundSourcePluginLibrary::init() {
 
     SoundSourcePluginAPI_getVersionFunc getVersionFunc = (SoundSourcePluginAPI_getVersionFunc)
             m_library.resolve(SoundSourcePluginAPI_getVersionFuncName);
-    if (!getVersionFunc) {
+    if (getVersionFunc == nullptr) {
         // Try to resolve the legacy plugin API function name
         getVersionFunc = (SoundSourcePluginAPI_getVersionFunc)
                     m_library.resolve("getSoundSourceAPIVersion");
     }
-    if (getVersionFunc) {
-        m_apiVersion = getVersionFunc();
-        if (m_apiVersion == MIXXX_SOUNDSOURCEPLUGINAPI_VERSION) {
-            m_createSoundSourceProviderFunc = (SoundSourcePluginAPI_createSoundSourceProviderFunc)
-                    m_library.resolve(SoundSourcePluginAPI_createSoundSourceProviderFuncName);
-            if (nullptr == m_createSoundSourceProviderFunc) {
-                qWarning() << "Failed to resolve SoundSource plugin API function"
-                        << SoundSourcePluginAPI_createSoundSourceProviderFuncName;
-            }
-            m_destroySoundSourceProviderFunc = (SoundSourcePluginAPI_destroySoundSourceProviderFunc)
-                    m_library.resolve(SoundSourcePluginAPI_destroySoundSourceProviderFuncName);
-            if (nullptr == m_destroySoundSourceProviderFunc) {
-                qWarning() << "Failed to resolve SoundSource plugin API function"
-                        << SoundSourcePluginAPI_destroySoundSourceProviderFuncName;
-            }
-        } else {
-            qWarning() << "Incompatible SoundSource plugin API version"
-                    << m_apiVersion << "<>" << MIXXX_SOUNDSOURCEPLUGINAPI_VERSION;
-        }
-    } else {
+    if (getVersionFunc == nullptr) {
         qWarning() << "Failed to resolve SoundSource plugin API function"
                 << SoundSourcePluginAPI_getVersionFuncName;
+        return initFailedForIncompatiblePlugin();
     }
 
-    if (getVersionFunc && m_createSoundSourceProviderFunc && m_destroySoundSourceProviderFunc) {
+    m_apiVersion = getVersionFunc();
+    if (m_apiVersion != MIXXX_SOUNDSOURCEPLUGINAPI_VERSION) {
+        qWarning() << "Incompatible SoundSource plugin API version"
+                << m_apiVersion << "<>" << MIXXX_SOUNDSOURCEPLUGINAPI_VERSION;
+        return initFailedForIncompatiblePlugin();
+    }
+
+    auto const createSoundSourceProviderFunc =
+            reinterpret_cast<SoundSourcePluginAPI_createSoundSourceProviderFunc>(
+                    m_library.resolve(SoundSourcePluginAPI_createSoundSourceProviderFuncName));
+    if (createSoundSourceProviderFunc == nullptr) {
+        qWarning() << "Failed to resolve SoundSource plugin API function"
+                << SoundSourcePluginAPI_createSoundSourceProviderFuncName;
+        return initFailedForIncompatiblePlugin();
+    }
+
+    auto const destroySoundSourceProviderFunc =
+            reinterpret_cast<SoundSourcePluginAPI_destroySoundSourceProviderFunc>(
+                m_library.resolve(SoundSourcePluginAPI_destroySoundSourceProviderFuncName));
+    if (destroySoundSourceProviderFunc == nullptr) {
+        qWarning() << "Failed to resolve SoundSource plugin API function"
+                << SoundSourcePluginAPI_destroySoundSourceProviderFuncName;
+        return initFailedForIncompatiblePlugin();
+    }
+
+    m_pSoundSourceProvider = SoundSourceProviderPointer(
+            (*createSoundSourceProviderFunc)(),
+            destroySoundSourceProviderFunc);
+    if (m_pSoundSourceProvider) {
         return true;
     } else {
-        qWarning() << "Incompatible SoundSource plugin"
+        qWarning() << "Failed to create SoundSource provider for plugin library"
                 << m_library.fileName();
         return false;
     }
 }
 
-SoundSourceProviderPointer SoundSourcePluginLibrary::createSoundSourceProvider() const {
-    DEBUG_ASSERT(m_createSoundSourceProviderFunc);
-    DEBUG_ASSERT(m_destroySoundSourceProviderFunc);
-    return SoundSourceProviderPointer(
-            (*m_createSoundSourceProviderFunc)(),
-            m_destroySoundSourceProviderFunc);
+bool SoundSourcePluginLibrary::initFailedForIncompatiblePlugin() const {
+    qWarning() << "Incompatible SoundSource plugin"
+            << m_library.fileName();
+    return false;
+}
+
+SoundSourceProviderPointer SoundSourcePluginLibrary::getSoundSourceProvider() const {
+    return m_pSoundSourceProvider;
 }
 
 } // Mixxx

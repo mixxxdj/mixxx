@@ -1,12 +1,9 @@
 #include "track/bpm.h"
 
-namespace Mixxx {
+namespace mixxx {
 
-// TODO(uklotzde): Replace 'const' with 'constexpr' and remove
-// initialization after switching to Visual Studio 2015.
-
-/*static*/ const double Bpm::kValueUndefined = 0.0;
-/*static*/ const double Bpm::kValueMin = 0.0; // lower bound (exclusive)
+/*static*/ constexpr double Bpm::kValueUndefined;
+/*static*/ constexpr double Bpm::kValueMin;
 
 double Bpm::valueFromString(const QString& str, bool* pValid) {
     if (pValid) {
@@ -57,4 +54,4 @@ void Bpm::normalizeValue() {
     }
 }
 
-} //namespace Mixxx
+} //namespace mixxx

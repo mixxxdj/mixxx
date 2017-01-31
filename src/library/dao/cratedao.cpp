@@ -138,8 +138,6 @@ QList<TrackId> CrateDAO::getTrackIds(const int crateId) {
     return trackIds;
 }
 
-#ifdef __AUTODJCRATES__
-
 bool CrateDAO::setCrateInAutoDj(int crateId, bool bIn) {
     // SQLite3 doesn't support boolean value. Using integer instead.
     int iIn = bIn ? 1 : 0;
@@ -239,8 +237,6 @@ void CrateDAO::getAutoDjCrates(bool trackSource, QMap<QString,int>* pCrateMap) {
         pCrateMap->insert(query.value(0).toString(), query.value(1).toInt());
     }
 }
-
-#endif // __AUTODJCRATES__
 
 bool CrateDAO::deleteCrate(const int crateId) {
     ScopedTransaction transaction(m_database);

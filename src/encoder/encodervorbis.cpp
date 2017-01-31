@@ -3,7 +3,7 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
+                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
  ***************************************************************************/
 
 /***************************************************************************
@@ -37,39 +37,15 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 
 EncoderVorbis::EncoderVorbis(EncoderCallback* pCallback)
         : m_bStreamInitialized(false),
+          m_vblock({}),
+          m_vdsp({}),
+          m_vinfo({}),
+          m_vcomment({}),
           m_header_write(false),
           m_pCallback(pCallback),
           m_metaDataTitle(NULL),
           m_metaDataArtist(NULL),
           m_metaDataAlbum(NULL){
-    m_vdsp.pcm_returned = 0;
-    m_vdsp.preextrapolate = 0;
-    m_vdsp.eofflag = 0;
-    m_vdsp.lW = 0;
-    m_vdsp.W = 0;
-    m_vdsp.nW = 0;
-    m_vdsp.centerW = 0;
-    m_vdsp.granulepos = 0;
-    m_vdsp.sequence = 0;
-    m_vdsp.glue_bits = 0;
-    m_vdsp.time_bits = 0;
-    m_vdsp.floor_bits = 0;
-    m_vdsp.res_bits = 0;
-    m_vdsp.backend_state = NULL;
-
-    m_vinfo.version = 0;
-    m_vinfo.channels = 0;
-    m_vinfo.rate = 0;
-    m_vinfo.bitrate_upper = 0;
-    m_vinfo.bitrate_nominal = 0;
-    m_vinfo.bitrate_lower = 0;
-    m_vinfo.bitrate_window = 0;
-    m_vinfo.codec_setup = NULL;
-
-    m_vcomment.user_comments = NULL;
-    m_vcomment.comment_lengths = NULL;
-    m_vcomment.comments = 0;
-    m_vcomment.vendor = NULL;
 }
 
 EncoderVorbis::~EncoderVorbis() {
@@ -82,7 +58,7 @@ EncoderVorbis::~EncoderVorbis() {
     }
 }
 
-// call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
+// call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
 void EncoderVorbis::flush() {
     vorbis_analysis_wrote(&m_vdsp, 0);
     writePage();
@@ -122,7 +98,11 @@ void EncoderVorbis::writePage() {
             result = ogg_stream_flush(&m_oggs, &m_oggpage);
             if (result == 0)
                 break;
-            m_pCallback->write(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
+            m_pCallback->write(
+                    m_oggpage.header,
+                    m_oggpage.body,
+                    m_oggpage.header_len,
+                    m_oggpage.body_len);
         }
         m_header_write = false;
     }
@@ -164,7 +144,7 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size) {
     writePage();
 }
 
-/* Originally called from engineshoutcast.cpp to update metadata information
+/* Originally called from enginebroadcast.cpp to update metadata information
  * when streaming, however, this causes pops
  *
  * Currently this method is used before init() once to save artist, title and album

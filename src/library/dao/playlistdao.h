@@ -28,6 +28,8 @@ const QString PLAYLISTTRACKSTABLE_ARTIST = "artist";
 const QString PLAYLISTTRACKSTABLE_TITLE = "title";
 const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = "pl_datetime_added";
 
+class AutoDJProcessor;
+
 class PlaylistDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
@@ -107,6 +109,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
 
+    void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
+    void sendToAutoDJ(const QList<TrackId>& trackIds, bool bTop);
+
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
@@ -130,6 +135,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     QSqlDatabase& m_database;
     QMultiHash<TrackId, int> m_playlistsTrackIsIn;
+    AutoDJProcessor* m_pAutoDJProcessor;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
 

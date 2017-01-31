@@ -3,13 +3,13 @@
 
 #include "engine/keycontrol.h"
 
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlpotmeter.h"
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"
 
-static const double kLockOriginalKey = 0;
+//static const double kLockOriginalKey = 0;
 static const double kLockCurrentKey = 1;
 
 KeyControl::KeyControl(QString group,

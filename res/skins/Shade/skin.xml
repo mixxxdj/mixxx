@@ -69,7 +69,7 @@
 			<attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
 			<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
 			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
-			<attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
 		</attributes>
 	</manifest>
 
@@ -471,7 +471,7 @@
 					#DlgHidden > QPushButton,
 					#DlgAutoDJ > QPushButton,
 					#DlgRecording > QPushButton,
-					#DlgAnalysis > QPushButton { 
+					#DlgAnalysis > QPushButton {
 					    margin: 9px 3px 6px 3px;
 					    padding: 3px 8px;
 					    min-width: 65px;
@@ -734,6 +734,7 @@
 											<Size>e,me</Size>
 											<Style></Style>
 											<SplitSizes>1,e</SplitSizes>
+                                            <Collapsible>0,0</Collapsible>
 											<Children>
 												<LibrarySidebar></LibrarySidebar>
 												<!--Cover Art-->

@@ -12,10 +12,7 @@ WStarRating::WStarRating(QString group, QWidget* pParent)
           m_focused(false) {
 }
 
-WStarRating::~WStarRating() {
-}
-
-void WStarRating::setup(QDomNode node, const SkinContext& context) {
+void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);
     setMouseTracking(true);
@@ -37,22 +34,19 @@ QSize WStarRating::sizeHint() const {
     return widgetSize;
 }
 
-void WStarRating::slotTrackLoaded(TrackPointer track) {
-    if (track) {
-        m_pCurrentTrack = track;
-        connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-                this, SLOT(updateRating(TrackInfoObject*)));
+void WStarRating::slotTrackLoaded(TrackPointer pTrack) {
+    if (m_pCurrentTrack != pTrack) {
+        if (m_pCurrentTrack) {
+            disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
+            m_pCurrentTrack.reset();
+        }
+        if (pTrack) {
+            connect(pTrack.get(), SIGNAL(changed(Track*)),
+                    this, SLOT(updateRating(Track*)));
+            m_pCurrentTrack = pTrack;
+        }
         updateRating();
     }
-}
-
-void WStarRating::slotTrackUnloaded(TrackPointer track) {
-    Q_UNUSED(track);
-    if (m_pCurrentTrack) {
-        disconnect(m_pCurrentTrack.data(), 0, this, 0);
-    }
-    m_pCurrentTrack.clear();
-    updateRating();
 }
 
 void WStarRating::updateRating() {
@@ -64,11 +58,11 @@ void WStarRating::updateRating() {
     update();
 }
 
-void WStarRating::updateRating(TrackInfoObject*) {
+void WStarRating::updateRating(Track* /*unused*/) {
     updateRating();
 }
 
-void WStarRating::paintEvent(QPaintEvent *) {
+void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
@@ -80,8 +74,9 @@ void WStarRating::paintEvent(QPaintEvent *) {
 }
 
 void WStarRating::mouseMoveEvent(QMouseEvent *event) {
-    if (!m_pCurrentTrack)
+    if (!m_pCurrentTrack) {
         return;
+    }
 
     m_focused = true;
     int star = starAtPosition(event->x());
@@ -92,7 +87,7 @@ void WStarRating::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
-void WStarRating::leaveEvent(QEvent*) {
+void WStarRating::leaveEvent(QEvent* /*unused*/) {
     m_focused = false;
     updateRating();
 }
@@ -112,9 +107,10 @@ int WStarRating::starAtPosition(int x) {
     return star;
 }
 
-void WStarRating::mouseReleaseEvent(QMouseEvent*) {
-    if (!m_pCurrentTrack)
+void WStarRating::mouseReleaseEvent(QMouseEvent* /*unused*/) {
+    if (!m_pCurrentTrack) {
         return;
+    }
 
     m_pCurrentTrack->setRating(m_starRating.starCount());
 }

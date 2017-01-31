@@ -43,8 +43,8 @@ void AutoDJCratesDAO::initialize() {
 void AutoDJCratesDAO::createAutoDjCratesDatabase() {
     // If the use of tracks that haven't been played in a while has changed,
     // then the active-tracks view must be recreated.
-    bool bUseIgnoreTime = (bool) m_pConfig->getValueString(
-            ConfigKey("[Auto DJ]", "UseIgnoreTime"), "0").toInt();
+    bool bUseIgnoreTime = m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "UseIgnoreTime"), false);
     if (m_bAutoDjCratesDbCreated) {
         if (m_bUseIgnoreTime != bUseIgnoreTime) {
             // Do all this in a single transaction.
@@ -165,8 +165,8 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
 
     // Be notified when a track is modified.
     // We only care when the number of times it's been played changes.
-    connect(&m_rTrackDAO, SIGNAL(trackDirty(int)),
-            this, SLOT(slotTrackDirty(int)));
+    connect(&m_rTrackDAO, SIGNAL(trackDirty(TrackId)),
+            this, SLOT(slotTrackDirty(TrackId)));
 
     // Be notified when the status of crates changes.
     // We only care about the crates labeled as auto-DJ, and tracks added to,
@@ -177,10 +177,10 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
             this, SLOT(slotCrateDeleted(int)));
     connect(&m_rCrateDAO, SIGNAL(autoDjChanged(int,bool)),
             this, SLOT(slotCrateAutoDjChanged(int,bool)));
-    connect(&m_rCrateDAO, SIGNAL(trackAdded(int,int)),
-            this, SLOT(slotCrateTrackAdded(int,int)));
-    connect(&m_rCrateDAO, SIGNAL(trackRemoved(int,int)),
-            this, SLOT(slotCrateTrackRemoved(int,int)));
+    connect(&m_rCrateDAO, SIGNAL(trackAdded(int,TrackId)),
+            this, SLOT(slotCrateTrackAdded(int,TrackId)));
+    connect(&m_rCrateDAO, SIGNAL(trackRemoved(int,TrackId)),
+            this, SLOT(slotCrateTrackRemoved(int,TrackId)));
 
     // Be notified when playlists are added/removed.
     // We only care about set-log playlists.
@@ -191,10 +191,10 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
 
     // Be notified when tracks are added/removed from playlists.
     // We only care about the auto-DJ playlist and the set-log playlists.
-    connect(&m_rPlaylistDAO, SIGNAL(trackAdded(int,int,int)),
-            this, SLOT(slotPlaylistTrackAdded(int,int,int)));
-    connect(&m_rPlaylistDAO, SIGNAL(trackRemoved(int,int,int)),
-            this, SLOT(slotPlaylistTrackRemoved(int,int,int)));
+    connect(&m_rPlaylistDAO, SIGNAL(trackAdded(int,TrackId,int)),
+            this, SLOT(slotPlaylistTrackAdded(int,TrackId,int)));
+    connect(&m_rPlaylistDAO, SIGNAL(trackRemoved(int,TrackId,int)),
+            this, SLOT(slotPlaylistTrackRemoved(int,TrackId,int)));
 
     // Be notified when tracks are loaded to, or unloaded from, a deck.
     // These count as auto-DJ references, i.e. prevent the track from being
@@ -444,8 +444,8 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
     }
 
     // Get the active percentage (default 20%).
-    int iMinimumAvailable = m_pConfig->getValueString (ConfigKey("[Auto DJ]",
-        "MinimumAvailable"), "20").toInt();
+    int iMinimumAvailable = m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "MinimumAvailable"), 20);
 
     // Calculate the number of active-tracks.  This is either the number of
     // auto-DJ-crate tracks that have never been played, or the active
@@ -464,8 +464,8 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
         QDateTime timCurrent = QDateTime::currentDateTime().toUTC();
 
         // Subtract the replay age.
-        QTime timIgnoreTime = (QTime::fromString(m_pConfig->getValueString
-            (ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"), "hh:mm"));
+        QTime timIgnoreTime = (QTime::fromString(m_pConfig->getValue(
+                ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"), "hh:mm"));
         timCurrent = timCurrent.addSecs(-(timIgnoreTime.hour() * 3600
             + timIgnoreTime.minute() * 60));
 

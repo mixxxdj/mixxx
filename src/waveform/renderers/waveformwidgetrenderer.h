@@ -6,7 +6,7 @@
 #include <QVector>
 #include <QtDebug>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -14,8 +14,8 @@
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
-class TrackInfoObject;
-class ControlObjectSlave;
+class Track;
+class ControlProxy;
 class VisualPlayPosition;
 class VSyncThread;
 
@@ -46,16 +46,16 @@ class WaveformWidgetRenderer {
     double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
     double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
 
-    //those function replace at its best sample position to an admissible
-    //sample position according to the current visual resampling
-    //this make mark and signal deterministic
+    // those function replace at its best sample position to an admissible
+    // sample position according to the current visual resampling
+    // this make mark and signal deterministic
     void regulateVisualSample(int& sampleIndex) const;
 
-    //this "regulate" against visual sampling to make the position in widget
-    //stable and deterministic
+    // this "regulate" against visual sampling to make the position in widget
+    // stable and deterministic
     // Transform sample index to pixel in track.
-    inline double transformSampleIndexInRendererWorld(int sampleIndex) const {
-        const double relativePosition = (double)sampleIndex / (double)m_trackSamples;
+    inline double transformSamplePositionInRendererWorld(double samplePosition) const {
+        const double relativePosition = samplePosition / m_trackSamples;
         return transformPositionInRendererWorld(relativePosition);
     }
     // Transform position (percentage of track) to pixel in track.
@@ -73,6 +73,9 @@ class WaveformWidgetRenderer {
     void resize(int width, int height);
     int getHeight() const { return m_height;}
     int getWidth() const { return m_width;}
+    int getLength() const { return m_orientation == Qt::Horizontal ? m_width : m_height;}
+    int getBreadth() const { return m_orientation == Qt::Horizontal ? m_height : m_width;}
+    Qt::Orientation getOrientation() const { return m_orientation;}
     const WaveformSignalColors* getWaveformSignalColors() const { return &m_colors; };
 
     template< class T_Renderer>
@@ -88,6 +91,7 @@ class WaveformWidgetRenderer {
     const char* m_group;
     TrackPointer m_pTrack;
     QList<WaveformRendererAbstract*> m_rendererStack;
+    Qt::Orientation m_orientation;
     int m_height;
     int m_width;
     WaveformSignalColors m_colors;
@@ -106,15 +110,15 @@ class WaveformWidgetRenderer {
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     double m_playPos;
     int m_playPosVSample;
-    ControlObjectSlave* m_pRateControlObject;
+    ControlProxy* m_pRateControlObject;
     double m_rate;
-    ControlObjectSlave* m_pRateRangeControlObject;
+    ControlProxy* m_pRateRangeControlObject;
     double m_rateRange;
-    ControlObjectSlave* m_pRateDirControlObject;
+    ControlProxy* m_pRateDirControlObject;
     double m_rateDir;
-    ControlObjectSlave* m_pGainControlObject;
+    ControlProxy* m_pGainControlObject;
     double m_gain;
-    ControlObjectSlave* m_pTrackSamplesControlObject;
+    ControlProxy* m_pTrackSamplesControlObject;
     int m_trackSamples;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG

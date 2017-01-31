@@ -7,8 +7,8 @@
 
 #include <QScopedPointer>
 
-#include "controlobjectslave.h"
-#include "controlpushbutton.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
 #include "util/circularbuffer.h"
@@ -48,16 +48,12 @@ class EngineAux : public EngineChannel, public AudioDestination {
     // a soundcard input.
     virtual void onInputUnconfigured(AudioInput input);
 
-  private slots:
-    // Reject all change requests for input configured.
-    void slotInputConfiguredChangeRequest(double) {}
-
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
     QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
-    ControlObjectSlave* m_pSampleRate;
+    ControlProxy* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_wasActive;
 };

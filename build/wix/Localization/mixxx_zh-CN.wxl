@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="zh-cn" Codepage="65001"
+                 xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+  <!-- ..................................................... -->
+  <!-- This wxl file has been auto generated from a po file  -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools        -->
+  <!-- Source File: po/zh-CN.po                              -->
+  <!-- ..................................................... -->
+
+  <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
+  <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
+  <String Id="Language">2052</String>
+
+
+  <!-- Programm informations -->
+  <String Id="ApplicationName">Mixxx</String>
+  <String Id="ManufacturerName">Mixxx</String>
+  <String Id="ManufacturerFullName">Mixxx开发团队</String>
+  <String Id="ProductDescription">开源数字DJ软件</String>
+  <String Id="Comments">安装Mixxx</String>
+
+  <!-- Error messages -->
+  <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
+  <String Id="OS2Old">此产品要求Windows XP或更高版本。</String>
+  <String Id="NewerInstalled">已安装此产品相同或更高版本。</String>
+  <String Id="x64VersionRequired">您需要在64位Windows上安装本产品的64位版本。</String>
+  <String Id="x86VersionRequired">您需要在32位Windows上安装本产品的32位版本。</String>
+  <String Id="x86VersionWarning">您将要在64位操作系统上安装32位版本的Mixxx。&#13;&#10;我们建议使用64位版本以获取更好的性能。&#13;&#10;您可以从http://mixxx.org/download/ 下载64位的安装包。</String>
+  <String Id="XPWarning">您正在一个过时的操作系统上安装Mixxx。部分甚至全部功能可能无法正常工作，我们建议您升级操作系统。</String>
+  <String Id="bitWidthMismatch32">您将要安装Mixxx的32位版本，但64位版本已经安装，这可能会导致超乎您意料的结果。请先卸载现有的Mixxx，或下载64位的安装包进行升级 (除非您知道自己在做什么。)</String>
+  <String Id="bitWidthMismatch64">您将要安装Mixxx的64位版本，但32位版本已经安装，这可能会导致超乎您意料的结果。请先卸载现有的Mixxx，或下载64位的安装包进行升级 (除非您知道自己在做什么。)</String>
+  <String Id="OlderVersionFound">已检测到旧版本的Mixxx。我们现已更换安装程序，这将导致不能直接进行升级。安装此版本之前请先卸载旧版本。</String>
+
+  <!-- Custom Warning Dialog -->
+  <String Id="WarningDlgTitle">{\WixUI_Font_Title}警告</String>
+
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">退出安装程序后，启动Mixxx</String>
+
+  <!-- Features translations -->
+  <String Id="FeatureCompleteDescription">完整软件包</String>
+  <String Id="FeatureMainProgramTitle">核心程序</String>
+  <String Id="FeatureMainProgramDescription">核心Mixxx程序包含控制器预设</String>
+  <String Id="FeaturePDBTitle">PDB debug files</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
+  <String Id="FeatureDesktopShortcutTitle">桌面快捷方式</String>
+  <String Id="FeatureDesktopShortcutDescription">添加Mixxx的快捷方式到您的桌面</String>
+  <String Id="FeatureManualTitle">用户手册</String>
+  <String Id="FeatureManualDescription">Mixxx用户手册为PDF格式，您也可在http://mixxx.org/manual/ 上查看。</String>
+  <String Id="FeatureTranslationsTitle">翻译</String>
+  <String Id="FeatureTranslationsDescription">资源文件将允许Mixxx显示英语（美国）以外的语言</String>
+</WixLocalization>

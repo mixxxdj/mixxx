@@ -2,7 +2,7 @@
 
 #include <QFile>
 
-namespace Mixxx {
+namespace mixxx {
 
 //static
 WavpackStreamReader SoundSourceWV::s_streamReader = {
@@ -18,17 +18,18 @@ WavpackStreamReader SoundSourceWV::s_streamReader = {
 
 SoundSourceWV::SoundSourceWV(const QUrl& url)
         : SoundSourcePlugin(url, "wv"),
-          m_wpc(NULL),
+          m_wpc(nullptr),
           m_sampleScaleFactor(CSAMPLE_ZERO), 
-          m_pWVFile(NULL),
-          m_pWVCFile(NULL) {
+          m_pWVFile(nullptr),
+          m_pWVCFile(nullptr),
+          m_curFrameIndex(getMinFrameIndex()) {
 }
 
 SoundSourceWV::~SoundSourceWV() {
     close();
 }
 
-Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
@@ -52,7 +53,7 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
             msg, openFlags, 0);
     if (!m_wpc) {
         qDebug() << "SSWV::open: failed to open file : " << msg;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     setChannelCount(WavpackGetReducedChannels(m_wpc));
@@ -68,29 +69,42 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
         m_sampleScaleFactor = CSAMPLE_PEAK / wavpackPeakSampleValue;
     }
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceWV::close() {
     if (m_wpc) {
         WavpackCloseFile(m_wpc);
-        m_wpc = NULL;
+        m_wpc = nullptr;
     }
     if (m_pWVFile) {
         m_pWVFile->close();
         delete m_pWVFile;
-        m_pWVFile = NULL;
+        m_pWVFile = nullptr;
     }
     if (m_pWVCFile) {
         m_pWVCFile->close();
         delete m_pWVCFile;
-        m_pWVCFile = NULL;
+        m_pWVCFile = nullptr;
     }
+    m_curFrameIndex = getMinFrameIndex();
 }
 
 SINT SoundSourceWV::seekSampleFrame(SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF reached
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    if (frameIndex == m_curFrameIndex) {
+        return m_curFrameIndex;
+    }
+
     if (WavpackSeekSample(m_wpc, frameIndex) == true) {
+        m_curFrameIndex = frameIndex;
         return frameIndex;
     } else {
         qDebug() << "SSWV::seek : could not seek to frame #" << frameIndex;
@@ -100,9 +114,23 @@ SINT SoundSourceWV::seekSampleFrame(SINT frameIndex) {
 
 SINT SoundSourceWV::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
+    if (sampleBuffer == nullptr) {
+        // NOTE(uklotzde): The WavPack API does not provide any
+        // functions for skipping samples in the audio stream. Calling
+        // API functions with a nullptr buffer does not return. Since
+        // we don't want to read samples into a temporary buffer that
+        // has to be allocated we are seeking to the position after
+        // the skipped samples.
+        SINT curFrameIndexBefore = m_curFrameIndex;
+        SINT curFrameIndexAfter = seekSampleFrame(m_curFrameIndex + numberOfFrames);
+        DEBUG_ASSERT(curFrameIndexBefore <= curFrameIndexAfter);
+        DEBUG_ASSERT(m_curFrameIndex == curFrameIndexAfter);
+        return curFrameIndexAfter - curFrameIndexBefore;
+    }
     // static assert: sizeof(CSAMPLE) == sizeof(int32_t)
     SINT unpackCount = WavpackUnpackSamples(m_wpc,
             reinterpret_cast<int32_t*>(sampleBuffer), numberOfFrames);
+    DEBUG_ASSERT(unpackCount >= 0);
     if (!(WavpackGetMode(m_wpc) & MODE_FLOAT)) {
         // signed integer -> float
         const SINT sampleCount = frames2samples(unpackCount);
@@ -112,6 +140,7 @@ SINT SoundSourceWV::readSampleFrames(
             sampleBuffer[i] = CSAMPLE(sampleValue) * m_sampleScaleFactor;
         }
     }
+    m_curFrameIndex += unpackCount;
     return unpackCount;
 }
 
@@ -126,7 +155,7 @@ QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
 }
 
 SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
-    return exportSoundSourcePlugin(new SoundSourceWV(url));
+    return newSoundSourcePluginFromUrl<SoundSourceWV>(url);
 }
 
 //static
@@ -221,17 +250,17 @@ int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount)
     return (int32_t)pFile->write((char*)data, bcount);
 }
 
-} // namespace Mixxx
+} // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderWV is stateless and a single instance
     // can safely be shared
-    static Mixxx::SoundSourceProviderWV singleton;
+    static mixxx::SoundSourceProviderWV singleton;
     return &singleton;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
     // The statically allocated instance must not be deleted!
 }

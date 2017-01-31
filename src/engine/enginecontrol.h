@@ -8,15 +8,15 @@
 #include <QList>
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "control/controlvalue.h"
 #include "engine/effects/groupfeaturestate.h"
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 
 class EngineMaster;
 class EngineBuffer;
 
-const double kNoTrigger = -1;
+const int kNoTrigger = -1;
 
 /**
  * EngineControl is an abstract base class for objects which implement
@@ -35,7 +35,7 @@ class EngineControl : public QObject {
     Q_OBJECT
   public:
     EngineControl(QString group,
-                  UserSettingsPointer _config);
+                  UserSettingsPointer pConfig);
     virtual ~EngineControl();
 
     // Called by EngineBuffer::process every latency period. See the above

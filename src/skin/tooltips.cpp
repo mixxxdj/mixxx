@@ -364,9 +364,9 @@ void Tooltips::addStandardTooltips() {
             << tr("Show/hide the spinning vinyl section.");
 
     add("keylock")
-            << tr("Key-Lock")
+            << tr("Keylock")
             << tr("Prevents the pitch from changing when the rate changes.")
-            << tr("Toggling key-lock during playback may result in a momentary audio glitch.");
+            << tr("Toggling keylock during playback may result in a momentary audio glitch.");
 
     // Used in cue/hotcue/loop tooltips below.
     QString quantizeSnap = tr("If quantize is enabled, snaps to the nearest beat.");
@@ -389,7 +389,7 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("Jumps to the beginning of the track and stops."));
 
     // Currently used for decks
-    QString cueSet = tr("Places a cue-point at the current position on the waveform.");
+    QString cueSet = tr("Places a cue point at the current position on the waveform.");
     add("play_cue_set")
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
@@ -399,11 +399,12 @@ void Tooltips::addStandardTooltips() {
     QString whileStopped = tr("(while stopped)");
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
-            << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Stops track at cue point."))
-            << QString("%1 %2: %3").arg(leftClick, whileStopped, tr("Set cue point (Pioneer/Mixxx mode) OR preview from it (Denon mode)."))
+            << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Stops track at cue point, OR go to cue point and play after release (CUP mode)."))
+            << QString("%1 %2: %3").arg(leftClick, whileStopped, tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
+                                                                    "OR preview from it (Denon mode)."))
             << tr("Hint: Change the default cue mode in Preferences -> Interface.")
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue-point and stops."));
+            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."));
 
     add("pfl")
             << tr("Headphone")
@@ -457,7 +458,7 @@ void Tooltips::addStandardTooltips() {
 
     add("rate")
             << tr("Speed Control")
-            << tr("Changes the track playback speed (affects both the tempo and the pitch). If key-lock is enabled, only the tempo is affected.")
+            << tr("Changes the track playback speed (affects both the tempo and the pitch). If keylock is enabled, only the tempo is affected.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("pitch")
@@ -507,11 +508,14 @@ void Tooltips::addStandardTooltips() {
             << tr("Record Mix")
             << tr("Toggle mix recording.");
 
-    add("shoutcast_enabled")
-            << tr("Enable Live Broadcasting")
-            << tr("Stream your mix over the Internet.")
-            << tr("Provides visual feedback for Live Broadcasting status:")
-            << tr("disabled, connecting, connected, failure.");
+    // For legacy reasons also add tooltips for "shoutcast_enabled".
+    for (const char* key : {"shoutcast_enabled", "broadcast_enabled"}) {
+        add(key)
+                << tr("Enable Live Broadcasting")
+                << tr("Stream your mix over the Internet.")
+                << tr("Provides visual feedback for Live Broadcasting status:")
+                << tr("disabled, connecting, connected, failure.");
+    }
 
     add("passthrough_enabled")
             << tr("Enable Passthrough")

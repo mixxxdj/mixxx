@@ -2,7 +2,6 @@
 #include <QtDebug>
 
 #include "track/keys.h"
-#include "track/keyutils.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::KeyMap;

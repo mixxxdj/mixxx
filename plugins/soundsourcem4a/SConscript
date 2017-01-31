@@ -15,6 +15,7 @@ m4a_sources = [
     "sources/soundsource.cpp",
     "sources/soundsourceplugin.cpp",
     "sources/audiosource.cpp",
+    "util/audiosignal.cpp",
     "util/samplebuffer.cpp",
     "util/singularsamplebuffer.cpp",
     "util/sample.cpp",
@@ -60,6 +61,7 @@ if int(build.flags['faad']):
         env.Append(CPPDEFINES = '__MP4V2__')
 
     env = conf.Finish()
+    results = []
     SHLIBPREFIX='lib' #Makes the filename "libsoundsourcem4a" consistently across platforms to make our lives easier.
     if build.platform_is_windows:
         env["LINKFLAGS"].remove("/entry:mainCRTStartup")
@@ -69,13 +71,15 @@ if int(build.flags['faad']):
         else:
             env["LINKFLAGS"].remove("/subsystem:windows,5.01")
         ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+        results.append('ssm4a_bin')
+        if build.bundle_pdbs:
+            ssm4a_pdb = env.SideEffect('soundsourcem4a.pdb', ssm4a_bin)
+            results.append('ssm4a_pdb')
     else:
         ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources)
+        results.append('ssm4a_bin')
 
     #Pass this soundsourcem4a library object file back to the SConscript above us.
-    Return("ssm4a_bin")
+    Return(results)
 else:
     Return("")
-
-
-

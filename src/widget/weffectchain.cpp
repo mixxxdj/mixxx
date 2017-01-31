@@ -10,10 +10,7 @@ WEffectChain::WEffectChain(QWidget* pParent, EffectsManager* pEffectsManager)
     chainUpdated();
 }
 
-WEffectChain::~WEffectChain() {
-}
-
-void WEffectChain::setup(QDomNode node, const SkinContext& context) {
+void WEffectChain::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(

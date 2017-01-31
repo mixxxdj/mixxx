@@ -15,7 +15,7 @@
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
 #include "track/beatutils.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
@@ -38,9 +38,8 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    bool bPreferencesBeatDetectionEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED)).toInt());
+    bool bPreferencesBeatDetectionEnabled = m_pConfig->getValue<bool>(
+            ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED));
     if (!bPreferencesBeatDetectionEnabled) {
         qDebug() << "Beat calculation is deactivated";
         return false;
@@ -52,8 +51,8 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    bool allow_above = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED)).toInt());
+    bool allow_above = m_pConfig->getValue<bool>(
+        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED));
     if (allow_above) {
         m_iMinBpm = 0;
         m_iMaxBpm = 9999;
@@ -62,30 +61,26 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         m_iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
     }
 
-    m_bPreferencesFixedTempo = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION)).toInt());
-    m_bPreferencesOffsetCorrection = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION)).toInt());
-    m_bPreferencesReanalyzeOldBpm = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
-    m_bPreferencesFastAnalysis = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
+    m_bPreferencesFixedTempo = m_pConfig->getValue<bool>(
+            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION));
+    m_bPreferencesOffsetCorrection = m_pConfig->getValue<bool>(
+            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION));
+    m_bPreferencesReanalyzeOldBpm = m_pConfig->getValue<bool>(
+            ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE));
+    m_bPreferencesFastAnalysis = m_pConfig->getValue<bool>(
+            ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED));
 
     QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_LIBRARY));
+            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_LIBRARY));
     QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
+            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
 
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
 
     // if we can load a stored track don't reanalyze it
-    bool bShouldAnalyze = !loadStored(tio);
+    bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
         m_pVamp = new VampAnalyzer();
@@ -106,12 +101,12 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     return bShouldAnalyze;
 }
 
-bool AnalyzerBeats::loadStored(TrackPointer tio) const {
+bool AnalyzerBeats::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     int iMinBpm;
     int iMaxBpm;
 
-    bool allow_above = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED)).toInt());
+    bool allow_above = m_pConfig->getValue<bool>(
+        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED));
     if (allow_above) {
         iMinBpm = 0;
         iMaxBpm = 9999;
@@ -215,7 +210,7 @@ void AnalyzerBeats::finalize(TrackPointer tio) {
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
         m_pluginId, m_bPreferencesFastAnalysis);
     BeatsPointer pBeats = BeatFactory::makePreferredBeats(
-        tio, beats, extraVersionInfo,
+        *tio, beats, extraVersionInfo,
         m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
         m_iSampleRate, m_iTotalSamples,
         m_iMinBpm, m_iMaxBpm);
@@ -232,7 +227,7 @@ void AnalyzerBeats::finalize(TrackPointer tio) {
     // If the track received the beat lock while we were analyzing it then we
     // abort setting it.
     if (tio->isBpmLocked()) {
-        qDebug() << "Track was BPM-locked as we were analysing it. Aborting analysis.";
+        qDebug() << "Track was BPM-locked as we were analyzing it. Aborting analysis.";
         return;
     }
 

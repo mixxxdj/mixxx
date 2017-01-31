@@ -4,7 +4,7 @@
     copyright            : (C) 2012-2013 by Tuukka Pasanen
                            (C) 2007 by Wesley Stessens
                            (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
+                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
  ***************************************************************************/
 
 /***************************************************************************
@@ -25,7 +25,6 @@ extern "C" {
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include <libavutil/audioconvert.h>
 #include <libavutil/common.h>
 #include <libavutil/mathematics.h>
 #include <libavutil/samplefmt.h>
@@ -46,7 +45,7 @@ extern "C" {
 
 #include "util/types.h"
 #include "encoder/encoder.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class EncoderCallback;
 
@@ -71,7 +70,7 @@ protected:
 private:
     int getSerial();
     bool metaDataHasChanged();
-    //Call this method in conjunction with shoutcast streaming
+    //Call this method in conjunction with broadcast streaming
     int writeAudioFrame(AVFormatContext *oc, AVStream *st);
     void closeAudio(AVStream *st);
     void openAudio(AVCodec *codec, AVStream *st);

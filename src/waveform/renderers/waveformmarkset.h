@@ -5,6 +5,7 @@
 
 #include "waveformmark.h"
 #include "skin/skincontext.h"
+#include "util/memory.h"
 
 class WaveformWidgetRenderer;
 
@@ -16,16 +17,19 @@ class WaveformMarkSet {
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
                const WaveformSignalColors& signalColors);
-    void clear();
 
     int size() const { return m_marks.size();}
-    WaveformMark& operator[] (int i) { return m_marks[i]; }
+    WaveformMarkPointer operator[] (int i) const { return m_marks[i]; };
 
-    const WaveformMark& getDefaultMark() const { return m_defaultMark;}
+    // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
+    WaveformMarkPointer getHotCueMark(int hotCue) const;
+    void setHotCueMark(int hotCue, WaveformMarkPointer pMark);
 
   private:
-    WaveformMark m_defaultMark;
-    QList<WaveformMark> m_marks;
+    void clear(){ m_marks.clear(); }
+    std::unique_ptr<WaveformMark> m_pDefaultMark;
+    QList<WaveformMarkPointer> m_marks;
+    int m_iFirstHotCue;
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
 };
 

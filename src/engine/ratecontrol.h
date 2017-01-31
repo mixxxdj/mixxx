@@ -21,7 +21,7 @@ class ControlTTRotary;
 class ControlObject;
 class ControlPotmeter;
 class ControlPushButton;
-class ControlObjectSlave;
+class ControlProxy;
 class EngineChannel;
 class PositionScratchController;
 
@@ -31,7 +31,7 @@ class PositionScratchController;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(QString group, UserSettingsPointer _config);
+    RateControl(QString group, UserSettingsPointer pConfig);
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
@@ -127,8 +127,8 @@ public:
     // For Master Sync
     BpmControl* m_pBpmControl;
 
-    ControlObjectSlave* m_pSyncMode;
-    ControlObjectSlave* m_pSlipEnabled;
+    ControlProxy* m_pSyncMode;
+    ControlProxy* m_pSlipEnabled;
 
     // Enumerations which hold the state of the pitchbend buttons.
     // These enumerations can be used like a bitmask.

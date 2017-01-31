@@ -20,9 +20,7 @@
 #include "preferences/usersettings.h"
 #include "library/treeitemmodel.h"
 
-#ifdef __AUTODJCRATES__
 #include "library/dao/autodjcratesdao.h"
-#endif // __AUTODJCRATES__
 
 class DlgAutoDJ;
 class Library;
@@ -46,7 +44,7 @@ class AutoDJFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
 
     void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+                    KeyboardEventFilter* keyboard);
 
     TreeItemModel* getChildModel();
 
@@ -54,9 +52,7 @@ class AutoDJFeature : public LibraryFeature {
     void activate();
 
     // Temporary, until WCrateTableView can be written.
-#ifdef __AUTODJCRATES__
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-#endif // __AUTODJCRATES__
 
   private:
     UserSettingsPointer m_pConfig;
@@ -70,8 +66,6 @@ class AutoDJFeature : public LibraryFeature {
     const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
     DlgAutoDJ* m_pAutoDJView;
-
-#ifdef __AUTODJCRATES__
 
     // Initialize the list of crates loaded into the auto-DJ queue.
     void constructCrateChildModel();
@@ -97,8 +91,6 @@ class AutoDJFeature : public LibraryFeature {
 
     // Used to map menu-item signals.
     QSignalMapper m_crateMapper;
-
-#endif // __AUTODJCRATES__
 
   private slots:
     // Add a crate to the auto-DJ queue.

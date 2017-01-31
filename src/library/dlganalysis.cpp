@@ -30,7 +30,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             this, SIGNAL(trackSelected(TrackPointer)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -45,6 +45,8 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     connect(radioButtonAllSongs, SIGNAL(clicked()),
             this,  SLOT(showAllSongs()));
 
+    // TODO(rryan): This triggers a library search before the UI has even
+    // started up. Accounts for 0.2% of skin creation time. Get rid of this!
     radioButtonRecentlyAdded->click();
 
     labelProgress->setText("");
@@ -68,6 +70,10 @@ void DlgAnalysis::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
     m_pAnalysisLibraryTableModel->select();
+}
+
+bool DlgAnalysis::hasFocus() const {
+    return QWidget::hasFocus();
 }
 
 void DlgAnalysis::onSearch(const QString& text) {

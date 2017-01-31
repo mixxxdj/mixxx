@@ -1,16 +1,15 @@
 #include "engine/clockcontrol.h"
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "preferences/usersettings.h"
-#include "cachingreader.h"
 #include "engine/enginecontrol.h"
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 
 ClockControl::ClockControl(QString group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     m_pCOBeatActive = new ControlObject(ConfigKey(group, "beat_active"));
     m_pCOBeatActive->set(0.0);
-    m_pCOSampleRate = new ControlObjectSlave("[Master]","samplerate");
+    m_pCOSampleRate = new ControlProxy("[Master]","samplerate");
 }
 
 ClockControl::~ClockControl() {
@@ -26,17 +25,17 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 
     // Disconnect any previously loaded track/beats
     if (m_pTrack) {
-        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+        disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotBeatsUpdated()));
     }
     if (pNewTrack) {
         m_pTrack = pNewTrack;
         m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+        connect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotBeatsUpdated()));
     } else {
         m_pBeats.clear();
-        m_pTrack.clear();
+        m_pTrack.reset();
     }
 
 }

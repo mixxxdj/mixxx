@@ -14,7 +14,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "treeitem.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "widget/wlibrary.h"
 #include "util/dnd.h"
 #include "library/dlghidden.h"
@@ -108,15 +108,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
 
-    TreeItem* pRootItem = new TreeItem();
-    TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
-                                               this, pRootItem);
-    TreeItem* phiddenChildItem = new TreeItem(kHiddenTitle, kHiddenTitle,
-                                              this, pRootItem);
-    pRootItem->appendChild(pmissingChildItem);
-    pRootItem->appendChild(phiddenChildItem);
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    pRootItem->appendChild(kMissingTitle);
+    pRootItem->appendChild(kHiddenTitle);
 
-    m_childModel.setRootItem(pRootItem);
+    m_childModel.setRootItem(std::move(pRootItem));
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
@@ -124,7 +120,7 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 }
 
 void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
-                                     MixxxKeyboard* pKeyboard) {
+                                     KeyboardEventFilter* pKeyboard) {
     m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
                                   m_pTrackCollection, pKeyboard);
     pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);
@@ -139,11 +135,11 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Library");
+    return tr("Tracks");
 }
 
 QIcon MixxxLibraryFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_library.png");
+    return QIcon(":/images/library/ic_library_tracks.png");
 }
 
 TreeItemModel* MixxxLibraryFeature::getChildModel() {

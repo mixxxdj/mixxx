@@ -11,12 +11,12 @@
 #endif
 #include <sndfile.h>
 
-namespace Mixxx {
+namespace mixxx {
 
-class SoundSourceSndFile: public Mixxx::SoundSource {
+class SoundSourceSndFile: public mixxx::SoundSource {
 public:
-    explicit SoundSourceSndFile(QUrl url);
-    ~SoundSourceSndFile();
+    explicit SoundSourceSndFile(const QUrl& url);
+    ~SoundSourceSndFile() override;
 
     void close() override;
 
@@ -26,9 +26,11 @@ public:
             CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     SNDFILE* m_pSndFile;
+
+    SINT m_curFrameIndex;
 };
 
 class SoundSourceProviderSndFile: public SoundSourceProvider {
@@ -45,10 +47,10 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceSndFile(url));
+        return newSoundSourceFromUrl<SoundSourceSndFile>(url);
     }
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCESNDFILE_H

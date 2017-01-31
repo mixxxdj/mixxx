@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="et-ee" Codepage="1257"
+                 xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+  <!-- ..................................................... -->
+  <!-- This wxl file has been auto generated from a po file  -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools        -->
+  <!-- Source File: po/et-EE.po                              -->
+  <!-- ..................................................... -->
+
+  <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
+  <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
+  <String Id="Language">1061</String>
+
+
+  <!-- Programm informations -->
+  <String Id="ApplicationName">Mixxx</String>
+  <String Id="ManufacturerName">Mixxx</String>
+  <String Id="ManufacturerFullName">Mixxx Arendusmeeskond</String>
+  <String Id="ProductDescription">Avatud lähtekoodiga digitaalne DJ tarkvara</String>
+  <String Id="Comments">Paigaldab Mixxxi</String>
+
+  <!-- Error messages -->
+  <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
+  <String Id="OS2Old">See toode nõuab Windows XP-d või uuemat op. süsteemi.</String>
+  <String Id="NewerInstalled">Sama või uuem versioon sellest tootest on juba paigaldatud.</String>
+  <String Id="x64VersionRequired">Sul tuleb paigaldada 64-bitine versioon sellest tootest 64-bitisele Windowsile.</String>
+  <String Id="x86VersionRequired">Sul tuleb paigaldada 32-bitine versioon sellest tootest 32-bitisele Windowsile.</String>
+  <String Id="x86VersionWarning">Sa soovid paigaldada 32-bitist versiooni 64-bitisele operatsioonisüsteemile.&#13;&#10;Soovitame kasutada 64-bitist versiooni parema jõudluse jaoks.&#13;&#10;Saate 64-bitise paigalduspaketi alla laadida aadressilt http://mixxx.org/download/</String>
+  <String Id="XPWarning">Te paigaldate Mixxxi vananenud operatsioonisüsteemile. Mõned funktsioonid ei pruugi normaalselt või üldse töödata. Soovitame teil uuendada oma operatsioonisüsteem.</String>
+  <String Id="bitWidthMismatch32">Sa proovid paigaldada 32-bitist versiooni, kuid 64-bitine on juba paigaldatud. See võib viia soovimatu käitumiseni. Palun eemaldage olemasolev Mixxx kõigepealt või laadige 64-bitine paigalduspakett uuendamiseks alla (kui sa just ei tea mida sa täpselt teed)</String>
+  <String Id="bitWidthMismatch64">Sa proovid paigaldada 64-bitist versiooni aga 32-bitine on juba paigaldatud. See võib viia soovimatu käitumiseni. Palun eemaldage olemasolev Mixxx kõigepealt või laadige 32-bitine paigalduspakett uuendamiseks alla (kui sa just ei tea mida sa täpselt teed)</String>
+  <String Id="OlderVersionFound">Tuvastati vanem versioo Mixxxist. Kuna me vahetasime paigaldajat, ei saa me tõrgeteta uuendada. Palun eemaldage vanem versioon enne selle paigaldamist.</String>
+
+  <!-- Custom Warning Dialog -->
+  <String Id="WarningDlgTitle">{\WixUI_Font_Title}Hoiatus</String>
+
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">Launch Mixxx when setup exits.</String>
+
+  <!-- Features translations -->
+  <String Id="FeatureCompleteDescription">Kogu pakett.</String>
+  <String Id="FeatureMainProgramTitle">Põhi rakendus</String>
+  <String Id="FeatureMainProgramDescription">Põhirakendus Mixxx koos kontrollerite eelseadistustega.</String>
+  <String Id="FeaturePDBTitle">PDB debug files</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
+  <String Id="FeatureDesktopShortcutTitle">Töölaua otsetee</String>
+  <String Id="FeatureDesktopShortcutDescription">Lisa Mixxxi otsetee oma töölauale</String>
+  <String Id="FeatureManualTitle">Kasutusjuhend</String>
+  <String Id="FeatureManualDescription">Mixxxi kasutusjuhend on PDF failis, lisaks saadaval http://mixxx.org/manual/</String>
+  <String Id="FeatureTranslationsTitle">Tõlked</String>
+  <String Id="FeatureTranslationsDescription">Ressursifailid mis lubavad Mixxxil kuvada teisi alternatiivkeeli peale Ameerika Ühendriikide inglise keele</String>
+</WixLocalization>

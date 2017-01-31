@@ -202,8 +202,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         else {
 #endif
             // This must have been the first run... right? :)
-            qDebug() << "No version number in configuration file. Setting to" << VERSION;
-            config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+            qDebug() << "No version number in configuration file. Setting to" << MIXXX_VERSION;
+            config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
             m_bFirstRun = true;
             return config;
 #ifdef __APPLE__
@@ -214,8 +214,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     }
 
     // If it's already current, stop here
-    if (configVersion == VERSION) {
-        qDebug() << "Configuration file is at the current version" << VERSION;
+    if (configVersion == MIXXX_VERSION) {
+        qDebug() << "Configuration file is at the current version" << MIXXX_VERSION;
         return config;
     }
 
@@ -383,8 +383,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // default of 6.  We've now removed all of the hacks, so subtracting
         // 6 from everyone's replay gain should keep things consistent for
         // all users.
-        int oldReplayGain = config->getValueString(
-                ConfigKey("[ReplayGain]", "InitialReplayGainBoost"), "6").toInt();
+        int oldReplayGain = config->getValue(
+                ConfigKey("[ReplayGain]", "InitialReplayGainBoost"), 6);
         int newReplayGain = math_max(-6, oldReplayGain - 6);
         config->set(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),
                     ConfigValue(newReplayGain));
@@ -392,25 +392,25 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // if everything until here worked fine we can mark the configuration as
         // updated
         if (successful) {
-            configVersion = VERSION;
+            configVersion = MIXXX_VERSION;
             m_bUpgraded = true;
-            config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+            config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
         }
         else {
             qDebug() << "Upgrade failed!\n";
         }
     }
 
-    if (configVersion == VERSION) qDebug() << "Configuration file is now at the current version" << VERSION;
+    if (configVersion == MIXXX_VERSION) qDebug() << "Configuration file is now at the current version" << MIXXX_VERSION;
     else {
         /* Way too verbose, this confuses the hell out of Linux users when they see this:
         qWarning() << "Configuration file is at version" << configVersion
-                   << "and I don't know how to upgrade it to the current" << VERSION
+                   << "and I don't know how to upgrade it to the current" << MIXXX_VERSION
                    << "\n   (That means a function to do this needs to be added to upgrade.cpp.)"
                    << "\n-> Leaving the configuration file version as-is.";
         */
         qWarning() << "Configuration file is at version" << configVersion
-                   << "instead of the current" << VERSION;
+                   << "instead of the current" << MIXXX_VERSION;
     }
 
     return config;

@@ -4,11 +4,12 @@
 #include <QScopedPointer>
 
 #include "mixxxtest.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlproxy.h"
 #include "engine/loopingcontrol.h"
 #include "test/mockedenginebackendtest.h"
+#include "util/memory.h"
 
 class LoopingControlTest : public MockedEngineBackendTest {
   public:
@@ -17,47 +18,30 @@ class LoopingControlTest : public MockedEngineBackendTest {
     }
 
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         MockedEngineBackendTest::SetUp();
-        m_pQuantizeEnabled.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "quantize")));
+        m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
         m_pQuantizeEnabled->set(1.0);
-        m_pNextBeat.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "beat_next")));
-        m_pNextBeat->set(-1);
-        m_pClosestBeat.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "beat_closest")));
-        m_pClosestBeat->set(-1);
-        m_pTrackSamples.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "track_samples")));
-        m_pTrackSamples->set(kTrackLengthSamples);
+        m_pNextBeat = std::make_unique<ControlProxy>(m_sGroup1, "beat_next");
 
-        m_pButtonLoopIn.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "loop_in")));
-        m_pButtonLoopOut.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "loop_out")));
-        m_pButtonLoopExit.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "loop_exit")));
-        m_pButtonReloopExit.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "reloop_exit")));
-        m_pButtonLoopDouble.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "loop_double")));
-        m_pButtonLoopHalve.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "loop_halve")));
-        m_pLoopEnabled.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "loop_enabled")));
-        m_pLoopStartPoint.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "loop_start_position")));
-        m_pLoopEndPoint.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "loop_end_position")));
-        m_pPlayPosition.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "playposition")));
-        m_pButtonBeatMoveForward.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "loop_move_1_forward")));
-        m_pButtonBeatMoveBackward.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "loop_move_1_backward")));
-        m_pButtonBeatLoop2Activate.reset(getControlObjectSlave(
-                ConfigKey(m_sGroup1, "beatloop_2_activate")));
+        m_pNextBeat->set(-1);
+        m_pClosestBeat = std::make_unique<ControlProxy>(m_sGroup1, "beat_closest");
+        m_pClosestBeat->set(-1);
+        m_pTrackSamples = std::make_unique<ControlProxy>(m_sGroup1, "track_samples");
+        m_pTrackSamples->set(kTrackLengthSamples);
+        m_pButtonLoopIn = std::make_unique<ControlProxy>(m_sGroup1, "loop_in");
+        m_pButtonLoopOut = std::make_unique<ControlProxy>(m_sGroup1, "loop_out");
+        m_pButtonLoopExit = std::make_unique<ControlProxy>(m_sGroup1, "loop_exit");
+        m_pButtonReloopExit = std::make_unique<ControlProxy>(m_sGroup1, "reloop_exit");
+        m_pButtonLoopDouble = std::make_unique<ControlProxy>(m_sGroup1, "loop_double");
+        m_pButtonLoopHalve = std::make_unique<ControlProxy>(m_sGroup1, "loop_halve");
+        m_pLoopEnabled = std::make_unique<ControlProxy>(m_sGroup1, "loop_enabled");
+        m_pLoopStartPoint = std::make_unique<ControlProxy>(m_sGroup1, "loop_start_position");
+        m_pLoopEndPoint = std::make_unique<ControlProxy>(m_sGroup1, "loop_end_position");
+        m_pPlayPosition = std::make_unique<ControlProxy>(m_sGroup1, "playposition");
+        m_pButtonBeatMoveForward = std::make_unique<ControlProxy>(m_sGroup1, "loop_move_1_forward");
+        m_pButtonBeatMoveBackward = std::make_unique<ControlProxy>(m_sGroup1, "loop_move_1_backward");
+        m_pButtonBeatLoop2Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_2_activate");
     }
 
     bool isLoopEnabled() {
@@ -70,23 +54,23 @@ class LoopingControlTest : public MockedEngineBackendTest {
     }
 
     const int kTrackLengthSamples;
-    QScopedPointer<ControlObjectSlave> m_pNextBeat;
-    QScopedPointer<ControlObjectSlave> m_pClosestBeat;
-    QScopedPointer<ControlObjectSlave> m_pQuantizeEnabled;
-    QScopedPointer<ControlObjectSlave> m_pTrackSamples;
-    QScopedPointer<ControlObjectSlave> m_pButtonLoopIn;
-    QScopedPointer<ControlObjectSlave> m_pButtonLoopOut;
-    QScopedPointer<ControlObjectSlave> m_pButtonLoopExit;
-    QScopedPointer<ControlObjectSlave> m_pButtonReloopExit;
-    QScopedPointer<ControlObjectSlave> m_pButtonLoopDouble;
-    QScopedPointer<ControlObjectSlave> m_pButtonLoopHalve;
-    QScopedPointer<ControlObjectSlave> m_pLoopEnabled;
-    QScopedPointer<ControlObjectSlave> m_pLoopStartPoint;
-    QScopedPointer<ControlObjectSlave> m_pLoopEndPoint;
-    QScopedPointer<ControlObjectSlave> m_pPlayPosition;
-    QScopedPointer<ControlObjectSlave> m_pButtonBeatMoveForward;
-    QScopedPointer<ControlObjectSlave> m_pButtonBeatMoveBackward;
-    QScopedPointer<ControlObjectSlave> m_pButtonBeatLoop2Activate;
+    std::unique_ptr<ControlProxy> m_pNextBeat;
+    std::unique_ptr<ControlProxy> m_pClosestBeat;
+    std::unique_ptr<ControlProxy> m_pQuantizeEnabled;
+    std::unique_ptr<ControlProxy> m_pTrackSamples;
+    std::unique_ptr<ControlProxy> m_pButtonLoopIn;
+    std::unique_ptr<ControlProxy> m_pButtonLoopOut;
+    std::unique_ptr<ControlProxy> m_pButtonLoopExit;
+    std::unique_ptr<ControlProxy> m_pButtonReloopExit;
+    std::unique_ptr<ControlProxy> m_pButtonLoopDouble;
+    std::unique_ptr<ControlProxy> m_pButtonLoopHalve;
+    std::unique_ptr<ControlProxy> m_pLoopEnabled;
+    std::unique_ptr<ControlProxy> m_pLoopStartPoint;
+    std::unique_ptr<ControlProxy> m_pLoopEndPoint;
+    std::unique_ptr<ControlProxy> m_pPlayPosition;
+    std::unique_ptr<ControlProxy> m_pButtonBeatMoveForward;
+    std::unique_ptr<ControlProxy> m_pButtonBeatMoveBackward;
+    std::unique_ptr<ControlProxy> m_pButtonBeatLoop2Activate;
 };
 
 TEST_F(LoopingControlTest, LoopSet) {

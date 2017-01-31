@@ -3,8 +3,12 @@
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
 
-const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
+namespace {
+
+const QString kDefaultLibraryFilter =
         "mixxx_deleted=0 AND fs_deleted=0";
+
+} // anonymous namespace
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
@@ -32,7 +36,7 @@ void LibraryTableModel::setTableModel(int id) {
             "SELECT " + columns.join(", ") +
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+            "WHERE (" + kDefaultLibraryFilter + ")";
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -104,13 +108,4 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_MANIPULATEBEATS
             | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
-}
-
-void LibraryTableModel::setSort(int column, Qt::SortOrder order) {
-    BaseSqlTableModel::setSort(column, order);
-
-    // Random sort easter egg, only in library view
-    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
-        m_tableOrderBy = "ORDER BY RANDOM()";
-    }
 }

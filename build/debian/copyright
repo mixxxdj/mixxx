@@ -1,22 +1,27 @@
-This package was debianized by Paul Brossier <piem@altern.org> on
-Fri, 26 Nov 2004 12:55:35 +0000.
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Mixxx
+Upstream-Contact:
+ RJ Ryan <rryan@mixxx.org>
+Source: http://downloads.mixxx.org/
 
-It was downloaded from http://mixxx.sourceforge.net/
-
-  gplot and vbrheadersdk have been removed from the original archive as
-  they do not comply with the Debian Free Software Guidelines (DFSG).
-
+Files: *
 Copyright:
-  Mixxx
-    Copyright (C) 2000-2016 Haste Andersen and Mixxx developers
+ 2001-2017 Mixxx development team
+License: GPL-2+
 
-Upstream Authors: Tue Haste Andersen <haste@diku.dk>
-              and Ken Haste Andersen <kha@dfu.min.dk>
-
-License:
-
-Mixxx is released under the GNU General Public License Version 2 or above:
-
- You are free to distribute this software under the terms of the GNU General
- Public License. On Debian systems, the complete text of the GNU General Public
- License can be found in the file `/usr/share/common-licenses/GPL'.
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+Comment:
+ On Debian systems the full text of the GNU General Public
+ License can be found in the `/usr/share/common-licenses/GPL-2' file.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.

@@ -1,4 +1,4 @@
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "engine/enginetalkoverducking.h"
 
 #define DUCK_THRESHOLD 0.1
@@ -8,13 +8,13 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     : EngineSideChainCompressor(group),
       m_pConfig(pConfig),
       m_group(group) {
-    m_pMasterSampleRate = new ControlObjectSlave(m_group, "samplerate", this);
+    m_pMasterSampleRate = new ControlProxy(m_group, "samplerate", this);
     m_pMasterSampleRate->connectValueChanged(SLOT(slotSampleRateChanged(double)),
                                              Qt::DirectConnection);
 
     m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
     m_pDuckStrength->set(
-            m_pConfig->getValueString(ConfigKey(m_group, "duckStrength"), "90").toDouble() / 100);
+            m_pConfig->getValue<double>(ConfigKey(m_group, "duckStrength"), 90) / 100);
     connect(m_pDuckStrength, SIGNAL(valueChanged(double)),
             this, SLOT(slotDuckStrengthChanged(double)),
             Qt::DirectConnection);
@@ -32,8 +32,8 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     m_pTalkoverDucking->setButtonMode(ControlPushButton::TOGGLE);
     m_pTalkoverDucking->setStates(3);
     m_pTalkoverDucking->set(
-            m_pConfig->getValueString(
-                ConfigKey(m_group, "duckMode"), QString::number(AUTO)).toDouble());
+            m_pConfig->getValue<double>(
+                ConfigKey(m_group, "duckMode"), AUTO));
     connect(m_pTalkoverDucking, SIGNAL(valueChanged(double)),
             this, SLOT(slotDuckModeChanged(double)),
             Qt::DirectConnection);

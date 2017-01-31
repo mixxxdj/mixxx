@@ -11,10 +11,9 @@
 class WLibraryTextBrowser : public QTextBrowser, public LibraryView {
     Q_OBJECT
   public:
-    WLibraryTextBrowser(QWidget* parent = NULL);
-    virtual ~WLibraryTextBrowser();
-
-    virtual void onShow() {}
+    explicit WLibraryTextBrowser(QWidget* parent = nullptr);
+    void onShow() override {}
+    bool hasFocus() const override;
 };
 
 #endif /* WLIBRARYTEXTBROWSER_H */

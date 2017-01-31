@@ -3,25 +3,26 @@
 
 #include <QApplication>
 
-class ControlObjectSlave;
+class ControlProxy;
 
 class MixxxApplication : public QApplication {
     Q_OBJECT
-
   public:
     MixxxApplication(int& argc, char** argv);
-    virtual ~MixxxApplication();
+    ~MixxxApplication() override;
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     virtual bool notify(QObject*, QEvent*);
 #endif
 
   private:
     bool touchIsRightButton();
+    void registerMetaTypes();
 
     int m_fakeMouseSourcePointId;
     QWidget* m_fakeMouseWidget;
     enum Qt::MouseButton m_activeTouchButton;
-    ControlObjectSlave* m_pTouchShift;
+    ControlProxy* m_pTouchShift;
 
 };
 

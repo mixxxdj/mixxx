@@ -9,7 +9,14 @@
 #define _USE_MATH_DEFINES
 #endif
 #endif
-#include <cmath>
+
+#include <math.h>
+#include <cmath> 
+// Note: Because of our fpclassify hack, we actualy need to inlude both, 
+// the c and the c++ version of the math header.  
+// From GCC 6.1.1 math.h depends on cmath, which failes to compile if included 
+// after our fpclassify hack 
+
 #include <algorithm>
 
 #include "util/assert.h"
@@ -57,13 +64,6 @@ inline int roundUpToPowerOf2(int v) {
     }
     return power;
 }
-
-// MSVS 2013 (_MSC_VER 1800) introduced C99 support.
-#if defined(__WINDOWS__) &&  _MSC_VER < 1800
-inline int round(double x) {
-    return x < 0.0 ? ceil(x - 0.5) : floor(x + 0.5);
-}
-#endif
 
 template <typename T>
 inline const T ratio2db(const T a) {

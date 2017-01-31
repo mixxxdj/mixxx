@@ -12,7 +12,7 @@ namespace {
 
 class SampleUtilTest : public testing::Test {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         sizes.append(1024);
         sizes.append(1025);
         sizes.append(1026);
@@ -28,7 +28,7 @@ class SampleUtilTest : public testing::Test {
                 evenBuffers.append(i);
         }
     }
-    virtual void TearDown() {
+    void TearDown() override {
         for (int i = 0; i < buffers.size(); ++i) {
             SampleUtil::free(buffers[i]);
         }
@@ -621,7 +621,4 @@ static void BM_Copy2WithRampingGain(benchmark::State& state) {
 }
 BENCHMARK(BM_Copy2WithRampingGain)->Range(64, 4096);
 
-
-
-
-}
+}  // namespace

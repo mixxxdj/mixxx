@@ -51,6 +51,10 @@ const QString EffectParameter::name() const {
     return m_parameter.name();
 }
 
+const QString EffectParameter::shortName() const {
+    return m_parameter.shortName();
+}
+
 const QString EffectParameter::description() const {
     return m_parameter.description();
 }
@@ -86,6 +90,10 @@ bool EffectParameter::clampRanges() {
 
 EffectManifestParameter::LinkType EffectParameter::getDefaultLinkType() const {
     return m_parameter.defaultLinkType();
+}
+
+EffectManifestParameter::LinkInversion EffectParameter::getDefaultLinkInversion() const {
+    return m_parameter.defaultLinkInversion();
 }
 
 double EffectParameter::getNeutralPointOnScale() const {
@@ -136,7 +144,7 @@ void EffectParameter::setMinimum(double minimum) {
     // value is currently below the manifest minimum. Since similar
     // guards exist in the setMaximum call, this should not be able to
     // happen.
-    DEBUG_ASSERT_AND_HANDLE(m_minimum >= m_parameter.getMinimum()) {
+    VERIFY_OR_DEBUG_ASSERT(m_minimum >= m_parameter.getMinimum()) {
         return;
     }
 
@@ -172,7 +180,7 @@ void EffectParameter::setMaximum(double maximum) {
     // value is currently above the manifest maximum. Since similar
     // guards exist in the setMinimum call, this should not be able to
     // happen.
-    DEBUG_ASSERT_AND_HANDLE(m_maximum <= m_parameter.getMaximum()) {
+    VERIFY_OR_DEBUG_ASSERT(m_maximum <= m_parameter.getMaximum()) {
         return;
     }
 

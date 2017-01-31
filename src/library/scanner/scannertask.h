@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QRunnable>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/scanner/scannerglobal.h"
 
 class LibraryScanner;

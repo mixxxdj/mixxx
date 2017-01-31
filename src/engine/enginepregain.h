@@ -2,7 +2,7 @@
 #define ENGINEPREGAIN_H
 
 #include "engine/engineobject.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "util/performancetimer.h"
 
 class ControlAudioTaperPot;
@@ -15,7 +15,7 @@ class ControlObject;
 class EnginePregain : public EngineObject {
   public:
     EnginePregain(QString group);
-    virtual ~EnginePregain();
+    ~EnginePregain() override;
 
     void setSpeed(double speed);
 
@@ -26,7 +26,9 @@ class EnginePregain : public EngineObject {
     // reversed without a ramp to zero.
     void setScratching(bool scratching);
 
-    void process(CSAMPLE* pInOut, const int iBufferSize);
+    void process(CSAMPLE* pInOut, const int iBufferSize) override;
+
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
 
   private:
     double m_dSpeed;

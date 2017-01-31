@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="ro-ro" Codepage="1250"
+                 xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+  <!-- ..................................................... -->
+  <!-- This wxl file has been auto generated from a po file  -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools        -->
+  <!-- Source File: po/ro-RO.po                              -->
+  <!-- ..................................................... -->
+
+  <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
+  <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
+  <String Id="Language">1048</String>
+
+
+  <!-- Programm informations -->
+  <String Id="ApplicationName">Mixxx</String>
+  <String Id="ManufacturerName">Mixxx</String>
+  <String Id="ManufacturerFullName">Echipa de dezvoltare Mixxx</String>
+  <String Id="ProductDescription">Aplicaţie DJ Digital Opesource</String>
+  <String Id="Comments">Instalare Mixxx</String>
+
+  <!-- Error messages -->
+  <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
+  <String Id="OS2Old">Acest produs necesită Windows XP sau ulterior.</String>
+  <String Id="NewerInstalled">Aceiaşi sau o versiune mai nouă a acestui produs este deja instalată.</String>
+  <String Id="x64VersionRequired">Trebuie să instalaţi versiunea produsului pe 64-biţi pentru Windows.</String>
+  <String Id="x86VersionRequired">Trebuie să instalaţi versiunea pe 32-biţi a acestui produs pentru Windows.</String>
+  <String Id="x86VersionWarning">You are about to install the 32-bit version on a 64-bit operating system.&#13;&#10;We recommend using the 64-bit version for better performance.&#13;&#10;You can download the 64-bit installation package from http://mixxx.org/download/</String>
+  <String Id="XPWarning">Instalaţi Mixxx pe un sistem de operare expirat. Unele funcţii este posibil să nu funcţioneze corect sau deloc. Vă recomandăm să actualizaţi sistemul de operare.</String>
+  <String Id="bitWidthMismatch32">You are about to install the 32-bit version but a 64-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 64-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
+  <String Id="bitWidthMismatch64">You are about to install the 64-bit version but a 32-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 32-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
+  <String Id="OlderVersionFound">O versiune veche Mixxx a fost detectată. Deoarece am schimbat instalatorul, nu putem actualiza facil. Dezinstalaţi versiunea veche înaintea instalării acesteia.</String>
+
+  <!-- Custom Warning Dialog -->
+  <String Id="WarningDlgTitle">{\WixUI_Font_Title}Atenţie</String>
+
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">Launch Mixxx when setup exits.</String>
+
+  <!-- Features translations -->
+  <String Id="FeatureCompleteDescription">Pachetul complet.</String>
+  <String Id="FeatureMainProgramTitle">Aplicaţia de bază</String>
+  <String Id="FeatureMainProgramDescription">Aplicaţia de bază Mixxx include preconfigurări controllere.</String>
+  <String Id="FeaturePDBTitle">PDB debug files</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
+  <String Id="FeatureDesktopShortcutTitle">Scurtătură birou</String>
+  <String Id="FeatureDesktopShortcutDescription">Adaugă o scurtătură pentru Mixxx pe birou</String>
+  <String Id="FeatureManualTitle">Manual utilizator</String>
+  <String Id="FeatureManualDescription">Manualul utilizatorului Mixxx în format PDF, este disponibil la </String>
+  <String Id="FeatureTranslationsTitle">Traduceri</String>
+  <String Id="FeatureTranslationsDescription">Fişierele resursă care permit Mixxx să afişeze în alte limbi, altele decât Engleza US</String>
+</WixLocalization>

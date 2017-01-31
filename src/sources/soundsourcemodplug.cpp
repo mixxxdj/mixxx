@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -39,9 +39,9 @@ QString getModPlugTypeFromUrl(QUrl url) {
 
 } // anonymous namespace
 
-const SINT SoundSourceModPlug::kChannelCount = AudioSource::kChannelCountStereo;
-const SINT SoundSourceModPlug::kBitsPerSample = 16;
-const SINT SoundSourceModPlug::kSamplingRate = 44100; // 44.1 kHz
+/*static*/ constexpr SINT SoundSourceModPlug::kChannelCount;
+/*static*/ constexpr SINT SoundSourceModPlug::kBitsPerSample;
+/*static*/ constexpr SINT SoundSourceModPlug::kSamplingRate;
 
 unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
@@ -52,9 +52,9 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
     ModPlug::ModPlug_SetSettings(&settings);
 }
 
-SoundSourceModPlug::SoundSourceModPlug(QUrl url)
+SoundSourceModPlug::SoundSourceModPlug(const QUrl& url)
         : SoundSource(url, getModPlugTypeFromUrl(url)),
-          m_pModFile(NULL),
+          m_pModFile(nullptr),
           m_seekPos(0) {
 }
 
@@ -64,28 +64,36 @@ SoundSourceModPlug::~SoundSourceModPlug() {
 
 Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
         TrackMetadata* pTrackMetadata,
-        QImage* /*pCoverArt*/) const {
-    // The modplug library currently does not support reading cover-art from
-    // modplug files -- kain88 (Oct 2014)
-    QFile modFile(getLocalFileName());
-    modFile.open(QIODevice::ReadOnly);
-    const QByteArray fileBuf(modFile.readAll());
-    modFile.close();
+        QImage* pCoverArt) const {
+    if (pTrackMetadata != nullptr) {
+        QFile modFile(getLocalFileName());
+        modFile.open(QIODevice::ReadOnly);
+        const QByteArray fileBuf(modFile.readAll());
+        modFile.close();
 
-    ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
-            fileBuf.length());
-    if (NULL != pModFile) {
+        ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
+                fileBuf.length());
+        if (pModFile == nullptr) {
+            return ERR;
+        }
+
         pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
-        pTrackMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000);
+        pTrackMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000.0);
         pTrackMetadata->setBitrate(8); // not really, but fill in something...
         ModPlug::ModPlug_Unload(pModFile);
     }
 
-    return pModFile ? OK : ERR;
+    // The modplug library currently does not support reading cover-art from
+    // modplug files -- kain88 (Oct 2014)
+    // NOTE(uklotzde, 2016-11-02): Leave the QImage passed by the caller untouched
+    // if pCoverArt != nullptr.
+    Q_UNUSED(pCoverArt);
+
+    return OK;
 }
 
-Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     ScopedTimer t("SoundSourceModPlug::open()");
 
     // read module file to byte array
@@ -99,11 +107,11 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     // get ModPlugFile descriptor for later access
     m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(),
             m_fileBuf.length());
-    if (m_pModFile == NULL) {
+    if (m_pModFile == nullptr) {
         // an error occurred
         t.cancel();
         qDebug() << "[ModPlug] Could not load module file: " << fileName;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     DEBUG_ASSERT(0 == (kChunkSizeInBytes % sizeof(m_sampleBuf[0])));
@@ -155,13 +163,13 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     setFrameCount(samples2frames(m_sampleBuf.size()));
     m_seekPos = 0;
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceModPlug::close() {
     if (m_pModFile) {
         ModPlug::ModPlug_Unload(m_pModFile);
-        m_pModFile = NULL;
+        m_pModFile = nullptr;
     }
 }
 
@@ -204,4 +212,4 @@ QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+} // namespace mixxx

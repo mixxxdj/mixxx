@@ -21,6 +21,26 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
+namespace {
+
+QString nameForPreset(const PresetInfo& preset) {
+    QString name = preset.getName();
+    if (name.length() == 0) {
+        QFileInfo file(preset.getPath());
+        name = file.baseName();
+    }
+    return name;
+}
+
+bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
+    // the comparison function for PresetInfo objects
+    // this function is used to sort the list of
+    // presets in the combo box
+    return nameForPreset(a) < nameForPreset(b);
+}
+
+} // The anonymous namespace
+
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
                                      UserSettingsPointer pConfig)
@@ -101,8 +121,6 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
             this, SLOT(removeScript()));
     connect(m_ui.btnOpenScript, SIGNAL(clicked()),
             this, SLOT(openScript()));
-
-    slotUpdate();
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -231,15 +249,6 @@ void DlgPrefController::slotDirty() {
     m_bDirty = true;
 }
 
-QString nameForPreset(const PresetInfo& preset) {
-    QString name = preset.getName();
-    if (name.length() == 0) {
-        QFileInfo file(preset.getPath());
-        name = file.baseName();
-    }
-    return name;
-}
-
 void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->clear();
 
@@ -250,13 +259,23 @@ void DlgPrefController::enumeratePresets() {
     // user has their controller plugged in)
     m_ui.comboBoxPreset->addItem("...");
 
-    m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
     // Ask the controller manager for a list of applicable presets
-    PresetInfoEnumerator* pie =  m_pControllerManager->getMainThreadPresetEnumerator();
-    QList<PresetInfo> presets = pie->getPresets(m_pController->presetExtension());
+    QSharedPointer<PresetInfoEnumerator> pie =
+            m_pControllerManager->getMainThreadPresetEnumerator();
+
+    // Not ready yet. Should be rare. We will re-enumerate on the next open of
+    // the preferences.
+    if (pie.isNull()) {
+        return;
+    }
+
+    // Making the list of presets in the alphabetical order
+    QList<PresetInfo> presets = pie->getPresetsByExtension(
+        m_pController->presetExtension());
+    qSort(presets.begin(), presets.end(), presetInfoNameComparator);
 
     PresetInfo match;
-    foreach (const PresetInfo& preset, presets) {
+    for (const PresetInfo& preset : presets) {
         m_ui.comboBoxPreset->addItem(nameForPreset(preset), preset.getPath());
         if (m_pController->matchPreset(preset)) {
             match = preset;
@@ -742,3 +761,5 @@ void DlgPrefController::openScript() {
         }
     }
 }
+
+
