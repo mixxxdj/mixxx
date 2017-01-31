@@ -20,8 +20,8 @@ print = function(string) {
     engine.log(string);
 }
 
-var printObj = function (obj) {
-    print(JSON.stringify(obj, null, 2));
+var printObject = function (object) {
+    print(JSON.stringify(object, null, 2));
 };
 
 // ----------------- Generic functions ---------------------
