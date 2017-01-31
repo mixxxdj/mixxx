@@ -7,6 +7,8 @@
 #include "library/dao/directorydao.h"
 #include "library/queryutil.h"
 
+#include "util/db/sqllikewildcardescaper.h"
+
 DirectoryDAO::DirectoryDAO(QSqlDatabase& database)
             : m_database(database) {
 }
@@ -106,10 +108,9 @@ QSet<TrackId> DirectoryDAO::relocateDirectory(const QString& oldFolder,
         return QSet<TrackId>();
     }
 
-    FieldEscaper escaper(m_database);
     // on Windows the absolute path starts with the drive name
     // we also need to check for that
-    QString startsWithOldFolder = escaper.escapeStringForLike(
+    QString startsWithOldFolder = SqlLikeWildcardEscaper::escapeStringForLike(
         QDir(oldFolder).absolutePath() + "/", '%') + "%";
 
     // Also update information in the track_locations table. This is where mixxx

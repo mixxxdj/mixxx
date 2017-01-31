@@ -3,18 +3,22 @@
 #include "util/db/sqllikewildcards.h"
 
 
-QString SqlLikeWildcardEscaper::apply(const QString& escapeString, QChar escapeCharacter) {
-    QString escapeCharacterStr(escapeCharacter);
-    QString result = escapeString;
-    // Replace instances of escapeCharacter with two escapeCharacters.
-    result = result.replace(
-        escapeCharacter, escapeCharacterStr + escapeCharacterStr);
-    // Replace instances of % or _ with $escapeCharacter%.
-    if (escapeCharacter != '%') {
-        result = result.replace("%", escapeCharacterStr + "%");
+//static
+QString SqlLikeWildcardEscaper::escapeStringForLike(
+        const QString& unescapedString,
+        QChar escapeCharacter) {
+    QString escapePrefix(escapeCharacter);
+    QString escapedString = unescapedString;
+    // Duplicate all occurrences of escapeCharacter, i.e. prefix escapeCharacter
+    // with itself
+    escapedString.replace(escapeCharacter, escapePrefix + escapeCharacter);
+    // Prefix all occurrences of LIKE wildcards other than the escapeCharacter
+    // itself with escapeCharacter
+    if (escapeCharacter != kSqlLikeMatchAll) {
+        escapedString.replace(kSqlLikeMatchAll, escapePrefix + kSqlLikeMatchAll);
     }
-    if (escapeCharacter != '_') {
-        result = result.replace("_", escapeCharacterStr + "_");
+    if (escapeCharacter != kSqlLikeMatchOne) {
+        escapedString.replace(kSqlLikeMatchOne, escapePrefix + kSqlLikeMatchOne);
     }
-    return result;
+    return escapedString;
 }
