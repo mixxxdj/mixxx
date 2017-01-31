@@ -117,6 +117,10 @@ class CrateFeature : public LibraryFeature {
     QModelIndex m_lastRightClickedIndex;
     TrackPointer m_pSelectedTrack;
 
+    // FIXME(XXX): std::unique_ptr is wrong! Qt takes ownership
+    // of these actions. Should be replaced with the appropriate
+    // variant of parented_ptr as soon as it becomes available.
+    // See also: https://github.com/mixxxdj/mixxx/pull/1161
     std::unique_ptr<QAction> m_pCreateCrateAction;
     std::unique_ptr<QAction> m_pDeleteCrateAction;
     std::unique_ptr<QAction> m_pRenameCrateAction;
