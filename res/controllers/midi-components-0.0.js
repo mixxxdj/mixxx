@@ -1,7 +1,7 @@
 /**
- * Controls JS library for Mixxx
+ * Components JS library for Mixxx
  * Documentation is on the Mixxx wiki at
- * http://mixxx.org/wiki/doku.php/controls_js
+ * http://mixxx.org/wiki/doku.php/components_js
  *
  * Copyright (C) 2017 Be <be.0@gmx.com>
  *
@@ -27,7 +27,7 @@
 **/
 
 ;(function (global) {
-    var Control = function (options) {
+    var Component = function (options) {
         if (Array.isArray(options) && typeof options[0] === 'number') {
             this.midi = options;
         } else {
@@ -53,7 +53,7 @@
             }
         }
     };
-    Control.prototype = {
+    Component.prototype = {
         // default attributes
         // You should probably overwrite at least some of these.
         inValueScale: function (value) {
@@ -108,7 +108,7 @@
 
         connect: function () {
             /**
-            Override this method with a custom one to connect multiple Mixxx COs for a single Control.
+            Override this method with a custom one to connect multiple Mixxx COs for a single Component.
             Add the connection objects to the this.connections array so they all get disconnected just
             by calling this.disconnect(). This can be helpful for multicolor LEDs that show a
             different color depending on the state of different Mixxx COs. Refer to
@@ -151,9 +151,9 @@
     };
 
     var Button = function (options) {
-        Control.call(this, options);
+        Component.call(this, options);
     };
-    Button.prototype = new Control({
+    Button.prototype = new Component({
         onlyOnPress: true,
         on: 127,
         off: 0,
@@ -300,15 +300,15 @@
                 this.connections[1] = engine.connectControl(this.group, 'play', this.output);
             }
         },
-        outKey: null, // hack to get Control constructor to call connect()
+        outKey: null, // hack to get Component constructor to call connect()
     });
 
     var Pot = function (options) {
-        Control.call(this, options);
+        Component.call(this, options);
 
         this.firstValueReceived = false;
     };
-    Pot.prototype = new Control({
+    Pot.prototype = new Component({
         inValueScale: function (value) { return value / this.max; },
         input: function (channel, control, value, status, group) {
             this.inSetParameter(this.inValueScale(value));
@@ -329,33 +329,33 @@
     });
 
     /**
-    The generic Control code provides everything to implement an Encoder. This Encoder Control
-    exists so instanceof can be used to separate Encoders from other Controls.
+    The generic Component code provides everything to implement an Encoder. This Encoder Component
+    exists so instanceof can be used to separate Encoders from other Components.
     **/
     var Encoder = function (options) {
-        Control.call(this, options);
+        Component.call(this, options);
     };
-    Encoder.prototype = new Control();
+    Encoder.prototype = new Component();
 
-    var ControlContainer = function (initialLayer) {
+    var ComponentContainer = function (initialLayer) {
         if (typeof initialLayer === 'object') {
             this.applyLayer(initialLayer);
         }
     };
-    ControlContainer.prototype = {
-        forEachControl: function (operation, recursive) {
+    ComponentContainer.prototype = {
+        forEachComponent: function (operation, recursive) {
             if (typeof operation !== 'function') {
-                print('ERROR: ControlContainer.forEachContainer requires a function argument');
+                print('ERROR: ComponentContainer.forEachComponent requires a function argument');
                 return;
             }
             if (recursive === undefined) { recursive = true; }
 
             var that = this;
             var applyOperationTo = function (obj) {
-                if (obj instanceof Control) {
+                if (obj instanceof Component) {
                     operation.call(that, obj);
-                } else if (recursive && obj instanceof ControlContainer) {
-                    obj.forEachControl(operation);
+                } else if (recursive && obj instanceof ComponentContainer) {
+                    obj.forEachComponent(operation);
                 } else if (Array.isArray(obj)) {
                     obj.forEach(function (element) {
                         applyOperationTo(element);
@@ -369,51 +369,51 @@
                 }
             }
         },
-        reconnectControls: function (operation, recursive) {
-            this.forEachControl(function (control) {
-                control.disconnect();
+        reconnectComponents: function (operation, recursive) {
+            this.forEachComponent(function (component) {
+                component.disconnect();
                 if (typeof operation === 'function') {
-                    operation.call(this, control);
+                    operation.call(this, component);
                 }
-                control.connect();
-                control.trigger();
+                component.connect();
+                component.trigger();
             }, recursive);
         },
         isShifted: false,
         shift: function () {
-            this.forEachControl(function (control) {
-                if (typeof control.shift === 'function') {
-                    control.shift();
+            this.forEachComponent(function (component) {
+                if (typeof component.shift === 'function') {
+                    component.shift();
                 }
-                // Set isShifted for child ControlContainers forEachControl is iterating through recursively
+                // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
                 this.isShifted = true;
             });
         },
         unshift: function () {
-            this.forEachControl(function (control) {
-                if (typeof control.unshift === 'function') {
-                    control.unshift();
+            this.forEachComponent(function (component) {
+                if (typeof component.unshift === 'function') {
+                    component.unshift();
                 }
-                // Set isShifted for child ControlContainers forEachControl is iterating through recursively
+                // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
                 this.isShifted = false;
             });
         },
-        applyLayer: function (newLayer, reconnectControls) {
-            if (reconnectControls !== false) {
-                reconnectControls = true;
+        applyLayer: function (newLayer, reconnectComponents) {
+            if (reconnectComponents !== false) {
+                reconnectComponents = true;
             }
-            if (reconnectControls === true) {
-                this.forEachControl(function (control) {
-                    control.disconnect();
+            if (reconnectComponents === true) {
+                this.forEachComponent(function (component) {
+                    component.disconnect();
                 });
             }
 
             _.merge(this, newLayer);
 
-            if (reconnectControls === true) {
-                this.forEachControl(function (control) {
-                    control.connect();
-                    control.trigger();
+            if (reconnectComponents === true) {
+                this.forEachComponent(function (component) {
+                    component.connect();
+                    component.trigger();
                 });
             }
         },
@@ -426,19 +426,19 @@
             this.deckNumbers = deckNumbers;
         }
     };
-    Deck.prototype = new ControlContainer({
+    Deck.prototype = new ComponentContainer({
         setCurrentDeck: function (newGroup) {
             this.currentDeck = newGroup;
-            this.reconnectControls(function (control) {
-                if (control.group.search(script.channelRegEx) !== -1) {
-                    control.group = this.currentDeck;
-                } else if (control.group.search(script.eqRegEx) !== -1) {
-                    control.group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
-                } else if (control.group.search(script.quickEffectRegEx) !== -1) {
-                    control.group = '[QuickEffectRack1_' + this.currentDeck + ']';
+            this.reconnectComponents(function (component) {
+                if (component.group.search(script.channelRegEx) !== -1) {
+                    component.group = this.currentDeck;
+                } else if (component.group.search(script.eqRegEx) !== -1) {
+                    component.group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
+                } else if (component.group.search(script.quickEffectRegEx) !== -1) {
+                    component.group = '[QuickEffectRack1_' + this.currentDeck + ']';
                 }
-                // Do not alter the Control's group if it does not match any of those RegExs because
-                // that could break effects Controls.
+                // Do not alter the Component's group if it does not match any of those RegExs because
+                // that could break effects Components.
             });
         },
         toggle: function () {
@@ -471,12 +471,12 @@
                 // for soft takeover
                 this.disconnect();
                 this.connect();
-                eu.knobs.reconnectControls();
+                eu.knobs.reconnectComponents();
             },
             outConnect: false,
         });
 
-        this.enableOnChannelButtons = new ControlContainer();
+        this.enableOnChannelButtons = new ComponentContainer();
         this.enableOnChannelButtons.addButton = function (channel) {
             this[channel] = new Button({
                 group: eu.group,
@@ -569,14 +569,14 @@
                 this.onFocusChanged = function (value, group, control) {
                     if (value === this.number) {
                         // make knobs control first 3 parameters of the focused effect
-                        eu.knobs.reconnectControls(function (knob) {
+                        eu.knobs.reconnectComponents(function (knob) {
                             if (typeof knob.onParametersShow === 'function') {
                                 knob.onParametersShow(); // to set new group property
                             }
                         });
                     } else if (value === 0) {
                         // make knobs control metaknobs
-                        eu.knobs.reconnectControls(function (knob) {
+                        eu.knobs.reconnectComponents(function (knob) {
                             if (typeof knob.onParametersShow === 'function') {
                                 knob.onParametersHide(); // to set new group property
                             }
@@ -591,8 +591,8 @@
             },
         });
 
-        this.knobs = new ControlContainer();
-        this.enableButtons = new ControlContainer();
+        this.knobs = new ComponentContainer();
+        this.enableButtons = new ComponentContainer();
         for (var n = 1; n <= 3; n++) {
             this.knobs[n] = new this.EffectUnitKnob(n);
             this.enableButtons[n] = new this.EffectEnableButton(n);
@@ -605,9 +605,9 @@
                 this.send((value > 0) ? this.on : this.off);
                 if (value === 0) {
                     engine.setValue(this.group, "show_focus", 0);
-                    // NOTE: calling eu.reconnectControls() here would cause an infinite loop when
-                    // calling EffectUnit.reconnectControls().
-                    eu.forEachControl(function (c) {
+                    // NOTE: calling eu.reconnectComponents() here would cause an infinite loop when
+                    // calling EffectUnit.reconnectComponents().
+                    eu.forEachComponent(function (c) {
                         if (typeof c.onParametersHide === 'function') {
                             c.disconnect();
                             c.onParametersHide();
@@ -617,7 +617,7 @@
                     });
                 } else {
                     engine.setValue(this.group, "show_focus", 1);
-                    eu.forEachControl(function (c) {
+                    eu.forEachComponent(function (c) {
                         if (typeof c.onParametersShow === 'function') {
                             c.disconnect();
                             c.onParametersShow();
@@ -634,7 +634,7 @@
             this.showParametersButton.connect();
             this.showParametersButton.trigger();
 
-            this.enableOnChannelButtons.forEachControl(function (button) {
+            this.enableOnChannelButtons.forEachComponent(function (button) {
                 if (button.midi !== undefined) {
                     button.disconnect();
                     button.connect();
@@ -642,17 +642,17 @@
                 }
             });
 
-            this.forEachControl(function (control) {
-                if (control.group === undefined) {
-                    control.group = eu.group;
+            this.forEachComponent(function (component) {
+                if (component.group === undefined) {
+                    component.group = eu.group;
                 }
             });
         };
     };
-    EffectUnit.prototype = new ControlContainer();
+    EffectUnit.prototype = new ComponentContainer();
 
     var exports = {};
-    exports.Control = Control;
+    exports.Component = Component;
     exports.Button = Button;
     exports.PlayButton = PlayButton;
     exports.CueButton = CueButton;
@@ -662,8 +662,8 @@
     exports.SamplerButton = SamplerButton;
     exports.Pot = Pot;
     exports.Encoder = Encoder;
-    exports.ControlContainer = ControlContainer;
+    exports.ComponentContainer = ComponentContainer;
     exports.Deck = Deck;
     exports.EffectUnit = EffectUnit;
-    global.controls = exports;
+    global.components = exports;
 }(this));
