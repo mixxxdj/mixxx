@@ -136,12 +136,18 @@ ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState()
 
     // Initialize the filters with default parameters
 
-    m_lowBoost = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupLoFreq, kQBoost);
-    m_midBoost = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupMidFreq, kQBoost);
-    m_highBoost = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupHiFreq, kQBoost);
-    m_lowCut = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupLoFreq, kQKill);
-    m_midCut = std::make_unique<EngineFilterBiquad1Peaking>(kStartupSamplerate , kStartupMidFreq, kQKill);
-    m_highCut = std::make_unique<EngineFilterBiquad1HighShelving>(kStartupSamplerate , kStartupHiFreq / 2, kQKillShelve);
+    m_lowBoost = std::make_unique<EngineFilterBiquad1Peaking>(
+            kStartupSamplerate , kStartupLoFreq, kQBoost);
+    m_midBoost = std::make_unique<EngineFilterBiquad1Peaking>(
+            kStartupSamplerate , kStartupMidFreq, kQBoost);
+    m_highBoost = std::make_unique<EngineFilterBiquad1Peaking>(
+            kStartupSamplerate , kStartupHiFreq, kQBoost);
+    m_lowCut = std::make_unique<EngineFilterBiquad1Peaking>(
+            kStartupSamplerate , kStartupLoFreq, kQKill);
+    m_midCut = std::make_unique<EngineFilterBiquad1Peaking>(
+            kStartupSamplerate , kStartupMidFreq, kQKill);
+    m_highCut = std::make_unique<EngineFilterBiquad1HighShelving>(
+            kStartupSamplerate , kStartupHiFreq / 2, kQKillShelve);
 }
 
 ThreeBandBiquadEQEffectGroupState::~ThreeBandBiquadEQEffectGroupState() {
