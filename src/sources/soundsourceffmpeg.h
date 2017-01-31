@@ -28,6 +28,75 @@ extern "C" {
 // forward declaration
 class EncoderFfmpegResample;
 
+namespace {
+
+  // Because 3.1 changed API how to access thigs in AVStream
+  // we'll separate this logic in own wrapper class
+  class AVStreamWrapper {
+    public:
+        virtual AVMediaType getMediaTypeOfStream(AVStream* pStream) = 0;
+        virtual AVCodec* findDecoderForStream(AVStream* pStream) = 0;
+        virtual SINT getChannelCountOfStream(AVStream* pStream) = 0;
+        virtual SINT getSamplingRateOfStream(AVStream* pStream) = 0;
+        virtual AVSampleFormat getSampleFormatOfStream(AVStream* pStream) = 0;
+  };
+
+  // Implement classes for version befor 3.1 and after that
+#if LIBAVFORMAT_CHANGE_AVSTREAM
+  // This is after version 3.1
+  class AVStreamWrapperImpl : public AVStreamWrapper {
+    public:
+        AVMediaType getMediaTypeOfStream(AVStream* pStream) {
+             return pStream->codecpar->codec_type;
+        }
+
+        AVCodec* findDecoderForStream(AVStream* pStream) {
+            return avcodec_find_decoder(pStream->codecpar->codec_id);
+        }
+
+        SINT getChannelCountOfStream(AVStream* pStream) {
+            return pStream->codecpar->channels;
+        }
+
+        SINT getSamplingRateOfStream(AVStream* pStream) {
+            return pStream->codecpar->sample_rate;
+        }
+
+        AVSampleFormat getSampleFormatOfStream(AVStream* pStream) {
+            return (AVSampleFormat)pStream->codecpar->format;
+        }
+  };
+#else
+  class AVStreamWrapperImpl : public AVStreamWrapper {
+    public:
+        AVMediaType getMediaTypeOfStream(AVStream* pStream) {
+             return pStream->codec->codec_type;
+        }
+
+        AVCodec* findDecoderForStream(AVStream* pStream) {
+            return avcodec_find_decoder(pStream->codec->codec_id);
+        }
+
+        SINT getChannelCountOfStream(AVStream* pStream) {
+            return pStream->codec->channels;
+        }
+
+        SINT getSamplingRateOfStream(AVStream* pStream) {
+            return pStream->codec->sample_rate;
+        }
+
+        AVSampleFormat getSampleFormatOfStream(AVStream* pStream) {
+            return pStream->codec->sample_fmt;
+        }
+  };
+#endif
+
+  //AVStreamWrapperImpl *m_pAVStreamWrapper = new AVStreamWrapperImpl();
+  AVStreamWrapperImpl m_pAVStreamWrapper;
+
+}
+
+
 namespace mixxx {
 
 struct ffmpegLocationObject {

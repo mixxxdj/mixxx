@@ -28,25 +28,9 @@ void initFFmpegLib() {
 // More than 2 channels are currently not supported
 const SINT kMaxChannelCount = 2;
 
-//
-// FFMPEG 3.1 obsolettes AVSteam->codec to favor AVStream->codepar
-// This change is little bit harmfull if you want to have backward
-// compability but we try to keep it
-inline
-#if LIBAVFORMAT_CHANGE_AVSTREAM
-AVCodecParameters *getCodecStructPtr(AVStream* pStream) {
-    return pStream->codecpar;
-}
-#else
-AVCodecContext *getCodecStructPtr(AVStream* pStream) {
-    return pStream->codec;
-}
-#endif
-
-
 inline
 AVMediaType getMediaTypeOfStream(AVStream* pStream) {
-    return getCodecStructPtr(pStream)->codec_type;
+    return m_pAVStreamWrapper.getMediaTypeOfStream(pStream);
 }
 
 AVStream* findFirstAudioStream(AVFormatContext* pFormatCtx) {
@@ -67,17 +51,17 @@ AVStream* findFirstAudioStream(AVFormatContext* pFormatCtx) {
 
 inline
 AVCodec* findDecoderForStream(AVStream* pStream) {
-    return avcodec_find_decoder(getCodecStructPtr(pStream)->codec_id);
+    return m_pAVStreamWrapper.findDecoderForStream(pStream);
 }
 
 inline
 SINT getChannelCountOfStream(AVStream* pStream) {
-    return getCodecStructPtr(pStream)->channels;
+    return m_pAVStreamWrapper.getChannelCountOfStream(pStream);
 }
 
 inline
 SINT getSamplingRateOfStream(AVStream* pStream) {
-    return getCodecStructPtr(pStream)->sample_rate;
+    return m_pAVStreamWrapper.getSamplingRateOfStream(pStream);
 }
 
 inline
@@ -123,11 +107,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
 
 inline
 AVSampleFormat getSampleFormatOfStream(AVStream* pStream) {
-#if LIBAVFORMAT_CHANGE_AVSTREAM
-    return (AVSampleFormat)getCodecStructPtr(pStream)->format;
-#else
-    return getCodecStructPtr(pStream)->sample_fmt;
-#endif
+  return m_pAVStreamWrapper.getSampleFormatOfStream(pStream);
 }
 
 } // anonymous namespace
