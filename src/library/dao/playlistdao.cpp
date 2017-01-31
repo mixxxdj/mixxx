@@ -247,10 +247,14 @@ bool PlaylistDAO::isPlaylistLocked(const int playlistId) const {
 }
 
 bool PlaylistDAO::clearPlaylist(const int playlistId) {
+    int position =
+        (m_pAutoDJProcessor && m_pAutoDJProcessor->nextTrackLoaded()) ? 2 : 1;
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
-    query.prepare("DELETE FROM PlaylistTracks WHERE playlist_id = :id");
+    query.prepare("DELETE FROM PlaylistTracks "
+                  "WHERE playlist_id=:id AND position>=:pos");
     query.bindValue(":id", playlistId);
+    query.bindValue(":pos", position);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return false;
@@ -1039,12 +1043,10 @@ void PlaylistDAO::sendToAutoDJ(const QList<TrackId>& trackIds, AutoDJSendLoc loc
 
     switch (loc) {
         case AutoDJSendLoc::TOP: {
-            int position = 1;
-            if (m_pAutoDJProcessor && m_pAutoDJProcessor->nextTrackLoaded()) {
-                // Load track to position two because position one is
-                // already loaded to the player
-                position = 2;
-            }
+            // If the first song is already loaded to the player,
+            // load tracks to position two
+            int position = (m_pAutoDJProcessor &&
+                m_pAutoDJProcessor->nextTrackLoaded()) ? 2 : 1;
             insertTracksIntoPlaylist(trackIds, iAutoDJPlaylistId, position);
             break;
         }
