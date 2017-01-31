@@ -4,7 +4,7 @@
 
 
 //static
-QString SqlLikeWildcardEscaper::escapeStringForLike(
+QString SqlLikeWildcardEscaper::apply(
         const QString& unescapedString,
         QChar escapeCharacter) {
     QString escapePrefix(escapeCharacter);

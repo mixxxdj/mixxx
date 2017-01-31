@@ -14,6 +14,7 @@
 #include "track/track.h"
 #include "library/queryutil.h"
 #include "util/db/sqlstringformatter.h"
+#include "util/db/sqllikewildcards.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqltransaction.h"
 #include "library/coverart.h"
@@ -888,13 +889,13 @@ QList<TrackId> TrackDAO::getTrackIds(const QDir& dir) {
     // dir needs to end in a slash otherwise we might match other
     // directories.
     const QString dirPath = dir.absolutePath();
-    QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", '%') + "%";
+    QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
 
     QSqlQuery query(m_database);
     query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
                           "ON library.location = track_locations.id "
-                          "WHERE track_locations.location LIKE %1 ESCAPE '%'")
-                  .arg(SqlStringFormatter::format(m_database, likeClause)));
+                          "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
+                  .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dirPath;
@@ -1844,13 +1845,13 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
-    QString likeClause = SqlLikeWildcardEscaper::apply(dir + "/", '%') + "%";
+    QString likeClause = SqlLikeWildcardEscaper::apply(dir + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
 
     QSqlQuery query(m_database);
     query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
                           "ON library.location = track_locations.id "
-                          "WHERE track_locations.location LIKE %1 ESCAPE '%'")
-                  .arg(SqlStringFormatter::format(m_database, likeClause)));
+                          "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
+                  .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dir;

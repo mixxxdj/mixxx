@@ -42,5 +42,5 @@ TEST_F(QueryUtilTest, FieldEscaperEscapesForLike) {
     FieldEscaper f(db);
 
     EXPECT_STREQ(qPrintable(QString("xx44xx4%yy4_yy")),
-                 qPrintable(SqlLikeWildcardEscaper::escapeStringForLike("xx4xx%yy_yy", '4')));
+                 qPrintable(SqlLikeWildcardEscaper::apply("xx4xx%yy_yy", '4')));
 }
