@@ -247,6 +247,7 @@ bool PlaylistDAO::isPlaylistLocked(const int playlistId) const {
 }
 
 bool PlaylistDAO::clearPlaylist(const int playlistId) {
+    // Retain the first track if it is loaded in a deck
     int position =
         (m_pAutoDJProcessor && m_pAutoDJProcessor->nextTrackLoaded()) ? 2 : 1;
     ScopedTransaction transaction(m_database);

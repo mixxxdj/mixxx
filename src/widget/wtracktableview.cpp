@@ -475,9 +475,6 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     case DlgPrefLibrary::ADD_TRACK_TOP:
             sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP); // add track to Auto-DJ Queue (top)
             break;
-    // case DlgPrefLibrary::ADD_TRACK_REPLACE:
-    //         sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
-    //         break;
     default: // load track to next available deck
             TrackModel* trackModel = getTrackModel();
             TrackPointer pTrack;
