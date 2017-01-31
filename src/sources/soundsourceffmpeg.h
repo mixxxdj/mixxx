@@ -22,6 +22,9 @@ extern "C" {
 
 #include "util/memory.h" // std::unique_ptr<> + std::make_unique()
 
+#define LIBAVFORMAT_CHANGE_AVSTREAM \
+    (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 48, 0))
+
 // forward declaration
 class EncoderFfmpegResample;
 
@@ -99,7 +102,7 @@ class SoundSourceFFmpeg : public SoundSource {
     };
     ClosableInputAVFormatContextPtr m_pInputFormatContext;
 
-    static OpenResult openAudioStream(AVStream* pAudioStream);
+    static OpenResult openAudioStream(AVCodecContext* pCodecContext, AVCodec *pDecoder);
 
     // Takes ownership of an opened (audio) stream and ensures that
     // the corresponding AVStream is closed, either explicitly or
@@ -136,6 +139,48 @@ class SoundSourceFFmpeg : public SoundSource {
         AVStream* m_pClosableStream;
     };
     ClosableAVStreamPtr m_pAudioStream;
+
+
+#if LIBAVFORMAT_CHANGE_AVSTREAM
+    // Takes ownership of an opened (audio) codec context and ensures that
+    // the corresponding AVCodecContext is closed, either explicitly or
+    // implicitly by the destructor. The wrapper can only be moved,
+    // copying is disabled.
+    //
+    // This is prior new API changes made in FFMmpeg 3.1
+    // before that we can use AVStream->codec to access AVCodecContext
+    class ClosableAVCodecContextPtr final {
+    public:
+        explicit ClosableAVCodecContextPtr(AVCodecContext* pClosableContext = nullptr)
+            : m_pClosableContext(pClosableContext) {
+        }
+        explicit ClosableAVCodecContextPtr(const ClosableAVCodecContextPtr&) = delete;
+        explicit ClosableAVCodecContextPtr(ClosableAVCodecContextPtr&& that)
+            : m_pClosableContext(that.m_pClosableContext) {
+            that.m_pClosableContext = nullptr;
+        }
+        ~ClosableAVCodecContextPtr() {
+            close();
+        }
+
+        void take(AVCodecContext** ppClosableContext);
+        void close();
+
+        friend void swap(ClosableAVCodecContextPtr& lhs, ClosableAVCodecContextPtr& rhs) {
+            std::swap(lhs.m_pClosableContext, rhs.m_pClosableContext);
+        }
+
+        ClosableAVCodecContextPtr& operator=(const ClosableAVCodecContextPtr&) = delete;
+        ClosableAVCodecContextPtr& operator=(ClosableAVCodecContextPtr&& that) = delete;
+
+        AVCodecContext* operator->() { return m_pClosableContext; }
+        operator AVCodecContext*() { return m_pClosableContext; }
+
+    private:
+        AVCodecContext* m_pClosableContext;
+    };
+    ClosableAVCodecContextPtr m_pAudioContext;
+#endif
 
     std::unique_ptr<EncoderFfmpegResample> m_pResample;
 
