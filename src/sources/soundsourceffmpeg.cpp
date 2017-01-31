@@ -562,6 +562,9 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 #if LIBAVFORMAT_CHANGE_AVSTREAM
                 // AVERROR(EAGAIN) means that we need to feed more
                 // That we can decode Frame or Packet
+                
+                quint8 l_iRepeat = 5;
+                
                 do {
                     do {
                         l_iRet = avcodec_send_packet(m_pAudioContext, &l_SPacket);
@@ -578,7 +581,16 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                         qDebug() << "SoundSourceFFmpeg::readFramesToCache: Warning can't decode frame!";
                         break;
                     }
-                } while(l_iRet == AVERROR(EAGAIN));
+                    
+                    // Sometimes (Espescially with m4a with Cover art)
+                    // This gets stuck.. then we have to bail out
+                    // not hang here more than 5 times..
+                    if( l_iRet == AVERROR(EAGAIN) ) {
+                        l_iRepeat --;
+                    } else {
+                        l_iRepeat = 5;
+                    }
+                } while(l_iRet == AVERROR(EAGAIN) && l_iRepeat);
 
                 if (l_iRet == AVERROR_EOF || l_iRet < 0) {
 #else
