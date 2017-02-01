@@ -88,6 +88,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_dSlipPosition(0.),
           m_dSlipRate(1.0),
           m_slipEnabled(0),
+          m_slipCancelled(0),
           m_bSlipEnabledProcessing(false),
           m_pRepeat(NULL),
           m_startButton(NULL),
@@ -180,6 +181,13 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     connect(m_pSlipButton, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotControlSlip(double)),
             Qt::DirectConnection);
+    
+    m_pSlipCancelButton = new ControlPushButton(ConfigKey(m_group, "slip_cancel"));
+    m_pSlipCancelButton->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pSlipCancelButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlSlipCancel(double)),
+            Qt::DirectConnection);
+    
 
     // BPM to display in the UI (updated more slowly than the actual bpm)
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
@@ -721,6 +729,13 @@ void EngineBuffer::slotControlSlip(double v)
     m_slipEnabled = static_cast<int>(v > 0.0);
 }
 
+void EngineBuffer::slotControlSlipCancel(double v)
+{
+    if (load_atomic(m_slipEnabled)) {
+        m_slipCancelled = static_cast<int>(v > 0.0);
+    }
+}
+
 void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
     if (m_bScalerOverride) {
         return;
@@ -1156,7 +1171,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
     bool enabled = static_cast<bool>(load_atomic(m_slipEnabled));
     if (enabled != m_bSlipEnabledProcessing) {
         m_bSlipEnabledProcessing = enabled;
-        if (enabled) {
+        if (enabled || m_slipCancelled.fetchAndStoreAcquire(0)) {
             m_dSlipPosition = m_filepos_play;
             m_dSlipRate = m_rate_old;
         } else {
@@ -1167,7 +1182,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
             m_dSlipPosition = 0;
         }
     }
-
+    
     // Increment slip position even if it was just toggled -- this ensures the position is correct.
     if (enabled) {
         m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
