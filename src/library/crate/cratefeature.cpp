@@ -633,6 +633,11 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
         updateTreeItemForCrateSummary(m_childModel.getItem(index), crateSummary);
         m_childModel.triggerRepaint(index);
     }
+    if (m_pSelectedTrack) {
+        // Crates containing the currently selected track might
+        // have been modified.
+        slotTrackSelected(m_pSelectedTrack);
+    }
 }
 
 CrateId CrateFeature::crateIdFromIndex(const QModelIndex& index) const {
