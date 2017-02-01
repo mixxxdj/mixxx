@@ -848,13 +848,43 @@ WEffectSelector {
   color: #c1cabe;
   background-color: #444342;
   /* TODO: use a linear gradient for the background color */
+
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  margin-top: 0px;
+  margin-bottom: 0px;
+
+  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+   * names start getting cut off. Adding explicit padding improves this. */
+  padding: 1px 4px;
+
+  /* The 3D frame on the combo box becomes flat when you give it a border */
+  border: 1px solid #444342;
+  border-radius: 3px;
 }
 
-WEffectSelector QAbstractItemView {
-  color: #c1cabe;
-  background-color: #201f1f;
-  selection-background-color: #184880;
-}
+  WEffectSelector:hover {
+    border: 2px ridge #015d8d;
+    /* reduce padding to compensate for the 1px thicker border, otherwise the contents of
+       the combobox shift to the side */
+    padding: 1px 3px;
+  }
+
+  WEffectSelector::drop-down {
+    /* This causes the Qt theme's widget style to magically not apply. Go figure. */
+    border: 0;
+  }
+
+  WEffectSelector::down-arrow {
+    width: 20px;
+    height: 20px;
+    image: url(skin:/icon/ic_chevron_down_48px.svg);
+  }
+
+  WEffectSelector QAbstractItemView {
+    color: #c1cabe;
+    background-color: #201f1f;
+    selection-background-color: #184880;
+  }
 
 #EffectKnob {
 }
