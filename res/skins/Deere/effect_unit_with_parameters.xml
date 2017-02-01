@@ -14,7 +14,7 @@ Variables:
     <SizePolicy>me,max</SizePolicy>
     <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.-->
     <MinimumSize>-1,150</MinimumSize>
-    <MaximumSize>-1,175</MaximumSize>
+    <MaximumSize>-1,180</MaximumSize>
     <Children>
 
       <WidgetGroup>
