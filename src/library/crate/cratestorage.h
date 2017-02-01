@@ -288,8 +288,8 @@ class CrateStorage: public SqlStorage {
     CrateTrackSelectResult selectTrackCratesSorted(
             TrackId trackId) const;
 
-    // Returns the set of crate ids for crates that contain one ore more
-    // of the provided track ids.
+    // Returns the set of crate ids for crates that contain any of the
+    // provided track ids.
     QSet<CrateId> collectCrateIdsOfTracks(
             const QList<TrackId>& trackIds) const;
 
