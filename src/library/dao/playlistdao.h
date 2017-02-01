@@ -40,6 +40,12 @@ class PlaylistDAO : public QObject, public virtual DAO {
         PLHT_UNKNOWN = -1
     };
 
+    enum class AutoDJSendLoc {
+        TOP,
+        BOTTOM,
+        REPLACE,
+    };
+
     PlaylistDAO(QSqlDatabase& database);
     virtual ~PlaylistDAO();
 
@@ -108,7 +114,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
 
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
-    void sendToAutoDJ(const QList<TrackId>& trackIds, bool bTop);
+    void sendToAutoDJ(const QList<TrackId>& trackIds, AutoDJSendLoc loc);
 
   signals:
     void added(int playlistId);
@@ -120,6 +126,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void lockChanged(int playlistId);
 
   private:
+    bool removeTracksFromPlaylist(const int playlistId, const int startIndex);
     void removeTracksFromPlaylistsInner(const QStringList& idList);
     void searchForDuplicateTrack(const int fromPosition,
                                  const int toPosition,

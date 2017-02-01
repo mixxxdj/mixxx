@@ -88,13 +88,17 @@ void DlgAnalysis::loadSelectedTrackToGroup(QString group, bool play) {
     m_pAnalysisLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 
-void DlgAnalysis::slotSendToAutoDJ() {
+void DlgAnalysis::slotSendToAutoDJBottom() {
     // append to auto DJ
-    m_pAnalysisLibraryTableView->slotSendToAutoDJ();
+    m_pAnalysisLibraryTableView->slotSendToAutoDJBottom();
 }
 
 void DlgAnalysis::slotSendToAutoDJTop() {
     m_pAnalysisLibraryTableView->slotSendToAutoDJTop();
+}
+
+void DlgAnalysis::slotSendToAutoDJReplace() {
+    m_pAnalysisLibraryTableView->slotSendToAutoDJReplace();
 }
 
 void DlgAnalysis::moveSelection(int delta) {
