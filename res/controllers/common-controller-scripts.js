@@ -20,6 +20,10 @@ print = function(string) {
     engine.log(string);
 }
 
+var printObject = function (object) {
+    print(JSON.stringify(object, null, 2));
+};
+
 // ----------------- Generic functions ---------------------
 
 function secondstominutes(secs)
@@ -360,6 +364,12 @@ bpm.tapButton = function(deck) {
     engine.setValue("[Channel"+deck+"]","rate",fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
 //     print("Script: BPM="+average+" setting to "+fRateScale);
 }
+
+// ----------------- Common regular expressions --------------------------
+script.samplerRegEx = /\[Sampler(\d+)\]/ ;
+script.channelRegEx = /\[Channel(\d+)\]/ ;
+script.eqRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/ ;
+script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/ ;
 
 // ----------------- Object definitions --------------------------
 
