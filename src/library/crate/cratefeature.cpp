@@ -164,12 +164,12 @@ std::unique_ptr<TreeItem> CrateFeature::newTreeItem(
     pTreeItem->setIcon(
             crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
 
-    updateTreeItem(pTreeItem.get(), selectedTrackId, std::vector<CrateId>());
+    updateTreeItemTrackSelection(pTreeItem.get(), selectedTrackId, std::vector<CrateId>());
 
     return pTreeItem;
 }
 
-void CrateFeature::updateTreeItem(
+void CrateFeature::updateTreeItemCrateSummary(
         TreeItem* pTreeItem,
         const CrateSummary& crateSummary) {
     DEBUG_ASSERT(pTreeItem != nullptr);
@@ -178,7 +178,7 @@ void CrateFeature::updateTreeItem(
     pTreeItem->setIcon(crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
 }
 
-void CrateFeature::updateTreeItem(
+void CrateFeature::updateTreeItemTrackSelection(
         TreeItem* pTreeItem,
         TrackId selectedTrackId,
         const std::vector<CrateId>& sortedTrackCrates) {
@@ -624,7 +624,7 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
         VERIFY_OR_DEBUG_ASSERT(crateStorage.readCrateSummaryById(crateId, &crateSummary)) {
             continue;
         }
-        updateTreeItem(m_childModel.getItem(index), crateSummary);
+        updateTreeItemCrateSummary(m_childModel.getItem(index), crateSummary);
         m_childModel.triggerRepaint(index);
     }
 }
@@ -904,7 +904,7 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     // Set all crates the track is in bold (or if there is no track selected,
     // clear all the bolding).
     for (TreeItem* pTreeItem: pRootItem->children()) {
-        updateTreeItem(pTreeItem, selectedTrackId, sortedTrackCrates);
+        updateTreeItemTrackSelection(pTreeItem, selectedTrackId, sortedTrackCrates);
     }
 
     m_childModel.triggerRepaint();

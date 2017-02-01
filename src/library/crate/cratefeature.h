@@ -88,10 +88,10 @@ class CrateFeature : public LibraryFeature {
     std::unique_ptr<TreeItem> newTreeItem(
             const CrateSummary& crateSummary,
             TrackId selectedTrackId);
-    void updateTreeItem(
+    void updateTreeItemCrateSummary(
             TreeItem* pTreeItem,
             const CrateSummary& crateSummary);
-    void updateTreeItem(
+    void updateTreeItemTrackSelection(
             TreeItem* pTreeItem,
             TrackId selectedTrackId,
             const std::vector<CrateId>& sortedTrackCrates);
