@@ -10,8 +10,6 @@
 #include <QIcon>
 #include <QPoint>
 
-#include <vector>
-
 #include "library/crate/cratetablemodel.h"
 
 #include "library/libraryfeature.h"
@@ -85,16 +83,11 @@ class CrateFeature : public LibraryFeature {
 
     bool activateCrate(CrateId crateId);
 
-    std::unique_ptr<TreeItem> newTreeItem(
-            const CrateSummary& crateSummary,
-            TrackId selectedTrackId);
-    void updateTreeItemCrateSummary(
-            TreeItem* pTreeItem,
+    std::unique_ptr<TreeItem> newTreeItemForCrateSummary(
             const CrateSummary& crateSummary);
-    void updateTreeItemTrackSelection(
+    void updateTreeItemForCrateSummary(
             TreeItem* pTreeItem,
-            TrackId selectedTrackId,
-            const std::vector<CrateId>& sortedTrackCrates);
+            const CrateSummary& crateSummary) const;
 
     QModelIndex rebuildChildModel(CrateId selectedCrateId = CrateId());
     void updateChildModel(const QSet<CrateId>& updatedCrateIds);

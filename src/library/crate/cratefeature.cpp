@@ -7,6 +7,7 @@
 #include <QDesktopServices>
 
 #include <algorithm>
+#include <vector>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -156,20 +157,16 @@ QString CrateFeature::formatRootViewHtml() const {
     return html;
 }
 
-std::unique_ptr<TreeItem> CrateFeature::newTreeItem(
-        const CrateSummary& crateSummary,
-        TrackId selectedTrackId) {
+std::unique_ptr<TreeItem> CrateFeature::newTreeItemForCrateSummary(
+        const CrateSummary& crateSummary) {
     auto pTreeItem = std::make_unique<TreeItem>(this);
-
-    updateTreeItemCrateSummary(pTreeItem.get(), crateSummary);
-    updateTreeItemTrackSelection(pTreeItem.get(), selectedTrackId, std::vector<CrateId>());
-
+    updateTreeItemForCrateSummary(pTreeItem.get(), crateSummary);
     return pTreeItem;
 }
 
-void CrateFeature::updateTreeItemCrateSummary(
+void CrateFeature::updateTreeItemForCrateSummary(
         TreeItem* pTreeItem,
-        const CrateSummary& crateSummary) {
+        const CrateSummary& crateSummary) const {
     DEBUG_ASSERT(pTreeItem != nullptr);
     if (pTreeItem->getData().isNull()) {
         // Initialize a newly created tree item
@@ -183,7 +180,9 @@ void CrateFeature::updateTreeItemCrateSummary(
     pTreeItem->setIcon(crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
 }
 
-void CrateFeature::updateTreeItemTrackSelection(
+namespace {
+
+void updateTreeItemForTrackSelection(
         TreeItem* pTreeItem,
         TrackId selectedTrackId,
         const std::vector<CrateId>& sortedTrackCrates) {
@@ -196,6 +195,8 @@ void CrateFeature::updateTreeItemTrackSelection(
                     CrateId(pTreeItem->getData()));
     pTreeItem->setBold(crateContainsSelectedTrack);
 }
+
+} // anonymous namespace
 
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
@@ -588,9 +589,6 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     }
     m_childModel.removeRows(0, pRootItem->childRows());
 
-    TrackId selectedTrackId =
-            m_pSelectedTrack ? m_pSelectedTrack->getId() : TrackId();
-
     QList<TreeItem*> modelRows;
     modelRows.reserve(m_pTrackCollection->crates().countCrates());
 
@@ -599,7 +597,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
             m_pTrackCollection->crates().selectCrateSummaries());
     CrateSummary crateSummary;
     while (crateSummaries.populateNext(&crateSummary)) {
-        auto pTreeItem = newTreeItem(crateSummary, selectedTrackId);
+        auto pTreeItem = newTreeItemForCrateSummary(crateSummary);
         modelRows.append(pTreeItem.get());
         pTreeItem.release();
         if (selectedCrateId == crateSummary.getId()) {
@@ -610,6 +608,9 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_childModel.insertRows(modelRows, 0, modelRows.size());
+
+    // Update rendering of crates depending on the currently selected track
+    slotTrackSelected(m_pSelectedTrack);
 
     if (selectedRow >= 0) {
         return m_childModel.index(selectedRow, 0);
@@ -629,7 +630,7 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
         VERIFY_OR_DEBUG_ASSERT(crateStorage.readCrateSummaryById(crateId, &crateSummary)) {
             continue;
         }
-        updateTreeItemCrateSummary(m_childModel.getItem(index), crateSummary);
+        updateTreeItemForCrateSummary(m_childModel.getItem(index), crateSummary);
         m_childModel.triggerRepaint(index);
     }
 }
@@ -896,20 +897,21 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
         return;
     }
 
-    TrackId selectedTrackId =
-            pTrack ? pTrack->getId() : TrackId();
-
+    TrackId selectedTrackId;
     std::vector<CrateId> sortedTrackCrates;
-    CrateTrackSelectResult trackCratesIter(
-            m_pTrackCollection->crates().selectTrackCratesSorted(selectedTrackId));
-    while (trackCratesIter.next()) {
-        sortedTrackCrates.push_back(trackCratesIter.crateId());
+    if (pTrack) {
+        selectedTrackId = pTrack->getId();
+        CrateTrackSelectResult trackCratesIter(
+                m_pTrackCollection->crates().selectTrackCratesSorted(selectedTrackId));
+        while (trackCratesIter.next()) {
+            sortedTrackCrates.push_back(trackCratesIter.crateId());
+        }
     }
 
     // Set all crates the track is in bold (or if there is no track selected,
     // clear all the bolding).
     for (TreeItem* pTreeItem: pRootItem->children()) {
-        updateTreeItemTrackSelection(pTreeItem, selectedTrackId, sortedTrackCrates);
+        updateTreeItemForTrackSelection(pTreeItem, selectedTrackId, sortedTrackCrates);
     }
 
     m_childModel.triggerRepaint();
