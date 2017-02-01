@@ -159,11 +159,9 @@ QString CrateFeature::formatRootViewHtml() const {
 std::unique_ptr<TreeItem> CrateFeature::newTreeItem(
         const CrateSummary& crateSummary,
         TrackId selectedTrackId) {
-    auto pTreeItem = std::make_unique<TreeItem>(
-            this, formatLabel(crateSummary), crateSummary.getId().toVariant());
-    pTreeItem->setIcon(
-            crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
+    auto pTreeItem = std::make_unique<TreeItem>(this);
 
+    updateTreeItemCrateSummary(pTreeItem.get(), crateSummary);
     updateTreeItemTrackSelection(pTreeItem.get(), selectedTrackId, std::vector<CrateId>());
 
     return pTreeItem;
@@ -173,7 +171,14 @@ void CrateFeature::updateTreeItemCrateSummary(
         TreeItem* pTreeItem,
         const CrateSummary& crateSummary) {
     DEBUG_ASSERT(pTreeItem != nullptr);
-    DEBUG_ASSERT(CrateId(pTreeItem->getData()) == crateSummary.getId());
+    if (pTreeItem->getData().isNull()) {
+        // Initialize a newly created tree item
+        pTreeItem->setData(crateSummary.getId().toVariant());
+    } else {
+        // The data (= CrateId) is immutable once it has been set
+        DEBUG_ASSERT(CrateId(pTreeItem->getData()) == crateSummary.getId());
+    }
+    // Update mutable properties
     pTreeItem->setLabel(formatLabel(crateSummary));
     pTreeItem->setIcon(crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
 }
