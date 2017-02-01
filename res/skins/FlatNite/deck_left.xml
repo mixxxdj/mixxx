@@ -22,20 +22,19 @@
                 <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable> -->
                 <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
               </Template>
-          
-              <!--	Additional line to display comments from file tag. 
+
+              <!--	Additional line to display comments from file tag/library column.
               Useful to explain hotcues, loop, Ins & Outs for live sets etc.
               Deprecated as soon as HotCue labels are easily editable -->
-              <WidgetGroup><!-- 17px -->
+              <WidgetGroup>
                 <ObjectName>TrackCommentLeft</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>me,f</SizePolicy>
                 <Children>
                   <TrackProperty>
-                      <Size>0me,17f</Size>
-                      <Property>comment</Property>
-                      <Elide>right</Elide>
-                      <Channel><Variable name="channum" /></Channel>
+                    <Size>0me,16f</Size>
+                    <Property>comment</Property>
+                    <Elide>right</Elide>
+                    <Channel><Variable name="channum" /></Channel>
                   </TrackProperty>
                 </Children>
                 <Connection>

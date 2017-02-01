@@ -126,9 +126,9 @@
         </Children>
       </WidgetGroup><!-- /Deck Buttons -->
 
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
-      <Template src="skin:deck_hotcues.xml"/>
+      <Template src="skin:hotcues.xml"/>
 
       <WidgetGroup><!-- Play button -->
         <Layout>stacked</Layout>

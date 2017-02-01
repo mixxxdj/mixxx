@@ -1,7 +1,7 @@
 <!--
 Description:
-	A Sampler deck with 0/4/8 Hotcue buttons, control buttons, Gain knob,
-	Pitch slider and waveform overview.
+  A Sampler deck with 0/4/8 Hotcue buttons, control buttons, Gain knob,
+  Pitch slider and waveform overview.
 Variables:
   ToolTip/ToolTipID
   ObjectName
@@ -14,252 +14,252 @@ Variables:
   Knob graphics
 -->
 <Template>
-	<SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
-	<WidgetGroup><!-- SamplerDeck -->
-		<Layout>horizontal</Layout>
-		<ObjectName>SamplerDeck</ObjectName>
-		<Size>180me,82f</Size><!-- 79 + 3bottom -->
-		<Children>
-		
-			<WidgetGroup><!-- SamplerMain -->
-				<Layout>vertical</Layout>
-				<SizePolicy>min,min</SizePolicy>
-				<ObjectName>SamplerMain</ObjectName>
-				<Children>
-		
-					<WidgetGroup><!-- SamplerTitle -->
-						<Layout>horizontal</Layout>
-						<Size>1me,19f</Size>
-						<ObjectName>SamplerTitle</ObjectName>
-						<Children>
-							<Text>
-								<TooltipId>text</TooltipId>
-								<Size>1me,18f</Size>y
-								<Group>[Sampler<Variable name="samplernum"/>]</Group>
-								<Elide>right</Elide>
-							</Text>
-						</Children>
-					</WidgetGroup><!-- /SamplerTitle -->
-						
-					<WidgetGroup><!-- Play / Overview / Buttons -->
-						<Layout>horizontal</Layout>
-						<Size>1me,36f</Size>
-						<ObjectName>SamplerPlayOverview</ObjectName>
-						<Children>
-							<WidgetGroup>
-								<ObjectName>SamplerPlay</ObjectName>
-								<Layout>stacked</Layout>
-								<Size>25f,36f</Size>
-								<Children>
-									<Template src="skin:button_2state_display.xml">
-										<SetVariable name="ObjectName">PlayCue</SetVariable>
-										<SetVariable name="Size">24f,34f</SetVariable>
-										<SetVariable name="ToolTipID">play_cue_set</SetVariable>
-										<SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-										<SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
-										<SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
-									</Template>
-							<!--	Turns Orange when playing Cue/HotCue.
-									Only visible when play_indicator=0 -->
-									<Template src="skin:button_2state.xml">
-										<SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
-										<SetVariable name="Size">24f,34f</SetVariable>
-										<SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-									</Template>
-								</Children>
-							</WidgetGroup>
-							
-							<WidgetGroup><!-- SamplerOverview -->
-								<ObjectName>SamplerOverviewRow</ObjectName>
-								<Layout>horizontal</Layout>
-								<SizePolicy>me,min</SizePolicy>
-								<Children>
-									<Overview>
-								        <ObjectName>SamplerOverview</ObjectName>
-										<TooltipId>waveform_overview</TooltipId>
-										<SizePolicy>me,min</SizePolicy>
-										<Group><Variable name="group"/></Group>
-										<!-- BgColor has no effect here -->
-										<BgColor>#1a1a1a</BgColor>
-										<SignalColor>#bababa</SignalColor>
-										<PlayPosColor>#FF4300</PlayPosColor>
-										<MarkerColor>#00FF00</MarkerColor>
-										<DefaultMark>
-											<Align>bottom</Align>
-											<Color>#00FF00</Color>
-											<TextColor>#FFFFFF</TextColor>
-											<Text> %1 </Text>
-										</DefaultMark>
-										<Connection>
-											<ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-										</Connection>
-									</Overview>
-									
-									<WidgetGroup>
-									    <ObjectName>Spacer0f</ObjectName>
-									    <Size>1f,0me</Size>
-									    <Children/>
-									</WidgetGroup>
-									
-									<WidgetGroup><!-- SamplerButtonGrid -->
-										<Layout>vertical</Layout>
-										<SizePolicy>min,min</SizePolicy>
-										<ObjectName>SamplerButtonGrid</ObjectName>
-										<Children>
-											<WidgetGroup>
-												<Layout>horizontal</Layout>
-												<SizePolicy>min,min</SizePolicy>
-												<Children>
-													<Template src="skin:button_2state.xml">
-														<SetVariable name="ToolTipId">repeat</SetVariable>
-														<SetVariable name="ObjectName">SamplerButton</SetVariable>
-														<SetVariable name="Size">18f,18f</SetVariable>
-														<SetVariable name="state_0_pressed">sampler_repeat_off.svg</SetVariable>
-														<SetVariable name="state_0_unpressed">sampler_repeat_off.svg</SetVariable>
-														<SetVariable name="state_1_pressed">sampler_repeat_on.svg</SetVariable>
-														<SetVariable name="state_1_unpressed">sampler_repeat_on.svg</SetVariable>
-														<SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
-													</Template>
-													<Template src="skin:button_1state.xml">
-														<SetVariable name="ToolTipId">eject</SetVariable>
-														<SetVariable name="ObjectName">SamplerButton</SetVariable>
-														<SetVariable name="Size">18f,18f</SetVariable>
-														<SetVariable name="state_0_pressed">sampler_eject_down.svg</SetVariable>
-														<SetVariable name="state_0_unpressed">sampler_eject.svg</SetVariable>
-														<SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
-													</Template>
-												</Children>
-											</WidgetGroup>
-							
-											<WidgetGroup>
-												<Layout>horizontal</Layout>
-												<SizePolicy>min,min</SizePolicy>
-												<Children>
-													<Template src="skin:button_3state.xml">
-														<SetVariable name="ToolTipId">orientation</SetVariable>
-														<SetVariable name="ObjectName">SamplerButton</SetVariable>
-														<SetVariable name="Size">18f,18f</SetVariable>
-														<SetVariable name="state_0_text">|--</SetVariable>
-														<SetVariable name="state_1_text">-|-</SetVariable>
-														<SetVariable name="state_2_text">--|</SetVariable>
-														<SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
-													</Template>
-													<Template src="skin:button_2state.xml">
-														<SetVariable name="ToolTipId">keylock</SetVariable>
-														<SetVariable name="ObjectName">SamplerButton</SetVariable>
-														<SetVariable name="Size">18f,18f</SetVariable>
-														<SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
-														<SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
-														<SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
-														<SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
-														<SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
-													</Template>
-												</Children>
-											</WidgetGroup>
-										</Children>
-									</WidgetGroup><!-- /SamplerButtonGrid -->
-								</Children>
-							</WidgetGroup><!-- /SamplerOverview -->
-						</Children>
-					</WidgetGroup><!-- /Play / Overview / Buttons -->
-					
-					<WidgetGroup><!-- Sync HotCues Gain Pfl -->
-						<Layout>horizontal</Layout>
-						<Size>1me,24f</Size>
-						<Children>
-							
-							<Template src="skin:sampler_hotcues.xml"/>
-							
-							<WidgetGroup>
-								<ObjectName>SamplerSyncGainPfl</ObjectName>
-								<Layout>horizontal</Layout>
-								<SizePolicy>min,min</SizePolicy>
-								<Children>
+  <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+  <WidgetGroup><!-- SamplerDeck -->
+    <Layout>horizontal</Layout>
+    <ObjectName>SamplerDeck</ObjectName>
+    <Size>180me,82f</Size><!-- 79 + 3bottom -->
+    <Children>
+
+      <WidgetGroup><!-- SamplerMain -->
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <ObjectName>SamplerMain</ObjectName>
+        <Children>
+
+          <WidgetGroup><!-- SamplerTitle -->
+            <Layout>horizontal</Layout>
+            <Size>1me,19f</Size>
+            <ObjectName>SamplerTitle</ObjectName>
+            <Children>
+              <Text>
+                <TooltipId>text</TooltipId>
+                <Size>1me,18f</Size>y
+                <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                <Elide>right</Elide>
+              </Text>
+            </Children>
+          </WidgetGroup><!-- /SamplerTitle -->
+
+          <WidgetGroup><!-- Play / Overview / Buttons -->
+            <Layout>horizontal</Layout>
+            <Size>1me,36f</Size>
+            <ObjectName>SamplerPlayOverview</ObjectName>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>SamplerPlay</ObjectName>
+                <Layout>stacked</Layout>
+                <Size>25f,36f</Size>
+                <Children>
+                  <Template src="skin:button_2state_display.xml">
+                    <SetVariable name="ObjectName">PlayCue</SetVariable>
+                    <SetVariable name="Size">24f,34f</SetVariable>
+                    <SetVariable name="ToolTipID">play_cue_set</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+                  </Template>
+              <!--	Turns Orange when playing Cue/HotCue.
+                  Only visible when play_indicator=0 -->
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
+                    <SetVariable name="Size">24f,34f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- SamplerOverview -->
+                <ObjectName>SamplerOverviewRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Overview>
+                    <ObjectName>SamplerOverview</ObjectName>
+                    <TooltipId>waveform_overview</TooltipId>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Group><Variable name="group"/></Group>
+                    <!-- BgColor has no effect here -->
+                    <BgColor>#1a1a1a</BgColor>
+                    <SignalColor>#bababa</SignalColor>
+                    <PlayPosColor>#FF4300</PlayPosColor>
+                    <MarkerColor>#00FF00</MarkerColor>
+                    <DefaultMark>
+                      <Align>bottom</Align>
+                      <Color>#00FF00</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                      <Text> %1 </Text>
+                    </DefaultMark>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                    </Connection>
+                  </Overview>
+
+                  <WidgetGroup>
+                      <ObjectName>Spacer0f</ObjectName>
+                      <Size>1f,0me</Size>
+                      <Children/>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- SamplerButtonGrid -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <ObjectName>SamplerButtonGrid</ObjectName>
+                    <Children>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <Template src="skin:button_2state.xml">
+                            <SetVariable name="ToolTipId">repeat</SetVariable>
+                            <SetVariable name="ObjectName">SamplerButton</SetVariable>
+                            <SetVariable name="Size">18f,18f</SetVariable>
+                            <SetVariable name="state_0_pressed">sampler_repeat_off.svg</SetVariable>
+                            <SetVariable name="state_0_unpressed">sampler_repeat_off.svg</SetVariable>
+                            <SetVariable name="state_1_pressed">sampler_repeat_on.svg</SetVariable>
+                            <SetVariable name="state_1_unpressed">sampler_repeat_on.svg</SetVariable>
+                            <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
+                          </Template>
+                          <Template src="skin:button_1state.xml">
+                            <SetVariable name="ToolTipId">eject</SetVariable>
+                            <SetVariable name="ObjectName">SamplerButton</SetVariable>
+                            <SetVariable name="Size">18f,18f</SetVariable>
+                            <SetVariable name="state_0_pressed">sampler_eject_down.svg</SetVariable>
+                            <SetVariable name="state_0_unpressed">sampler_eject.svg</SetVariable>
+                            <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <Template src="skin:button_3state.xml">
+                            <SetVariable name="ToolTipId">orientation</SetVariable>
+                            <SetVariable name="ObjectName">SamplerButton</SetVariable>
+                            <SetVariable name="Size">18f,18f</SetVariable>
+                            <SetVariable name="state_0_text">|--</SetVariable>
+                            <SetVariable name="state_1_text">-|-</SetVariable>
+                            <SetVariable name="state_2_text">--|</SetVariable>
+                            <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
+                          </Template>
+                          <Template src="skin:button_2state.xml">
+                            <SetVariable name="ToolTipId">keylock</SetVariable>
+                            <SetVariable name="ObjectName">SamplerButton</SetVariable>
+                            <SetVariable name="Size">18f,18f</SetVariable>
+                            <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
+                            <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
+                            <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
+                            <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
+                            <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup><!-- /SamplerButtonGrid -->
+                </Children>
+              </WidgetGroup><!-- /SamplerOverview -->
+            </Children>
+          </WidgetGroup><!-- /Play / Overview / Buttons -->
+
+          <WidgetGroup><!-- Sync HotCues Gain Pfl -->
+            <Layout>horizontal</Layout>
+            <Size>1me,24f</Size>
+            <Children>
+
+              <Template src="skin:hotcues.xml"/>
+
+              <WidgetGroup>
+                <ObjectName>SamplerSyncGainPfl</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
                     <WidgetGroup><Size>0me,1min</Size><Children/></WidgetGroup>
-									<Template src="skin:button_1state.xml">
-										<SetVariable name="ToolTipId">beatsync_beatsync_tempo</SetVariable>
-										<SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
-										<SetVariable name="Size">35f,22f</SetVariable>
-										<SetVariable name="state_0_text">SYNC</SetVariable>
-										<SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],beatsync</SetVariable>
-										<SetVariable name="ConfigKeyRight">[Sampler<Variable name="samplernum"/>],beatsync_tempo</SetVariable>
-									</Template>
-										<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-									<Template src="skin:button_2state.xml">
-										<SetVariable name="ToolTipID">pfl</SetVariable>
-										<SetVariable name="ObjectName">PflButton</SetVariable>
-										<SetVariable name="Size">22f,22f</SetVariable>
-										<SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
-										<SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
-										<SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
-										<SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
-										<SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],pfl</SetVariable>
-									</Template>
-										<WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-									<Template src="skin:knob_textless.xml">
-										<SetVariable name="ToolTipID">pregain</SetVariable>
-										<SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
-										<SetVariable name="Size">22f,22f</SetVariable>
-										<SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
-										<SetVariable name="ConfigKey">pregain</SetVariable>
-										<SetVariable name="Color">tiny_red</SetVariable>
-									</Template>
-								</Children>
-							</WidgetGroup>
-					
-						</Children>
-					</WidgetGroup><!-- /Sync HotCues Gain Pfl -->
-					
-				</Children>
-			</WidgetGroup><!-- /SamplerMain -->
-			
-			<WidgetGroup><!-- SamplerVU   79 x 21-->
-				<ObjectName>SamplerVU</ObjectName>
-				<Layout>stacked</Layout>
-				<Size>12f,79f</Size>
-				<Children><!-- 71 x 6 -->
-					<StatusLight>
-						<TooltipId>sampler_PeakIndicator</TooltipId>
-						<ObjectName>SamplerVUClipping</ObjectName>
-						<PathStatusLight>skin:/graphics/vumeter_sampler_clipping_over.png</PathStatusLight>
-						<PathBack>skin:/graphics/vumeter_sampler_clipping.png</PathBack>
-						<Connection>
-							<ConfigKey>[Sampler<Variable name="samplernum"/>],PeakIndicator</ConfigKey>
-						</Connection>
-					</StatusLight>
-					<VuMeter>
-						<TooltipId>sampler_VuMeter</TooltipId>
-						<ObjectName>SamplerVU</ObjectName>
-						<PathVu>skin:/graphics/vumeter_sampler_over.png</PathVu>
-						<PathBack>skin:/graphics/vumeter_sampler.png</PathBack>
-						<Horizontal>false</Horizontal>
-						<PeakHoldSize>5</PeakHoldSize>
-						<PeakHoldTime>500</PeakHoldTime>
-						<PeakFallTime>50</PeakFallTime>
-						<PeakFallStep>2</PeakFallStep>
-						<Connection>
-							<ConfigKey>[Sampler<Variable name="samplernum"/>],VuMeter</ConfigKey>
-						</Connection>
-					</VuMeter>
-				</Children>
-			</WidgetGroup><!-- /SamplerVU -->
-					
-			<WidgetGroup><!-- Pitch Control -->
-				<ObjectName>SamplerPitchSlider</ObjectName>
-				<Layout>vertical</Layout>
-				<Size>31f,min</Size><!-- 1 + [ 3 + 24 + 3 ] -->
-				<Children>
-					<SliderComposed>
-						<TooltipId>rate</TooltipId>
-						<Handle>skin:/knobs_sliders/sampler_pitch_handle.svg</Handle>
-						<Slider>skin:/knobs_sliders/sampler_pitch_slider.svg</Slider>
-						<Horizontal>false</Horizontal>
-						<Connection>
-							<ConfigKey>[Sampler<Variable name="samplernum"/>],rate</ConfigKey>
-						</Connection>
-					</SliderComposed>
-				</Children>
-			</WidgetGroup><!-- /Pitch Control -->
-		</Children>
-	</WidgetGroup><!-- /SamplerDeck -->
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="ToolTipId">beatsync_beatsync_tempo</SetVariable>
+                    <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
+                    <SetVariable name="Size">35f,22f</SetVariable>
+                    <SetVariable name="state_0_text">SYNC</SetVariable>
+                    <SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],beatsync</SetVariable>
+                    <SetVariable name="ConfigKeyRight">[Sampler<Variable name="samplernum"/>],beatsync_tempo</SetVariable>
+                  </Template>
+                    <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ToolTipID">pfl</SetVariable>
+                    <SetVariable name="ObjectName">PflButton</SetVariable>
+                    <SetVariable name="Size">22f,22f</SetVariable>
+                    <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
+                    <SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],pfl</SetVariable>
+                  </Template>
+                    <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="ToolTipID">pregain</SetVariable>
+                    <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
+                    <SetVariable name="Size">22f,22f</SetVariable>
+                    <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+                    <SetVariable name="ConfigKey">pregain</SetVariable>
+                    <SetVariable name="Color">tiny_red</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- /Sync HotCues Gain Pfl -->
+
+        </Children>
+      </WidgetGroup><!-- /SamplerMain -->
+
+      <WidgetGroup><!-- SamplerVU   79 x 21-->
+        <ObjectName>SamplerVU</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>12f,79f</Size>
+        <Children><!-- 71 x 6 -->
+          <StatusLight>
+            <TooltipId>sampler_PeakIndicator</TooltipId>
+            <ObjectName>SamplerVUClipping</ObjectName>
+            <PathStatusLight>skin:/graphics/vumeter_sampler_clipping_over.png</PathStatusLight>
+            <PathBack>skin:/graphics/vumeter_sampler_clipping.png</PathBack>
+            <Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],PeakIndicator</ConfigKey>
+            </Connection>
+          </StatusLight>
+          <VuMeter>
+            <TooltipId>sampler_VuMeter</TooltipId>
+            <ObjectName>SamplerVU</ObjectName>
+            <PathVu>skin:/graphics/vumeter_sampler_over.png</PathVu>
+            <PathBack>skin:/graphics/vumeter_sampler.png</PathBack>
+            <Horizontal>false</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
+            <Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],VuMeter</ConfigKey>
+            </Connection>
+          </VuMeter>
+        </Children>
+      </WidgetGroup><!-- /SamplerVU -->
+
+      <WidgetGroup><!-- Pitch Control -->
+        <ObjectName>SamplerPitchSlider</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>25f,min</Size><!-- 1 + [ 3 + 24 + 3 ] -->
+        <Children>
+          <SliderComposed>
+            <TooltipId>rate</TooltipId>
+            <Handle>skin:/knobs_sliders/sampler_pitch_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/sampler_pitch_slider.svg</Slider>
+            <Horizontal>false</Horizontal>
+            <Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],rate</ConfigKey>
+            </Connection>
+          </SliderComposed>
+        </Children>
+      </WidgetGroup><!-- /Pitch Control -->
+    </Children>
+  </WidgetGroup><!-- /SamplerDeck -->
 </Template>

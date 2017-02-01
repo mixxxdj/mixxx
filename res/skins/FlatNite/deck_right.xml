@@ -122,6 +122,7 @@
                 <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable> -->
                 <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
               </Template>
+
               <!--	Additional line to display comments from file tag/library column. 
               Useful to explain hotcues, loop, Ins & Outs for live sets etc.
               Deprecated as soon as HotCue labels are easily editable -->
@@ -136,14 +137,15 @@
                     <Channel><Variable name="channum" /></Channel>
                   </TrackProperty>
                 </Children>
-                  <Connection>
-                    <ConfigKey persist="true">[FlatNite],trackComment</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
+                <Connection>
+                  <ConfigKey persist="true">[FlatNite],trackComment</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup><!-- /Track Comment -->
+
             </Children>
           </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
-          
+
           <Template src="skin:deck_buttons_right.xml" /><!-- 24f -->
           <Template src="skin:deck_loop_beatjump_right.xml"/><!-- 50+1 -->
           

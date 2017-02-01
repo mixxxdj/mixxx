@@ -16,13 +16,13 @@ Description:
         <SizePolicy>200f,me</SizePolicy>
         <Children>
           <WidgetGroup>
-              <ObjectName>SkinSettingsHeader</ObjectName>
+            <ObjectName>SkinSettingsHeader</ObjectName>
             <Layout>horizontal</Layout>
             <Size>200f,30f</Size>
             <Children>
               <Label>
-                  <ObjectName>CategoryLabel</ObjectName>
-                  <Text>Decks / General</Text>
+                <ObjectName>CategoryLabel</ObjectName>
+                <Text>Decks / General</Text>
               </Label>
                 <WidgetGroup><Size>1me,1me</Size><Children/></WidgetGroup>
               <Template src="skin:button_2state.xml">
@@ -70,7 +70,7 @@ Description:
                 <SetVariable name="state_0_text">      Hotcues</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Hotcues   4&#9668; 8</SetVariable>
                 <SetVariable name="state_2_text"> &#10003; Hotcues   4 &#9658;8</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],hotcues_deck</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[FlatNite],hotcues</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_persist.xml">
@@ -108,24 +108,36 @@ Description:
                 <SetVariable name="state_1_text"> &#10003; BPM / Pitch Slider</SetVariable>
                 <SetVariable name="ConfigKeyPerm">[FlatNite],pitch_slider</SetVariable>
               </Template>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
+
+              <WidgetGroup><!-- Pitch/Key submenu -->
+                <Layout>stacked</Layout>
                 <SizePolicy>max,max</SizePolicy>
                 <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Pitch slider is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[FlatNite],pitch_slider</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
+
                   <Template src="skin:button_2state_persist.xml">
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">172f,20f</SetVariable>
                     <SetVariable name="Align">left</SetVariable>
-                    <SetVariable name="state_0_text">          Key Controls</SetVariable>
-                    <SetVariable name="state_1_text">     &#10003; Key Controls</SetVariable>
+                    <SetVariable name="state_0_text">      Key Controls</SetVariable>
+                    <SetVariable name="state_1_text"> &#10003; Key Controls</SetVariable>
                     <SetVariable name="ConfigKeyPerm">[FlatNite],key_controls</SetVariable>
                   </Template>
                 </Children>
-                <Connection>
-                  <ConfigKey persist="true">[FlatNite],pitch_slider</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- Pitch/Key submenu -->
 
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
@@ -148,7 +160,7 @@ Description:
             <Size>200f,min</Size>
             <Children>
 
-              <Template src="skin:button_3state_persist.xml">
+              <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                 <SetVariable name="Size">172f,20f</SetVariable>
                 <SetVariable name="Align">left</SetVariable>
@@ -157,39 +169,66 @@ Description:
                 <SetVariable name="ConfigKeyPerm">[FlatNite],spinnyCover</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_persist.xml">
-                  <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                  <SetVariable name="Size">172f,20f</SetVariable>
-                  <SetVariable name="Align">left</SetVariable>
-                  <SetVariable name="state_0_text">      Spinny&#9668; Cover</SetVariable>
-                  <SetVariable name="state_1_text">      Spinny &#9658;Cover</SetVariable>
-                  <SetVariable name="ConfigKeyPerm">[FlatNite],spinny0_cover1</SetVariable>
-              </Template>
+              <WidgetGroup><!-- Pitch/Key submenu -->
+                <Layout>stacked</Layout>
+                <SizePolicy>max,max</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <Template src="skin:button_2state_persist.xml">
-                  <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                  <SetVariable name="Size">172f,20f</SetVariable>
-                  <SetVariable name="Align">left</SetVariable>
-                  <SetVariable name="state_0_text">      °&#9668; O</SetVariable>
-                  <SetVariable name="state_1_text">      ° &#9658;O</SetVariable>
-                  <SetVariable name="ConfigKeyPerm">[FlatNite],spinnyCoverBIG</SetVariable>
-              </Template>
+                  <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[FlatNite],spinnyCover</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
 
-              <Template src="skin:button_2state_persist.xml">
-                  <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                  <SetVariable name="Size">172f,20f</SetVariable>
-                  <SetVariable name="Align">left</SetVariable>
-                  <SetVariable name="state_0_text">      Cover on Spinny</SetVariable>
-                  <SetVariable name="state_1_text"> &#10003; Cover on Spinny</SetVariable>
-                  <SetVariable name="ConfigKeyPerm">[FlatNite],spinnyWithCoverArt</SetVariable>
-              </Template>
+                  <WidgetGroup><!-- SpinnyCover submenu buttons -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>max,max</SizePolicy>
+                    <Children>
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                        <SetVariable name="Size">172f,20f</SetVariable>
+                        <SetVariable name="Align">left</SetVariable>
+                        <SetVariable name="state_0_text">      Spinny&#9668; Cover</SetVariable>
+                        <SetVariable name="state_1_text">      Spinny &#9658;Cover</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[FlatNite],spinny0_cover1</SetVariable>
+                      </Template>
+
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                        <SetVariable name="Size">172f,20f</SetVariable>
+                        <SetVariable name="Align">left</SetVariable>
+                        <SetVariable name="state_0_text">      °&#9668; O</SetVariable>
+                        <SetVariable name="state_1_text">      ° &#9658;O</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[FlatNite],spinnyCoverBIG</SetVariable>
+                      </Template>
+
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                        <SetVariable name="Size">172f,20f</SetVariable>
+                        <SetVariable name="Align">left</SetVariable>
+                        <SetVariable name="state_0_text">      Cover on Spinny</SetVariable>
+                        <SetVariable name="state_1_text"> &#10003; Cover on Spinny</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[FlatNite],spinnyWithCoverArt</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup><!-- Spinny/Cover submenu buttons -->
+                </Children>
+              </WidgetGroup><!-- Spinny/Cover submenu -->
 
             </Children>
           </WidgetGroup><!-- /Spinny Settings -->
 
           <Label><!-- Mixer Settings -->
-              <ObjectName>CategoryLabel</ObjectName>
-              <Text>Mixer</Text>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Mixer</Text>
           </Label>
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
@@ -232,46 +271,64 @@ Description:
                 <SetVariable name="state_1_text"> &#10003; Mixer Bar</SetVariable>
                 <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar</SetVariable>
               </Template>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
+
+              <WidgetGroup><!-- MixerBar submenu -->
+                <Layout>stacked</Layout>
                 <SizePolicy>max,max</SizePolicy>
                 <Children>
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                    <SetVariable name="Size">172f,20f</SetVariable>
-                    <SetVariable name="Align">left</SetVariable>
-                    <SetVariable name="state_0_text">          Headphone Mixer</SetVariable>
-                    <SetVariable name="state_1_text">     &#10003; Headphone Mixer</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar_headphone</SetVariable>
-                  </Template>
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                    <SetVariable name="Size">172f,20f</SetVariable>
-                    <SetVariable name="Align">left</SetVariable>
-                    <SetVariable name="state_0_text">          MIC mixer (if configured)</SetVariable>
-                    <SetVariable name="state_1_text">     &#10003; MIC mixer (if configured)</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar_mic</SetVariable>
-                  </Template>
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                    <SetVariable name="Size">172f,20f</SetVariable>
-                    <SetVariable name="Align">left</SetVariable>
-                    <SetVariable name="state_0_text">          AUX mixer (if configured)</SetVariable>
-                    <SetVariable name="state_1_text">     &#10003; AUX mixer (if configured)</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar_aux</SetVariable>
-                  </Template>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when MixerBar is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[FlatNite],mixerbar</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- MixerBar submenu buttons -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>max,max</SizePolicy>
+                    <Children>
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                        <SetVariable name="Size">172f,20f</SetVariable>
+                        <SetVariable name="Align">left</SetVariable>
+                        <SetVariable name="state_0_text">      Headphone Mixer</SetVariable>
+                        <SetVariable name="state_1_text"> &#10003; Headphone Mixer</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar_headphone</SetVariable>
+                      </Template>
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                        <SetVariable name="Size">172f,20f</SetVariable>
+                        <SetVariable name="Align">left</SetVariable>
+                        <SetVariable name="state_0_text">      MIC mixer (if configured)</SetVariable>
+                        <SetVariable name="state_1_text"> &#10003; MIC mixer (if configured)</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar_mic</SetVariable>
+                      </Template>
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                        <SetVariable name="Size">172f,20f</SetVariable>
+                        <SetVariable name="Align">left</SetVariable>
+                        <SetVariable name="state_0_text">      AUX mixer (if configured)</SetVariable>
+                        <SetVariable name="state_1_text"> &#10003; AUX mixer (if configured)</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar_aux</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup><!-- MixerBar submenu buttons -->
                 </Children>
-                <Connection>
-                  <ConfigKey persist="true">[FlatNite],mixerbar</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- MixerBar submenu -->
             </Children>
           </WidgetGroup><!-- /Mixer Settings -->
 
           <Label><!-- Extras -->
-              <ObjectName>CategoryLabel</ObjectName>
-              <Text>Extras</Text>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Extras</Text>
           </Label>
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
@@ -288,10 +345,26 @@ Description:
                 <SetVariable name="state_1_text"> &#10003; Effect Rack</SetVariable>
                 <SetVariable name="ConfigKeyPerm">[EffectRack1],show</SetVariable>
               </Template>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
+
+              <WidgetGroup><!-- EffectRack submenu -->
+                <Layout>stacked</Layout>
                 <SizePolicy>max,max</SizePolicy>
                 <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when EffectRack1 is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
+
                   <Template src="skin:button_2state_persist.xml">
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">172f,20f</SetVariable>
@@ -300,12 +373,9 @@ Description:
                     <SetVariable name="state_1_text">      2 &#9658;4  Effect Units</SetVariable>
                     <SetVariable name="ConfigKeyPerm">[FlatNite],2or4_fxUnits</SetVariable>
                   </Template>
+
                 </Children>
-                <Connection>
-                  <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- EffectRack submenu -->
 
               <Template src="skin:button_3state_persist.xml">
                 <SetVariable name="ToolTipID">show_samplers</SetVariable>
@@ -317,25 +387,6 @@ Description:
                 <SetVariable name="state_2_text"> &#10003; Samplers 4 &#9658;8</SetVariable>
                 <SetVariable name="ConfigKeyPerm">[Samplers],show_samplers</SetVariable>
               </Template>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <SizePolicy>max,max</SizePolicy>
-                <Children>
-                  <Template src="skin:button_3state_persist.xml">
-                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                    <SetVariable name="Size">172f,20f</SetVariable>
-                    <SetVariable name="Align">left</SetVariable>
-                    <SetVariable name="state_0_text">          HotCues</SetVariable>
-                    <SetVariable name="state_1_text">     &#10003; HotCues   4&#9668; 8</SetVariable>
-                    <SetVariable name="state_2_text">     &#10003; HotCues   4 &#9658;8</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[FlatNite],hotcues_samplers</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
 
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ToolTipID">show_library</SetVariable>
@@ -347,34 +398,38 @@ Description:
                 <SetVariable name="ConfigKeyPerm">[Library],show_library</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ToolTipID">show_previewdeck</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,20f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      Preview Deck</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Preview Deck</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[PreviewDeck],show_previewdeck</SetVariable>
-              </Template>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
+              <WidgetGroup><!-- Library submenu -->
+                <Layout>stacked</Layout>
                 <SizePolicy>max,max</SizePolicy>
                 <Children>
-                  <Template src="skin:button_3state_persist.xml">
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Library is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[Library],show_library</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:button_2state_persist.xml">
+                    <SetVariable name="ToolTipID">show_previewdeck</SetVariable>
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">172f,20f</SetVariable>
                     <SetVariable name="Align">left</SetVariable>
-                    <SetVariable name="state_0_text">          HotCues</SetVariable>
-                    <SetVariable name="state_1_text">     &#10003; HotCues   4&#9668; 8</SetVariable>
-                    <SetVariable name="state_2_text">     &#10003; HotCues   4 &#9658;8</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[FlatNite],hotcues_preview</SetVariable>
+                    <SetVariable name="state_0_text">      Preview Deck</SetVariable>
+                    <SetVariable name="state_1_text"> &#10003; Preview Deck</SetVariable>
+                    <SetVariable name="ConfigKeyPerm">[PreviewDeck],show_previewdeck</SetVariable>
                   </Template>
+
                 </Children>
-                <Connection>
-                  <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- Library submenu -->
+
             </Children>
           </WidgetGroup><!-- /Extras -->
         </Children>

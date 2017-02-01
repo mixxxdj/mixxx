@@ -148,17 +148,20 @@ WWidget, QLabel {
     font-weight: bold;
     background-color: #456129;	*/
   }
+  #SubmenuCover {
+	  background-color: rgba(51, 51, 51, 127);
+  }
+  #SkinSettingsButton {
+    padding: 4px 0px 0px 2px;
+    margin-bottom: 4px;	/*	*/
+    font-size: 12px/14px;
+    text-align: left;
+    color: #d2d2d2;
+  }
+  #SkinSettingsButton:hover {
+    background: #151515;
+  }
 
-#SkinSettingsButton {
-  padding: 4px 0px 0px 2px;
-  margin-bottom: 4px;	/*	*/
-  font-size: 12px/14px;
-  text-align: left;
-  color: #d2d2d2;
-}
-    #SkinSettingsButton:hover {
-      background: #151515;
-    }
 
 
 /*################################################################
@@ -166,9 +169,9 @@ WWidget, QLabel {
 ################################################################ */
 
 #WaveformContainer {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  }
-
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+/* Also, see color definition above. */
 #Waveform1, #Waveform2, #Waveform3, #Waveform4 {
 /* this will shift waveforms' center position to the left.
   Useful to 'look ahead' further (who cares about history, ha?)
@@ -292,6 +295,9 @@ are still drawn full-size.
     margin-top: 3px;
     background-color: #951212;	*/
   }
+  #Deck1, #Deck3, #Deck2, #Deck4 {
+    background-color: #0f0f0f
+    }
   #Deck1, #Deck3 {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';	/*
     background-color: #321654;	*/
@@ -352,9 +358,8 @@ are still drawn full-size.
   padding-left: 2px;
   font-size: 12px/12px;
   }
-#TrackCommentLeft {
-  border-bottom: 1px solid 0f0f0f;
-  }	
+  #TrackCommentLeft {
+  }
   #TrackCommentLeft WLabel, #TrackCommentRight WLabel {
   /* defining font-size here breaks top alignment	*/
     color: #888888;
@@ -364,13 +369,14 @@ are still drawn full-size.
 #DeckArtistTitleLoopLeft, #DeckTitlePassthroughLeft {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
     background-color: #333333;	/*
-    margin-top: 1px;	*/
+    border-top: 1px solid #0f0f0f;	*/
+    margin-top: 1px;
   }
 #DeckArtistTitleLoopRight, #DeckTitlePassthroughRight {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
     background-color: #333333;  /*
-    margin-bottom: 1px; */
-    border-bottom: 1px solid #0f0f0f;
+    border-bottom: 1px solid #0f0f0f; */
+    margin-bottom: 1px;
   }
   #TitleTimeRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
@@ -417,9 +423,10 @@ are still drawn full-size.
       background-color: #FF8F00;
     }
     
-#DeckButtonsPlay {
+#DeckButtonsPlay {  /*
   border-top: 1px solid #0f0f0f;
-  background-color: #0f0f0f;
+  background-color: #0f0f0f;  */
+  margin-top: 1px;
 }
 #DeckButtonsLeft {
   qproperty-layoutAlignment: 'Alignleft | AlignVCenter';
@@ -486,6 +493,7 @@ are still drawn full-size.
 
 #Hotcues {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color: #0f0f0f;
   }
   #HotcueButton {
     font-size: 13px/15px;
@@ -539,7 +547,7 @@ are still drawn full-size.
   qproperty-layoutSpacing: 0px;
 }
 #LoopBeatJumpContainer {
-  background-color: #0f0f0f
+  padding-top: 1px;
 }
   #LoopBeatJumpButton {
     font-weight: bold;
@@ -1094,7 +1102,8 @@ are still drawn full-size.
 }
   #SamplerDeck {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-    margin-bottom: 3px;
+    border-bottom: 3px solid #1e1e1e;
+    background-color: #0f0f0f;
   }
 
 #SamplersLoadButton {
@@ -1205,6 +1214,8 @@ are still drawn full-size.
 
 #PreviewDeck {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  background-color: #0f0f0f;
+  border-bottom: 5px solid #1e1e1e;
 }
 #PreviewTitle, #PreviewEject, #PreviewGainKnob {	/*
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';	*/
@@ -1283,6 +1294,9 @@ are still drawn full-size.
 
 #Spacer0f {
   background-color: #0f0f0f;
+}
+#Spacer1e {
+  background-color: #1e1e1e;
 }
 #Spacer33 {
   background-color: #333333;

@@ -7,7 +7,7 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetStack>
-    <Size>45f,45f</Size>
+    <SizePolicy>min,min</SizePolicy>
     <NextControl>[LoopMove],next</NextControl>
     <PrevControl>[LoopMove],prev</PrevControl>
     <Children>

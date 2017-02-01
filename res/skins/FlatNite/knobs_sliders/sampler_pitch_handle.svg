@@ -15,7 +15,7 @@
    id="svg5926"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="New document 9">
+   sodipodi:docname="sampler_pitch_handle.svg">
   <defs
      id="defs5928">
     <linearGradient
@@ -55,7 +55,7 @@
        id="linearGradient5924"
        xlink:href="#linearGradient5858"
        inkscape:collect="always"
-       gradientTransform="matrix(0.75,0,0,1,1.758538e-7,1047.3624)" />
+       gradientTransform="matrix(0.75,0,0,1,2e-7,1047.3624)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -65,7 +65,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="22.4"
-     inkscape:cx="18.563157"
+     inkscape:cx="13.45155"
      inkscape:cy="3.0028055"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -73,9 +73,9 @@
      inkscape:snap-page="true"
      inkscape:snap-bbox="true"
      inkscape:window-width="1366"
-     inkscape:window-height="746"
+     inkscape:window-height="747"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="21"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata5931">
@@ -85,7 +85,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -97,11 +97,11 @@
     <rect
        style="fill:url(#linearGradient5924);fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect5348"
-       width="24"
+       width="20"
        height="5"
-       x="0"
+       x="2"
        y="1047.3622"
-       rx="2"
+       rx="1.6666667"
        ry="1.9999999" />
   </g>
 </svg>

@@ -22,7 +22,7 @@ Variables:
 
           <WidgetGroup><!-- Preview Search Cover Tree -->
             <Layout>vertical</Layout>
-            <Size>191min,80me</Size>
+            <Size>183min,80me</Size>
             <Children>
               <Template src="skin:preview_deck.xml"/>
               <!-- Splitter to make CoverArt resizeable -->
