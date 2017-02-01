@@ -14,7 +14,7 @@ static const double kQKill = 0.9;
 static const double kQLowKillShelve = 0.4;
 static const double kQHighKillShelve = 0.4;
 static const double kKillGain = -23;
-static const double kBesselStartRatio = 0.4;
+static const double kBesselStartRatio = 0.25;
 static const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 static const int kRampDone = -1;
 
@@ -32,8 +32,13 @@ double knobValueToBiquadGainDb (double value, bool kill) {
     if (kill) {
         return kKillGain;
     }
-    double clampedValue = math_max(value, 0.07); // limit at kKillGain
-    return ratio2db(clampedValue);
+    if (value > kBesselStartRatio) {
+        return ratio2db(value);
+    }
+    double startDB = ratio2db(kBesselStartRatio);
+    value = 1 - (value / kBesselStartRatio);
+    return (kKillGain - startDB) * value + startDB;
+
 }
 
 double knobValueToBesselRatio (double value, bool kill) {
