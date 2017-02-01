@@ -164,17 +164,17 @@ TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
  * Before you can resize the data model dynamically by using 'insertRows' and 'removeRows'
  * make sure you have initialized
  */
-bool TreeItemModel::insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent) {
-    if (rows == 0) {
-        return true;
+void TreeItemModel::insertTreeItemRows(QList<TreeItem*>& rows, int position, const QModelIndex& parent) {
+    if (rows.isEmpty()) {
+        return;
     }
-    TreeItem *parentItem = getItem(parent);
 
-    beginInsertRows(parent, position, position + rows - 1);
-    parentItem->insertChildren(data, position, rows);
+    TreeItem* pParentItem = getItem(parent);
+    DEBUG_ASSERT(pParentItem != nullptr);
+
+    beginInsertRows(parent, position, position + rows.size() - 1);
+    pParentItem->insertChildren(rows, position, rows.size());
     endInsertRows();
-
-    return true;
 }
 
 bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent) {

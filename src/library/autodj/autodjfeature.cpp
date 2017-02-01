@@ -190,7 +190,7 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
         QList<TreeItem*> rows;
         rows.append(new TreeItem(this, crate.getName(), crate.getId().toVariant()));
         QModelIndex parentIndex = m_childModel.index(0, 0);
-        m_childModel.insertRows(rows, m_crateList.length(), rows.length(), parentIndex);
+        m_childModel.insertTreeItemRows(rows, m_crateList.length(), parentIndex);
         DEBUG_ASSERT(rows.isEmpty()); // ownership passed to m_childModel
         m_crateList.append(crate);
     } else {

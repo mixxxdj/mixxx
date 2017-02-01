@@ -607,7 +607,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertRows(modelRows, 0, modelRows.size());
+    m_childModel.insertTreeItemRows(modelRows, 0);
 
     // Update rendering of crates depending on the currently selected track
     slotTrackSelected(m_pSelectedTrack);
