@@ -18,7 +18,7 @@ Variables:
         <Layout>vertical</Layout>
         <SizePolicy>max,f</SizePolicy>
         <MinimumSize>-1,65</MinimumSize>
-        <MaximumSize>-1,65</MaximumSize>
+        <MaximumSize>-1,75</MaximumSize>
         <Children>
 
           <WidgetGroup>
