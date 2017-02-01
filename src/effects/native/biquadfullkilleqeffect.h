@@ -14,6 +14,7 @@
 #include "util/sample.h"
 #include "util/types.h"
 #include "util/memory.h"
+#include "util/samplebuffer.h"
 
 static const int kMaxDelay2 = 3300; // allows a 30 Hz filter at 97346;
 
@@ -35,11 +36,11 @@ class BiquadFullKillEQEffectGroupState final {
     std::unique_ptr<EngineFilterBessel4Low> m_low2;
     std::unique_ptr<EngineFilterDelay<kMaxDelay2>> m_delay2;
     std::unique_ptr<EngineFilterDelay<kMaxDelay2>> m_delay3;
-    CSAMPLE* m_pLowBuf;
-    CSAMPLE* m_pBandBuf;
-    CSAMPLE* m_pHighBuf;
+    std::unique_ptr<SampleBuffer> m_pLowBuf;
+    std::unique_ptr<SampleBuffer> m_pBandBuf;
+    std::unique_ptr<SampleBuffer> m_pHighBuf;
+    std::unique_ptr<SampleBuffer> m_pTempBuf;
 
-    CSAMPLE* m_pTempBuf;
     double m_oldLowBoost;
     double m_oldMidBoost;
     double m_oldHighBoost;

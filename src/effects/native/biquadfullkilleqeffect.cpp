@@ -14,9 +14,10 @@ static const double kQKill = 0.9;
 static const double kQLowKillShelve = 0.4;
 static const double kQHighKillShelve = 0.4;
 static const double kKillGain = -23;
+static const double kBesselStartRatio = 0.4;
 static const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 static const int kRampDone = -1;
-static const int kBesselStartRatio = 0.4;
+
 
 
 double getCenterFrequency(double low, double high) {
@@ -31,7 +32,7 @@ double knobValueToBiquadGainDb (double value, bool kill) {
     if (kill) {
         return kKillGain;
     }
-    double clampedValue = math_max(value, 0.07);
+    double clampedValue = math_max(value, 0.07); // limit at kKillGain
     return ratio2db(clampedValue);
 }
 
@@ -39,7 +40,7 @@ double knobValueToBesselRatio (double value, bool kill) {
     if (kill) {
         return 0.0;
     }
-    return math_min(value / 0.4, 1.0);
+    return math_min(value / kBesselStartRatio, 1.0);
 }
 
 } // anonymous namesspace
@@ -150,12 +151,13 @@ BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState()
           m_loFreqCorner(0),
           m_highFreqCorner(0),
           m_rampHoldOff(kRampDone),
+          m_groupDelay(0),
           m_oldSampleRate(kStartupSamplerate) {
 
-    m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pTempBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pLowBuf = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
+    m_pBandBuf = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
+    m_pHighBuf = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
+    m_pTempBuf = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
 
     // Initialize the filters with default parameters
 
@@ -182,10 +184,6 @@ BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState()
 }
 
 BiquadFullKillEQEffectGroupState::~BiquadFullKillEQEffectGroupState() {
-    SampleUtil::free(m_pLowBuf);
-    SampleUtil::free(m_pBandBuf);
-    SampleUtil::free(m_pHighBuf);
-    SampleUtil::free(m_pTempBuf);
 }
 
 void BiquadFullKillEQEffectGroupState::setFilters(
@@ -217,6 +215,7 @@ void BiquadFullKillEQEffectGroupState::setFilters(
 
     m_delay2->setDelay((delayLow1 - delayLow2) * 2);
     m_delay3->setDelay(delayLow1 * 2);
+    m_groupDelay = delayLow1 * 2;
 }
 
 BiquadFullKillEQEffect::BiquadFullKillEQEffect(EngineEffect* pEffect,
@@ -286,8 +285,8 @@ void BiquadFullKillEQEffect::processChannel(
 
     if (activeFilters == 2) {
         inBuffer.append(pInput);
-        outBuffer.append(pState->m_pTempBuf);
-        inBuffer.append(pState->m_pTempBuf);
+        outBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_pTempBuf->data());
         outBuffer.append(pOutput);
     }
     else
@@ -295,8 +294,8 @@ void BiquadFullKillEQEffect::processChannel(
         inBuffer.append(pInput);
         outBuffer.append(pOutput);
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf);
-        inBuffer.append(pState->m_pTempBuf);
+        outBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_pTempBuf->data());
         outBuffer.append(pOutput);
     }
 
@@ -421,25 +420,27 @@ void BiquadFullKillEQEffect::processChannel(
     // frequencies are slipping though or wanted frequencies are damped.
     // We know the exact group delay here so we can just hold off the ramping.
     if (fHigh || pState->m_oldHigh) {
-        pState->m_delay3->process(pOutput, pState->m_pHighBuf, numSamples);
+        pState->m_delay3->process(pOutput, pState->m_pHighBuf->data(), numSamples);
     }
 
     if (fMid || pState->m_oldMid) {
-        pState->m_delay2->process(pOutput, pState->m_pBandBuf, numSamples);
-        pState->m_low2->process(pState->m_pBandBuf, pState->m_pBandBuf, numSamples);
+        pState->m_delay2->process(
+                pOutput, pState->m_pBandBuf->data(), numSamples);
+        pState->m_low2->process(
+                pState->m_pBandBuf->data(), pState->m_pBandBuf->data(), numSamples);
     }
 
     if (fLow || pState->m_oldLow) {
-        pState->m_low1->process(pOutput, pState->m_pLowBuf, numSamples);
+        pState->m_low1->process(pOutput, pState->m_pLowBuf->data(), numSamples);
     }
 
     if (fLow == pState->m_oldLow &&
             fMid == pState->m_oldMid &&
             fHigh == pState->m_oldHigh) {
         SampleUtil::copy3WithGain(pOutput,
-                pState->m_pLowBuf, fLow,
-                pState->m_pBandBuf, fMid,
-                pState->m_pHighBuf, fHigh,
+                pState->m_pLowBuf->data(), fLow,
+                pState->m_pBandBuf->data(), fMid,
+                pState->m_pHighBuf->data(), fHigh,
                 numSamples);
     } else {
         int copySamples = 0;
@@ -468,17 +469,17 @@ void BiquadFullKillEQEffect::processChannel(
             rampingSamples = numSamples - copySamples;
 
             SampleUtil::copy3WithGain(pOutput,
-                    pState->m_pLowBuf, pState->m_oldLow,
-                    pState->m_pBandBuf, pState->m_oldMid,
-                    pState->m_pHighBuf, pState->m_oldHigh,
+                    pState->m_pLowBuf->data(), pState->m_oldLow,
+                    pState->m_pBandBuf->data(), pState->m_oldMid,
+                    pState->m_pHighBuf->data(), pState->m_oldHigh,
                     copySamples);
         }
 
         if (rampingSamples) {
             SampleUtil::copy3WithRampingGain(&pOutput[copySamples],
-                    &pState->m_pLowBuf[copySamples], pState->m_oldLow, fLow,
-                    &pState->m_pBandBuf[copySamples], pState->m_oldMid, fMid,
-                    &pState->m_pHighBuf[copySamples], pState->m_oldHigh, fHigh,
+                    pState->m_pLowBuf->data(copySamples), pState->m_oldLow, fLow,
+                    pState->m_pBandBuf->data(copySamples), pState->m_oldMid, fMid,
+                    pState->m_pHighBuf->data(copySamples), pState->m_oldHigh, fHigh,
                     rampingSamples);
 
             pState->m_oldLow = fLow;
