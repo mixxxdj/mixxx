@@ -3,6 +3,8 @@
 #include "library/dao/trackdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/cratedao.h"
+#include "track/keyutils.h"
+
 
 void ColumnCache::setColumns(const QStringList& columns) {
     m_columnsByIndex.clear();
@@ -71,6 +73,53 @@ void ColumnCache::setColumns(const QStringList& columns) {
 
     const QString sortInt("cast(%1 as integer)");
     const QString sortNoCase("lower(%1)");
+    const mixxx::track::io::key::ChromaticKey keysByCircleOfFifths[] = {
+        mixxx::track::io::key::INVALID,
+        
+        mixxx::track::io::key::C_MAJOR,
+        mixxx::track::io::key::A_MINOR,
+        
+        mixxx::track::io::key::G_MAJOR,
+        mixxx::track::io::key::E_MINOR,
+        
+        mixxx::track::io::key::D_MAJOR,
+        mixxx::track::io::key::B_MINOR,
+
+        mixxx::track::io::key::A_MAJOR,
+        mixxx::track::io::key::F_SHARP_MINOR,
+        
+        mixxx::track::io::key::E_MAJOR,
+        mixxx::track::io::key::C_SHARP_MINOR,
+
+        mixxx::track::io::key::B_MAJOR,
+        mixxx::track::io::key::G_SHARP_MINOR,
+
+        mixxx::track::io::key::F_SHARP_MAJOR,
+        mixxx::track::io::key::E_FLAT_MINOR,
+
+        mixxx::track::io::key::D_FLAT_MAJOR,
+        mixxx::track::io::key::B_FLAT_MINOR,
+
+        mixxx::track::io::key::A_FLAT_MAJOR,
+        mixxx::track::io::key::F_MINOR,
+
+        mixxx::track::io::key::E_FLAT_MAJOR,
+        mixxx::track::io::key::C_MINOR,
+
+        mixxx::track::io::key::B_FLAT_MAJOR,
+        mixxx::track::io::key::G_MINOR,
+
+        mixxx::track::io::key::F_MAJOR,
+        mixxx::track::io::key::D_MINOR
+    };
+
+    QString sortCircleOfFifths("CASE key_id ");
+    for (int i = 0; i <= 24; ++i) {
+            sortCircleOfFifths.append(QString("WHEN %1 THEN %2 ")
+                .arg(keysByCircleOfFifths[i]).arg(i));
+    }
+    sortCircleOfFifths.append("END");
+
     m_columnSortByIndex.clear();
     // Add the columns that requires a special sort
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ARTIST], sortNoCase);
@@ -85,6 +134,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_FILETYPE], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COMMENT], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY], sortCircleOfFifths);
 
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_ARTIST], sortNoCase);
