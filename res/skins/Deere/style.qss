@@ -863,10 +863,7 @@ WEffectSelector {
 }
 
   WEffectSelector:hover {
-    border: 2px ridge #015d8d;
-    /* reduce padding to compensate for the 1px thicker border, otherwise the contents of
-       the combobox shift to the side */
-    padding: 1px 3px;
+    border: 1px ridge #015d8d;
   }
 
   WEffectSelector::drop-down {
