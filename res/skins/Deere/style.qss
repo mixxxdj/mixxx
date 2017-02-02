@@ -855,7 +855,7 @@ WEffectSelector {
 
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
    * names start getting cut off. Adding explicit padding improves this. */
-  padding: 1px 4px;
+  padding: 0px 4px;
 
   /* The 3D frame on the combo box becomes flat when you give it a border */
   border: 1px solid #444342;
