@@ -25,6 +25,7 @@
       <attribute persist="true" config_key="[Library],show_coverart">0</attribute> <!-- in library -->
 
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Deere],show_coverart">1</attribute> <!-- in decks -->
       <attribute persist="true" config_key="[Deere],show_starrating">0</attribute>
       <attribute persist="true" config_key="[Deere],show_track_info">1</attribute>
