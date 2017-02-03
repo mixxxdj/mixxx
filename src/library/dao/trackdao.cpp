@@ -288,7 +288,7 @@ void TrackDAO::saveTrack(Track* pTrack) {
 
 void TrackDAO::slotTrackDirty(Track* pTrack) {
     // Should not be possible.
-    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
         return;
     }
 
@@ -308,7 +308,7 @@ void TrackDAO::slotTrackDirty(Track* pTrack) {
 
 void TrackDAO::slotTrackClean(Track* pTrack) {
     // Should not be possible.
-    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
         return;
     }
 
@@ -343,7 +343,7 @@ void TrackDAO::databaseTracksChanged(QSet<TrackId> tracksChanged) {
 
 void TrackDAO::slotTrackChanged(Track* pTrack) {
     // Should not be possible.
-    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
         return;
     }
 
@@ -553,7 +553,7 @@ namespace {
 
 TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     DEBUG_ASSERT(pTrack);
-    DEBUG_ASSERT_AND_HANDLE(m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
+    VERIFY_OR_DEBUG_ASSERT(m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
         m_pQueryLibrarySelect || m_pQueryTrackLocationSelect) {
         qDebug() << "TrackDAO::addTracksAddTrack: needed SqlQuerys have not "
                 "been prepared. Skipping track"
@@ -642,7 +642,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         // track location into the table AND we could not retrieve the id of
         // that track location from the same table. "It shouldn't
         // happen"... unless I screwed up - Albert :)
-        DEBUG_ASSERT_AND_HANDLE(trackLocationId.isValid()) {
+        VERIFY_OR_DEBUG_ASSERT(trackLocationId.isValid()) {
             return TrackId();
         }
 
@@ -650,7 +650,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             return TrackId();
         }
         trackId = TrackId(m_pQueryLibraryInsert->lastInsertId());
-        DEBUG_ASSERT_AND_HANDLE(trackId.isValid()) {
+        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
             return TrackId();
         }
 
@@ -984,7 +984,7 @@ void TrackDAO::purgeTracks(const QList<TrackId>& trackIds) {
 
 void TrackDAO::slotTrackReferenceExpired(Track* pTrack) {
     // Should not be possible.
-    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
         return;
     }
 
@@ -1341,7 +1341,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
 
     QSqlRecord queryRecord = query.record();
     int recordCount = queryRecord.count();
-    DEBUG_ASSERT_AND_HANDLE(recordCount == columnsCount) {
+    VERIFY_OR_DEBUG_ASSERT(recordCount == columnsCount) {
         recordCount = math_min(recordCount, columnsCount);
     }
 
@@ -1985,7 +1985,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
 
         CoverInfo::Source source = static_cast<CoverInfo::Source>(
             query.value(4).toInt());
-        DEBUG_ASSERT_AND_HANDLE(source != CoverInfo::USER_SELECTED) {
+        VERIFY_OR_DEBUG_ASSERT(source != CoverInfo::USER_SELECTED) {
             qWarning() << "PROGRAMMING ERROR! detectCoverArtForTracksWithoutCover()"
                        << "got a USER_SELECTED track. Skipping.";
             continue;

@@ -139,7 +139,7 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile, const QString& fileName) {
                     << fileName;
             continue;
         }
-        DEBUG_ASSERT_AND_HANDLE(!"unreachable code") {
+        VERIFY_OR_DEBUG_ASSERT(!"unreachable code") {
             qWarning() << "Skipping track"
                     << trackId
                     << "of"
