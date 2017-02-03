@@ -11,16 +11,29 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <Size>40f,30f</Size>
+    <Size>55f,42f</Size>
     <Children>
-      <Template src="skin:small_knob.xml">
-        <SetVariable name="TooltipId">EffectSlot_parameter</SetVariable>
-        <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
-        <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
-        <SetVariable name="color"><Variable name="color"/></SetVariable>
-      </Template>
+
+      <WidgetGroup>
+        <ObjectName>EffectParameterSmallKnob</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>me,20f</Size>
+        <Children>
+          <KnobComposed>
+            <TooltipId><Variable name="TooltipId"/></TooltipId>
+            <Size>20f,20f</Size>
+            <Knob>knob_small.svg</Knob>
+            <MinAngle>-230</MinAngle>
+            <MaxAngle>50</MaxAngle>
+            <Connection>
+              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
+            </Connection>
+          </KnobComposed>
+        </Children>
+      </WidgetGroup>
+
       <EffectParameterName>
-        <Size>40f,10f</Size>
+        <Size>55f,12f</Size>
         <ObjectName>EffectKnobLabel</ObjectName>
         <EffectRack><Variable name="EffectRack"/></EffectRack>
         <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
@@ -52,6 +65,29 @@
         <SetVariable name="state_4_unpressed"></SetVariable>
         <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
       </Template>
+
+      <WidgetGroup>
+        <ObjectName>EffectSlotParameterLinkInversionButtonContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>-1,6f</Size>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <!-- Button has no text/images, qss only -->
+            <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
+            <SetVariable name="ObjectName">EffectSlotParameterLinkInversionButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallHorizontalStretchLinkButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallHorizontalStretchLinkButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallHorizontalStretchLinkButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed"></SetVariable>
+            <SetVariable name="state_1_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_inverse</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
 
     </Children>
     <Connection>
