@@ -256,22 +256,44 @@ void BiquadFullKillEQEffect::processChannel(
 
     int activeFilters = 0;
 
-    if (bqGainLow != 0.0) {
+    if (bqGainLow > 0.0 || pState->m_oldLowBoost > 0.0) {
         ++activeFilters;
     }
-    if (bqGainMid != 0.0) {
+    if (bqGainLow < 0.0 || pState->m_oldLowKill < 0.0) {
         ++activeFilters;
     }
-    if (bqGainHigh != 0.0) {
+    if (bqGainMid > 0.0 || pState->m_oldMidBoost > 0.0) {
+        ++activeFilters;
+    }
+    if (bqGainMid < 0.0 || pState->m_oldMidKill < 0.0) {
+        ++activeFilters;
+    }
+    if (bqGainHigh > 0.0 || pState->m_oldHighBoost > 0.0) {
+        ++activeFilters;
+    }
+    if (bqGainHigh < 0.0 || pState->m_oldHighKill < 0.0) {
         ++activeFilters;
     }
 
-    QVarLengthArray<const CSAMPLE*, 3> inBuffer;
-    QVarLengthArray<CSAMPLE*, 3> outBuffer;
+    QVarLengthArray<const CSAMPLE*, 6> inBuffer;
+    QVarLengthArray<CSAMPLE*, 6> outBuffer;
 
-    if (activeFilters == 2) {
+    if (activeFilters % 2 == 0) {
         inBuffer.append(pInput);
         outBuffer.append(pState->m_pTempBuf->data());
+
+        inBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pOutput);
+
+        inBuffer.append(pOutput);
+        outBuffer.append(pState->m_pTempBuf->data());
+
+        inBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pOutput);
+
+        inBuffer.append(pOutput);
+        outBuffer.append(pState->m_pTempBuf->data());
+
         inBuffer.append(pState->m_pTempBuf->data());
         outBuffer.append(pOutput);
     }
@@ -279,15 +301,26 @@ void BiquadFullKillEQEffect::processChannel(
     {
         inBuffer.append(pInput);
         outBuffer.append(pOutput);
+
         inBuffer.append(pOutput);
         outBuffer.append(pState->m_pTempBuf->data());
+
         inBuffer.append(pState->m_pTempBuf->data());
         outBuffer.append(pOutput);
+
+        inBuffer.append(pOutput);
+        outBuffer.append(pState->m_pTempBuf->data());
+
+        inBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pOutput);
+
+        inBuffer.append(pOutput);
+        outBuffer.append(pState->m_pTempBuf->data());
     }
 
     int bufIndex = 0;
 
-    if (bqGainLow > 0.0) {
+    if (bqGainLow > 0.0 || pState->m_oldLowBoost > 0.0) {
         if (bqGainLow != pState->m_oldLowBoost) {
             double lowCenter = getCenterFrequency(
                     kMinimumFrequency, pState->m_loFreqCorner);
@@ -297,9 +330,13 @@ void BiquadFullKillEQEffect::processChannel(
         }
         pState->m_lowBoost->process(
                 inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
-        pState->m_lowKill->pauseFilter();
         ++bufIndex;
-    } else if (bqGainLow < 0.0) {
+    } else {
+        pState->m_lowBoost->pauseFilter();
+    }
+
+
+    if (bqGainLow < 0.0 || pState->m_oldLowKill < 0.0) {
         if (bqGainLow != pState->m_oldLowKill) {
             double lowCenter = getCenterFrequency(
                     kMinimumFrequency, pState->m_loFreqCorner);
@@ -307,16 +344,15 @@ void BiquadFullKillEQEffect::processChannel(
                     sampleRate, lowCenter * 2, kQLowKillShelve, bqGainLow);
             pState->m_oldLowKill = bqGainLow;
         }
-        pState->m_lowBoost->pauseFilter();
         pState->m_lowKill->process(
                 inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
         ++bufIndex;
     } else {
-        pState->m_lowBoost->pauseFilter();
         pState->m_lowKill->pauseFilter();
+
     }
 
-    if (bqGainMid > 0.0) {
+    if (bqGainMid > 0.0 || pState->m_oldMidBoost > 0.0) {
         if (bqGainMid != pState->m_oldMidBoost) {
             double midCenter = getCenterFrequency(
                     pState->m_loFreqCorner, pState->m_highFreqCorner);
@@ -326,9 +362,12 @@ void BiquadFullKillEQEffect::processChannel(
         }
         pState->m_midBoost->process(
                 inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
-        pState->m_midKill->pauseFilter();
         ++bufIndex;
-    } else if (bqGainMid < 0.0) {
+    } else {
+        pState->m_midBoost->pauseFilter();
+    }
+
+    if (bqGainMid < 0.0 || pState->m_oldMidKill < 0.0) {
         if (bqGainMid != pState->m_oldMidKill) {
             double midCenter = getCenterFrequency(
                     pState->m_loFreqCorner, pState->m_highFreqCorner);
@@ -336,16 +375,14 @@ void BiquadFullKillEQEffect::processChannel(
                     sampleRate, midCenter, kQKill, bqGainMid);
             pState->m_oldMidKill = bqGainMid;
         }
-        pState->m_midBoost->pauseFilter();
         pState->m_midKill->process(
                 inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
         ++bufIndex;
     } else {
-        pState->m_midBoost->pauseFilter();
         pState->m_midKill->pauseFilter();
     }
 
-    if (bqGainHigh > 0.0) {
+    if (bqGainHigh > 0.0 || pState->m_oldHighBoost > 0.0) {
         if (bqGainHigh != pState->m_oldHighBoost) {
             double highCenter = getCenterFrequency(
                     pState->m_highFreqCorner, kMaximumFrequency);
@@ -355,9 +392,12 @@ void BiquadFullKillEQEffect::processChannel(
         }
         pState->m_highBoost->process(
                 inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
-        pState->m_highKill->pauseFilter();
         ++bufIndex;
-    } else if (bqGainHigh < 0.0) {
+    } else {
+        pState->m_highBoost->pauseFilter();
+    }
+
+    if (bqGainHigh < 0.0 || pState->m_oldHighKill < 0.0) {
         if (bqGainHigh != pState->m_oldHighKill) {
             double highCenter = getCenterFrequency(
                     pState->m_highFreqCorner, kMaximumFrequency);
@@ -365,12 +405,10 @@ void BiquadFullKillEQEffect::processChannel(
                     sampleRate, highCenter / 2, kQHighKillShelve, bqGainHigh);
             pState->m_oldHighKill = bqGainHigh;
         }
-        pState->m_highBoost->pauseFilter();
         pState->m_highKill->process(
                 inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
         ++bufIndex;
     } else {
-        pState->m_highBoost->pauseFilter();
         pState->m_highKill->pauseFilter();
     }
 
