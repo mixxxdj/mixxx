@@ -355,7 +355,7 @@ QString CrateFeature::proposeNameForNewCrate() const {
         proposedCrateName = tr("New Crate");
         if (proposedCrateNameCounter++ > 0) {
             proposedCrateName.append(
-                    QString::number(proposedCrateNameCounter));
+                    QString(" %1").arg(proposedCrateNameCounter));
         }
     } while (m_pTrackCollection->crates().readCrateByName(proposedCrateName));
     return proposedCrateName;
@@ -483,7 +483,7 @@ QString CrateFeature::proposeNameForDuplicateCrate(const QString& crateName) con
                 crateName, tr("copy" , "[noun]"));
         if (proposedCrateNameCounter++ > 0) {
             proposedCrateName.append(
-                    QString::number(proposedCrateNameCounter));
+                    QString(" %1").arg(proposedCrateNameCounter));
         }
     } while (m_pTrackCollection->crates().readCrateByName(proposedCrateName));
     return proposedCrateName;
@@ -725,7 +725,7 @@ void CrateFeature::slotCreateImportCrate() {
         for (int i = 0;; ++i) {
             QString name = baseName;
             if (i > 0) {
-                name += QString::number(i);
+                name += QString(" %1").arg(i);
             }
 
             if (crate.parseName(name)) {
