@@ -394,48 +394,7 @@ CrateId CrateFeature::createCrate() {
 }
 
 void CrateFeature::slotCreateCrate() {
-    Crate crate;
-    while (!crate.hasName()) {
-        bool ok = false;
-        crate.parseName(
-                QInputDialog::getText(
-                        nullptr,
-                        tr("Create New Crate"),
-                        tr("Enter name for new crate:"),
-                        QLineEdit::Normal,
-                        tr("New Crate"),
-                        &ok));
-        if (!ok) {
-            return;
-        }
-        if (!crate.hasName()) {
-            QMessageBox::warning(
-                    nullptr,
-                    tr("Creating Crate Failed"),
-                    tr("A crate cannot have a blank name."));
-            continue;
-        }
-
-        if (m_pTrackCollection->crates().readCrateByName(crate.getName())) {
-            QMessageBox::warning(
-                    nullptr,
-                    tr("Creating Crate Failed"),
-                    tr("A crate by that name already exists."));
-            crate.resetName();
-            continue;
-        }
-    }
-
-    CrateId crateId;
-    if (m_pTrackCollection->insertCrate(crate, &crateId)) {
-        activateCrate(crateId);
-    } else {
-        qDebug() << "Error creating crate with name " << crate.getName();
-        QMessageBox::warning(
-                nullptr,
-                tr("Creating Crate Failed"),
-                tr("An unknown error occurred while creating crate: ") + crate.getName());
-    }
+    createCrate();
 }
 
 void CrateFeature::slotDeleteCrate() {
@@ -888,7 +847,7 @@ void CrateFeature::slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds) {
 
 void CrateFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path())=="create") {
-        slotCreateCrate();
+        createCrate();
     } else {
         qDebug() << "Unknown crate link clicked" << link;
     }
