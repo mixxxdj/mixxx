@@ -17,7 +17,7 @@
         <Layout>vertical</Layout>
         <Children>
           <EffectPushButton>
-            <Size>40f,15f</Size>
+            <Size>55f,15f</Size>
             <ObjectName>EffectButton</ObjectName>
             <TooltipId>EffectSlot_button_parameter</TooltipId>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
@@ -40,7 +40,7 @@
           </EffectPushButton>
 
           <EffectButtonParameterName>
-            <Size>40f,15f</Size>
+            <Size>55f,15f</Size>
             <ObjectName>EffectButtonLabel</ObjectName>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
