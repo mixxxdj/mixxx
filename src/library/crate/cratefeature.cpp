@@ -475,9 +475,25 @@ void CrateFeature::slotRenameCrate() {
     }
 }
 
+QString CrateFeature::proposeNameForDuplicateCrate(const QString& crateName) const {
+    QString proposedCrateName;
+    int proposedCrateNameCounter = 0;
+    do {
+        proposedCrateName = QString("%1 %2").arg(
+                crateName, tr("copy" , "[noun]"));
+        if (proposedCrateNameCounter++ > 0) {
+            proposedCrateName.append(
+                    QString::number(proposedCrateNameCounter));
+        }
+    } while (m_pTrackCollection->crates().readCrateByName(proposedCrateName));
+    return proposedCrateName;
+}
+
 void CrateFeature::slotDuplicateCrate() {
     Crate oldCrate;
     if (readLastRightClickedCrate(&oldCrate)) {
+        const QString proposedCrateName =
+                proposeNameForDuplicateCrate(oldCrate.getName());
         Crate crate;
         while (!crate.hasName()) {
             bool ok = false;
@@ -487,8 +503,7 @@ void CrateFeature::slotDuplicateCrate() {
                              tr("Duplicate Crate"),
                              tr("Enter name for new crate:"),
                              QLineEdit::Normal,
-                             //: Appendix to default name when duplicating a crate
-                             oldCrate.getName() + tr("_copy" , "[noun]"),
+                             proposedCrateName,
                              &ok));
             if (!ok || (crate.getName() == oldCrate.getName())) {
                 return;

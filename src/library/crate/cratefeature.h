@@ -82,7 +82,9 @@ class CrateFeature : public LibraryFeature {
     void connectTrackCollection();
 
     bool activateCrate(CrateId crateId);
+
     QString proposeNameForNewCrate() const;
+    QString proposeNameForDuplicateCrate(const QString& crateName) const;
 
     std::unique_ptr<TreeItem> newTreeItemForCrateSummary(
             const CrateSummary& crateSummary);
