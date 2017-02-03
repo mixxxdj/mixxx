@@ -850,6 +850,11 @@ void CrateFeature::slotExportTrackFiles() {
 
 void CrateFeature::slotCrateTableChanged(CrateId crateId) {
     m_lastRightClickedIndex = rebuildChildModel(crateId);
+    if (m_lastRightClickedIndex.isValid()) {
+        emit(featureSelect(this, m_lastRightClickedIndex));
+        activateChild(m_lastRightClickedIndex);
+    }
+
 }
 
 void CrateFeature::slotCrateContentChanged(CrateId crateId) {
