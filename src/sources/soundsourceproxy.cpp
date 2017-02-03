@@ -147,32 +147,32 @@ void SoundSourceProxy::loadPlugins() {
 #ifdef __FFMPEGFILE__
     // Use FFmpeg as the last resort.
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderFFmpeg>());
+            std::make_shared<mixxx::SoundSourceProviderFFmpeg>());
 #endif
 #ifdef __SNDFILE__
     // libsndfile is another fallback
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderSndFile>());
+            std::make_shared<mixxx::SoundSourceProviderSndFile>());
 #endif
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderFLAC>());
+            std::make_shared<mixxx::SoundSourceProviderFLAC>());
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderOggVorbis>());
+            std::make_shared<mixxx::SoundSourceProviderOggVorbis>());
 #ifdef __OPUS__
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderOpus>());
+            std::make_shared<mixxx::SoundSourceProviderOpus>());
 #endif
 #ifdef __MAD__
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderMp3>());
+            std::make_shared<mixxx::SoundSourceProviderMp3>());
 #endif
 #ifdef __MODPLUG__
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderModPlug>());
+            std::make_shared<mixxx::SoundSourceProviderModPlug>());
 #endif
 #ifdef __COREAUDIO__
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderCoreAudio>());
+            std::make_shared<mixxx::SoundSourceProviderCoreAudio>());
 #endif
 
     // Scan for and initialize all plugins.
