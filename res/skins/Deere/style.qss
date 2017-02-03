@@ -22,20 +22,18 @@
  *******************************************************************************/
 /* These definitions put a faint border around all the widgets. We have to be
    tricky with top/bottom-ness to get things right. */
-#DeckControls {
+#Mixer {
   border-color: #222;
   border-style: solid;
-  border-left-width: 3px;
-  border-right-width: 3px;
-  padding-bottom: 5px;
+  border-width: 3px 1.5px 3px 1.5px;
 }
 
-#Crossfader {
-  border-color: #222;
-  border-style: solid;
-  border-left-width: 3px;
-  border-right-width: 3px;
-  border-bottom-width: 3px;
+#DeckControls {
+  padding: 7.5px;
+}
+
+#CrossfaderContainer {
+  padding: 0px 7.5px 7.5px 7.5px;
 }
 
 #DeckTextRow {
@@ -64,11 +62,6 @@
   border-right: 1px solid #222;
 }
 
-/* Prevent a 2px border where the decks meet. */
-#Deck3 #DeckRows, #Deck4 #DeckRows {
-  border-top: none;
-}
-
 #VisualRow {
   border-top: 1px solid #222;
   background-color: transparent;
@@ -92,7 +85,7 @@
 #Deck1, #Deck3 {
   border-bottom-right-radius:5px;
   border-top-right-radius:5px;
-  border-width: 1px;
+  border-width: 3px 1.5px 3px 3px;
   border-style: solid;
   border-color: #222;
 }
@@ -100,9 +93,13 @@
 #Deck2, #Deck4 {
   border-bottom-left-radius:5px;
   border-top-left-radius:5px;
-  border-width: 1px;
+  border-width: 3px 3px 3px 1.5px;
   border-style: solid;
   border-color: #222;
+}
+
+#Deck3, #Deck4 {
+  border-top-width: 0;
 }
 
 #Sampler {
@@ -534,6 +531,7 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
 
 #SkinSettingsTop {
   margin: 7px 4px 6px 6px;
+  border-bottom: 1px solid #A9A9A9;
 }
 
 #SkinSettingsTop > #h1 {
@@ -609,13 +607,7 @@ WWidget, QLabel {
 }
 
 /* Start spacing for Deck inner column (tempo slider, rate change) */
-#Deck1InnerColumn, #Deck3InnerColumn {
-  background-color: #333333;
-  padding: 4px;
-  qproperty-layoutSpacing: 2;
-}
-
-#Deck2InnerColumn, #Deck4InnerColumn {
+#Deck1InnerColumn, #Deck2InnerColumn, #Deck3InnerColumn, #Deck4InnerColumn {
   background-color: #333333;
   padding: 4px;
   qproperty-layoutSpacing: 2;
@@ -632,12 +624,12 @@ WWidget, QLabel {
   qproperty-layoutSpacing: 5;
 }
 
+#MinimalControlsContainer {
+  qproperty-layoutSpacing: 2;}
+
 #HotcueGrid, #HotcueGridExtended {
   background-color: #333333;
   padding: 1px;
-  qproperty-layoutSpacing: 2;
-}
-#HotcueGridExtendedRow1, #HotcueGridExtendedRow1 {
   qproperty-layoutSpacing: 2;
 }
 
@@ -648,8 +640,7 @@ WWidget, QLabel {
 #HotcueGrid WPushButton, #HotcueGridExtended WPushButton {
 }
 
-
-#LoopingContainer, #BeatLoopContainer, #TransportContainer, #VinylControlsContainer {
+#LoopingContainer, #BeatLoopContainer, #TransportContainer, #VinylControlsContainer, #MinimalControlsContainer {
   background-color: #333333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
@@ -660,6 +651,7 @@ WWidget, QLabel {
 }
 
 #LoopingContainer WPushButton, #BeatLoopContainer WPushButton, #TransportContainer WPushButton, #VinylControlsContainer WPushButton {
+  font-size: 12px;
 }
 /* End spacing for Deck controls row */
 
@@ -668,6 +660,14 @@ WWidget, QLabel {
   padding: 0px 4px 0px 4px;
   qproperty-layoutSpacing: 5;
   background-color: #111111;
+}
+
+#ToolBarLeft {
+  qproperty-layoutSpacing: 5;
+}
+
+#ToolBarRight {
+  qproperty-layoutSpacing: 12;
 }
 
 #NotificationsContainer {
@@ -690,7 +690,7 @@ WWidget, QLabel {
 }
 
 #KnobLabelH, #HeadSplit {
-  font: bold 10px;
+  font: bold 11px;
 }
 
 /* All widget groups that are children of #DeckRows should AlignTop. */
@@ -764,7 +764,7 @@ WWidget, QLabel {
 
 #SamplerTextRow #TitleGutter WLabel {
   font-weight: bold;
-  font-size: 13px;
+  font-size: 15px;
   text-transform: none;
   text-align: left;
 }
@@ -894,8 +894,8 @@ WEffectSelector {
   background-color: none;
   border: none;
   qproperty-alignment: 'AlignHCenter';
-  font: 9px;
-  margin-top: -3px;
+  font: 10px;
+  margin-top: -2px;
 }
 
 #SmallKnobLabel {
@@ -979,48 +979,63 @@ WWidget, WLabel {
 }
 
 /* Track text, etc. should be in the deck color. */
-#Deck1 WLabel {
+#Deck1 WLabel, #Deck2 WLabel, #Deck3 WLabel, #Deck4 WLabel {
   color: #D2D2D2;
 }
 
-#DeckMixer1 {
+#DeckMixer1, #DeckMixer2, #DeckMixer3, #DeckMixer4 {
   background-color: #333333;
 }
 
-/* Track text, etc. should be in the deck color. */
-#Deck2 WLabel {
-  color: #D2D2D2;
+WNumberRate {
+  font-size: 13px;
+}
+#RateDisplay1, #RateDisplay2, #RateDisplay3, #RateDisplay4 {
+  qproperty-layoutAlignment: 'AlignHCenter';
 }
 
-#DeckMixer2 {
-  background-color: #333333;
+#DeckMixer1_Column2, #DeckMixer2_Column2, #DeckMixer3_Column2, #DeckMixer4_Column2 {
+  qproperty-layoutSpacing: 5;
 }
 
-#Deck3 WLabel {
-  color: #D2D2D2;
+#CircleButton {
+  border: 3px solid #333333;
+  border-radius: 2px;
 }
 
-#DeckMixer3 {
-  background-color: #333333;
+#DeckControlsSplitWaveforms4Decks #channel_VuMeter_Group,
+#DeckControlsStackedWaveforms4Decks #channel_VuMeter_Group {
+  padding-bottom: 5px;
 }
 
-#Deck4 WLabel {
-  color: #D2D2D2;
-}
-
-#DeckMixer4 {
-  background-color: #333333;
-}
-
-#DeckMixer1_Column2, #DeckMixer2_Column2, #DeckMixer3_Column2,
-#DeckMixer4_Column2 {
-  qproperty-layoutSpacing: 7;
+#DeckMixer1_ColumnCondensed, #DeckMixer2_ColumnCondensed, #DeckMixer3_ColumnCondensed,
+#DeckMixer4_ColumnCondensed {
   padding: 5;
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 
-#4DecksMixerCol2Container {
+/* pad 4 deck mixer colums left/right
+to avoid EQ kill buttons from shifting center of rest of column */
+#4DecksMixerCol2ContainerRight,
+#CondensedButtonContainerRight {
+  padding-right: 14px;
+}
+#4DecksMixerCol2ContainerLeft,
+#CondensedButtonContainerLeft {
   padding-left: 14px;
+}
+
+#4DecksMixerCondensedMonoMeterLeft {
+  padding-left: 2px;
+  padding-right: 4px;
+}
+#4DecksMixerCondensedMonoMeterRight {
+  padding-left: 4px;
+  padding-right: 2px;
+}
+
+#CondensedVolumeAndMonoMeter {
+  padding-bottom: 5px;
 }
 
 #channel_VuMeter_Group {
@@ -1028,8 +1043,16 @@ WWidget, WLabel {
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 
+#master_VuMeter_Group {
+  qproperty-layoutSpacing: 3;
+  qproperty-layoutAlignment: 'AlignHCenter';
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 #MasterVumeter {
-  qproperty-layoutSpacing: 2;
+  qproperty-layoutSpacing: 3;
+  qproperty-layoutAlignment: 'AlignHCenter';
   padding-left: 10px;
   padding-right: 10px;
 }
@@ -1125,6 +1148,10 @@ WStarRating {
 
 #SamplerBankContainer {
   padding: 4px;
+  qproperty-layoutSpacing: 2;
+}
+
+#SamplerBankGrid {
   qproperty-layoutSpacing: 2;
 }
 
@@ -1402,16 +1429,8 @@ WPushButton[value="2"]:hover {
   border: none;
 }
 
-#DeckCue {
+#BeatJumpValue, #BeatLoopButton, #LoopMoveValue, #HotcueButton, #DeckCue, #DeckSync, #BeatsyncButton {
   font: bold 12px;
-}
-
-#DeckSync {
-  font: bold 10px;
-}
-
-#BeatJumpValue, #BeatLoopButton, #LoopMoveValue, #HotcueButton {
-  font: bold 9px;
 }
 
 /*******************************************************************************

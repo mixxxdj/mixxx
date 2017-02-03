@@ -11,7 +11,8 @@
   <WidgetGroup>
     <ObjectName>Deck<Variable name="i"/></ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
+    <MinimumSize>-1,150</MinimumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>DeckInnerColumn</ObjectName>
@@ -31,10 +32,12 @@
           <WidgetGroup>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:deck_visual_row.xml"/>
+              <SingletonContainer>
+                <ObjectName>DeckVisualRow<Variable name="i" /></ObjectName>
+              </SingletonContainer>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+              <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>

@@ -9,10 +9,10 @@
   <WidgetGroup>
     <ObjectName>VisualRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,max</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <!-- Because the spinny hides itself and throws off the size
          calculation we set our minimum size to the spinny size. -->
-    <MinimumSize>-1,101</MinimumSize>
+    <MinimumSize>-1,31</MinimumSize>
     <Children>
       <Visual>
         <TooltipId>waveform_display</TooltipId>
@@ -147,21 +147,23 @@
             <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_up</SetVariable>
           </Template>
         </Children>
+        <!--The zoom buttons shift the center line off center in stacked waveform mode.-->
+        <Connection>
+          <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
       </WidgetGroup>
 
-      <!-- We allow for the following options in the skin settings:
-           : Show no cover
-           : Show cover on spinning vinyl images
-           : Show cover in text row of decks
-      -->
-      <WidgetStack>
+      <WidgetGroup>
         <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,max</SizePolicy>
-        <MinimumSize>-1,100</MinimumSize>
-        <NextControl>[Deere],show_coverart</NextControl>
-        <PrevControl></PrevControl>
+        <MinimumSize>-1,30</MinimumSize>
         <Children>
+
           <WidgetGroup>
             <ObjectName>SpinnyHolder</ObjectName>
             <Layout>horizontal</Layout>
@@ -177,6 +179,13 @@
                 <ShowCover>false</ShowCover>
               </Spinny>
             </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
           </WidgetGroup>
 
           <WidgetGroup>
@@ -198,13 +207,18 @@
                 <ShowCover>true</ShowCover>
               </Spinny>
             </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
+
         </Children>
         <Connection>
-          <ConfigKey persist="true"><Variable name="control_show_spinny"/></ConfigKey>
+          <ConfigKey><Variable name="control_show_spinny"/></ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetStack>
+      </WidgetGroup> <!--SpinnyContainer-->
 
       <Template src="skin:vinylcontrol.xml"/>
 

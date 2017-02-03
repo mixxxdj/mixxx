@@ -128,17 +128,10 @@
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+          <ConfigKey>[Microphone],show_microphone</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetStack>
     </Children>
-    <Connection>
-      <ConfigKey>[Master],maximize_library</ConfigKey>
-      <BindProperty>visible</BindProperty>
-      <Transform>
-        <Not/>
-      </Transform>
-    </Connection>
   </WidgetGroup>
 </Template>

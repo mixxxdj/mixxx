@@ -35,12 +35,5 @@ Container for all the effect units
         </Children>
       </WidgetStack>
     </Children>
-    <Connection>
-      <ConfigKey>[Master],maximize_library</ConfigKey>
-      <BindProperty>visible</BindProperty>
-      <Transform>
-        <Not/>
-      </Transform>
-    </Connection>
   </WidgetGroup>
 </Template>

@@ -1,0 +1,87 @@
+<!DOCTYPE template>
+<!-- Master level meter -->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>MasterVu2Deck</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <!-- Spacer to align with bottom of mixer-->
+          <WidgetGroup>
+            <Size>-1,-1me</Size>
+            <MaximumSize>-1,15</MaximumSize>
+            <Layout>vertical</Layout>
+            <Children/>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>master_VuMeter_Group</ObjectName>
+            <Size>22min,-1me</Size>
+            <MaximumSize>-1,160</MaximumSize>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="tooltip_meter">master_VuMeterL</SetVariable>
+                <SetVariable name="tooltip_clip">master_PeakIndicatorL</SetVariable>
+              </Template>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="tooltip_meter">master_VuMeterR</SetVariable>
+                <SetVariable name="tooltip_clip">master_PeakIndicatorR</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>MasterVu4Deck</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>master_VuMeter_Group</ObjectName>
+            <Size>22min,-1me</Size>
+            <MaximumSize>-1,120</MaximumSize>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="tooltip_meter">master_VuMeterL</SetVariable>
+                <SetVariable name="tooltip_clip">master_PeakIndicatorL</SetVariable>
+              </Template>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="tooltip_meter">master_VuMeterR</SetVariable>
+                <SetVariable name="tooltip_clip">master_PeakIndicatorR</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -9,9 +9,9 @@
   <WidgetGroup>
     <ObjectName>OverviewRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,max</SizePolicy>
-    <MinimumSize>-1,40</MinimumSize>
-    <MaximumSize>-1,60</MaximumSize>
+    <SizePolicy>me,me</SizePolicy>
+    <MinimumSize>-1,50</MinimumSize>
+    <MaximumSize>-1,85</MaximumSize>
     <Children>
       <Overview>
         <TooltipId>waveform_overview</TooltipId>
@@ -28,7 +28,7 @@
         <PlayPosColor>#00FF00</PlayPosColor>
         <DefaultMark>
           <Align>bottom|right</Align>
-          <Color>#00FF00</Color>
+          <Color>#619dea</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
         </DefaultMark>
@@ -163,6 +163,13 @@
             </Children>
           </WidgetGroup>
         </Children>
+        <Connection>
+          <ConfigKey>[Deere],show_minimal_deck_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
       </WidgetGroup>
     </Children>
   </WidgetGroup>

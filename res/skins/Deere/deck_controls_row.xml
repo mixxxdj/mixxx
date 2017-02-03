@@ -11,10 +11,139 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
-      <Template src="skin:transport.xml"/>
-      <Template src="skin:beatloop.xml"/>
-      <Template src="skin:loop.xml"/>
-      <Template src="skin:hotcue.xml"/>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:transport.xml"/>
+          <!-- Expanding spacers in between control contexts -->
+          <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
+          <Template src="skin:beatloop.xml"/>
+          <Template src="skin:loop.xml"/>
+          <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
+          <Template src="skin:hotcue.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey>[Deere],show_minimal_deck_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <ObjectName>MinimalControlsContainer</ObjectName>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">quantize</SetVariable>
+            <SetVariable name="ObjectName">QuantizeButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_quantize_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_quantize_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_quantize_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_quantize_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,quantize</SetVariable>
+          </Template>
+
+          <!-- Workaround for layout spacing -->
+          <Template src="skin:spacer_hx.xml">
+            <SetVariable name="width">2</SetVariable>
+          </Template>
+
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">keylock</SetVariable>
+            <SetVariable name="ObjectName">KeylockButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_key_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_key_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_key_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_key_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,keylock</SetVariable>
+          </Template>
+
+
+
+          <Template src="skin:spacer_h.xml"/>
+
+
+
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">sync_enabled</SetVariable>
+            <SetVariable name="ObjectName">DeckSync</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize">30</SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">Sync</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_1_text">Sync</SetVariable>
+            <SetVariable name="state_1_pressed"></SetVariable>
+            <SetVariable name="state_1_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
+          </Template>
+
+          <!-- Workaround for layout spacing -->
+          <Template src="skin:spacer_hx.xml">
+            <SetVariable name="width">2</SetVariable>
+          </Template>
+
+          <Template src="skin:left_right_display_2state_button.xml">
+            <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
+            <SetVariable name="ObjectName">DeckCue</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize">30</SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+            <SetVariable name="LeftClickIsPushButton">true</SetVariable>
+            <SetVariable name="RightClickIsPushButton">true</SetVariable>
+            <SetVariable name="state_0_text">CUE</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_1_text">CUE</SetVariable>
+            <SetVariable name="state_1_pressed"></SetVariable>
+            <SetVariable name="state_1_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,cue_default</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,cue_gotoandstop</SetVariable>
+            <SetVariable name="display_connection_control"><Variable name="group"/>,cue_indicator</SetVariable>
+          </Template>
+
+          <!-- Workaround for layout spacing -->
+          <Template src="skin:spacer_hx.xml">
+            <SetVariable name="width">2</SetVariable>
+          </Template>
+
+          <Template src="skin:left_right_display_2state_button.xml">
+            <SetVariable name="TooltipId">play_cue_set</SetVariable>
+            <SetVariable name="ObjectName">PlayToggle</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize">30</SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+            <SetVariable name="LeftClickIsPushButton">false</SetVariable>
+            <SetVariable name="RightClickIsPushButton">false</SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_play_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_play_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_play_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_play_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,cue_set</SetVariable>
+            <SetVariable name="display_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Deere],show_minimal_deck_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

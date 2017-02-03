@@ -12,12 +12,22 @@
     <ObjectName>KnobWithButtonHorizontal</ObjectName>
     <Layout>horizontal</Layout>
     <Children>
+
+      <Template src="skin:knob_with_label.xml"/>
+
       <WidgetGroup>
-        <Size>15f,21f</Size>
+        <Layout>vertical</Layout>
         <Children>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>15f,12f</Size>
+            <Children/>
+          </WidgetGroup>
+
           <PushButton>
             <TooltipId><Variable name="button_TooltipId"/></TooltipId>
-            <ObjectName>MixerButton</ObjectName>
+            <ObjectName>CircleButton</ObjectName>
             <Size>15f,15f</Size>
             <NumberStates>2</NumberStates>
             <State>
@@ -37,19 +47,16 @@
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>15f,-1me</Size>
+            <Children/>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
-      <WidgetGroup>
-        <Layout>vertical</Layout>
-        <Children>
-          <Template src="skin:knob.xml"/>
-          <Label>
-            <Size>40f,10f</Size>
-            <ObjectName>KnobLabel</ObjectName>
-            <Text><Variable name="label"/></Text>
-          </Label>
-        </Children>
-      </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>
