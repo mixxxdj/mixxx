@@ -144,9 +144,9 @@ void MoogLadder4FilterEffect::processChannel(
         // hpf enabled, fade-in is handled in the filter when starting from pause
         pState->m_pHighFilter->process(pInput, pHpfOutput, numSamples);
     } else if (pState->m_hiFreq > kMinCorner) {
-            // hpf disabling
-            pState->m_pHighFilter->processAndPauseFilter(pInput,
-                    pHpfOutput, numSamples);
+        // hpf disabling
+        pState->m_pHighFilter->processAndPauseFilter(pInput,
+                pHpfOutput, numSamples);
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;
