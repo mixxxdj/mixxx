@@ -2,21 +2,21 @@
 
 #include <QtDebug>
 
-#include "track/trackmetadata.h"
-#include "sources/soundsourceproxy.h"
-#include "sources/soundsourceopus.h"
 #include "test/mixxxtest.h"
+
+#include "sources/soundsourceproxy.h"
+#include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
+
+#ifdef __OPUS__
+#include "sources/soundsourceopus.h"
+#endif // __OPUS__
 
 namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
 } // anonymous namespace
-
-#ifdef __FFMPEGFILE__
-#include "sources/soundsourceffmpeg.h"
-#endif
 
 class SoundSourceProxyTest: public MixxxTest {
   protected:
@@ -72,6 +72,8 @@ class SoundSourceProxyTest: public MixxxTest {
         }
     }
 
+#ifdef __OPUS__
+    // Known issue: Decoding with libopus is not sample accurate
     static void expectDecodedSamplesEqualOpus(
             SINT size,
             const CSAMPLE* expected,
@@ -82,6 +84,7 @@ class SoundSourceProxyTest: public MixxxTest {
                     mixxx::SoundSourceOpus::kMaxDecodingError) << errorMessage;
         }
     }
+#endif // __OPUS__
 };
 
 TEST_F(SoundSourceProxyTest, open) {
@@ -191,6 +194,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
 
             // Both buffers should again be equal
             ASSERT_EQ(contReadFrameCount, seekReadFrameCount);
+#ifdef __OPUS__
             if (filePath.endsWith(".opus")) {
                 expectDecodedSamplesEqualOpus(
                         pContReadSource->frames2samples(contReadFrameCount),
@@ -198,12 +202,15 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                         &seekReadData[0],
                         "Decoding mismatch after seeking backward");
             } else {
+#endif // __OPUS__
                 expectDecodedSamplesEqual(
                         pContReadSource->frames2samples(contReadFrameCount),
                         &contReadData[0],
                         &seekReadData[0],
                         "Decoding mismatch after seeking backward");
+#ifdef __OPUS__
             }
+#endif // __OPUS__
         }
     }
 }
@@ -266,6 +273,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
 
             // Both buffers should be equal
             ASSERT_EQ(contReadFrameCount, skipReadFrameCount);
+#ifdef __OPUS__
             if (filePath.endsWith(".opus")) {
                 expectDecodedSamplesEqualOpus(
                         pContReadSource->frames2samples(contReadFrameCount),
@@ -273,12 +281,15 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                         &skipReadData[0],
                         "Decoding mismatch after skipping");
             } else {
+#endif // __OPUS__
                 expectDecodedSamplesEqual(
                         pContReadSource->frames2samples(contReadFrameCount),
                         &contReadData[0],
                         &skipReadData[0],
                         "Decoding mismatch after skipping");
+#ifdef __OPUS__
             }
+#endif // __OPUS__
 
             frameIndex = contFrameIndex;
         }
@@ -305,10 +316,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
         // Seek to boundaries (alternating)
         EXPECT_EQ(pSeekReadSource->getMinFrameIndex(),
                 pSeekReadSource->seekSampleFrame(pSeekReadSource->getMinFrameIndex()));
-#ifdef __APPLE__
-        EXPECT_EQ(pSeekReadSource->getMaxFrameIndex() - 1,
-                pSeekReadSource->seekSampleFrame(pSeekReadSource->getMaxFrameIndex() - 1));
-#else
+#ifdef __MAD__
         // TODO(XXX): Seeking near the end of an MP3 stream
         // is currently broken for SoundSourceMP3 (libmad)
         if (filePath.endsWith(".mp3")) {
@@ -316,10 +324,12 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
                     << "TODO(XXX): Fix seeking near end of stream for MP3 files"
                     << "and re-enable this test!";
         } else {
+#endif // __MAD__
             EXPECT_EQ(pSeekReadSource->getMaxFrameIndex() - 1,
                     pSeekReadSource->seekSampleFrame(pSeekReadSource->getMaxFrameIndex() - 1));
+#ifdef __MAD__
         }
-#endif
+#endif // __MAD__
         EXPECT_EQ(pSeekReadSource->getMinFrameIndex() + 1,
                 pSeekReadSource->seekSampleFrame(pSeekReadSource->getMinFrameIndex() + 1));
         EXPECT_EQ(pSeekReadSource->getMaxFrameIndex(),
@@ -344,6 +354,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
                 pSeekReadSource->frames2samples(kReadFrameCount));
         ASSERT_EQ(kReadFrameCount,
                 pSeekReadSource->readSampleFrames(kReadFrameCount, &seekReadData[0]));
+#ifdef __OPUS__
         if (filePath.endsWith(".opus")) {
             expectDecodedSamplesEqualOpus(
                     pContReadSource->frames2samples(kReadFrameCount),
@@ -351,11 +362,14 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
                     &seekReadData[0],
                     "Decoding mismatch after seeking");
         } else {
+#endif // __OPUS__
             expectDecodedSamplesEqual(
                     pContReadSource->frames2samples(kReadFrameCount),
                     &contReadData[0],
                     &seekReadData[0],
                     "Decoding mismatch after seeking");
+#ifdef __OPUS__
         }
+#endif // __OPUS__
     }
 }
