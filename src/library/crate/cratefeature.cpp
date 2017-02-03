@@ -270,7 +270,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
 }
 
 bool CrateFeature::activateCrate(CrateId crateId) {
-    //qDebug() << "CrateFeature::activateCrate()" << crateId;
+    qDebug() << "CrateFeature::activateCrate()" << crateId;
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
     }
@@ -381,6 +381,7 @@ CrateId CrateFeature::createCrate() {
 
     CrateId crateId;
     if (m_pTrackCollection->insertCrate(crate, &crateId)) {
+        DEBUG_ASSERT(crateId.isValid());
         activateCrate(crateId);
         return crateId;
     } else {
@@ -542,6 +543,8 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
 }
 
 QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
+    qDebug() << "CrateFeature::rebuildChildModel()" << selectedCrateId;
+
     TreeItem* pRootItem = m_childModel.getRootItem();
     VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
         return QModelIndex();
@@ -561,7 +564,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
         pTreeItem.release();
         if (selectedCrateId == crateSummary.getId()) {
             // save index for selection
-            selectedRow = modelRows.size();
+            selectedRow = modelRows.size() - 1;
         }
     }
 
