@@ -293,22 +293,30 @@ QTreeView::branch:open:has-children:has-siblings {
   height: 6px;
 }
 
-/* QSplitter between LibrarySidebar and CoverArt */
-#LibraryCoverArtSplitter::handle {
+/* vertical splitters */
+#LibraryCoverArtSplitter::handle,
+#LibraryVerticalSplitter::handle,
+#DeckSplitter::handle {
   image: url(skin:/image/style_handle_vertical_unchecked.svg);
   background: none;
 }
 
-#LibraryCoverArtSplitter::handle:pressed {
+#LibraryCoverArtSplitter::handle:pressed,
+#LibraryVerticalSplitter::handle:pressed,
+#DeckSplitter::handle:pressed {
   image: url(skin:/image/style_handle_vertical_checked.svg);
   background: none;
 }
 
-#LibraryCoverArtSplitter::handle:horizontal {
+#LibraryCoverArtSplitter::handle:horizontal,
+#LibraryVerticalSplitter::handle:horizontal,
+#DeckSplitter::handle:horizontal {
   width: 6px;
 }
 
-#LibraryCoverArtSplitter::handle:vertical {
+#LibraryCoverArtSplitter::handle:vertical,
+#LibraryVerticalSplitter::handle:vertical,
+#DeckSplitter::handle::vertical {
   height: 6px;
 }
 
@@ -949,7 +957,7 @@ WEffectSelector {
   qproperty-layoutSpacing: 0;
 }
 
-#MainDeckContainer {
+#MainDecks, #MainDeckContainer {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                     stop: 0 #333333,
                                     stop: 1.0 #333333);
