@@ -10,8 +10,8 @@
     <ObjectName>OverviewRow</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
-    <MinimumSize>-1,50</MinimumSize>
-    <MaximumSize>-1,85</MaximumSize>
+    <MinimumSize>-1,40</MinimumSize>
+    <MaximumSize>-1,65</MaximumSize>
     <Children>
       <Overview>
         <TooltipId>waveform_overview</TooltipId>
