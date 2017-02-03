@@ -340,7 +340,9 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addSeparator();
     menu.addAction(m_pAnalyzeCrateAction.get());
     menu.addSeparator();
-    menu.addAction(m_pImportPlaylistAction.get());
+    if (!crate.isLocked()) {
+        menu.addAction(m_pImportPlaylistAction.get());
+    }
     menu.addAction(m_pExportPlaylistAction.get());
     menu.addAction(m_pExportTrackFilesAction.get());
     menu.exec(globalPos);
