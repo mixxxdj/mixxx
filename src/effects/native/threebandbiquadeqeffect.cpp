@@ -315,13 +315,17 @@ void ThreeBandBiquadEQEffect::processChannel(
                     sampleRate, lowCenter, kQBoost, bqGainLow);
             pState->m_oldLowBoost = bqGainLow;
         }
-        pState->m_lowBoost->process(
-                inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        if (bqGainLow > 0.0) {
+            pState->m_lowBoost->process(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        } else {
+            pState->m_lowBoost->processAndPauseFilter(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        }
         ++bufIndex;
     } else {
         pState->m_lowBoost->pauseFilter();
     }
-
 
     if (bqGainLow < 0.0 || pState->m_oldLowCut < 0.0) {
         if (bqGainLow != pState->m_oldLowCut) {
@@ -331,12 +335,16 @@ void ThreeBandBiquadEQEffect::processChannel(
                     sampleRate, lowCenter, kQKill, bqGainLow);
             pState->m_oldLowCut = bqGainLow;
         }
-        pState->m_lowCut->process(
-                inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        if (bqGainLow < 0.0) {
+            pState->m_lowCut->process(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        } else {
+            pState->m_lowCut->processAndPauseFilter(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        }
         ++bufIndex;
     } else {
         pState->m_lowCut->pauseFilter();
-
     }
 
     if (bqGainMid > 0.0 || pState->m_oldMidBoost > 0.0) {
@@ -347,12 +355,18 @@ void ThreeBandBiquadEQEffect::processChannel(
                     sampleRate, midCenter, kQBoost, bqGainMid);
             pState->m_oldMidBoost = bqGainMid;
         }
-        pState->m_midBoost->process(
-                inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        if (bqGainMid > 0.0) {
+            pState->m_midBoost->process(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        } else {
+            pState->m_midBoost->processAndPauseFilter(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        }
         ++bufIndex;
     } else {
         pState->m_midBoost->pauseFilter();
     }
+
 
     if (bqGainMid < 0.0 || pState->m_oldMidCut < 0.0) {
         if (bqGainMid != pState->m_oldMidCut) {
@@ -362,8 +376,13 @@ void ThreeBandBiquadEQEffect::processChannel(
                     sampleRate, midCenter, kQKill, bqGainMid);
             pState->m_oldMidCut = bqGainMid;
         }
-        pState->m_midCut->process(
-                inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        if (bqGainMid < 0.0) {
+            pState->m_midCut->process(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        } else {
+            pState->m_midCut->processAndPauseFilter(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        }
         ++bufIndex;
     } else {
         pState->m_midCut->pauseFilter();
@@ -377,8 +396,13 @@ void ThreeBandBiquadEQEffect::processChannel(
                     sampleRate, highCenter, kQBoost, bqGainHigh);
             pState->m_oldHighBoost = bqGainHigh;
         }
-        pState->m_highBoost->process(
-                inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        if (bqGainHigh > 0.0) {
+            pState->m_highBoost->process(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        } else {
+            pState->m_highBoost->processAndPauseFilter(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        }
         ++bufIndex;
     } else {
         pState->m_highBoost->pauseFilter();
@@ -392,8 +416,13 @@ void ThreeBandBiquadEQEffect::processChannel(
                     sampleRate, highCenter / 2, kQKillShelve, bqGainHigh);
             pState->m_oldHighCut = bqGainHigh;
         }
-        pState->m_highCut->process(
-                inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        if (bqGainHigh < 0.0) {
+            pState->m_highCut->process(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        } else {
+            pState->m_highCut->processAndPauseFilter(
+                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+        }
         ++bufIndex;
     } else {
         pState->m_highCut->pauseFilter();
