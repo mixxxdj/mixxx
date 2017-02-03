@@ -18,6 +18,8 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
 
+    qWarning() << "vScrollBarPosKey=" << vScrollBarPosKey;
+
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
@@ -73,6 +75,7 @@ void WLibraryTableView::saveVScrollBarPos() {
     //Save the scrollbar's position so we can return here after
     //a search is cleared.
     m_iSavedVScrollBarPos = verticalScrollBar()->value();
+
 }
 
 
@@ -109,6 +112,20 @@ void WLibraryTableView::moveSelection(int delta) {
 
             delta++;
         }
+    }
+}
+
+void WLibraryTableView::saveVScrollBarPos(const QString key){
+    m_vScrollBarPosValues[key] = verticalScrollBar()->value();
+}
+
+void WLibraryTableView::restoreVScrollBarPos(const QString key){
+    updateGeometries();
+    if (m_vScrollBarPosValues.contains(key)){
+        verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
+    }else{
+        m_vScrollBarPosValues[key] = 0;
+        verticalScrollBar()->setValue(0);
     }
 }
 

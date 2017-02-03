@@ -28,10 +28,11 @@
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
-                                 TrackCollection* pTrackCollection, bool sorting)
+                                 TrackCollection* pTrackCollection,
+                                 const QString scrollBarKey, bool sorting)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
-                                      WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
+                                      scrollBarKey)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_sorting(sorting),
@@ -43,6 +44,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
 
+    qWarning() << "WTrackTableView called";
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
@@ -199,6 +201,8 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     //qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
+    qWarning() << "loadTrackModel:" << reinterpret_cast<unsigned long>(model);
+
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
     DEBUG_ASSERT_AND_HANDLE(model) {
@@ -217,6 +221,13 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // a select() if the table is dirty.
         doSortByColumn(horizontalHeader()->sortIndicatorSection());
         return;
+    }else{
+        saveVScrollBarPos(QString::number(reinterpret_cast<unsigned long>(getTrackModel())));
+        //saving current vertical bar position
+        //using adress of track model as key
+        restoreVScrollBarPos(QString::number(reinterpret_cast<unsigned long>(trackModel)));
+        // restoring scrollBar position using model pointer as key
+        // scrollbar positions with respect  to different models are backed by map
     }
 
     // The "coverLocation" and "hash" column numbers are required very often
@@ -357,6 +368,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
+    //restoreVScrollBarPos();
 }
 
 void WTrackTableView::createActions() {
@@ -563,6 +575,7 @@ void WTrackTableView::slotOpenInFileBrowser() {
 }
 
 void WTrackTableView::slotHide() {
+
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
@@ -1009,6 +1022,7 @@ void WTrackTableView::onSearchCleared() {
 }
 
 void WTrackTableView::onShow() {
+    restoreVScrollBarPos();
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
