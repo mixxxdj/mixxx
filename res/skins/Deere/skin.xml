@@ -164,23 +164,45 @@
       </Children>
     </SingletonDefinition>
 
-    <WidgetGroup>
-      <SizePolicy>me,me</SizePolicy>
-      <Layout>vertical</Layout>
+<!--    <SingletonDefinition>
+      <ObjectName>MainDecks</ObjectName>
       <Children>
-        <Template src="skin:tool_bar.xml"/>
+        <Template src="skin:main_decks.xml"/>
+      </Children>
+    </SingletonDefinition>-->
 
-        <Splitter>
-          <ObjectName>LibraryVerticalSplitter</ObjectName>
-          <Orientation>vertical</Orientation>
+    <SingletonDefinition>
+      <ObjectName>BelowDecks</ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Layout>vertical</Layout>
           <Size>-1me,-1me</Size>
-          <SplitSizesConfigKey>[Deere],DecksLibrarySplit</SplitSizesConfigKey>
           <Children>
             <WidgetGroup>
               <Layout>vertical</Layout>
               <Children>
 
-                <Template src="skin:main_decks.xml"/>
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <Template src="skin:sample_decks.xml"/>
+                  </Children>
+                  <Connection>
+                    <ConfigKey>[Samplers],show_samplers</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                </WidgetGroup>
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <Template src="skin:effect_rack.xml"/>
+                  </Children>
+                  <Connection>
+                    <ConfigKey>[EffectRack1],show</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                </WidgetGroup>
+                <Template src="skin:microphone_rack.xml"/>
 
               </Children>
               <Connection>
@@ -192,51 +214,213 @@
               </Connection>
             </WidgetGroup>
 
+            <Template src="skin:library.xml"/>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </SingletonDefinition>
+
+    <WidgetGroup>
+      <SizePolicy>me,me</SizePolicy>
+      <Layout>vertical</Layout>
+      <Children>
+        <Template src="skin:tool_bar.xml"/>
+
+
+        <WidgetGroup>
+          <Layout>vertical</Layout>
+          <Size>-1me,-1me</Size>
+          <Children>
+
             <WidgetGroup>
               <Layout>vertical</Layout>
+              <Size>-1me,-1me</Size>
               <Children>
-                <WidgetGroup>
-                  <Layout>vertical</Layout>
-                  <Children>
 
+                <Splitter>
+                  <ObjectName>LibraryVerticalSplitter</ObjectName>
+                  <Orientation>vertical</Orientation>
+                  <SplitSizesConfigKey>[Deere],DecksLibrarySplit</SplitSizesConfigKey>
+                  <Size>-1me,-1me</Size>
+                  <Children>
                     <WidgetGroup>
-                      <Layout>horizontal</Layout>
+                      <Layout>vertical</Layout>
+                      <Size>-1me,-1me</Size>
+                      <MaximumSize>-1,300</MaximumSize>
                       <Children>
-                        <Template src="skin:sample_decks.xml"/>
+                        <Template src="skin:main_decks.xml"/>
                       </Children>
                       <Connection>
-                        <ConfigKey>[Samplers],show_samplers</ConfigKey>
+                        <ConfigKey>[Master],maximize_library</ConfigKey>
                         <BindProperty>visible</BindProperty>
+                        <Transform>
+                          <Not/>
+                        </Transform>
                       </Connection>
                     </WidgetGroup>
-                    <WidgetGroup>
-                      <Layout>horizontal</Layout>
-                      <Children>
-                        <Template src="skin:effect_rack.xml"/>
-                      </Children>
-                      <Connection>
-                        <ConfigKey>[EffectRack1],show</ConfigKey>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
-                    </WidgetGroup>
-                    <Template src="skin:microphone_rack.xml"/>
+
+                    <SingletonContainer>
+                      <ObjectName>BelowDecks</ObjectName>
+                    </SingletonContainer>
 
                   </Children>
-                  <Connection>
-                    <ConfigKey>[Master],maximize_library</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                    <Transform>
-                      <Not/>
-                    </Transform>
-                  </Connection>
-                </WidgetGroup>
+                </Splitter>
 
-                <Template src="skin:library.xml"/>
               </Children>
+              <Connection>
+                <BindProperty>visible</BindProperty>
+                <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+                <Transform>
+                  <Not/>
+                </Transform>
+              </Connection>
+            </WidgetGroup>
+
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Size>-1me,-1me</Size>
+              <Children>
+
+                <Splitter>
+                  <ObjectName>LibraryVerticalSplitter</ObjectName>
+                  <Orientation>vertical</Orientation>
+                  <SplitSizesConfigKey>[Deere],DecksLibrarySplit</SplitSizesConfigKey>
+                  <Size>-1me,-1me</Size>
+                  <Children>
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <Size>-1me,-1me</Size>
+                      <Children>
+                        <Template src="skin:main_decks.xml"/>
+                      </Children>
+                      <Connection>
+                        <ConfigKey>[Master],maximize_library</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                        <Transform>
+                          <Not/>
+                        </Transform>
+                      </Connection>
+                    </WidgetGroup>
+
+                    <SingletonContainer>
+                      <ObjectName>BelowDecks</ObjectName>
+                    </SingletonContainer>
+
+                  </Children>
+                </Splitter>
+
+              </Children>
+              <Connection>
+                <BindProperty>visible</BindProperty>
+                <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+              </Connection>
             </WidgetGroup>
 
           </Children>
-        </Splitter>
+          <Connection>
+            <BindProperty>visible</BindProperty>
+            <ConfigKey>[Master],show_4decks</ConfigKey>
+            <Transform>
+              <Not/>
+            </Transform>
+          </Connection>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <Layout>vertical</Layout>
+          <Size>-1me,-1me</Size>
+          <Children>
+
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Size>-1me,-1me</Size>
+              <Children>
+
+                <Splitter>
+                  <ObjectName>LibraryVerticalSplitter</ObjectName>
+                  <Orientation>vertical</Orientation>
+                  <SplitSizesConfigKey>[Deere],DecksLibrarySplit4</SplitSizesConfigKey>
+                  <Size>-1me,-1me</Size>
+                  <Children>
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <Size>-1me,-1me</Size>
+                      <MaximumSize>-1,700</MaximumSize>
+                      <Children>
+                        <Template src="skin:main_decks.xml"/>
+                      </Children>
+                      <Connection>
+                        <ConfigKey>[Master],maximize_library</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                        <Transform>
+                          <Not/>
+                        </Transform>
+                      </Connection>
+                    </WidgetGroup>
+
+                    <SingletonContainer>
+                      <ObjectName>BelowDecks</ObjectName>
+                    </SingletonContainer>
+
+                  </Children>
+                </Splitter>
+
+              </Children>
+              <Connection>
+                <BindProperty>visible</BindProperty>
+                <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+                <Transform>
+                  <Not/>
+                </Transform>
+              </Connection>
+            </WidgetGroup>
+
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Size>-1me,-1me</Size>
+              <Children>
+
+                <Splitter>
+                  <ObjectName>LibraryVerticalSplitter</ObjectName>
+                  <Orientation>vertical</Orientation>
+                  <SplitSizesConfigKey>[Deere],DecksLibrarySplit4</SplitSizesConfigKey>
+                  <Size>-1me,-1me</Size>
+                  <Children>
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <Size>-1me,-1me</Size>
+                      <Children>
+                        <Template src="skin:main_decks.xml"/>
+                      </Children>
+                      <Connection>
+                        <ConfigKey>[Master],maximize_library</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                        <Transform>
+                          <Not/>
+                        </Transform>
+                      </Connection>
+                    </WidgetGroup>
+
+                    <SingletonContainer>
+                      <ObjectName>BelowDecks</ObjectName>
+                    </SingletonContainer>
+
+                  </Children>
+                </Splitter>
+
+              </Children>
+              <Connection>
+                <BindProperty>visible</BindProperty>
+                <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+              </Connection>
+            </WidgetGroup>
+
+          </Children>
+          <Connection>
+            <BindProperty>visible</BindProperty>
+            <ConfigKey>[Master],show_4decks</ConfigKey>
+          </Connection>
+        </WidgetGroup>
 
       </Children>
     </WidgetGroup>
