@@ -346,7 +346,21 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.exec(globalPos);
 }
 
+QString CrateFeature::proposeNameForNewCrate() const {
+    QString proposedCrateName;
+    int proposedCrateNameCounter = 0;
+    do {
+        proposedCrateName = tr("New Crate");
+        if (proposedCrateNameCounter++ > 0) {
+            proposedCrateName.append(
+                    QString::number(proposedCrateNameCounter));
+        }
+    } while (m_pTrackCollection->crates().readCrateByName(proposedCrateName));
+    return proposedCrateName;
+}
+
 CrateId CrateFeature::createCrate() {
+    const QString proposedCrateName = proposeNameForNewCrate();
     Crate crate;
     while (!crate.hasName()) {
         bool ok = false;
@@ -356,7 +370,7 @@ CrateId CrateFeature::createCrate() {
                         tr("Create New Crate"),
                         tr("Enter name for new crate:"),
                         QLineEdit::Normal,
-                        tr("New Crate"),
+                        proposedCrateName,
                         &ok));
         if (!ok) {
             return CrateId();
