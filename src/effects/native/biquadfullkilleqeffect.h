@@ -8,6 +8,7 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbiquad1.h"
 #include "engine/enginefilterbessel4.h"
+#include "effects/native/lvmixeqbase.h"
 #include "engine/enginefilterdelay.h"
 #include "util/class.h"
 #include "util/defs.h"
@@ -32,14 +33,12 @@ class BiquadFullKillEQEffectGroupState final {
     std::unique_ptr<EngineFilterBiquad1LowShelving> m_lowKill;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_midKill;
     std::unique_ptr<EngineFilterBiquad1HighShelving> m_highKill;
-    std::unique_ptr<EngineFilterBessel4Low> m_low1;
-    std::unique_ptr<EngineFilterBessel4Low> m_low2;
-    std::unique_ptr<EngineFilterDelay<kMaxDelay2>> m_delay2;
-    std::unique_ptr<EngineFilterDelay<kMaxDelay2>> m_delay3;
+    std::unique_ptr<LVMixEQEffectGroupState<EngineFilterBessel4Low>> m_lvMixIso;
     std::unique_ptr<SampleBuffer> m_pLowBuf;
     std::unique_ptr<SampleBuffer> m_pBandBuf;
     std::unique_ptr<SampleBuffer> m_pHighBuf;
     std::unique_ptr<SampleBuffer> m_pTempBuf;
+
 
     double m_oldLowBoost;
     double m_oldMidBoost;

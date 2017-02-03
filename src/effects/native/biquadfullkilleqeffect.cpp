@@ -3,21 +3,15 @@
 
 namespace {
 
-static const int kStartupSamplerate = 44100;
 static const double kMinimumFrequency = 10.0;
 static const double kMaximumFrequency = kStartupSamplerate / 2;
-static const double kStartupLoFreq = 50.0;
 static const double kStartupMidFreq = 1100.0;
-static const double kStartupHiFreq = 12000.0;
 static const double kQBoost = 0.3;
 static const double kQKill = 0.9;
 static const double kQLowKillShelve = 0.4;
 static const double kQHighKillShelve = 0.4;
 static const double kKillGain = -23;
 static const double kBesselStartRatio = 0.25;
-static const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
-static const int kRampDone = -1;
-
 
 
 double getCenterFrequency(double low, double high) {
@@ -178,12 +172,7 @@ BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState()
             kStartupSamplerate, kStartupMidFreq, kQKill);
     m_highKill = std::make_unique<EngineFilterBiquad1HighShelving>(
             kStartupSamplerate, kStartupHiFreq / 2, kQHighKillShelve);
-    m_low1 = std::make_unique<EngineFilterBessel4Low>(
-            kStartupSamplerate, kStartupLoFreq);
-    m_low2 = std::make_unique<EngineFilterBessel4Low>(
-            kStartupSamplerate, kStartupHiFreq);
-    m_delay2 = std::make_unique<EngineFilterDelay<kMaxDelay2>>();
-    m_delay3 = std::make_unique<EngineFilterDelay<kMaxDelay2>>();
+    m_lvMixIso = std::make_unique<LVMixEQEffectGroupState<EngineFilterBessel4Low>>();
 
     setFilters(kStartupSamplerate, kStartupLoFreq, kStartupHiFreq);
 }
@@ -212,15 +201,7 @@ void BiquadFullKillEQEffectGroupState::setFilters(
     m_highKill->setFrequencyCorners(
             sampleRate, highCenter / 2, kQHighKillShelve, m_oldHighKill);
 
-
-    int delayLow1 = m_low1->setFrequencyCornersForIntDelay(
-            lowFreqCorner / sampleRate, kMaxDelay);
-    int delayLow2 = m_low2->setFrequencyCornersForIntDelay(
-            highFreqCorner / sampleRate, kMaxDelay);
-
-    m_delay2->setDelay((delayLow1 - delayLow2) * 2);
-    m_delay3->setDelay(delayLow1 * 2);
-    m_groupDelay = delayLow1 * 2;
+    m_lvMixIso->setFilters(sampleRate, lowFreqCorner, highFreqCorner);
 }
 
 BiquadFullKillEQEffect::BiquadFullKillEQEffect(EngineEffect* pEffect,
@@ -406,93 +387,18 @@ void BiquadFullKillEQEffect::processChannel(
         pState->m_highKill->pauseFilter();
     }
 
-    // Since a Bessel Low pass Filter has a constant group delay in the pass band,
-    // we can subtract or add the filtered signal to the dry signal if we compensate this delay
-    // The dry signal represents the high gain
-    // Then the higher low pass is added and at least the lower low pass result.
-    double fLow = knobValueToBesselRatio(
-            m_pPotLow->value(), m_pKillLow->toBool());
-    double fMid = knobValueToBesselRatio(
-            m_pPotMid->value(), m_pKillMid->toBool());
-    double fHigh = knobValueToBesselRatio(
-            m_pPotHigh->value(), m_pKillHigh->toBool());
-    fLow = fLow - fMid;
-    fMid = fMid - fHigh;
-
-
-    // Note: We do not call pauseFilter() here because this will introduce a
-    // buffer size-dependent start delay. During such start delay some unwanted
-    // frequencies are slipping though or wanted frequencies are damped.
-    // We know the exact group delay here so we can just hold off the ramping.
-    if (fHigh || pState->m_oldHigh) {
-        pState->m_delay3->process(pOutput, pState->m_pHighBuf->data(), numSamples);
-    }
-
-    if (fMid || pState->m_oldMid) {
-        pState->m_delay2->process(
-                pOutput, pState->m_pBandBuf->data(), numSamples);
-        pState->m_low2->process(
-                pState->m_pBandBuf->data(), pState->m_pBandBuf->data(), numSamples);
-    }
-
-    if (fLow || pState->m_oldLow) {
-        pState->m_low1->process(pOutput, pState->m_pLowBuf->data(), numSamples);
-    }
-
-    if (fLow == pState->m_oldLow &&
-            fMid == pState->m_oldMid &&
-            fHigh == pState->m_oldHigh) {
-        SampleUtil::copy3WithGain(pOutput,
-                pState->m_pLowBuf->data(), fLow,
-                pState->m_pBandBuf->data(), fMid,
-                pState->m_pHighBuf->data(), fHigh,
-                numSamples);
+    if (enableState == EffectProcessor::DISABLING) {
+        pState->m_lvMixIso->processChannelAndPause(pOutput, pOutput, numSamples);
     } else {
-        int copySamples = 0;
-        int rampingSamples = numSamples;
-        if ((fLow && !pState->m_oldLow) ||
-                (fMid && !pState->m_oldMid) ||
-                (fHigh && !pState->m_oldHigh)) {
-            // we have just switched at least one filter on
-            // Hold off ramping for the group delay
-            if (pState->m_rampHoldOff == kRampDone) {
-                // multiply the group delay * 2 to ensure that the filter is
-                // settled it is actually at a factor of 1,8 at default setting
-                pState->m_rampHoldOff = pState->m_groupDelay * 2;
-                // ensure that we have at least 128 samples for ramping
-                // (the smallest buffer, that suits for de-clicking)
-                int rampingSamples = numSamples - (pState->m_rampHoldOff % numSamples);
-                if (rampingSamples < 128) {
-                    pState->m_rampHoldOff += rampingSamples;
-                }
-            }
-
-            // ramping is done in one of the following calls if
-            // pState->m_rampHoldOff >= numSamples;
-            copySamples = math_min<int>(pState->m_rampHoldOff, numSamples);
-            pState->m_rampHoldOff -= copySamples;
-            rampingSamples = numSamples - copySamples;
-
-            SampleUtil::copy3WithGain(pOutput,
-                    pState->m_pLowBuf->data(), pState->m_oldLow,
-                    pState->m_pBandBuf->data(), pState->m_oldMid,
-                    pState->m_pHighBuf->data(), pState->m_oldHigh,
-                    copySamples);
-        }
-
-        if (rampingSamples) {
-            SampleUtil::copy3WithRampingGain(&pOutput[copySamples],
-                    pState->m_pLowBuf->data(copySamples), pState->m_oldLow, fLow,
-                    pState->m_pBandBuf->data(copySamples), pState->m_oldMid, fMid,
-                    pState->m_pHighBuf->data(copySamples), pState->m_oldHigh, fHigh,
-                    rampingSamples);
-
-            pState->m_oldLow = fLow;
-            pState->m_oldMid = fMid;
-            pState->m_oldHigh = fHigh;
-            pState->m_rampHoldOff = kRampDone;
-
-        }
+        double fLow = knobValueToBesselRatio(
+                m_pPotLow->value(), m_pKillLow->toBool());
+        double fMid = knobValueToBesselRatio(
+                m_pPotMid->value(), m_pKillMid->toBool());
+        double fHigh = knobValueToBesselRatio(
+                m_pPotHigh->value(), m_pKillHigh->toBool());
+        pState->m_lvMixIso->processChannel(
+                pInput, pOutput, numSamples, sampleRate, fLow, fMid, fHigh,
+                m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
     }
 }
 

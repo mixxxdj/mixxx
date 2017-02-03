@@ -121,15 +121,13 @@ void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
-    double fLow;
-    double fMid;
-    double fHigh;
     if (enableState == EffectProcessor::DISABLING) {
         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
-        fLow = 1.0;
-        fMid = 1.0;
-        fHigh = 1.0;
+        pState->processChannelAndPause(pInput, pOutput, numSamples);
     } else {
+        double fLow;
+        double fMid;
+        double fHigh;
         if (!m_pKillLow->toBool()) {
             fLow = m_pPotLow->value();
         } else {
@@ -145,9 +143,8 @@ void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
         } else {
             fHigh = 0;
         }
+        pState->processChannel(pInput, pOutput, numSamples, sampleRate,
+                               fLow, fMid, fHigh,
+                               m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
     }
-
-    pState->processChannel(pInput, pOutput, numSamples, sampleRate,
-                           fLow, fMid, fHigh,
-                           m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
 }

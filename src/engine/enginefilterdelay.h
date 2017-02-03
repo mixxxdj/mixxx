@@ -102,6 +102,19 @@ class EngineFilterDelay : public EngineObjectConstIn {
         m_doStart = false;
     }
 
+
+    // this is can be used instead off a final process() call before pause
+    // It fades to dry or 0 according to the m_startFromDry parameter
+    // it is an alternative for using pauseFillter() calls
+    void processAndPauseFilter(const CSAMPLE* pIn, CSAMPLE* pOutput,
+                       const int iBufferSize) {
+        double oldDelay = m_delaySamples;
+        m_delaySamples = 0;
+        process(pIn, pOutput, iBufferSize);
+        m_delaySamples = oldDelay;
+        pauseFilter();
+    }
+
   protected:
     int m_delaySamples;
     int m_oldDelaySamples;
