@@ -208,9 +208,6 @@ Section "Mixxx (required)" SecMixxx
   File "${BASE_BUILD_DIR}\README"
   File "${BASE_BUILD_DIR}\COPYING"
 
-  SetOutPath $INSTDIR\promo\${PRODUCT_VERSION}
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\promo\${PRODUCT_VERSION}\*"
-
   SetOutPath $INSTDIR\sqldrivers
   ; Copies both DLLs and PDBs.
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
@@ -428,6 +425,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Hercules DJ Control MP3.hid.xml"
   Delete "$INSTDIR\controllers\Hercules DJ Control MP3.midi.xml"
   Delete "$INSTDIR\controllers\Hercules DJ Control Steel.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules P32 DJ.midi.xml"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-4-Mx-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk1-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk2-hid-scripts.js"
@@ -444,6 +442,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-MP3-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Control-Steel-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-mp3e2-compat.js"
+  Delete "$INSTDIR\controllers\Hercules-P32-scripts.js"
   Delete "$INSTDIR\controllers\HID-Keyboard.js"
   Delete "$INSTDIR\controllers\HID-Trackpad.js"
   Delete "$INSTDIR\controllers\Ion Discover DJ.midi.xml"
@@ -457,11 +456,15 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Korg nanoPAD2.midi.xml"
   Delete "$INSTDIR\controllers\Korg-nanoKONTROL-2-scripts.js"
   Delete "$INSTDIR\controllers\Korg-nanoPAD2-scripts.js"
+  Delete "$INSTDIR\controllers\lodash.mixxx.js"
+  Delete "$INSTDIR\controllers\M-Audio-Xponent-scripts.js"
+  Delete "$INSTDIR\controllers\M-Audio_Xponent.midi.xml"
   Delete "$INSTDIR\controllers\korg_nanokontrol2.mixco.output.js"
   Delete "$INSTDIR\controllers\korg_nanokontrol2.mixco.output.midi.xml"
   Delete "$INSTDIR\controllers\M-Audio_Xsession_pro.midi.xml"
   Delete "$INSTDIR\controllers\maudio_xponent.mixco.output.js"
   Delete "$INSTDIR\controllers\maudio_xponent.mixco.output.midi.xml"
+  Delete "$INSTDIR\controllers\midi-controls-0.0.js"
   Delete "$INSTDIR\controllers\Midi-Keyboard.midi.xml"
   Delete "$INSTDIR\controllers\Midi_for_light.midi.xml"
   Delete "$INSTDIR\controllers\Midi_for_light-scripts.js"
@@ -570,12 +573,6 @@ Section "Uninstall"
 
   ;Delete $INSTDIR\controllers\*.* ; Avoid this since it will delete customized files too
   RMDir "$INSTDIR\controllers"
-
-  ; Remove promos
-  Delete $INSTDIR\promo\${PRODUCT_VERSION}\*.*
-  Delete $INSTDIR\promo\*.*
-  RMDir /r "$INSTDIR\promo\${PRODUCT_VERSION}"
-  RMDir "$INSTDIR\promo"
 
   ; Remove skins we (might have) installed
   Delete $INSTDIR\skins\*.* ; This just deletes files at the root of the skins directory

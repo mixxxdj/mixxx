@@ -51,7 +51,7 @@ class EngineFilterPan : public EngineObjectConstIn {
             delayRightSourceFrame = m_delayFrame + SIZE + m_leftDelayFrames;
         }
 
-        DEBUG_ASSERT_AND_HANDLE(delayLeftSourceFrame >= 0 &&
+        VERIFY_OR_DEBUG_ASSERT(delayLeftSourceFrame >= 0 &&
                                 delayRightSourceFrame >= 0) {
             SampleUtil::copy(pOutput, pIn, iBufferSize);
             return;
@@ -81,7 +81,7 @@ class EngineFilterPan : public EngineObjectConstIn {
                 delayOldRightSourceFrame = m_delayFrame + SIZE + m_oldLeftDelayFrames;
             }
 
-            DEBUG_ASSERT_AND_HANDLE(delayOldLeftSourceFrame >= 0 &&
+            VERIFY_OR_DEBUG_ASSERT(delayOldLeftSourceFrame >= 0 &&
                                     delayOldRightSourceFrame >= 0) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;

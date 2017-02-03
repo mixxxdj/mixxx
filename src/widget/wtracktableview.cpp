@@ -14,7 +14,6 @@
 #include "library/coverartcache.h"
 #include "library/dlgtrackinfo.h"
 #include "library/librarytablemodel.h"
-#include "library/trackcollection.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
@@ -117,8 +116,9 @@ WTrackTableView::~WTrackTableView() {
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
     delete m_pAddToPreviewDeck;
-    delete m_pAutoDJAct;
+    delete m_pAutoDJBottomAct;
     delete m_pAutoDJTopAct;
+    delete m_pAutoDJReplaceAct;
     delete m_pRemoveAct;
     delete m_pHideAct;
     delete m_pUnhideAct;
@@ -201,10 +201,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
-    DEBUG_ASSERT_AND_HANDLE(model) {
+    VERIFY_OR_DEBUG_ASSERT(model) {
         return;
     }
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
 
@@ -383,12 +383,17 @@ void WTrackTableView::createActions() {
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
             this, SLOT(slotOpenInFileBrowser()));
 
-    m_pAutoDJAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-    connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
+    m_pAutoDJBottomAct = new QAction(tr("Add to Auto-DJ Queue (bottom)"), this);
+    connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
+            this, SLOT(slotSendToAutoDJBottom()));
 
     m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJTop()));
+
+    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto-DJ Queue (replace)"), this);
+    connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
+            this, SLOT(slotSendToAutoDJReplace()));
 
     m_pReloadMetadataAct = new QAction(tr("Reload Metadata from File"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
@@ -465,10 +470,10 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     }
     switch (action) {
     case DlgPrefLibrary::ADD_TRACK_BOTTOM:
-            sendToAutoDJ(false); // add track to Auto-DJ Queue (bottom)
+            sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM); // add track to Auto-DJ Queue (bottom)
             break;
     case DlgPrefLibrary::ADD_TRACK_TOP:
-            sendToAutoDJ(true); // add track to Auto-DJ Queue (top)
+            sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP); // add track to Auto-DJ Queue (top)
             break;
     default: // load track to next available deck
             TrackModel* trackModel = getTrackModel();
@@ -726,8 +731,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pMenu->clear();
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
-        m_pMenu->addAction(m_pAutoDJAct);
+        m_pMenu->addAction(m_pAutoDJBottomAct);
         m_pMenu->addAction(m_pAutoDJTopAct);
+        m_pMenu->addAction(m_pAutoDJReplaceAct);
         m_pMenu->addSeparator();
     }
 
@@ -739,8 +745,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 QString deckGroup = PlayerManager::groupForDeck(i - 1);
                 bool deckPlaying = ControlObject::get(
                         ConfigKey(deckGroup, "play")) > 0.0;
-                bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
-                    ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt();
+                bool loadTrackIntoPlayingDeck = m_pConfig->getValue<bool>(
+                        ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
                 QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
@@ -1305,16 +1311,20 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
     loadSelectionToGroup(group, play);
 }
 
-void WTrackTableView::slotSendToAutoDJ() {
+void WTrackTableView::slotSendToAutoDJBottom() {
     // append to auto DJ
-    sendToAutoDJ(false); // bTop = false
+    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
 void WTrackTableView::slotSendToAutoDJTop() {
-    sendToAutoDJ(true); // bTop = true
+    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void WTrackTableView::sendToAutoDJ(bool bTop) {
+void WTrackTableView::slotSendToAutoDJReplace() {
+    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
+}
+
+void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
     }
@@ -1343,7 +1353,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
 
     // TODO(XXX): Care whether the append succeeded.
-    playlistDao.sendToAutoDJ(trackIds, bTop);
+    playlistDao.sendToAutoDJ(trackIds, loc);
 }
 
 void WTrackTableView::slotReloadTrackMetadata() {

@@ -31,26 +31,26 @@ public:
         Interleaved
     };
 
-    static const SINT kChannelCountZero    = 0;
-    static const SINT kChannelCountDefault = kChannelCountZero;
-    static const SINT kChannelCountMono    = 1;
-    static const SINT kChannelCountMin     = kChannelCountMono; // lower bound
-    static const SINT kChannelCountStereo  = 2;
-    static const SINT kChannelCountMax     = 256; // upper bound (8-bit unsigned integer)
+    static constexpr SINT kChannelCountZero    = 0;
+    static constexpr SINT kChannelCountDefault = kChannelCountZero;
+    static constexpr SINT kChannelCountMono    = 1;
+    static constexpr SINT kChannelCountMin     = kChannelCountMono; // lower bound
+    static constexpr SINT kChannelCountStereo  = 2;
+    static constexpr SINT kChannelCountMax     = 256; // upper bound (8-bit unsigned integer)
 
     static bool isValidChannelCount(SINT channelCount) {
         return (kChannelCountMin <= channelCount) && (kChannelCountMax >= channelCount);
     }
 
-    static const SINT kSamplingRateZero    = 0;
-    static const SINT kSamplingRateDefault = kSamplingRateZero;
-    static const SINT kSamplingRateMin     = 8000; // lower bound (= minimum MP3 sampling rate)
-    static const SINT kSamplingRate32kHz   = 32000;
-    static const SINT kSamplingRateCD      = 44100;
-    static const SINT kSamplingRate48kHz   = 48000;
-    static const SINT kSamplingRate96kHz   = 96000;
-    static const SINT kSamplingRate192kHz  = 192000;
-    static const SINT kSamplingRateMax     = kSamplingRate192kHz; // upper bound
+    static constexpr SINT kSamplingRateZero    = 0;
+    static constexpr SINT kSamplingRateDefault = kSamplingRateZero;
+    static constexpr SINT kSamplingRateMin     = 8000; // lower bound (= minimum MP3 sampling rate)
+    static constexpr SINT kSamplingRate32kHz   = 32000;
+    static constexpr SINT kSamplingRateCD      = 44100;
+    static constexpr SINT kSamplingRate48kHz   = 48000;
+    static constexpr SINT kSamplingRate96kHz   = 96000;
+    static constexpr SINT kSamplingRate192kHz  = 192000;
+    static constexpr SINT kSamplingRateMax     = kSamplingRate192kHz; // upper bound
 
     static bool isValidSamplingRate(SINT samplingRate) {
         return (kSamplingRateMin <= samplingRate) && (kSamplingRateMax >= samplingRate);

@@ -298,7 +298,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 }
             }
         }
-        if(m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "EqAutoReset"), 0).toInt()) {
+        if(m_pConfig->getValue(
+                ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
             if (m_pLowFilter != NULL) {
                 m_pLowFilter->set(1.0);
             }
@@ -319,9 +320,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             }
             m_pPreGain->set(1.0);
         }
-        int reset = m_pConfig->getValueString(ConfigKey(
-                "[Controls]", "SpeedAutoReset"),
-                QString("%1").arg(RESET_PITCH)).toInt();
+        int reset = m_pConfig->getValue<int>(
+                ConfigKey("[Controls]", "SpeedAutoReset"), RESET_PITCH);
         if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
             // Avoid reseting speed if master sync is enabled and other decks with sync enabled
             // are playing, as this would change the speed of already playing decks.

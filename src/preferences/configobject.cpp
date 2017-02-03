@@ -182,16 +182,6 @@ QString ConfigObject<ValueType>::getValueString(const ConfigKey& k) const {
     return v.value;
 }
 
-template <class ValueType>
-QString ConfigObject<ValueType>::getValueString(const ConfigKey& k,
-                                                const QString& default_string) const {
-    QString ret = getValueString(k);
-    if (ret.isEmpty()) {
-        return default_string;
-    }
-    return ret;
-}
-
 template <class ValueType> bool ConfigObject<ValueType>::parse() {
     // Open file for reading
     QFile configfile(m_filename);
@@ -301,23 +291,32 @@ template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueKbd>;
 
 template <> template <>
-void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const QString& value) {
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const QString& value) {
     set(key, ConfigValue(value));
 }
 
 template <> template <>
-void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const bool& value) {
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const bool& value) {
     set(key, value ? ConfigValue("1") : ConfigValue("0"));
 }
 
 template <> template <>
-void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const int& value) {
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const int& value) {
     set(key, ConfigValue(QString::number(value)));
 }
 
 template <> template <>
-bool ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
-                                         const bool& default_value) const {
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const double& value) {
+    set(key, ConfigValue(QString::number(value)));
+}
+
+template <> template <>
+bool ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const bool& default_value) const {
     const ConfigValue value = get(key);
     if (value.isNull()) {
         return default_value;
@@ -328,8 +327,8 @@ bool ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
 }
 
 template <> template <>
-int ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
-                                        const int& default_value) const {
+int ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const int& default_value) const {
     const ConfigValue value = get(key);
     if (value.isNull()) {
         return default_value;
@@ -340,8 +339,8 @@ int ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
 }
 
 template <> template <>
-double ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
-                                           const double& default_value) const {
+double ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const double& default_value) const {
     const ConfigValue value = get(key);
     if (value.isNull()) {
         return default_value;
@@ -351,10 +350,41 @@ double ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
     return ok ? result : default_value;
 }
 
-template <> template <>
-QString ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
-                                            const QString& default_value) const {
+// For string literal default
+template <>
+QString ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const char* default_value) const {
     const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return QString(default_value);
+    }
+    return value.value;
+}
+
+template <>
+QString ConfigObject<ConfigValueKbd>::getValue(
+        const ConfigKey& key, const char* default_value) const {
+    const ConfigValueKbd value = get(key);
+    if (value.isNull()) {
+        return QString(default_value);
+    }
+    return value.value;
+}
+
+template <> template <>
+QString ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const QString& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    return value.value;
+}
+
+template <> template <>
+QString ConfigObject<ConfigValueKbd>::getValue(
+        const ConfigKey& key, const QString& default_value) const {
+    const ConfigValueKbd value = get(key);
     if (value.isNull()) {
         return default_value;
     }

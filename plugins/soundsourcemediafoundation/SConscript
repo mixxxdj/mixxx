@@ -17,6 +17,7 @@ if int(build.flags['mediafoundation']):
         env["LINKFLAGS"].remove("/subsystem:windows,5.02")
     else:
         env["LINKFLAGS"].remove("/subsystem:windows,5.01")
+    results = ["ssmediafoundation_bin"]
     ssmediafoundation_bin = env.SharedLibrary('soundsourcemediafoundation',
         ['soundsourcemediafoundation.cpp',
          'sources/soundsourceplugin.cpp',
@@ -33,6 +34,9 @@ if int(build.flags['mediafoundation']):
          'track/bpm.cpp' ],
         LINKCOM  = [env['LINKCOM'],
             'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
-    Return("ssmediafoundation_bin")
+    if build.bundle_pdbs:
+        ssmediafoundation_pdb = env.SideEffect('soundsourcemediafoundation.pdb', ssmediafoundation_bin)
+        results.append("ssmediafoundation_pdb")
+    Return(results)
 else:
     Return("")

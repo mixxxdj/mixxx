@@ -53,7 +53,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
 }
 
 SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
-    DEBUG_ASSERT_AND_HANDLE(!SUCCEEDED(m_hrCoInitialize)) {
+    VERIFY_OR_DEBUG_ASSERT(!SUCCEEDED(m_hrCoInitialize)) {
         qWarning() << kLogPreamble
                 << "Cannot reopen file"
                 << getUrlString();
@@ -412,7 +412,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                     pLockedSampleBuffer,
                     writableChunk.size());
             HRESULT hrUnlock = pMediaBuffer->Unlock();
-            DEBUG_ASSERT_AND_HANDLE(SUCCEEDED(hrUnlock)) {
+            VERIFY_OR_DEBUG_ASSERT(SUCCEEDED(hrUnlock)) {
                 qWarning() << kLogPreamble
                         << "IMFMediaBuffer::Unlock() failed"
                         << hrUnlock;

@@ -125,8 +125,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(buttonGroupKeyLockMode, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotKeyLockMode(QAbstractButton *)));
 
-    m_keylockMode = m_pConfig->getValueString(
-        ConfigKey("[Controls]", "keylockMode"), "0").toInt();
+    m_keylockMode = m_pConfig->getValue(
+        ConfigKey("[Controls]", "keylockMode"), 0);
     foreach (ControlProxy* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
     }
@@ -231,8 +231,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     // Set default value in config file and control objects, if not present
     // Default is "0" = Mixxx Mode
-    QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]", "CueDefault"), "0");
-    int cueDefaultValue = cueDefault.toInt();
+    int cueDefaultValue = m_pConfig->getValue(
+            ConfigKey("[Controls]", "CueDefault"), 0);
 
     // Update combo box
     // The itemData values are out of order to avoid breaking configurations
@@ -350,9 +350,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
-    int configSPAutoReset = m_pConfig->getValueString(
+    int configSPAutoReset = m_pConfig->getValue<int>(
                     ConfigKey("[Controls]", "SpeedAutoReset"),
-                    QString("%1").arg(BaseTrackPlayer::RESET_PITCH)).toInt();
+                    BaseTrackPlayer::RESET_PITCH);
 
     m_speedAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_SPEED ||
                         configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
