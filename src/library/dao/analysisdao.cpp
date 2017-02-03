@@ -407,5 +407,11 @@ bool AnalysisDao::deleteAnalysesByType(AnalysisType type) {
         QString dataPath = analysisPath.absoluteFilePath(query.value(idColumn).toString());
         deleteFile(dataPath);
     }
+    query.prepare(QString("DELETE FROM %1 WHERE type=:type").arg(s_analysisTableName));
+    query.bindValue(":type", type);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't delete analysis";
+    }
+
     return true;
 }
