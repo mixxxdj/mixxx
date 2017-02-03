@@ -371,6 +371,24 @@
               <ConfigKey>[EffectRack1],show</ConfigKey>
             </Connection>
           </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9898; 4 Effect Units</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9899; 4 Effect Units</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],show_4effects</ConfigKey>
+            </Connection>
+          </PushButton>
         </Children>
       </WidgetGroup>
 

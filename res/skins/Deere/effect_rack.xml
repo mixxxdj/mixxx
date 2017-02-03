@@ -13,27 +13,62 @@ Container for all the effect units
       <WidgetStack>
         <ObjectName>EffectRackContainer</ObjectName>
         <SizePolicy>me,min</SizePolicy>
+        <Layout>vertical</Layout>
         <Children>
+          <!-- Add another WidgetGroup wrapper so the WidgetStack doesn't interfere with showing the
+          second row. -->
           <WidgetGroup>
-            <ObjectName>EffectUnitsRow1</ObjectName>
-            <Layout>horizontal</Layout>
-            <MinimumSize>-1,50</MinimumSize>
-            <MaximumSize>-1,195</MaximumSize>
-            <SizePolicy>me,me</SizePolicy>
+            <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:effect_unit.xml">
-                <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectUnit">1</SetVariable>
-              </Template>
 
-              <Template src="skin:effect_unit.xml">
-                <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectUnit">2</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <ObjectName>EffectUnitsRow1</ObjectName>
+                <Layout>horizontal</Layout>
+                <MinimumSize>-1,50</MinimumSize>
+                <MaximumSize>-1,195</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:effect_unit.xml">
+                    <SetVariable name="EffectRack">1</SetVariable>
+                    <SetVariable name="EffectUnit">1</SetVariable>
+                  </Template>
+
+                  <Template src="skin:effect_unit.xml">
+                    <SetVariable name="EffectRack">1</SetVariable>
+                    <SetVariable name="EffectUnit">2</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>EffectUnitsRow1</ObjectName>
+                <Layout>horizontal</Layout>
+                <MinimumSize>-1,50</MinimumSize>
+                <MaximumSize>-1,195</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:effect_unit.xml">
+                    <SetVariable name="EffectRack">1</SetVariable>
+                    <SetVariable name="EffectUnit">3</SetVariable>
+                  </Template>
+
+                  <Template src="skin:effect_unit.xml">
+                    <SetVariable name="EffectRack">1</SetVariable>
+                    <SetVariable name="EffectUnit">4</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],show_4effects</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
             </Children>
           </WidgetGroup>
+
         </Children>
       </WidgetStack>
+
     </Children>
   </WidgetGroup>
 </Template>
