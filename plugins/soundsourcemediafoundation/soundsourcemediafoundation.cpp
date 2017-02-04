@@ -478,7 +478,16 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
                 << "failed to get current media type from stream";
         return false;
     }
+    //------------ Get bitrate from the file, before we change it to get uncompressed audio
+    UINT32 aacbitrate;
+    hr = pAudioType->GetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, &aacbitrate);
+    if (FAILED(hr)) {
+        qWarning() << kLogPreamble << "error getting MF_MT_AUDIO_AVG_BYTES_PER_SECOND with pAudioType";
+    }
+    setBitrate(aacbitrate*8/1000);
 
+    
+    //-------------
     hr = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
     if (FAILED(hr)) {
         qWarning() << kLogPreamble << hr
@@ -644,6 +653,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
             << "Sample buffer capacity"
             << m_sampleBuffer.getCapacity();
 
+            
     // Finally release the reference
     safeRelease(&pAudioType);
 
@@ -665,11 +675,7 @@ bool SoundSourceMediaFoundation::readProperties() {
     qDebug() << kLogPreamble << "Frame count" << getFrameCount();
     PropVariantClear(&prop);
 
-    // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
-    // presentation descriptors, one of which MFSourceReader is not.
-    // Therefore, we calculate it ourselves.
-    setBitrate(kBitsPerSample * frames2samples(getSamplingRate()));
-
+   
     return true;
 }
 
