@@ -893,6 +893,7 @@ class MixxxCore(Feature):
 
                    "library/crate/cratestorage.cpp",
                    "library/crate/cratefeature.cpp",
+                   "library/crate/cratefeaturehelper.cpp",
                    "library/crate/cratetablemodel.cpp",
 
                    "library/playlisttablemodel.cpp",

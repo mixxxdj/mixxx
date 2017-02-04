@@ -14,6 +14,7 @@
 #include "library/coverartcache.h"
 #include "library/dlgtrackinfo.h"
 #include "library/librarytablemodel.h"
+#include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackschema.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -832,7 +833,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pCrateMenu->addSeparator();
         QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
         m_pCrateMenu->addAction(newCrateAction);
-        m_crateMapper.setMapping(newCrateAction, -1);// -1 to signify new playlist
+        m_crateMapper.setMapping(newCrateAction, CrateId().toInt());// invalid crate id for new crate
         connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
 
         m_pMenu->addMenu(m_pCrateMenu);
@@ -1468,45 +1469,17 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
             trackIds.append(trackId);
         }
     }
+    if (trackIds.isEmpty()) {
+        qWarning() << "Cannot add empty track selection to crate";
+        return;
+    }
+
     CrateId crateId(iCrateId);
     if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
-        Crate crate;
-        while (!crate.hasName()) {
-            bool ok = false;
-            crate.parseName(
-                    QInputDialog::getText(
-                            nullptr,
-                            tr("Create New Crate"),
-                            tr("Enter name for new crate:"),
-                            QLineEdit::Normal, tr("New Crate"),
-                            &ok));
-            if (!ok) {
-                return;
-            }
-            if (!crate.hasName()) {
-                QMessageBox::warning(
-                        nullptr,
-                        tr("Creating Crate Failed"),
-                        tr("A crate cannot have a blank name."));
-                continue;
-            }
-            if (m_pTrackCollection->crates().readCrateByName(crate.getName())) {
-                QMessageBox::warning(nullptr,
-                                     tr("Creating Crate Failed"),
-                                     tr("A crate by that name already exists."));
-                continue;
-            }
-        }
-        if (!m_pTrackCollection->insertCrate(crate, &crateId)) {
-            qDebug() << "Error creating crate with name " << crate.getName();
-            QMessageBox::warning(nullptr,
-                                 tr("Creating Crate Failed"),
-                                 tr("An unknown error occurred while creating crate: ")
-                                 + crate.getName());
-            return;
-        }
+        crateId = CrateFeatureHelper(
+                m_pTrackCollection, m_pConfig).createEmptyCrate();
     }
-    if (trackIds.size() > 0) {
+    if (crateId.isValid()) {
         m_pTrackCollection->unhideTracks(trackIds);
         m_pTrackCollection->addCrateTracks(crateId, trackIds);
     }

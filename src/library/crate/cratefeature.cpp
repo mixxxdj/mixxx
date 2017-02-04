@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "library/crate/cratefeaturehelper.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/parser.h"
@@ -290,14 +291,15 @@ bool CrateFeature::activateCrate(CrateId crateId) {
 bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
     CrateId crateId(crateIdFromIndex(m_lastRightClickedIndex));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
+        qWarning() << "Failed to determine id of selected crate";
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(m_pTrackCollection->crates().readCrateById(crateId, pCrate)) {
+        qWarning() << "Failed to read selected crate with id" << crateId;
         return false;
     }
     return true;
 }
-
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
@@ -348,88 +350,27 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.exec(globalPos);
 }
 
-QString CrateFeature::proposeNameForNewCrate() const {
-    QString proposedCrateName;
-    int proposedCrateNameCounter = 0;
-    do {
-        proposedCrateName = tr("New Crate");
-        if (proposedCrateNameCounter++ > 0) {
-            proposedCrateName.append(
-                    QString(" %1").arg(proposedCrateNameCounter));
-        }
-    } while (m_pTrackCollection->crates().readCrateByName(proposedCrateName));
-    return proposedCrateName;
-}
-
-CrateId CrateFeature::createCrate() {
-    const QString proposedCrateName = proposeNameForNewCrate();
-    Crate crate;
-    while (!crate.hasName()) {
-        bool ok = false;
-        crate.parseName(
-                QInputDialog::getText(
-                        nullptr,
-                        tr("Create New Crate"),
-                        tr("Enter name for new crate:"),
-                        QLineEdit::Normal,
-                        proposedCrateName,
-                        &ok));
-        if (!ok) {
-            return CrateId();
-        }
-        if (!crate.hasName()) {
-            QMessageBox::warning(
-                    nullptr,
-                    tr("Creating Crate Failed"),
-                    tr("A crate cannot have a blank name."));
-            continue;
-        }
-
-        if (m_pTrackCollection->crates().readCrateByName(crate.getName())) {
-            QMessageBox::warning(
-                    nullptr,
-                    tr("Creating Crate Failed"),
-                    tr("A crate by that name already exists."));
-            crate.resetName();
-            continue;
-        }
-    }
-
-    CrateId crateId;
-    if (m_pTrackCollection->insertCrate(crate, &crateId)) {
-        DEBUG_ASSERT(crateId.isValid());
-        activateCrate(crateId);
-        return crateId;
-    } else {
-        qDebug() << "Error creating crate with name " << crate.getName();
-        QMessageBox::warning(
-                nullptr,
-                tr("Creating Crate Failed"),
-                tr("An unknown error occurred while creating crate: ") + crate.getName());
-        return CrateId();
-    }
-}
-
 void CrateFeature::slotCreateCrate() {
-    createCrate();
+    CrateId crateId = CrateFeatureHelper(
+            m_pTrackCollection, m_pConfig).createEmptyCrate();
+    if (crateId.isValid()) {
+        activateCrate(crateId);
+    }
 }
 
 void CrateFeature::slotDeleteCrate() {
     Crate crate;
     if (readLastRightClickedCrate(&crate)) {
         if (crate.isLocked()) {
-            qDebug() << "Refusing to delete locked crate" << crate.getId();
+            qWarning() << "Refusing to delete locked crate" << crate;
             return;
         }
-
         if (m_pTrackCollection->deleteCrate(crate.getId())) {
-            activate();
-        } else {
-            qDebug() << "Failed to delete crate" << crate;
+            qDebug() << "Deleted crate" << crate;
+            return;
         }
-    } else {
-        qDebug() << "Failed to delete selected crate";
     }
+    qWarning() << "Failed to delete selected crate";
 }
 
 void CrateFeature::slotRenameCrate() {
@@ -475,76 +416,13 @@ void CrateFeature::slotRenameCrate() {
     }
 }
 
-QString CrateFeature::proposeNameForDuplicateCrate(const QString& crateName) const {
-    QString proposedCrateName;
-    int proposedCrateNameCounter = 0;
-    do {
-        proposedCrateName = QString("%1 %2").arg(
-                crateName, tr("copy" , "[noun]"));
-        if (proposedCrateNameCounter++ > 0) {
-            proposedCrateName.append(
-                    QString(" %1").arg(proposedCrateNameCounter));
-        }
-    } while (m_pTrackCollection->crates().readCrateByName(proposedCrateName));
-    return proposedCrateName;
-}
-
 void CrateFeature::slotDuplicateCrate() {
-    Crate oldCrate;
-    if (readLastRightClickedCrate(&oldCrate)) {
-        const QString proposedCrateName =
-                proposeNameForDuplicateCrate(oldCrate.getName());
-        Crate crate;
-        while (!crate.hasName()) {
-            bool ok = false;
-            crate.parseName(
-                    QInputDialog::getText(
-                            nullptr,
-                             tr("Duplicate Crate"),
-                             tr("Enter name for new crate:"),
-                             QLineEdit::Normal,
-                             proposedCrateName,
-                             &ok));
-            if (!ok || (crate.getName() == oldCrate.getName())) {
-                return;
-            }
-            if (!crate.hasName()) {
-                QMessageBox::warning(
-                        nullptr,
-                        tr("Duplicating Crate Failed"),
-                        tr("A crate cannot have a blank name."));
-                continue;
-            }
-            if (m_pTrackCollection->crates().readCrateByName(crate.getName())) {
-                QMessageBox::warning(
-                        nullptr,
-                        tr("Duplicating Crate Failed"),
-                        tr("A crate by that name already exists."));
-                crate.resetName();
-                continue;
-            }
-        }
-
-        CrateId crateId;
-        if (m_pTrackCollection->insertCrate(crate, &crateId)) {
-            QList<TrackId> trackIds;
-            trackIds.reserve(
-                    m_pTrackCollection->crates().countCrateTracks(oldCrate.getId()));
-            {
-                CrateTrackSelectResult crateTracks(
-                        m_pTrackCollection->crates().selectCrateTracksSorted(oldCrate.getId()));
-                while (crateTracks.next()) {
-                    trackIds.append(crateTracks.trackId());
-                }
-            }
-            m_pTrackCollection->addCrateTracks(crateId, trackIds);
+    Crate crate;
+    if (readLastRightClickedCrate(&crate)) {
+        CrateId crateId = CrateFeatureHelper(
+                m_pTrackCollection, m_pConfig).duplicateCrate(crate);
+        if (crateId.isValid()) {
             activateCrate(crateId);
-        } else {
-            qDebug() << "Error creating crate with name " << crate.getName();
-            QMessageBox::warning(
-                    nullptr,
-                    tr("Creating Crate Failed"),
-                    tr("An unknown error occurred while creating crate: ") + crate.getName());
         }
     } else {
         qDebug() << "Failed to duplicate selected crate";
@@ -886,7 +764,7 @@ void CrateFeature::slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds) {
 
 void CrateFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path())=="create") {
-        createCrate();
+        slotCreateCrate();
     } else {
         qDebug() << "Unknown crate link clicked" << link;
     }

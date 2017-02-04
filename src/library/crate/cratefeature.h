@@ -44,8 +44,6 @@ class CrateFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel() override;
 
-    CrateId createCrate();
-
   signals:
     void analyzeTracks(QList<TrackId>);
 
@@ -54,9 +52,9 @@ class CrateFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void slotCreateCrate();
 
   private slots:
-    void slotCreateCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
     void slotDuplicateCrate();
@@ -82,9 +80,6 @@ class CrateFeature : public LibraryFeature {
     void connectTrackCollection();
 
     bool activateCrate(CrateId crateId);
-
-    QString proposeNameForNewCrate() const;
-    QString proposeNameForDuplicateCrate(const QString& crateName) const;
 
     std::unique_ptr<TreeItem> newTreeItemForCrateSummary(
             const CrateSummary& crateSummary);
