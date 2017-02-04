@@ -31,7 +31,7 @@ const QString kConfigKey = "[Mixer Profile]";
 const QString kEnableEqs = "EnableEQs";
 const QString kEqsOnly = "EQsOnly";
 const QString kSingleEq = "SingleEQEffect";
-const QString kDefaultEqId = "org.mixxx.effects.bessel8lvmixeq";
+const QString kDefaultEqId = "org.mixxx.effects.dbiquadquadeq";
 const QString kDefaultMasterEqId = QString();
 const QString kDefaultQuickEffectId = "org.mixxx.effects.filter";
 

@@ -1,5 +1,5 @@
-#ifndef THREEBANDBIQUADEQEFFECT_H
-#define THREEBANDBIQUADEQEFFECT_H
+#ifndef BIQUADFULLKILLEQEFFECT_H
+#define BIQUADFULLKILLEQEFFECT_H
 
 #include "control/controlproxy.h"
 #include "effects/effect.h"
@@ -7,6 +7,9 @@
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbiquad1.h"
+#include "engine/enginefilterbessel4.h"
+#include "effects/native/lvmixeqbase.h"
+#include "engine/enginefilterdelay.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -14,10 +17,12 @@
 #include "util/memory.h"
 #include "util/samplebuffer.h"
 
-class ThreeBandBiquadEQEffectGroupState final {
+static const int kMaxDelay2 = 3300; // allows a 30 Hz filter at 97346;
+
+class BiquadFullKillEQEffectGroupState final {
   public:
-    ThreeBandBiquadEQEffectGroupState();
-    ~ThreeBandBiquadEQEffectGroupState();
+    BiquadFullKillEQEffectGroupState();
+    ~BiquadFullKillEQEffectGroupState();
 
     void setFilters(
             int sampleRate, double lowFreqCorner, double highFreqCorner);
@@ -25,27 +30,39 @@ class ThreeBandBiquadEQEffectGroupState final {
     std::unique_ptr<EngineFilterBiquad1Peaking> m_lowBoost;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_midBoost;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_highBoost;
-    std::unique_ptr<EngineFilterBiquad1Peaking> m_lowCut;
-    std::unique_ptr<EngineFilterBiquad1Peaking> m_midCut;
-    std::unique_ptr<EngineFilterBiquad1HighShelving> m_highCut;
+    std::unique_ptr<EngineFilterBiquad1LowShelving> m_lowKill;
+    std::unique_ptr<EngineFilterBiquad1Peaking> m_midKill;
+    std::unique_ptr<EngineFilterBiquad1HighShelving> m_highKill;
+    std::unique_ptr<LVMixEQEffectGroupState<EngineFilterBessel4Low>> m_lvMixIso;
+    std::unique_ptr<SampleBuffer> m_pLowBuf;
+    std::unique_ptr<SampleBuffer> m_pBandBuf;
+    std::unique_ptr<SampleBuffer> m_pHighBuf;
     std::unique_ptr<SampleBuffer> m_pTempBuf;
+
+
     double m_oldLowBoost;
     double m_oldMidBoost;
     double m_oldHighBoost;
-    double m_oldLowCut;
-    double m_oldMidCut;
-    double m_oldHighCut;
+    double m_oldLowKill;
+    double m_oldMidKill;
+    double m_oldHighKill;
+    double m_oldLow;
+    double m_oldMid;
+    double m_oldHigh;
 
     double m_loFreqCorner;
     double m_highFreqCorner;
 
+    int m_rampHoldOff;
+    int m_groupDelay;
+
     unsigned int m_oldSampleRate;
 };
 
-class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandBiquadEQEffectGroupState> {
+class BiquadFullKillEQEffect : public PerChannelEffectProcessor<BiquadFullKillEQEffectGroupState> {
   public:
-    ThreeBandBiquadEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    ~ThreeBandBiquadEQEffect() override;
+    BiquadFullKillEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    ~BiquadFullKillEQEffect() override;
 
     static QString getId();
     static EffectManifest getManifest();
@@ -54,7 +71,7 @@ class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandBiquad
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
-                        ThreeBandBiquadEQEffectGroupState* pState,
+                        BiquadFullKillEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,
@@ -62,8 +79,8 @@ class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandBiquad
                         const GroupFeatureState& groupFeatureState);
 
   private:
-    ThreeBandBiquadEQEffect(const ThreeBandBiquadEQEffect&) = delete;
-    void operator=(const ThreeBandBiquadEQEffect&) = delete;
+    BiquadFullKillEQEffect(const BiquadFullKillEQEffect&) = delete;
+    void operator=(const BiquadFullKillEQEffect&) = delete;
 
     QString debugString() const {
         return getId();
@@ -81,4 +98,4 @@ class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandBiquad
     std::unique_ptr<ControlProxy> m_pHiFreqCorner;
 };
 
-#endif // THREEBANDBIQUADEQEFFECT_H
+#endif // BIQUADFULLKILLEQEFFECT_H
