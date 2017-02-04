@@ -279,6 +279,7 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return false;
     }
+    m_lastRightClickedIndex = index;
     m_crateTableModel.selectCrate(crateId);
     emit(showTrackModel(&m_crateTableModel));
     emit(enableCoverArtDisplay(true));
@@ -744,12 +745,17 @@ void CrateFeature::slotExportTrackFiles() {
 }
 
 void CrateFeature::slotCrateTableChanged(CrateId crateId) {
-    m_lastRightClickedIndex = rebuildChildModel(crateId);
-    if (m_lastRightClickedIndex.isValid()) {
-        emit(featureSelect(this, m_lastRightClickedIndex));
-        activateChild(m_lastRightClickedIndex);
+    if (m_lastRightClickedIndex.isValid() &&
+            (crateIdFromIndex(m_lastRightClickedIndex) == crateId)) {
+        // Preserve crate selection
+        m_lastRightClickedIndex = rebuildChildModel(crateId);
+        if (m_lastRightClickedIndex.isValid()) {
+            activateCrate(crateId);
+        }
+    } else {
+        // Discard crate selection
+        rebuildChildModel();
     }
-
 }
 
 void CrateFeature::slotCrateContentChanged(CrateId crateId) {
