@@ -4,7 +4,8 @@
 
 #include "library/queryutil.h"
 #include "track/keyutils.h"
-#include "library/dao/trackdao.h"
+#include "library/dao/trackschema.h"
+#include "util/db/sqllikewildcards.h"
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
@@ -156,7 +157,7 @@ bool TextFilterNode::match(const TrackPointer& pTrack) const {
 
 QString TextFilterNode::toSql() const {
     FieldEscaper escaper(m_database);
-    QString escapedArgument = escaper.escapeString("%" + m_argument + "%");
+    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + m_argument + kSqlLikeMatchAll);
 
     QStringList searchClauses;
     for (const auto& sqlColumn: m_sqlColumns) {

@@ -50,7 +50,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
     if (m_playlistId >= 0) {
         // Clear old playlist
         m_playlistId = -1;
-        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QSqlQuery query(m_pTrackCollection->database());
         QString strQuery("DELETE FROM " BANSHEE_TABLE);
         if (!query.exec(strQuery)) {
             LOG_FAILED_QUERY(query);
@@ -61,7 +61,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         // setup new playlist
         m_playlistId = playlistId;
 
-        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QSqlQuery query(m_pTrackCollection->database());
         QString strQuery("CREATE TEMP TABLE IF NOT EXISTS " BANSHEE_TABLE
             " (" CLM_VIEW_ORDER " INTEGER, "
                  CLM_ARTIST " TEXT, "
