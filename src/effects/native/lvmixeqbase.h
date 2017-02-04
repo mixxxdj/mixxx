@@ -160,8 +160,6 @@ class LVMixEQEffectGroupState {
 
     void processChannelAndPause(
             const CSAMPLE* pInput, CSAMPLE* pOutput, const int numSamples) {
-        DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
-
 
         // Note: We do not call pauseFilter() here because this will introduce a
         // buffer size-dependent start delay. During such start delay some unwanted
