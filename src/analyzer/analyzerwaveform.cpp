@@ -10,7 +10,10 @@
 #include "track/track.h"
 #include "waveform/waveformfactory.h"
 
-QMutex AnalyzerWaveform::s_mutex;
+namespace
+{
+    QAtomicInt dbIndex(0);
+}
 
 AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :
         m_skipProcessing(false),
@@ -19,16 +22,14 @@ AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :
         m_stride(0, 0),
         m_currentStride(0),
         m_currentSummaryStride(0) {
-    qDebug() << "AnalyzerWaveform::AnalyzerWaveform()";
+    const int idx = ::dbIndex.fetchAndAddAcquire(1);
+    qDebug() << "AnalyzerWaveform::AnalyzerWaveform() :" << idx;
 
     m_filter[0] = 0;
     m_filter[1] = 0;
     m_filter[2] = 0;
-
-    QMutexLocker lock(&s_mutex);
-    static int i = 0;
     //A new connection different for each thread is needed http://doc.qt.io/qt-4.8/threads-modules.html#threads-and-the-sql-module
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(idx));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
         m_database.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
@@ -46,9 +47,9 @@ AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :
 }
 
 AnalyzerWaveform::~AnalyzerWaveform() {
-    qDebug() << "AnalyzerWaveform::~AnalyzerWaveform()";
-    destroyFilters();
     QString conname = m_database.connectionName();
+    qDebug() << "AnalyzerWaveform::~AnalyzerWaveform():" << conname;
+    destroyFilters();
     m_database.close();
     QSqlDatabase::removeDatabase(conname);
 }
