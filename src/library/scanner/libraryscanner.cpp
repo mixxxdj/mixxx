@@ -336,7 +336,11 @@ void LibraryScanner::cleanUpScan() {
 
     qDebug() << "Detecting cover art for unscanned files.";
     QSet<TrackId> coverArtTracksChanged;
-    m_trackDao.detectCoverArtForTracksWithoutCover(
+    m_trackDao.detectCoverArtForTracksUnknownCover(
+            m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
+
+    qDebug() << "Detecting cover art with provisional hashes.";
+    m_trackDao.makeAllCoverArtHashesUnique(
             m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
 
     // Update BaseTrackCache via signals connected to the main TrackDAO.

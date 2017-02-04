@@ -27,9 +27,14 @@ class CoverArtUtils {
             SecurityTokenPointer pToken);
 
     static QImage loadCover(const CoverInfo& info);
-    static quint16 calculateHash(const QImage& image) {
+
+    static quint16 calculateProvisionalHash(const QImage& image) {
         return qChecksum(reinterpret_cast<const char*>(image.constBits()),
                          image.byteCount());
+    }
+
+    static bool isHashProvisional(int hash) {
+        return hash <= CoverInfo::kMaxProvisionalHash;
     }
 
     static QStringList supportedCoverArtExtensions();
@@ -51,19 +56,15 @@ class CoverArtUtils {
     static QLinkedList<QFileInfo> findPossibleCoversInFolder(
             const QString& folder);
 
-    // Selects an appropriate cover file from provided list of image files.
+    // Selects an appropriate cover file from provided list of image
+    // files. Assumes a SecurityTokenPointer is held by the caller for all files
+    // in 'covers'.
     static CoverInfo selectCoverArtForTrack(
             const Track& track,
             const QLinkedList<QFileInfo>& covers);
 
-    // Selects an appropriate cover file from provided list of image
-    // files. Assumes a SecurityTokenPointer is held by the caller for all files
-    // in 'covers'.
-    static CoverInfoRelative selectCoverArtForTrack(
-            const QString& trackBaseName,
-            const QString& albumName,
-            const QLinkedList<QFileInfo>& covers);
-
+    static const QFileInfo* selectBestCoverFile(const QLinkedList<QFileInfo>& covers,
+            const QString& trackBaseName, const QString& albumName);
 
   private:
     CoverArtUtils() {}

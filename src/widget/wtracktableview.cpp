@@ -955,7 +955,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             last.sibling(last.row(), m_iCoverSourceColumn).data().toInt());
         info.type = static_cast<CoverInfo::Type>(
             last.sibling(last.row(), m_iCoverTypeColumn).data().toInt());
-        info.hash = last.sibling(last.row(), m_iCoverHashColumn).data().toUInt();
+        info.hash = last.sibling(last.row(), m_iCoverHashColumn).data().toInt();
         info.trackLocation = last.sibling(
             last.row(), m_iTrackLocationColumn).data().toString();
         info.coverLocation = last.sibling(

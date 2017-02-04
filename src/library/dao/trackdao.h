@@ -166,8 +166,15 @@ class TrackDAO : public QObject, public virtual DAO {
             const QStringList& libraryRootDirs,
             volatile const bool* pCancel);
 
-    void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
-                                        QSet<TrackId>* pTracksChanged);
+    void detectCoverArtForTracksUnknownCover(volatile const bool* pCancel,
+            QSet<TrackId>* pTracksChanged);
+
+    void makeAllCoverArtHashesUnique(volatile const bool* pCancel,
+            QSet<TrackId>* pTracksChanged);
+
+    bool verifyCoverHashUnique(const QImage& image, int hash);
+    int calculateUniqueCoverHash(const QImage& image);
+    void makeTrackCoverHashUnique(Track* pTrack);
 
   signals:
     void trackDirty(TrackId trackId) const;

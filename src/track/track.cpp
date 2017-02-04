@@ -932,7 +932,7 @@ CoverInfo Track::getCoverInfo() const {
     return CoverInfo(m_coverInfoRelative, m_fileInfo.absoluteFilePath());
 }
 
-quint16 Track::getCoverHash() const {
+int Track::getCoverHash() const {
     QMutexLocker lock(&m_qMutex);
     return m_coverInfoRelative.hash;
 }

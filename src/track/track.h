@@ -280,7 +280,7 @@ class Track : public QObject {
 
     CoverInfo getCoverInfo() const;
 
-    quint16 getCoverHash() const;
+    int getCoverHash() const;
 
     // Set/get track metadata and cover art (optional) all at once.
     void setTrackMetadata(
