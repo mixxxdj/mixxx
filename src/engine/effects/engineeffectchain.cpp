@@ -8,14 +8,14 @@ EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),
           m_enableState(EffectProcessor::ENABLED),
           m_insertionType(EffectChain::INSERT),
-          m_dMix(0),
-          m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+          m_dMix(0) {
+    m_pBuffer1 = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
+    m_pBuffer2 = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 }
 
 EngineEffectChain::~EngineEffectChain() {
-    SampleUtil::free(m_pBuffer);
 }
 
 bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
@@ -192,9 +192,6 @@ void EngineEffectChain::process(const ChannelHandle& handle,
         } else if (wet_gain_old == 0.0 && wet_gain == 0.0) {
             // Fully dry, no ramp, insert optimization. No action is needed
         } else {
-            // Clear scratch buffer.
-            SampleUtil::clear(m_pBuffer, numSamples);
-
             // Chain each effect
             bool anyProcessed = false;
             for (int i = 0; i < m_effects.size(); ++i) {
@@ -202,8 +199,9 @@ void EngineEffectChain::process(const ChannelHandle& handle,
                 if (pEffect == NULL || !pEffect->enabled()) {
                     continue;
                 }
-                const CSAMPLE* pIntermediateInput = (anyProcessed) ?  m_pBuffer : pInOut;
-                CSAMPLE* pIntermediateOutput = m_pBuffer;
+                const CSAMPLE* pIntermediateInput =
+                        anyProcessed ?  m_pBuffer1->data() : pInOut;
+                CSAMPLE* pIntermediateOutput = m_pBuffer1->data();
                 pEffect->process(handle, pIntermediateInput, pIntermediateOutput,
                                  numSamples, sampleRate,
                                  effectiveEnableState, groupFeatures);
@@ -216,12 +214,12 @@ void EngineEffectChain::process(const ChannelHandle& handle,
                 // copy2WithGain.
                 SampleUtil::copy2WithRampingGain(
                     pInOut, pInOut, 1.0 - wet_gain_old, 1.0 - wet_gain,
-                    m_pBuffer, wet_gain_old, wet_gain, numSamples);
+                    m_pBuffer1->data(), wet_gain_old, wet_gain, numSamples);
             }
         }
     } else { // SEND mode: output = input + effect(input) * wet
         // Clear scratch buffer.
-        SampleUtil::applyGain(m_pBuffer, 0.0, numSamples);
+        SampleUtil::applyGain(m_pBuffer1->data(), 0.0, numSamples);
 
         // Chain each effect
         bool anyProcessed = false;
@@ -230,8 +228,8 @@ void EngineEffectChain::process(const ChannelHandle& handle,
             if (pEffect == NULL || !pEffect->enabled()) {
                 continue;
             }
-            const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
-            CSAMPLE* pIntermediateOutput = m_pBuffer;
+            const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer1->data();
+            CSAMPLE* pIntermediateOutput = m_pBuffer1->data();
             pEffect->process(handle, pIntermediateInput,
                              pIntermediateOutput, numSamples, sampleRate,
                              effectiveEnableState, groupFeatures);
@@ -240,7 +238,7 @@ void EngineEffectChain::process(const ChannelHandle& handle,
 
         if (anyProcessed) {
             // m_pBuffer now contains the fully wet output.
-            SampleUtil::addWithRampingGain(pInOut, m_pBuffer,
+            SampleUtil::addWithRampingGain(pInOut, m_pBuffer1->data(),
                                            wet_gain_old, wet_gain, numSamples);
         }
     }

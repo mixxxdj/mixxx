@@ -7,6 +7,7 @@
 
 #include "util/class.h"
 #include "util/types.h"
+#include "util/samplebuffer.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -64,7 +65,8 @@ class EngineEffectChain : public EffectsRequestHandler {
     EffectChain::InsertionType m_insertionType;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;
-    CSAMPLE* m_pBuffer;
+    std::unique_ptr<SampleBuffer> m_pBuffer1;
+    std::unique_ptr<SampleBuffer> m_pBuffer2;
     ChannelHandleMap<ChannelStatus> m_channelStatus;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
