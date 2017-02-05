@@ -478,16 +478,20 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
                 << "failed to get current media type from stream";
         return false;
     }
-    //------------ Get bitrate from the file, before we change it to get uncompressed audio
-    UINT32 aacbitrate;
-    hr = pAudioType->GetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, &aacbitrate);
-    if (FAILED(hr)) {
-        qWarning() << kLogPreamble << "error getting MF_MT_AUDIO_AVG_BYTES_PER_SECOND with pAudioType";
-    }
-    setBitrate(aacbitrate*8/1000);
 
-    
-    //-------------
+    //------ Get bitrate from the file, before we change it to get uncompressed audio
+    UINT32 avgBytesPerSecond;
+
+    hr = pAudioType->GetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, &avgBytesPerSecond);
+    if (FAILED(hr)) {
+        qWarning() << kLogPreamble << hr
+                << "error getting MF_MT_AUDIO_AVG_BYTES_PER_SECOND";
+        return false;
+    }
+
+    setBitrate( (avgBytesPerSecond * 8) / 1000);
+    //------
+
     hr = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
     if (FAILED(hr)) {
         qWarning() << kLogPreamble << hr
