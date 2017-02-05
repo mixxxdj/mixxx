@@ -1,0 +1,36 @@
+ToDo
+* General
+  - remove layout-spacing workarounds when this is fixed
+    https://bugs.launchpad.net/mixxx/+bug/1578111
+  - workaround SizeAwareStacks' kicking out Library
+      
+* Decks
+  - replace Deck (text, overview, buttons) when Vinyl passthrough is enabled
+  - re-design SlipMode button
+  
+* Mixer
+  - decouple Channel Mixer and Mixer Bar
+  - togglers for EQs and channels' Volume fader
+  		
+* Mixerbar
+  - Mute button on each SectionLabel
+  - VUMeter for each section
+  - Mic auto-duck button
+  
+* FX
+  - minimal/expanded FX Units with toggle button
+  - a way to collapse FX units automatically when space is scarse
+
+* Library
+  - distinguish focused/unfocused Tree/Tracks/other?
+        * emphasize border
+        * darken background-color when focused
+        * ?
+        
+* Skin settings menu
+        
+
+
+
+
+

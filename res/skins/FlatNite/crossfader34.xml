@@ -19,8 +19,8 @@
           <SliderComposed trigger="[FlatNite],crossfader" persist="true" on-hide-select="0">
               <ObjectName>Crossfader</ObjectName>
             <TooltipId>crossfader</TooltipId>
-            <Handle>skin:/knobs_sliders/crossfader_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/crossfader_slider.svg</Slider>
+            <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
             <Horizontal>true</Horizontal>
             <Connection>
               <ConfigKey>[Master],crossfader</ConfigKey>

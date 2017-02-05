@@ -78,8 +78,8 @@ Variables:
           <SliderComposed><!-- Volume slider 36 x 103 -->
             <ObjectName>VolumeSlider</ObjectName>
             <TooltipId>channel_volume</TooltipId>
-            <Slider>skin:/knobs_sliders/volume_slider.svg</Slider>
-            <Handle>skin:/knobs_sliders/volume_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_volume_v_scale.svg</Slider>
+            <Handle>skin:/knobs_sliders/slider_volume_v_handle.svg</Handle>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>

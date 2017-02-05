@@ -49,8 +49,8 @@ Variables:
               <SliderComposed>
                 <TooltipId></TooltipId>
                 <ObjectName>MixerBarSlider</ObjectName>
-                <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-                <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+                <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
                 <Horizontal>true</Horizontal>
                 <Connection>
                   <ConfigKey>[Master],volume</ConfigKey>
@@ -60,8 +60,8 @@ Variables:
               <SliderComposed>
                 <TooltipId>balance</TooltipId>
                 <ObjectName>MixerBarSlider</ObjectName>
-                <Handle>skin:/knobs_sliders/balance_handle.svg</Handle>
-                <Slider>skin:/knobs_sliders/balance_slider.svg</Slider>
+                <Handle>skin:/knobs_sliders/slider_balance_handle.svg</Handle>
+                <Slider>skin:/knobs_sliders/slider_balance_scale.svg</Slider>
                 <Horizontal>true</Horizontal>
                 <Connection>
                   <ConfigKey>[Master],balance</ConfigKey>
@@ -93,8 +93,8 @@ Variables:
                   <SliderComposed>
                     <TooltipId></TooltipId>
                     <ObjectName>MixerBarSlider</ObjectName>
-                    <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-                    <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                    <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+                    <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
                     <Horizontal>true</Horizontal>
                     <Connection>
                       <ConfigKey>[Master],headVolume</ConfigKey>
@@ -104,8 +104,8 @@ Variables:
                   <SliderComposed>
                     <TooltipId>headMix</TooltipId>
                     <ObjectName>MixerBarSlider</ObjectName>
-                    <Handle>skin:/knobs_sliders/headMix_handle.svg</Handle>
-                    <Slider>skin:/knobs_sliders/headMix_slider.svg</Slider>
+                    <Handle>skin:/knobs_sliders/slider_headMix_handle.svg</Handle>
+                    <Slider>skin:/knobs_sliders/slider_headMix_scale.svg</Slider>
                     <Horizontal>true</Horizontal>
                     <Connection>
                       <ConfigKey>[Master],headMix</ConfigKey>
@@ -161,8 +161,8 @@ Variables:
                       <SliderComposed>
                         <TooltipId></TooltipId>
                         <ObjectName>MixerBarSlider</ObjectName>
-                        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-                        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                        <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+                        <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
                         <Horizontal>true</Horizontal>
                         <Connection>
                           <ConfigKey>[Microphone],volume</ConfigKey>
@@ -203,8 +203,8 @@ Variables:
                       <SliderComposed>
                         <TooltipId></TooltipId>
                         <ObjectName>MixerBarSlider</ObjectName>
-                        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-                        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                        <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+                        <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
                         <Horizontal>true</Horizontal>
                         <Connection>
                           <ConfigKey>[Microphone2],volume</ConfigKey>
@@ -255,8 +255,8 @@ Variables:
                       <SliderComposed>
                         <TooltipId></TooltipId>
                         <ObjectName>MixerBarSlider</ObjectName>
-                        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-                        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                        <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+                        <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
                         <Horizontal>true</Horizontal>
                         <Connection>
                           <ConfigKey>[Auxiliary1],volume</ConfigKey>
@@ -297,8 +297,8 @@ Variables:
                       <SliderComposed>
                         <TooltipId></TooltipId>
                         <ObjectName>MixerBarSlider</ObjectName>
-                        <Handle>skin:/knobs_sliders/volume_handle_hori.svg</Handle>
-                        <Slider>skin:/knobs_sliders/volume_slider_hori.svg</Slider>
+                        <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+                        <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
                         <Horizontal>true</Horizontal>
                         <Connection>
                           <ConfigKey>[Auxiliary2],volume</ConfigKey>

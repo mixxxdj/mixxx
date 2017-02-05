@@ -110,8 +110,8 @@ Variables:
           <SliderComposed>
               <ObjectName>PitchSlider</ObjectName>
             <TooltipId>rate</TooltipId>
-            <Handle>skin:/knobs_sliders/pitch_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/pitch_slider.svg</Slider>
+            <Handle>skin:/knobs_sliders/slider_pitch_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_pitch_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum" />],rate</ConfigKey>

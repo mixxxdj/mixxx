@@ -251,8 +251,8 @@ Variables:
         <Children>
           <SliderComposed>
             <TooltipId>rate</TooltipId>
-            <Handle>skin:/knobs_sliders/sampler_pitch_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/sampler_pitch_slider.svg</Slider>
+            <Handle>skin:/knobs_sliders/slider_pitch_sampler_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_pitch_sampler_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey>[Sampler<Variable name="samplernum"/>],rate</ConfigKey>
