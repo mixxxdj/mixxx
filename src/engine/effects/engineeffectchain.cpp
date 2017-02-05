@@ -192,6 +192,11 @@ void EngineEffectChain::process(const ChannelHandle& handle,
         } else if (wet_gain_old == 0.0 && wet_gain == 0.0) {
             // Fully dry, no ramp, insert optimization. No action is needed
         } else {
+            if (wet_gain_old != 0.0 && wet_gain == 0.0) {
+                // Tell the effect that this is the last call before disabling
+                effectiveEnableState = EffectProcessor::DISABLING;
+            }
+
             // Chain each effect
             bool anyProcessed = false;
             for (int i = 0; i < m_effects.size(); ++i) {

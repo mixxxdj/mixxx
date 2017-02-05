@@ -8,6 +8,7 @@
 #include "util/class.h"
 #include "util/types.h"
 #include "util/samplebuffer.h"
+#include "util/memory.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
