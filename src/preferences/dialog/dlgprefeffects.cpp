@@ -18,25 +18,18 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
 
 void DlgPrefEffects::slotUpdate() {
     clear();
-    QStringList effectIds = m_pEffectsManager->getAvailableEffects();
+    const QList<EffectManifest> availableEffectManifests = m_pEffectsManager->getAvailableEffectManifests();
 
-    foreach (QString id, effectIds) {
-        addEffectToList(id);
+    for (const auto& manifest : availableEffectManifests) {
+        QListWidgetItem* pItem = new QListWidgetItem();
+        pItem->setData(Qt::UserRole, manifest.id());
+        pItem->setText(manifest.displayName());
+        availableEffectsList->addItem(pItem);
     }
 
-    if (!effectIds.isEmpty()) {
+    if (!availableEffectManifests.isEmpty()) {
         availableEffectsList->setCurrentRow(0);
     }
-}
-
-void DlgPrefEffects::addEffectToList(const QString& effectId) {
-    QPair<EffectManifest, EffectsBackend*> manifestAndBackend =
-            m_pEffectsManager->getEffectManifestAndBackend(effectId);
-
-    QListWidgetItem* pItem = new QListWidgetItem();
-    pItem->setText(manifestAndBackend.first.name());
-    pItem->setData(Qt::UserRole, effectId);
-    availableEffectsList->addItem(pItem);
 }
 
 void DlgPrefEffects::slotApply() {

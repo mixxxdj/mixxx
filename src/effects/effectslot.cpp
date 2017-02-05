@@ -165,11 +165,13 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         connect(pEffect.data(), SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));
 
-        while (static_cast<unsigned int>(m_parameters.size()) < pEffect->numKnobParameters()) {
+        while (static_cast<unsigned int>(m_parameters.size())
+                < pEffect->numKnobParameters()) {
             addEffectParameterSlot();
         }
 
-        while (static_cast<unsigned int>(m_buttonParameters.size()) < pEffect->numButtonParameters()) {
+        while (static_cast<unsigned int>(m_buttonParameters.size())
+                < pEffect->numButtonParameters()) {
             addEffectButtonParameterSlot();
         }
 
@@ -182,8 +184,6 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             pParameter->loadEffect(pEffect);
             m_parametersById.insert(pParameter->getManifest().id(), pParameter);
         }
-
-        slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
 
         emit(effectLoaded(pEffect, m_iEffectNumber));
     } else {
@@ -251,8 +251,8 @@ double EffectSlot::getMetaParameter() const {
 // slotEffectMetaParameter does not need to update m_pControlMetaParameter's value
 void EffectSlot::setMetaParameter(double v, bool force) {
     if (!m_pSoftTakeover->ignore(m_pControlMetaParameter, v)
-        || !m_pControlEnabled->toBool()
-        || force) {
+            || !m_pControlEnabled->toBool()
+            || force) {
         m_pControlMetaParameter->set(v);
         slotEffectMetaParameter(v, force);
     }

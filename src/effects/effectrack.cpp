@@ -133,6 +133,33 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
 }
 
+void EffectRack::maybeLoadEffect(const unsigned int iChainSlotNumber,
+                                 const unsigned int iEffectSlotNumber,
+                                 const QString& id) {
+    if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
+        return;
+    }
+
+    EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
+    if (pChainSlot == nullptr) {
+        return;
+    }
+    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(iEffectSlotNumber);
+
+    bool loadNew = false;
+    if (pEffectSlot == nullptr || pEffectSlot->getEffect() == nullptr) {
+        loadNew = true;
+    } else if (id != pEffectSlot->getEffect()->getManifest().id()) {
+        loadNew = true;
+    }
+
+    if (loadNew) {
+        EffectChainPointer pChain = pChainSlot->getEffectChain();
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(id);
+        pChain->replaceEffect(iEffectSlotNumber, pEffect);
+    }
+}
+
 void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
                                 const unsigned int iEffectSlotNumber,
                                 EffectPointer pEffect) {

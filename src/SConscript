@@ -7,6 +7,8 @@ import shutil
 import subprocess
 import time
 import datetime
+import glob
+from xml.dom import minidom
 import SCons.Script as SCons
 
 from build import util, depends
@@ -236,21 +238,13 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
 #        unix_share_path = flags['prefix'] + "/share"
 #        unix_bin_path   = flags['prefix'] + "/bin"
 
-bundle_pdbs = build.platform_is_windows and (
-        build.build_is_debug or
-        SCons.ARGUMENTS.get('bundle_pdbs', '') in ('yes', 'y', '1'))
-
 #Mixxx binary
 binary_files = [mixxx_bin];
 if test_bin is not None:
         binary_files.append(test_bin)
-        if bundle_pdbs:
-                binary_files.append(
-                        Glob('#' + os.path.join(build.build_dir, 'mixxx-test.pdb')))
 
-if bundle_pdbs:
-        binary_files.append(
-                Glob('#' + os.path.join(build.build_dir, 'mixxx.pdb')))
+if build.bundle_pdbs:
+        binary_files.append(env.SideEffect('mixxx.pdb', mixxx_bin))
 
 #Soundsource plugins
 soundsource_plugin_files = soundsource_plugins
@@ -272,9 +266,6 @@ font_files = Glob('#res/fonts/*')
 
 #Keyboard mapping(s)
 keyboardmappings_files = Glob('#res/keyboard/*')
-
-#Promo tracks
-promotracks_files = Glob('#res/promo/*')
 
 #Documentation
 docs_files = Glob('#./LICENSE')
@@ -301,16 +292,15 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets
 # all files on 2+ builds after a clean.
 dll_files = []
-if build.toolchain_is_msvs:
-        mixxx_winlib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc90-release')
+if build.toolchain_is_msvs and not build.static_dependencies:
         # skip the MSVC DLLs incase they're in there too
-        dll_files.extend(Glob('%s/*.dll' % mixxx_winlib_path))
-        dll_files.extend(Glob('%s/lib/*.dll' % mixxx_winlib_path))
+        dll_files.extend(Glob('%s/*.dll' % build.winlib_path))
+        dll_files.extend(Glob('%s/lib/*.dll' % build.winlib_path))
 
-        if bundle_pdbs:
-                dll_files.extend(Glob('%s/*.pdb' % mixxx_winlib_path))
-                dll_files.extend(Glob('%s/lib/*.pdb' % mixxx_winlib_path))
-elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        if build.bundle_pdbs:
+                dll_files.extend(Glob('%s/*.pdb' % build.winlib_path))
+                dll_files.extend(Glob('%s/lib/*.pdb' % build.winlib_path))
+elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu and not build.static_dependencies:
         # We're cross-compiling, grab these from the crosscompile bin
         # folder. How should we be doing this?
         dll_files = Glob('#/../../mixxx-win%slib-crossmingw' % build.bitwidth)
@@ -338,7 +328,7 @@ if qt5:
         if not build.static_qt:
             imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
         # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
-        pdbSuffix = 'd.pdb' if (bundle_pdbs and build.build_is_debug) else ''
+        pdbSuffix = 'd.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
         if pdbSuffix:
                  imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 else:
@@ -346,7 +336,7 @@ else:
         if not build.static_qt:
             imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
         # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
-        pdbSuffix = 'd4.pdb' if (bundle_pdbs and build.build_is_debug) else ''
+        pdbSuffix = 'd4.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
         if pdbSuffix:
                 imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 
@@ -396,7 +386,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                 dotappstream = env.Install(os.path.join(unix_share_path, 'appdata'), dotappstream_files)
                 docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
                 icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
-                promotracks = env.Install(os.path.join(unix_share_path, 'mixxx', 'promo'), promotracks_files)
 
                 # NOTE(rryan): Hack to detect when we're Debian packaging.
                 building_debian_package = 'debian/tmp/usr' in install_root
@@ -415,7 +404,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', dotdesktop)
                 env.Alias('install', dotappstream)
                 env.Alias('install', icon)
-                env.Alias('install', promotracks)
                 env.Alias('install', vamp_plugin)
 
                 if not building_debian_package and os.access(udev_root, os.W_OK):
@@ -504,7 +492,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                    translation_files,
                    Dir('#res/keyboard/'),
                    Dir('#res/doc/'),
-                   Dir('#res/promo/'),
                    Dir(menu_nib),
                    File("#README"),
                    File("#LICENSE")]
@@ -564,7 +551,6 @@ if build.platform_is_windows:
         translations = env.Install(os.path.join(base_dist_dir, "translations"), translation_files)
         keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
         docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
-        promotracks = env.Install(os.path.join(base_dist_dir, "promo/"), promotracks_files)
         #icon = env.Install(base_dist_dir+"", icon_files)
         dlls = env.Install(base_dist_dir+"/", dll_files)
         soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"),
@@ -579,7 +565,6 @@ if build.platform_is_windows:
         env.Alias('mixxx', fonts)
         env.Alias('mixxx', translations)
         env.Alias('mixxx', keyboardmappings)
-        env.Alias('mixxx', promotracks)
         env.Alias('mixxx', docs)
         env.Alias('mixxx', dlls)
         env.Alias('mixxx', soundsource_plugins)
@@ -619,7 +604,13 @@ def win32_find_program_via_registry(program_name):
             program_location_tuple = _winreg.QueryValueEx(program_location_handle, "Path")
             program_location = program_location_tuple[0]
         except WindowsError:
-            program_location_handle = None
+            program_location = None
+    if not program_location:
+        try:
+            program_location_tuple = _winreg.QueryValueEx(program_location_handle, "CurrentInstallFolder")
+            program_location = program_location_tuple[0]
+        except WindowsError:
+            program_location = None
 
     _winreg.CloseKey(hklm)
     return program_location
@@ -645,7 +636,7 @@ def BuildRelease(target, source, env):
     package_version = construct_version(build, mixxx_version, branch_name,
                                         vcs_revision)
     arch = "x64" if build.machine_is_64bit else "x86"
-    exe_name = '%s-%s-%s.exe' % (package_name, package_version, arch)
+    exe_name = '%s-%s-%s.msi' % (package_name, package_version, arch)
     print exe_name
     print
     print "Top line of README, check version:"
@@ -667,38 +658,213 @@ def BuildRelease(target, source, env):
             redist_file = 'vc_redist.%s.exe' % arch
             print "Searching for the Visual C++ DLL installer package", redist_file
             # Check for the runtime installer in the winlib root.
-            redist_path = '%s' % os.path.join(mixxx_winlib_path, redist_file)
+            redist_path = '%s' % os.path.join(build.winlib_path, redist_file)
             print "   ", redist_path,
             if not os.path.isfile(redist_path):
                 raise Exception('Could not find the MSVC++ runtime installer.')
 
         print "Now building installation package..."
-        command_flag = None
-        nsis_path = None
-        if not build.crosscompile and build.platform_is_windows:
-            nsis_directory = win32_find_program_via_registry("NSIS")
-            nsis_path = '"%s"' % os.path.join(nsis_directory, "makensis.exe")
-            command_flag = '/'
-        elif build.crosscompile and build.platform_is_windows:
-            nsis_path = 'makensis'
-            command_flag = '-'
 
-        if not nsis_path:
-            print "Cannot find NSIS. Do you have it installed?"
+        print "Looking for WIX Toolset..."
+        wix_path = None
+        if not build.crosscompile and build.platform_is_windows:
+            wix_directory = os.getenv('WIX')
+            wix_path = '%s' % os.path.join(wix_directory, "bin")
+        elif build.crosscompile and build.platform_is_windows:
+            # TODO(XXX) How to handle that ? what does this exactly means ?
+            raise NotImplementedError
+
+        if not wix_directory:
+            raise Exception ('Cannot find WIX Toolkit. Do you have it installed?')
         else:
-            # Call the NSIS build
-            buildwin64 = "/Dx64=1" if build.machine_is_64bit else ''
-            staticdeps = "/DSTATICDEPS=1" if build.static_dependencies else ''
-            command = '%(path)s /DPACKAGE_NAME=\"%(package_name)s\" /DPRODUCT_VERSION=%(version)s /DQTDIR=%(qtpath)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s %(staticdeps)s build\\nsis\\Mixxx.nsi' % \
-                {'path': nsis_path,
-                 'package_name': exe_name,
-                 'version': mixxx_version,
-                 'qtpath': build.env['QTDIR'],
-                 'winlibpath': mixxx_winlib_path,
-                 '64bit': buildwin64,
-                 'staticdeps': staticdeps}
-            print "Using command: " + command
+            print "    Found Wix Toolset in " + wix_path
+
+        WinSDK_path = 'build\\wix'
+
+        if not os.path.isfile(os.path.join(WinSDK_path, 'wisubstg.vbs')):
+            raise Exception ('can not find ' + WinSDK_path + '\wisubstg.vbs')
+
+        if not os.path.isfile(os.path.join(WinSDK_path, 'WiLangId.vbs')):
+            raise Exception ('can not find ' + WinSDK_path + '\WiLangId.vbs')
+
+        # The default language
+        defaultLanguage="en-us"
+        # The langIds contained in the installer. starting with LangId of the default language
+        langIds="1033"
+
+        winArch = "x64" if build.machine_is_64bit else "x86"
+
+        # Auto-create wxs file for each subdir and compile them
+        print "*** Building intermediate files"
+        for subdir in next(os.walk(dist_dir))[1]:
+            print "    " + dist_dir + "\\" + subdir
+            # Exclude doc and imageformats helper DLLs, they are bundled elsewhere
+            if subdir in ['doc', 'imageformats']:
+                continue
+            command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
+                {'wix': wix_path,
+                 'distdir': dist_dir,
+                 'sub': subdir}
+            print "Using Command: " + command
             subprocess.check_call(command)
+            command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
+                {'wix': wix_path,
+                 'winlibpath': build.winlib_path,
+                 'arch': winArch,
+                 'distdir': dist_dir,
+                 'sub': subdir}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+        # Handle QT's imageformats helper DLLs if dynamic QT
+        imageformats = "no"
+        if os.path.exists(os.path.join(dist_dir,"imageformats")) and not build.static_qt:
+            imageformats = "yes"
+            command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
+                {'wix': wix_path,
+                 'distdir': dist_dir,
+                 'sub': "imageformats"}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+            command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
+                {'wix': wix_path,
+                 'winlibpath': build.winlib_path,
+                 'arch': winArch,
+                 'distdir': dist_dir,
+                 'sub': "imageformats"}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+        # Harvest main DLL from install dir
+        command = '"%(wix)s\\heat.exe" dir %(distdir)s -nologo -sfrag -suid -ag -srd -cg mainDLLCompGroup -dr INSTALLDIR -out build\wix\subdirs\mainDLL.wxs -sw5150 -var var.SourceDir -t build\wix\only-dll.xslt' % \
+            {'wix': wix_path,
+             'distdir': dist_dir}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
+        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dSourceDir=%(distdir)s -arch %(arch)s -out build\wix\subdirs\mainDLL.wixobj build\wix\subdirs\mainDLL.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': build.winlib_path,
+             'arch': winArch,
+             'distdir': dist_dir}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
+        # Harvest main PDB from install dir if they exist
+        isPdb = "no"
+        if build.bundle_pdbs and glob.glob(os.path.join(dist_dir, "*.pdb")):
+            isPdb = "yes"
+            command = '"%(wix)s\\heat.exe" dir %(distdir)s -nologo -sfrag -suid -ag -srd -cg mainPDBCompGroup -dr INSTALLDIR -out build\wix\subdirs\mainPDB.wxs -sw5150 -var var.SourceDir -t build\wix\only-pdb.xslt' % \
+            {'wix': wix_path,
+             'distdir': dist_dir}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+            command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dSourceDir=%(distdir)s -arch %(arch)s -out build\wix\subdirs\mainPDB.wixobj build\wix\subdirs\mainPDB.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': build.winlib_path,
+             'arch': winArch,
+             'distdir': dist_dir}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+        # Compile main wix files
+        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -arch %(arch)s -out build\wix\warningDlg.wixobj build\wix\warningDlg.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': build.winlib_path,
+             'arch': winArch}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dImageformats=%(isimageformats)s -dPDB=%(isPDB)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': build.winlib_path,
+             'isimageformats': imageformats,
+             'isPDB': isPdb,
+             'arch': winArch}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
+        # Build package for default language
+        print "*** Building package for default language " + defaultLanguage
+        command = '"%(wix)s\\light.exe" -cc .\ -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
+            {'wix': wix_path,
+             'deflang': defaultLanguage,
+             'package_name': 'part.' + exe_name}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
+        for file in glob.glob('build\wix\Localization\mixxx_*.wxl'):
+            doc = minidom.parse(file)
+            wixloc = doc.getElementsByTagName("WixLocalization")[0]
+            culture = wixloc.getAttribute("Culture")
+            if culture == defaultLanguage:
+                continue
+            strings = doc.getElementsByTagName("String")
+            LCID = None
+            for string in strings:
+                if string.getAttribute('Id') == "Language":
+                    LCID = string.firstChild.data
+                    break
+
+            if not LCID:
+                print "LCID not found, skipping file " + file
+                continue
+
+            print "*** Building package transform for locale %(culture)s LangID %(LCID)s" % \
+                {'culture': culture,
+                 'LCID': LCID}
+
+            command = '"%(wix)s\\light.exe" -cc .\ -reusecab -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%(lang)s,%(deflang)s -loc %(wxl_file)s -out %(lang)s.msi build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
+                {'wix': wix_path,
+                 'lang': culture,
+                 'deflang': defaultLanguage,
+                 'wxl_file': file}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+            command = '"%(wix)s\\torch.exe" -nologo -p -t language %(package_name)s %(lang)s.msi -o %(lang)s.mst' % \
+                {'wix': wix_path,
+                 'lang': culture,
+                 'package_name': 'part.' + exe_name}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+            command = 'cscript "%(winsdk)s\wisubstg.vbs" %(package_name)s %(lang)s.mst %(langid)s' % \
+                {'winsdk': WinSDK_path,
+                 'lang': culture,
+                 'package_name': 'part.' + exe_name,
+                 'langid': LCID}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+            langIds = langIds + "," + LCID
+            os.remove(culture + ".msi")
+            os.remove(culture + ".mst")
+
+        print "*** Add all supported languages to MSI Package attribute"
+        command = 'cscript "%(winsdk)s\WiLangId.vbs" %(package_name)s Package %(langid)s' % \
+            {'winsdk': WinSDK_path,
+             'package_name': 'part.' + exe_name,
+             'langid': langIds}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
+        # Everything is OK, now rename the msi to final name
+        if os.path.isfile(exe_name):
+            os.remove(exe_name)
+        os.rename('part.' + exe_name, exe_name)
+
+        # Some cleaning before leaving
+        for file in glob.glob('*.cab'):
+            os.remove(file)
+        for file in glob.glob('build\wix\*.wixobj'):
+            os.remove(file)
+        for file in glob.glob('build\wix\subdirs\*.wixobj'):
+            os.remove(file)
+        for file in glob.glob('build\wix\subdirs\*.wxs'):
+            os.remove(file)
+
     else:
         print "Aborted building installer"
 

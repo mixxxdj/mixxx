@@ -25,9 +25,9 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*a
     const ushort* const fileNameUtf16 = localFileName.utf16();
     static_assert(sizeof(wchar_t) == sizeof(ushort), "QString::utf16(): wchar_t and ushort have different sizes");
     m_pSndFile = sf_wchar_open(
-		reinterpret_cast<wchar_t*>(const_cast<ushort*>(fileNameUtf16)),
-		SFM_READ,
-		&sfInfo);
+        reinterpret_cast<wchar_t*>(const_cast<ushort*>(fileNameUtf16)),
+        SFM_READ,
+        &sfInfo);
 #else
     m_pSndFile = sf_open(getLocalFileName().toLocal8Bit(), SFM_READ, &sfInfo);
 #endif
@@ -37,14 +37,14 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*a
         DEBUG_ASSERT(m_pSndFile != nullptr);
         break; // continue
     case SF_ERR_UNRECOGNISED_FORMAT:
-        return OpenResult::UNSUPPORTED_FORMAT;
+        return OpenResult::ABORTED;
     default:
         const QString errorMsg(sf_strerror(m_pSndFile));
         if (errorMsg.toLower().indexOf("unknown format") != -1) {
             // NOTE(uklotzde 2016-05-11): This actually happens when
             // trying to open a file with a supported file extension
             // that contains data in an unsupported format!
-            return OpenResult::UNSUPPORTED_FORMAT;
+            return OpenResult::ABORTED;
         } else {
             qWarning() << "Error opening libsndfile file:"
                     << getUrlString()
@@ -103,7 +103,7 @@ SINT SoundSourceSndFile::seekSampleFrame(
 
 SINT SoundSourceSndFile::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    DEBUG_ASSERT_AND_HANDLE(numberOfFrames >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(numberOfFrames >= 0) {
         return 0;
     }
     if (numberOfFrames == 0) {

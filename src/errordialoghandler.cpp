@@ -126,7 +126,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
 
     // Make sure the minimum items are set
     QString text = props->getText();
-    DEBUG_ASSERT_AND_HANDLE(!text.isEmpty()) {
+    VERIFY_OR_DEBUG_ASSERT(!text.isEmpty()) {
         delete props;
         return false;
     }

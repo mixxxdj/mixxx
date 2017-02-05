@@ -1,0 +1,230 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect chain widget.
+  Variables:
+    EffectRack: number of the effect rack (1)
+    EffectUnit: number of this effect unit
+-->
+<Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <MinimumSize>-1,50</MinimumSize>
+    <MaximumSize>-1,195</MaximumSize>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectUnitGroupControls</ObjectName>
+        <Size>-1,20</Size>
+        <SizePolicy>me,max</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>EffectUnitGroupControlsLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:hide_show_button.xml">
+                <SetVariable name="object_name">EffectUnitToggle</SetVariable>
+                <SetVariable name="control"><Variable name="group"/>,show_parameters</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitGroupControlsRight</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:effect_unit_group_control_button.xml">
+                <SetVariable name="group_name">Head</SetVariable>
+                <SetVariable name="group_group">[Headphone]</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit_group_control_button.xml">
+                <SetVariable name="group_name">Master</SetVariable>
+                <SetVariable name="group_group">[Master]</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit_group_control_button.xml">
+                <SetVariable name="group_name">CH1</SetVariable>
+                <SetVariable name="group_group">[Channel1]</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit_group_control_button.xml">
+                <SetVariable name="group_name">CH2</SetVariable>
+                <SetVariable name="group_group">[Channel2]</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit_group_control_button.xml">
+                <SetVariable name="group_name">CH3</SetVariable>
+                <SetVariable name="group_group">[Channel3]</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit_group_control_button.xml">
+                <SetVariable name="group_name">CH4</SetVariable>
+                <SetVariable name="group_group">[Channel4]</SetVariable>
+              </Template>
+
+              <!-- Optionally display Mic 1-4 and Aux 1-4 FX arm buttons if these
+                  channels are configured in the Sound Hardware preferences.
+                    We have to use WidgetGroups here, because we can't connect
+                  <BindProperty> directly to templates. -->
+              <WidgetGroup>
+                <ObjectName>EffectUnitGroupControls</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>max,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">MIC1</SetVariable>
+                        <SetVariable name="group_group">[Microphone]</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Microphone],enabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">MIC2</SetVariable>
+                        <SetVariable name="group_group">[Microphone2]</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Microphone2],enabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">MIC3</SetVariable>
+                        <SetVariable name="group_group">[Microphone3]</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Microphone3],enabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">MIC4</SetVariable>
+                        <SetVariable name="group_group">[Microphone4]</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Microphone4],enabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                      <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">Aux1</SetVariable>
+                        <SetVariable name="group_group">[Auxiliary1]</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Auxiliary1],enabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                      <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">Aux2</SetVariable>
+                        <SetVariable name="group_group">[Auxiliary2]</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Auxiliary2],enabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                      <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">Aux3</SetVariable>
+                        <SetVariable name="group_group">[Auxiliary3]</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Auxiliary3],enabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                      <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">Aux4</SetVariable>
+                        <SetVariable name="group_group">[Auxiliary4]</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Auxiliary4],enabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:effect_unit_no_parameters.xml">
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:effect_unit_with_parameters.xml">
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

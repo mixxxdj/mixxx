@@ -190,7 +190,7 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
     // We special case direction change in the calling function, so this
     // shouldn't happen
-    DEBUG_ASSERT_AND_HANDLE(rate_new * rate_old >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(rate_new * rate_old >= 0) {
         // We cannot change direction here.
         qDebug() << "EBSL::do_scale() can't change direction";
         rate_old = 0;

@@ -383,8 +383,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // default of 6.  We've now removed all of the hacks, so subtracting
         // 6 from everyone's replay gain should keep things consistent for
         // all users.
-        int oldReplayGain = config->getValueString(
-                ConfigKey("[ReplayGain]", "InitialReplayGainBoost"), "6").toInt();
+        int oldReplayGain = config->getValue(
+                ConfigKey("[ReplayGain]", "InitialReplayGainBoost"), 6);
         int newReplayGain = math_max(-6, oldReplayGain - 6);
         config->set(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),
                     ConfigValue(newReplayGain));

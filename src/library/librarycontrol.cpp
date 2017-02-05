@@ -285,7 +285,7 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
         if (!activeView) {
             return;
         }
-        activeView->slotSendToAutoDJ();
+        activeView->slotSendToAutoDJBottom();
     }
 }
 
@@ -415,10 +415,23 @@ void LibraryControl::setLibraryFocus() {
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
-    if (v != 0) {
-        const auto key = (v < 0) ? Qt::Key_Up : Qt::Key_Down;
-        emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier});
-        emitKeyEvent(QKeyEvent{QEvent::KeyRelease, key, Qt::NoModifier});
+    if (m_pSidebarWidget == NULL) {
+        return;
+    }
+    if (v > 0) {
+        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
+            QEvent::KeyPress,
+            (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
+        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
+            QEvent::KeyRelease,
+            (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
+    } else if (v < 0) {
+        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
+            QEvent::KeyPress,
+            (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
+        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
+            QEvent::KeyRelease,
+            (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
     }
 }
 

@@ -10,12 +10,13 @@ QString Bessel4LVMixEQEffect::getId() {
 EffectManifest Bessel4LVMixEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Bessel4 LV-Mix EQ"));
-    manifest.setShortName(QObject::tr("Bessel4 EQ"));
+    manifest.setName(QObject::tr("Bessel4 LV-Mix Isolator"));
+    manifest.setShortName(QObject::tr("Bessel4 ISO"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Bessel 4th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -24 db/Oct). "
+        "A Bessel 4th-order filter isolator with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -24 dB/octave).") +
+        " " +  QObject::tr(
         "To adjust frequency shelves see the Equalizer preferences."));
     manifest.setIsMixingEQ(true);
     manifest.setEffectRampsFromDry(true);
@@ -46,7 +47,7 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     EffectManifestParameter* mid = manifest.addParameter();
     mid->setId("mid");
     mid->setName(QObject::tr("Mid"));
-    mid->setDescription(QObject::tr("Gain for Band Filter"));
+    mid->setDescription(QObject::tr("Gain for Mid Filter"));
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -120,15 +121,13 @@ void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
-    double fLow;
-    double fMid;
-    double fHigh;
     if (enableState == EffectProcessor::DISABLING) {
         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
-        fLow = 1.0;
-        fMid = 1.0;
-        fHigh = 1.0;
+        pState->processChannelAndPause(pInput, pOutput, numSamples);
     } else {
+        double fLow;
+        double fMid;
+        double fHigh;
         if (!m_pKillLow->toBool()) {
             fLow = m_pPotLow->value();
         } else {
@@ -144,9 +143,8 @@ void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
         } else {
             fHigh = 0;
         }
+        pState->processChannel(pInput, pOutput, numSamples, sampleRate,
+                               fLow, fMid, fHigh,
+                               m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
     }
-
-    pState->processChannel(pInput, pOutput, numSamples, sampleRate,
-                           fLow, fMid, fHigh,
-                           m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
 }
