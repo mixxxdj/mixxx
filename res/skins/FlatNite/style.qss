@@ -149,7 +149,7 @@ WWidget, QLabel {
     background-color: #456129;	*/
   }
   #SubmenuCover {
-	  background-color: rgba(51, 51, 51, 127);
+    background-color: rgba(51, 51, 51, 127);
   }
   #SkinSettingsButton {
     padding: 4px 0px 0px 2px;
@@ -603,7 +603,7 @@ are still drawn full-size.
     border-radius: 2px;	/*	*/
   }
   #KeyDisplay {
-    font-size: 12px/12px; /*
+    font-size: 14px/14px; /*
     margin-top: 1px;  */
   }
   #KeyDown, #KeyUp, #KeyReset {
@@ -1289,7 +1289,7 @@ are still drawn full-size.
   margin-left: 2000px;
 }
 #AlignRight {
-    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
 #Spacer0f {
