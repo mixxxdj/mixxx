@@ -3,14 +3,12 @@ ToDo
   - remove layout-spacing workarounds when this is fixed
     https://bugs.launchpad.net/mixxx/+bug/1578111
   - workaround SizeAwareStacks' kicking out Library
+    (i.e. when switching from 4 to 2 FX units, LIb and Samplers are disabled)
       
 * Decks
   - replace Deck (text, overview, buttons) when Vinyl passthrough is enabled
-  - re-design SlipMode button
   
 * Mixer
-  - decouple Channel Mixer and Mixer Bar
-  - togglers for EQs and channels' Volume fader
   		
 * Mixerbar
   - Mute button on each SectionLabel

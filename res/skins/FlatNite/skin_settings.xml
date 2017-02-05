@@ -169,7 +169,7 @@ Description:
                 <SetVariable name="ConfigKeyPerm">[FlatNite],spinnyCover</SetVariable>
               </Template>
 
-              <WidgetGroup><!-- Pitch/Key submenu -->
+              <WidgetGroup><!-- SpinnyCover submenu -->
                 <Layout>stacked</Layout>
                 <SizePolicy>max,max</SizePolicy>
                 <Children>
@@ -242,8 +242,44 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Channel Mixer</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Master],show_mixer</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[FlatNite],channel_mixer</SetVariable>
               </Template>
+
+              <WidgetGroup><!-- Channel Mixer submenu -->
+                <Layout>stacked</Layout>
+                <SizePolicy>max,max</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[FlatNite],channel_mixer</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- Channel Mixer submenu buttons -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>max,max</SizePolicy>
+                    <Children>
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                        <SetVariable name="Size">172f,20f</SetVariable>
+                        <SetVariable name="Align">left</SetVariable>
+                        <SetVariable name="state_0_text">      EQ Knobs</SetVariable>
+                        <SetVariable name="state_1_text"> &#10003; EQ Knobs</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[FlatNite],eq_knobs</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup><!-- Channel Mixer submenu buttons -->
+                </Children>
+              </WidgetGroup><!-- Channel Mixer submenu -->
 
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>

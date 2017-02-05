@@ -108,10 +108,14 @@ Variables:
             </Children>
           </WidgetGroup><!-- /PflButton -->
         </Children>
+        <Connection>
+          <ConfigKey persist="true">[FlatNite],eq_knobs</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup><!-- /EQs -->
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+      <ConfigKey persist="true">[FlatNite],channel_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

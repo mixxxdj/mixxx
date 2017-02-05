@@ -39,7 +39,7 @@
                       <Template src="skin:spinnyCover_small.xml"/>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                      <ConfigKey persist="true">[FlatNite],channel_mixer</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>

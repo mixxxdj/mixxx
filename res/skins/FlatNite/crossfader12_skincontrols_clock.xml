@@ -64,7 +64,7 @@
             <SetVariable name="state_0_unpressed">mixer_off.svg</SetVariable>
             <SetVariable name="state_1_pressed">mixer_on.svg</SetVariable>
             <SetVariable name="state_1_unpressed">mixer_on.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Master],show_mixer</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[FlatNite],channel_mixer</SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->

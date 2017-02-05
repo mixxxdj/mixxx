@@ -32,7 +32,7 @@
                 <Children>
                 
                   <!-- mixer -->
-                  <WidgetGroup trigger="[Master],show_mixer" persist="true" on-hide-select="1">
+                  <WidgetGroup trigger="[FlatNite],channel_mixer" persist="true" on-hide-select="1">
                     <Layout>horizontal</Layout>
                     <SizePolicy>f,f</SizePolicy>
                     <Children>
