@@ -260,7 +260,8 @@ QDomElement EffectParameterSlot::toXML(QDomDocument* doc) const {
                              QString::number(m_pControlValue->getParameter()));
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterLinkType,
-                             QString::number(m_pControlLinkType->get()));
+                             EffectManifestParameter::LinkTypeToString(
+                                static_cast<int>(m_pControlLinkType->get())));
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterLinkInversion,
                              QString::number(m_pControlLinkInverse->get()));
@@ -286,9 +287,10 @@ void EffectParameterSlot::loadValuesFromXml(const QDomElement& parameterElement)
             XmlParse::selectNodeDouble(parameterElement,
                                        EffectXml::ParameterValue),
             nullptr);
-        m_pControlLinkType->set(
-            XmlParse::selectNodeDouble(parameterElement,
-                                       EffectXml::ParameterLinkType));
+        m_pControlLinkType->set(static_cast<double>(
+            EffectManifestParameter::LinkTypeFromString(
+                XmlParse::selectNodeQString(parameterElement,
+                                            EffectXml::ParameterLinkType))));
         m_pControlLinkInverse->set(
             XmlParse::selectNodeDouble(parameterElement,
                                        EffectXml::ParameterLinkInversion));
