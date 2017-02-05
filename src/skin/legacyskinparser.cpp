@@ -78,6 +78,7 @@
 #include "widget/wsingletoncontainer.h"
 #include "util/valuetransformer.h"
 #include "util/cmdlineargs.h"
+#include "util/memory.h"
 #include "util/timer.h"
 
 using mixxx::skin::SkinManifest;
@@ -143,8 +144,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pLibrary(NULL),
           m_pVCManager(NULL),
           m_pEffectsManager(NULL),
-          m_pParent(NULL),
-          m_pContext(NULL) {
+          m_pParent(NULL) {
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
@@ -161,12 +161,10 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
-          m_pParent(NULL),
-          m_pContext(NULL) {
+          m_pParent(NULL) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
-    delete m_pContext;
 }
 
 bool LegacySkinParser::canParse(const QString& skinPath) {
@@ -300,6 +298,9 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     ScopedTimer timer("SkinLoader::parseSkin");
     qDebug() << "LegacySkinParser loading skin:" << skinPath;
 
+    m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");
+    m_pContext->setSkinBasePath(skinPath + "/");
+
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
     }
@@ -374,9 +375,6 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     // created parent so MixxxMainWindow can use it for nefarious purposes (
     // fullscreen mostly) --bkgood
     m_pParent = pParent;
-    delete m_pContext;
-    m_pContext = new SkinContext(m_pConfig, skinPath + "/skin.xml");
-    m_pContext->setSkinBasePath(skinPath + "/");
     QList<QWidget*> widgets = parseNode(skinDocument);
 
     if (widgets.empty()) {
@@ -395,8 +393,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 }
 
 LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget* pParent) {
-    delete m_pContext;
-    m_pContext = new SkinContext(m_pConfig, skinPath + "/skin.xml");
+    m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");
     m_pContext->setSkinBasePath(skinPath + "/");
 
     QDomElement skinDocument = openSkin(skinPath);
@@ -1507,8 +1504,8 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
         qDebug() << "BEGIN TEMPLATE" << path;
     }
 
-    SkinContext* pOldContext = m_pContext;
-    m_pContext = new SkinContext(*pOldContext);
+    std::unique_ptr<SkinContext> pOldContext = std::move(m_pContext);
+    m_pContext = std::make_unique<SkinContext>(*pOldContext);
     // Take any <SetVariable> elements from this node and update the context
     // with them.
     m_pContext->updateVariables(node);
@@ -1525,8 +1522,7 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
         child = child.nextSibling();
     }
 
-    delete m_pContext;
-    m_pContext = pOldContext;
+    m_pContext = std::move(pOldContext);
 
     if (sDebug) {
         qDebug() << "END TEMPLATE" << path;
