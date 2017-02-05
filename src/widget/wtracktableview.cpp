@@ -27,11 +27,10 @@
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
-                                 TrackCollection* pTrackCollection,
-                                 const QString scrollBarKey, bool sorting)
+                                 TrackCollection* pTrackCollection, bool sorting)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
-                                      scrollBarKey)),
+                                      WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_sorting(sorting),
@@ -42,8 +41,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverColumn(-1),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
-
-    qWarning() << "WTrackTableView called";
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
@@ -201,8 +198,6 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     //qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
-    qWarning() << "loadTrackModel:" << reinterpret_cast<unsigned long>(model);
-
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
     VERIFY_OR_DEBUG_ASSERT(model) {
@@ -211,6 +206,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
+
+    unsigned long newModelAddr = 0;
 
     /* If the model has not changed
      * there's no need to exchange the headers
@@ -222,12 +219,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         doSortByColumn(horizontalHeader()->sortIndicatorSection());
         return;
     }else{
+        newModelAddr = reinterpret_cast<unsigned long>(trackModel);
         saveVScrollBarPos(QString::number(reinterpret_cast<unsigned long>(getTrackModel())));
         //saving current vertical bar position
         //using adress of track model as key
-        restoreVScrollBarPos(QString::number(reinterpret_cast<unsigned long>(trackModel)));
-        // restoring scrollBar position using model pointer as key
-        // scrollbar positions with respect  to different models are backed by map
     }
 
     // The "coverLocation" and "hash" column numbers are required very often
@@ -369,6 +364,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     setVisible(true);
     //restoreVScrollBarPos();
+
+    restoreVScrollBarPos(QString::number(newModelAddr));
+    // restoring scrollBar position using model pointer as key
+    // scrollbar positions with respect  to different models are backed by map
 }
 
 void WTrackTableView::createActions() {

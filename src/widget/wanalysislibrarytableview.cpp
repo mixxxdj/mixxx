@@ -4,7 +4,7 @@
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(QWidget* parent,
                                                    UserSettingsPointer pConfig,
                                                    TrackCollection* pTrackCollection)
-        : WTrackTableView(parent, pConfig, pTrackCollection, QString::number(qrand())) {
+        : WTrackTableView(parent, pConfig, pTrackCollection) {
     setDragDropMode(QAbstractItemView::DragOnly);
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
 }

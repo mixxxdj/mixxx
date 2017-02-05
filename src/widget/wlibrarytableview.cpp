@@ -18,8 +18,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
 
-    qWarning() << "vScrollBarPosKey=" << vScrollBarPosKey;
-
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
@@ -44,7 +42,7 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
-    loadVScrollBarPosState();
+    //loadVScrollBarPosState();
 
     connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
             this, SIGNAL(scrollValueChanged(int)));
@@ -53,7 +51,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 }
 
 WLibraryTableView::~WLibraryTableView() {
-    saveVScrollBarPosState();
 }
 
 void WLibraryTableView::loadVScrollBarPosState() {
@@ -75,7 +72,6 @@ void WLibraryTableView::saveVScrollBarPos() {
     //Save the scrollbar's position so we can return here after
     //a search is cleared.
     m_iSavedVScrollBarPos = verticalScrollBar()->value();
-
 }
 
 
@@ -121,6 +117,7 @@ void WLibraryTableView::saveVScrollBarPos(const QString key){
 
 void WLibraryTableView::restoreVScrollBarPos(const QString key){
     updateGeometries();
+
     if (m_vScrollBarPosValues.contains(key)){
         verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
     }else{
