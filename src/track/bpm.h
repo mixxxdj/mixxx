@@ -12,8 +12,9 @@ class Bpm final {
 public:
     static constexpr double kValueUndefined = 0.0;
     static constexpr double kValueMin = 0.0; // lower bound (exclusive)
-    static constexpr double kValueMinForTwoDecimals = 5000.0;
-    static constexpr double kValueMinForOneDecimal = 500.0;
+    //These define our BPM range to be from 30 to 299.99.
+    static constexpr double kValueMinForTwoDecimals = 3000.0;
+    static constexpr double kValueMinForOneDecimal = 300.0;
 
     Bpm()
         : Bpm(kValueUndefined) {
