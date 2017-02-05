@@ -33,10 +33,45 @@ class MetadataTest : public testing::Test {
         // that should already be normalized.
         EXPECT_EQ(normalizedBpm.getValue(), normalizedValue);
     }
+    
+    void readBPMFromId3(const char* inputValue, double expectedValue) {
+        TagLib::ID3v2::Tag tag;
+        tag.header()->setMajorVersion(3);
+        auto pFrame =
+            std::make_unique<TagLib::ID3v2::TextIdentificationFrame>("TBPM", TagLib::String::Latin1);
+
+        pFrame->setText(TagLib::String(inputValue, TagLib::String::UTF8));
+        tag.addFrame(pFrame.get());
+        // Now that the plain pointer in pFrame is owned and managed by
+        // pTag we need to release the ownership to avoid double deletion!
+        pFrame.release();
+
+        mixxx::TrackMetadata trackMetadata;
+        mixxx::taglib::readTrackMetadataFromID3v2Tag(&trackMetadata, tag);        
+
+        EXPECT_DOUBLE_EQ(trackMetadata.getBpm().getValue(), actualValue);
+    }
 };
 
 TEST_F(MetadataTest, ParseBpmPrecision) {
     parseBpm("128.1234", true, 128.1234); // 4 fractional digits
+
+    //Test special case where BPM value represents cents of a BPM (like 1240 instead of 124)
+    const char* bpmchar[] = {
+        "200",
+        "600",
+        "1256",
+        "14525"
+    };
+    double bpmdouble[] = {
+        200.0,
+        60.0,
+        125.6,
+        145.25
+    };
+    for (size_t i = 0; i < sizeof(bpmchar) / sizeof(bpmchar[0]); ++i) {
+        readBPMFromId3(bpmchar[i], bpmdouble[i]);
+    }
 }
 
 TEST_F(MetadataTest, ParseBpmValidRange) {

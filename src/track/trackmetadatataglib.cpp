@@ -227,13 +227,6 @@ bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
     bool isBpmValid = false;
     double bpmValue = Bpm::valueFromString(sBpm, &isBpmValid);
     if (isBpmValid) {
-        //Some software uses (or used) to write decimated values without comma,
-        //so the number reads as 1352 or 14525 when it is 135.2 or 145.25
-        if (bpmValue > 5000.0) {
-            bpmValue /= 100.0;
-        } else if (bpmValue > 500.0) {
-            bpmValue /= 10.0;
-        }
         pTrackMetadata->setBpm(Bpm(bpmValue));
     }
     return isBpmValid;
@@ -1033,6 +1026,19 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
     const TagLib::ID3v2::FrameList bpmFrame(tag.frameListMap()["TBPM"]);
     if (!bpmFrame.isEmpty()) {
         parseBpm(pTrackMetadata, toQStringFirstNotEmpty(bpmFrame));
+        long bpmValue = pTrackMetadata->getBpm().getValue();
+        //Some software uses (or used) to write decimated values without comma,
+        //so the number reads as 1352 or 14525 when it is 135.2 or 145.25
+        if (bpmValue >= Bpm::kValueMinForTwoDecimals) {
+            qWarning() << " Changing BPM on " << pTrackMetadata->getArtist() << " - " << 
+                pTrackMetadata->getTitle() << " from " << bpmValue << " to " << bpmValue/100.0;
+            bpmValue /= 100.0;
+        } else if (bpmValue >= Bpm::kValueMinForOneDecimal) {
+            qWarning() << " Changing BPM on " << pTrackMetadata->getArtist() << " - " << 
+                pTrackMetadata->getTitle() << " from " << bpmValue << " to " << bpmValue/10.0;
+            bpmValue /= 10.0;
+        }
+        pTrackMetadata->getBpm().setValue(bpmValue);
     }
 
     const TagLib::ID3v2::FrameList keyFrame(tag.frameListMap()["TKEY"]);
