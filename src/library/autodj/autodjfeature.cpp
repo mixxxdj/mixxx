@@ -40,21 +40,25 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pAutoDJProcessor(NULL),
           m_pAutoDJView(NULL),
           m_autoDjCratesDao(pTrackCollection, pConfig) {
-    m_autoDjCratesDao.initialize();
-
-    m_iAutoDJPlaylistId = m_autoDjCratesDao.getPlaylistId();
+    m_iAutoDJPlaylistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     // If the AutoDJ playlist does not exist yet then create it.
     if (m_iAutoDJPlaylistId < 0) {
         m_iAutoDJPlaylistId = m_playlistDao.createPlaylist(
                 AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+        VERIFY_OR_DEBUG_ASSERT(m_iAutoDJPlaylistId >= 0) {
+            qWarning() << "Failed to create Auto DJ playlist!";
+        }
     }
+    // The AutoDJCratesDAO expects that the dedicated AutoDJ playlist
+    // has already been created.
+    m_autoDjCratesDao.initialize();
+
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
             this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
     connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
-
 
     // Create the "Crates" tree-item under the root item.
     auto pRootItem = std::make_unique<TreeItem>(this);
