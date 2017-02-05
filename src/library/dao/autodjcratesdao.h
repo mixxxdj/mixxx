@@ -22,8 +22,8 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     void initialize() override;
 
     int getPlaylistId() const {
-    	DEBUG_ASSERT(m_iAutoDjPlaylistId >= 0);
-    	return m_iAutoDjPlaylistId;
+        DEBUG_ASSERT(m_iAutoDjPlaylistId >= 0);
+        return m_iAutoDjPlaylistId;
     }
 
     // Get the ID of a random track.

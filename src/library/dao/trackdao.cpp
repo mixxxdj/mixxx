@@ -130,8 +130,8 @@ void TrackDAO::finish() {
     qDebug() << "Clearing played information for this session";
     QSqlQuery query(m_database);
     if (!query.exec("UPDATE library SET played=0 where played>0")) {
-	// Note: whithout where, this call updates every row which takes long
-	LOG_FAILED_QUERY(query)
+        // Note: whithout where, this call updates every row which takes long
+        LOG_FAILED_QUERY(query)
                 << "Error clearing played value";
     }
 
