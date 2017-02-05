@@ -2,6 +2,9 @@
 
 #include "track/trackmetadatataglib.h"
 #include "util/memory.h"
+
+#include <taglib/tstring.h>
+#include <taglib/textidentificationframe.h>
 #include <QtDebug>
 
 namespace {
