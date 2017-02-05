@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "track/trackmetadatataglib.h"
-
+#include "util/memory.h"
 #include <QtDebug>
 
 namespace {
@@ -49,7 +49,7 @@ class MetadataTest : public testing::Test {
         mixxx::TrackMetadata trackMetadata;
         mixxx::taglib::readTrackMetadataFromID3v2Tag(&trackMetadata, tag);        
 
-        EXPECT_DOUBLE_EQ(trackMetadata.getBpm().getValue(), actualValue);
+        EXPECT_DOUBLE_EQ(trackMetadata.getBpm().getValue(), expectedValue);
     }
 };
 
