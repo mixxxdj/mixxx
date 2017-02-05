@@ -132,7 +132,7 @@
                 <Size>3f,1me</Size>
                 <Children/>
                 <Connection>
-                  <ConfigKey>[FlatNite],pitch_slider</ConfigKey>
+                  <ConfigKey>[FlatNite],pitch_fader</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /Pitch slider & key controls -->

@@ -104,9 +104,9 @@ Description:
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                 <SetVariable name="Size">172f,20f</SetVariable>
                 <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      BPM / Pitch Slider</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; BPM / Pitch Slider</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],pitch_slider</SetVariable>
+                <SetVariable name="state_0_text">      BPM / Pitch Fader</SetVariable>
+                <SetVariable name="state_1_text"> &#10003; BPM / Pitch Fader</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[FlatNite],pitch_fader</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Pitch/Key submenu -->
@@ -122,7 +122,7 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Children/>
                     <Connection>
-                      <ConfigKey persist="true">[FlatNite],pitch_slider</ConfigKey>
+                      <ConfigKey persist="true">[FlatNite],pitch_fader</ConfigKey>
                       <BindProperty>visible</BindProperty>
                       <Transform><Not/></Transform>
                     </Connection>

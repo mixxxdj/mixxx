@@ -65,7 +65,7 @@
       <attribute persist="true" config_key="[FlatNite],mixerbar_aux">1</attribute>
       <attribute persist="true" config_key="[FlatNite],mixerbar_headphone">1</attribute>
       <attribute persist="true" config_key="[FlatNite],mixerbar_mic">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],pitch_slider">1</attribute>
+      <attribute persist="true" config_key="[FlatNite],pitch_fader">1</attribute>
       <attribute persist="true" config_key="[FlatNite],key_controls">1</attribute>
       <attribute persist="true" config_key="[FlatNite],vumeter">1</attribute>
       <attribute persist="true" config_key="[FlatNite],stars">1</attribute>
@@ -323,7 +323,7 @@
                       <Size>106f,1min</Size>
                       <Children/>
                       <Connection>
-                        <ConfigKey>[FlatNite],pitch_slider</ConfigKey>
+                        <ConfigKey>[FlatNite],pitch_fader</ConfigKey>
                         <BindProperty>visible</BindProperty>
                       </Connection>
                     </WidgetGroup>
@@ -396,7 +396,7 @@
                   <Size>106f,1min</Size>
                   <Children/>
                   <Connection>
-                    <ConfigKey>[FlatNite],pitch_slider</ConfigKey>
+                    <ConfigKey>[FlatNite],pitch_fader</ConfigKey>
                     <BindProperty>visible</BindProperty>
                   </Connection>
                 </WidgetGroup>

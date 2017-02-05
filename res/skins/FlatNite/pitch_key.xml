@@ -122,7 +122,7 @@ Variables:
       
     </Children>
     <Connection>
-      <ConfigKey persist="true">[FlatNite],pitch_slider</ConfigKey>
+      <ConfigKey persist="true">[FlatNite],pitch_fader</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- /RateContainer -->
