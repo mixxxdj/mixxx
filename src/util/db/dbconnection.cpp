@@ -256,9 +256,11 @@ DbConnection::DbConnection(const QString& dirPath)
 
         DEBUG_ASSERT(*this); // success
         return; // early exit
+    } else {
+        qWarning() << "localecompare requires a SQLite3 database driver, found:"
+                   << v.typeName();
     }
 #endif // __SQLITE3__
-    qWarning() << "Unsupported database driver:" << v.typeName();
 }
 
 DbConnection::~DbConnection() {
