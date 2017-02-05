@@ -703,13 +703,20 @@ are still drawn full-size.
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
     }
-
-#PflButton {
-  border-radius: 2px;	/*
-  background-color: #136461;	*/
+/*  This wouldn't scale the image:
+#PflButton[displayValue="0"] {
+  background: transparent url(skin:/buttons/btn_pfl_off.svg) no-repeat center center;
+  background-origin: padding;
   }
-#PflButton:hover {
-  background-color: #666666;
+  This is a workaround from
+  https://forum.qt.io/topic/40151/solved-scaled-background-image-using-stylesheet/6
+  border-image: url(skin:/buttons/btn_pfl_off.svg) 0 0 0 0 stretch stretch; */
+#PflButton:hover {  /*
+  In conjunction with the workaround above, this would only
+  draw invisible border and squeez image by 1px:
+  border: 1px solid #eeeeee;  */
+  background-color: #0f0f0f;
+  border-radius: 2px;
   }
         
 #VolumeSliderGain {
