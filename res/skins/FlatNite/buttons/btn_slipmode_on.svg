@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.839192"
-     inkscape:cx="-11.071051"
-     inkscape:cy="6.3622322"
+     inkscape:zoom="7.919596"
+     inkscape:cx="-6.3132267"
+     inkscape:cy="4.5141599"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -55,15 +55,11 @@
        id="guide3014" />
     <sodipodi:guide
        orientation="1,0"
-       position="3,18.62505"
-       id="guide3016" />
-    <sodipodi:guide
-       orientation="1,0"
        position="9,16.999958"
        id="guide3826" />
     <sodipodi:guide
        orientation="1,0"
-       position="11,17.93"
+       position="4,10.999975"
        id="guide3828" />
   </sodipodi:namedview>
   <metadata
@@ -98,24 +94,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.45822504,0,0,0.45822504,5.089417,1039.0711)"
-       inkscape:transform-center-x="-1.7320461" />
-    <path
-       sodipodi:type="star"
-       style="fill:#4e81a2;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="path3018-5"
-       sodipodi:sides="3"
-       sodipodi:cx="3"
-       sodipodi:cy="5"
-       sodipodi:r1="15.119611"
-       sodipodi:r2="7.5598059"
-       sodipodi:arg1="0"
-       sodipodi:arg2="1.0471976"
-       inkscape:flatsided="true"
-       inkscape:rounded="0"
-       inkscape:randomized="0"
-       d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.45822504,0,0,0.45822504,9.089417,1039.0711)"
+       transform="matrix(0.45822504,0,0,0.45822504,6.089417,1039.0711)"
        inkscape:transform-center-x="-1.7320461" />
     <path
        sodipodi:type="star"
@@ -132,7 +111,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.45822504,0,0,0.45822504,13.089417,1039.0711)"
+       transform="matrix(0.45822504,0,0,0.45822504,11.089417,1039.0711)"
        inkscape:transform-center-x="-1.7320461" />
   </g>
 </svg>
