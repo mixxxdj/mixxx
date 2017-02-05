@@ -225,7 +225,7 @@ bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
     DEBUG_ASSERT(pTrackMetadata);
 
     bool isBpmValid = false;
-    double bpmValue = Bpm::valueFromString(sBpm, &isBpmValid);
+    const double bpmValue = Bpm::valueFromString(sBpm, &isBpmValid);
     if (isBpmValid) {
         pTrackMetadata->setBpm(Bpm(bpmValue));
     }
