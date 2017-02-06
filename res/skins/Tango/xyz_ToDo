@@ -11,11 +11,12 @@ ToDo
   - replace Deck (text, overview, buttons) when Vinyl passthrough is enabled
   
 * Mixer
+  - brighter Gain knob notch (as well Super knob notch)
   		
 * Mixerbar
   - Mute button on each SectionLabel
   - VUMeter for each section
-  - Mic auto-duck button
+  - Mic auto-duck button, ducking strength knob
   - make it lower to save space?
 
 * Skin Controls
@@ -23,7 +24,7 @@ ToDo
   - show Logo when Crossfader is visible
   
 * FX
-  - minimal/expanded FX Units with toggle button
+  - minimal/expanded 2.1 FX Units with toggle button
   - a way to collapse FX units automatically when space is scarse
 
 * Library
