@@ -130,15 +130,12 @@ bool EffectChainManager::saveEffectChains() {
     QDomDocument doc("MixxxEffects");
 
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<" + EffectXml::Root + ">\n"
+        "<" + EffectXml::Root + " schemaVersion=\"" +
+              QString::number(EffectXml::kXmlSchemaVersion) + "\">\n"
         "</" + EffectXml::Root + ">\n";
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();
-    QDomElement mixxxVersionElement = doc.createElement(EffectXml::SchemaVersion);
-    QDomText version = doc.createTextNode(QString::number(EffectXml::kXmlSchemaVersion));
-    mixxxVersionElement.appendChild(version);
-    rootNode.appendChild(mixxxVersionElement);
 
     for (EffectRackPointer pRack : m_standardEffectRacks) {
         rootNode.appendChild(pRack->toXML(&doc));
