@@ -1,9 +1,11 @@
 ToDo
-* General
+* General / Wording
   - remove layout-spacing workarounds when this is fixed
     https://bugs.launchpad.net/mixxx/+bug/1578111
-  - workaround SizeAwareStacks' kicking out Library
+  - work around SizeAwareStacks' kicking out Library
     (i.e. when switching from 4 to 2 FX units, LIb and Samplers are disabled)
+  - investigate decreasing MinimumSize to 1024px
+  - better name for "Extra Deck Buttons"
       
 * Decks
   - replace Deck (text, overview, buttons) when Vinyl passthrough is enabled
@@ -14,19 +16,24 @@ ToDo
   - Mute button on each SectionLabel
   - VUMeter for each section
   - Mic auto-duck button
+  - make it lower to save space?
+
+* Skin Controls
+  - improve positioning of Crossfader in 4-decks mode, as well as for varying FX units
+  - show Logo when Crossfader is visible
   
 * FX
   - minimal/expanded FX Units with toggle button
   - a way to collapse FX units automatically when space is scarse
 
 * Library
-  - distinguish focused/unfocused Tree/Tracks/other?
-        * emphasize border
-        * darken background-color when focused
-        * ?
+  - distinguish focused/unfocused TreeView/Tracks/other?
+    * emphasize border
+    * darken background-color when focused
         
-* Skin settings menu
-        
+* Skin Settings menu
+  - make Spinny/Cover button a 3-state button: empty/Spinny/Cover
+  - add option to hide MixerBar when Library is maximized
 
 
 
