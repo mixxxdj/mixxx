@@ -43,13 +43,13 @@ class EffectManifestParameter {
     static QString LinkTypeToString (int type) {
         switch (type) {
           case EffectManifestParameter::LINK_LINKED:
-              return "LINKED";
+              return "LINK_LINKED";
           case EffectManifestParameter::LINK_LINKED_LEFT:
-              return "LINKED_LEFT";
+              return "LINK_LINKED_LEFT";
           case EffectManifestParameter::LINK_LINKED_RIGHT:
-              return "LINKED_RIGHT";
+              return "LINK_LINKED_RIGHT";
           case EffectManifestParameter::LINK_LINKED_LEFT_RIGHT:
-              return "LINKED_LEFT_RIGHT";
+              return "LINK_LINKED_LEFT_RIGHT";
           case EffectManifestParameter::LINK_NONE:
           default:
               return "LINK_NONE";
@@ -57,13 +57,13 @@ class EffectManifestParameter {
     }
 
     static LinkType LinkTypeFromString (const QString& string) {
-        if (string == "LINKED") {
+        if (string == "LINK_LINKED") {
             return LinkType::LINK_LINKED;
-        } else if (string == "LINKED_LEFT") {
+        } else if (string == "LINK_LINKED_LEFT") {
             return LinkType::LINK_LINKED_LEFT;
-        } else if (string == "LINKED_RIGHT") {
+        } else if (string == "LINK_LINKED_RIGHT") {
             return LinkType::LINK_LINKED_RIGHT;
-        } else if (string == "LINKED_LEFT_RIGHT") {
+        } else if (string == "LINK_LINKED_LEFT_RIGHT") {
             return LinkType::LINK_LINKED_LEFT_RIGHT;
         } else {
             return LinkType::LINK_NONE;
