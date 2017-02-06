@@ -33,7 +33,7 @@ Description:
                 <SetVariable name="state_0_unpressed">skinsettings_close.svg</SetVariable>
                 <SetVariable name="state_1_pressed">skinsettings_close.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">skinsettings_close.svg</SetVariable>
-                <SetVariable name="ConfigKey">[FlatNite],skin_settings</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -60,7 +60,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Stacked Waveforms</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Stacked Waveforms</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],stacked_waveforms</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],stacked_waveforms</SetVariable>
               </Template>
 
               <Template src="skin:button_3state_persist.xml">
@@ -70,7 +70,7 @@ Description:
                 <SetVariable name="state_0_text">      Hotcues</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Hotcues   4&#9668; 8</SetVariable>
                 <SetVariable name="state_2_text"> &#10003; Hotcues   4 &#9658;8</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],hotcues</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],hotcues</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_persist.xml">
@@ -79,7 +79,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Extra Deck Buttons</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Extra Deck Buttons</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],extra_deckbuttons</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],extra_deckbuttons</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_persist.xml">
@@ -88,7 +88,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Star Rating</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Star Rating</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],stars</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],stars</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_persist.xml">
@@ -97,7 +97,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Track Comment</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Track Comment</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],trackComment</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],trackComment</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_persist.xml">
@@ -106,7 +106,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      BPM / Pitch Fader</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; BPM / Pitch Fader</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],pitch_fader</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],pitch_fader</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Pitch/Key submenu -->
@@ -122,7 +122,7 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Children/>
                     <Connection>
-                      <ConfigKey persist="true">[FlatNite],pitch_fader</ConfigKey>
+                      <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
                       <BindProperty>visible</BindProperty>
                       <Transform><Not/></Transform>
                     </Connection>
@@ -134,7 +134,7 @@ Description:
                     <SetVariable name="Align">left</SetVariable>
                     <SetVariable name="state_0_text">      Key Controls</SetVariable>
                     <SetVariable name="state_1_text"> &#10003; Key Controls</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[FlatNite],key_controls</SetVariable>
+                    <SetVariable name="ConfigKeyPerm">[Tango],key_controls</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- Pitch/Key submenu -->
@@ -145,7 +145,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Loop/Beatjump controls</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Loop/Beatjump controls</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],loop_beatjump_controls</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],loop_beatjump_controls</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -166,7 +166,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Spinny/CoverArt</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Spinny/CoverArt</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],spinnyCover</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],spinnyCover</SetVariable>
               </Template>
 
               <WidgetGroup><!-- SpinnyCover submenu -->
@@ -182,7 +182,7 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Children/>
                     <Connection>
-                      <ConfigKey persist="true">[FlatNite],spinnyCover</ConfigKey>
+                      <ConfigKey persist="true">[Tango],spinnyCover</ConfigKey>
                       <BindProperty>visible</BindProperty>
                       <Transform><Not/></Transform>
                     </Connection>
@@ -198,7 +198,7 @@ Description:
                         <SetVariable name="Align">left</SetVariable>
                         <SetVariable name="state_0_text">      Spinny&#9668; Cover</SetVariable>
                         <SetVariable name="state_1_text">      Spinny &#9658;Cover</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[FlatNite],spinny0_cover1</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],spinny0_cover1</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
@@ -207,7 +207,7 @@ Description:
                         <SetVariable name="Align">left</SetVariable>
                         <SetVariable name="state_0_text">      °&#9668; O</SetVariable>
                         <SetVariable name="state_1_text">      ° &#9658;O</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[FlatNite],spinnyCoverBIG</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],spinnyCoverBIG</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
@@ -216,7 +216,7 @@ Description:
                         <SetVariable name="Align">left</SetVariable>
                         <SetVariable name="state_0_text">      Cover on Spinny</SetVariable>
                         <SetVariable name="state_1_text"> &#10003; Cover on Spinny</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[FlatNite],spinnyWithCoverArt</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],spinnyWithCoverArt</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup><!-- Spinny/Cover submenu buttons -->
@@ -242,7 +242,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Channel Mixer</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],channel_mixer</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],channel_mixer</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Channel Mixer submenu -->
@@ -258,7 +258,7 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Children/>
                     <Connection>
-                      <ConfigKey persist="true">[FlatNite],channel_mixer</ConfigKey>
+                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
                       <BindProperty>visible</BindProperty>
                       <Transform><Not/></Transform>
                     </Connection>
@@ -274,7 +274,7 @@ Description:
                         <SetVariable name="Align">left</SetVariable>
                         <SetVariable name="state_0_text">      EQ Knobs</SetVariable>
                         <SetVariable name="state_1_text"> &#10003; EQ Knobs</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[FlatNite],eq_knobs</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],eq_knobs</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup><!-- Channel Mixer submenu buttons -->
@@ -287,7 +287,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      VU Meter</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; VU Meter</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],vumeter</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],vumeter</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_persist.xml">
@@ -296,7 +296,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Crossfader</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Crossfader</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],crossfader</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],crossfader</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_persist.xml">
@@ -305,7 +305,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Mixer Bar</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Mixer Bar</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],mixerbar</SetVariable>
               </Template>
 
               <WidgetGroup><!-- MixerBar submenu -->
@@ -321,7 +321,7 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Children/>
                     <Connection>
-                      <ConfigKey persist="true">[FlatNite],mixerbar</ConfigKey>
+                      <ConfigKey persist="true">[Tango],mixerbar</ConfigKey>
                       <BindProperty>visible</BindProperty>
                       <Transform><Not/></Transform>
                     </Connection>
@@ -337,7 +337,7 @@ Description:
                         <SetVariable name="Align">left</SetVariable>
                         <SetVariable name="state_0_text">      Headphone Mixer</SetVariable>
                         <SetVariable name="state_1_text"> &#10003; Headphone Mixer</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar_headphone</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_headphone</SetVariable>
                       </Template>
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
@@ -345,7 +345,7 @@ Description:
                         <SetVariable name="Align">left</SetVariable>
                         <SetVariable name="state_0_text">      MIC mixer (if configured)</SetVariable>
                         <SetVariable name="state_1_text"> &#10003; MIC mixer (if configured)</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar_mic</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_mic</SetVariable>
                       </Template>
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
@@ -353,7 +353,7 @@ Description:
                         <SetVariable name="Align">left</SetVariable>
                         <SetVariable name="state_0_text">      AUX mixer (if configured)</SetVariable>
                         <SetVariable name="state_1_text"> &#10003; AUX mixer (if configured)</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[FlatNite],mixerbar_aux</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_aux</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup><!-- MixerBar submenu buttons -->
@@ -407,7 +407,7 @@ Description:
                     <SetVariable name="Align">left</SetVariable>
                     <SetVariable name="state_0_text">      2&#9668; 4  Effect Units</SetVariable>
                     <SetVariable name="state_1_text">      2 &#9658;4  Effect Units</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[FlatNite],2or4_fxUnits</SetVariable>
+                    <SetVariable name="ConfigKeyPerm">[Tango],2or4_fxUnits</SetVariable>
                   </Template>
 
                 </Children>
@@ -478,7 +478,7 @@ Description:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey>[FlatNite],skin_settings</ConfigKey>
+      <ConfigKey>[Tango],skin_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

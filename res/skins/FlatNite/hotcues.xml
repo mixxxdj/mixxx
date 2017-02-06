@@ -29,7 +29,7 @@ Variables:
 					</Template>
 				</Children>
 				<Connection>
-					<ConfigKey persist="true">[FlatNite],hotcues</ConfigKey>
+					<ConfigKey persist="true">[Tango],hotcues</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup><!-- /DeckHotcues 1-4 -->
@@ -52,7 +52,7 @@ Variables:
 					</Template>
 				</Children>
 				<Connection>
-					<ConfigKey persist="true">[FlatNite],hotcues</ConfigKey>
+					<ConfigKey persist="true">[Tango],hotcues</ConfigKey>
 					<BindProperty>visible</BindProperty>
 					<Transform><Add>-1</Add></Transform>
 				</Connection>

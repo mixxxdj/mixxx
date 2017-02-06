@@ -1,5 +1,5 @@
 <!--
-    FlatNite - a flat, super-minimizable, nightime-compatible skin for mixxx
+    Tango - a flat, super-minimizable, nightime-compatible skin for mixxx
 
     This skin acts as an extension for your controller, meaning (almost) all duplicate
     controls can be removed. See skin settings menu (next to clock) for all controls.
@@ -31,7 +31,7 @@
 
 <skin>
   <manifest>
-    <title>FlatNite</title>
+    <title>Tango</title>
     <author>Ronny Sandig</author>
     <version>1.34</version>
     <description>A flat, super-minimizable, nightime-compatible skin</description>
@@ -55,31 +55,31 @@
       <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <!-- [FlatNite] specific defaults -->
-      <attribute persist="true" config_key="[FlatNite],beatgrid_buttons">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],extra_deckbuttons">0</attribute>
-      <attribute persist="true" config_key="[FlatNite],hotcues_deck">0</attribute>
-      <attribute persist="true" config_key="[FlatNite],hotcues_preview">2</attribute>
-      <attribute persist="true" config_key="[FlatNite],hotcues_samplers">2</attribute>
-      <attribute persist="true" config_key="[FlatNite],mixerbar">0</attribute>
-      <attribute persist="true" config_key="[FlatNite],mixerbar_aux">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],mixerbar_headphone">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],mixerbar_mic">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],pitch_fader">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],key_controls">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],vumeter">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],stars">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],trackComment">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],stacked_waveforms">0</attribute>
-      <attribute persist="true" config_key="[FlatNite],2or4_fxUnits">0</attribute>
-      <attribute persist="true" config_key="[FlatNite],mixer_spinnyCover">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],spinnyCover">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],spinnyCoverBIG">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],spinny0_cover1">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],spinny0_cover1_stack">1</attribute>
-      <attribute persist="true" config_key="[FlatNite],spinnyWithCoverArt">0</attribute>
-      <attribute persist="true" config_key="[FlatNite],spinnyWithCoverArt_stack">0</attribute>
-      <attribute persist="true" config_key="[FlatNite],loop_beatjump_controls">0</attribute>
+      <!-- [Tango] specific defaults -->
+      <attribute persist="true" config_key="[Tango],beatgrid_buttons">1</attribute>
+      <attribute persist="true" config_key="[Tango],extra_deckbuttons">0</attribute>
+      <attribute persist="true" config_key="[Tango],hotcues_deck">0</attribute>
+      <attribute persist="true" config_key="[Tango],hotcues_preview">2</attribute>
+      <attribute persist="true" config_key="[Tango],hotcues_samplers">2</attribute>
+      <attribute persist="true" config_key="[Tango],mixerbar">0</attribute>
+      <attribute persist="true" config_key="[Tango],mixerbar_aux">1</attribute>
+      <attribute persist="true" config_key="[Tango],mixerbar_headphone">1</attribute>
+      <attribute persist="true" config_key="[Tango],mixerbar_mic">1</attribute>
+      <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
+      <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
+      <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
+      <attribute persist="true" config_key="[Tango],stars">1</attribute>
+      <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
+      <attribute persist="true" config_key="[Tango],stacked_waveforms">0</attribute>
+      <attribute persist="true" config_key="[Tango],2or4_fxUnits">0</attribute>
+      <attribute persist="true" config_key="[Tango],mixer_spinnyCover">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyCover">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyCoverBIG">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinny0_cover1">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinny0_cover1_stack">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyWithCoverArt">0</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyWithCoverArt_stack">0</attribute>
+      <attribute persist="true" config_key="[Tango],loop_beatjump_controls">0</attribute>
     </attributes>
   </manifest>
 
@@ -204,7 +204,7 @@
                 <!-- spacer when stacked waveforms are hidden -->
                 <WidgetGroup><Size>1me,3f</Size><Children/>
                   <Connection>
-                    <ConfigKey persist="true">[FlatNite],stacked_waveforms</ConfigKey>
+                    <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
                     <Transform><Not/></Transform>
                     <BindProperty>visible</BindProperty>
                   </Connection>
@@ -323,7 +323,7 @@
                       <Size>106f,1min</Size>
                       <Children/>
                       <Connection>
-                        <ConfigKey>[FlatNite],pitch_fader</ConfigKey>
+                        <ConfigKey>[Tango],pitch_fader</ConfigKey>
                         <BindProperty>visible</BindProperty>
                       </Connection>
                     </WidgetGroup>
@@ -358,7 +358,7 @@
                     </WidgetGroup>
                   </Children>
                   <Connection>
-                    <ConfigKey persist="true">[FlatNite],2or4_fxUnits</ConfigKey>
+                    <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
                     <BindProperty>visible</BindProperty>
                   </Connection>
                 </WidgetGroup>
@@ -396,7 +396,7 @@
                   <Size>106f,1min</Size>
                   <Children/>
                   <Connection>
-                    <ConfigKey>[FlatNite],pitch_fader</ConfigKey>
+                    <ConfigKey>[Tango],pitch_fader</ConfigKey>
                     <BindProperty>visible</BindProperty>
                   </Connection>
                 </WidgetGroup>
@@ -529,7 +529,7 @@
                 <Splitter><!-- Lib normal, stacked resizable waveforms -->
                   <ObjectName>WaveformSplitter</ObjectName>
                   <SplitSizes>1,10</SplitSizes>
-                  <SplitSizesConfigKey>[FlatNite],waveform_splitSize</SplitSizesConfigKey>
+                  <SplitSizesConfigKey>[Tango],waveform_splitSize</SplitSizesConfigKey>
                   <Orientation>vertical</Orientation>
                   <Collapsible>0,0</Collapsible>
                   <Children>
@@ -540,7 +540,7 @@
                         <Template src="skin:waveforms_container.xml"/>
                       </Children>
                       <Connection>
-                        <ConfigKey persist="true">[FlatNite],stacked_waveforms</ConfigKey>
+                        <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
                         <BindProperty>visible</BindProperty>
                       </Connection>
                     </WidgetGroup>
@@ -572,7 +572,7 @@
                               </SingletonContainer>
                             </Children>
                             <Connection>
-                              <ConfigKey persist="true">[FlatNite],2or4_fxUnits</ConfigKey>
+                              <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
                               <Transform><Not/></Transform>
                               <BindProperty>visible</BindProperty>
                             </Connection>
@@ -609,7 +609,7 @@
                             </SingletonContainer>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[FlatNite],2or4_fxUnits</ConfigKey>
+                            <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup><!-- /Decks + 4 FX Units -->

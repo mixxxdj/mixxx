@@ -18,7 +18,7 @@
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[FlatNite],loop_beatjump_controls</ConfigKey>
+      <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

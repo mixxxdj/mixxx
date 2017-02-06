@@ -49,7 +49,7 @@
               </WidgetGroup>
 
               <!-- when there is enough space for stars (min 83px) show them. -->
-              <WidgetGroup trigger="[FlatNite],stars" persist="true">
+              <WidgetGroup trigger="[Tango],stars" persist="true">
                 <MinimumSize>83,22</MinimumSize>
                 <MaximumSize>i,22</MaximumSize>
                 <Layout>horizontal</Layout>
@@ -66,7 +66,7 @@
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[FlatNite],stars</ConfigKey>
+              <ConfigKey persist="true">[Tango],stars</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </SizeAwareStack>
@@ -127,7 +127,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[FlatNite],extra_deckbuttons</ConfigKey>
+              <ConfigKey persist="true">[Tango],extra_deckbuttons</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Extra Deck Buttons -->
@@ -135,7 +135,7 @@
           <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
             <SetVariable name="ObjectName">DeckButtonTogglerRight</SetVariable>
             <SetVariable name="Size">11f,22f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[FlatNite],extra_deckbuttons</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],extra_deckbuttons</SetVariable>
           </Template>
 
           <Template src="skin:button_2state_persist.xml"><!-- Keylock -->

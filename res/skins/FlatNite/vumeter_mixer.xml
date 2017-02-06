@@ -74,7 +74,7 @@ Variables:
 			</WidgetGroup>
 		</Children>
 		<Connection>
-			<ConfigKey persist="true">[FlatNite],vumeter</ConfigKey>
+			<ConfigKey persist="true">[Tango],vumeter</ConfigKey>
 			<BindProperty>visible</BindProperty>
 		</Connection>
 	</WidgetGroup>

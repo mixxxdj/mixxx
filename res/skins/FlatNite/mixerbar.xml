@@ -122,7 +122,7 @@ Variables:
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[FlatNite],mixerbar_headphone</ConfigKey>
+          <ConfigKey persist="true">[Tango],mixerbar_headphone</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- Headphone Mixer -->
@@ -216,7 +216,7 @@ Variables:
           </WidgetGroup><!-- /MIC2 -->
         </Children>
         <Connection>
-          <ConfigKey persist="true">[FlatNite],mixerbar_mic</ConfigKey>
+          <ConfigKey persist="true">[Tango],mixerbar_mic</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Microphone Mixer -->
@@ -310,7 +310,7 @@ Variables:
           </WidgetGroup><!-- /AUX 2 -->
         </Children>
         <Connection>
-          <ConfigKey persist="true">[FlatNite],mixerbar_aux</ConfigKey>
+          <ConfigKey persist="true">[Tango],mixerbar_aux</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Auxiliary Mixer -->
@@ -319,7 +319,7 @@ Variables:
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[FlatNite],mixerbar</ConfigKey>
+      <ConfigKey persist="true">[Tango],mixerbar</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

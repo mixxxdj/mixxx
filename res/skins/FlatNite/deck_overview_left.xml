@@ -56,7 +56,7 @@
                 <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
                 <SetVariable name="Size">11f,50f</SetVariable>
                 <SetVariable name="ToolTipID"></SetVariable>
-                <SetVariable name="ConfigKeyPerm">[FlatNite],vinylControlsDeck<Variable name="channum"/></SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="channum"/></SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -78,7 +78,7 @@
                   <Template src="skin:spinnyCover_small.xml"/>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[FlatNite],spinnyCoverBIG</ConfigKey>
+                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
                   <BindProperty>visible</BindProperty>
                   <Transform><Not/></Transform>
                 </Connection>
@@ -94,19 +94,19 @@
                       <Template src="skin:spinnyCover_small.xml"/>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[FlatNite],channel_mixer</ConfigKey>
+                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[FlatNite],spinnyCoverBIG</ConfigKey>
+                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- BIG but mixer is ON -->
             </Children>
             <Connection>
-              <ConfigKey persist="true">[FlatNite],spinnyCover</ConfigKey>
+              <ConfigKey persist="true">[Tango],spinnyCover</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Spinny / CoverArt -->
@@ -133,7 +133,7 @@
           </Template>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[FlatNite],stacked_waveforms</ConfigKey>
+          <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>

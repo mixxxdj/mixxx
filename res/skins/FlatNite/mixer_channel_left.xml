@@ -67,7 +67,7 @@ Variables:
           </WidgetGroup><!-- /PflButton -->
         </Children>
         <Connection>
-          <ConfigKey persist="true">[FlatNite],eq_knobs</ConfigKey>
+          <ConfigKey persist="true">[Tango],eq_knobs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EQs -->
@@ -115,7 +115,7 @@ Variables:
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[FlatNite],channel_mixer</ConfigKey>
+      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

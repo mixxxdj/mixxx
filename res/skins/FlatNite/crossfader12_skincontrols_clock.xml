@@ -28,7 +28,7 @@
             <SetVariable name="state_0_unpressed">wave_off.svg</SetVariable>
             <SetVariable name="state_1_pressed">wave_on.svg</SetVariable>
             <SetVariable name="state_1_unpressed">wave_on.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[FlatNite],stacked_waveforms</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],stacked_waveforms</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
           <Template src="skin:button_2state_persist.xml"><!-- Spinny -->
@@ -39,7 +39,7 @@
             <SetVariable name="state_0_unpressed">coverart_off.svg</SetVariable>
             <SetVariable name="state_1_pressed">spinny_off.svg</SetVariable>
             <SetVariable name="state_1_unpressed">spinny_off.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[FlatNite],spinny0_cover1</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],spinny0_cover1</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
           <Template src="skin:button_3state_persist.xml">
@@ -53,7 +53,7 @@
               <SetVariable name="state_1_pressed">hotcues_on.svg</SetVariable>
               <SetVariable name="state_2_unpressed">hotcues_on.svg</SetVariable>
               <SetVariable name="state_2_pressed">hotcues_on.svg</SetVariable>
-              <SetVariable name="ConfigKeyPerm">[FlatNite],hotcues</SetVariable>
+              <SetVariable name="ConfigKeyPerm">[Tango],hotcues</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
           <Template src="skin:button_2state_persist.xml"><!-- Mixer -->
@@ -64,7 +64,7 @@
             <SetVariable name="state_0_unpressed">mixer_off.svg</SetVariable>
             <SetVariable name="state_1_pressed">mixer_on.svg</SetVariable>
             <SetVariable name="state_1_unpressed">mixer_on.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[FlatNite],channel_mixer</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],channel_mixer</SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
@@ -141,12 +141,12 @@
           <Template src="skin:button_2state.xml">
             <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
             <SetVariable name="Size">24f,24f</SetVariable>
-            <SetVariable name="ConfigKey">[FlatNite],skin_settings</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- /Clock -->
 
-      <WidgetStack currentpage="[FlatNite],crossfader_logo" persist="true"><!-- LogoCrossfaderBox 2 Decks-->
+      <WidgetStack currentpage="[Tango],crossfader_logo" persist="true"><!-- LogoCrossfaderBox 2 Decks-->
         <Layout>horizontal</Layout>
         <Size>104f,26f</Size>
         <Children>
@@ -162,7 +162,7 @@
             </Children>
           </WidgetGroup>
 
-          <SliderComposed trigger="[FlatNite],crossfader" persist="true" on-hide-select="0">
+          <SliderComposed trigger="[Tango],crossfader" persist="true" on-hide-select="0">
               <ObjectName>Crossfader</ObjectName>
             <TooltipId>crossfader</TooltipId>
             <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
@@ -172,7 +172,7 @@
               <ConfigKey>[Master],crossfader</ConfigKey>
             </Connection>
             <Connection>
-              <ConfigKey persist="true">[FlatNite],crossfader</ConfigKey>
+              <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </SliderComposed>

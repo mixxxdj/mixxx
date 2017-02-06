@@ -82,7 +82,7 @@ Variables:
       <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
         <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
         <SetVariable name="Size">11f,50me</SetVariable>
-        <SetVariable name="ConfigKeyPerm">[FlatNite],beatgrid_buttons</SetVariable>
+        <SetVariable name="ConfigKeyPerm">[Tango],beatgrid_buttons</SetVariable>
       </Template>
 
       <WidgetGroup><!-- Beatgrid buttons -->
@@ -169,7 +169,7 @@ Variables:
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[FlatNite],beatgrid_buttons</ConfigKey>
+          <ConfigKey persist="true">[Tango],beatgrid_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- Beatgrid buttons -->

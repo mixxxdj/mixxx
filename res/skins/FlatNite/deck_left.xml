@@ -38,7 +38,7 @@
                   </TrackProperty>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[FlatNite],trackComment</ConfigKey>
+                  <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /Track Comment -->
@@ -63,13 +63,13 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <!-- Mixer / CoverArt / empty -->
-              <WidgetStack currentpage="[FlatNite],mixer_spinnyCover" persist="true">
+              <WidgetStack currentpage="[Tango],mixer_spinnyCover" persist="true">
                 <ObjectName>MixerCoverStack</ObjectName>
                 <SizePolicy>f,min</SizePolicy>
                 <Children>
                 
                   <!-- mixer -->
-                  <WidgetGroup trigger="[FlatNite],channel_mixer" persist="true" on-hide-select="1">
+                  <WidgetGroup trigger="[Tango],channel_mixer" persist="true" on-hide-select="1">
                     <Layout>horizontal</Layout>
                     <SizePolicy>f,f</SizePolicy>
                     <Children>
@@ -100,13 +100,13 @@
                                 
                             </Children>
                             <Connection>
-                              <ConfigKey persist="true">[FlatNite],spinnyCoverBIG</ConfigKey>
+                              <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </WidgetGroup>
                         </Children>
                         <Connection>
-                          <ConfigKey persist="true">[FlatNite],spinnyCover</ConfigKey>
+                          <ConfigKey persist="true">[Tango],spinnyCover</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>
@@ -115,7 +115,7 @@
                         <Size>3f,1me</Size>
                         <Children/>
                         <Connection>
-                          <ConfigKey>[FlatNite],vumeter</ConfigKey>
+                          <ConfigKey>[Tango],vumeter</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>
@@ -132,7 +132,7 @@
                 <Size>3f,1me</Size>
                 <Children/>
                 <Connection>
-                  <ConfigKey>[FlatNite],pitch_fader</ConfigKey>
+                  <ConfigKey>[Tango],pitch_fader</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /Pitch slider & key controls -->

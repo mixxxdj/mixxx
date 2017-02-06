@@ -63,7 +63,7 @@ Variables:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[FlatNite],vinylControlsDeck<Variable name="channum"/></ConfigKey>
+      <ConfigKey persist="true">[Tango],vinylControlsDeck<Variable name="channum"/></ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

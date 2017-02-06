@@ -39,7 +39,7 @@ Variables:
             <Children>
             </Children>
             <Connection>
-              <ConfigKey>[FlatNite],trackComment</ConfigKey>
+              <ConfigKey>[Tango],trackComment</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -73,7 +73,7 @@ Variables:
             <Size>1min,1f</Size>
             <Children/>
             <Connection>
-              <ConfigKey>[FlatNite],trackComment</ConfigKey>
+              <ConfigKey>[Tango],trackComment</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -81,7 +81,7 @@ Variables:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[FlatNite],vinylControlsDeck<Variable name="channum"/></ConfigKey>
+      <ConfigKey persist="true">[Tango],vinylControlsDeck<Variable name="channum"/></ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

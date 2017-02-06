@@ -28,7 +28,7 @@ Modes:
 				<MinimumSize>770,83</MinimumSize>
 				<MaximumSize>-1,164</MaximumSize>
 				<Children>
-				<!--	<WidgetStack currentpage="[FlatNite],FxLibSam_1_lastOpened" persist="true"> -->
+				<!--	<WidgetStack currentpage="[Tango],FxLibSam_1_lastOpened" persist="true"> -->
 					<WidgetStack>
 						<Children>
 						    

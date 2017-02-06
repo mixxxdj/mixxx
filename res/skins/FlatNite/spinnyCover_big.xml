@@ -3,15 +3,15 @@ Description:
   Container for either BIG CoverArt or BIG Spinny (with or without Cover)
 Variables:
   channum: channel number
-  [FlatNite],spinny0_cover1_stack: show Spinny or CoverArt
-  [FlatNite],spinnyWithCoverArt_stack: show Spinny with or without Cover
+  [Tango],spinny0_cover1_stack: show Spinny or CoverArt
+  [Tango],spinnyWithCoverArt_stack: show Spinny with or without Cover
 -->
 <Template>	
-  <WidgetStack currentpage="[FlatNite],spinny0_cover1_stack" persist="true">
+  <WidgetStack currentpage="[Tango],spinny0_cover1_stack" persist="true">
     <ObjectName>SpinnyCoverBig</ObjectName>
     <Size>111f,136f</Size><!-- 3 + 111px + 3px -->
     <Children>
-      <WidgetStack currentpage="[FlatNite],spinnyWithCoverArt_stack" persist="true">
+      <WidgetStack currentpage="[Tango],spinnyWithCoverArt_stack" persist="true">
         <Size>111f,111f</Size>
         <Children>
           <Spinny>
@@ -24,7 +24,7 @@ Variables:
             <PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinnyBig_indicator_ghost.svg</PathGhost>
             <ShowCover>false</ShowCover>
           </Spinny>
-          <Spinny trigger="[FlatNite],spinnyWithCoverArt" persist="true" on-hide-select="0">
+          <Spinny trigger="[Tango],spinnyWithCoverArt" persist="true" on-hide-select="0">
             <TooltipId>spinny</TooltipId>
             <Size>111f,111f</Size>
             <Group>[Channel<Variable name="channum"/>]</Group>
@@ -34,18 +34,18 @@ Variables:
             <PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinnyBig_indicator_ghost.svg</PathGhost>
             <ShowCover>true</ShowCover>
             <Connection>
-              <ConfigKey persist="true">[FlatNite],spinnyWithCoverArt</ConfigKey>
+              <ConfigKey persist="true">[Tango],spinnyWithCoverArt</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </Spinny>
         </Children>
       </WidgetStack>
-      <CoverArt trigger="[FlatNite],spinny0_cover1" persist="true" on-hide-select="0">
+      <CoverArt trigger="[Tango],spinny0_cover1" persist="true" on-hide-select="0">
         <Size>111f,111f</Size>
         <Group>[Channel<Variable name="channum" />]</Group>
         <DefaultCover>skin:/graphics/cover_default_big.svg</DefaultCover>
         <Connection>
-          <ConfigKey persist="true">[FlatNite],spinny0_cover1</ConfigKey>
+          <ConfigKey persist="true">[Tango],spinny0_cover1</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </CoverArt>
