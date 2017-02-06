@@ -112,7 +112,7 @@ void Effect::sendParameterUpdate() {
 unsigned int Effect::numKnobParameters() const {
     unsigned int num = 0;
     foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() != EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+        if (parameter->manifest().controlHint() != EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
             ++num;
         }
     }
@@ -122,7 +122,7 @@ unsigned int Effect::numKnobParameters() const {
 unsigned int Effect::numButtonParameters() const {
     unsigned int num = 0;
     foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() == EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+        if (parameter->manifest().controlHint() == EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
             ++num;
         }
     }
@@ -141,7 +141,7 @@ EffectParameter* Effect::getParameterById(const QString& id) const {
 // static
 bool Effect::isButtonParameter(EffectParameter* parameter) {
     return  parameter->manifest().controlHint() ==
-            EffectManifestParameter::CONTROL_TOGGLE_STEPPING;
+            EffectManifestParameter::ControlHint::TOGGLE_STEPPING;
 }
 
 // static

@@ -13,10 +13,10 @@ void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
         return;
     }
 
-    if (type == EffectManifestParameter::CONTROL_KNOB_LINEAR) {
+    if (type == EffectManifestParameter::ControlHint::KNOB_LINEAR) {
             m_pControl->setBehavior(new ControlLinPotmeterBehavior(
                     dMinValue, dMaxValue, false));
-    } else if (type == EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC) {
+    } else if (type == EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC) {
         if (dMinValue == 0) {
             if (dMaxValue == 1.0) {
                 // Volume like control

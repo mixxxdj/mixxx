@@ -7,28 +7,28 @@
 
 class EffectManifestParameter {
   public:
-    enum ControlHint {
-        CONTROL_UNKNOWN = 0,
-        CONTROL_KNOB_LINEAR,
-        CONTROL_KNOB_LOGARITHMIC,
-        CONTROL_KNOB_STEPPING,   // A step rotary, steps given by m_steps
-                                 // are arranged with equal distance on scale
-        CONTROL_TOGGLE_STEPPING  // For button and enum controls, not accessible
-                                 // from many controllers, no linking to meta knob
+    enum class ControlHint {
+        UNKNOWN = 0,
+        KNOB_LINEAR,
+        KNOB_LOGARITHMIC,
+        KNOB_STEPPING,   // A step rotary, steps given by m_steps
+                         // are arranged with equal distance on scale
+        TOGGLE_STEPPING  // For button and enum controls, not accessible
+                         // from many controllers, no linking to meta knob
     };
 
-    enum SemanticHint {
-        SEMANTIC_UNKNOWN = 0,
-        SEMANTIC_SAMPLES,
-        SEMANTIC_NOTE,
+    enum class SemanticHint {
+        UNKNOWN = 0,
+        SAMPLES,
+        NOTE,
     };
 
-    enum UnitsHint {
-        UNITS_UNKNOWN = 0,
-        UNITS_TIME,
-        UNITS_HERTZ,
-        UNITS_SAMPLERATE, // fraction of the samplerate
-        UNITS_BEATS, // multiples of a beat
+    enum class UnitsHint {
+        UNKNOWN = 0,
+        TIME,
+        HERTZ,
+        SAMPLERATE, // fraction of the samplerate
+        BEATS, // multiples of a beat
     };
 
     enum class LinkType {
@@ -74,9 +74,9 @@ class EffectManifestParameter {
     };
 
     EffectManifestParameter()
-            : m_controlHint(CONTROL_UNKNOWN),
-              m_semanticHint(SEMANTIC_UNKNOWN),
-              m_unitsHint(UNITS_UNKNOWN),
+            : m_controlHint(ControlHint::UNKNOWN),
+              m_semanticHint(SemanticHint::UNKNOWN),
+              m_unitsHint(UnitsHint::UNKNOWN),
               m_defaultLinkType(LinkType::NONE),
               m_defaultLinkInversion(LinkInversion::NOT_INVERTED),
               m_neutralPointOnScale(0.0),
