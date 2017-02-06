@@ -69,7 +69,7 @@ EffectManifest EchoEffect::getManifest() {
     send->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     send->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    send->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     send->setMinimum(0.0);
     send->setDefault(1.0);
     send->setMaximum(1.0);

@@ -65,7 +65,7 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    width->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    width->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     width->setMinimum(0.0);
     width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
     width->setDefault(0.5);

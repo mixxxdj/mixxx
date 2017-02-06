@@ -30,7 +30,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     lpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     lpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    lpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT);
+    lpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_LEFT);
     lpf->setNeutralPointOnScale(1);
     lpf->setDefault(kMaxCorner);
     lpf->setMinimum(kMinCorner);
@@ -55,7 +55,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     hpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     hpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     hpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    hpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_RIGHT);
+    hpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_RIGHT);
     hpf->setNeutralPointOnScale(0.0);
     hpf->setDefault(kMinCorner);
     hpf->setMinimum(kMinCorner);

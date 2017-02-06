@@ -41,7 +41,7 @@ EffectManifest LoudnessContourEffect::getManifest() {
     loudness->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     loudness->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     loudness->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    loudness->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    loudness->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     loudness->setNeutralPointOnScale(1);
     loudness->setDefault(-kMaxLoGain / 2);
     loudness->setMinimum(-kMaxLoGain);

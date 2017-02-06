@@ -26,7 +26,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     depth->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     depth->setNeutralPointOnScale(1.0);
     depth->setDefault(16);
@@ -43,7 +43,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    frequency->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    frequency->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     frequency->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     frequency->setNeutralPointOnScale(1.0);
     frequency->setDefault(1.0);

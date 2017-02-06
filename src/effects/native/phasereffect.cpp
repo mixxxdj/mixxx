@@ -74,7 +74,7 @@ EffectManifest PhaserEffect::getManifest() {
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     depth->setMinimum(0.5);
     depth->setMaximum(1.0);
     depth->setDefault(0.0);

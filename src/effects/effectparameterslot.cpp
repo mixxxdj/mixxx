@@ -19,7 +19,8 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
     m_pControlLinkType = new ControlPushButton(
             ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
+    m_pControlLinkType->setStates(
+        static_cast<double>(EffectManifestParameter::LinkType::NUM_LINK_TYPES));
 
     m_pControlLinkInverse = new ControlPushButton(
             ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
@@ -86,7 +87,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->forceSet(1.0);
 
-            m_pControlLinkType->set(m_pEffectParameter->getDefaultLinkType());
+            m_pControlLinkType->set(
+                static_cast<double>(m_pEffectParameter->getDefaultLinkType()));
             m_pControlLinkInverse->set(
                 static_cast<double>(m_pEffectParameter->getDefaultLinkInversion()));
 
@@ -108,7 +110,8 @@ void EffectParameterSlot::clear() {
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->forceSet(0.0);
-    m_pControlLinkType->setAndConfirm(EffectManifestParameter::LINK_NONE);
+    m_pControlLinkType->setAndConfirm(
+        static_cast<double>(EffectManifestParameter::LinkType::NONE));
     m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);
     emit(updated());
@@ -121,24 +124,28 @@ void EffectParameterSlot::slotParameterValueChanged(double value) {
 
 void EffectParameterSlot::slotLinkTypeChanging(double v) {
     m_pSoftTakeover->ignoreNext();
-    if (v > EffectManifestParameter::LINK_LINKED) {
+    EffectManifestParameter::LinkType newType =
+        static_cast<EffectManifestParameter::LinkType>(v);
+    if (newType == EffectManifestParameter::LinkType::LINKED_LEFT ||
+        newType == EffectManifestParameter::LinkType::LINKED_RIGHT ||
+        newType == EffectManifestParameter::LinkType::LINKED_LEFT_RIGHT) {
         double neutral = m_pEffectParameter->getNeutralPointOnScale();
         if (neutral > 0.0 && neutral < 1.0) {
             // Knob is already a split knob, meaning it has a positive and
             // negative effect if it's twisted above the neutral point or
             // below the neutral point.
             // Toggle back to 0
-            v = EffectManifestParameter::LINK_NONE;
+            newType = EffectManifestParameter::LinkType::NONE;
         }
     }
-    if (static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_LEFT ||
-            static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_RIGHT) {
+    if (newType == EffectManifestParameter::LinkType::LINKED_LEFT ||
+        newType == EffectManifestParameter::LinkType::LINKED_RIGHT) {
         m_pSoftTakeover->setThreshold(
                 SoftTakeover::kDefaultTakeoverThreshold * 2.0);
     } else {
         m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     }
-    m_pControlLinkType->setAndConfirm(v);
+    m_pControlLinkType->setAndConfirm(static_cast<double>(newType));
 }
 
 void EffectParameterSlot::slotLinkInverseChanged(double v) {
@@ -157,7 +164,7 @@ void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool fo
         bool inverse = m_pControlLinkInverse->toBool();
 
         switch (type) {
-            case EffectManifestParameter::LINK_LINKED:
+            case EffectManifestParameter::LinkType::LINKED:
                 if (parameter < 0.0 || parameter > 1.0) {
                     return;
                 }
@@ -182,7 +189,7 @@ void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool fo
                     }
                 }
                 break;
-            case EffectManifestParameter::LINK_LINKED_LEFT:
+            case EffectManifestParameter::LinkType::LINKED_LEFT:
                 if (parameter >= 0.5 && parameter <= 1.0) {
                     parameter = 1;
                 } else if (parameter >= 0.0 && parameter <= 0.5) {
@@ -191,7 +198,7 @@ void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool fo
                     return;
                 }
                 break;
-            case EffectManifestParameter::LINK_LINKED_RIGHT:
+            case EffectManifestParameter::LinkType::LINKED_RIGHT:
                 if (parameter >= 0.5 && parameter <= 1.0) {
                     parameter -= 0.5;
                     parameter *= 2;
@@ -201,7 +208,7 @@ void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool fo
                     return;
                 }
                 break;
-            case EffectManifestParameter::LINK_LINKED_LEFT_RIGHT:
+            case EffectManifestParameter::LinkType::LINKED_LEFT_RIGHT:
                 if (parameter >= 0.5 && parameter <= 1.0) {
                     parameter -= 0.5;
                     parameter *= 2;
@@ -212,7 +219,7 @@ void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool fo
                     return;
                 }
                 break;
-            case EffectManifestParameter::LINK_NONE:
+            case EffectManifestParameter::LinkType::NONE:
             default:
                 return;
         }
@@ -261,7 +268,8 @@ QDomElement EffectParameterSlot::toXML(QDomDocument* doc) const {
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterLinkType,
                              EffectManifestParameter::LinkTypeToString(
-                                static_cast<int>(m_pControlLinkType->get())));
+                                static_cast<EffectManifestParameter::LinkType>(
+                                    m_pControlLinkType->get())));
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterLinkInversion,
                              QString::number(m_pControlLinkInverse->get()));

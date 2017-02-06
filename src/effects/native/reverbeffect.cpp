@@ -67,7 +67,7 @@ EffectManifest ReverbEffect::getManifest() {
     send->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     send->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    send->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     send->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::NOT_INVERTED);
     send->setMinimum(0);
     send->setDefault(0);
