@@ -12,7 +12,7 @@ static const double kHiShelveGainDiv = 3.0;
 static const double kLoPleakQ = 0.2;
 static const double kHiShelveQ = 0.7;
 
-} // anonymous namesspace
+} // anonymous namespace
 
 
 // static
@@ -31,7 +31,6 @@ EffectManifest LoudnessContourEffect::getManifest() {
     manifest.setDescription(QObject::tr(
             "Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear."));
     manifest.setEffectRampsFromDry(true);
-    manifest.setIsMixingEQ(true);
 
     EffectManifestParameter* loudness = manifest.addParameter();
     loudness->setId("loudness");
@@ -47,16 +46,16 @@ EffectManifest LoudnessContourEffect::getManifest() {
     loudness->setMinimum(-kMaxLoGain);
     loudness->setMaximum(0);
 
-    EffectManifestParameter* killLow = manifest.addParameter();
-    killLow->setId("useGain");
-    killLow->setName(QObject::tr("Use Gain"));
-    killLow->setDescription(QObject::tr("Follow Gain Knob"));
-    killLow->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
-    killLow->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    killLow->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    killLow->setDefault(0);
-    killLow->setMinimum(0);
-    killLow->setMaximum(1);
+    EffectManifestParameter* useGain = manifest.addParameter();
+    useGain->setId("useGain");
+    useGain->setName(QObject::tr("Use Gain"));
+    useGain->setDescription(QObject::tr("Follow Gain Knob"));
+    useGain->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    useGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    useGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    useGain->setDefault(0);
+    useGain->setMinimum(0);
+    useGain->setMaximum(1);
 
     return manifest;
 }
