@@ -157,27 +157,21 @@
         onlyOnPress: true,
         on: 127,
         off: 0,
+        isPress: function (channel, control, value, status) {
+            return value > 0;
+        },
         inValueScale: function () { return ! this.inGetValue(); },
-        separateNoteOnOff: false,
         input: function (channel, control, value, status, group) {
             if (this.onlyOnPress) {
-                var pressed;
-                if (this.separateNoteOnOff) {
-                    // Does the first nybble of the first MIDI byte indicate a
-                    // note on or note off message?
-                    pressed = (status & 0xF0) === 0x90;
-                } else {
-                    pressed = value > 0;
-                }
-                if (pressed) {
+                if (this.isPress(channel, control, value, status)) {
                     this.inSetValue(this.inValueScale(value));
                 }
             } else {
                 this.inSetValue(this.inValueScale(value));
             }
         },
-        outValueScale: function() {
-            return (this.outGetValue()) ? this.on : this.off;
+        outValueScale: function (value) {
+            return (value > 0) ? this.on : this.off;
         },
     });
 
@@ -259,7 +253,7 @@
     SamplerButton.prototype = new Button({
         unshift: function () {
             this.input = function (channel, control, value, status, group) {
-                if (value > 0) {
+                if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, 'track_loaded') === 0) {
                         engine.setValue(this.group, 'LoadSelectedTrack', 1);
                     } else {
@@ -270,7 +264,7 @@
         },
         shift: function() {
             this.input = function (channel, control, value, status, group) {
-                if (value > 0) {
+                if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, 'play') === 1) {
                         engine.setValue(this.group, 'play', 0);
                     } else {
@@ -551,7 +545,7 @@
                 this.shift = function () {
                     this.isShifted = true;
                     this.input = function (channel, control, value, status, group) {
-                        if (value > 0) {
+                        if (this.isPress(channel, control, value, status)) {
                             if (engine.getValue(eu.group, "focused_effect") === this.number) {
                                 // unfocus and make knobs control metaknobs
                                 engine.setValue(eu.group, "focused_effect", 0);
