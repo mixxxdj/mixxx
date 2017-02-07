@@ -1138,9 +1138,8 @@ WStarRating {
   qproperty-layoutSpacing: 2;
 }
 
-#EffectUnitGroupControls {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  qproperty-layoutSpacing: 1;
+#EffectUnitGroupControlsLeft, #EffectUnitGroupControlsRight {
+  qproperty-layoutSpacing: 2;
 }
 
 #EffectUnit {
