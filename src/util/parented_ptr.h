@@ -44,7 +44,7 @@ class parented_ptr {
     }
 
     bool operator== (const parented_ptr& other) const {
-        return m_pObject == other.m_ptr;
+        return m_pObject == other.m_pObject;
     }
 
     bool operator== (const T* other) const {
