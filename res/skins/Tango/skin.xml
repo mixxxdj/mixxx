@@ -57,6 +57,8 @@
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <!-- [Tango] specific defaults -->
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">1</attribute>
+      <attribute persist="true" config_key="[Tango],channel_mixer">0</attribute>
+      <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Tango],extra_deckbuttons">0</attribute>
       <attribute persist="true" config_key="[Tango],hotcues_deck">0</attribute>
       <attribute persist="true" config_key="[Tango],hotcues_preview">2</attribute>
