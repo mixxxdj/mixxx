@@ -64,7 +64,7 @@ QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
     
     
     TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
-    DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTree != nullptr) {
         return TreeItemModel::data(index, role);
     }
     
@@ -162,7 +162,7 @@ void MixxxLibraryTreeModel::coverFound(const QObject* requestor, int requestRefe
 }
 
 QVariant MixxxLibraryTreeModel::getQuery(TreeItem* pTree) const {
-    DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTree != nullptr) {
         return "";
     }
     

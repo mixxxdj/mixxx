@@ -105,7 +105,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     double pingpong_frac = m_pPingPongParameter->value();
 
     int delay_samples = EchoGroupState::kChannelCount * delay_time * sampleRate;
-    DEBUG_ASSERT_AND_HANDLE(delay_samples <= gs.delay_buf.size()) {
+    VERIFY_OR_DEBUG_ASSERT(delay_samples <= gs.delay_buf.size()) {
         delay_samples = gs.delay_buf.size();
     }
 

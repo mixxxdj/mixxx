@@ -163,7 +163,7 @@ QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource() {
 }
 
 void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource) {
-    DEBUG_ASSERT_AND_HANDLE(m_defaultTrackSource.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(m_defaultTrackSource.isNull()) {
         return;
     }
     m_defaultTrackSource = trackSource;
@@ -260,7 +260,7 @@ int TrackCollection::sqliteLocaleAwareCompare(void* pArg,
 void TrackCollection::sqliteLike(sqlite3_context *context,
                                 int aArgc,
                                 sqlite3_value **aArgv) {
-    DEBUG_ASSERT_AND_HANDLE(aArgc == 2 || aArgc == 3) {
+    VERIFY_OR_DEBUG_ASSERT(aArgc == 2 || aArgc == 3) {
         return;
     }
 

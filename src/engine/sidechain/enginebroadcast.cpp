@@ -98,7 +98,7 @@ EngineBroadcast::~EngineBroadcast() {
     wait(4000);
 
     // Signal user if thread doesn't die
-    DEBUG_ASSERT_AND_HANDLE(!isRunning()) {
+    VERIFY_OR_DEBUG_ASSERT(!isRunning()) {
        qWarning() << "EngineBroadcast:~EngineBroadcast(): Thread didn't die.\
        Ignored but file a bug report if problems rise!";
     }
@@ -809,7 +809,7 @@ void EngineBroadcast::run() {
     ignoreSigpipe();
 #endif
 
-    DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
+    VERIFY_OR_DEBUG_ASSERT(m_pOutputFifo) {
         qDebug() << "EngineBroadcast::run: Broadcast FIFO handle is not available. Aborting";
         return;
     }

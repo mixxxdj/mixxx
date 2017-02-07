@@ -112,7 +112,7 @@ QVariant HistoryTreeModel::data(const QModelIndex& index, int role) const {
     }
     
     TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
-    DEBUG_ASSERT_AND_HANDLE(pTree) {
+    VERIFY_OR_DEBUG_ASSERT(pTree) {
         return QVariant();
     }
     

@@ -98,7 +98,7 @@ QString AndNode::toSql() const {
 bool OrNode::match(const TrackPointer& pTrack) const {
     // An empty OR node would always evaluate to false
     // which is inconsistent with the generated SQL query!
-    DEBUG_ASSERT_AND_HANDLE(!m_nodes.empty()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_nodes.empty()) {
         // Evaluate to true even if the correct choice would
         // be false to keep the evaluation consistent with
         // the generated SQL query.

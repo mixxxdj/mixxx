@@ -149,7 +149,7 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pAutoDJView.isNull()) {
         return;
     }
 
@@ -309,7 +309,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
         }
 
         playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
-        DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+        VERIFY_OR_DEBUG_ASSERT(!m_pAutoDJView.isNull()) {
             return;
         }
         m_pAutoDJView->onShow();
@@ -342,7 +342,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
         }
 
         playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
-        DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull()) {
+        VERIFY_OR_DEBUG_ASSERT(!m_pAutoDJView.isNull()) {
             return;
         }        
         m_pAutoDJView->onShow();
@@ -390,7 +390,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         m_lastRightClickedIndex = index;
 
         TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-        DEBUG_ASSERT_AND_HANDLE(item) {
+        VERIFY_OR_DEBUG_ASSERT(item) {
             return;
         }
         crateName = item->getLabel();
@@ -438,7 +438,7 @@ void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
 
 void AutoDJFeature::selectionChanged(const QItemSelection&, const QItemSelection&) {
     QPointer<WTrackTableView> pTable = getFocusedTable();
-    DEBUG_ASSERT_AND_HANDLE(!m_pAutoDJView.isNull() && !pTable.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pAutoDJView.isNull() && !pTable.isNull()) {
         return;
     }
     

@@ -337,7 +337,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 
     if (m_lastRightClickedIndex.isValid()) {
-        DEBUG_ASSERT_AND_HANDLE(playlistId >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
             return;
         }
         
@@ -751,7 +751,7 @@ void BasePlaylistFeature::updateChildModel(int selectedId) {
     }
     
     TreeItem* item = m_childModel->getItem(index);
-    DEBUG_ASSERT_AND_HANDLE(item) {
+    VERIFY_OR_DEBUG_ASSERT(item) {
         return;
     }
     // Update the name

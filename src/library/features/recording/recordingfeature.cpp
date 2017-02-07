@@ -67,7 +67,7 @@ QWidget *RecordingFeature::createInnerSidebarWidget(
 
 
 void RecordingFeature::activate() {
-    DEBUG_ASSERT_AND_HANDLE(!m_pRecordingView.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pRecordingView.isNull()) {
         return;
     }
     

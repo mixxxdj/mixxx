@@ -70,7 +70,7 @@ void LibraryPaneManager::setBreadCrumb(WLibraryBreadCrumb* pBreadCrumb) {
 }
 
 void LibraryPaneManager::addFeature(LibraryFeature* feature) {
-    DEBUG_ASSERT_AND_HANDLE(feature) {
+    VERIFY_OR_DEBUG_ASSERT(feature) {
         return;
     }
 
@@ -94,7 +94,7 @@ LibraryFeature *LibraryPaneManager::getCurrentFeature() const {
 }
 
 void LibraryPaneManager::setFocused(bool value) {
-    DEBUG_ASSERT_AND_HANDLE(m_pPaneWidget) {
+    VERIFY_OR_DEBUG_ASSERT(m_pPaneWidget) {
         return;
     }
     
@@ -121,7 +121,7 @@ void LibraryPaneManager::restoreSaveButton() {
 }
 
 void LibraryPaneManager::showBreadCrumb(TreeItem *pTree) {
-    DEBUG_ASSERT_AND_HANDLE(!m_pBreadCrumb.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pBreadCrumb.isNull()) {
         return;
     }
     
@@ -129,7 +129,7 @@ void LibraryPaneManager::showBreadCrumb(TreeItem *pTree) {
 }
 
 void LibraryPaneManager::showBreadCrumb(const QString &text, const QIcon& icon) {
-    DEBUG_ASSERT_AND_HANDLE(!m_pBreadCrumb.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pBreadCrumb.isNull()) {
         return;
     }
     m_pBreadCrumb->showBreadCrumb(text, icon);
@@ -186,7 +186,7 @@ void LibraryPaneManager::slotSearchCancel() {
 }
 
 void LibraryPaneManager::slotSearch(const QString& text) {
-    DEBUG_ASSERT_AND_HANDLE(!m_pPaneWidget.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pPaneWidget.isNull()) {
         return;    
     }
     m_pPaneWidget->search(text);

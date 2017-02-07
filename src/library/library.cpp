@@ -182,12 +182,12 @@ void Library::destroyInterface() {
 
 LibraryView* Library::getActiveView() {
     LibraryPaneManager* pPane = m_panes.value(m_focusedPaneId);
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return nullptr;
     }
     WBaseLibrary* pPaneWidget = pPane->getPaneWidget();
     WLibraryPane* pLibrary = qobject_cast<WLibraryPane*>(pPaneWidget);
-    DEBUG_ASSERT_AND_HANDLE(pLibrary) {
+    VERIFY_OR_DEBUG_ASSERT(pLibrary) {
         return nullptr;
     }
     return pLibrary->getActiveView();
@@ -195,7 +195,7 @@ LibraryView* Library::getActiveView() {
 
 
 void Library::addFeature(LibraryFeature* feature) {
-    DEBUG_ASSERT_AND_HANDLE(feature) {
+    VERIFY_OR_DEBUG_ASSERT(feature) {
         return;
     }
     m_features.append(feature);
@@ -240,7 +240,7 @@ void Library::switchToFeature(LibraryFeature* pFeature) {
 
 void Library::showBreadCrumb(int paneId, TreeItem *pTree) {
     LibraryPaneManager* pPane = getOrCreatePane(paneId);
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return;
     }
     
@@ -249,7 +249,7 @@ void Library::showBreadCrumb(int paneId, TreeItem *pTree) {
 
 void Library::showBreadCrumb(int paneId, const QString &text, const QIcon &icon) {
     LibraryPaneManager* pPane = getOrCreatePane(paneId);
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return;
     }
     
@@ -274,7 +274,7 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
 
 void Library::restoreSearch(int paneId, const QString& text) {
     LibraryPaneManager* pPane = getOrCreatePane(paneId);
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return;
     }
     pPane->restoreSearch(text);
@@ -283,21 +283,21 @@ void Library::restoreSearch(int paneId, const QString& text) {
 
 void Library::restoreSaveButton(int paneId) {
     LibraryPaneManager* pPane = getOrCreatePane(paneId);
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return;
     }
     pPane->restoreSaveButton();
 }
 
 void Library::paneFocused(LibraryPaneManager* pPane) {
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return;
     }
     
     if (pPane != m_pSidebarExpanded) {
         m_focusedPaneId = pPane->getPaneId();
         pPane->getCurrentFeature()->setFeaturePaneId(m_focusedPaneId);
-        DEBUG_ASSERT_AND_HANDLE(m_focusedPaneId != -1) {
+        VERIFY_OR_DEBUG_ASSERT(m_focusedPaneId != -1) {
             return;
         }
         handleFocus();
@@ -597,7 +597,7 @@ LibraryPaneManager* Library::getOrCreatePane(int paneId) {
     }
     
     // The paneId must be non negative
-    DEBUG_ASSERT_AND_HANDLE(paneId >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(paneId >= 0) {
         return nullptr;
     }
     
