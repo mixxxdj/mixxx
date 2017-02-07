@@ -115,11 +115,12 @@
         <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
       </Template>
 
-      <WidgetGroup><!-- Clock -->
+      <WidgetGroup><!-- Broadcast + Clock Skin Settings -->
         <ObjectName>ClockBox</ObjectName>
         <Layout>horizontal</Layout>
         <Size>104f,30me</Size>
         <Children>
+
           <Template src="skin:button_4state_display.xml"><!-- Recording -->
             <SetVariable name="ToolTipID">broadcast_enabled</SetVariable>
             <SetVariable name="ObjectName">BroadcastButton</SetVariable>
@@ -127,39 +128,73 @@
             <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
           </Template>
-            <WidgetGroup><Size>0me,0me</Size><Children/></WidgetGroup>
-          <Time>
-            <TooltipId>time</TooltipId>
-            <ObjectName>Clock</ObjectName>
-            <Size>30min,20me</Size>
-            <ShowSeconds>false</ShowSeconds>
-            <!-- This has no effect, neither has 'text-align' in qss.
-                Therefore set hSize to '30min' and frame with expanding spacers.
-            <Align>center</Align>   -->
-          </Time>
-            <WidgetGroup><Size>0me,0me</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><!-- Clock (& Logo when Crossfader is visible in 2-decks mode) -->
+            <ObjectName>AlignCenter</ObjectName>
+            <Size>56me,43me</Size>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup><!-- Clock container -->
+                <ObjectName>AlignCenter</ObjectName>
+                <Size>me,min</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Time>
+                    <TooltipId>time</TooltipId>
+                    <ObjectName>Clock</ObjectName>
+                    <Size>30min,20f</Size>
+                    <ShowSeconds>false</ShowSeconds>
+                    <!-- This has no effect, neither has 'text-align' in qss.
+                    <Align>center</Align>   -->
+                  </Time>
+                </Children>
+              </WidgetGroup><!-- Clock container -->
+
+              <WidgetGroup><!-- LogoMini container -->
+                <ObjectName>AlignCenter</ObjectName>
+                <Size>56f,13f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Size>52f,13f</Size>
+                    <Layout>vertical</Layout>
+                    <ObjectName>LogoMini</ObjectName>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- LogoMini container -->
+
+            </Children>
+          </WidgetGroup><!-- Clock (& Logo when Crossfader is visible in 2-decks mode) -->
+
           <Template src="skin:button_2state.xml">
             <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
             <SetVariable name="Size">24f,24f</SetVariable>
             <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
           </Template>
+
         </Children>
-      </WidgetGroup><!-- /Clock -->
+      </WidgetGroup><!-- /Broadcast + Clock Skin Settings -->
 
       <WidgetStack currentpage="[Tango],crossfader_logo" persist="true"><!-- LogoCrossfaderBox 2 Decks-->
         <Layout>horizontal</Layout>
         <Size>104f,26f</Size>
         <Children>
+
           <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
+            <ObjectName>Logo</ObjectName>
+            <Size>104f,26f</Size>
             <Layout>horizontal</Layout>
-            <Children>
-              <WidgetGroup>
-                <Size>104f,26f</Size>
-                <ObjectName>Logo</ObjectName>
-                <Children/>
-              </WidgetGroup>
-            </Children>
+            <Children/>
           </WidgetGroup>
 
           <SliderComposed trigger="[Tango],crossfader" persist="true" on-hide-select="0">

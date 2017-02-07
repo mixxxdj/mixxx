@@ -843,8 +843,11 @@ are still drawn full-size.
     }
 
 #Logo {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  background: transparent url(skin:/graphics/mixxx_logo_104x26.png) no-repeat top center;	/*
+  background: transparent url(skin:/graphics/mixxx_logo_104x26.svg) no-repeat center center;	/*
+  background-color: #798145;	*/
+  }
+#LogoMini {
+  background: transparent url(skin:/graphics/mixxx_logo_52x13.svg) no-repeat center center;	/*
   background-color: #798145;	*/
   }
 #CrossfaderBox {
@@ -1300,6 +1303,9 @@ are still drawn full-size.
 }
 #AlignRight {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+}
+#AlignCenter {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #Spacer0f {

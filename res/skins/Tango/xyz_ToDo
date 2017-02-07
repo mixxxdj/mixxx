@@ -22,10 +22,12 @@ ToDo
 * Skin Controls
   - improve positioning of Crossfader in 4-decks mode, as well as for varying FX units
   - show Logo when Crossfader is visible
+  - Recording duration widget behind Rec toggler
   
 * FX
   - minimal/expanded 2.1 FX Units with toggle button
   - a way to collapse FX units automatically when space is scarse
+  - extend group assignment buttons to 4 Mics/4AUX
 
 * Library
   - distinguish focused/unfocused TreeView/Tracks/other?
