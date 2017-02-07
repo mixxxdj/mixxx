@@ -85,11 +85,18 @@ Variables:
                     <PlayPosColor>#FF4300</PlayPosColor>
                     <MarkerColor>#00FF00</MarkerColor>
                     <DefaultMark>
-                      <Align>bottom</Align>
+                      <Align>bottom|right</Align>
                       <Color>#00FF00</Color>
                       <TextColor>#FFFFFF</TextColor>
                       <Text> %1 </Text>
                     </DefaultMark>
+                    <Mark>
+                      <Control>cue_point</Control>
+                      <Text>C</Text>
+                      <Align>top|right</Align>
+                      <Color>#FF0080</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                    </Mark>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                     </Connection>
