@@ -9,6 +9,7 @@
 #include "library/coverart.h"
 #include "library/dlgtagfetcher.h"
 #include "library/libraryview.h"
+#include "library/trackcollection.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "track/track.h"
 #include "util/duration.h"
@@ -49,8 +50,9 @@ class WTrackTableView : public WLibraryTableView {
     void slotPurge();
     void onSearchStarting() override;
     void onSearchCleared() override;
-    void slotSendToAutoDJ() override;
+    void slotSendToAutoDJBottom() override;
     void slotSendToAutoDJTop() override;
+    void slotSendToAutoDJReplace() override;
     
   signals:
     void tableChanged();
@@ -87,7 +89,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotTagFetcherClosed();
 
   private:
-    void sendToAutoDJ(bool bTop);
+
+    void sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
     void createActions();
@@ -143,8 +146,9 @@ class WTrackTableView : public WLibraryTableView {
     QAction* m_pAddToPreviewDeck;
 
     // Send to Auto-DJ Action
-    QAction *m_pAutoDJAct;
+    QAction *m_pAutoDJBottomAct;
     QAction *m_pAutoDJTopAct;
+    QAction *m_pAutoDJReplaceAct;
 
     // Remove from table
     QAction *m_pRemoveAct;
