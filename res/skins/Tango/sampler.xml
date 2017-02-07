@@ -55,7 +55,7 @@ Variables:
                     <SetVariable name="ObjectName">PlayCue</SetVariable>
                     <SetVariable name="Size">24f,34f</SetVariable>
                     <SetVariable name="ToolTipID">play_cue_set</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
                   </Template>
