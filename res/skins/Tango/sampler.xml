@@ -51,7 +51,7 @@ Variables:
                 <Layout>stacked</Layout>
                 <Size>25f,36f</Size>
                 <Children>
-                  <Template src="skin:button_2state_display.xml">
+                  <Template src="skin:button_2state_right_display.xml">
                     <SetVariable name="ObjectName">PlayCue</SetVariable>
                     <SetVariable name="Size">24f,34f</SetVariable>
                     <SetVariable name="ToolTipID">play_cue_set</SetVariable>
