@@ -1,24 +1,26 @@
 #ifndef LIBRARYTEST_H
 #define LIBRARYTEST_H
 
-#include <QDir>
-#include <QScopedPointer>
-
 #include "test/mixxxtest.h"
+
 #include "library/trackcollection.h"
+#include "util/memory.h"
+
 
 class LibraryTest : public MixxxTest {
   protected:
     LibraryTest() {
-        m_pTrackCollection.reset(new TrackCollection(config()));
+        m_pTrackCollection = std::make_unique<TrackCollection>(config());
+    }
+    ~LibraryTest() override {
     }
 
-    TrackCollection* collection() {
-        return m_pTrackCollection.data();
+    TrackCollection* collection() const {
+        return m_pTrackCollection.get();
     }
 
   private:
-    QScopedPointer<TrackCollection> m_pTrackCollection;
+    std::unique_ptr<TrackCollection> m_pTrackCollection;
 };
 
 

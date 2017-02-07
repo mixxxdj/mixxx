@@ -44,9 +44,9 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    q->setDefault(0);
     q->setMinimum(0.0);
     q->setMaximum(4.0);
+    q->setDefault(1.0);
 
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
@@ -104,7 +104,6 @@ void MoogLadder4FilterEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate);
 
 
     double resonance = m_pResonance->value();
