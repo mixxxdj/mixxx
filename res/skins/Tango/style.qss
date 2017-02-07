@@ -418,10 +418,10 @@ are still drawn full-size.
       border: 1px solid #ffffff;
     }
     #LoopIndicator[displayValue="0"] {
-      background-color: #333333;
+      background: #333333 url(skin:/buttons/btn_loop_indicator_off.svg) no-repeat center center;
     }
     #LoopIndicator[displayValue="1"] {
-      background-color: #FF8F00;
+      background: #FF8F00 url(skin:/buttons/btn_loop_indicator_on.svg) no-repeat center center;
     }
     
 #DeckButtonsPlay {  /*
@@ -709,12 +709,14 @@ are still drawn full-size.
   background: transparent url(skin:/buttons/btn_pfl_off.svg) no-repeat center center;
   background-origin: padding;
   }
-  This is a workaround from
+  This is a workaround to scale and center the image, but image would appear blurred
+  if it is scaled up too much (>120). Source:
   https://forum.qt.io/topic/40151/solved-scaled-background-image-using-stylesheet/6
   border-image: url(skin:/buttons/btn_pfl_off.svg) 0 0 0 0 stretch stretch; */
 #PflButton:hover {  /*
   In conjunction with the workaround above, this would only
-  draw invisible border and squeez image by 1px:
+  draw invisible border and squeez image by [border-width] on each side.
+  Though, this is a nice hover effect, even more if border is removed on hover.
   border: 1px solid #eeeeee;  */
   background-color: #0f0f0f;
   border-radius: 2px;

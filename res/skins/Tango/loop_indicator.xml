@@ -18,10 +18,6 @@ Variables:
           <Template src="skin:button_2state_display.xml">
             <SetVariable name="ObjectName">LoopIndicator</SetVariable>
             <SetVariable name="Size">50f,44me</SetVariable>
-            <SetVariable name="state_0_pressed">loop_indicator.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">loop_indicator.svg</SetVariable>
-            <SetVariable name="state_1_pressed">loop_indicator.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">loop_indicator.svg</SetVariable>
             <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],reloop_exit</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Channel<Variable name="channum"/>],loop_enabled</SetVariable>
           </Template>
