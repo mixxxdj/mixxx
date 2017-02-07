@@ -31,10 +31,12 @@
         </Connection>
       </WidgetGroup>
 
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <ObjectName>MinimalControlsContainer</ObjectName>
         <Children>
+
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId">quantize</SetVariable>
             <SetVariable name="ObjectName">QuantizeButton</SetVariable>
@@ -74,13 +76,14 @@
 
           <Template src="skin:spacer_h.xml"/>
 
+          <SetVariable name="MinimalControlsButtonWidth">36</SetVariable>
 
 
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId">sync_enabled</SetVariable>
             <SetVariable name="ObjectName">DeckSync</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize">30</SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="MinimalControlsButtonWidth"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">Sync</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
@@ -100,7 +103,7 @@
             <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
             <SetVariable name="ObjectName">DeckCue</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize">30</SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="MinimalControlsButtonWidth"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
             <SetVariable name="LeftClickIsPushButton">true</SetVariable>
             <SetVariable name="RightClickIsPushButton">true</SetVariable>
@@ -124,7 +127,7 @@
             <SetVariable name="TooltipId">play_cue_set</SetVariable>
             <SetVariable name="ObjectName">PlayToggle</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize">30</SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="MinimalControlsButtonWidth"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
             <SetVariable name="LeftClickIsPushButton">false</SetVariable>
             <SetVariable name="RightClickIsPushButton">false</SetVariable>
