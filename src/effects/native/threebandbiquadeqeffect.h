@@ -15,10 +15,10 @@
 #include "util/types.h"
 #include "util/memory.h"
 
-class ThreeBandKillEQEffectGroupState final {
+class ThreeBandBiquadEQEffectGroupState final {
   public:
-    ThreeBandKillEQEffectGroupState();
-    ~ThreeBandKillEQEffectGroupState();
+    ThreeBandBiquadEQEffectGroupState();
+    ~ThreeBandBiquadEQEffectGroupState();
 
     void setFilters(
             int sampleRate, double lowFreqCorner, double highFreqCorner);
@@ -26,16 +26,16 @@ class ThreeBandKillEQEffectGroupState final {
     std::unique_ptr<EngineFilterBiquad1Peaking> m_lowBoost;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_midBoost;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_highBoost;
-    std::unique_ptr<EngineFilterBiquad1Peaking> m_lowKill;
-    std::unique_ptr<EngineFilterBiquad1Peaking> m_midKill;
-    std::unique_ptr<EngineFilterBiquad1HighShelving> m_highKill;
+    std::unique_ptr<EngineFilterBiquad1Peaking> m_lowCut;
+    std::unique_ptr<EngineFilterBiquad1Peaking> m_midCut;
+    std::unique_ptr<EngineFilterBiquad1HighShelving> m_highCut;
     CSAMPLE* m_pBuf;
     double m_oldLowBoost;
     double m_oldMidBoost;
     double m_oldHighBoost;
-    double m_oldLowKill;
-    double m_oldMidKill;
-    double m_oldHighKill;
+    double m_oldLowCut;
+    double m_oldMidCut;
+    double m_oldHighCut;
 
     double m_loFreqCorner;
     double m_highFreqCorner;
@@ -43,7 +43,7 @@ class ThreeBandKillEQEffectGroupState final {
     unsigned int m_oldSampleRate;
 };
 
-class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandKillEQEffectGroupState> {
+class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandBiquadEQEffectGroupState> {
   public:
     ThreeBandBiquadEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     ~ThreeBandBiquadEQEffect() override;
@@ -55,7 +55,7 @@ class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandKillEQ
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
-                        ThreeBandKillEQEffectGroupState* pState,
+                        ThreeBandBiquadEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,

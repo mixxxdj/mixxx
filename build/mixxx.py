@@ -115,6 +115,9 @@ class MixxxBuild(object):
         self.static_dependencies = int(Script.ARGUMENTS.get('staticlibs', 0))
         self.static_qt = int(Script.ARGUMENTS.get('staticqt', 0))
 
+        self.bundle_pdbs = self.platform_is_windows and (
+            self.build_is_debug or Script.ARGUMENTS.get('bundle_pdbs', '') in ('yes', 'y', '1'))
+
         logging.info("Target Platform: %s" % self.platform)
         logging.info("Target Machine: %s" % self.machine)
         logging.info("Build: %s" % self.build)
