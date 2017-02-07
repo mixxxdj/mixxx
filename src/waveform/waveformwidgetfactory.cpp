@@ -202,10 +202,11 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     if (ok) {
         setEndOfTrackWarningTime(endTime);
     } else {
-        m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"), ConfigValue(m_endOfTrackWarningTime));
+        m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"),
+                ConfigValue(m_endOfTrackWarningTime));
     }
 
-    int vsync = m_config->getValueString(ConfigKey("[Waveform]","VSync"),"0").toInt();
+    int vsync = m_config->getValue(ConfigKey("[Waveform]","VSync"), 0);
     setVSyncType(vsync);
 
     int defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom")).toInt(&ok);
@@ -223,14 +224,14 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     }
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
-                m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
+            m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
     if (!ok || !setWidgetType(type)) {
         setWidgetType(autoChooseWidgetType());
     }
 
     for (int i = 0; i < FilterCount; i++) {
         double visualGain = m_config->getValueString(
-                    ConfigKey("[Waveform]","VisualGain_" + QString::number(i))).toDouble(&ok);
+                ConfigKey("[Waveform]","VisualGain_" + QString::number(i))).toDouble(&ok);
 
         if (ok) {
             setVisualGain(FilterIndex(i), visualGain);

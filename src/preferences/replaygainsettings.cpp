@@ -1,10 +1,3 @@
-/*
- * replaygainsettings.cpp
- *
- *  Created on: 09.03.2016
- *      Author: daniel
- */
-
 #include "preferences/replaygainsettings.h"
 
 namespace {
@@ -20,7 +13,7 @@ const char* kReplayGainReanalyze = "ReplayGainReanalyze";
 
 const char* kReplayGainEnabled = "ReplayGainEnabled";
 
-const char* kInitialDefaultBoostDefault = "-6";
+const int kInitialDefaultBoostDefault = -6;
 } // anonymous namespace
 
 ReplayGainSettings::ReplayGainSettings(UserSettingsPointer pConfig)
@@ -28,8 +21,8 @@ ReplayGainSettings::ReplayGainSettings(UserSettingsPointer pConfig)
 }
 
 int ReplayGainSettings::getInitialReplayGainBoost() const {
-    return m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kInitialReplayGainBoost), "0").toInt();
+    return m_pConfig->getValue(
+            ConfigKey(kConfigKey, kInitialReplayGainBoost), 0);
 }
 
 void ReplayGainSettings::setInitialReplayGainBoost(int value) {
@@ -38,8 +31,8 @@ void ReplayGainSettings::setInitialReplayGainBoost(int value) {
 }
 
 int ReplayGainSettings::getInitialDefaultBoost() const {
-    return m_pConfig->getValueString(ConfigKey(kConfigKey, kInitialDefaultBoost),
-            kInitialDefaultBoostDefault).toInt();
+    return m_pConfig->getValue(ConfigKey(kConfigKey, kInitialDefaultBoost),
+            kInitialDefaultBoostDefault);
 }
 
 void ReplayGainSettings::setInitialDefaultBoost(int value) {
@@ -48,8 +41,8 @@ void ReplayGainSettings::setInitialDefaultBoost(int value) {
 }
 
 bool ReplayGainSettings::getReplayGainEnabled() const {
-    return m_pConfig->getValueString(
-        ConfigKey(kConfigKey, kReplayGainEnabled), "1").toInt() == 1;
+    return m_pConfig->getValue(
+        ConfigKey(kConfigKey, kReplayGainEnabled), true);
 }
 
 void ReplayGainSettings::setReplayGainEnabled(bool value) {
@@ -61,8 +54,8 @@ void ReplayGainSettings::setReplayGainEnabled(bool value) {
 }
 
 bool ReplayGainSettings::getReplayGainAnalyzerEnabled() const {
-    return m_pConfig->getValueString(
-        ConfigKey(kConfigKey, kReplayGainAnalyzerEnabled), "1").toInt();
+    return m_pConfig->getValue(
+        ConfigKey(kConfigKey, kReplayGainAnalyzerEnabled), true);
 }
 
 void ReplayGainSettings::setReplayGainAnalyzerEnabled(bool value) {
@@ -71,8 +64,8 @@ void ReplayGainSettings::setReplayGainAnalyzerEnabled(bool value) {
 }
 
 int ReplayGainSettings::getReplayGainAnalyzerVersion() const {
-    return m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kReplayGainAnalyzerVersion), "2").toInt();
+    return m_pConfig->getValue(
+            ConfigKey(kConfigKey, kReplayGainAnalyzerVersion), 2);
 }
 
 void ReplayGainSettings::setReplayGainAnalyzerVersion(int value) {

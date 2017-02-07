@@ -168,7 +168,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
-        pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt());
+        pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
+                static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
 
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
@@ -364,8 +365,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // If we were told to start in fullscreen mode on the command-line or if
     // user chose always starts in fullscreen mode, then turn on fullscreen
     // mode.
-    bool fullscreenPref = pConfig->getValueString(
-        ConfigKey("[Config]", "StartInFullscreen")).toInt()==1;
+    bool fullscreenPref = pConfig->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
     if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
@@ -376,8 +377,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pControllerManager->setUpDevices();
 
     // Scan the library for new files and directories
-    bool rescan = pConfig->getValueString(
-            ConfigKey("[Library]","RescanOnStartup")).toInt();
+    bool rescan = pConfig->getValue<bool>(
+            ConfigKey("[Library]","RescanOnStartup"));
     // rescan the library if we get a new plugin
     QSet<QString> prev_plugins = QSet<QString>::fromList(
             pConfig->getValueString(
@@ -674,8 +675,8 @@ void MixxxMainWindow::initializeKeyboard() {
     // TODO(XXX) leak pKbdConfig, KeyboardEventFilter owns it? Maybe roll all keyboard
     // initialization into KeyboardEventFilter
     // Workaround for today: KeyboardEventFilter calls delete
-    bool keyboardShortcutsEnabled = pConfig->getValueString(
-            ConfigKey("[Keyboard]", "Enabled")) == "1";
+    bool keyboardShortcutsEnabled = pConfig->getValue<bool>(
+            ConfigKey("[Keyboard]", "Enabled"));
     m_pKeyboard = new KeyboardEventFilter(
             keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }

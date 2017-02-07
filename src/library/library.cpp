@@ -85,9 +85,8 @@ Library::Library(UserSettingsPointer pConfig,
         qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
     }
 
-    m_iTrackTableRowHeight = m_pConfig->getValueString(
-            ConfigKey("[Library]", "RowHeight"),
-            QString::number(kDefaultRowHeightPx)).toInt();
+    m_iTrackTableRowHeight = m_pConfig->getValue(
+            ConfigKey("[Library]", "RowHeight"), kDefaultRowHeightPx);
     QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);
@@ -735,22 +734,22 @@ void Library::createFeatures(UserSettingsPointer pConfig,
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey("[Library]","ShowRhythmboxLibrary"), true)) {
         addFeature(new RhythmboxFeature(pConfig, this, this, m_pTrackCollection));
     }
 
-    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
+    if (pConfig->getValue(ConfigKey("[Library]","ShowBansheeLibrary"), true)) {
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(pConfig, this, this, m_pTrackCollection));
         }
     }
     if (ITunesFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey("[Library]","ShowITunesLibrary"), true)) {
         addFeature(new ITunesFeature(pConfig, this, this, m_pTrackCollection));
     }
     if (TraktorFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey("[Library]","ShowTraktorLibrary"), true)) {
         addFeature(new TraktorFeature(pConfig, this, this, m_pTrackCollection));
     }
     
