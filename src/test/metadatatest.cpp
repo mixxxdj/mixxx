@@ -9,8 +9,6 @@
 
 namespace {
 
-const double kBpmValueMax = 300.0;
-
 class MetadataTest : public testing::Test {
   protected:
     double parseBpm(QString inputValue, bool expectedResult, double expectedValue) {
@@ -78,7 +76,7 @@ TEST_F(MetadataTest, ParseBpmPrecision) {
 }
 
 TEST_F(MetadataTest, ParseBpmValidRange) {
-    for (int bpm100 = int(mixxx::Bpm::kValueMin) * 100; kBpmValueMax * 100 >= bpm100; ++bpm100) {
+    for (int bpm100 = int(mixxx::Bpm::kValueMin) * 100; mixxx::Bpm::kValueMax * 100 >= bpm100; ++bpm100) {
         const double expectedValue = bpm100 / 100.0;
         const QString inputValues[] = {
                 QString("%1").arg(expectedValue),
@@ -102,10 +100,10 @@ TEST_F(MetadataTest, NormalizeBpm) {
     normalizeBpm(mixxx::Bpm::kValueMin - 1.0);
     normalizeBpm(mixxx::Bpm::kValueMin + 1.0);
     normalizeBpm(-mixxx::Bpm::kValueMin);
-    normalizeBpm(kBpmValueMax);
-    normalizeBpm(kBpmValueMax - 1.0);
-    normalizeBpm(kBpmValueMax + 1.0);
-    normalizeBpm(-kBpmValueMax);
+    normalizeBpm(mixxx::Bpm::kValueMax);
+    normalizeBpm(mixxx::Bpm::kValueMax - 1.0);
+    normalizeBpm(mixxx::Bpm::kValueMax + 1.0);
+    normalizeBpm(-mixxx::Bpm::kValueMax);
 }
 
 TEST_F(MetadataTest, ID3v2Year) {

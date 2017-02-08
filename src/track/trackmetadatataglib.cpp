@@ -1029,14 +1029,13 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
         long bpmValue = pTrackMetadata->getBpm().getValue();
         //Some software uses (or used) to write decimated values without comma,
         //so the number reads as 1352 or 14525 when it is 135.2 or 145.25
-        if (bpmValue >= Bpm::kValueMinForTwoDecimals) {
+        long bpmValueOriginal = bpmValue;
+        while (bpmValue > Bpm::kValueMax) {
+            bpmValue /= 10.0;  
+        }
+        if (bpmValue != bpmValueOriginal) {
             qWarning() << " Changing BPM on " << pTrackMetadata->getArtist() << " - " << 
-                pTrackMetadata->getTitle() << " from " << bpmValue << " to " << bpmValue/100.0;
-            bpmValue /= 100.0;
-        } else if (bpmValue >= Bpm::kValueMinForOneDecimal) {
-            qWarning() << " Changing BPM on " << pTrackMetadata->getArtist() << " - " << 
-                pTrackMetadata->getTitle() << " from " << bpmValue << " to " << bpmValue/10.0;
-            bpmValue /= 10.0;
+                pTrackMetadata->getTitle() << " from " << bpmValueOriginal << " to " << bpmValue;
         }
         pTrackMetadata->getBpm().setValue(bpmValue);
     }
