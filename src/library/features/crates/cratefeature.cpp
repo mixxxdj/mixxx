@@ -556,11 +556,12 @@ CrateId CrateFeature::crateIdFromIndex(const QModelIndex& index) const {
     if (!index.isValid()) {
         return CrateId();
     }
-    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-    if (item == nullptr) {
-        return CrateId();
+    bool ok = false;
+    int id = index.data(AbstractRole::RoleData).toInt(&ok);
+    if (ok) {
+    	return CrateId(id);
     }
-    return CrateId(item->getData());
+    return CrateId();
 }
 
 QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) const {
