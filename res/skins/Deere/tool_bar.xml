@@ -17,7 +17,6 @@
         <Children>
 
           <WidgetGroup>
-            <ObjectName></ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -36,16 +35,12 @@
             </Children>
           </WidgetGroup>
 
-
-          <Template src="skin:spacer_h.xml"/>
-
-
           <WidgetGroup>
             <ObjectName>HeadphoneControls</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:knob_label_horizontal.xml">
+              <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">headMix</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">headMix</SetVariable>
@@ -53,7 +48,7 @@
                 <SetVariable name="label">Head Mix</SetVariable>
               </Template>
 
-              <Template src="skin:knob_label_horizontal.xml">
+              <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">headphone_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">headGain</SetVariable>
@@ -87,7 +82,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:knob_label_horizontal.xml">
+              <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">balance</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">balance</SetVariable>
@@ -95,7 +90,7 @@
                 <SetVariable name="label">Balance</SetVariable>
               </Template>
 
-              <Template src="skin:knob_label_horizontal.xml">
+              <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">master_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">gain</SetVariable>
@@ -264,7 +259,7 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <Size>119f,28f</Size>
+            <Size>107f,25f</Size>
             <BackPath>image/mixxx_logo.svg</BackPath>
           </WidgetGroup>
 

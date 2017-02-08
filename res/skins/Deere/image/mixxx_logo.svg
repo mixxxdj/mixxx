@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="120"
-   height="28"
-   viewBox="0 0 119.99999 28.000001"
+   width="107"
+   height="25"
+   viewBox="0 0 106.99999 25.000001"
    id="svg5498"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.0 r"
    sodipodi:docname="mixxx_logo.svg"
    inkscape:export-filename="/home/be/sw/mixxx/deere/res/skins/Deere/image/mixxx_logo.png"
    inkscape:export-xdpi="74.117645"
@@ -218,8 +218,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="48.564309"
-     inkscape:cy="29.24398"
+     inkscape:cx="70.101057"
+     inkscape:cy="27.74398"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -249,24 +249,24 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-302.61495,-347.29076)">
+     transform="translate(-309.41899,-348.79076)">
     <polygon
-       transform="matrix(0.86070757,0,0,0.81289002,303.03548,148.82692)"
+       transform="matrix(0.7684889,0,0,0.72579466,309.41899,171.5909)"
        style="fill:url(#SVGID_47_)"
-       points="114.823,278.591 104.378,278.591 127.999,244.146 138.439,244.146 "
+       points="104.378,278.591 127.999,244.146 138.439,244.146 114.823,278.591 "
        id="polygon4805" />
     <polygon
-       transform="matrix(0.86070757,0,0,0.81289002,303.03548,148.82692)"
+       transform="matrix(0.7684889,0,0,0.72579466,309.41899,171.5909)"
        style="fill:url(#SVGID_48_)"
-       points="67.51,278.591 57.062,278.591 80.68,244.146 91.126,244.146 "
+       points="57.062,278.591 80.68,244.146 91.126,244.146 67.51,278.591 "
        id="polygon4830" />
     <polygon
-       transform="matrix(0.86070757,0,0,0.81289002,303.03548,148.82692)"
+       transform="matrix(0.7684889,0,0,0.72579466,309.41899,171.5909)"
        style="fill:url(#SVGID_49_)"
-       points="91.167,278.591 80.722,278.591 104.342,244.146 114.783,244.146 "
+       points="80.722,278.591 104.342,244.146 114.783,244.146 91.167,278.591 "
        id="polygon4849" />
     <g
-       transform="matrix(0.86070757,0,0,0.81289002,303.03548,148.82692)"
+       transform="matrix(0.7684889,0,0,0.72579466,309.41899,171.5909)"
        id="g4851">
       <linearGradient
          id="linearGradient5463"
@@ -286,7 +286,7 @@
       </linearGradient>
       <polygon
          style="fill:url(#SVGID_50_)"
-         points="80.68,278.591 91.126,278.591 67.51,244.146 57.065,244.146 "
+         points="91.126,278.591 67.51,244.146 57.065,244.146 80.68,278.591 "
          id="polygon4858" />
       <linearGradient
          id="linearGradient5470"
@@ -306,7 +306,7 @@
       </linearGradient>
       <polygon
          style="fill:url(#SVGID_51_)"
-         points="104.342,278.591 114.787,278.591 91.167,244.146 80.722,244.146 "
+         points="114.787,278.591 91.167,244.146 80.722,244.146 104.342,278.591 "
          id="polygon4865" />
       <linearGradient
          id="linearGradient5477"
@@ -326,7 +326,7 @@
       </linearGradient>
       <polygon
          style="fill:url(#SVGID_52_)"
-         points="127.999,278.591 138.443,278.591 114.823,244.146 104.378,244.146 "
+         points="138.443,278.591 114.823,244.146 104.378,244.146 127.999,278.591 "
          id="polygon4872" />
       <linearGradient
          id="linearGradient5484"
@@ -369,7 +369,7 @@
       </linearGradient>
       <polygon
          style="fill:url(#SVGID_54_)"
-         points="0,278.591 8.76,278.591 8.76,258.42 20.076,275.596 20.307,275.596 31.74,258.245 31.74,278.591 40.618,278.591 40.618,244.146 30.988,244.146 20.307,261.321 9.631,244.146 0,244.146 "
+         points="31.74,258.245 31.74,278.591 40.618,278.591 40.618,244.146 30.988,244.146 20.307,261.321 9.631,244.146 0,244.146 0,278.591 8.76,278.591 8.76,258.42 20.076,275.596 20.307,275.596 "
          id="polygon4886" />
     </g>
   </g>

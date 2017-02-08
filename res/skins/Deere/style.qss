@@ -671,7 +671,7 @@ WWidget, QLabel {
 }
 
 #ToolBarLeft {
-  qproperty-layoutSpacing: 5;
+  qproperty-layoutSpacing: 40;
 }
 
 #ToolBarRight {
@@ -688,9 +688,6 @@ WWidget, QLabel {
     margin-top: 1px;
 }
 
-#HeadphoneControls {
-    margin-right: 30px;
-}
 /* End spacing for toolbar */
 
 #Time {
