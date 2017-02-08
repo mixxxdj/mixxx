@@ -98,6 +98,10 @@ class EffectManifest final {
         return m_parameters;
     }
 
+    virtual QList<EffectManifestParameter>& parameters() {
+        return m_parameters;
+    }
+
     virtual EffectManifestParameter* addParameter() {
         m_parameters.append(EffectManifestParameter());
         return &m_parameters.last();

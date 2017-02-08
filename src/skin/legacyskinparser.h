@@ -12,6 +12,7 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/tooltips.h"
 #include "proto/skin.pb.h"
+#include "util/memory.h"
 
 class WBaseWidget;
 class Library;
@@ -142,7 +143,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     VinylControlManager* m_pVCManager;
     EffectsManager* m_pEffectsManager;
     QWidget* m_pParent;
-    SkinContext* m_pContext;
+    std::unique_ptr<SkinContext> m_pContext;
     Tooltips m_tooltips;
     QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;

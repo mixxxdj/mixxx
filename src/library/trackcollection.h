@@ -32,8 +32,7 @@ class TrackCollection : public QObject {
   public:
     static const int kRequiredSchemaVersion;
 
-    explicit TrackCollection(
-    		UserSettingsPointer pConfig);
+    explicit TrackCollection(UserSettingsPointer pConfig);
     ~TrackCollection() override;
 
     bool checkForTables();
@@ -41,7 +40,7 @@ class TrackCollection : public QObject {
     void resetLibaryCancellation();
 
     QSqlDatabase& database() {
-    	return m_dbConnection.database();
+        return m_dbConnection.database();
     }
 
     const CrateStorage& crates() const {

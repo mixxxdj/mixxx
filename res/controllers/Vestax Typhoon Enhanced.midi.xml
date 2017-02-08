@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.0.0+">
   <info>
-    <name>Vestax Typhoon</name>
+    <name>Vestax Typhoon Enhanced</name>
     <author>bestdani</author>
-    <description>bestdani's controller capping for Vestax Typhoon in Mixxx 2.0+ and script. The controller reacts as descriped on the console. Some elements are taken from Bill Good's original mapping.</description>
+    <description>bestdani's customized controller mapping for Vestax Typhoon in Mixxx 2.0+ and script. The controller actions differ from the description on the console. Therefore it enables more controls such as hotcues, relative pitch movements, slip mode and much more. Some elements are taken from Bill Good's original mapping.</description>
     <forums>http://mixxx.org/forums/viewtopic.php?p=14494#p14494</forums>
   </info>
   <controller id="Vestax Typhoon">
@@ -44,122 +44,122 @@
 		<control>
 			<!--SongList-->
 			<group>[Playlist]</group>
-			<key>SelectNextPlaylist</key>
+			<key>VestaxTyphoon.slipShift</key>
 			<status>0x92</status>
 			<midino>0x26</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<!--Transport / Hot-Cue Controls Deck 1-->
 		<control>
 			<!-- play / hot cue 1 -->
 			<group>[Channel1]</group>
-			<key>play</key>
+			<key>VestaxTyphoon.playh1</key>
 			<status>0x90</status>
 			<midino>0x32</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<!-- cue / hot cue 2 -->
 			<group>[Channel1]</group>
-			<key>cue_default</key>
+			<key>VestaxTyphoon.cueh2</key>
 			<status>0x90</status>
 			<midino>0x35</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<!-- cup / hot cue 3 -->
 			<group>[Channel1]</group>
-			<key>cue_gotoandplay</key>
+			<key>VestaxTyphoon.cuph3</key>
 			<status>0x90</status>
 			<midino>0x33</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<!-- beginning (shift+play) -->
 			<group>[Channel1]</group>
-			<key>start_stop</key>
+			<key>VestaxTyphoon.begd1</key>
 			<status>0x90</status>
 			<midino>0x36</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<!-- rewind (shift+cue) -->
 			<group>[Channel1]</group>
-			<key>back</key>
+			<key>VestaxTyphoon.rrd2</key>
 			<status>0x90</status>
 			<midino>0x37</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<!-- forward (shift+cup) -->
 			<group>[Channel1]</group>
-			<key>fwd</key>
+			<key>VestaxTyphoon.ffd3</key>
 			<status>0x90</status>
 			<midino>0x38</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 
 		<!-- Transport / Hot-Cue Controls for Deck2 -->
 		<control>
 			<!-- play -->
 			<group>[Channel2]</group>
-			<key>play</key>
+			<key>VestaxTyphoon.playh1</key>
 			<status>0x91</status>
 			<midino>0x32</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<!-- cue -->
 			<group>[Channel2]</group>
-			<key>cue_default</key>
+			<key>VestaxTyphoon.cueh2</key>
 			<status>0x91</status>
 			<midino>0x35</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<!-- cup -->
 			<group>[Channel2]</group>
-			<key>cue_gotoandplay</key>
+			<key>VestaxTyphoon.cuph3</key>
 			<status>0x91</status>
 			<midino>0x33</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<!-- beginning (shift+play) -->
 			<group>[Channel2]</group>
-			<key>start_stop</key>
+			<key>VestaxTyphoon.begd1</key>
 			<status>0x91</status>
 			<midino>0x36</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<!-- rewind (shift+cue) -->
 			<group>[Channel2]</group>
-			<key>back</key>
+			<key>VestaxTyphoon.rrd2</key>
 			<status>0x91</status>
 			<midino>0x37</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<!-- forward (shift+cup) -->
 			<group>[Channel2]</group>
-			<key>fwd</key>
+			<key>VestaxTyphoon.ffd3</key>
 			<status>0x91</status>
 			<midino>0x38</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 
 		<!-- filter / mode change -->
 		<control>
 			<group>[Channel1]</group>
-			<key>VestaxTyphoon.changeModeSimple</key>
+			<key>VestaxTyphoon.changeMode</key>
 			<status>0x90</status>
 			<midino>0x24</midino>
 			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<group>[Channel2]</group>
-			<key>VestaxTyphoon.changeModeSimple</key>
+			<key>VestaxTyphoon.changeMode</key>
 			<status>0x91</status>
 			<midino>0x24</midino>
 			<options><Script-Binding/></options>
@@ -168,51 +168,45 @@
 		<!-- pitch controls -->
 		<control>
 			<group>[Channel1]</group>
-			<key>rate</key>
+			<key>VestaxTyphoon.setPitch</key>
 			<status>0xB0</status>
 			<midino>0x0e</midino>
-			<options>
-				<invert/>
-				<soft-takeover/>
-			</options>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<group>[Channel1]</group>
-			<key>rate_temp_down</key>
+			<key>VestaxTyphoon.relPitch</key>
 			<status>0x90</status>
 			<midino>0x22</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<group>[Channel1]</group>
-			<key>rate_temp_up</key>
+			<key>VestaxTyphoon.relPitch</key>
 			<status>0x90</status>
 			<midino>0x23</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<group>[Channel2]</group>
-			<key>rate</key>
+			<key>VestaxTyphoon.setPitch</key>
 			<status>0xB1</status>
 			<midino>0x0e</midino>
-			<options>
-				<invert/>
-				<soft-takeover/>
-			</options>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<group>[Channel2]</group>
-			<key>rate_temp_down</key>
+			<key>VestaxTyphoon.relPitch</key>
 			<status>0x91</status>
 			<midino>0x22</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 		<control>
 			<group>[Channel2]</group>
-			<key>rate_temp_up</key>
+			<key>VestaxTyphoon.relPitch</key>
 			<status>0x91</status>
 			<midino>0x23</midino>
-			<options/>
+			<options><Script-Binding/></options>
 		</control>
 
 		<!--jogwheels-->
@@ -292,18 +286,18 @@
 	<control>
 		<!-- loop- -->
 		<group>[Channel1]</group>
-		<key>loop_halve</key>
+		<key>VestaxTyphoon.loopInMinus</key>
 		<status>0x90</status>
 		<midino>0x21</midino>
-		<options/>
+		<options><Script-Binding/></options>
 	</control>
 	<control>
 		<!-- loop+ -->
 		<group>[Channel1]</group>
-		<key>loop_double</key>
+		<key>VestaxTyphoon.loopOutPlus</key>
 		<status>0x90</status>
 		<midino>0x42</midino>
-		<options/>
+		<options><Script-Binding/></options>
 	</control>
 	<control>
 		<group>[Channel2]</group>
@@ -315,53 +309,53 @@
 	<control>
 		<!-- loop- -->
 		<group>[Channel2]</group>
-		<key>loop_halve</key>
+		<key>VestaxTyphoon.loopInMinus</key>
 		<status>0x91</status>
 		<midino>0x21</midino>
-		<options/>
+		<options><Script-Binding/></options>
 	</control>
 	<control>
 		<!-- loop+ -->
 		<group>[Channel2]</group>
-		<key>loop_double</key>
+		<key>VestaxTyphoon.loopOutPlus</key>
 		<status>0x91</status>
 		<midino>0x42</midino>
-		<options/>
+		<options><Script-Binding/></options>
 	</control>
       <control>
         <group>[Channel1]</group>
-        <key>LoadSelectedTrack</key>
+        <key>VestaxTyphoon.DeckLoad</key>
         <status>0x92</status>
         <midino>0x60</midino>
-        <options/>
+        <options><Script-Binding/></options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>LoadSelectedTrack</key>
+        <key>VestaxTyphoon.DeckLoad</key>
         <status>0x92</status>
         <midino>0x61</midino>
-        <options/>
+        <options><Script-Binding/></options>
       </control>
 	<control>
-        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-		<key>parameter1</key>
+		<group>[Channel1]</group>
+		<key>VestaxTyphoon.eqLow</key>
 		<status>0xB0</status>
 		<midino>0x17</midino>
-		<options/>
+		<options><Script-Binding/></options>
 	</control>
 	<control>
-        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-		<key>parameter2</key>
+		<group>[Channel1]</group>
+		<key>VestaxTyphoon.eqMid</key>
 		<status>0xB0</status>
 		<midino>0x16</midino>
-        <options/>
+        <options><Script-Binding/></options>
 	</control>
 		<control>
-        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-		<key>parameter3</key>
+		<group>[Channel1]</group>
+		<key>VestaxTyphoon.eqHigh</key>
 		<status>0xB0</status>
 		<midino>0x15</midino>
-        <options/>
+		<options><Script-Binding/></options>
 	</control>
       <control>
         <group>[Channel1]</group>
@@ -386,33 +380,31 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VestaxTyphoon.setSyncSimple</key>
+        <key>VestaxTyphoon.setSync</key>
         <status>0x90</status>
         <midino>0x46</midino>
-        <options>
-			<script-binding/>
-		</options>
+        <options><Script-Binding/></options>
       </control>
 	  <control>
-        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-		<key>parameter1</key>
-		<status>0xB1</status>
-		<midino>0x17</midino>
-		<options/>
+        <group>[Channel2]</group>
+        <key>VestaxTyphoon.eqLow</key>
+        <status>0xB1</status>
+        <midino>0x17</midino>
+        <options><Script-Binding/></options>
       </control>
       <control>
-        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-		<key>parameter2</key>
-		<status>0xB1</status>
-		<midino>0x16</midino>
-        <options/>
+        <group>[Channel2]</group>
+        <key>VestaxTyphoon.eqMid</key>
+        <status>0xB1</status>
+        <midino>0x16</midino>
+        <options><Script-Binding/></options>
       </control>
       <control>
-        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-		<key>parameter3</key>
-		<status>0xB1</status>
-		<midino>0x15</midino>
-        <options/>
+        <group>[Channel2]</group>
+        <key>VestaxTyphoon.eqHigh</key>
+        <status>0xB1</status>
+        <midino>0x15</midino>
+        <options><Script-Binding/></options>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -437,12 +429,10 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VestaxTyphoon.setSyncSimple</key>
+        <key>VestaxTyphoon.setSync</key>
         <status>0x91</status>
         <midino>0x46</midino>
-        <options>
-			<script-binding/>
-		</options>
+        <options><Script-Binding/></options>
       </control>
 	<control>
         <group>[Playlist]</group>

@@ -22,10 +22,10 @@
 #define AUTODJCRATESTABLE_LASTPLAYED "lastplayed"
 
 namespace {
-	// Percentage of most and least played tracks to ignore [0,50)
-	const int kLeastPreferredPercent = 15;
-	const int kLeastPreferredPercentMin = 0;
-	const int kLeastPreferredPercentMax = 50;
+// Percentage of most and least played tracks to ignore [0,50)
+const int kLeastPreferredPercent = 15;
+const int kLeastPreferredPercentMin = 0;
+const int kLeastPreferredPercentMax = 50;
 } // anonymous namespace
 
 AutoDJCratesDAO::AutoDJCratesDAO(
@@ -33,8 +33,8 @@ AutoDJCratesDAO::AutoDJCratesDAO(
         UserSettingsPointer a_pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_pConfig (a_pConfig),
-		  // The database has been created yet.
-		  m_bAutoDjCratesDbCreated(false),
+          // The database has been created yet.
+          m_bAutoDjCratesDbCreated(false),
           m_iAutoDjPlaylistId(-1),
           // By default, active tracks are not tracks that haven't been played in
           // a while.
@@ -48,7 +48,7 @@ void AutoDJCratesDAO::initialize() {
     // Save the ID of the auto-DJ playlist.
     m_iAutoDjPlaylistId = m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
     VERIFY_OR_DEBUG_ASSERT(m_iAutoDjPlaylistId >= 0) {
-    	qWarning() << "Auto DJ playlist not found!";
+        qWarning() << "Auto DJ playlist not found!";
     }
 }
 
@@ -448,12 +448,12 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
     }
     int iUnplayedTracks = 0;
     int iTotalTracks = 0;
-	if (oQuery.next()) {
-		iUnplayedTracks = oQuery.value(0).toInt();
-		if (oQuery.next()) {
-			iTotalTracks = oQuery.value(0).toInt();
-		}
-	}
+    if (oQuery.next()) {
+        iUnplayedTracks = oQuery.value(0).toInt();
+        if (oQuery.next()) {
+            iTotalTracks = oQuery.value(0).toInt();
+        }
+    }
 
     // Get the active percentage (default 20%).
     int iMinimumAvailable = m_pConfig->getValue(
@@ -506,7 +506,7 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
 
     // If there are no tracks, let our caller know.
     if (iActiveTracks == 0) {
-    	qDebug() << "No random track available for Auto DJ";
+        qDebug() << "No random track available for Auto DJ";
         return TrackId();
     }
 
@@ -519,12 +519,12 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
         LOG_FAILED_QUERY(oQuery);
         return TrackId();
     }
-	if (oQuery.next()) {
-		// Give our caller the randomly-selected track.
-		return TrackId(oQuery.value(0));
+    if (oQuery.next()) {
+        // Give our caller the randomly-selected track.
+        return TrackId(oQuery.value(0));
     } else {
-    	qDebug() << "No random track available for Auto DJ";
-    	return TrackId();
+        qDebug() << "No random track available for Auto DJ";
+        return TrackId();
     }
 }
 
@@ -942,13 +942,13 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
         return TrackId();
     }
     int iTotalTracks = 0;
-	if (oQuery.next()) {
-		iTotalTracks = oQuery.value(0).toInt();
+    if (oQuery.next()) {
+        iTotalTracks = oQuery.value(0).toInt();
     }
-	DEBUG_ASSERT(iTotalTracks >= 0);
+    DEBUG_ASSERT(iTotalTracks >= 0);
     if (iTotalTracks == 0) {
-    	qDebug() << "No tracks available in playlist" << iPlaylistId << "for Auto DJ";
-    	return TrackId();
+        qDebug() << "No tracks available in playlist" << iPlaylistId << "for Auto DJ";
+        return TrackId();
     }
 
     // We ignore tracks from [0,ignoreIndex1] and [ignoreIndex2+1,most_played_Track]
@@ -1002,11 +1002,11 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
         LOG_FAILED_QUERY(oQuery);
         return TrackId();
     }
-	if (oQuery.next()) {
-		// Get the trackId
-		return TrackId(oQuery.value(0));
+    if (oQuery.next()) {
+        // Get the trackId
+        return TrackId(oQuery.value(0));
     } else {
-    	qDebug() << "No random track available for Auto DJ in playlist" << iPlaylistId;
+        qDebug() << "No random track available for Auto DJ in playlist" << iPlaylistId;
         return TrackId();
     }
 }

@@ -40,13 +40,19 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
           m_pAutoDJProcessor(nullptr),
           m_pAutoDJView(nullptr),
           m_autoDjCratesDao(pTrackCollection, pConfig) {
-    m_autoDjCratesDao.initialize();
-
-    m_iAutoDJPlaylistId = m_autoDjCratesDao.getPlaylistId();    // If the AutoDJ playlist does not exist yet then create it.
+    m_iAutoDJPlaylistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+    // If the AutoDJ playlist does not exist yet then create it.
     if (m_iAutoDJPlaylistId < 0) {
         m_iAutoDJPlaylistId = m_playlistDao.createPlaylist(
                 AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+        VERIFY_OR_DEBUG_ASSERT(m_iAutoDJPlaylistId >= 0) {
+            qWarning() << "Failed to create Auto DJ playlist!";
+        }
     }
+    // The AutoDJCratesDAO expects that the dedicated AutoDJ playlist
+    // has already been created.
+    m_autoDjCratesDao.initialize();
+
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
             this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
