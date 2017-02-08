@@ -152,7 +152,7 @@
 
               <WidgetGroup><!-- LogoMini container -->
                 <ObjectName>AlignCenter</ObjectName>
-                <Size>56f,13f</Size>
+                <SizePolicy>me,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup>
