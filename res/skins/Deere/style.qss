@@ -554,7 +554,7 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   text-align: left;
   color: #d2d2d2;
   background-color: none;
-  margin: 0.2em;
+  margin: 0 0.2em .1em 0;
   border-top: none;
   border-bottom: 1px solid #A9A9A9;
 }
@@ -563,7 +563,7 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   font: 12px/14px;
   background-color: none;
   text-align: left;
-  margin: 0.5em;
+  margin: .05em 0.5em;
 }
 
 #SkinSettings > #h3 WPushButton {
