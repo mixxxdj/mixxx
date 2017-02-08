@@ -101,7 +101,7 @@
     <LaunchImageStyle>
       LaunchImage { background-color: #0f0f0f; }
       QLabel {
-        image: url(skin:/graphics/mixxx_logo.svg);
+        image: url(skin:/graphics/mixxx_logo_104x26.svg);
         padding: 0;
         margin: 0;
         border: none;
