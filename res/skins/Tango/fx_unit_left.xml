@@ -106,12 +106,6 @@
                 <Layout>horizontal</Layout>
                 <Size>80f,20f</Size>
                 <Children>
-                  <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">EffectUnit_prev_chain</SetVariable>
-                    <SetVariable name="ObjectName">EffectSelectorButtonPrev</SetVariable>
-                    <SetVariable name="Size">20f,20f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,prev_chain</SetVariable>
-                  </Template>
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ToolTipId">EffectUnit_enabled</SetVariable>
                     <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
@@ -119,12 +113,6 @@
                     <SetVariable name="state_0_text">OFF</SetVariable>
                     <SetVariable name="state_1_text">ON</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
-                  </Template>
-                  <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">EffectUnit_next_chain</SetVariable>
-                    <SetVariable name="ObjectName">EffectSelectorButtonNext</SetVariable>
-                    <SetVariable name="Size">20f,20f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,next_chain</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /EffectChainSelector + ON/OFF -->
