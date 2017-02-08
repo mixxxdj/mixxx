@@ -60,6 +60,9 @@ class TreeItem final {
         return m_children.size();
     }
     TreeItem* child(int row) const;
+    const QList<TreeItem*>& children() const {
+        return m_children;
+    }
 
     // single child items
     TreeItem* appendChild(

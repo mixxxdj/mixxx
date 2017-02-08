@@ -109,7 +109,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     QList<TrackId> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
+        m_pTrackCollection->unhideTracks(trackIds);
     } else {
         // If a track is dropped onto a playlist's name, but the track isn't in the
         // library, then add the track to the library before adding it to the
@@ -167,24 +167,32 @@ void PlaylistFeature::buildPlaylistList() {
         "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
         "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
         "WHERE Playlists.hidden = 0 "
-        "GROUP BY Playlists.id "
-        "ORDER BY LOWER(Playlists.name);");
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+        "GROUP BY Playlists.id");
+    queryString.append(DbConnection::collateLexicographically(
+            " ORDER BY sort_name"));
+    QSqlQuery query(m_pTrackCollection->database());
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
-    
-    QSqlRecord record = query.record();
-    int iName = record.indexOf("name");
-    int iId = record.indexOf("id");
-    int iCount = record.indexOf("count");
-    int iDuration = record.indexOf("durationSeconds");
-    
+
+    // Setup the sidebar playlist model
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    playlistTableModel.setTable("PlaylistsCountsDurations");
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
+    }
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int idColumn = record.indexOf("id");
+    int countColumn = record.indexOf("count");
+    int durationColumn = record.indexOf("durationSeconds");
+
     while (query.next()) {
-        int id = query.value(iId).toInt();
-        QString name = query.value(iName).toString();
-        int count = query.value(iCount).toInt();
-        int duration = query.value(iDuration).toInt();
+        int id = query.value(idColumn).toInt();
+        QString name = query.value(nameColumn).toString();
+        int count = query.value(countColumn).toInt();
+        int duration = query.value(durationColumn).toInt();
         QString itemName = "%1 (%2) %3";
         itemName = itemName.arg(name, 
                                 QString::number(count),

@@ -738,7 +738,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel->insertRows(dataList, 0, m_playlistList.size());
+    m_childModel->insertTreeItemRows(dataList, 0);
     return m_childModel->index(selectedRow, 0);
 }
 

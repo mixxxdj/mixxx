@@ -128,15 +128,16 @@ class LibraryFeature : public QObject {
     void restoreSaveButton();
     
   protected:
-    inline QStringList getPlaylistFiles() { 
+    QStringList getPlaylistFiles() const {
         return getPlaylistFiles(QFileDialog::ExistingFiles); 
     }
-    inline QString getPlaylistFile() { 
-        QStringList files(getPlaylistFiles(QFileDialog::ExistingFile));
-        if (files.isEmpty()) {
-            return QString();
+    QString getPlaylistFile() const {
+        const QStringList playListFiles = getPlaylistFiles();
+        if (playListFiles.isEmpty()) {
+            return QString(); // no file chosen
+        } else {
+            return playListFiles.first();
         }
-        return files.first();
     }
     
     // Creates a table widget with no model
@@ -168,7 +169,7 @@ class LibraryFeature : public QObject {
     int m_featurePane;
     
   private: 
-    QStringList getPlaylistFiles(QFileDialog::FileMode mode);
+    QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
     QHash<int, QPointer<WTrackTableView> > m_trackTablesByPaneId;
 };
 

@@ -289,7 +289,7 @@ WTrackTableView* LibraryFeature::getFocusedTable() {
     return *it;
 }
 
-QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {
+QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) const {
     QString lastPlaylistDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));

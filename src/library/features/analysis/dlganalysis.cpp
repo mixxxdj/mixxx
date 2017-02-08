@@ -3,6 +3,7 @@
 #include "library/features/analysis/analysisfeature.h"
 #include "library/features/analysis/dlganalysis.h"
 #include "library/trackcollection.h"
+#include "library/dao/trackschema.h"
 #include "util/assert.h"
 #include "widget/wanalysislibrarytableview.h"
 #include "widget/wskincolor.h"

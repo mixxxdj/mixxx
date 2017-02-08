@@ -1,6 +1,7 @@
 #include <QStringList>
 
 #include "library/features/libraryfolder/libraryfoldermodel.h"
+#include "library/dao/trackschema.h"
 
 #include "library/libraryfeature.h"
 #include "library/queryutil.h"
@@ -101,7 +102,7 @@ void LibraryFolderModel::createTracksTree() {
                             "library." + LIBRARYTABLE_ID,
                             "track_locations." + TRACKLOCATIONSTABLE_ID);
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(m_pTrackCollection->database());
     query.prepare(queryStr);
 
     for (const QString& dir : dirs) {

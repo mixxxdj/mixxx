@@ -371,7 +371,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
     // has no subfolders
     if (!folders.isEmpty()) {
-        m_childModel.insertRows(folders, 0, folders.size(), index);
+        m_childModel.insertTreeItemRows(folders, 0, index);
     }
 }
 

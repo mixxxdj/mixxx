@@ -1,5 +1,6 @@
 #include <QString>
 
+#include "library/dao/trackschema.h"
 #include "library/coverartcache.h"
 #include "library/libraryfeature.h"
 #include "library/queryutil.h"
@@ -233,7 +234,7 @@ void MixxxLibraryTreeModel::createTracksTree() {
                             "track_locations." + TRACKLOCATIONSTABLE_FSDELETED);
         
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(m_pTrackCollection->database());
     query.prepare(queryStr);
 
     if (!query.exec()) {

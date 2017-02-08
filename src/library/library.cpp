@@ -22,6 +22,7 @@
 #include "library/features/recording/recordingfeature.h"
 #include "library/features/rhythmbox/rhythmboxfeature.h"
 #include "library/features/traktor/traktorfeature.h"
+#include "library/dao/trackschema.h"
 
 #include "library/library_preferences.h"
 #include "library/librarycontrol.h"
@@ -412,7 +413,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
             break;
         case Library::PurgeTracks:
             // The user requested that we purge all metadata.
-            m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+            m_pTrackCollection->purgeTracks(dir);
             break;
         case Library::LeaveTracksUnchanged:
         default:
@@ -659,7 +660,7 @@ void Library::createTrackCache() {
             << "library." + LIBRARYTABLE_COVERART_LOCATION
             << "library." + LIBRARYTABLE_COVERART_HASH;
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(m_pTrackCollection->database());
     QString tableName = "library_cache_view";
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "

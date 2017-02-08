@@ -59,7 +59,7 @@ RhythmboxFeature::RhythmboxFeature(UserSettingsPointer pConfig,
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(),
+    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(),
                                              "RHYTHMBOX_SCANNER");
 
     //Open the database connection in this thread.

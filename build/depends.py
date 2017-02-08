@@ -935,6 +935,8 @@ class MixxxCore(Feature):
 
                    "library/features/crates/cratefeature.cpp",
                    "library/features/crates/cratetablemodel.cpp",
+                   "library/features/crates/cratestorage.cpp",
+                   "library/features/crates/cratefeaturehelper.cpp",
 
                    "library/features/history/historyfeature.cpp",
                    "library/features/history/historytreemodel.cpp",
@@ -974,7 +976,6 @@ class MixxxCore(Feature):
                    "library/scanner/importfilestask.cpp",
                    "library/scanner/recursivescandirectorytask.cpp",
 
-                   "library/dao/cratedao.cpp",
                    "library/dao/cuedao.cpp",
                    "library/dao/cue.cpp",
                    "library/dao/trackdao.cpp",
@@ -1125,7 +1126,14 @@ class MixxxCore(Feature):
                    "util/tapfilter.cpp",
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
-                   "util/dbid.cpp",
+                   "util/db/dbconnection.cpp",
+                   "util/db/dbid.cpp",
+                   "util/db/fwdsqlquery.cpp",
+                   "util/db/fwdsqlqueryselectresult.cpp",
+                   "util/db/sqllikewildcardescaper.cpp",
+                   "util/db/sqlqueryfinisher.cpp",
+                   "util/db/sqlstringformatter.cpp",
+                   "util/db/sqltransaction.cpp",
                    "util/sample.cpp",
                    "util/samplebuffer.cpp",
                    "util/singularsamplebuffer.cpp",

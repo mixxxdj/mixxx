@@ -1,8 +1,7 @@
 #include "library/columncache.h"
 
-#include "library/dao/trackdao.h"
+#include "library/dao/trackschema.h"
 #include "library/dao/playlistdao.h"
-#include "library/dao/cratedao.h"
 #include "track/keyutils.h"
 #include "track/key_preferences.h"
 #include "control/controlproxy.h"
@@ -80,9 +79,6 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_ARTIST] = fieldIndex(PLAYLISTTRACKSTABLE_ARTIST);
     m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE] = fieldIndex(PLAYLISTTRACKSTABLE_TITLE);
     m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED] = fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED);
-
-    m_columnIndexByEnum[COLUMN_CRATETRACKSTABLE_TRACKID] = fieldIndex(CRATETRACKSTABLE_TRACKID);
-    m_columnIndexByEnum[COLUMN_CRATETRACKSTABLE_CRATEID] = fieldIndex(CRATETRACKSTABLE_CRATEID);
 
     const QString sortInt("cast(%1 as integer)");
     const QString sortNoCase("lower(%1)");
