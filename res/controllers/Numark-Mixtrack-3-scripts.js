@@ -1894,14 +1894,14 @@ NumarkMixtrack3.OnHotcueChange = function(value, group, control) {
     deck.LEDs["hotCue" + padindex].onOff((value) ? ON : OFF);
 };
 
-NumarkMixtrack3.SamplerButton = function(channel, control, value, status,
-    group) {
+NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group) {
     var isplaying = engine.getValue(group, "play");
     var isLoaded = engine.getValue(group, "track_loaded");
-    var padindex = parseInt(group.substring(8, 9));
-    var decknum = padindex;
-    
-    if (decknum > 4) {
+    var padIndex = parseInt(group.substring(8, 9));
+    var sampler = NumarkMixtrack3.samplers["S" + padindex];
+    var decknum;
+
+    if (padIndex > 4) {
         decknum = 2;
         engine.setValue("[Deere]","sampler_bank_2", true);
     } else {
@@ -1911,30 +1911,26 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status,
 
     decknum = NumarkMixtrack3.deckFromGroup("[Channel" + decknum + "]");
     var deck = NumarkMixtrack3.decks["D" + decknum];
-    var sampler = NumarkMixtrack3.samplers["S" + padindex];
 
     if (value === DOWN) {
         if (!isLoaded) {
             engine.setValue(group, "LoadSelectedTrack", 1);
         }
 
-
-    sampler.PADSampleButtonHold.ButtonDown(channel, control, value, status, group);
+        sampler.PADSampleButtonHold.ButtonDown(channel, control, value, status, group);
 
         if (!isplaying) {
             if (deck.shiftKey) {
-                //Shift is on, play sampler with no Sync
+                // shift is on, play sampler with no Sync
                 engine.setValue(group, "beatsync", 0);
                 engine.setValue(group, "cue_gotoandplay", 1);
-                sampler.LEDs["PADsampler" + padindex].flashOn(300,
-                    PADcolors.purple, 300);
             } else {
-                //play sampler with Sync
+                // play sampler with Sync
                 engine.setValue(group, "cue_gotoandplay", 1);
                 engine.setValue(group, "beatsync", 1);
-                sampler.LEDs["PADsampler" + padindex].flashOn(300,
-                    PADcolors.purple, 300);
             }
+
+            sampler.LEDs["PADsampler" + padindex].flashOn(300, PADcolors.purple, 300);
         } else {
             engine.setValue(group, "stop", 1);
             sampler.LEDs["PADsampler" + padindex].onOff(ON);
@@ -1950,19 +1946,18 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status,
     }
 };
 
-NumarkMixtrack3.onPADSampleButtonHold = function(channel, control, value, status,
-    group, eventkind) {
-    var decknum = parseInt(group.substring(8, 9));
+NumarkMixtrack3.onPADSampleButtonHold = function(channel, control, value, status, group, eventkind) {
     var sampler = NumarkMixtrack3.samplers["S" + decknum];
-    var padindex = parseInt(group.substring(8, 9));
+    var padIndex = parseInt(group.substring(8, 9));
+    var decknum;
 
-    if (decknum > 4) {
+    if (padIndex > 4) {
         decknum = 2;
     } else {
         decknum = 1;
     }
 
-    //The event is a Long Press, LONG_PRESS is true, we set a variable so that when the 
+    // the event is a Long Press, LONG_PRESS is true, we set a variable so that when the 
     // pad button is lifted, the Sampler stops
     if (eventkind === LONG_PRESS) {
         engine.setValue(group, "stop", 1);
@@ -1975,8 +1970,7 @@ NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
     var sampler = NumarkMixtrack3.samplers["S" + decknum];
 
     if (value === 1) {
-        sampler.LEDs["PADsampler" + decknum].flashOn(300, PADcolors.purple,
-            300);
+        sampler.LEDs["PADsampler" + decknum].flashOn(300, PADcolors.purple, 300);
     } else {
         sampler.LEDs["PADsampler" + decknum].onOff(ON);
     }
@@ -2214,7 +2208,7 @@ NumarkMixtrack3.brake_button = function(decknum, value) {
         engine.brake(decknum, true); // enable brake effect
     } else {
         engine.brake(decknum, false); // disable brake effect
-    }   
+    }
 };
 
 NumarkMixtrack3.OnEffectEnabled = function(value, group, control) {
