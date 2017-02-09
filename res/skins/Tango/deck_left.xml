@@ -2,15 +2,15 @@
   <WidgetGroup>
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>578me,136min</Size><!-- 136px Deck1/3 + 3px margin-top -->
+    <Size>578me,136min</Size>
     <Children>
 
       <WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
         <ObjectName>Deck<Variable name="channum"/></ObjectName>
-        <Size>250me,136min</Size><!--  -->
-        <Layout>vertical</Layout><!--  -->
+        <Size>250me,136min</Size>
+        <Layout>vertical</Layout>
         <Children>
-        
+
           <!-- Packed Waveform & ArtistTitle into a fixed-size container,
           so Deck stays steady while Comment can expand and LoopBeatjump
           controls can be toggled -->
@@ -18,8 +18,8 @@
             <Layout>vertical</Layout>
             <Size>250me,111f</Size>
             <Children>
-              <Template src="skin:deck_overview_left.xml"><!-- 50px
-                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable> -->
+              <Template src="skin:deck_overview_left.xml">
+              <!-- <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable> -->
                 <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
               </Template>
 
@@ -42,47 +42,47 @@
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /Track Comment -->
-              
+
               <Template src="skin:deck_artist_title_left.xml"/><!-- = 20min + 20min -->
-              
+
             </Children>
           </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
-          
+
           <Template src="skin:deck_buttons_left.xml" /><!-- 50+1 -->
           <Template src="skin:deck_loop_beatjump_left.xml"/><!-- 24f -->
-          
+
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
-      
-      <WidgetGroup><!-- [Mixer/Spinny + VUMeter + Pitch] + expanding spacer-->
+
+      <WidgetGroup><!-- Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch + spacer -->
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- [Mixer/Spinny + VUMeter + Pitch] -->
+          <WidgetGroup><!-- Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch -->
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <!-- Mixer / CoverArt / empty -->
+              <!-- Mixer / [ [Spinny / Cover] + VUMeter ] -->
               <WidgetStack currentpage="[Tango],mixer_spinnyCover" persist="true">
                 <ObjectName>MixerCoverStack</ObjectName>
                 <SizePolicy>f,min</SizePolicy>
                 <Children>
-                
-                  <!-- mixer -->
+
+                  <!-- Mixer -->
                   <WidgetGroup trigger="[Tango],channel_mixer" persist="true" on-hide-select="1">
                     <Layout>horizontal</Layout>
                     <SizePolicy>f,f</SizePolicy>
                     <Children>
                       <Template src="skin:mixer_channel_left.xml"/>
                     </Children>
-                  </WidgetGroup><!-- /mixer -->
-                  
-                  <WidgetGroup><!-- Spinny/Cover + VUMeter -->
+                  </WidgetGroup><!-- /Mixer -->
+
+                  <WidgetGroup><!-- [Spinny / Cover] + VUMeter -->
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
-                    
-                      <WidgetGroup><!-- Spinny/Cover -->
+
+                      <WidgetGroup><!-- [Spinny / Cover] -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
@@ -90,14 +90,14 @@
                             <Layout>horizontal</Layout>
                             <SizePolicy>min,min</SizePolicy>
                             <Children>
-      
-                                <WidgetGroup>
-                                  <Size>3f,1min</Size>
-                                  <Children/>
-                                </WidgetGroup>
-                                
-                                <Template src="skin:spinnyCover_big.xml"/>
-                                
+
+                              <WidgetGroup>
+                                <Size>3f,1min</Size>
+                                <Children/>
+                              </WidgetGroup>
+
+                              <Template src="skin:spinnyCover_big.xml"/>
+
                             </Children>
                             <Connection>
                               <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
@@ -106,11 +106,11 @@
                           </WidgetGroup>
                         </Children>
                         <Connection>
-                          <ConfigKey persist="true">[Tango],spinnyCover</ConfigKey>
+                          <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </WidgetGroup>
-      
+                      </WidgetGroup><!-- /[Spinny / Cover] -->
+
                       <WidgetGroup>
                         <Size>3f,1me</Size>
                         <Children/>
@@ -119,39 +119,40 @@
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>
-                      
+
                       <Template src="skin:vumeter_floating.xml"/>
-                        
+
                     </Children>
-                  </WidgetGroup><!-- [spinnyCover] + VUMeter -->
-                    
+                  </WidgetGroup><!-- / [Spinny / Cover] + VUMeter -->
+
                 </Children>
-              </WidgetStack><!-- /Mixer / CoverArt / empty  -->
-      
-              <WidgetGroup><!-- Pitch slider & key controls -->
+              </WidgetStack><!-- /Mixer / [ [Spinny / Cover] + VUMeter ] -->
+
+              <WidgetGroup><!-- Pitch slider & Key controls -->
                 <Size>3f,1me</Size>
                 <Children/>
                 <Connection>
                   <ConfigKey>[Tango],pitch_fader</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- /Pitch slider & key controls -->
-      
+              </WidgetGroup>
+
               <Template src="skin:pitch_key.xml"/>
-            
+              <!-- /Pitch slider & Key controls -->
+
             </Children>
-          </WidgetGroup><!-- /[Mixer/Spinny + VUMeter + Pitch] -->
-          
+          </WidgetGroup><!-- /Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch -->
+
           <!-- This was working and somehow necessary, but now (v38++) causes left decks
           to grow by 3px (right decks shrink by 3px) when enabling extra deck buttons.
-          
+
           Expanding spacer, necessary because obviously WidgetStack breaks
           qproperty-layoutAlignment of parent Widget -->
           <WidgetGroup><SizePolicy>min,me</SizePolicy><Children/></WidgetGroup>
-          
+
         </Children>
-      </WidgetGroup><!-- [Mixer/Spinny + VUMeter + Pitch] + expanding spacer-->
-      
+      </WidgetGroup><!-- Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch + spacer -->
+
     </Children>
   </WidgetGroup>
 </Template>

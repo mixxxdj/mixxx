@@ -24,18 +24,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="16"
-     inkscape:cx="39.272633"
-     inkscape:cy="21.61038"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="5.2653441"
+     inkscape:cy="58.839213"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:snap-bbox="true"
      inkscape:snap-page="true"
      inkscape:window-width="1366"
-     inkscape:window-height="746"
+     inkscape:window-height="747"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="21"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -53,6 +53,14 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-956.36218)">
+    <rect
+       style="fill:#1e1e1e;fill-opacity:1;stroke:none"
+       id="rect4605"
+       width="96"
+       height="96"
+       x="0"
+       y="0"
+       transform="translate(0,956.36218)" />
     <path
        sodipodi:type="arc"
        style="fill:#000000;fill-opacity:1;stroke:none;display:inline"
@@ -61,7 +69,7 @@
        sodipodi:cy="48.144024"
        sodipodi:rx="42.110733"
        sodipodi:ry="45.330597"
-       d="m 89.524769,48.144024 a 42.110733,45.330597 0 1 1 -84.2214662,0 42.110733,45.330597 0 1 1 84.2214662,0 z"
+       d="m 89.524769,48.144024 c 0,25.035397 -18.853618,45.330597 -42.110733,45.330597 -23.257116,0 -42.1107332,-20.2952 -42.1107332,-45.330597 0,-25.035397 18.8536172,-45.330597 42.1107332,-45.330597 23.257115,0 42.110733,20.2952 42.110733,45.330597 z"
        transform="matrix(1.098337,0,0,1.0203213,-4.0765977,955.2398)" />
     <path
        style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#585858;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.22671224;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
@@ -81,7 +89,7 @@
        sodipodi:cy="48.017754"
        sodipodi:rx="4.2931485"
        sodipodi:ry="4.2931485"
-       d="m 53.033009,48.017754 a 4.2931485,4.2931485 0 1 1 -8.586297,0 4.2931485,4.2931485 0 1 1 8.586297,0 z"
+       d="m 53.033009,48.017754 c 0,2.37104 -1.922108,4.293148 -4.293148,4.293148 -2.371041,0 -4.293149,-1.922108 -4.293149,-4.293148 0,-2.371041 1.922108,-4.293149 4.293149,-4.293149 2.37104,0 4.293148,1.922108 4.293148,4.293149 z"
        transform="matrix(0.27995619,0,0,0.27995619,34.354962,990.9193)" />
   </g>
 </svg>

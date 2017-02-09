@@ -160,13 +160,14 @@ Description:
             <Size>200f,min</Size>
             <Children>
 
-              <Template src="skin:button_2state_persist.xml">
+              <Template src="skin:button_3state_persist.xml">
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                 <SetVariable name="Size">172f,20f</SetVariable>
                 <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      Spinny/CoverArt</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Spinny/CoverArt</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],spinnyCover</SetVariable>
+                <SetVariable name="state_0_text">      Spinny  /  Cover</SetVariable>
+                <SetVariable name="state_1_text"> &#10003; Spinny&#9668; Cover</SetVariable>
+                <SetVariable name="state_2_text"> &#10003; Spinny &#9658;Cover</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],empty_spinny_cover</SetVariable>
               </Template>
 
               <WidgetGroup><!-- SpinnyCover submenu -->
@@ -182,7 +183,7 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Children/>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],spinnyCover</ConfigKey>
+                      <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
                       <BindProperty>visible</BindProperty>
                       <Transform><Not/></Transform>
                     </Connection>
@@ -192,14 +193,6 @@ Description:
                     <Layout>vertical</Layout>
                     <SizePolicy>max,max</SizePolicy>
                     <Children>
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                        <SetVariable name="Size">172f,20f</SetVariable>
-                        <SetVariable name="Align">left</SetVariable>
-                        <SetVariable name="state_0_text">      Spinny&#9668; Cover</SetVariable>
-                        <SetVariable name="state_1_text">      Spinny &#9658;Cover</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],spinny0_cover1</SetVariable>
-                      </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>

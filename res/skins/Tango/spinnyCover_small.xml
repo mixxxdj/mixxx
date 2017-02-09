@@ -12,6 +12,7 @@ Variables:
     <ObjectName>SpinnyCoverSmall</ObjectName>
     <Size>50f,50f</Size><!-- 3 + 111px + 3px -->
     <Children>
+
       <WidgetStack currentpage="[Tango],spinnyWithCoverArt_stack" persist="true">
         <Size>111f,111f</Size>
         <Children>
@@ -45,15 +46,20 @@ Variables:
           </Spinny>
 
         </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetStack>
 
-      <CoverArt trigger="[Tango],spinny0_cover1" persist="true">
+      <CoverArt>
         <Size>50f,50f</Size>
         <Group>[Channel<Variable name="channum" />]</Group>
         <DefaultCover>skin:/graphics/cover_default_small.svg</DefaultCover>
         <Connection>
-          <ConfigKey persist="true">[Tango],spinny0_cover1</ConfigKey>
+          <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
           <BindProperty>visible</BindProperty>
+          <Transform><Add>-1</Add></Transform>
         </Connection>
       </CoverArt>
 
