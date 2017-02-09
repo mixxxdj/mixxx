@@ -262,7 +262,7 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer
 
     pChainSlotPointer->loadEffectChain(pChain);
 
-    pChainSlot->loadValuesFromXml(effectChainElement);
+    pChainSlot->loadChainSlotFromXml(effectChainElement);
 
     return pChainSlotPointer;
 }

@@ -117,7 +117,6 @@ QDomElement EffectButtonParameterSlot::toXML(QDomDocument* doc) const {
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterId,
                              m_pEffectParameter->id());
-        // TODO(rryan): Do smarter QVariant formatting?
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterValue,
                              QString::number(m_pControlValue->get()));
@@ -126,7 +125,7 @@ QDomElement EffectButtonParameterSlot::toXML(QDomDocument* doc) const {
     return parameterElement;
 }
 
-void EffectButtonParameterSlot::loadValuesFromXml(const QDomElement&
+void EffectButtonParameterSlot::loadParameterSlotFromXml(const QDomElement&
                                                   parameterElement) {
     if (m_pEffectParameter == nullptr) {
         return;

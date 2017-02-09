@@ -27,7 +27,7 @@ class EffectParameterSlotBase : public QObject {
     const EffectManifestParameter getManifest();
 
     virtual QDomElement toXML(QDomDocument* doc) const = 0;
-    virtual void loadValuesFromXml(const QDomElement& parameterElement) = 0;
+    virtual void loadParameterSlotFromXml(const QDomElement& parameterElement) = 0;
 
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.

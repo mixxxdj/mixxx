@@ -470,7 +470,7 @@ QDomElement EffectChainSlot::toXML(QDomDocument* doc) const {
     return chainElement;
 }
 
-void EffectChainSlot::loadValuesFromXml(const QDomElement& effectChainElement) {
+void EffectChainSlot::loadChainSlotFromXml(const QDomElement& effectChainElement) {
     if (effectChainElement.text().isEmpty()) {
         return;
     }
@@ -489,7 +489,7 @@ void EffectChainSlot::loadValuesFromXml(const QDomElement& effectChainElement) {
             QDomNode effectNode = effectsNodeList.at(i);
             if (effectNode.isElement()) {
                 QDomElement effectElement = effectNode.toElement();
-                m_slots[i]->loadValuesFromXml(effectElement);
+                m_slots[i]->loadEffectSlotFromXml(effectElement);
             }
         }
     }

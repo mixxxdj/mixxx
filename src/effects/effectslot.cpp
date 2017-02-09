@@ -300,7 +300,7 @@ QDomElement EffectSlot::toXML(QDomDocument* doc) const {
     return effectElement;
 }
 
-void EffectSlot::loadValuesFromXml(const QDomElement& effectElement) {
+void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
     if (effectElement.text().isEmpty()) {
         return;
     }
@@ -322,7 +322,7 @@ void EffectSlot::loadValuesFromXml(const QDomElement& effectElement) {
                                                            EffectXml::ParameterId);
             if (m_parametersById.contains(id)) {
                 EffectParameterSlotBasePointer pParameterSlot = m_parametersById.value(id);
-                pParameterSlot->loadValuesFromXml(parameterNode.toElement());
+                pParameterSlot->loadParameterSlotFromXml(parameterNode.toElement());
             }
         }
     }

@@ -52,7 +52,7 @@ class EffectChainSlot : public QObject {
     }
 
     QDomElement toXML(QDomDocument* doc) const;
-    void loadValuesFromXml(const QDomElement& effectChainElement);
+    void loadChainSlotFromXml(const QDomElement& effectChainElement);
 
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of

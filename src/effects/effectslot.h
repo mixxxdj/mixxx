@@ -62,7 +62,7 @@ class EffectSlot : public QObject {
     }
 
     QDomElement toXML(QDomDocument* doc) const;
-    void loadValuesFromXml(const QDomElement& effectElement);
+    void loadEffectSlotFromXml(const QDomElement& effectElement);
 
   public slots:
     // Request that this EffectSlot load the given Effect

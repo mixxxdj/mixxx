@@ -44,7 +44,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     void clear();
 
     QDomElement toXML(QDomDocument* doc) const override;
-    void loadValuesFromXml(const QDomElement& parameterElement) override;
+    void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
 
   private slots:
     // Solely for handling control changes
