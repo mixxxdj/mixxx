@@ -336,7 +336,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 
     if (m_lastRightClickedIndex.isValid()) {
-        DEBUG_ASSERT_AND_HANDLE(playlistId >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
             return;
         }
         
@@ -465,7 +465,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     QString playlistName = m_playlistDao.getPlaylistName(playlistId);
     qDebug() << "Export playlist" << playlistName;
 
-    QString lastPlaylistDirectory = m_pConfig->getValueString(
+    QString lastPlaylistDirectory = m_pConfig->getValue(
                 ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
                 QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
@@ -514,8 +514,8 @@ void BasePlaylistFeature::slotExportPlaylist() {
     pPlaylistTableModel->select();
 
     // check config if relative paths are desired
-    bool useRelativePath = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
+    bool useRelativePath = m_pConfig->getValue<bool>(
+            ConfigKey("[Library]", "UseRelativePathOnExport"));
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
         ParserCsv::writeCSVFile(file_location, pPlaylistTableModel.data(), useRelativePath);
@@ -737,7 +737,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel->insertRows(dataList, 0, m_playlistList.size());
+    m_childModel->insertTreeItemRows(dataList, 0);
     return m_childModel->index(selectedRow, 0);
 }
 
@@ -750,7 +750,7 @@ void BasePlaylistFeature::updateChildModel(int selectedId) {
     }
     
     TreeItem* item = m_childModel->getItem(index);
-    DEBUG_ASSERT_AND_HANDLE(item) {
+    VERIFY_OR_DEBUG_ASSERT(item) {
         return;
     }
     // Update the name

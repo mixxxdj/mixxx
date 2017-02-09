@@ -25,8 +25,9 @@ class WLibraryStack : public QStackedWidget, public LibraryView {
     void onSearch(const QString& text);
 
     void loadSelectedTrack();
-    void slotSendToAutoDJ();
+    void slotSendToAutoDJBottom();
     void slotSendToAutoDJTop();
+    void slotSendToAutoDJReplace();
     
     bool eventFilter(QObject*o, QEvent* e);
 

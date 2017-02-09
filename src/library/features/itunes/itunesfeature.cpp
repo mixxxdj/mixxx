@@ -72,7 +72,7 @@ ITunesFeature::ITunesFeature(UserSettingsPointer pConfig,
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(), "ITUNES_SCANNER");
+    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(), "ITUNES_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -127,7 +127,7 @@ void ITunesFeature::activate() {
 void ITunesFeature::activate(bool forceReload) {
     //qDebug("ITunesFeature::activate()");
     if (!m_isActivated || forceReload) {
-        SettingsDAO settings(m_pTrackCollection->getDatabase());
+        SettingsDAO settings(m_pTrackCollection->database());
         QString dbSetting(settings.getValue(ITDB_PATH_KEY));
         // if a path exists in the database, use it
         if (!dbSetting.isEmpty() && QFile::exists(dbSetting)) {

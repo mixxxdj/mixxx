@@ -89,7 +89,7 @@ TraktorFeature::TraktorFeature(UserSettingsPointer pConfig,
 
     m_title = tr("Traktor");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(),
+    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(),
                                              "TRAKTOR_SCANNER");
 
     //Open the database connection in this thread.

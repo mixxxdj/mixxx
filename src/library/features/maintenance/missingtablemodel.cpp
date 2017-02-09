@@ -3,6 +3,7 @@
 #include "library/features/maintenance/missingtablemodel.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
+#include "library/dao/trackschema.h"
 
 namespace {
 
@@ -63,7 +64,7 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(getTrackId(index));
     }
 
-    m_trackDAO.purgeTracks(trackIds);
+    m_pTrackCollection->purgeTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

@@ -12,7 +12,6 @@ class EngineFilterDelay : public EngineObjectConstIn {
             : m_delaySamples(0),
               m_oldDelaySamples(0),
               m_delayPos(0),
-              m_doRamping(false),
               m_doStart(false) {
         // Set the current buffers to 0
         memset(m_buf, 0, sizeof(m_buf));
@@ -24,26 +23,25 @@ class EngineFilterDelay : public EngineObjectConstIn {
         // Set the current buffers to 0
         if (!m_doStart) {
             memset(m_buf, 0, sizeof(m_buf));
+            m_oldDelaySamples = 0;
             m_doStart = true;
         }
     }
 
     void setDelay(unsigned int delaySamples) {
-        m_oldDelaySamples = m_delaySamples;
         m_delaySamples = delaySamples;
-        m_doRamping = true;
     }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {
-        if (!m_doRamping) {
+        if (m_oldDelaySamples == m_delaySamples) {
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples) % SIZE;
 
-            DEBUG_ASSERT_AND_HANDLE(delaySourcePos >= 0) {
+            VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
-            DEBUG_ASSERT_AND_HANDLE(delaySourcePos <= static_cast<int>(SIZE)) {
+            VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(SIZE)) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
@@ -61,19 +59,19 @@ class EngineFilterDelay : public EngineObjectConstIn {
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) % SIZE;
             int oldDelaySourcePos = (m_delayPos + SIZE - m_oldDelaySamples) % SIZE;
 
-            DEBUG_ASSERT_AND_HANDLE(delaySourcePos >= 0) {
+            VERIFY_OR_DEBUG_ASSERT(delaySourcePos >= 0) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
-            DEBUG_ASSERT_AND_HANDLE(delaySourcePos <= static_cast<int>(SIZE)) {
+            VERIFY_OR_DEBUG_ASSERT(delaySourcePos <= static_cast<int>(SIZE)) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
-            DEBUG_ASSERT_AND_HANDLE(oldDelaySourcePos >= 0) {
+            VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos >= 0) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
-            DEBUG_ASSERT_AND_HANDLE(oldDelaySourcePos <= static_cast<int>(SIZE)) {
+            VERIFY_OR_DEBUG_ASSERT(oldDelaySourcePos <= static_cast<int>(SIZE)) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
@@ -91,18 +89,30 @@ class EngineFilterDelay : public EngineObjectConstIn {
                     // only ramp the second half of the buffer, because we do
                     // the same in the IIR filter to wait for settling
                     pOutput[i] = m_buf[oldDelaySourcePos];
-                    oldDelaySourcePos = (oldDelaySourcePos + 1) % SIZE;
                 } else {
-                    pOutput[i] = m_buf[delaySourcePos] * cross_mix;
+                    pOutput[i] = m_buf[oldDelaySourcePos] * (1.0 - cross_mix);
+                    pOutput[i] += m_buf[delaySourcePos] * cross_mix;
                     delaySourcePos = (delaySourcePos + 1) % SIZE;
-                    pOutput[i] += m_buf[oldDelaySourcePos] * (1.0 - cross_mix);
-                    oldDelaySourcePos = (oldDelaySourcePos + 1) % SIZE;
                     cross_mix += cross_inc;
                 }
+                oldDelaySourcePos = (oldDelaySourcePos + 1) % SIZE;
             }
-            m_doRamping = false;
+            m_oldDelaySamples = m_delaySamples;
         }
         m_doStart = false;
+    }
+
+
+    // this is can be used instead off a final process() call before pause
+    // It fades to dry or 0 according to the m_startFromDry parameter
+    // it is an alternative for using pauseFillter() calls
+    void processAndPauseFilter(const CSAMPLE* pIn, CSAMPLE* pOutput,
+                       const int iBufferSize) {
+        double oldDelay = m_delaySamples;
+        m_delaySamples = 0;
+        process(pIn, pOutput, iBufferSize);
+        m_delaySamples = oldDelay;
+        pauseFilter();
     }
 
   protected:
@@ -110,7 +120,6 @@ class EngineFilterDelay : public EngineObjectConstIn {
     int m_oldDelaySamples;
     int m_delayPos;
     double m_buf[SIZE];
-    bool m_doRamping;
     bool m_doStart;
 };
 

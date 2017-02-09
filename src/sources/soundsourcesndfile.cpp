@@ -25,9 +25,9 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*a
     const ushort* const fileNameUtf16 = localFileName.utf16();
     static_assert(sizeof(wchar_t) == sizeof(ushort), "QString::utf16(): wchar_t and ushort have different sizes");
     m_pSndFile = sf_wchar_open(
-		reinterpret_cast<wchar_t*>(const_cast<ushort*>(fileNameUtf16)),
-		SFM_READ,
-		&sfInfo);
+        reinterpret_cast<wchar_t*>(const_cast<ushort*>(fileNameUtf16)),
+        SFM_READ,
+        &sfInfo);
 #else
     m_pSndFile = sf_open(getLocalFileName().toLocal8Bit(), SFM_READ, &sfInfo);
 #endif
@@ -103,7 +103,7 @@ SINT SoundSourceSndFile::seekSampleFrame(
 
 SINT SoundSourceSndFile::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    DEBUG_ASSERT_AND_HANDLE(numberOfFrames >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(numberOfFrames >= 0) {
         return 0;
     }
     if (numberOfFrames == 0) {

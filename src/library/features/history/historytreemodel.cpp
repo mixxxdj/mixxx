@@ -39,7 +39,7 @@ QModelIndex HistoryTreeModel::reloadListsTree(int playlistId) {
                             PLAYLISTTABLE_DATECREATED,
                             trackCountName);
     
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(m_pTrackCollection->database());
     if (!query.exec(queryStr)) {
         qDebug() << queryStr;
         LOG_FAILED_QUERY(query);
@@ -112,7 +112,7 @@ QVariant HistoryTreeModel::data(const QModelIndex& index, int role) const {
     }
     
     TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
-    DEBUG_ASSERT_AND_HANDLE(pTree) {
+    VERIFY_OR_DEBUG_ASSERT(pTree) {
         return QVariant();
     }
     

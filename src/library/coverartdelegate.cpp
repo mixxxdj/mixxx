@@ -3,7 +3,7 @@
 
 #include "library/coverartdelegate.h"
 #include "library/coverartcache.h"
-#include "library/dao/trackdao.h"
+#include "library/dao/trackschema.h"
 #include "util/math.h"
 
 CoverArtDelegate::CoverArtDelegate(QObject *parent)

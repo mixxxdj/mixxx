@@ -188,11 +188,14 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 } else if (field == "duration") {
                     pNode = std::make_unique<DurationFilterNode>(
                             m_fieldToSqlColumns[field], argument);
-                } else if (field == "date_added" || field == "datetime_added" || field == "added" || field == "dateadded") {
-		    field = "datetime_added";
-		    pNode = std::make_unique<TextFilterNode>(
-			m_database, m_fieldToSqlColumns[field], argument);
-		}
+                } else if (field == "date_added" ||
+                           field == "datetime_added" ||
+                           field == "added" ||
+                           field == "dateadded") {
+                    field = "datetime_added";
+                    pNode = std::make_unique<TextFilterNode>(
+                        m_database, m_fieldToSqlColumns[field], argument);
+                }
             }
             if (pNode) {
                 if (negate) {

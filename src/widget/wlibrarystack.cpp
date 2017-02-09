@@ -48,10 +48,10 @@ void WLibraryStack::loadSelectedTrack() {
     }
 }
 
-void WLibraryStack::slotSendToAutoDJ() {
+void WLibraryStack::slotSendToAutoDJBottom() {
     LibraryView* pView = getCurrentView();
     if (pView) {
-        pView->slotSendToAutoDJ();
+        pView->slotSendToAutoDJBottom();
     }
 }
 
@@ -59,6 +59,13 @@ void WLibraryStack::slotSendToAutoDJTop() {
     LibraryView* pView = getCurrentView();
     if (pView) {
         pView->slotSendToAutoDJTop();
+    }
+}
+
+void WLibraryStack::slotSendToAutoDJReplace() {
+    LibraryView* pView = getCurrentView();
+    if (pView) {
+        pView->slotSendToAutoDJReplace();
     }
 }
 

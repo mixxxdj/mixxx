@@ -6,7 +6,7 @@
 #include <QString>
 
 #include "library/dao/dao.h"
-#include "util/dbid.h"
+#include "util/db/dbid.h"
 
 #define SAVEDQUERYTABLE "savedQueries"
 

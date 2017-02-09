@@ -42,7 +42,7 @@ TreeItemModel* MaintenanceFeature::getChildModel() {
 }
 
 void MaintenanceFeature::activate() {
-    DEBUG_ASSERT_AND_HANDLE(!m_pTab.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pTab.isNull()) {
         return;
     }
 
@@ -113,7 +113,7 @@ void MaintenanceFeature::slotTabIndexChanged(int index) {
     const QString* title;
 
     if (index == m_idExpandedHidden) {
-        DEBUG_ASSERT_AND_HANDLE(!m_pHiddenView.isNull()) {
+        VERIFY_OR_DEBUG_ASSERT(!m_pHiddenView.isNull()) {
             return;
         }
         m_idPaneCurrent[m_featurePane] = Pane::Hidden;
@@ -122,7 +122,7 @@ void MaintenanceFeature::slotTabIndexChanged(int index) {
         title = &kHiddenTitle;
         m_pHiddenView->onShow();
     } else if (index == m_idExpandedMissing) {
-        DEBUG_ASSERT_AND_HANDLE(!m_pMissingView.isNull()) {
+        VERIFY_OR_DEBUG_ASSERT(!m_pMissingView.isNull()) {
             return;
         }
 

@@ -13,6 +13,7 @@
 #include "library/librarytablemodel.h"
 #include "library/parser.h"
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
@@ -45,6 +46,60 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_foldersShown(false) {
+    QStringList columns;
+    columns << "library." + LIBRARYTABLE_ID
+            << "library." + LIBRARYTABLE_PLAYED
+            << "library." + LIBRARYTABLE_TIMESPLAYED
+            //has to be up here otherwise Played and TimesPlayed are not show
+            << "library." + LIBRARYTABLE_ALBUMARTIST
+            << "library." + LIBRARYTABLE_ALBUM
+            << "library." + LIBRARYTABLE_ARTIST
+            << "library." + LIBRARYTABLE_TITLE
+            << "library." + LIBRARYTABLE_YEAR
+            << "library." + LIBRARYTABLE_RATING
+            << "library." + LIBRARYTABLE_GENRE
+            << "library." + LIBRARYTABLE_COMPOSER
+            << "library." + LIBRARYTABLE_GROUPING
+            << "library." + LIBRARYTABLE_TRACKNUMBER
+            << "library." + LIBRARYTABLE_KEY
+            << "library." + LIBRARYTABLE_KEY_ID
+            << "library." + LIBRARYTABLE_BPM
+            << "library." + LIBRARYTABLE_BPM_LOCK
+            << "library." + LIBRARYTABLE_DURATION
+            << "library." + LIBRARYTABLE_BITRATE
+            << "library." + LIBRARYTABLE_REPLAYGAIN
+            << "library." + LIBRARYTABLE_FILETYPE
+            << "library." + LIBRARYTABLE_DATETIMEADDED
+            << "track_locations.location"
+            << "track_locations.fs_deleted"
+            << "library." + LIBRARYTABLE_COMMENT
+            << "library." + LIBRARYTABLE_MIXXXDELETED
+            << "library." + LIBRARYTABLE_COVERART_SOURCE
+            << "library." + LIBRARYTABLE_COVERART_TYPE
+            << "library." + LIBRARYTABLE_COVERART_LOCATION
+            << "library." + LIBRARYTABLE_COVERART_HASH;
+
+    QSqlQuery query(pTrackCollection->database());
+    QString tableName = "library_cache_view";
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM library "
+        "INNER JOIN track_locations ON library.location = track_locations.id")
+            .arg(tableName, columns.join(","));
+    query.prepare(queryString);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Strip out library. and track_locations.
+    for (QStringList::iterator it = columns.begin();
+         it != columns.end(); ++it) {
+        if (it->startsWith("library.")) {
+            *it = it->replace("library.", "");
+        } else if (it->startsWith("track_locations.")) {
+            *it = it->replace("track_locations.", "");
+        }
+    }
 
     m_pBaseTrackCache = pTrackCollection->getTrackSource();
     connect(&m_trackDao, SIGNAL(trackDirty(TrackId)),

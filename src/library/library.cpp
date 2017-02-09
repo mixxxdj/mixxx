@@ -22,6 +22,7 @@
 #include "library/features/recording/recordingfeature.h"
 #include "library/features/rhythmbox/rhythmboxfeature.h"
 #include "library/features/traktor/traktorfeature.h"
+#include "library/dao/trackschema.h"
 
 #include "library/library_preferences.h"
 #include "library/librarycontrol.h"
@@ -85,9 +86,8 @@ Library::Library(UserSettingsPointer pConfig,
         qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
     }
 
-    m_iTrackTableRowHeight = m_pConfig->getValueString(
-            ConfigKey("[Library]", "RowHeight"),
-            QString::number(kDefaultRowHeightPx)).toInt();
+    m_iTrackTableRowHeight = m_pConfig->getValue(
+            ConfigKey("[Library]", "RowHeight"), kDefaultRowHeightPx);
     QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);
@@ -183,12 +183,12 @@ void Library::destroyInterface() {
 
 LibraryView* Library::getActiveView() {
     LibraryPaneManager* pPane = m_panes.value(m_focusedPaneId);
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return nullptr;
     }
     WBaseLibrary* pPaneWidget = pPane->getPaneWidget();
     WLibraryPane* pLibrary = qobject_cast<WLibraryPane*>(pPaneWidget);
-    DEBUG_ASSERT_AND_HANDLE(pLibrary) {
+    VERIFY_OR_DEBUG_ASSERT(pLibrary) {
         return nullptr;
     }
     return pLibrary->getActiveView();
@@ -196,7 +196,7 @@ LibraryView* Library::getActiveView() {
 
 
 void Library::addFeature(LibraryFeature* feature) {
-    DEBUG_ASSERT_AND_HANDLE(feature) {
+    VERIFY_OR_DEBUG_ASSERT(feature) {
         return;
     }
     m_features.append(feature);
@@ -241,7 +241,7 @@ void Library::switchToFeature(LibraryFeature* pFeature) {
 
 void Library::showBreadCrumb(int paneId, TreeItem *pTree) {
     LibraryPaneManager* pPane = getOrCreatePane(paneId);
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return;
     }
     
@@ -250,7 +250,7 @@ void Library::showBreadCrumb(int paneId, TreeItem *pTree) {
 
 void Library::showBreadCrumb(int paneId, const QString &text, const QIcon &icon) {
     LibraryPaneManager* pPane = getOrCreatePane(paneId);
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return;
     }
     
@@ -275,7 +275,7 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
 
 void Library::restoreSearch(int paneId, const QString& text) {
     LibraryPaneManager* pPane = getOrCreatePane(paneId);
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return;
     }
     pPane->restoreSearch(text);
@@ -284,21 +284,21 @@ void Library::restoreSearch(int paneId, const QString& text) {
 
 void Library::restoreSaveButton(int paneId) {
     LibraryPaneManager* pPane = getOrCreatePane(paneId);
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return;
     }
     pPane->restoreSaveButton();
 }
 
 void Library::paneFocused(LibraryPaneManager* pPane) {
-    DEBUG_ASSERT_AND_HANDLE(pPane) {
+    VERIFY_OR_DEBUG_ASSERT(pPane) {
         return;
     }
     
     if (pPane != m_pSidebarExpanded) {
         m_focusedPaneId = pPane->getPaneId();
         pPane->getCurrentFeature()->setFeaturePaneId(m_focusedPaneId);
-        DEBUG_ASSERT_AND_HANDLE(m_focusedPaneId != -1) {
+        VERIFY_OR_DEBUG_ASSERT(m_focusedPaneId != -1) {
             return;
         }
         handleFocus();
@@ -413,7 +413,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
             break;
         case Library::PurgeTracks:
             // The user requested that we purge all metadata.
-            m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+            m_pTrackCollection->purgeTracks(dir);
             break;
         case Library::LeaveTracksUnchanged:
         default:
@@ -598,7 +598,7 @@ LibraryPaneManager* Library::getOrCreatePane(int paneId) {
     }
     
     // The paneId must be non negative
-    DEBUG_ASSERT_AND_HANDLE(paneId >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(paneId >= 0) {
         return nullptr;
     }
     
@@ -660,7 +660,7 @@ void Library::createTrackCache() {
             << "library." + LIBRARYTABLE_COVERART_LOCATION
             << "library." + LIBRARYTABLE_COVERART_HASH;
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(m_pTrackCollection->database());
     QString tableName = "library_cache_view";
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
@@ -735,22 +735,22 @@ void Library::createFeatures(UserSettingsPointer pConfig,
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey("[Library]","ShowRhythmboxLibrary"), true)) {
         addFeature(new RhythmboxFeature(pConfig, this, this, m_pTrackCollection));
     }
 
-    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
+    if (pConfig->getValue(ConfigKey("[Library]","ShowBansheeLibrary"), true)) {
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(pConfig, this, this, m_pTrackCollection));
         }
     }
     if (ITunesFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey("[Library]","ShowITunesLibrary"), true)) {
         addFeature(new ITunesFeature(pConfig, this, this, m_pTrackCollection));
     }
     if (TraktorFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey("[Library]","ShowTraktorLibrary"), true)) {
         addFeature(new TraktorFeature(pConfig, this, this, m_pTrackCollection));
     }
     

@@ -1,5 +1,6 @@
 #include <QString>
 
+#include "library/dao/trackschema.h"
 #include "library/coverartcache.h"
 #include "library/libraryfeature.h"
 #include "library/queryutil.h"
@@ -64,7 +65,7 @@ QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
     
     
     TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
-    DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTree != nullptr) {
         return TreeItemModel::data(index, role);
     }
     
@@ -162,7 +163,7 @@ void MixxxLibraryTreeModel::coverFound(const QObject* requestor, int requestRefe
 }
 
 QVariant MixxxLibraryTreeModel::getQuery(TreeItem* pTree) const {
-    DEBUG_ASSERT_AND_HANDLE(pTree != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTree != nullptr) {
         return "";
     }
     
@@ -233,7 +234,7 @@ void MixxxLibraryTreeModel::createTracksTree() {
                             "track_locations." + TRACKLOCATIONSTABLE_FSDELETED);
         
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(m_pTrackCollection->database());
     query.prepare(queryStr);
 
     if (!query.exec()) {

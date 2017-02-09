@@ -9,7 +9,7 @@ WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* pare
         : QToolButton(parent),
           m_textControl(ConfigKey("[Library]", "show_icon_text"), this),
           m_pFeature(pFeature) {
-    DEBUG_ASSERT_AND_HANDLE(pFeature != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pFeature != nullptr) {
         return;
     }
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);

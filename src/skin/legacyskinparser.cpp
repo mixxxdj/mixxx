@@ -57,6 +57,7 @@
 #include "widget/wnumberrate.h"
 #include "widget/weffectchain.h"
 #include "widget/weffect.h"
+#include "widget/weffectselector.h"
 #include "widget/weffectparameter.h"
 #include "widget/weffectbuttonparameter.h"
 #include "widget/weffectparameterbase.h"
@@ -149,7 +150,6 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pVCManager(NULL),
           m_pEffectsManager(NULL),
           m_pParent(NULL),
-          m_pContext(NULL),
 		  m_paneId(0) {
 }
 
@@ -168,12 +168,10 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
           m_pParent(NULL),
-          m_pContext(NULL),
 		  m_paneId(0) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
-    delete m_pContext;
 }
 
 bool LegacySkinParser::canParse(const QString& skinPath) {
@@ -307,6 +305,9 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     ScopedTimer timer("SkinLoader::parseSkin");
     qDebug() << "LegacySkinParser loading skin:" << skinPath;
 
+    m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");
+    m_pContext->setSkinBasePath(skinPath + "/");
+
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
     }
@@ -392,9 +393,6 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     // created parent so MixxxMainWindow can use it for nefarious purposes (
     // fullscreen mostly) --bkgood
     m_pParent = pParent;
-    delete m_pContext;
-    m_pContext = new SkinContext(m_pConfig, skinPath + "/skin.xml");
-    m_pContext->setSkinBasePath(skinPath + "/");
     QList<QWidget*> widgets = parseNode(skinDocument);
 
     if (widgets.empty()) {
@@ -413,8 +411,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 }
 
 LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget* pParent) {
-    delete m_pContext;
-    m_pContext = new SkinContext(m_pConfig, skinPath + "/skin.xml");
+    m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");
     m_pContext->setSkinBasePath(skinPath + "/");
 
     QDomElement skinDocument = openSkin(skinPath);
@@ -564,6 +561,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseEffectChainName(node));
     } else if (nodeName == "EffectName") {
         result = wrapWidget(parseEffectName(node));
+    } else if (nodeName == "EffectSelector") {
+        result = wrapWidget(parseEffectSelector(node));
     } else if (nodeName == "EffectParameterName") {
         result = wrapWidget(parseEffectParameterName(node));
     } else if (nodeName == "EffectButtonParameterName") {
@@ -923,7 +922,7 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     WOverview* overviewWidget = NULL;
 
     // "RGB" = "2", "HSV" = "1" or "Filtered" = "0" (LMH) waveform overview type
-    int type = m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "2").toInt();
+    int type = m_pConfig->getValue(ConfigKey("[Waveform]","WaveformOverviewType"), 2);
     if (type == 0) {
         overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pConfig, m_pParent);
     } else if (type == 1) {
@@ -1636,8 +1635,8 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
         qDebug() << "BEGIN TEMPLATE" << path;
     }
 
-    SkinContext* pOldContext = m_pContext;
-    m_pContext = new SkinContext(*pOldContext);
+    std::unique_ptr<SkinContext> pOldContext = std::move(m_pContext);
+    m_pContext = std::make_unique<SkinContext>(*pOldContext);
     // Take any <SetVariable> elements from this node and update the context
     // with them.
     m_pContext->updateVariables(node);
@@ -1654,8 +1653,7 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
         child = child.nextSibling();
     }
 
-    delete m_pContext;
-    m_pContext = pOldContext;
+    m_pContext = std::move(pOldContext);
 
     if (sDebug) {
         qDebug() << "END TEMPLATE" << path;
@@ -1706,6 +1704,17 @@ QWidget* LegacySkinParser::parseEffectName(const QDomElement& node) {
     WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffect);
     return pEffect;
+}
+
+QWidget* LegacySkinParser::parseEffectSelector(const QDomElement& node) {
+    WEffectSelector* pSelector = new WEffectSelector(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pSelector);
+    pSelector->setup(node, *m_pContext);
+    pSelector->installEventFilter(m_pKeyboard);
+    pSelector->installEventFilter(
+        m_pControllerManager->getControllerLearningEventFilter());
+    pSelector->Init();
+    return pSelector;
 }
 
 QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {

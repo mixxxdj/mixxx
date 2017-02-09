@@ -67,14 +67,23 @@ REM ^ is the escape character.
 if "%3" == "" (
   echo Missing parameters. Usage: ^(Note: keep same case and order^)
   echo.
-  echo build_mixxx.bat x64^|x86 debug^|release ^<winlib-path^>
+  echo build_mixxx.bat x64^|x86 debug^|release^|release-fastbuild ^<winlib-path^>
   echo.
   echo Example: build_mixxx.bat x64 release c:\mixxx\environments\msvc15-static-x86-release
   exit /b 1
 )
 
 set MACHINE_X86="%1" == "x86"
-set CONFIG_RELEASE="%2" == "release"
+if "%2" == "release" (
+  set CONFIG_RELEASE=1==1
+)
+if "%2" == "release-fastbuild" (
+  set CONFIG_RELEASE=1==1
+)
+if "%2" == "debug" (
+  set CONFIG_RELEASE=0==1
+)
+
 set WINLIB_DIR=%3
 
 SET BIN_DIR=%WINLIB_DIR%\bin

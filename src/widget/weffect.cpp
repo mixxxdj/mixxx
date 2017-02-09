@@ -44,14 +44,9 @@ void WEffect::effectUpdated() {
         EffectPointer pEffect = m_pEffectSlot->getEffect();
         if (pEffect) {
             const EffectManifest& manifest = pEffect->getManifest();
-            if (!manifest.shortName().isEmpty()) {
-                name = manifest.shortName();
-                //: %1 = effect name; %2 = effect description
-                description = tr("%1: %2").arg(manifest.name(), manifest.description());
-            } else {
-                name = manifest.name();
-                description = manifest.description();
-            }
+            name = manifest.displayName();
+            //: %1 = effect name; %2 = effect description
+            description = tr("%1: %2").arg(manifest.name(), manifest.description());
         }
     } else {
         name = tr("None");
