@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="18"
+   height="18"
+   viewBox="0 0 18 18"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="btn_channel_a.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4172">
+      <stop
+         style="stop-color:#170b28;stop-opacity:1"
+         offset="0"
+         id="stop4174" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="1"
+         id="stop4176" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4172"
+       id="radialGradient4178"
+       cx="37.890625"
+       cy="1037.6161"
+       fx="37.890625"
+       fy="1037.6161"
+       r="10.839844"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.91999186,1.0980407e-7,-1.0887398e-7,0.91219909,13.123944,92.84973)" />
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="14.481547"
+     inkscape:cx="-18.98123"
+     inkscape:cy="10.226858"
+     inkscape:document-units="px"
+     inkscape:current-layer="g4197"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jorge Rosa</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:description>Email: jorge.bigarte@gmail.com
+Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1034.3622)">
+    <g
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#666666;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="text4146-3" />
+    <g
+       id="g4197"
+       transform="matrix(0.75206304,0,0,0.75206304,-27.086164,261.6963)"
+       style="stroke-width:1.32967579;stroke-miterlimit:4;stroke-dasharray:none">
+      <path
+         style="opacity:1;fill:url(#radialGradient4178);fill-opacity:1;stroke:none;stroke-width:1.32967579;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 57.955466,1039.3623 a 9.9725683,9.9725683 0 0 1 -9.972569,9.9725 9.9725683,9.9725683 0 0 1 -9.972568,-9.9725 9.9725683,9.9725683 0 0 1 9.972568,-9.9726 9.9725683,9.9725683 0 0 1 9.972569,9.9726 z"
+         id="path4170"
+         inkscape:connector-curvature="0" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#1a1a1a;stroke-width:1.32967579;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 58.602113,1039.3622 a 10.619215,10.619215 0 0 1 -10.619215,10.6192 10.619215,10.619215 0 0 1 -10.619215,-10.6192 10.619215,10.619215 0 0 1 10.619215,-10.6192 10.619215,10.619215 0 0 1 10.619215,10.6192 z"
+         id="path4180"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.37248802px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#3c1d6b;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="text4143"
+       transform="matrix(0.89966766,0,0,0.89966766,2.7023265,103.10329)">
+      <path
+         d="m 10.624752,1049.0267 -1.2747041,0 -0.8759818,-2.2413 -3.0085445,0 -0.8155693,2.2413 -1.2747046,0 3.0327095,-7.8173 1.1478383,0 3.0689565,7.8173 z m -3.4978856,-5.9385 q -0.030206,-0.085 -0.078536,-0.2417 -0.042289,-0.1631 -0.072495,-0.3383 l -0.024165,0 q -0.030206,0.1873 -0.078536,0.3504 -0.042289,0.1571 -0.084578,0.2658 l -0.9484769,2.6219 2.2775528,0 -0.9907657,-2.6581 z"
+         id="path4166"
+         inkscape:connector-curvature="0"
+         style="fill:#3c1d6b;fill-opacity:1" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.1311264px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#442178;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       x="6.1138768"
+       y="1026.4618"
+       id="text4143-9"
+       sodipodi:linespacing="100%"><tspan
+         sodipodi:role="line"
+         id="tspan4145-5"
+         x="6.1138768"
+         y="1026.4618">A</tspan></text>
+  </g>
+</svg>
