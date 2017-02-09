@@ -682,11 +682,10 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
     return m_childModel.get();
 }
 
-parented_ptr<QWidget> BasePlaylistFeature::createPaneWidget(
-            KeyboardEventFilter* pKeyboard, int paneId,
-            const parented_ptr<QWidget>& parent) {
-    auto pStack = make_parented<WLibraryStack>(parent.get());
-    m_panes[paneId] = pStack.get();
+QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                               int paneId, QWidget* parent) {
+    auto pStack = make_parented<WLibraryStack>(parent);
+    m_panes[paneId] = pStack.toWeakRef();
     
     auto edit = make_parented<WLibraryTextBrowser>(pStack.get());
     edit->setHtml(getRootViewHtml());
@@ -696,10 +695,10 @@ parented_ptr<QWidget> BasePlaylistFeature::createPaneWidget(
             this, SLOT(htmlLinkClicked(const QUrl)));
     m_browseIndexByPaneId[paneId] = pStack->addWidget(edit.get());
     
-    auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, pStack);
-    m_tableIndexByPaneId[paneId] = pStack->addWidget(pTable.get());
+    QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, pStack.get());
+    m_tableIndexByPaneId[paneId] = pStack->addWidget(pTable);
     
-    return pStack;
+    return pStack.get();
 }
 
 void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {

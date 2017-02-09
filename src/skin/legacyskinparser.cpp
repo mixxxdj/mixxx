@@ -1286,7 +1286,7 @@ QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
     pLibraryPaneWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
     
-    m_pLibrary->bindPaneWidget(pLibraryPaneWidget, m_pKeyboard, id);
+    m_pLibrary->bindPaneWidget(pLibraryPaneWidget.get(), m_pKeyboard, id);
     
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
@@ -1317,7 +1317,7 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 	        m_pControllerManager->getControllerLearningEventFilter());
 	pLayout->addWidget(pLibraryWidget.get());
 	
-	m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, m_paneId);
+	m_pLibrary->bindPaneWidget(pLibraryWidget.get(), m_pKeyboard, m_paneId);
 	commonWidgetSetup(node, pLibraryWidget.get(), false);
 	qDebug() << "LegacySkinParser::parseLibrary";
 	
@@ -1351,7 +1351,7 @@ QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
     auto pLibrarySidebarExpanded = make_parented<WBaseLibrary>(pContainer.get());
 	pLibrarySidebarExpanded->installEventFilter(m_pKeyboard);
 	pLibrarySidebarExpanded->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-	m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded, m_pKeyboard);
+	m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded.get(), m_pKeyboard);
 	pLayout->addWidget(pLibrarySidebarExpanded.get());
 	
     setupWidget(node, pLibrarySidebar.get());
@@ -1378,7 +1378,7 @@ QWidget* LegacySkinParser::parseLibrarySidebarExpanded(const QDomElement &node) 
     auto pLibrarySidebarExpanded = make_parented<WBaseLibrary>(m_pParent);
     pLibrarySidebarExpanded->installEventFilter(m_pKeyboard);
     pLibrarySidebarExpanded->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded, m_pKeyboard);
+    m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded.get(), m_pKeyboard);
     commonWidgetSetup(node, pLibrarySidebarExpanded.get(), false);    
     return pLibrarySidebarExpanded.get();
 }

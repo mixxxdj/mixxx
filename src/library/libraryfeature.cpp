@@ -66,8 +66,8 @@ bool LibraryFeature::dragMoveAcceptChild(const QModelIndex &, QUrl) {
     return false;
 }
 
-parented_ptr<QWidget> LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
-            int paneId, const parented_ptr<QWidget>& parent) {
+QWidget *LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+            int paneId, QWidget *parent) {
     Q_UNUSED(pKeyboard);
     return createTableWidget(paneId, parent);
 }
@@ -176,10 +176,9 @@ QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {
     return m_savedDAO.getSavedQueries(this);
 }
 
-parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId, 
-            const parented_ptr<QWidget>& parent) {
+WTrackTableView* LibraryFeature::createTableWidget(int paneId, QWidget* parent) {
     auto pTrackTableView = make_parented<WTrackTableView>(
-            parent.get(), m_pConfig, m_pTrackCollection, true);
+            parent, m_pConfig, m_pTrackCollection, true);
     
     m_trackTablesByPaneId[paneId] = pTrackTableView.get();
         
@@ -200,7 +199,7 @@ parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId,
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView.get(), SLOT(setTrackTableRowHeight(int)));
     
-    return pTrackTableView;
+    return pTrackTableView.get();
 }
 
 QWidget* LibraryFeature::createInnerSidebarWidget(KeyboardEventFilter *pKeyboard) {

@@ -45,9 +45,9 @@ TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 
-parented_ptr<QWidget> RecordingFeature::createPaneWidget(KeyboardEventFilter*, 
-            int paneId, const parented_ptr<QWidget>& parent) {
-    auto pTable = LibraryFeature::createTableWidget(paneId, parent);
+QWidget* RecordingFeature::createPaneWidget(KeyboardEventFilter*, 
+                                            int paneId, QWidget* parent) {
+    WTrackTableView* pTable = LibraryFeature::createTableWidget(paneId, parent);
     pTable->setSorting(false);    
     return pTable;
 }

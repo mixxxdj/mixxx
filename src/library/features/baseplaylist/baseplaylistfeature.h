@@ -27,8 +27,8 @@ class BasePlaylistFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*pKeyboard, 
-            int paneId, const parented_ptr<QWidget>& parent) override;
+    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, 
+                              int paneId, QWidget* parent) override;
 
   signals:
     void showPage(const QUrl& page);

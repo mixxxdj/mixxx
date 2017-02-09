@@ -19,10 +19,10 @@ LibraryPaneManager::LibraryPaneManager(int paneId, Library *pLibrary, QObject* p
 LibraryPaneManager::~LibraryPaneManager() {
 }
 
-void LibraryPaneManager::bindPaneWidget(const parented_ptr<WBaseLibrary>& pPaneWidget,
+void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pPaneWidget,
                                         KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
-    m_pPaneWidget = pPaneWidget.get();
+    m_pPaneWidget = pPaneWidget;
     
     connect(m_pPaneWidget, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
@@ -35,9 +35,9 @@ void LibraryPaneManager::bindPaneWidget(const parented_ptr<WBaseLibrary>& pPaneW
         return;
     }
     for (LibraryFeature* f : m_features) {        
-        parented_ptr<QWidget> pFeaturePaneWidget = f->createPaneWidget(
-                pKeyboard, m_paneId, make_parented<WBaseLibrary>(m_pPaneWidget));
-        m_pPaneWidget->registerView(f, pFeaturePaneWidget.get());
+        QWidget* pFeaturePaneWidget = f->createPaneWidget(pKeyboard, m_paneId, 
+                                                          m_pPaneWidget);
+        m_pPaneWidget->registerView(f, pFeaturePaneWidget);
     }
 }
 

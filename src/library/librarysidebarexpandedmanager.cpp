@@ -7,9 +7,9 @@ LibrarySidebarExpandedManager::LibrarySidebarExpandedManager(Library *pLibrary,
 
 }
 
-void LibrarySidebarExpandedManager::bindPaneWidget(const parented_ptr<WBaseLibrary>&sidebarWidget,
+void LibrarySidebarExpandedManager::bindPaneWidget(WBaseLibrary *sidebarWidget,
                                                    KeyboardEventFilter* pKeyboard) {
-    m_pPaneWidget = sidebarWidget.get();
+    m_pPaneWidget = sidebarWidget;
 
     for (LibraryFeature* f : m_features) {        
         QWidget* pPane = f->createSidebarWidget(pKeyboard);

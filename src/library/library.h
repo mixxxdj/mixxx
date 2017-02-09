@@ -18,6 +18,7 @@
 #include "recording/recordingmanager.h"
 #include "track/track.h"
 #include "util/parented_ptr.h"
+#include "util/memory.h"
 
 class AnalysisFeature;
 class CrateFeature;
@@ -60,9 +61,9 @@ public:
     
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
     void bindSidebarButtons(WButtonBar* sidebar);
-    void bindPaneWidget(const parented_ptr<WLibraryPane>&libraryWidget,
+    void bindPaneWidget(WLibraryPane *libraryWidget,
                         KeyboardEventFilter* pKeyboard, int paneId);
-    void bindSidebarExpanded(const parented_ptr<WBaseLibrary>&expandedPane, 
+    void bindSidebarExpanded(WBaseLibrary *expandedPane, 
                              KeyboardEventFilter* pKeyboard);
     void bindBreadCrumb(WLibraryBreadCrumb *pBreadCrumb, int paneId);
 
@@ -174,7 +175,7 @@ public:
     QScopedPointer<ControlObject> m_pKeyNotation;
     
     QHash<int, LibraryPaneManager*> m_panes;
-    LibraryPaneManager* m_pSidebarExpanded;
+    std::unique_ptr<LibrarySidebarExpandedManager> m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
     QSet<int> m_collapsedPanes;
     QHash<int, LibraryFeature*> m_savedFeatures;
