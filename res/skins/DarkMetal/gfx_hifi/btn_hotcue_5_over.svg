@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="26"
+   height="26"
+   viewBox="0 0 26 26"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="btn_hotcue_5_over.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4733">
+      <stop
+         style="stop-color:#8d5fd3;stop-opacity:1"
+         offset="0"
+         id="stop4735" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="1"
+         id="stop4737" />
+    </linearGradient>
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4733"
+       id="radialGradient4725-4-0-0"
+       cx="768.18414"
+       cy="167.08989"
+       fx="768.18414"
+       fy="167.08963"
+       r="24.596836"
+       gradientTransform="matrix(0.87137642,1.0639886e-7,4.4424633e-5,0.68681766,-693.12187,923.08356)"
+       gradientUnits="userSpaceOnUse" />
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern-5" />
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern-4" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="14.481547"
+     inkscape:cx="13.600942"
+     inkscape:cy="12.867346"
+     inkscape:document-units="px"
+     inkscape:current-layer="g4255"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showguides="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jorge Rosa</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:description>Email: jorge.bigarte@gmail.com
+Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1026.3622)">
+    <g
+       id="g4255"
+       transform="translate(37.02673,0)">
+      <path
+         style="opacity:0.85900005;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.00554919;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         d="m -34.93092,1028.0011 21.800677,0 0,21.9891 -21.800677,0 z"
+         id="rect4183-39-0-0-1-8-7-4" />
+      <path
+         style="opacity:1;fill:url(#radialGradient4725-4-0-0);fill-opacity:1;stroke:none;stroke-width:1.02858019;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         d="m -35.383472,1027.0894 22.705778,0 0,22.0908 -22.705778,0 z"
+         id="rect4183-39-0-0-1-8-2" />
+      <path
+         transform="scale(1,-1)"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#1a1a1a;stroke-width:1.02858019;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         d="m -35.383472,-1049.0768 22.705778,0 0,22.0908 -22.705778,0 z"
+         id="rect4183-39-0-0-1-8-78-3" />
+      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#e5d5ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;opacity:0.755"
+         id="text4144">
+        <path
+           d="m -21.286983,1039.7303 q 0,0.7471 -0.270997,1.3404 -0.270996,0.5932 -0.739746,1.0107 -0.46875,0.4102 -1.083984,0.6299 -0.615234,0.2124 -1.311035,0.2124 -0.629883,0 -1.186524,-0.1318 -0.549316,-0.1319 -0.952148,-0.3589 l 0,-1.3184 q 0.197754,0.1319 0.454101,0.2564 0.263672,0.1172 0.541993,0.2124 0.285644,0.088 0.563965,0.1465 0.285644,0.059 0.534667,0.059 0.454102,0 0.820313,-0.1465 0.373535,-0.1465 0.637207,-0.4102 0.263672,-0.2637 0.410156,-0.6299 0.146485,-0.3662 0.146485,-0.7983 0,-0.4688 -0.168457,-0.813 -0.168457,-0.3516 -0.454102,-0.5786 -0.27832,-0.2344 -0.651855,-0.3443 -0.366211,-0.1098 -0.769043,-0.1025 -0.498047,0 -0.959473,0.1245 -0.461426,0.1245 -0.827637,0.3076 l -0.292969,-0.3881 0,-4.6949 5.126954,0 0,1.2012 -3.837891,0 0,2.439 q 0.109863,-0.015 0.241699,-0.029 0.131836,-0.015 0.270996,-0.022 0.146485,-0.015 0.285645,-0.015 0.13916,-0.01 0.249023,-0.01 0.695801,0 1.289063,0.1905 0.593261,0.1904 1.018066,0.5566 0.432129,0.3589 0.673828,0.8936 0.2417,0.5273 0.2417,1.2084 z"
+           id="path4149"
+           style="fill:#e5d5ff;fill-opacity:1" />
+      </g>
+    </g>
+  </g>
+</svg>
