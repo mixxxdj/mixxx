@@ -66,41 +66,41 @@ bool LibraryFeature::dragMoveAcceptChild(const QModelIndex &, QUrl) {
     return false;
 }
 
-QWidget *LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
-            int paneId, QWidget *parent) {
+QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                          int paneId, QWidget* parent) {
     Q_UNUSED(pKeyboard);
     return createTableWidget(paneId, parent);
 }
 
-QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
+QWidget* LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard, QWidget* parent) {
     //qDebug() << "LibraryFeature::bindSidebarWidget";
-    QFrame* pContainer = new QFrame(nullptr);
+    auto pContainer = make_parented<QFrame>(parent);
     pContainer->setContentsMargins(0,0,0,0);
     
-    QVBoxLayout* pLayout = new QVBoxLayout(pContainer);
+    auto pLayout = make_parented<QVBoxLayout>(pContainer.get());
     pLayout->setContentsMargins(0,0,0,0);
     pLayout->setSpacing(0);
-    pContainer->setLayout(pLayout);
+    pContainer->setLayout(pLayout.get());
     
-    QHBoxLayout* pLayoutTitle = new QHBoxLayout(pContainer);
+    auto pLayoutTitle = make_parented<QHBoxLayout>(pContainer.get());
     
-    QLabel* pIcon = new QLabel(pContainer);
+    auto pIcon = make_parented<QLabel>(pContainer.get());
     int height = pIcon->fontMetrics().height();
     pIcon->setPixmap(getIcon().pixmap(height));
-    pLayoutTitle->addWidget(pIcon);
+    pLayoutTitle->addWidget(pIcon.get());
     
-    QLabel* pTitle = new QLabel(title().toString(), pContainer);
-    pLayoutTitle->addWidget(pTitle);
+    auto pTitle = make_parented<QLabel>(title().toString(), pContainer.get());
+    pLayoutTitle->addWidget(pTitle.get());
     pLayoutTitle->addSpacerItem(new QSpacerItem(0, 0, 
                                                 QSizePolicy::Expanding, 
                                                 QSizePolicy::Minimum));
-    pLayout->addLayout(pLayoutTitle);
+    pLayout->addLayout(pLayoutTitle.get());
     
     QWidget* pSidebar = createInnerSidebarWidget(pKeyboard);
-    pSidebar->setParent(pContainer);
+    pSidebar->setParent(pContainer.get());
     pLayout->addWidget(pSidebar);
     
-    return pContainer;
+    return pContainer.get();
 }
 
 void LibraryFeature::setFeaturePaneId(int paneId) {

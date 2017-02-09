@@ -7,12 +7,12 @@ LibrarySidebarExpandedManager::LibrarySidebarExpandedManager(Library *pLibrary,
 
 }
 
-void LibrarySidebarExpandedManager::bindPaneWidget(WBaseLibrary *sidebarWidget,
+void LibrarySidebarExpandedManager::bindPaneWidget(WBaseLibrary* sidebarWidget,
                                                    KeyboardEventFilter* pKeyboard) {
     m_pPaneWidget = sidebarWidget;
 
     for (LibraryFeature* f : m_features) {        
-        QWidget* pPane = f->createSidebarWidget(pKeyboard);
+        QWidget* pPane = f->createSidebarWidget(pKeyboard, m_pPaneWidget);
         if (pPane == nullptr) {
             continue;
         }
