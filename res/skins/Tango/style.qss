@@ -668,8 +668,7 @@ are still drawn full-size.
 }
 
 #EQKnobs {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 4px 4px 0px 4px;	/*
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
   background-color: #411223;	*/
   }
   #EQKnob {

@@ -14,7 +14,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>EQKnob</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>max,max</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
       
       <WidgetGroup>
