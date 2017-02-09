@@ -3,11 +3,6 @@
 
 ===================================================================================================
 
-LICENCE:
-- Creative Commons - Attribution 3.0 Unported - https://creativecommons.org/licenses/by/3.0
-	
-===================================================================================================
-
 INSTALLING:
 
 - 1 • Remove any older version of "DarkMetal" (Just delete the "DarkMetal" folder), if you already have one.
