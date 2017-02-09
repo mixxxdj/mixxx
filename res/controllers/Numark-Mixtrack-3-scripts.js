@@ -103,11 +103,13 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
  * 2016-12-05 (2.2) - Stéphane Morin 
  *              - Always allow use of wheel to position song when song is not playing 
  *              - Add configuration option for to choose if pitch bend is allowed when wheel is off
+ * 2017-02-10 (2.3) - Radu Suciu
+ *             - Load sample on sample button press if none is currently loaded
  *
  ***********************************************************************
  *                           GPL v2 licence
  *                           -------------- 
- * Numark Mixtrack Pro 3 controller script 2.1 for Mixxx 2.0+
+ * Numark Mixtrack Pro 3 controller script 2.3 for Mixxx 2.1+
  * Copyright (C) 2016 Stéphane Morin
  *
  * This program is free software; you can redistribute it and/or
@@ -1895,6 +1897,7 @@ NumarkMixtrack3.OnHotcueChange = function(value, group, control) {
 NumarkMixtrack3.SamplerButton = function(channel, control, value, status,
     group) {
     var isplaying = engine.getValue(group, "play");
+    var isLoaded = engine.getValue(group, "track_loaded");
     var padindex = parseInt(group.substring(8, 9));
     var decknum = padindex;
     
@@ -1911,6 +1914,9 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status,
     var sampler = NumarkMixtrack3.samplers["S" + padindex];
 
     if (value === DOWN) {
+        if (!isLoaded) {
+            engine.setValue(group, "LoadSelectedTrack", 1);
+        }
 
 
     sampler.PADSampleButtonHold.ButtonDown(channel, control, value, status, group);
@@ -1932,6 +1938,10 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status,
         } else {
             engine.setValue(group, "stop", 1);
             sampler.LEDs["PADsampler" + padindex].onOff(ON);
+
+            if (deck.shiftKey) {
+                engine.setValue(group, "eject", 1);
+            }
         }
     }
 
