@@ -17,8 +17,8 @@
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId">sync_enabled</SetVariable>
             <SetVariable name="ObjectName">DeckSync</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+            <SetVariable name="MinimumSize">-1,18</SetVariable>
+            <SetVariable name="MaximumSize">-1,18</SetVariable>
             <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">Sync</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
@@ -39,18 +39,34 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>RateTempButtons</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
-          <SliderComposed>
-            <TooltipId>rate</TooltipId>
-            <Size>40f,-1me</Size>
-            <MaximumSize>40,200</MaximumSize>
-            <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-            <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
-            </Connection>
-          </SliderComposed>
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="ObjectName">TempRateDown</SetVariable>
+            <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
+            <SetVariable name="MinimumSize">22,18</SetVariable>
+            <SetVariable name="MaximumSize">22,18</SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_remove_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_down</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_down_small</SetVariable>
+          </Template>
+
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
+            <SetVariable name="ObjectName">TempRateUp</SetVariable>
+            <SetVariable name="MinimumSize">22,18</SetVariable>
+            <SetVariable name="MaximumSize">22,18</SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_up</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_up_small</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 
@@ -69,34 +85,18 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>RateTempButtons</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:left_right_1state_button.xml">
-            <SetVariable name="ObjectName">TempRateDown</SetVariable>
-            <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed">icon/ic_remove_48px.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_down</SetVariable>
-            <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_down_small</SetVariable>
-          </Template>
-
-          <Template src="skin:left_right_1state_button.xml">
-            <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
-            <SetVariable name="ObjectName">TempRateUp</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_up</SetVariable>
-            <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_up_small</SetVariable>
-          </Template>
+          <SliderComposed>
+            <TooltipId>rate</TooltipId>
+            <Size>40f,-1me</Size>
+            <MaximumSize>40,200</MaximumSize>
+            <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+            </Connection>
+          </SliderComposed>
         </Children>
       </WidgetGroup>
 
@@ -104,7 +104,7 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:spacer_vx.xml">
-            <SetVariable name="height">8</SetVariable>
+            <SetVariable name="height">2</SetVariable>
           </Template>
 
           <Template src="skin:left_right_display_2state_button.xml">
