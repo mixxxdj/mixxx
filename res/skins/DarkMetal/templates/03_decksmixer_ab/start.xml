@@ -1,0 +1,35 @@
+<!DOCTYPE template>
+
+<Template>	
+	
+	<!-- WIDGETGROUP: -->	
+	<WidgetGroup>
+	<ObjectName>DecksAndMixerRack1</ObjectName>
+	<Pos>0,0</Pos>
+	<MinimumSize>1,300</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	<!-- WIDGETGROUP: -->			  
+    <Template src="skin:templates/03_decksmixer_ab/deck_left.xml">
+	<SetVariable name="audiochannel">1</SetVariable>
+	<SetVariable name="decktohide">2</SetVariable>
+	</Template>
+	<!-- WIDGETGROUP: Mixer Panel -->
+	<Template src="skin:templates/03_decksmixer_ab/mixer.xml">
+	<SetVariable name="audiochannel_a">1</SetVariable>
+	<SetVariable name="audiochannel_b">2</SetVariable>	
+	</Template>	
+	<!-- WIDGETGROUP: -->	
+	<Template src="skin:templates/03_decksmixer_ab/deck_right.xml">
+	<SetVariable name="audiochannel">2</SetVariable>
+	<SetVariable name="decktohide">1</SetVariable>
+	</Template>
+	</Children>
+	<Connection>
+	<ConfigKey>[DecksAndMixerRack1],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+	
+</Template>

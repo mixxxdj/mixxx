@@ -1,0 +1,209 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<WidgetGroup>
+	<ObjectName>SamplersOptions</ObjectName>
+	<MinimumSize>me,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	<!-- Texts -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>100,30</MinimumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font: 10px/12px "Arial"; font-family: "Arial"; background: transparent; color: #484848;</Style>
+	<Text>Samplers Options</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>
+	
+	<!-- Button: Show/Hide this Row -->
+	<PushButton>	
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>gfx_hifi/btn_view1.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view1.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>gfx_hifi/btn_view1_over.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view1_over.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplersRack<Variable name="toolbarnum_a"/>],show</ConfigKey>
+	</Connection>
+	</PushButton>	
+
+	<!-- Button: Show/Hide the other Row -->
+	<PushButton>	
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>gfx_hifi/btn_view2.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view2.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>gfx_hifi/btn_view2_over.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view2_over.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplersRack<Variable name="toolbarnum_b"/>],show</ConfigKey>
+	</Connection>
+	</PushButton>	
+
+	<!-- Button: Clear (Eject) Bank -->
+	<PushButton>
+	<NumberStates>1</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>gfx_hifi/btn_samplers_eject_bank.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_samplers_eject_bank.svg</Unpressed>
+	</State>
+	<Connection>
+	<ConfigKey>[Sampler1],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler2],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler3],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler4],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler5],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler6],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler7],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler8],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler9],eject</ConfigKey> <!-- Overload: But needed to enable the previous last <Connection> (?) -->
+	</Connection>
+	</PushButton>
+		
+	<!-- Button: Load Bank -->
+	<PushButton>
+	<NumberStates>1</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>gfx_hifi/btn_samplers_load_bank.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_samplers_load_bank.svg</Unpressed>
+	</State>
+	<Connection>
+	<ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- Button: Save Bank -->	
+	<PushButton>
+	<NumberStates>1</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>gfx_hifi/btn_samplers_save_bank.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_samplers_save_bank.svg</Unpressed>
+	</State>
+	<Connection>
+	<ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- Texts -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>60,30</MinimumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font: 10px/12px "Arial"; font-family: "Arial"; background: transparent; color: #484848;</Style>
+	<Text>Modules</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>
+	
+	<!-- Button: Show/Hide Sampler Module (Disabled) -->
+	<PushButton>
+	<NumberStates>1</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey><!-- [SamplerModule<Variable name="samplernum_a"/>],show --></ConfigKey>
+	</Connection>	
+	</PushButton>		
+
+	<!-- Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>gfx_hifi/btn_view.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule<Variable name="samplernum_b"/>],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>gfx_hifi/btn_view.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule<Variable name="samplernum_c"/>],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>gfx_hifi/btn_view.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
+	<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule<Variable name="samplernum_d"/>],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	</Children>
+	</WidgetGroup>
+	
+</Template>

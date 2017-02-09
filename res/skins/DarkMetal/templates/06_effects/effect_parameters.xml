@@ -1,0 +1,69 @@
+<!DOCTYPE template>
+
+<!--
+  Description:
+    Effect selector buttons.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+-->
+
+<Template>
+
+  <WidgetGroup>
+  	<Size>390,85</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+    	<Template src="skin:templates/06_effects/effect_parameter_knob.xml">
+	    <SetVariable name="effect_parameter">1</SetVariable>
+		</Template>	
+    	<Template src="skin:templates/06_effects/effect_parameter_button.xml">
+		<SetVariable name="effect_parameter">1</SetVariable>
+		</Template>	
+		<Template src="skin:templates/06_effects/effect_parameter_knob.xml">
+		<SetVariable name="effect_parameter">2</SetVariable>
+		</Template>	
+    	<Template src="skin:templates/06_effects/effect_parameter_button.xml">
+		<SetVariable name="effect_parameter">2</SetVariable>
+		</Template>	
+		<Template src="skin:templates/06_effects/effect_parameter_knob.xml">
+		<SetVariable name="effect_parameter">3</SetVariable>
+		</Template>	
+    	<Template src="skin:templates/06_effects/effect_parameter_button.xml">
+		<SetVariable name="effect_parameter">3</SetVariable>
+		</Template>	
+		<Template src="skin:templates/06_effects/effect_parameter_knob.xml">
+		<SetVariable name="effect_parameter">4</SetVariable>
+		</Template>	
+       	<Template src="skin:templates/06_effects/effect_parameter_button.xml">
+		<SetVariable name="effect_parameter">4</SetVariable>
+		</Template>			
+        <Template src="skin:templates/06_effects/effect_parameter_knob.xml">
+		<SetVariable name="effect_parameter">5</SetVariable>
+		</Template>	
+    	<Template src="skin:templates/06_effects/effect_parameter_button.xml">
+		<SetVariable name="effect_parameter">5</SetVariable>
+		</Template>	
+		<Template src="skin:templates/06_effects/effect_parameter_knob.xml">
+		<SetVariable name="effect_parameter">6</SetVariable>
+		</Template>	
+    	<Template src="skin:templates/06_effects/effect_parameter_button.xml">
+		<SetVariable name="effect_parameter">6</SetVariable>
+		</Template>	
+		<Template src="skin:templates/06_effects/effect_parameter_knob.xml">
+		<SetVariable name="effect_parameter">7</SetVariable>
+		</Template>	
+    	<Template src="skin:templates/06_effects/effect_parameter_button.xml">
+		<SetVariable name="effect_parameter">7</SetVariable>
+		</Template>	
+		<Template src="skin:templates/06_effects/effect_parameter_knob.xml">
+		<SetVariable name="effect_parameter">8</SetVariable>
+		</Template>
+    	<Template src="skin:templates/06_effects/effect_parameter_button.xml">
+		<SetVariable name="effect_parameter">8</SetVariable>
+		</Template>
+    </Children>
+  </WidgetGroup>
+  
+</Template>

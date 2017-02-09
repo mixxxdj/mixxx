@@ -1,0 +1,516 @@
+
+	/* ##################################################################################################################### */
+	/* SKIN ELEMETS STYLES: */	
+	/* ##################################################################################################################### */	
+	
+	#Mixxx {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	background-color: #000000; border: 0px; margin: 0; padding: 0px;
+	background: url(skin:/gfx_hifi/background_main.svg) repeat;
+    }
+
+	
+	#Hifi {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	border: 0px; margin: 0; padding: 0px;
+    }
+
+	
+	#ToolBarTests {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	background-color: #000000; border: 0px; margin: 0; padding: 0px;
+	background: url(skin:/gfx_hifi/background_toolbar99.svg) repeat;
+	}
+	#ToolBarTestsMetal {
+	background: url(skin:/gfx_hifi/background_tests.svg) repeat;
+	}
+	
+	
+	#ToolBar1 {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	background-color: #000000; border: 0px; margin: 0; padding: 0px;
+	background: url(skin:/gfx_hifi/background_toolbar1.svg) repeat;
+	}
+	#ToolBar1Metal {
+	background: url(skin:/gfx_hifi/background_toolbar1.svg) repeat;
+	}
+	
+	
+	#ToolBar2 {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	background: url(skin:/gfx_hifi/background_toolbar2.svg) repeat;	
+	}
+	#ToolBar2Metal {
+	background: url(skin:/gfx_hifi/background_toolbar2.svg) repeat;
+	}
+	#HeadphoneButtons{
+	background: url(skin:/gfx_hifi/background_global_head.svg) no-repeat; margin: 0; padding: 0;	
+	}
+	#MasterButtons{
+	background: url(skin:/gfx_hifi/background_global_master.svg) no-repeat; margin: 0; padding: 0;	
+	}
+	#GlobalVUS {
+	background: url(skin:/gfx_hifi/background_global_vus.svg) no-repeat; margin: 0; padding: 0;
+	}
+	#Broadcast {
+	background: url(skin:/gfx_hifi/background_broadcast.svg) no-repeat; margin: 0; padding: 0;
+	}
+	#Record {
+	background: url(skin:/gfx_hifi/background_record.svg) no-repeat; margin: 0; padding: 0;	
+	}
+	#AutoDJ {
+	background: url(skin:/gfx_hifi/background_autodj.svg) no-repeat; margin: 0; padding: 0;	
+	}
+	#Clock {
+	background: url(skin:/gfx_hifi/background_clock.svg) no-repeat; margin: 0; padding: 0;	
+	}	
+	#ClockTexts {
+	border: 0px solid #000000; font: normal 12px/14px "digital"; font-family: "digital"; background-color: transparent; color: #cdcdcd; qproperty-alignment: AlignCenter;
+	}	
+	#LatencyVumeter {
+	background: url(skin:/gfx_hifi/background_latency.svg) no-repeat; margin: 0; padding: 0;
+	}
+
+	
+	#ToolBarMicros {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	background-color: #000000; border: 0px solid #000000; margin: 0; padding: 0px;
+	background: url(skin:/gfx_hifi/background_toolbar3.svg) repeat;
+	}
+	#Microphone {
+	background: url(skin:/gfx_hifi/background_microphone.svg) no-repeat;
+	}
+
+	
+	#ToolBarAuxiliaries {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	background-color: #000000; border: 0px solid #000000; margin: 0; padding: 0px;
+	background: url(skin:/gfx_hifi/background_toolbar4.svg) repeat;
+	}
+	#Auxiliary {
+	background: url(skin:/gfx_hifi/background_auxiliary.svg) no-repeat;
+	}	
+	
+
+	#MiniPlayer {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	background-color: #000000; border: 0px solid #000000; margin: 0; padding: 0px;
+	background: url(skin:/gfx_hifi/background_miniplayer_metal.svg) repeat;
+	}	
+	#MiniDeck1, #MiniDeck2, #MiniDeck3, #MiniDeck4 {
+	background: url(skin:/gfx_hifi/background_miniplayer.svg) repeat;
+	}
+	#MiniFader {
+	background: url(skin:/gfx_hifi/background_miniplayer_fader.svg) no-repeat;
+	}
+	#MiniTitle {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: left; padding-left: 2px;
+	}
+	#MiniBPM {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: right; padding-left: 2px; padding-right: 4px;
+	}
+	#MiniArtist {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #cacaca; text-align: left; padding-left: 2px;
+	}
+	#MiniPlayPosition {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #cacaca; text-align: right; padding-left: 2px; padding-right: 4px;
+	}
+	
+	
+	#DecksAndMixerRack1, #DecksAndMixerRack2 {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	}	
+
+	
+	#MixerPanel1 {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	border: 0px solid #000000; margin: 0; padding: 0;
+	}
+	#MixerPanel2 {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	border: 0px solid #000000; margin: 0; padding: 0;
+	}		
+	#PitchRateDisplay {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #cdcdcd; text-align: center; padding-right: 1px; 
+	}
+	#KeyNumberDisplay {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #cdcdcd; text-align: center; padding-right: 1px;
+	}
+	
+
+	#AnalogVUS {
+	border: 0px solid #000000; margin: 0; padding: 0;
+	background: url(skin:/gfx_hifi/background_analogvus.svg) repeat;
+	}	
+	#AnalogVU1 {
+	border: 0px solid #000000; margin: 0; padding: 0;
+	background: url(skin:/gfx_hifi/background_analogvu_1.svg) no-repeat;
+	}
+	#AnalogVU2 {
+	border: 0px solid #000000; margin: 0; padding: 0;
+	background: url(skin:/gfx_hifi/background_analogvu_2.svg) no-repeat;
+	}
+	#AnalogVU3 {
+	border: 0px solid #000000; margin: 0; padding: 0;
+	background: url(skin:/gfx_hifi/background_analogvu_3.svg) no-repeat;
+	}
+	#AnalogVU4 {
+	border: 0px solid #000000; margin: 0; padding: 0;
+	background: url(skin:/gfx_hifi/background_analogvu_4.svg) no-repeat;
+	}
+	#DBDisplay {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: center; padding-right: 1px; 
+	}	
+	
+	
+	#Deck1 {
+	qproperty-layoutAlignment: 'AlignRight | AlignTop';
+	border: 0px solid #000000; margin: 0; padding: 0; padding-right: 2px;
+	background: url(skin:/gfx_hifi/background_decks.svg) repeat;
+	}
+	#TrackTitleDeck1, #TrackBPMDeck1 {
+	font: normal 16px/18px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: left; padding-left: 2px; padding-bottom: 2px;
+	}
+	#TrackArtistDeck1, #TrackPlayPositionDeck1 {
+	font: normal 16px/18px "digital"; font-family: "digital"; background-color: transparent; color: #cacaca; text-align: left; padding-left: 2px; padding-bottom: 2px;
+	}
+	#TrackRateDeck1 {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: right; padding-right: 2px;
+	}	
+	#CoverArtBig1 {
+	background: url(skin:/gfx_hifi/background_coverart.svg) no-repeat;
+	}
+	
+	
+	#Deck2 {
+	qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+	border: 0px solid #000000; margin: 0; padding: 0; padding-left: 2px;
+	background: url(skin:/gfx_hifi/background_decks.svg) repeat;
+	}
+	#TrackTitleDeck2, #TrackBPMDeck2 {
+	font: normal 16px/18px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: left; padding-left: 2px; padding-bottom: 2px;
+	}
+	#TrackArtistDeck2, #TrackPlayPositionDeck2 {
+	font: normal 16px/18px "digital"; font-family: "digital"; background-color: transparent; color: #cacaca; text-align: left; padding-left: 2px; padding-bottom: 2px;
+	}
+	#TrackRateDeck2 {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: left; padding-left: 2px;
+	}
+	#CoverArtBig2 {
+	background: url(skin:/gfx_hifi/background_coverart.svg) no-repeat;
+	}
+	
+
+	#Deck3 {
+	qproperty-layoutAlignment: 'AlignRight | AlignTop';
+	border: 0px solid #000000; margin: 0; padding: 0; padding-right: 2px;
+	background: url(skin:/gfx_hifi/background_decks.svg) repeat;
+	}	
+	#TrackTitleDeck3, #TrackBPMDeck3 {
+	font: normal 16px/18px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: left; padding-left: 2px; padding-bottom: 2px;
+	}
+	#TrackArtistDeck3, #TrackPlayPositionDeck3 {
+	font: normal 16px/18px "digital"; font-family: "digital"; background-color: transparent; color: #cacaca; text-align: left; padding-left: 2px; padding-bottom: 2px;
+	}
+	#TrackRateDeck3 {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: right; padding-right: 2px;
+	}
+	#CoverArtBig3 {
+	background: url(skin:/gfx_hifi/background_coverart.svg) no-repeat;
+	}
+	
+	
+	#Deck4 {
+	qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+	border: 0px solid #000000; margin: 0; padding: 0; padding-left: 2px;
+	background: url(skin:/gfx_hifi/background_decks.svg) repeat;
+	}
+	#TrackTitleDeck4, #TrackBPMDeck4 {
+	font: normal 16px/18px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: left; padding-left: 2px; padding-bottom: 2px;
+	}
+	#TrackArtistDeck4, #TrackPlayPositionDeck4 {
+	font: normal 16px/18px "digital"; font-family: "digital"; background-color: transparent; color: #cacaca; text-align: left; padding-left: 2px; padding-bottom: 2px;
+	}
+	#TrackRateDeck4 {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: left; padding-left: 2px;
+	}
+	#CoverArtBig4 {
+	background: url(skin:/gfx_hifi/background_coverart.svg) no-repeat;
+	}
+	
+	
+	#HorizontalLine {
+	background-color: #252525; color: #252525;
+	}
+	#VerticalLine {
+	background-color: #252525; color: #252525; border: 0px solid #000000; margin: 0; padding: 0px;
+	background: url(skin:/gfx_hifi/background_vertical_line_50.svg) no-repeat;	
+	}
+	#VerticalLineDarker {
+	background-color: #252525; color: #252525; border: 0px solid #000000; margin: 0; padding: 0px;
+	background: url(skin:/gfx_hifi/background_vertical_line_darker_50.svg) no-repeat;	
+	}
+	#VerticalLineDarker30 {
+	background-color: #252525; color: #252525; border: 0px solid #000000; margin: 0; padding: 0px;
+	background: url(skin:/gfx_hifi/background_vertical_line_darker_30.svg) no-repeat;	
+	}
+	#VerticalLineDarker50 {
+	background-color: #252525; color: #252525; border: 0px solid #000000; margin: 0; padding: 0px;
+	background: url(skin:/gfx_hifi/background_vertical_line_darker_50.svg) no-repeat;	
+	}
+	
+	
+	#SamplersOptions {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	}
+	#SamplersOptionsBg {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	background: url(skin:/gfx_hifi/background_samplers_options.svg) repeat;
+	}	
+	#SamplersRack {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/background_racks_200.svg); repeat;
+	}
+	#SamplersTexts {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: left; padding: 0px;
+	padding-left: 2px;
+	padding-top: -2px;
+	}	
+
+	
+	#EffectsOptions {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/background_effects_settings.svg); repeat;
+	}
+	#EffectsRacksContents {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	}
+	#EffectsRacks {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/background_racks_150.svg); repeat;
+	}
+	#EffectsTexts {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #cacaca; text-align: center; padding: 0px;
+	padding-top: -3px;
+	qproperty-alignment: AlignCenter;
+	}
+	#Effect, #EffectParameterButton {
+	font: 10px/12px "Arial"; font-family: "Arial"; background: transparent; color: #484848;
+	qproperty-alignment: AlignCenter;
+	}
+	#EffectsTextsSmall {
+	font: 10px/12px "Arial"; font-family: "Arial"; background: transparent; color: #484848; margin-bottom: 4px;
+	qproperty-alignment: AlignCenter;
+	}
+	
+
+	#LibraryArea {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	}
+	#LibrarySettings {
+	qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/background_library_settings.svg); repeat;
+	}
+	#LibrarySetFonts{
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/background_library_fonts.svg); no-repeat;
+	}
+	#LibraryCoverArtFrame {
+	border: 1px solid #656565; background: transparent; padding: 6px;
+	}
+	#LibraryCoverArt {
+	border: 0px solid #656565; background: transparent;
+	}
+	#PreviewDeck1 {
+	border: 1px solid #656565; background: #000000;
+	}
+	#PreviewDeck1Texts {
+	font: normal 10px/12px "digital"; font-family: "digital"; background-color: transparent; color: #7a7a7a; text-align: left; padding-left: 2px;
+	}
+	
+	
+	/* RACKS - Just the visual left/right bars designs: */	
+	#Rack25 {
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/rack_25.svg); no-repeat;
+	}
+	#Rack30 {
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/rack_30.svg); no-repeat;
+	}
+	#Rack50 {
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/rack_50.svg); no-repeat;
+	}
+	#Rack75 {
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/rack_75.svg); no-repeat;
+	}
+	#Rack85 {
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/rack_85.svg); no-repeat;
+	}
+	#Rack120 {
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/rack_120.svg); no-repeat;
+	}	
+	#Rack150 {
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/rack_150.svg); no-repeat;
+	}
+	#Rack170 {
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/rack_170.svg); no-repeat;
+	}
+	#Rack300 {
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/rack_300.svg); no-repeat;
+	}	
+	#Rack500 {
+	border: 0px solid #000000; margin: 0px; background: url(skin:/gfx_hifi/rack_500.svg); no-repeat;
+	border-image: url(skin:/gfx_hifi/rack_500.svg) 0 0 0 0 stretch stretch; /* Stretch trick: On! */
+	}	
+	
+
+	
+	
+	/* ##################################################################################################################### */
+	/* GLOBAL STYLES: */	
+	/* ##################################################################################################################### */
+
+	/* Main Window (Doesnt work by now) */
+	QWindow { border: 1px solid #3c3c3c; background-color: #000000; background: #000000; color: #d5d5d5; }
+	
+	/* Main Buttons: Backs and theirs texts */
+	QPushButton { font: normal 16px/18px Arial; background: #000000; color: #d5d5d5; margin-right:10px; padding: 4px; border: 1px solid #3c3c3c;}
+	QPushButton::pressed { background: #404040; color: #d5d5d5; padding: 4px; border: 1px solid #3c3c3c;}
+	QPushButton::checked { background: #404040; color: #d5d5d5; padding: 4px; border: 1px solid #3c3c3c;}
+	
+	/* Tips */
+	QToolTip { color: #d5d5d5; border: 1px solid #808080; background-color: transparent; }	
+
+	
+	/* ##################################################################################################################### */
+	/* STYLES FOR THE LIBRARY: */	
+	/* ##################################################################################################################### */	
+
+	/* QT STYLE SHEETS EXAMPLES: http://qt-project.org/doc/qt-5/stylesheet-examples.html */
+				
+	QGroupBox { border: 0px solid #ffffff; margin: 0px 0px 0px 0px; }				
+    QHeaderView { font: "Arial"; font-family: "Arial"; }
+			
+	/* File Browser SELECTED BAR: */
+	QTableView, QTextBrowser, QTreeView { selection-color: #ffffff; selection-background-color: #1f1f1f; color: #ffffff; }	
+				
+	/* File Browser HOVER BAR: */
+	QTableView::item:hover, QTextBrowser::item:hover, QTreeView::item:hover { color: #ffffff; }				
+
+	/* File Browser ROWS: */
+	QTableView, QTextBrowser, QTreeView { border: 1px solid #656565; font: "Arial"; font-family: "Arial"; background: transparent; color: #707070; alternate-background-color: #0c0c0c; }
+	/* we use "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug? */				
+				
+	/* checkbox in library "Played" column */
+	QTableView::indicator { width: 12px; height: 12px; background: transparent; border: 0; }
+	QTableView::indicator:unchecked { background: url(skin:/gfx_library/checkbox.svg); no-repeat; }
+	QTableView::indicator:checked { background: url(skin:/gfx_library/checkbox_checked.svg); no-repeat; }	
+	
+	/* TREE NAVIGATION - BRANCHES IMAGES: */
+	QTreeView { show-decoration-selected: 0; } /* Suppresses that selected sidebar items branch indicator shows wrong color when out of focus; lp:880588 */
+	QTreeView::branch:has-siblings:!adjoins-item { border-image: url(skin:/gfx_library/branch_line.svg) 0; }
+	QTreeView::branch:has-siblings:adjoins-item { border-image: url(skin:/gfx_library/branch_more.svg) 0; }
+	QTreeView::branch:!has-children:!has-siblings:adjoins-item { border-image: url(skin:/gfx_library/branch_end.svg) 0; }
+	QTreeView::branch:has-children:!has-siblings:closed, QTreeView::branch:closed:has-children:has-siblings {
+	border-image: none;	image: url(skin:/gfx_library/branch_closed.svg); }
+	QTreeView::branch:open:has-children:!has-siblings, QTreeView::branch:open:has-children:has-siblings {
+	border-image: none;	image: url(skin:/gfx_library/branch_open.svg); }
+			
+	/* Button in library "Preview" column */
+	QPushButton#LibraryPreviewButton { font: 10px/12px "Arial"; font-family: "Arial"; margin: 1px; padding: 1px; }
+	QPushButton#LibraryPreviewButton { width: 16px; height: 12px; background: transparent; border: 0; }
+	QPushButton#LibraryPreviewButton:!checked { image: url(skin:/gfx_library/preview_play.svg); no-repeat; }
+	QPushButton#LibraryPreviewButton:checked { image: url(skin:/gfx_library/preview_pause.svg); no-repeat; }
+								
+	/* QPushButton#RatingButton { width: 16px; height: 12px; background: transparent; border: 0; color: #ffffff; } */
+
+	QSpinBox:editable { font: 10px/12px "Arial"; font-family: "Arial"; background: transparent; color: #e3e3e3; }
+	QSpinBox { min-height: 20px; max-height: 20px; min-width: 40px; max-width: 40px;}
+
+	/* library search box bar */
+	WSearchLineEdit { padding: 1px; border: 1px solid #656565; font: 13px/15px "Arial"; font-family: "Arial"; background: #000000; color: #e3e3e3; }
+	WSearchLineEdit:focus { padding: 2px; border: 1px solid #ffffff; font: normal 10px/12px "Arial"; font-family: "Arial"; background: #000000; color: #D6D6D6;}
+		
+	/* QSplitter: Between Tree and Library ( QSplitter::handle {...} ) */
+	#SplitterVertical::handle { image: url(skin:/gfx_library/handle_vertical.svg); background: none; }
+	#SplitterVertical::handle:pressed { image: url(skin:/gfx_library/handle_vertical_pressed.svg); background: none; }
+	#SplitterVertical::handle:horizontal { width: 4px; }
+	#SplitterVertical::handle:vertical { height: 4px; }
+
+	/* QSplitter: Between Library and CoverArt ( QSplitter::handle {...} )  */
+	#SplitterHorizontal::handle { image: url(skin:/gfx_library/handle_horizontal.svg); background: none; }
+	#SplitterHorizontal::handle:pressed { image: url(skin:/gfx_library/handle_horizontal_pressed.svg); background: none; }
+	#SplitterHorizontal::handle:horizontal { width: 4px; }
+	#SplitterHorizontal::handle:vertical { height: 4px; }
+
+	QPushButton { font: 10px/12px "Arial"; font-family: "Arial"; margin: 1px; padding: 10px; }
+				
+	/* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
+	QLabel, QRadioButton { font: 10px/12px "Arial"; font-family: "Arial"; background: transparent; color: #e3e3e3; }
+
+	/* Spacing between treeview and searchbar */
+	QTreeView { margin: 6px 0px 0px 0px; }
+							
+	/* QTreeView: Customizing left tree items navigation: */
+	QTreeView::item { background: none; color: #8e8e8e; }
+	QTreeView::item:selected { background: #141414; color: #8e8e8e; }
+	QTreeView::item:selected:active { background: #141414; color: #8e8e8e; }
+	QTreeView::item:hover { background: #141414; color: #8e8e8e; }			
+				
+	/* File Browser HEADERS: */
+	QHeaderView { font: 10px/12px "Arial"; font-family: "Arial"; background: #000000; border-bottom: 1px solid #404040; }
+	QHeaderView::section { padding: 2px; background: #5d5d5d; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; }
+	QHeaderView::section:selected { padding: 2px; background: #E4E4E4; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; }
+	QHeaderView::up-arrow { image: url(skin:/gfx_library/arrow_up.svg)}
+	QHeaderView::down-arrow {image: url(skin:/gfx_library/arrow_down.svg)}		
+			
+	/* File Browser SCROLL BARS: */
+	QAbstractScrollArea::corner { background: #000000; border: none ;}
+				
+	QScrollBar:horizontal { border-top: 1px solid #aeaeae; background: #101010; height: 14px; margin: 0px 43px 0px 0px; }
+	QScrollBar::handle:horizontal { background: #323232; min-width: 20px; } /* horizontal drag bar */
+	QScrollBar::handle:horizontal:pressed { background: #323232; min-width: 20px; } /* horizontal drag bar */
+	QScrollBar::add-line:horizontal { background: #808080; width: 20px; subcontrol-position: right; subcontrol-origin: margin; border-left: 1px solid #101010; border-right: 1px solid #101010; border-top: 1px solid #aeaeae; }
+	QScrollBar::add-line:horizontal:pressed { background: #aeaeae; width: 20px; subcontrol-position: right; subcontrol-origin: margin; border-left: 1px solid #101010; border-right: 1px solid #101010; }
+	QScrollBar::sub-line:horizontal { background: #808080; width: 20px; subcontrol-position: top right; subcontrol-origin: margin; position: absolute; right: 21px; border-left: 1px solid #101010; border-right: 1px solid #101010; border-top: 1px solid #aeaeae; }
+	QScrollBar::sub-line:horizontal:pressed { background: #aeaeae; width: 20px; subcontrol-position: top right; subcontrol-origin: margin; position: absolute; right: 21px; border-left: 1px solid #101010; border-right: 1px solid #101010; }
+	QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal { width: 12px; height: 12px; background: none; }
+	QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal { background: none; }
+	QScrollBar::left-arrow:horizontal { image: url(skin:/gfx_library/scroll_left.svg)} QScrollBar::right-arrow:horizontal { image: url(skin:/gfx_library/scroll_right.svg)}
+
+	QScrollBar:vertical { border-left: 1px solid #aeaeae; background: #101010; width: 14px; margin: 0px 0px 43px 0px; }
+	QScrollBar::handle:vertical { background: #323232; min-height: 20px; } /* vertical drag bar */
+	QScrollBar::handle:vertical:pressed { background: #323232; min-height: 20px; } /* vertical drag bar */
+	QScrollBar::add-line:vertical { background: #808080; height: 20px; subcontrol-position: bottom; subcontrol-origin: margin; border-left: 1px solid #aeaeae; border-top: 1px solid #101010; border-bottom: 1px solid #101010;}
+	QScrollBar::add-line:vertical:pressed { background: #aeaeae; height: 20px; subcontrol-position: bottom; subcontrol-origin: margin; border-top: 1px solid #101010; border-bottom: 1px solid #101010;}
+	QScrollBar::sub-line:vertical { background: #808080; height: 20px; subcontrol-position: top bottom; subcontrol-origin: margin;position: absolute; bottom: 21px; border-left: 1px solid #aeaeae; border-top: 1px solid #101010; border-bottom: 1px solid #101010;}
+	QScrollBar::sub-line:vertical:pressed { background: #aeaeae; height: 20px; subcontrol-position: top bottom; subcontrol-origin: margin; position: absolute; bottom: 21px; border-top: 1px solid #101010; border-bottom: 1px solid #101010; }
+	QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical { width: 12px; height: 12px; background: none; }
+	QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; } QScrollBar::add-page:vertical:pressed, QScrollBar::sub-page:vertical:pressed {background: none; }
+	QScrollBar::up-arrow:vertical { image: url(skin:/gfx_library/scroll_up.svg)}
+	QScrollBar::down-arrow:vertical { image: url(skin:/gfx_library/scroll_down.svg)}
+				
+	/* QComboBox: Not used */
+	QComboBox { border: 1px solid #424242; color: #ffffff; background: transparent; margin: 1px; padding: 1px; }
+	QComboBox::up-arrow { image: url(skin:/gfx_library/arrow_up.svg); }
+	QComboBox::up-arrow:on { image: url(skin:/gfx_library/arrow_up.svg) }
+	QComboBox::down-arrow { image: url(skin:/gfx_library/arrow_down.svg); }
+	QComboBox::down-arrow:on { image: url(skin:/gfx_library/arrow_down.svg) }
+				
+	/* QSpinBox: Used at "Auto DJ - transition duration" */
+	QSpinBox { border: 1px solid #424242; color: #ffffff; background: transparent; margin: 1px; padding: 7px; }
+	QSpinBox::up-arrow { image: url(skin:/gfx_library/arrow_up.svg); }
+	QSpinBox::up-arrow:on { image: url(skin:/gfx_library/arrow_up.svg) }
+	QSpinBox::down-arrow { image: url(skin:/gfx_library/arrow_down.svg); }
+	QSpinBox::down-arrow:on { image: url(skin:/gfx_library/arrow_down.svg) }
+				
+	/* QLineEdit: Input texts fields */
+	QLineEdit { border: 1px solid #424242; color: #d5d5d5; background: #000000; margin: 1px; padding: 1px; }			
+				
+	/* QTextEdit: Input texts fields */
+	QTextEdit { border: 1px solid #424242; color: #d5d5d5; background: #000000; margin: 1px; padding: 1px; }
+	
+	
+	
+	
+	
+	
+	

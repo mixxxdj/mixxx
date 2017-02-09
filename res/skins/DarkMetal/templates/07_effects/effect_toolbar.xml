@@ -1,0 +1,114 @@
+<!DOCTYPE template>
+
+<Template>
+
+		<!-- Texts -->
+		<WidgetGroup>
+		<ObjectName>Texts</ObjectName>	
+		<MinimumSize>95,30</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>
+		<Label>
+		<Style>font: 10px/12px "Arial"; font-family: "Arial"; background: transparent; color: #484848;</Style>
+		<Text>Effects Options</Text>
+		</Label>
+		</Children>			
+		</WidgetGroup>
+		
+		<!-- Button: Show/Hide this Row -->
+		<PushButton>	
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_view1.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view1.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_view1_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view1_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[EffectsRack<Variable name="toolbarnum_a"/>],show</ConfigKey>
+		</Connection>
+		</PushButton>
+
+		<!-- Button: Show/Hide the other Row -->
+		<PushButton>	
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_view2.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view2.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_view2_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view2_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[EffectsRack<Variable name="toolbarnum_b"/>],show</ConfigKey>
+		</Connection>
+		</PushButton>
+		
+		<!-- Texts -->
+		<WidgetGroup>
+		<ObjectName>Texts</ObjectName>	
+		<MinimumSize>60,30</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>
+		<Label>
+		<Style>font: 10px/12px "Arial"; font-family: "Arial"; background: transparent; color: #484848;</Style>
+		<Text>Modules</Text>
+		</Label>
+		</Children>			
+		</WidgetGroup>
+		
+		<!-- Button: Show/Hide Module (Disabled) -->
+		<WidgetGroup>
+		<Size>30,30</Size>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>		
+		<PushButton>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey><!-- [EffectsModule<Variable name="unit_a"/>],show --></ConfigKey>
+		</Connection>	
+		</PushButton>
+		</Children>
+		</WidgetGroup>		
+
+		<!-- Button: Show/Hide Module -->	
+		<WidgetGroup>
+		<Size>30,30</Size>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_view.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[EffectsModule<Variable name="unit_b"/>],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		</Children>
+		</WidgetGroup>
+		
+</Template>

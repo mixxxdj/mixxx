@@ -1,0 +1,585 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<!-- WIDGETGROUP: Tool Bar Microphones -->	
+	<WidgetGroup>
+	<ObjectName>ToolBarMicros</ObjectName>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	
+	<WidgetGroup>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>
+	
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLineDarker</ObjectName>
+		<MinimumSize>3,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>	
+
+		<!--
+		********************************************************************************************
+		********************************************************************************************
+		Microphone N1 - Group:
+		********************************************************************************************
+		********************************************************************************************
+		-->
+
+		<WidgetGroup>
+		<ObjectName>Microphone</ObjectName>
+		<MinimumSize>210,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>	
+
+		<!--
+		****************************************
+		Button - Talk!
+		****************************************
+		-->
+						
+		<PushButton>
+			<Pos>6,8</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_talk_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_talk.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_talk_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_talk_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Microphone],talkover</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+						
+		<!--
+		**********************************************
+		Button - Mix Orientation (Routing)
+		**********************************************
+		-->
+		
+		<PushButton>
+			<Pos>64,8</Pos>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Microphone],orientation</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Visual - Volume level display
+		**********************************************
+		-->
+						
+		<VuMeter>
+			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
+			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<Pos>70,26</Pos>
+			<Horizontal>true</Horizontal>
+			<PeakHoldSize>5</PeakHoldSize>
+			<PeakHoldTime>600</PeakHoldTime>
+			<PeakFallTime>100</PeakFallTime>
+			<PeakFallStep>1</PeakFallStep>
+			<Connection>
+			<ConfigKey>[Microphone],VuMeter</ConfigKey>
+			</Connection>
+		</VuMeter>
+						
+		<!--
+		**********************************************
+		Visual - Volume peak indicator
+		**********************************************
+		-->
+						
+		<StatusLight>
+			<Pos>140,26</Pos>
+			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
+			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<Connection>
+			<ConfigKey>[Microphone],PeakIndicator</ConfigKey>
+			</Connection>
+		</StatusLight>
+
+		<!--
+		**********************************************
+		Knob - Channel Volume
+		**********************************************
+		-->
+		
+		<KnobComposed>
+			<Pos>165,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Microphone],pregain</ConfigKey>
+			</Connection>
+		</KnobComposed>						
+
+		</Children>
+		</WidgetGroup>	
+		
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLineDarker</ObjectName>
+		<MinimumSize>3,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>		
+
+
+		<!--
+		********************************************************************************************
+		********************************************************************************************
+		Microphone N2 - Group:
+		********************************************************************************************
+		********************************************************************************************
+		-->
+
+		<WidgetGroup>
+		<ObjectName>Microphone</ObjectName>
+		<MinimumSize>210,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>	
+
+		<!--
+		****************************************
+		Button - Talk!
+		****************************************
+		-->
+						
+		<PushButton>
+			<Pos>6,8</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_talk_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_talk.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_talk_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_talk_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Microphone2],talkover</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+						
+		<!--
+		**********************************************
+		Button - Mix Orientation (Routing)
+		**********************************************
+		-->
+		
+		<PushButton>
+			<Pos>64,8</Pos>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Microphone2],orientation</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Visual - Volume level display
+		**********************************************
+		-->
+						
+		<VuMeter>
+			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
+			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<Pos>70,26</Pos>
+			<Horizontal>true</Horizontal>
+			<PeakHoldSize>5</PeakHoldSize>
+			<PeakHoldTime>600</PeakHoldTime>
+			<PeakFallTime>100</PeakFallTime>
+			<PeakFallStep>1</PeakFallStep>
+			<Connection>
+			<ConfigKey>[Microphone2],VuMeter</ConfigKey>
+			</Connection>
+		</VuMeter>
+						
+		<!--
+		**********************************************
+		Visual - Volume peak indicator
+		**********************************************
+		-->
+						
+		<StatusLight>
+			<Pos>140,26</Pos>
+			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
+			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<Connection>
+			<ConfigKey>[Microphone2],PeakIndicator</ConfigKey>
+			</Connection>
+		</StatusLight>
+
+		<!--
+		**********************************************
+		Knob - Channel Volume
+		**********************************************
+		-->
+						
+		<KnobComposed>
+			<Pos>165,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Microphone2],pregain</ConfigKey>
+			</Connection>
+		</KnobComposed>	
+
+		</Children>
+		</WidgetGroup>	
+		
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLineDarker</ObjectName>
+		<MinimumSize>3,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		
+		
+<!--
+		********************************************************************************************
+		********************************************************************************************
+		Microphone N3 - Group:
+		********************************************************************************************
+		********************************************************************************************
+		-->
+
+		<WidgetGroup>
+		<ObjectName>Microphone</ObjectName>
+		<MinimumSize>210,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>	
+
+		<!--
+		****************************************
+		Button - Talk!
+		****************************************
+		-->
+						
+		<PushButton>
+			<Pos>6,8</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_talk_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_talk.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_talk_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_talk_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Microphone3],talkover</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+						
+		<!--
+		**********************************************
+		Button - Mix Orientation (Routing)
+		**********************************************
+		-->
+		
+		<PushButton>
+			<Pos>64,8</Pos>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Microphone3],orientation</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Visual - Volume level display
+		**********************************************
+		-->
+						
+		<VuMeter>
+			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
+			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<Pos>70,26</Pos>
+			<Horizontal>true</Horizontal>
+			<PeakHoldSize>5</PeakHoldSize>
+			<PeakHoldTime>600</PeakHoldTime>
+			<PeakFallTime>100</PeakFallTime>
+			<PeakFallStep>1</PeakFallStep>
+			<Connection>
+			<ConfigKey>[Microphone3],VuMeter</ConfigKey>
+			</Connection>
+		</VuMeter>
+						
+		<!--
+		**********************************************
+		Visual - Volume peak indicator
+		**********************************************
+		-->
+						
+		<StatusLight>
+			<Pos>140,26</Pos>
+			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
+			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<Connection>
+			<ConfigKey>[Microphone3],PeakIndicator</ConfigKey>
+			</Connection>
+		</StatusLight>
+
+		<!--
+		**********************************************
+		Knob - Channel Volume
+		**********************************************
+		-->
+						
+		<KnobComposed>
+			<Pos>165,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Microphone3],pregain</ConfigKey>
+			</Connection>
+		</KnobComposed>	
+
+		</Children>
+		</WidgetGroup>	
+		
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLineDarker</ObjectName>
+		<MinimumSize>3,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>	
+
+
+<!--
+		********************************************************************************************
+		********************************************************************************************
+		Microphone N4 - Group:
+		********************************************************************************************
+		********************************************************************************************
+		-->
+
+		<WidgetGroup>
+		<ObjectName>Microphone</ObjectName>
+		<MinimumSize>210,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>	
+
+		<!--
+		****************************************
+		Button - Talk!
+		****************************************
+		-->
+						
+		<PushButton>
+			<Pos>6,8</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_talk_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_talk.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_talk_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_talk_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Microphone4],talkover</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+						
+		<!--
+		**********************************************
+		Button - Mix Orientation (Routing)
+		**********************************************
+		-->
+		
+		<PushButton>
+			<Pos>64,8</Pos>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Microphone4],orientation</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Visual - Volume level display
+		**********************************************
+		-->
+						
+		<VuMeter>
+			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
+			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<Pos>70,26</Pos>
+			<Horizontal>true</Horizontal>
+			<PeakHoldSize>5</PeakHoldSize>
+			<PeakHoldTime>600</PeakHoldTime>
+			<PeakFallTime>100</PeakFallTime>
+			<PeakFallStep>1</PeakFallStep>
+			<Connection>
+			<ConfigKey>[Microphone4],VuMeter</ConfigKey>
+			</Connection>
+		</VuMeter>
+						
+		<!--
+		**********************************************
+		Visual - Volume peak indicator
+		**********************************************
+		-->
+						
+		<StatusLight>
+			<Pos>140,26</Pos>
+			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
+			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<Connection>
+			<ConfigKey>[Microphone4],PeakIndicator</ConfigKey>
+			</Connection>
+		</StatusLight>
+
+		<!--
+		**********************************************
+		Knob - Channel Volume
+		**********************************************
+		-->
+						
+		<KnobComposed>
+			<Pos>165,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Microphone4],pregain</ConfigKey>
+			</Connection>
+		</KnobComposed>	
+
+		</Children>
+		</WidgetGroup>	
+		
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLineDarker</ObjectName>
+		<MinimumSize>3,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>		
+
+
+		
+		
+		
+		
+	<WidgetGroup>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>
+	
+	</Children>	
+	<!-- Show/Hide -->
+	<Connection>
+	<ConfigKey>[ToolBarMicros],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+	
+</Template>

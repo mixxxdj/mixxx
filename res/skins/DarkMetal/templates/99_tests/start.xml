@@ -1,0 +1,163 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<WidgetGroup>
+	<ObjectName>ToolBarTests</ObjectName>
+	<Pos>0,0</Pos>
+	<MinimumSize>1230,46</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	<WidgetGroup>
+	<MinimumSize>10,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>		
+	
+	<WidgetGroup>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>	
+		
+	<WidgetGroup>
+	<ObjectName>VerticalLine</ObjectName>
+	<MinimumSize>3,45</MinimumSize>
+	<SizePolicy>f,me</SizePolicy>
+	<Children><!-- Design --></Children>
+	</WidgetGroup>
+	
+	<WidgetGroup>
+	<ObjectName>ToolBarTestsMetal</ObjectName>
+	<MinimumSize>800,45</MinimumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+
+	<!-- SKIN ELEMENTS to be tested: http://www.mixxx.org/wiki/doku.php/creating_skins  -->
+	<!-- MIXXX CONTROLS to be tested: https://www.mixxx.org/wiki/doku.php/mixxxcontrols -->
+	
+	<!-- STARTS: TESTS -->
+	
+	
+	
+	
+	
+	
+	
+	
+
+		<!-- TESTING: -->		
+		<WidgetGroup>				
+		<MinimumSize>50,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>
+		<Label>
+		<Text>Danger: Tests Area</Text>
+		</Label>
+		</Children>			
+		</WidgetGroup>
+
+		<!-- TESTING: -->		
+		<WidgetGroup>				
+		<MinimumSize>50,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>		
+			<NumberDb>
+			<Text>%1</Text>
+			<Alignment>center</Alignment>
+			<Connection>
+			<ConfigKey>[Channel1],pregain</ConfigKey>
+			</Connection>
+			</NumberDb>
+		</Children>			
+		</WidgetGroup> 
+		
+		<!-- TESTING: -->
+		<WidgetGroup>				
+		<MinimumSize>50,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>	
+			<StarRating></StarRating> <!-- ?????.... -->
+		</Children>			
+		</WidgetGroup> 
+		
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Auxiliaries
+		**********************************************
+		-->	
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_auxiliaries.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_auxiliaries.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_auxiliaries_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_auxiliaries_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[DecksAndMixerRack1],raise</ConfigKey>
+		</Connection>	
+		</PushButton>
+			
+		<!-- TESTING: -->
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_view.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Hifi],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+
+		
+	
+	
+	
+	
+	
+	
+	
+	<!-- ENDS: TESTS -->
+	
+	</Children>
+	</WidgetGroup>
+
+	<WidgetGroup>
+	<ObjectName>VerticalLine</ObjectName>
+	<MinimumSize>3,45</MinimumSize>
+	<SizePolicy>f,me</SizePolicy>
+	<Children><!-- Design --></Children>
+	</WidgetGroup>	
+		
+	<WidgetGroup>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>	
+	
+	</Children>
+	</WidgetGroup>
+	
+	</Children>
+	</WidgetGroup>	
+
+</Template>

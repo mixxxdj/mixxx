@@ -1,0 +1,555 @@
+<!DOCTYPE template>
+
+<Template>
+	
+		<WidgetGroup>
+		<ObjectName>SamplerModule<Variable name="samplernum"/></ObjectName>	
+		<MinimumSize>300,110</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>			
+			
+			
+			<!-- Sampler Bank sub-widget -->
+			
+			<WidgetGroup>				
+				<ObjectName>SamplerSkin</ObjectName>
+				<BackPath>gfx_hifi/background_sampler.svg</BackPath> <!-- For color process -->
+				<MinimumSize>300,110</MinimumSize>
+				<SizePolicy>f,f</SizePolicy>
+				<Children>				
+					
+							<!--
+							**********************************************
+							Text - Track Title
+							**********************************************
+							-->
+							
+							<Text>								
+								<ObjectName>SamplersTexts</ObjectName>
+								<Group>[Sampler<Variable name="samplernum"/>]</Group>
+								<Pos>8,3</Pos>
+								<Size>160f,21</Size>
+								<Elide>right</Elide> <!-- Adds "..." -->
+							</Text>
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							
+							<NumberBpm>								
+								<ObjectName>SamplersTexts</ObjectName>
+								<Group>[Sampler<Variable name="samplernum"/>]</Group>
+								<Pos>158,3</Pos>
+								<Size>55,21</Size>
+								<Alignment>right</Alignment>
+								<NumberOfDigits>1</NumberOfDigits>
+								<Connection>
+								<ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							-->
+
+							<PushButton>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_tap3_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_tap3.svg</Unpressed>
+								</State>
+								<Pos>218,5</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],bpm_tap</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Visual- Waveform overview
+							**********************************************
+							-->
+							
+							<Overview>
+								<Group>[Sampler<Variable name="samplernum"/>]</Group>
+								<Pos>50,26</Pos>
+								<Size>123,31</Size>
+								<BgColor></BgColor>	
+								<!-- <BgPixmap>gfx_hifi/wave_background_medium.svg</BgPixmap> --> <!-- bg image must be set here, not in "style.qss" -->
+								<SignalHighColor>#5f4d75</SignalHighColor><!-- highs - clear -->
+								<SignalMidColor>#230d44</SignalMidColor>  <!-- mediums - dark -->
+								<SignalLowColor>#180831</SignalLowColor>  <!-- lows - darker -->
+								<SignalColor>#7c708f</SignalColor>        <!-- "main wave" -->
+								<PlayPosColor>#ece7f5</PlayPosColor>
+								<BeatColor>#d8cbec</BeatColor>
+								<EndOfTrackColor>#6e4aaa</EndOfTrackColor>					
+								<AxesColor>#580078</AxesColor>
+								<DefaultMark> <!-- Applies to numbers 1 to 8 -->
+								<Align>top</Align>
+								<Color>#dbb7ff</Color>
+								<TextColor>#ffffff</TextColor>
+								<Text> %1 </Text>
+								</DefaultMark>
+								<MarkRange> <!-- ... -->
+								<StartControl>loop_start_position</StartControl>
+								<EndControl>loop_end_position</EndControl>
+								<EnabledControl>loop_enabled</EnabledControl>
+								<Color>#dbb7ff</Color>
+								<DisabledColor>#ffffff</DisabledColor>
+								</MarkRange>
+								<Mark>
+									<Control>loop_start_position</Control>
+									<Pixmap></Pixmap>
+									<Text> START </Text>
+									<Align>top</Align>
+									<Color>#cb97fb</Color>
+									<TextColor>#ffffff</TextColor>
+								</Mark>
+								<Mark>
+									<Control>loop_end_position</Control>
+									<Pixmap></Pixmap>
+									<Text> END </Text>
+									<Align>top</Align>
+									<Color>#cb97fb</Color>
+									<TextColor>#ffffff</TextColor>
+								</Mark>	
+								<Mark> <!-- Cue -->
+									<Control>cue_point</Control>
+									<Pixmap></Pixmap>
+									<Text> CUE </Text>
+									<Align>top</Align>
+									<Color>#cb97fb</Color>
+									<TextColor>#ffffff</TextColor>
+								</Mark>		
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],playposition</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</Overview>
+							
+							<!--
+							************************************************************************************
+							Display cover art: (This way we may now drag/drop this sound into a deck)
+							************************************************************************************
+							-->					
+
+							<CoverArt>
+							<Pos>182,26</Pos>							
+							<MinimumSize>31,31</MinimumSize>
+							<MaximumSize>31,31</MaximumSize>	
+							<SizePolicy>f,f</SizePolicy>					
+							<Group>[Sampler<Variable name="samplernum"/>]</Group>
+							</CoverArt>
+
+							<!--
+							**********************************************
+							RotaryFader - Gain
+							**********************************************
+							-->							
+						
+							<KnobComposed>
+								<Pos>222,64</Pos>
+								<Size>40f,40f</Size>
+								<BackPath>gfx_hifi/background_knob3.svg</BackPath>
+								<Knob>gfx_hifi/pointer_knob3.svg</Knob>
+								<MinAngle>-130</MinAngle>
+								<MaxAngle>130</MaxAngle>
+								<Connection>
+								<ConfigKey>[Sampler<Variable name="samplernum"/>],pregain</ConfigKey>
+								</Connection>
+							</KnobComposed>
+
+							<!--
+							**********************************************
+							Visual- Volume peak indicator
+							**********************************************
+							-->
+							
+							<StatusLight>
+								<PathStatusLight>gfx_hifi/volume_clipping_sampler_over.svg</PathStatusLight>
+								<PathBack>gfx_hifi/volume_clipping_sampler.svg</PathBack>
+								<Pos>267,4</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],PeakIndicator</ConfigKey>
+								</Connection>
+							</StatusLight>
+
+							<!--
+							**********************************************
+							Visual - Volume level display
+							**********************************************
+							-->
+							
+							<VuMeter>
+								<PathVu>gfx_hifi/volume_display_sampler_over.svg</PathVu>
+								<PathBack>gfx_hifi/volume_display_sampler.svg</PathBack>
+								<Pos>267,18</Pos>
+								<Horizontal>false</Horizontal>
+								<PeakHoldSize>5</PeakHoldSize>
+								<PeakHoldTime>600</PeakHoldTime>
+								<PeakFallTime>100</PeakFallTime>
+								<PeakFallStep>1</PeakFallStep>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],VuMeter</ConfigKey>
+								</Connection>
+							</VuMeter>
+
+							<!--
+							**********************************************
+							Slider - Pitch control
+							**********************************************
+							-->
+							
+							<SliderComposed>
+								<Handle>gfx_hifi/knob_pitch_sampler.svg</Handle>
+								<Slider>gfx_hifi/slider_pitch_sampler.svg</Slider>
+								<Pos>275,3</Pos>
+								<Horizontal>false</Horizontal>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],rate</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</SliderComposed>
+
+							<!--
+							****************************************
+							 Button - Play
+							****************************************
+							-->
+							
+							<PushButton>
+								<Pos>7,23</Pos>
+								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_play_sampler.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_play_sampler.svg</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>gfx_hifi/btn_play_sampler_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_play_sampler_over.svg</Unpressed>
+								</State>								
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],play</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],start</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button - Beat sync
+							**********************************************
+							-->
+							
+							<PushButton>
+								<Pos>7,71</Pos>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_sync_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_sync.svg</Unpressed>
+								</State>								
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button - Hotcue
+							**********************************************
+							-->
+							
+							<PushButton><!-- Label: 1 -->
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_hotcue_1_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_hotcue_1.svg</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>gfx_hifi/btn_hotcue_1_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_hotcue_1_over.svg</Unpressed>
+								</State>
+								<Pos>87,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							
+							<PushButton><!-- Label: 2 -->
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_hotcue_2_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_hotcue_2.svg</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>gfx_hifi/btn_hotcue_2_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_hotcue_2_over.svg</Unpressed>
+								</State>
+								<Pos>113,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							
+							<PushButton><!-- Label: 3 -->
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_hotcue_3_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_hotcue_3.svg</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>gfx_hifi/btn_hotcue_3_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_hotcue_3_over.svg</Unpressed>
+								</State>
+								<Pos>139,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							
+							<PushButton><!-- Label: 4 -->
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_hotcue_4_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_hotcue_4.svg</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>gfx_hifi/btn_hotcue_4_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_hotcue_4_over.svg</Unpressed>
+								</State>
+								<Pos>165,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button - Prelisten / Monitoring
+							**********************************************
+							-->
+							
+							<PushButton>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_headphones_2_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_headphones_2.svg</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>gfx_hifi/btn_headphones_2_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_headphones_2_over.svg</Unpressed>
+								</State>
+								<Pos>191,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],pfl</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button - Eject
+							**********************************************
+							-->
+							
+							<PushButton>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_eject_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_eject.svg</Unpressed>
+								</State>
+								<Pos>242,24</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],eject</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button - Repeat (End of track mode)
+							**********************************************
+							-->
+							
+							<PushButton>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_repeat_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_repeat.svg</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>gfx_hifi/btn_repeat_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_repeat_over.svg</Unpressed>
+								</State>
+								<Pos>220,24</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],repeat</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button - Mix Orientation (Routing)
+							**********************************************
+							-->
+							
+							<PushButton>
+								<NumberStates>3</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+								</State>
+								<State>
+									<Number>2</Number>
+									<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+								</State>
+								<Pos>217,42</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],orientation</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button - Key lock
+							**********************************************
+							-->
+							
+							<PushButton>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>gfx_hifi/btn_keylock_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_keylock.svg</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>gfx_hifi/btn_keylock_over.svg</Pressed>
+									<Unpressed>gfx_hifi/btn_keylock_over.svg</Unpressed>
+								</State>
+								<Pos>241,42</Pos>
+								<Connection>
+									<ConfigKey>[Sampler<Variable name="samplernum"/>],keylock</ConfigKey>
+								</Connection>
+							</PushButton>
+				
+	
+					
+				</Children>			
+			</WidgetGroup>
+			
+		</Children>
+		<Connection>
+		<ConfigKey>[SamplerModule<Variable name="samplernum"/>],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>			
+		</WidgetGroup>	
+			
+</Template>			
+

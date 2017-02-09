@@ -1,0 +1,440 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<!-- WIDGETGROUP: Toolbar -->	
+	<WidgetGroup>
+	<ObjectName>ToolBar1</ObjectName>
+	<Pos>0,0</Pos>
+	<MinimumSize>1,31</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	
+	<WidgetGroup>
+	<MinimumSize>10,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	<WidgetGroup>
+	<ObjectName>ToolBar1Metal</ObjectName>
+	<MinimumSize>1,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Children><!-- Design --></Children>
+	</WidgetGroup>
+
+	
+	
+		<WidgetGroup>
+		<Layout>horizontal</Layout>
+		<Children>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Microphones
+		**********************************************
+		-->	
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_microphones.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_microphones.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_microphones_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_microphones_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[ToolBarMicros],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Auxiliaries
+		**********************************************
+		-->	
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_auxiliaries.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_auxiliaries.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_auxiliaries_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_auxiliaries_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[ToolBarAuxiliaries],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Decks AB + Mixer
+		**********************************************
+		-->
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_decks_ab.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_decks_ab.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_decks_ab_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_decks_ab_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[DecksAndMixerRack1],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Decks CD + Mixer
+		**********************************************
+		-->
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_decks_cd.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_decks_cd.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_decks_cd_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_decks_cd_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[DecksAndMixerRack2],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: MiniPlayer 1
+		**********************************************
+		-->	
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_miniplayer1.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_miniplayer1.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_miniplayer1_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_miniplayer1_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[MiniPlayer1],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: MiniPlayer 2
+		**********************************************
+		-->	
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_miniplayer2.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_miniplayer2.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_miniplayer2_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_miniplayer2_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[MiniPlayer2],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Long Waves AB
+		**********************************************
+		-->
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_longwaves1.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_longwaves1.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_longwaves1_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_longwaves1_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[LongWavesRack1],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Long Waves CD
+		**********************************************
+		-->
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_longwaves2.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_longwaves2.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_longwaves2_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_longwaves2_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[LongWavesRack2],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Effects 
+		**********************************************
+		-->
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_effects1.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_effects1.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_effects1_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_effects1_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[EffectsRack1],show</ConfigKey>
+		</Connection>
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>		
+		
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Effects 
+		**********************************************
+		-->
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_effects2.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_effects2.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_effects2_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_effects2_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[EffectsRack2],show</ConfigKey>
+		</Connection>
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+	
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Samplers 1
+		**********************************************
+		-->
+
+		<PushButton>	
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_samplers_1.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_samplers_1.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_samplers_1_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_samplers_1_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[SamplersRack1],show</ConfigKey>
+		</Connection>
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**********************************************
+		Tab - Show/hide widget group: Samplers 2
+		**********************************************
+		-->
+
+		<PushButton>	
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/tab_samplers_2.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_samplers_2.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/tab_samplers_2_over.svg</Pressed>
+		<Unpressed>gfx_hifi/tab_samplers_2_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[SamplersRack2],show</ConfigKey>
+		</Connection>
+		</PushButton>
+
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>		
+		
+
+
+		</Children>
+		</WidgetGroup>
+
+		<WidgetGroup>
+		<ObjectName>ToolBar1Metal</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Children><!-- Design --></Children>
+		</WidgetGroup>
+	
+	</Children>
+	</WidgetGroup>
+	
+	<!-- Design only: For creating an horizontal long line: -->
+	<WidgetGroup>
+	<ObjectName>HorizontalLine</ObjectName>
+	<MinimumSize>10,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>	
+	
+	</Children>
+	</WidgetGroup>
+	
+</Template>

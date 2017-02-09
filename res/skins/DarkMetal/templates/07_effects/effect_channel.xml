@@ -1,0 +1,316 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<WidgetGroup>
+		<ObjectName>Effect</ObjectName>
+		<Layout>horizontal</Layout>		
+		<Children>
+
+			<WidgetGroup><!-- Spacer (for texts) -->
+			<MinimumSize>20,18</MinimumSize>
+			<Layout>horizontal</Layout>		
+			<Children></Children>
+			</WidgetGroup>
+			
+			<!-- Send effect to: MICROPHONE 1 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_1_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Microphone]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>			
+			</PushButton>
+
+			<!-- Send effect to: MICROPHONE 2 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_2_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_2.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_2_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_2_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Microphone2]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>			
+			</PushButton>
+			
+			<!-- Send effect to: MICROPHONE 3 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_3_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_3.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_3_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_3_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Microphone3]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>			
+			</PushButton>
+			
+			<!-- Send effect to: MICROPHONE 4 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_4_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_4.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_4_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_4_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Microphone4]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>			
+			</PushButton>
+			
+			<WidgetGroup><!-- Spacer (for texts) -->
+			<MinimumSize>58,18</MinimumSize>
+			<Layout>horizontal</Layout>		
+			<Children></Children>
+			</WidgetGroup>
+			
+			<!-- Send effect to: MASTER -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_master_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_master_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_master_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<!-- <ConfigKey>[EffectRack1_EffectUnit1],group_[BusLeft]_enable</ConfigKey> -->
+			<!-- <ConfigKey>[EffectRack1_EffectUnit],group_[BusRight]_enable</ConfigKey> -->
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Master]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>			
+			</PushButton>
+			
+			<!-- Send effect to: HEADPHONES -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_headphones_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_headphones.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_headphones_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_headphones_over.svg</Unpressed>
+			</State>		
+			<Connection>
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Headphone]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+			
+		</Children>
+	</WidgetGroup>
+	
+	
+	
+	<WidgetGroup>
+		<ObjectName>Effect</ObjectName>
+		<Layout>horizontal</Layout>
+		<Children>
+		
+			<WidgetGroup><!-- Spacer (for texts) -->
+			<MinimumSize>20,18</MinimumSize>
+			<Layout>horizontal</Layout>		
+			<Children></Children>
+			</WidgetGroup>
+			
+			<!-- Send effect to: AUXILIARY 1 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_1_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Auxiliary1]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>			
+			</PushButton>			
+
+			<!-- Send effect to: AUXILIARY 2 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_2_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_2.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_2_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_2_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Auxiliary2]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>			
+			</PushButton>
+
+			<!-- Send effect to: AUXILIARY 3 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_3_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_3.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_3_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_3_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Auxiliary3]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>			
+			</PushButton>
+
+			<!-- Send effect to: AUXILIARY 4 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_4_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_4.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_4_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_4_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Auxiliary4]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>			
+			</PushButton>
+			
+			<WidgetGroup><!-- Spacer (for texts) -->
+			<MinimumSize>22,18</MinimumSize>
+			<Layout>horizontal</Layout>		
+			<Children></Children>
+			</WidgetGroup>
+			
+			<!-- Send effect to: CH1 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_a_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_a.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_a_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_a_over.svg</Unpressed>
+			</State>		
+			<Connection>			
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Channel1]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+
+			<!-- Send effect to: CH2 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_b_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_b.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_b_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_b_over.svg</Unpressed>
+			</State>		
+			<Connection>			
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Channel2]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>			
+ 
+			<!-- Send effect to: CH3 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_c_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_c.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_c_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_c_over.svg</Unpressed>
+			</State>		
+			<Connection>			
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Channel3]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+
+			<!-- Send effect to: CH4 -->
+			<PushButton>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_channel_d_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_d.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_channel_d_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_channel_d_over.svg</Unpressed>
+			</State>		
+			<Connection>			
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],group_[Channel4]_enable</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+			
+		</Children>
+	</WidgetGroup>	  
+			  
+</Template>
+			  

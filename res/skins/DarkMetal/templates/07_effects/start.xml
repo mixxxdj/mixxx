@@ -1,0 +1,99 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<WidgetGroup>
+	<ObjectName>EffectsRacks</ObjectName>
+	<MinimumSize>-1,115</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout> 
+	<Children>
+	
+	<WidgetGroup>
+	<ObjectName>EffectsOptions</ObjectName>
+	<MinimumSize>-1,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout> 
+	<Children>
+	<!-- WIDGETGROUP: Toolbar -->
+	<Template src="skin:templates/07_effects/effect_toolbar.xml">
+	<SetVariable name="toolbarnum_a">2</SetVariable>
+	<SetVariable name="toolbarnum_b">1</SetVariable>
+	<SetVariable name="unit_a">3</SetVariable>
+	<SetVariable name="unit_b">4</SetVariable>
+	</Template>
+	</Children>
+	</WidgetGroup>
+
+	<WidgetGroup>
+	<Layout>horizontal</Layout> 
+	<Children>	
+	
+	<WidgetGroup> <!-- Design only: Visual Rack Left -->
+	<ObjectName>Rack85</ObjectName>
+	<MinimumSize>15,-1</MinimumSize>
+	<SizePolicy>f,me</SizePolicy>
+	<Children><!-- Design --></Children>
+	</WidgetGroup>  
+	
+	<WidgetGroup>
+	<MinimumSize>-1,-1</MinimumSize>
+	<SizePolicy>me,me</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>
+
+	<WidgetGroup>
+	<ObjectName>EffectsRacksContents</ObjectName>	
+	<MinimumSize>-1,85</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout> 
+	<Children>
+		
+		<!-- WIDGETGROUP: Row with 3 units -->		
+		<WidgetGroup>
+		<ObjectName>EffectsModulesRow2</ObjectName>
+		<MinimumSize>-1,85</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>
+		<Children>		
+			
+		<Template src="skin:templates/07_effects/effect_module.xml"><SetVariable name="unit">3</SetVariable></Template>
+		<Template src="skin:templates/07_effects/effect_module.xml"><SetVariable name="unit">4</SetVariable></Template>
+			
+		</Children>
+		<Connection>
+		<ConfigKey>[EffectsModulesRow2],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>
+		</WidgetGroup>
+
+		
+	</Children>
+	</WidgetGroup>
+	
+	<WidgetGroup>
+	<MinimumSize>-1,-1</MinimumSize>
+	<SizePolicy>me,me</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup> 
+	
+	<WidgetGroup> <!-- Design only: Visual Rack Right -->
+	<ObjectName>Rack85</ObjectName>
+	<MinimumSize>15,-1</MinimumSize>
+	<SizePolicy>f,me</SizePolicy>
+	<Children><!-- Design --></Children>
+	</WidgetGroup>
+	
+	</Children>
+	</WidgetGroup>
+	
+	
+	</Children>
+	<!-- Show/Hide this Group: -->
+	<Connection>
+	<ConfigKey>[EffectsRack2],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+
+</Template>

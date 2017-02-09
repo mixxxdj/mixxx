@@ -1,0 +1,549 @@
+<!DOCTYPE template>
+
+<Template>
+	
+	<WidgetGroup>
+    <ObjectName>LibraryArea</ObjectName>	
+	<MinimumSize>1,65</MinimumSize>
+	<MaximumSize>-1,-1</MaximumSize>
+	<SizePolicy>me,me</SizePolicy>
+	<Layout>vertical</Layout> 
+	<Children>
+	
+		<!-- Design only: For creating an horizontal long line: -->
+		<WidgetGroup>
+		<ObjectName>HorizontalLine</ObjectName>
+		<MinimumSize>10,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>		
+
+		
+		<!-- Library: Starts - settings buttons -->	
+		<WidgetGroup>
+		<ObjectName>LibrarySettings</ObjectName>
+		<Size>me,30</Size>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		
+		<WidgetGroup> <!-- Design only: Visual Rack Left -->
+		<ObjectName>Rack30</ObjectName>
+		<MinimumSize>15,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children><!-- Design --></Children>
+		</WidgetGroup>
+		
+		<!-- Button: Show/Hide Preview Deck -->	
+		<WidgetGroup>
+		<Size>30,30</Size>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_view.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[PreviewD1],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		</Children>
+		</WidgetGroup>
+	
+		<!-- Button: Show/Hide Search Box-->	
+		<WidgetGroup>
+		<Size>30,30</Size>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_view.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[SearchTextBox1],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		</Children>
+		</WidgetGroup>
+		
+		<WidgetGroup> <!-- Spacer (To center Library Button) -->
+		<Size>48,30</Size>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup> <!-- Pusher -->
+		<Size>me,30</Size>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>	
+
+		<!-- Button: Show/Hide Hifi (Expands the library) -->	
+		<WidgetGroup>
+		<Size>100,30</Size>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_library_less.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_library_less.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_library_more.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_library_more.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Hifi],show</ConfigKey>
+		<!-- <ConfigKey>[Library],show_library</ConfigKey> -->
+		</Connection>	
+		</PushButton>
+		</Children>
+		</WidgetGroup>		
+
+		<WidgetGroup> <!-- Pusher -->
+		<Size>me,30</Size>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>			
+		
+		<WidgetGroup>
+		<ObjectName>LibrarySetFonts</ObjectName>
+		<Size>108,30</Size>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		
+		<!--
+		<Knob>	
+		<NumberStates>64</NumberStates>
+		<Path>gfx_knobs/knob_rotary_s%1.svg</Path>
+		<Connection>
+		<ConfigKey>[Library],font_size_increment</ConfigKey>
+		</Connection>
+		</Knob>	
+
+		<Knob>	
+		<NumberStates>64</NumberStates>
+		<Path>gfx_knobs/knob_rotary_s%1.svg</Path>
+		<Connection>
+		<ConfigKey>[Playlist],SelectTrackKnob</ConfigKey>
+		</Connection>
+		</Knob>	
+		-->
+		
+		<WidgetGroup> <!-- Buttons Pusher -->
+		<Size>48,30</Size>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children></Children>
+		</WidgetGroup>
+		
+		<PushButton>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_library_font_decrease_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_library_font_decrease.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Library],font_size_decrement</ConfigKey>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_library_font_increase_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_library_font_increase.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Library],font_size_increment</ConfigKey>
+		</Connection>
+		</PushButton>
+			
+		</Children>
+		</WidgetGroup>
+		
+		<WidgetGroup> <!-- Design only: Visual Rack Left -->
+		<ObjectName>Rack30</ObjectName>
+		<MinimumSize>15,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children><!-- Design --></Children>
+		</WidgetGroup>
+		
+		</Children>
+		</WidgetGroup>
+		<!-- Library: Ends - settings buttons -->
+
+		<!-- Design only: For creating an horizontal long line: -->
+		<WidgetGroup>
+		<ObjectName>HorizontalLine</ObjectName>
+		<MinimumSize>10,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>		
+
+		<WidgetGroup>
+		<ObjectName>Library</ObjectName>
+		<Pos>0,0</Pos>
+		<Size>me,me</Size>
+		<SizePolicy>me,me</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+
+		
+		<WidgetGroup> <!-- Design only: Visual Rack Left -->
+		<ObjectName>Rack500</ObjectName>
+		<MinimumSize>15,1</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+	
+		<Splitter>
+		<ObjectName>SplitterVertical</ObjectName>
+		<Orientation>horizontal</Orientation>  
+        <MinimumSize>-1,-1</MinimumSize>
+		<SizePolicy>me,me</SizePolicy>	
+		<SplitSizes>1,9</SplitSizes> <!-- eg: 1 == 10%, 9 == 90% -->
+		<Children>
+		<WidgetGroup>	
+		<Layout>vertical</Layout>
+		<Children>		
+
+		
+		<!-- Preview Deck N1 -->
+		<WidgetGroup>
+		<ObjectName>PreviewDeck1</ObjectName>
+		<Size>100me,52f</Size>
+		<Layout>vertical</Layout>
+		<Children>
+		
+		<WidgetGroup>
+		<Size>100me,48f</Size>
+		<Layout>horizontal</Layout>
+		<Children>
+		
+		<!-- Preview Deck Column 1 Row 1 -->
+		<WidgetGroup>
+		<Layout>vertical</Layout>
+		<Children>
+		<WidgetGroup>		
+		<Layout>horizontal</Layout>
+		<SizePolicy>i,max</SizePolicy> <!-- To ignore childrens. Otherwise layouts widths are not respected, based on the size of the labels in this row -->
+		<Children>
+		
+		<!--
+		**********************************************
+		Text - Track Title
+		**********************************************
+		-->
+		
+		<Text>
+		<ObjectName>PreviewDeck1Texts</ObjectName>
+		<Group>[PreviewDeck1]</Group>
+		<Size>50me,16f</Size>
+		<Elide>right</Elide> <!-- Adds "..." -->
+		</Text>		
+
+		
+		</Children>
+		</WidgetGroup>
+		<!-- Preview Deck Column 1 Row 2 -->
+												
+		<WidgetGroup>
+		<ObjectName>PreviewDeck_C1</ObjectName>
+		<Size>50me,26f</Size>
+		<Layout>horizontal</Layout>
+		<Children>
+													
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_play_preview_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_play_preview.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_play_preview_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_play_preview_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[PreviewDeck1],play</ConfigKey>
+		<EmitOnDownPress>true</EmitOnDownPress>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[PreviewDeck1],start</ConfigKey>
+		<EmitOnDownPress>true</EmitOnDownPress>
+		<ButtonState>RightButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		</PushButton>
+														
+		<Overview>
+		<Group>[PreviewDeck1]</Group>
+		<Size>10me,20f</Size>
+		<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+		<BgColor></BgColor>
+		<BgPixmap>gfx_hifi/wave_background_medium.svg</BgPixmap> <!-- bg image must be set here, not in "style.qss" -->
+		<SignalHighColor>#5f4d75</SignalHighColor><!-- highs - clear -->
+		<SignalMidColor>#230d44</SignalMidColor>  <!-- mediums - dark -->
+		<SignalLowColor>#180831</SignalLowColor>  <!-- lows - darker -->
+		<SignalColor>#7c708f</SignalColor>        <!-- "main wave" -->
+		<PlayPosColor>#ece7f5</PlayPosColor>
+		<BeatColor>#d8cbec</BeatColor>
+		<EndOfTrackColor>#6e4aaa</EndOfTrackColor>					
+		<AxesColor>#580078</AxesColor>
+		<DefaultMark> <!-- Applies to numbers 1 to 8 -->
+		<Align>top</Align>
+		<Color>#dbb7ff</Color>
+		<TextColor>#ffffff</TextColor>
+		<Text> %1 </Text>
+		</DefaultMark>
+		<MarkRange> <!-- ... -->
+		<StartControl>loop_start_position</StartControl>
+		<EndControl>loop_end_position</EndControl>
+		<EnabledControl>loop_enabled</EnabledControl>
+		<Color>#dbb7ff</Color>
+		<DisabledColor>#ffffff</DisabledColor>
+		</MarkRange>
+		<Mark>
+		<Control>loop_start_position</Control>
+		<Pixmap></Pixmap>
+		<Text> START </Text>
+		<Align>top</Align>
+		<Color>#cb97fb</Color>
+		<TextColor>#ffffff</TextColor>
+		</Mark>
+		<Mark>
+		<Control>loop_end_position</Control>
+		<Pixmap></Pixmap>
+		<Text> END </Text>
+		<Align>top</Align>
+		<Color>#cb97fb</Color>
+		<TextColor>#ffffff</TextColor>
+		</Mark>	
+		<Mark> <!-- Cue -->
+		<Control>cue_point</Control>
+		<Pixmap></Pixmap>
+		<Text> CUE </Text>
+		<Align>top</Align>
+		<Color>#cb97fb</Color>
+		<TextColor>#ffffff</TextColor>
+		</Mark>			
+		<Connection>
+		<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</Overview>
+		
+		<!--
+		**********************************************
+		Button - Eject
+		**********************************************
+		-->
+		
+		<PushButton>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_eject_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_eject.svg</Unpressed>
+		</State>
+		<Pos></Pos>
+		<Connection>
+		<ConfigKey>[PreviewDeck1],eject</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		</PushButton>
+		
+		</Children>
+		</WidgetGroup>
+		</Children>
+		</WidgetGroup>
+
+		<!-- Preview Deck Column 2 -->
+		<WidgetGroup>
+		<ObjectName>PreviewDeck_C2</ObjectName>
+		<Size>25,44</Size>
+		<SizePolicy>f,me</SizePolicy>
+		<Children>
+		
+		<!--
+		**********************************************
+		Visual - Volume peak indicator
+		**********************************************
+		-->
+		
+		<StatusLight>
+		<PathStatusLight>gfx_hifi/volume_clipping_preview_over.svg</PathStatusLight>
+		<PathBack>gfx_hifi/volume_clipping_preview.svg</PathBack>
+		<Pos>0,2</Pos>
+		<Connection>
+		<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		
+		<!--
+		**********************************************
+		Visual - Volume level display
+		**********************************************
+		-->
+		
+		<VuMeter>
+		<PathVu>gfx_hifi/volume_display_preview_over.svg</PathVu>
+		<PathBack>gfx_hifi/volume_display_preview.svg</PathBack>
+		<Pos>0,12</Pos>
+		<Horizontal>false</Horizontal>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
+		</Connection>
+		</VuMeter>	
+		
+		<SliderComposed>
+		<Handle>gfx_hifi/knob_volume_preview.svg</Handle>
+		<Slider>gfx_hifi/slider_volume_preview.svg</Slider>
+		<Pos>10,2</Pos>
+		<Horizontal>false</Horizontal>
+		<Connection>
+		<ConfigKey>[PreviewDeck1],pregain</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+		
+		</Children>
+		</WidgetGroup>
+		
+		</Children>
+		</WidgetGroup>
+		
+		</Children>
+		<Connection>
+		<ConfigKey>[PreviewD1],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>
+		</WidgetGroup>		
+		
+
+		
+
+		<WidgetGroup>
+		<ObjectName>SearchBoxArea</ObjectName>
+		<Size>100me,28f</Size>
+		<Layout>vertical</Layout>
+		<Children>
+		<SearchBox> <!-- THE Search Box !!! --> </SearchBox>
+		</Children>
+		<Connection>
+		<ConfigKey>[SearchTextBox1],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>
+		</WidgetGroup>		 
+
+
+		
+		<!-- QSplitter (Between Sidebar and CoverArt) -->
+        <Splitter>
+        <ObjectName>SplitterHorizontal</ObjectName>
+        <Orientation>vertical</Orientation>        
+        <MinimumSize>100,-1</MinimumSize>
+		<SizePolicy>me,me</SizePolicy>
+		<SplitSizes>9,1</SplitSizes>  <!-- eg: 1 == 10%, 9 == 90% -->
+        <Children>
+		
+		<WidgetGroup>
+		<ObjectName>LibraryTree</ObjectName>
+		<Size>100me,50me</Size>
+		<Layout>horizontal</Layout>
+		<Children>
+		<LibrarySidebar> <!-- THE Directories Tree !!! --> </LibrarySidebar>	
+		</Children>
+		</WidgetGroup>		
+
+		<WidgetGroup>
+		<ObjectName>LibraryCoverArtFrame</ObjectName>
+		<Size>100me,-1me</Size>
+		<Layout>vertical</Layout>
+		<Children>		
+		<CoverArt>
+		<ObjectName>LibraryCoverArt</ObjectName>
+		<MinimumSize>50,-1</MinimumSize>
+		<SizePolicy>me,me</SizePolicy>  
+		<!--
+		<Connection>
+		<ConfigKey>[Library],show_coverart</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>
+		-->
+		</CoverArt>
+		</Children>
+		</WidgetGroup>		
+		
+		</Children>
+		</Splitter>
+
+		</Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<Layout>vertical</Layout>
+		<Children>
+		<Library> <!-- THE Library Table !!! (QGroupBox{}) --> </Library>
+		</Children>
+		</WidgetGroup>
+		
+		</Children>
+		</Splitter>
+		
+		<WidgetGroup> <!-- Design only: Visual Rack Left -->
+		<ObjectName>Rack500</ObjectName>
+		<MinimumSize>15,1</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		
+		</Children>
+	</WidgetGroup>
+	
+	</Children>
+	</WidgetGroup>
+	
+</Template>

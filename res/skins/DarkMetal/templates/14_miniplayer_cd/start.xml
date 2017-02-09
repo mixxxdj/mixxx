@@ -1,0 +1,71 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<!-- WIDGETGROUP: Mini Player AB -->	
+	<WidgetGroup>
+	<ObjectName>MiniPlayer</ObjectName>
+	<Pos>0,0</Pos>
+	<MinimumSize>1,46</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	
+	<WidgetGroup>
+	<ObjectName>MPRow1</ObjectName>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	<!-- Mini Player A -->
+	<Template src="skin:templates/14_miniplayer_cd/minideck_left.xml">
+	<SetVariable name="audiochannel">3</SetVariable>
+	<SetVariable name="minidecktohide">4</SetVariable>
+	</Template>	
+	
+	<!-- Slider - Crossfader -->
+	<WidgetGroup>
+	<ObjectName>MiniFader</ObjectName>
+	<MinimumSize>200,45</MinimumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Children>					
+	<SliderComposed>
+	<Pos>20,0</Pos>	
+	<Handle>gfx_hifi/knob_crossfader.svg</Handle>
+	<Slider>gfx_hifi/slider_crossfader.svg</Slider>
+	<Horizontal>true</Horizontal>
+	<Connection>
+	<ConfigKey>[Master],crossfader</ConfigKey>
+	<EmitOnDownPress>false</EmitOnDownPress>
+	</Connection>
+	</SliderComposed>
+	</Children>
+	</WidgetGroup>		
+	
+	<!-- Mini Player B -->
+	<Template src="skin:templates/14_miniplayer_cd/minideck_right.xml">
+	<SetVariable name="audiochannel">4</SetVariable>
+	<SetVariable name="minidecktohide">3</SetVariable>
+	</Template>			
+		
+	</Children>
+	</WidgetGroup>	
+
+	<!-- Design only: For creating an horizontal long line: -->
+	<WidgetGroup>
+	<ObjectName>HorizontalLine</ObjectName>
+	<MinimumSize>10,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+		
+	</Children>
+	<!-- Show/Hide this Group: -->
+	<Connection>
+	<ConfigKey>[MiniPlayer2],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+	
+</Template>

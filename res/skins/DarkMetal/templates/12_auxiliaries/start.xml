@@ -1,0 +1,562 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<!-- WIDGETGROUP: Tool Bar Microphones -->	
+	<WidgetGroup>
+	<ObjectName>ToolBarAuxiliaries</ObjectName>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	
+	<WidgetGroup>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>
+	
+	<WidgetGroup><!-- Design -->
+	<ObjectName>VerticalLineDarker</ObjectName>
+	<MinimumSize>3,45</MinimumSize>
+	<SizePolicy>f,me</SizePolicy>
+	<Children></Children>
+	</WidgetGroup>
+
+		<!--
+        <Label>
+        <ObjectName>MicSubTitle</ObjectName>
+        <Text>Aux <Variable name="auxnum"/></Text>
+        </Label>
+		-->	
+
+		<!--
+		********************************************************************************************
+		********************************************************************************************
+		Auxiliary N1 - Group:
+		********************************************************************************************
+		********************************************************************************************
+		-->
+
+		<WidgetGroup>
+		<ObjectName>Auxiliary</ObjectName>
+		<MinimumSize>175,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+		
+			<!-- VUMeter: -->
+			<VuMeter>
+			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
+			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<Pos>15,29</Pos>
+			<Horizontal>true</Horizontal>
+			<PeakHoldSize>5</PeakHoldSize>
+			<PeakHoldTime>600</PeakHoldTime>
+			<PeakFallTime>100</PeakFallTime>
+			<PeakFallStep>1</PeakFallStep>
+			<Connection>
+			<ConfigKey>[Auxiliary1],VuMeter</ConfigKey>
+			</Connection>
+			</VuMeter>
+			
+			<!-- Peak indicator: -->						
+			<StatusLight>
+			<Pos>85,29</Pos>
+			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
+			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<Connection>
+			<ConfigKey>[Auxiliary1],PeakIndicator</ConfigKey>
+			</Connection>
+			</StatusLight>
+			
+			<!-- Volume: -->			
+			<KnobComposed>
+			<Pos>105,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Auxiliary1],pregain</ConfigKey>
+			</Connection>
+			</KnobComposed>	
+			
+			<!-- Mute: -->
+			<PushButton>
+			<Pos>12,6</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_mute_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_mute_1_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary1],mute</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+	
+			<!-- Headphones: -->
+			<PushButton>
+			<Pos>34,6</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_headphones_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_headphones_1_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary1],pfl</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+				  
+			<!-- M,L,R: -->			
+			<PushButton>
+			<Pos>53,8</Pos>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary1],orientation</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>		
+
+		</Children>
+		</WidgetGroup>	
+		
+
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLineDarker</ObjectName>
+		<MinimumSize>3,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		********************************************************************************************
+		********************************************************************************************
+		Auxiliary N2 - Group:
+		********************************************************************************************
+		********************************************************************************************
+		-->
+
+		<WidgetGroup>
+		<ObjectName>Auxiliary</ObjectName>
+		<MinimumSize>175,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+		
+			<!-- VUMeter: -->
+			<VuMeter>
+			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
+			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<Pos>15,29</Pos>
+			<Horizontal>true</Horizontal>
+			<PeakHoldSize>5</PeakHoldSize>
+			<PeakHoldTime>600</PeakHoldTime>
+			<PeakFallTime>100</PeakFallTime>
+			<PeakFallStep>1</PeakFallStep>
+			<Connection>
+			<ConfigKey>[Auxiliary2],VuMeter</ConfigKey>
+			</Connection>
+			</VuMeter>
+			
+			<!-- Peak indicator: -->						
+			<StatusLight>
+			<Pos>85,29</Pos>
+			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
+			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<Connection>
+			<ConfigKey>[Auxiliary2],PeakIndicator</ConfigKey>
+			</Connection>
+			</StatusLight>	
+			
+			<!-- Volume: -->
+			<KnobComposed>
+			<Pos>105,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Auxiliary2],pregain</ConfigKey>
+			</Connection>
+			</KnobComposed>	
+			
+			<!-- Mute: -->
+			<PushButton>
+			<Pos>12,6</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_mute_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_mute_1_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary2],mute</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+	
+			<!-- Headphones: -->
+			<PushButton>
+			<Pos>34,6</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_headphones_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_headphones_1_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary2],pfl</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+				  
+			<!-- M,L,R: -->			
+			<PushButton>
+			<Pos>53,8</Pos>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary2],orientation</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>		
+
+		</Children>
+		</WidgetGroup>	
+		
+
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLineDarker</ObjectName>
+		<MinimumSize>3,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		********************************************************************************************
+		********************************************************************************************
+		Auxiliary N3 - Group:
+		********************************************************************************************
+		********************************************************************************************
+		-->
+
+		<WidgetGroup>
+		<ObjectName>Auxiliary</ObjectName>
+		<MinimumSize>175,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+		
+			<!-- VUMeter: -->
+			<VuMeter>
+			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
+			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<Pos>15,29</Pos>
+			<Horizontal>true</Horizontal>
+			<PeakHoldSize>5</PeakHoldSize>
+			<PeakHoldTime>600</PeakHoldTime>
+			<PeakFallTime>100</PeakFallTime>
+			<PeakFallStep>1</PeakFallStep>
+			<Connection>
+			<ConfigKey>[Auxiliary3],VuMeter</ConfigKey>
+			</Connection>
+			</VuMeter>
+			
+			<!-- Peak indicator: -->						
+			<StatusLight>
+			<Pos>85,29</Pos>
+			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
+			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<Connection>
+			<ConfigKey>[Auxiliary3],PeakIndicator</ConfigKey>
+			</Connection>
+			</StatusLight>	
+			
+			<!-- Volume: -->
+			<KnobComposed>
+			<Pos>105,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Auxiliary3],pregain</ConfigKey>
+			</Connection>
+			</KnobComposed>	
+			
+			<!-- Mute: -->
+			<PushButton>
+			<Pos>12,6</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_mute_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_mute_1_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary3],mute</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+	
+			<!-- Headphones: -->
+			<PushButton>
+			<Pos>34,6</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_headphones_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_headphones_1_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary3],pfl</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+				  
+			<!-- M,L,R: -->			
+			<PushButton>
+			<Pos>53,8</Pos>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary3],orientation</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>		
+
+		</Children>
+		</WidgetGroup>	
+		
+
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLineDarker</ObjectName>
+		<MinimumSize>3,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		********************************************************************************************
+		********************************************************************************************
+		Auxiliary N4 - Group:
+		********************************************************************************************
+		********************************************************************************************
+		-->
+
+		<WidgetGroup>
+		<ObjectName>Auxiliary</ObjectName>
+		<MinimumSize>175,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+		
+			<!-- VUMeter: -->
+			<VuMeter>
+			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
+			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<Pos>15,29</Pos>
+			<Horizontal>true</Horizontal>
+			<PeakHoldSize>5</PeakHoldSize>
+			<PeakHoldTime>600</PeakHoldTime>
+			<PeakFallTime>100</PeakFallTime>
+			<PeakFallStep>1</PeakFallStep>
+			<Connection>
+			<ConfigKey>[Auxiliary4],VuMeter</ConfigKey>
+			</Connection>
+			</VuMeter>
+			
+			<!-- Peak indicator: -->						
+			<StatusLight>
+			<Pos>85,29</Pos>
+			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
+			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<Connection>
+			<ConfigKey>[Auxiliary4],PeakIndicator</ConfigKey>
+			</Connection>
+			</StatusLight>		
+			
+			<!-- Volume: -->
+			<KnobComposed>
+			<Pos>105,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Auxiliary4],pregain</ConfigKey>
+			</Connection>
+			</KnobComposed>	
+			
+			<!-- Mute: -->
+			<PushButton>
+			<Pos>12,6</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_mute_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_mute_1_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary4],mute</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+	
+			<!-- Headphones: -->
+			<PushButton>
+			<Pos>34,6</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_headphones_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_headphones_1_over.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary4],pfl</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+				  
+			<!-- M,L,R: -->			
+			<PushButton>
+			<Pos>53,8</Pos>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary4],orientation</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>		
+
+		</Children>
+		</WidgetGroup>	
+
+		
+		
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLineDarker</ObjectName>
+		<MinimumSize>3,45</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		
+		
+	<WidgetGroup>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>
+	
+	</Children>	
+	<!-- Show/Hide -->
+	<Connection>
+	<ConfigKey>[ToolBarAuxiliaries],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+	
+</Template>

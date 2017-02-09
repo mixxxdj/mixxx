@@ -1,0 +1,702 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<WidgetGroup>
+	<ObjectName>ToolBar2</ObjectName>
+	<Pos>0,0</Pos>
+	<MinimumSize>1,51</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	
+	<!-- WIDGETGROUP: Tool Bar 2 -->	
+	<WidgetGroup>
+	<MinimumSize>10,50</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+		
+	<WidgetGroup>
+	<MinimumSize>1,50</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>
+
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLine</ObjectName>
+		<MinimumSize>3,50</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>HeadphoneButtons</ObjectName>
+		<MinimumSize>100,50</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+				
+		<!--
+		**********************************************
+		RotaryFader - Head vol
+		**********************************************
+		-->
+		
+		<KnobComposed>
+		<Pos>6,7</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob2.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Master],headVolume</ConfigKey>
+		</Connection>
+		</KnobComposed>
+
+		<!--
+		**********************************************
+		RotaryFader - Head mix
+		**********************************************
+		-->
+
+		<KnobComposed>
+		<Pos>53,7</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob2.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Master],headMix</ConfigKey>
+		</Connection>
+		</KnobComposed>
+		
+		</Children>
+		</WidgetGroup>
+
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLine</ObjectName>
+		<MinimumSize>3,50</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+
+		<WidgetGroup>
+		<ObjectName>MasterButtons</ObjectName>
+		<MinimumSize>100,50</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>		
+
+		<!--
+		**********************************************
+		RotaryFader - Balance
+		**********************************************
+		-->
+
+		<KnobComposed>
+		<Pos>6,7</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob2.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Master],balance</ConfigKey>
+		</Connection>
+		</KnobComposed>
+
+		<!--
+		**********************************************
+		RotaryFader - Master volume
+		**********************************************
+		-->
+
+		<KnobComposed>
+		<Pos>53,7</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob2.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Master],volume</ConfigKey>
+		</Connection>
+		</KnobComposed>
+			
+		</Children>
+		</WidgetGroup>
+		
+
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLine</ObjectName>
+		<MinimumSize>3,50</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+
+		
+		<WidgetGroup>
+		<ObjectName>GlobalVUS</ObjectName>
+		<MinimumSize>36,50</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+		
+		<!--
+		**********************************************
+		**********************************************
+		Visual - Volume level display
+		**********************************************
+		**********************************************
+		-->	
+
+		<VuMeter>	
+		<ObjectName>VuMeterL1</ObjectName>
+		<PathVu>gfx_hifi/volume_display_small_over.svg</PathVu>
+		<PathBack>gfx_hifi/volume_display_small.svg</PathBack>
+		<Pos>10,15</Pos>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Master],VuMeterL</ConfigKey>
+		</Connection>
+		</VuMeter>
+		
+		<VuMeter>
+		<ObjectName>VuMeterR1</ObjectName>
+		<PathVu>gfx_hifi/volume_display_small_over.svg</PathVu>
+		<PathBack>gfx_hifi/volume_display_small.svg</PathBack>
+		<Pos>19,15</Pos>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Master],VuMeterR</ConfigKey>
+		</Connection>
+		</VuMeter>
+
+		<!--
+		**********************************************
+		Visual - Volume peak indicator
+		**********************************************
+		-->		
+
+		<StatusLight><!-- MASTER peaks indicators -->	
+		<PathStatusLight>gfx_hifi/volume_clipping_small_over.svg</PathStatusLight>
+		<PathBack>gfx_hifi/volume_clipping_small.svg</PathBack>
+		<Pos>10,8</Pos>
+		<Connection>
+		<ConfigKey>[Master],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>	
+	
+		<StatusLight><!-- MASTER peaks indicators -->	
+		<PathStatusLight>gfx_hifi/volume_clipping_small_over.svg</PathStatusLight>
+		<PathBack>gfx_hifi/volume_clipping_small.svg</PathBack>
+		<Pos>19,8</Pos>
+		<Connection>
+		<ConfigKey>[Master],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		
+		</Children>
+		</WidgetGroup>
+		
+		
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLine</ObjectName>
+		<MinimumSize>3,50</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>		
+		
+		
+		<WidgetGroup>
+		<ObjectName>AnalogVUS</ObjectName>
+		<MinimumSize>210,50</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>
+		<Children>
+		
+		<WidgetGroup>
+		<ObjectName>SetArea</ObjectName>
+		<MinimumSize>50,50</MinimumSize>
+		<MaximumSize>50,50</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout><!-- empty, needed for overlap the next elements --></Layout>
+		<Children>
+		<KnobComposed>
+		<Size>50f,50f</Size>
+		<BackPath>gfx_hifi/background_analogvu_1.svg</BackPath>
+		<Knob>gfx_hifi/pointer_vu1.svg</Knob>
+		<MinAngle>-50</MinAngle>
+		<MaxAngle>50</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel1],VuMeter</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState></ButtonState>
+		</Connection>
+		</KnobComposed>
+		<NumberDb>
+		<ObjectName>DBDisplay</ObjectName>
+		<Pos>5,20</Pos>
+		<Size>40f,22f</Size>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>2</NumberOfDigits>
+		<Connection>
+		<ConfigKey>[Channel1],pregain</ConfigKey>
+		</Connection>
+		</NumberDb>		
+		<StatusLight>
+		<PathStatusLight>gfx_hifi/background_analogvu_1_peak.svg</PathStatusLight>
+		<PathBack></PathBack>		
+		<Connection>
+		<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		<PushButton>
+		<Pos>4,39</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_mute_3.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_mute_3.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_mute_3.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_mute_3_over.svg</Unpressed>
+		</State>					
+		<Connection>
+		<ConfigKey>[Channel1],mute</ConfigKey>
+		</Connection>
+		</PushButton>
+		</Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>SetArea</ObjectName>
+		<MinimumSize>50,50</MinimumSize>
+		<MaximumSize>50,50</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout><!-- empty, needed for overlap the next elements --></Layout>
+		<Children>		
+		<KnobComposed>
+		<Size>50f,50f</Size>
+		<BackPath>gfx_hifi/background_analogvu_2.svg</BackPath>
+		<Knob>gfx_hifi/pointer_vu1.svg</Knob>
+		<MinAngle>-50</MinAngle>
+		<MaxAngle>50</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel2],VuMeter</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState></ButtonState>
+		</Connection>
+		</KnobComposed>		
+		<NumberDb>
+		<ObjectName>DBDisplay</ObjectName>
+		<Pos>5,20</Pos>
+		<Size>40f,22f</Size>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>2</NumberOfDigits>
+		<Connection>
+		<ConfigKey>[Channel2],pregain</ConfigKey>
+		</Connection>
+		</NumberDb>		
+		<StatusLight>
+		<PathStatusLight>gfx_hifi/background_analogvu_2_peak.svg</PathStatusLight>
+		<PathBack></PathBack>		
+		<Connection>
+		<ConfigKey>[Channel2],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		<PushButton>
+		<Pos>4,39</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_mute_3.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_mute_3.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_mute_3.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_mute_3_over.svg</Unpressed>
+		</State>					
+		<Connection>
+		<ConfigKey>[Channel2],mute</ConfigKey>
+		</Connection>
+		</PushButton>
+		</Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>SetArea</ObjectName>
+		<MinimumSize>50,50</MinimumSize>
+		<MaximumSize>50,50</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout><!-- empty, needed for overlap the next elements --></Layout>
+		<Children>		
+		<KnobComposed>
+		<Size>50f,50f</Size>
+		<BackPath>gfx_hifi/background_analogvu_3.svg</BackPath>
+		<Knob>gfx_hifi/pointer_vu1.svg</Knob>
+		<MinAngle>-50</MinAngle>
+		<MaxAngle>50</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel3],VuMeter</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState></ButtonState>
+		</Connection>
+		</KnobComposed>			
+		<NumberDb>
+		<ObjectName>DBDisplay</ObjectName>
+		<Pos>5,20</Pos>
+		<Size>40f,22f</Size>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>2</NumberOfDigits>
+		<Connection>
+		<ConfigKey>[Channel3],pregain</ConfigKey>
+		</Connection>
+		</NumberDb>		
+		<StatusLight>
+		<PathStatusLight>gfx_hifi/background_analogvu_3_peak.svg</PathStatusLight>
+		<PathBack></PathBack>		
+		<Connection>
+		<ConfigKey>[Channel3],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		<PushButton>
+		<Pos>4,39</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_mute_3.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_mute_3.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_mute_3.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_mute_3_over.svg</Unpressed>
+		</State>					
+		<Connection>
+		<ConfigKey>[Channel3],mute</ConfigKey>
+		</Connection>
+		</PushButton>
+		</Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>SetArea</ObjectName>
+		<MinimumSize>50,50</MinimumSize>
+		<MaximumSize>50,50</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout><!-- empty, needed for overlap the next elements --></Layout>
+		<Children>		
+		<KnobComposed>
+		<Size>50f,50f</Size>
+		<BackPath>gfx_hifi/background_analogvu_4.svg</BackPath>
+		<Knob>gfx_hifi/pointer_vu1.svg</Knob>
+		<MinAngle>-50</MinAngle>
+		<MaxAngle>50</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel4],VuMeter</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState></ButtonState>
+		</Connection>
+		</KnobComposed>			
+		<NumberDb>
+		<ObjectName>DBDisplay</ObjectName>
+		<Pos>5,20</Pos>
+		<Size>40f,22f</Size>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>2</NumberOfDigits>
+		<Connection>
+		<ConfigKey>[Channel4],pregain</ConfigKey>
+		</Connection>
+		</NumberDb>		
+		<StatusLight>
+		<PathStatusLight>gfx_hifi/background_analogvu_4_peak.svg</PathStatusLight>
+		<PathBack></PathBack>		
+		<Connection>
+		<ConfigKey>[Channel4],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		<PushButton>
+		<Pos>4,39</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_mute_3.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_mute_3.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_mute_3.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_mute_3_over.svg</Unpressed>
+		</State>					
+		<Connection>
+		<ConfigKey>[Channel4],mute</ConfigKey>
+		</Connection>
+		</PushButton>
+		</Children>
+		</WidgetGroup>
+		
+		</Children>
+		</WidgetGroup>	
+		
+		
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLine</ObjectName>
+		<MinimumSize>3,50</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**********************************************
+		Broadcast:
+		**********************************************
+		-->
+		
+		<WidgetGroup>				
+		<ObjectName>Broadcast</ObjectName>
+		<MinimumSize>100,50</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>			
+			<PushButton>
+			<Pos>0,0</Pos>
+			<NumberStates>4</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_broadcast_unconnected.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_broadcast_unconnected.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_broadcast_connecting.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_broadcast_connecting.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>gfx_hifi/btn_broadcast_connected.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_broadcast_connected.svg</Unpressed>
+			</State>
+			<State>
+			<Number>3</Number>
+			<Pressed>gfx_hifi/btn_broadcast_failure.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_broadcast_failure.svg</Unpressed>
+			</State>			
+			<Connection>
+			<ConfigKey>[Shoutcast],enabled</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			<Connection>
+			<ConfigKey>[Shoutcast],status</ConfigKey>
+			</Connection>
+			</PushButton>
+		</Children>			
+		</WidgetGroup>
+		
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLine</ObjectName>
+		<MinimumSize>3,50</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+
+		<!--
+		**********************************************
+		Record
+		**********************************************
+		-->
+
+		<WidgetGroup>				
+		<ObjectName>Record</ObjectName>
+		<MinimumSize>65,50</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>			
+			<PushButton>
+			<NumberStates>3</NumberStates>
+			<LeftClickIsPushButton>true</LeftClickIsPushButton>
+			<RightClickIsPushButton>true</RightClickIsPushButton>
+			<State>
+			<!-- RECORD OFF -->
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_record_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_record.svg</Unpressed>
+			</State>
+			<State>
+			<!-- RECORD READY-->
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_record_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_record_over.svg</Unpressed>
+			</State>
+			<State>
+			<!-- RECORD ON-->
+			<Number>2</Number>
+			<Pressed>gfx_hifi/btn_record_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_record_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[Recording],toggle_recording</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+			</Connection>
+			<Connection>
+			<ConfigKey>[Recording],status</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			</Connection>
+			</PushButton>
+		</Children>			
+		</WidgetGroup>
+		
+		
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLine</ObjectName>
+		<MinimumSize>3,50</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		
+		
+		<!--
+		**********************************************
+		Auto DJ
+		**********************************************
+		-->
+
+		<WidgetGroup>				
+		<ObjectName>AutoDJ</ObjectName>
+		<MinimumSize>65,50</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>			
+			<PushButton>				
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>gfx_hifi/btn_autodj_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_autodj.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>gfx_hifi/btn_autodj_over.svg</Pressed>
+			<Unpressed>gfx_hifi/btn_autodj_over.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[AutoDJ],enabled</ConfigKey>
+			</Connection>
+			</PushButton>
+		</Children>			
+		</WidgetGroup>		
+
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLine</ObjectName>
+		<MinimumSize>3,50</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**********************************************
+		Clock
+		**********************************************
+		-->
+
+		<WidgetGroup>				
+		<ObjectName>Clock</ObjectName>
+		<MinimumSize>100,50</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>			
+			<Time>
+			<ObjectName>ClockTexts</ObjectName>
+			<Pos>21,24</Pos>
+			<CustomFormat>hh:mm:ss</CustomFormat>
+			<ShowSeconds>true</ShowSeconds>
+			<ClockFormat>24</ClockFormat>
+			</Time>					
+		</Children>			
+		</WidgetGroup>
+		
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLine</ObjectName>
+		<MinimumSize>3,50</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>		
+		
+		<!--
+		**********************************************
+		Latency
+		**********************************************
+		-->
+		
+		<WidgetGroup>	
+		<ObjectName>LatencyVumeter</ObjectName>
+		<MinimumSize>100,50</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+						
+		<VuMeter>
+		<Pos>25,28</Pos>
+		<MinimumSize>50,5</MinimumSize>
+		<MaximumSize>50,5</MaximumSize>
+		<PathVu>gfx_hifi/latency_vumeter.svg</PathVu>
+		<PathBack>gfx_hifi/latency_vumeter_back.svg</PathBack>			
+		<Horizontal>true</Horizontal>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Master],audio_latency_usage</ConfigKey>
+		</Connection>
+		</VuMeter>			
+								
+		</Children>			
+		</WidgetGroup>
+
+		<WidgetGroup><!-- Design -->
+		<ObjectName>VerticalLine</ObjectName>
+		<MinimumSize>3,50</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>		
+		
+		
+	<WidgetGroup>
+	<MinimumSize>1,50</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>
+	
+	
+	</Children>
+	</WidgetGroup>
+	
+	<!-- Design only: For creating an horizontal long line: -->
+	<WidgetGroup>
+	<ObjectName>HorizontalLine</ObjectName>
+	<MinimumSize>10,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+	
+	</Children>
+	</WidgetGroup>
+	
+	
+</Template>

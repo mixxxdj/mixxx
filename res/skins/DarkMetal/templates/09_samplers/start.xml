@@ -1,0 +1,75 @@
+<!DOCTYPE template>
+
+<Template>	
+	
+	<WidgetGroup>
+	<ObjectName>SamplersRack</ObjectName>	
+	<MinimumSize>-1,150</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout> 
+	<Children>
+
+	<WidgetGroup>
+	<ObjectName>SamplersOptionsBg</ObjectName>
+	<MinimumSize>-1,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>	
+	<Children>
+	<Template src="skin:templates/09_samplers/sampler_toolbar.xml">
+	<SetVariable name="toolbarnum_a">2</SetVariable>
+	<SetVariable name="toolbarnum_b">1</SetVariable>
+	<SetVariable name="samplernum_a">5</SetVariable>
+	<SetVariable name="samplernum_b">6</SetVariable>
+	<SetVariable name="samplernum_c">7</SetVariable>
+	<SetVariable name="samplernum_d">8</SetVariable>		
+	</Template>	
+	</Children>
+	</WidgetGroup>		
+	
+	
+	<!-- WIDGETGROUP: Row of Samplers -->
+	<WidgetGroup>
+	<MinimumSize>-1,120</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>	
+	<Children>
+	
+	<WidgetGroup> <!-- Design only: Visual Rack Left -->
+	<ObjectName>Rack120</ObjectName>
+	<MinimumSize>15,120</MinimumSize>
+	<SizePolicy>f,me</SizePolicy>
+	<Children><!-- Design --></Children>
+	</WidgetGroup>	
+
+		<WidgetGroup>
+		<MinimumSize>-1,120</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>
+		<Template src="skin:templates/09_samplers/sampler_module.xml"><SetVariable name="samplernum">5</SetVariable></Template>	
+		<Template src="skin:templates/09_samplers/sampler_module.xml"><SetVariable name="samplernum">6</SetVariable></Template>
+		<Template src="skin:templates/09_samplers/sampler_module.xml"><SetVariable name="samplernum">7</SetVariable></Template>
+		<Template src="skin:templates/09_samplers/sampler_module.xml"><SetVariable name="samplernum">8</SetVariable></Template>	
+		</Children>
+		</WidgetGroup>
+
+	<WidgetGroup> <!-- Design only: Visual Rack Right -->
+	<ObjectName>Rack120</ObjectName>
+	<MinimumSize>15,120</MinimumSize>
+	<SizePolicy>f,me</SizePolicy>
+	<Children><!-- Design --></Children>
+	</WidgetGroup>	
+	
+	</Children>
+	</WidgetGroup>	
+
+	
+	</Children>	
+	<!-- Show/Hide this Group: -->
+	<Connection>
+	<ConfigKey>[SamplersRack2],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>					
+	</WidgetGroup>	
+
+</Template>

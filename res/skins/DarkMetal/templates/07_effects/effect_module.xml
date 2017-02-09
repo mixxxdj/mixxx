@@ -1,0 +1,77 @@
+<!DOCTYPE template>
+
+<Template>
+		
+		<WidgetGroup>
+		<ObjectName>EffectsModule<Variable name="unit"/></ObjectName>	
+		<MinimumSize>640,85</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+			
+			<WidgetGroup>
+				<BackPath>gfx_hifi/background_effects_unit.svg</BackPath>
+				<Children>
+											
+					<KnobComposed><!-- Button: Super -->
+						<Pos>9,17</Pos>
+						<Size>25f,25f</Size>
+						<BackPath>gfx_hifi/background_knob4.svg</BackPath>
+						<Knob>gfx_hifi/pointer_knob4.svg</Knob>
+						<MinAngle>-130</MinAngle>
+						<MaxAngle>130</MaxAngle>
+						<Connection>
+						<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],super1</ConfigKey>
+						</Connection>
+					</KnobComposed>
+							
+					<KnobComposed><!-- Button: Mix -->
+						<Pos>9,52</Pos>
+						<Size>25f,25f</Size>
+						<BackPath>gfx_hifi/background_knob4.svg</BackPath>
+						<Knob>gfx_hifi/pointer_knob4.svg</Knob>
+						<MinAngle>-130</MinAngle>
+						<MaxAngle>130</MaxAngle>
+						<Connection>
+						<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>],mix</ConfigKey>
+						</Connection>
+					</KnobComposed>			
+				
+					<WidgetGroup><!-- Select a channel for this unit: -->
+						<Pos>46,7</Pos>
+						<Size>100,23</Size>						
+						<Layout>vertical</Layout>						
+						<Children>						
+						<Template src="skin:templates/06_effects/effect_channel.xml"><Variable name="unit"/></Template>	
+						</Children>						
+					</WidgetGroup>
+					
+					<WidgetGroup><!-- Select an effect: -->
+						<Pos>50,50</Pos>
+						<Size>100,23</Size>
+						<Layout>vertical</Layout>
+						<Children>						
+						<Template src="skin:templates/06_effects/effect_select.xml"><SetVariable name="effect">1</SetVariable></Template>
+						</Children>
+					</WidgetGroup>
+					
+					<WidgetGroup><!-- Effect parameters: -->
+						<Pos>240,0</Pos>
+						<Size>390,85</Size>
+						<Layout>vertical</Layout>
+						<Children>
+						<Template src="skin:templates/06_effects/effect_parameters.xml"><SetVariable name="effect">1</SetVariable></Template>	
+						</Children>
+					</WidgetGroup>
+					
+				</Children>			
+			</WidgetGroup>
+
+		</Children>
+		<Connection>
+		<ConfigKey>[EffectsModule<Variable name="unit"/>],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>			
+		</WidgetGroup>			
+
+	
+</Template>

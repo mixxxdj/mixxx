@@ -1,0 +1,77 @@
+<!DOCTYPE template>
+
+<!--
+  Description:
+    Effect selector buttons.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+-->
+
+<Template>
+
+	<WidgetGroup>	
+	    <Layout>horizontal</Layout>
+	    <Children>
+		
+	    	<!-- Button: FX Kill -->
+			<PushButton>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>gfx_hifi/btn_fx_over.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_fx.svg</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>gfx_hifi/btn_fx_over.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_fx_over.svg</Unpressed>
+				</State>
+				<Connection>
+		        <ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>_Effect<Variable name="effect"/>],enabled</ConfigKey>
+		        <ButtonState>LeftButton</ButtonState>
+		 		</Connection>
+			</PushButton>
+		
+			
+			
+			<PushButton><!-- Button: Previous -->
+				<NumberStates>1</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>gfx_hifi/btn_previous_over.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_previous.svg</Unpressed>
+				</State>
+				<Connection>
+		      		<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>_Effect<Variable name="effect"/>],prev_effect</ConfigKey>
+					<ButtonState>LeftButton</ButtonState>
+		        </Connection>
+		    </PushButton>
+			
+			<EffectName><!-- effect name text -->
+		      	<ObjectName>EffectsTexts</ObjectName>
+		        <Size>102f,me</Size><!-- text lenght limit -->
+		        <EffectRack>1</EffectRack>
+		        <EffectUnit><Variable name="unit"/></EffectUnit>
+		        <Effect><Variable name="effect"/></Effect>
+		        <Elide>middle</Elide>
+		    </EffectName>
+			
+			<PushButton><!-- button: Next -->
+				<NumberStates>1</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>gfx_hifi/btn_next_over.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_next.svg</Unpressed>
+			    </State>
+				<Connection>
+			        <ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>_Effect<Variable name="effect"/>],next_effect</ConfigKey>
+			    	<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+			
+		</Children>
+	</WidgetGroup>
+	
+</Template>

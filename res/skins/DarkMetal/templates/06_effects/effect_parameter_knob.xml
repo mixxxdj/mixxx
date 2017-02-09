@@ -1,0 +1,101 @@
+<!DOCTYPE template>
+
+<!--
+  Description:
+    An effect parameter knob.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+    EffectParameter: the parameter
+-->
+
+<Template>
+
+	<WidgetGroup>
+		<ObjectName>EffectParameterKnob</ObjectName>
+		<Layout>vertical</Layout>		
+		<MinimumSize>40,75</MinimumSize>
+		<MaximumSize>-1,75</MaximumSize>
+		<SizePolicy>me,f</SizePolicy>		
+		<Children>
+		
+			<EffectParameterName>
+				<ObjectName>EffectsTextsSmall</ObjectName>
+				<EffectRack>1</EffectRack>
+				<EffectUnit><Variable name="unit"/></EffectUnit>
+				<Effect><Variable name="effect"/></Effect>
+				<EffectParameter><Variable name="effect_parameter"/></EffectParameter>
+			</EffectParameterName>
+			
+			<WidgetGroup>
+			<Layout>vertical</Layout>
+				<Children>
+				
+					<WidgetGroup>
+					<Layout>horizontal</Layout>
+					<Children>					
+						<KnobComposed>
+						<Size>40f,40f</Size>
+						<BackPath>gfx_hifi/background_knob3.svg</BackPath>
+						<Knob>gfx_hifi/pointer_knob3.svg</Knob>
+						<MinAngle>-130</MinAngle>
+						<MaxAngle>130</MaxAngle>
+						<Connection>
+						<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>_Effect<Variable name="effect"/>],parameter<Variable name="effect_parameter"/></ConfigKey>
+						</Connection>
+						</KnobComposed>
+					</Children>
+					</WidgetGroup>
+					
+					<WidgetGroup>
+					<Layout>horizontal</Layout>
+					<Children>
+					<PushButton>					
+					<!-- <ObjectName>ButtonsLinks</ObjectName> -->
+					<!-- <SizePolicy>me,me</SizePolicy> -->
+						<NumberStates>5</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_link_type_none.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_link_type_none.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_link_type_linked.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_link_type_linked.svg</Unpressed>
+						</State>
+				   		<State>
+							<Number>2</Number>
+							<Pressed>gfx_hifi/btn_link_type_left.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_link_type_left.svg</Unpressed>
+						</State>
+						<State>
+				  			<Number>3</Number>
+				  			<Pressed>gfx_hifi/btn_link_type_right.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_link_type_right.svg</Unpressed>
+						</State>
+				   		<State>
+				  			<Number>4</Number>
+				  			<Pressed>gfx_hifi/btn_link_type_left_right.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_link_type_left_right.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>_Effect<Variable name="effect"/>],parameter<Variable name="effect_parameter"/>_link_type</ConfigKey>
+				  			<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+					</Children>
+					</WidgetGroup>
+					
+				</Children>
+			</WidgetGroup>
+			
+		</Children>
+		<Connection>
+			<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>_Effect<Variable name="effect"/>],parameter<Variable name="effect_parameter"/>_loaded</ConfigKey>
+			<BindProperty>visible</BindProperty>
+		</Connection>
+	</WidgetGroup>
+	
+</Template>

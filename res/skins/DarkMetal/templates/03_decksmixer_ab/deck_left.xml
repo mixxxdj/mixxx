@@ -1,0 +1,1788 @@
+<!DOCTYPE template>
+
+<Template>
+
+<WidgetGroup>
+		<ObjectName>Deck<Variable name="audiochannel"/></ObjectName>
+			<MinimumSize>265,300</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Layout>vertical</Layout>
+			<Children>
+			
+			<!--
+			**********************************************
+			ROW: Vinyl - All Control Modes
+			**********************************************
+			-->
+			
+			<WidgetGroup>
+			<ObjectName>VinylControlsDeck<Variable name="audiochannel"/></ObjectName>
+			<MinimumSize>10,20</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Layout>horizontal</Layout>
+			<Children>
+				
+			<!--
+			**********************************************
+			Vinyl - Control Mode:
+			**********************************************
+			-->	
+			
+			<WidgetGroup>		
+			<MinimumSize>120,16</MinimumSize>
+			<SizePolicy>f,f</SizePolicy>
+			<Children>				
+				
+				<PushButton>
+				<NumberStates>3</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Unpressed>
+				</State>
+				<State>
+				<Number>2</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Unpressed>
+				</State>
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_mode</ConfigKey>
+				</Connection>
+				</PushButton>							
+
+				<PushButton>				
+				<NumberStates>3</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Unpressed>
+				</State>
+				<State>
+				<Number>2</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Unpressed>
+				</State>				
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_mode</ConfigKey>
+				</Connection>
+				</PushButton>
+				
+				<PushButton>
+				<NumberStates>3</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Unpressed>
+				</State>
+				<State>
+				<Number>2</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Unpressed>
+				</State>
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_mode</ConfigKey>
+				</Connection>
+				</PushButton>							
+
+			</Children>
+			</WidgetGroup>
+			
+			<WidgetGroup> <!-- Pusher: Pushes everything in this row to both sides, left and right -->				
+			<MinimumSize>1,16</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Children><!-- Pusher --></Children>
+			</WidgetGroup>	
+			
+			<!--
+			**********************************************
+			Vinyl - Cueing Mode:
+			**********************************************
+			-->
+			
+			<WidgetGroup>
+			<MinimumSize>120,16</MinimumSize>
+			<SizePolicy>f,f</SizePolicy>
+			<Children>
+			
+				<PushButton>								
+				<NumberStates>3</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_off.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_off.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_one.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_one.svg</Unpressed>
+				</State>
+				<State>
+				<Number>2</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_hot.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_hot.svg</Unpressed>
+				</State>
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_cueing</ConfigKey>
+				</Connection>
+				</PushButton>
+				
+				<PushButton>
+				<NumberStates>3</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_off.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_off.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_one.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_one.svg</Unpressed>
+				</State>
+				<State>
+				<Number>2</Number>
+				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_hot.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_hot.svg</Unpressed>
+				</State>
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_cueing</ConfigKey>
+				</Connection>
+				</PushButton>				
+				
+			</Children>
+			</WidgetGroup>	
+
+			<!--
+			**********************************************
+			Vinyl - On/Off:
+			**********************************************
+			-->
+				
+			<WidgetGroup>		
+			<MinimumSize>26,16</MinimumSize>
+			<SizePolicy>f,f</SizePolicy>
+			<Children>
+
+				<PushButton>				
+				<NumberStates>2</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>gfx_hifi/btn_on.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_off.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>gfx_hifi/btn_on.svg</Pressed>
+				<Unpressed>gfx_hifi/btn_on.svg</Unpressed>
+				</State>
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_enabled</ConfigKey>
+				</Connection>
+				</PushButton>
+				
+			</Children>
+			</WidgetGroup>			
+				
+			</Children>
+			</WidgetGroup>
+
+			<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+			<ObjectName>HorizontalLine</ObjectName>
+			<MinimumSize>10,1</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Layout>horizontal</Layout>				
+			<Children></Children>
+			</WidgetGroup>			
+		
+			<!--
+			********************************************************************
+			ROW: Text - Track Title + BPM number display + Button - BPM Tap:
+			********************************************************************
+			-->
+			
+			<WidgetGroup>
+			<ObjectName>TextLineN1Deck<Variable name="audiochannel"/></ObjectName>
+			<BackPath>gfx_hifi/background_digital.svg</BackPath> <!-- For color process -->
+			<Pos>0,0</Pos>
+			<MinimumSize>10,23</MinimumSize>
+			<!-- <SizePolicy>me,f</SizePolicy> -->
+			<SizePolicy>i,max</SizePolicy> <!-- To ignore childrens. Otherwise decks widths are not respected, based on the size of the labels in this row -->
+			<Layout>horizontal</Layout>
+			<Children>            
+					
+					<TrackProperty>
+					<ObjectName>TrackTitleDeck<Variable name="audiochannel"/></ObjectName>
+						<Pos>0,0</Pos>
+						<MinimumSize>10,23</MinimumSize>
+						<SizePolicy>me,f</SizePolicy>
+						<Alignment>left</Alignment>
+						<Elide>right</Elide> <!-- Adds "..." -->
+						<Property>title</Property> <!-- artist, title, album, genre, year, track_number, times_played, comment, bpm, bpmFormatted, duration, durationFormatted, key -->
+						<Channel><Variable name="audiochannel"/></Channel>
+					</TrackProperty>
+				
+					<!-- TAP - widget group and put the bpm pushbutton on top of the display. -->
+                    <WidgetGroup>
+                    <ObjectName>BpmContainer</ObjectName>
+					<MinimumSize>30,23</MinimumSize>
+					<SizePolicy>me,f</SizePolicy>
+					<Layout>horizontal</Layout>
+                    <Children>
+					
+					<NumberBpm>
+					<ObjectName>TrackBPMDeck<Variable name="audiochannel"/></ObjectName>
+					<MinimumSize>10,23</MinimumSize>
+					<SizePolicy>me,f</SizePolicy>
+					<Alignment>right</Alignment>
+					<Channel><Variable name="audiochannel"/></Channel>
+					<NumberOfDigits>1</NumberOfDigits>
+					<Connection>
+					<ConfigKey>[Channel<Variable name="audiochannel"/>],visual_bpm</ConfigKey>
+					</Connection>
+					</NumberBpm>
+				
+					<PushButton>
+                    <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                    <MinimumSize>10,23</MinimumSize>
+					<SizePolicy>me,f</SizePolicy>
+					<NumberOfDigits>3</NumberOfDigits>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                    <Number>0</Number>
+                    <Text></Text>
+					<Pressed>gfx_hifi/btn_tap1_over.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_tap1.svg</Unpressed>
+                    </State>
+                    <State>
+                    <Number>1</Number>
+                    <Text></Text>
+					<Pressed>gfx_hifi/btn_tap1_over.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_tap1.svg</Unpressed>
+                    </State>                                      
+                    <Connection>
+                    <ConfigKey>[Channel<Variable name="audiochannel" />],bpm_tap</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    </Connection>
+                    </PushButton>
+					
+					</Children>
+					</WidgetGroup><!-- Ends: TAP -->
+					
+
+			</Children>
+			</WidgetGroup>
+			
+			
+			<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+			<ObjectName>HorizontalLine</ObjectName>
+			<MinimumSize>10,1</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Layout>horizontal</Layout>				
+			<Children></Children>
+			</WidgetGroup>
+
+			<!--
+			********************************************************************
+			ROW: Text - Track Artist + Text - Time remaining:
+			********************************************************************
+			-->
+
+			<WidgetGroup>
+				<ObjectName>TextLineN2Deck<Variable name="audiochannel"/></ObjectName>
+				<BackPath>gfx_hifi/background_digital.svg</BackPath> <!-- For color process -->
+				<Pos>0,26</Pos>
+				<MinimumSize>10,23</MinimumSize>
+				<!-- <SizePolicy>me,f</SizePolicy> -->
+				<SizePolicy>i,max</SizePolicy> <!-- To ignore childrens. Otherwise decks widths are not respected, based on the size of the labels in this row -->
+				<Layout>horizontal</Layout>
+				<Children>  
+				
+					<TrackProperty>
+					<ObjectName>TrackArtistDeck<Variable name="audiochannel"/></ObjectName>
+						<Pos>0,0</Pos>
+						<MinimumSize>10,23</MinimumSize>
+						<SizePolicy>me,f</SizePolicy>
+						<Alignment>left</Alignment>
+						<Elide>right</Elide> <!-- Adds "..." -->
+						<Property>artist</Property>
+						<Channel><Variable name="audiochannel"/></Channel>
+					</TrackProperty>
+						
+					<NumberPos>
+						<ObjectName>TrackPlayPositionDeck<Variable name="audiochannel"/></ObjectName>
+						<Channel><Variable name="audiochannel"/></Channel>
+						<Pos>290,26</Pos>
+						<MinimumSize>10,23</MinimumSize>
+						<SizePolicy>me,f</SizePolicy>
+						<Alignment>right</Alignment>
+						<NumberOfDigits>3</NumberOfDigits>
+						<Connection>
+						<ConfigKey>[Channel<Variable name="audiochannel"/>],playposition</ConfigKey>
+						</Connection>
+					</NumberPos>					
+
+				</Children>
+			</WidgetGroup>
+			 
+
+			<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+			<ObjectName>HorizontalLine</ObjectName>
+			<MinimumSize>10,1</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Layout>horizontal</Layout>				
+			<Children></Children>
+			</WidgetGroup>			
+			
+			<!--
+			********************************************************************
+			ROW: Art + Waves + Spinning:
+			********************************************************************
+			-->
+		
+			<WidgetGroup>
+				<Pos>0,50</Pos>
+				<MinimumSize>10,118</MinimumSize>
+				<SizePolicy>me,f</SizePolicy>
+				<Layout>horizontal</Layout>
+				<Children>
+								
+					<!--
+					**********************************************
+					Display BIG cover art:
+					**********************************************
+					-->					
+					
+					<WidgetGroup>
+						<ObjectName>CoverArtBig<Variable name="audiochannel"/></ObjectName>
+						<MinimumSize>118,118</MinimumSize>
+						<SizePolicy>f,f</SizePolicy>
+						<Layout>horizontal</Layout>
+						<Children>					
+						<CoverArt>	
+						<MinimumSize>83,83</MinimumSize>	
+						<SizePolicy>f,f</SizePolicy>					
+						<Group>[Channel<Variable name="audiochannel"/>]</Group>
+						<!-- <PathMask>gfx_hifi/cover_mask.svg</PathMask> -->
+						</CoverArt>						
+						</Children>
+						<Connection>
+						<ConfigKey>[CoverArtBigDeck<Variable name="audiochannel"/>],show</ConfigKey>
+						<BindProperty>visible</BindProperty>
+						</Connection>
+					</WidgetGroup>
+
+					
+					
+					<WidgetGroup>
+					<ObjectName>BothWaves</ObjectName>
+					<MinimumSize>-1,116</MinimumSize>
+					<SizePolicy>me,f</SizePolicy>
+					<Layout>vertical</Layout>				
+					<Children>					
+
+					<WidgetGroup> <!-- Display: The track kHz -->
+					<ObjectName>TrackRate<Variable name="audiochannel"/></ObjectName>
+					<BackPath>gfx_hifi/background_digital_small.svg</BackPath> <!-- For color process -->
+					<MinimumSize>-1,20</MinimumSize>
+					<SizePolicy>me,f</SizePolicy>
+					<Layout>horizontal</Layout>	
+					<Children>
+						<WidgetGroup><!-- Pusher -->								
+						<MinimumSize>-1,20</MinimumSize>
+						<SizePolicy>me,f</SizePolicy>
+						<Children></Children>
+						</WidgetGroup>
+						<Number>
+						<ObjectName>TrackRateDeck<Variable name="audiochannel"/></ObjectName>
+						<MinimumSize>-1,20</MinimumSize>
+						<SizePolicy>me,f</SizePolicy>						
+						<DisplayUnit>kHz</DisplayUnit>
+						<NumberOfDigits>0</NumberOfDigits>
+						<Text>%1 kHz</Text>
+						<Alignment>right</Alignment>
+						<Elide>right</Elide> <!-- Adds "..." if needed... -->
+						<Connection>
+						<ConfigKey>[Channel<Variable name="audiochannel"/>],track_samplerate</ConfigKey>
+						</Connection>
+						</Number>
+					</Children>			
+					</WidgetGroup>
+					
+					<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+					<ObjectName>HorizontalLine</ObjectName>
+					<MinimumSize>1,1</MinimumSize>
+					<SizePolicy>me,f</SizePolicy>
+					<Layout>horizontal</Layout>				
+					<Children></Children>
+					</WidgetGroup>	
+									
+					<!--
+					********************************************************************
+					(2 Waves) 1st - Big wave display:
+					********************************************************************
+					-->	
+					
+					<Visual>						
+					<Channel><Variable name="audiochannel"/></Channel>
+					<MinimumSize>1,66</MinimumSize>	
+					<SizePolicy>me,me</SizePolicy>
+					<BgColor></BgColor>
+					<BgPixmap>gfx_hifi/wave_background_big.svg</BgPixmap>					
+					<SignalHighColor>#5f4d75</SignalHighColor><!-- highs - clear -->
+					<SignalMidColor>#230d44</SignalMidColor>  <!-- mediums - dark -->
+					<SignalLowColor>#180831</SignalLowColor>  <!-- lows - darker -->
+					<SignalColor>#7c708f</SignalColor>        <!-- "main wave" -->
+					<PlayPosColor>#ece7f5</PlayPosColor>
+					<BeatColor>#d8cbec</BeatColor>
+					<EndOfTrackColor>#6e4aaa</EndOfTrackColor>					
+					<AxesColor>#580078</AxesColor>
+					<DefaultMark> <!-- Applies to numbers 1 to 8 -->
+					<Align>top</Align>
+					<Color>#dbb7ff</Color>
+					<TextColor>#ffffff</TextColor>
+					<Text> %1 </Text>
+					</DefaultMark>
+					<MarkRange> <!-- ... -->
+					<StartControl>loop_start_position</StartControl>
+					<EndControl>loop_end_position</EndControl>
+					<EnabledControl>loop_enabled</EnabledControl>
+					<Color>#dbb7ff</Color>
+					<DisabledColor>#ffffff</DisabledColor>
+					</MarkRange>
+					<Mark>
+						<Control>loop_start_position</Control>
+						<Pixmap></Pixmap>
+						<Text> START </Text>
+						<Align>top</Align>
+						<Color>#cb97fb</Color>
+						<TextColor>#ffffff</TextColor>
+					</Mark>
+					<Mark>
+						<Control>loop_end_position</Control>
+						<Pixmap></Pixmap>
+						<Text> END </Text>
+						<Align>top</Align>
+						<Color>#cb97fb</Color>
+						<TextColor>#ffffff</TextColor>
+					</Mark>	
+					<Mark> <!-- Cue -->
+						<Control>cue_point</Control>
+						<Pixmap></Pixmap>
+						<Text> CUE </Text>
+						<Align>top</Align>
+						<Color>#cb97fb</Color>
+						<TextColor>#ffffff</TextColor>
+					</Mark>	
+					</Visual>		
+
+					<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+					<ObjectName>HorizontalLine</ObjectName>
+					<MinimumSize>1,1</MinimumSize>
+					<SizePolicy>me,f</SizePolicy>
+					<Layout>horizontal</Layout>				
+					<Children></Children>
+					</WidgetGroup>					
+					
+					<!--
+					**********************************************
+					(2 Waves) 2nd - Medium Wave display:
+					**********************************************
+					-->
+					
+					<Overview>	
+					<MinimumSize>1,29</MinimumSize>	
+					<SizePolicy>me,f</SizePolicy>					
+					<Channel><Variable name="audiochannel"/></Channel>
+					<BgColor></BgColor>	
+					<BgPixmap>gfx_hifi/wave_background_medium.svg</BgPixmap> <!-- bg image must be set here, not in "style.qss" -->
+					<SignalHighColor>#5f4d75</SignalHighColor><!-- highs - clear -->
+					<SignalMidColor>#230d44</SignalMidColor>  <!-- mediums - dark -->
+					<SignalLowColor>#180831</SignalLowColor>  <!-- lows - darker -->
+					<SignalColor>#7c708f</SignalColor>        <!-- "main wave" -->
+					<PlayPosColor>#ece7f5</PlayPosColor>
+					<BeatColor>#d8cbec</BeatColor>
+					<EndOfTrackColor>#6e4aaa</EndOfTrackColor>					
+					<AxesColor>#580078</AxesColor>
+					<DefaultMark> <!-- Applies to numbers 1 to 8 -->
+					<Align>top</Align>
+					<Color>#dbb7ff</Color>
+					<TextColor>#ffffff</TextColor>
+					<Text> %1 </Text>
+					</DefaultMark>
+					<MarkRange> <!-- ... -->
+					<StartControl>loop_start_position</StartControl>
+					<EndControl>loop_end_position</EndControl>
+					<EnabledControl>loop_enabled</EnabledControl>
+					<Color>#dbb7ff</Color>
+					<DisabledColor>#ffffff</DisabledColor>
+					</MarkRange>
+					<Mark>
+						<Control>loop_start_position</Control>
+						<Pixmap></Pixmap>
+						<Text> START </Text>
+						<Align>top</Align>
+						<Color>#cb97fb</Color>
+						<TextColor>#ffffff</TextColor>
+					</Mark>
+					<Mark>
+						<Control>loop_end_position</Control>
+						<Pixmap></Pixmap>
+						<Text> END </Text>
+						<Align>top</Align>
+						<Color>#cb97fb</Color>
+						<TextColor>#ffffff</TextColor>
+					</Mark>	
+					<Mark> <!-- Cue -->
+						<Control>cue_point</Control>
+						<Pixmap></Pixmap>
+						<Text> CUE </Text>
+						<Align>top</Align>
+						<Color>#cb97fb</Color>
+						<TextColor>#ffffff</TextColor>
+					</Mark>						
+					<Connection>
+						<ConfigKey>[Channel<Variable name="audiochannel"/>],playposition</ConfigKey>
+						<EmitOnDownPress>false</EmitOnDownPress>
+					</Connection>
+					</Overview>	
+					
+					</Children>
+					</WidgetGroup>
+
+					<!--
+					********************************************************************
+					Spinnyng disc display:
+					********************************************************************
+					-->	
+					
+					<WidgetGroup>
+						<Pos>0,0</Pos>
+						<MinimumSize>118,118</MinimumSize>
+						<SizePolicy>f,f</SizePolicy>
+						<Layout>horizontal</Layout>
+						<Children>
+							<Spinny>								
+								<Channel><Variable name="audiochannel"/></Channel>								
+								<PathBackground>gfx_hifi/background_spinny.svg</PathBackground>
+								<PathForeground>gfx_hifi/spinny_bobine.svg</PathForeground>
+								<PathGhost>gfx_hifi/spinny_bobine.svg</PathGhost>
+								<PathMask></PathMask>
+								<ShowCover>false</ShowCover>
+							</Spinny>
+						</Children>
+						<Connection>
+							<ConfigKey>[Spinny<Variable name="audiochannel"/>],show_spinny</ConfigKey>
+							<BindProperty>visible</BindProperty>
+						</Connection>
+					</WidgetGroup>
+					
+					
+				</Children>
+			</WidgetGroup>
+			
+			
+			<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+			<ObjectName>HorizontalLine</ObjectName>
+			<MinimumSize>10,1</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Layout>horizontal</Layout>				
+			<Children></Children>
+			</WidgetGroup>
+			
+
+			<!--
+			********************************************************************
+			ROW: Small buttons:
+			********************************************************************
+			-->			
+			
+			<WidgetGroup>
+				<Pos>0,170</Pos>
+				<MinimumSize>50,35</MinimumSize>
+				<SizePolicy>me,f</SizePolicy>
+				<Layout>horizontal</Layout>				
+				<Children>								
+					
+					<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+					<ObjectName>VerticalLineDarker30</ObjectName>
+					<MinimumSize>1,35</MinimumSize>
+					<SizePolicy>f,me</SizePolicy>
+					<Layout>horizontal</Layout>				
+					<Children></Children>
+					</WidgetGroup>
+					
+					<!--
+					**********************************************
+					Button - Minimize / Expand the other Deck:
+					**********************************************
+					-->				
+					
+					<PushButton>
+					<NumberStates>2</NumberStates>
+					<State>
+					<Number>0</Number>
+					<Pressed>gfx_hifi/btn_expand_deck_<Variable name="audiochannel"/>.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_expand_deck_<Variable name="audiochannel"/>.svg</Unpressed>
+					</State>
+					<State>
+					<Number>1</Number>
+					<Pressed>gfx_hifi/btn_expand_deck_<Variable name="audiochannel"/>.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_expand_deck_<Variable name="audiochannel"/>.svg</Unpressed>
+					</State>
+					<Connection>
+					<ConfigKey>[Deck<Variable name="decktohide"/>],show</ConfigKey>    
+					<ButtonState>LeftButton</ButtonState>
+					</Connection>
+					</PushButton>
+
+					<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+					<ObjectName>VerticalLineDarker30</ObjectName>
+					<MinimumSize>1,35</MinimumSize>
+					<SizePolicy>f,me</SizePolicy>
+					<Layout>horizontal</Layout>				
+					<Children></Children>
+					</WidgetGroup>					
+				
+					<WidgetGroup><!-- Pusher -->
+					<MinimumSize>10,35</MinimumSize>
+					<SizePolicy>me,me</SizePolicy>
+					<Layout>horizontal</Layout>				
+					<Children></Children>
+					</WidgetGroup>
+								
+					<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+					<ObjectName>VerticalLineDarker30</ObjectName>
+					<MinimumSize>1,35</MinimumSize>
+					<SizePolicy>f,me</SizePolicy>
+					<Layout>horizontal</Layout>				
+					<Children></Children>
+					</WidgetGroup>
+					
+					<!--
+					**********************************************
+					Button - Show/Hide rows with buttons:
+					**********************************************
+					-->					
+				
+					<PushButton>				
+					<NumberStates>2</NumberStates>
+					<State>
+					<Number>0</Number>
+					<Pressed>gfx_hifi/btn_buttons_row.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_buttons_row.svg</Unpressed>
+					</State>
+					<State>
+					<Number>1</Number>
+					<Pressed>gfx_hifi/btn_buttons_row_over.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_buttons_row_over.svg</Unpressed>
+					</State>
+					<Connection>
+					<ConfigKey>[ButtonsRowDeck<Variable name="audiochannel"/>],show</ConfigKey>
+					<ButtonState>LeftButton</ButtonState>							
+					</Connection>					
+					</PushButton>					
+					
+					<!--
+					**********************************************
+					Button - Show/Hide BIG coverart:
+					**********************************************
+					-->
+					
+					<PushButton>				
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_coverart_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_coverart.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_coverart_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_coverart_over.svg</Unpressed>
+						</State>					
+						<Connection>
+							<ConfigKey>[CoverArtBigDeck<Variable name="audiochannel"/>],show</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+			
+					<!--
+					**********************************************
+					Button - Show/Hide spinning disc:
+					**********************************************
+					-->
+					
+					<PushButton>				
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_spinny.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_spinny.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_spinny_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_spinny_over.svg</Unpressed>
+						</State>					
+						<Connection>
+							<ConfigKey>[Spinny<Variable name="audiochannel"/>],show_spinny</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+					
+					<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+					<ObjectName>VerticalLineDarker30</ObjectName>
+					<MinimumSize>1,35</MinimumSize>
+					<SizePolicy>f,me</SizePolicy>
+					<Layout>horizontal</Layout>				
+					<Children></Children>
+					</WidgetGroup>
+
+					<!--
+					**********************************************
+					Button - Slip Mode:
+					**********************************************
+					-->
+
+					<PushButton>
+					<NumberStates>2</NumberStates>
+					<State>
+					<Number>0</Number>
+					<Pressed>gfx_hifi/btn_slip.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_slip.svg</Unpressed>
+					</State>
+					<State>
+					<Number>1</Number>
+					<Pressed>gfx_hifi/btn_slip_over.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_slip_over.svg</Unpressed>
+					</State>		
+					<Connection>
+					<ConfigKey>[Channel<Variable name="audiochannel"/>],slip_enabled</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+					</Connection>	
+					</PushButton>					
+
+					<!--
+					**********************************************
+					Button - Beatgrid:
+					**********************************************
+					-->
+					
+					<PushButton>			
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatgrid_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatgrid.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beats_translate_curpos</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+
+					<!--
+					**********************************************
+					Button - Key lock:
+					**********************************************
+					-->
+					
+					<PushButton>		
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_keylock.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_keylock.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_keylock_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_keylock_over.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],keylock</ConfigKey>
+						</Connection>
+					</PushButton>
+
+					<!--
+					**********************************************
+					Button - Quantize:
+					**********************************************
+					-->
+					
+					<PushButton>
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_quantize.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_quantize.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_quantize_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_quantize_over.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],quantize</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+
+					<!--
+					**********************************************
+					Button - Loop music:
+					**********************************************
+					-->
+					
+					<PushButton>
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_repeat.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_repeat.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_repeat_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_repeat_over.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],repeat</ConfigKey>
+						</Connection>
+					</PushButton>
+
+					<!--
+					**********************************************
+					Button - Eject:
+					**********************************************
+					-->
+					
+					<PushButton>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_eject_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_eject.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],eject</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+					</PushButton>				
+			
+			</Children>
+			</WidgetGroup>
+
+
+			<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+			<ObjectName>HorizontalLine</ObjectName>
+			<MinimumSize>10,1</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Children></Children>
+			</WidgetGroup>			
+			
+		<!--
+		*************************************************************************
+		*************************************************************************
+		STARTS - 2 ROWS with buttons: (But ONLY one will be visible at a time)
+		*************************************************************************
+		*************************************************************************
+		-->		
+				
+		<WidgetGroup> 
+		<ObjectName>SetAnFixedArea</ObjectName> <!-- Starts: SetAnFixedArea -->
+		<MinimumSize>-1,70</MinimumSize>
+		<MaximumSize>-1,70</MaximumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>
+		<Children>
+		
+		<WidgetGroup> <!-- Pusher: Pushes all <WidgetGroups> of buttons to right -->				
+		<MinimumSize>-1,70</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+
+			<!-- The first row with buttons: -->
+				
+			<WidgetGroup>
+			<ObjectName>ButtonsRowDeck<Variable name="audiochannel"/></ObjectName> <!-- MUST have 2 WidgetGroup with same name! -->
+			<MinimumSize>113,70</MinimumSize> <!-- 113 == The exact sum of the nexts "Boxes" and "Spacers" -->
+			<SizePolicy>f,f</SizePolicy>
+			<Layout>horizontal</Layout>
+			<Children>
+			
+				<WidgetGroup> <!-- All the Player Buttons -->	
+				<ObjectName>Box</ObjectName>
+				<MinimumSize>105,70</MinimumSize>
+				<SizePolicy>f,f</SizePolicy>
+				<Children>
+				
+					<!--
+					**********************************************
+					BOX 1: Button - Start position
+					**********************************************
+					-->
+					
+					<PushButton>
+					<Pos>0,10</Pos>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_startstop2.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_startstop1.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],start_stop</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],start_stop</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+					</PushButton>			
+					
+					<!--
+					**********************************************
+					BOX 1: Button - Fast rewind
+					**********************************************
+					-->
+					
+					<PushButton>
+					<Pos>26,10</Pos>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_rewind_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_rewind.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],back</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],start</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+					</PushButton>
+					
+					<!--
+					**********************************************
+					BOX 1: Button - Fast forward
+					**********************************************
+					-->
+					
+					<PushButton>
+					<Pos>52,10</Pos>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_forward_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_forward.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],fwd</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],end</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+					</PushButton>
+					
+					<!--
+					**********************************************
+					BOX 1: Button - End position
+					**********************************************
+					-->
+					
+					<PushButton>
+					<Pos>78,10</Pos>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_endstop_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_endstop.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],end</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],end</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+					</PushButton>
+					
+					<!--
+					****************************************
+					BOX 1: Button - Play from start
+					****************************************
+					-->
+					
+					<PushButton>
+						<Pos>1,36</Pos>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_startplay_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_startplay.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],start_play</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+					
+					<!--
+					****************************************
+					BOX 1: Button - Reverse playback
+					****************************************
+					-->
+					
+					<PushButton>
+						<Pos>53,36</Pos>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_reverse_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_reverse.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],reverse</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+					
+				</Children>
+				</WidgetGroup>
+				
+			<!-- Spacer: Creates a margin between these Boxes with buttons -->
+			<WidgetGroup> 				
+			<MinimumSize>8,70</MinimumSize>
+			<SizePolicy>f,f</SizePolicy>
+			<Children></Children>
+			</WidgetGroup>
+				
+			</Children>
+			<Connection><!-- Show/Hide above full row with buttons -->			
+			<ConfigKey>[ButtonsRowDeck<Variable name="audiochannel"/>],show</ConfigKey>            
+            <!-- <Transform><Not/></Transform> --> <!-- Important: INVERSE !!! -->
+			<BindProperty>visible</BindProperty>
+			</Connection>
+			</WidgetGroup>			
+			
+			<!-- The 2nd row with buttons: -->
+							
+			<WidgetGroup>
+			<ObjectName>ButtonsRowDeck<Variable name="audiochannel"/></ObjectName> <!-- MUST have 2 WidgetGroup with same name! -->
+			<MinimumSize>335,70</MinimumSize> <!-- 335 == The exact sum of the nexts "Boxes" and "Spacers" -->
+			<SizePolicy>f,f</SizePolicy>
+			<Layout>horizontal</Layout>
+			<Children>		
+					
+					<WidgetGroup><!-- All the Cues: Buttons with the numbers 1,2,3,4,5,6,7,8 -->	
+					<ObjectName>Box</ObjectName>
+					<MinimumSize>105,70</MinimumSize>
+					<SizePolicy>f,f</SizePolicy>
+					<Children>
+					
+					<PushButton><!-- Labeled: 1 -->
+					<Pos>0,10</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_hotcue_1.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_1.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_hotcue_1_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_1_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_1_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_1_clear</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_1_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					<PushButton><!-- Labeled: 2 -->
+					<Pos>26,10</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_hotcue_2.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_2.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_hotcue_2_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_2_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_2_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_2_clear</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_2_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					<PushButton> <!-- Labeled: 3 -->
+					<Pos>52,10</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_hotcue_3.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_3.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_hotcue_3_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_3_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_3_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_3_clear</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_3_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					<PushButton> <!-- Labeled: 4 -->
+					<Pos>78,10</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_hotcue_4.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_4.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_hotcue_4_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_4_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_4_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_4_clear</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_4_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					<PushButton> <!-- Labeled: 5 -->
+					<Pos>0,36</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_hotcue_5.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_5.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_hotcue_5_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_5_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_5_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_5_clear</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_5_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+
+					<PushButton> <!-- Labeled: 6 -->
+					<Pos>26,36</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_hotcue_6.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_6.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_hotcue_6_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_6_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_6_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_6_clear</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_6_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+
+					<PushButton> <!-- Labeled: 7 -->
+					<Pos>52,36</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_hotcue_7.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_7.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_hotcue_7_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_7_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_7_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_7_clear</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_7_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+
+					<PushButton> <!-- Labeled: 8 -->
+					<Pos>78,36</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_hotcue_8.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_8.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_hotcue_8_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_hotcue_8_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_8_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_8_clear</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_8_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					</Children>
+					</WidgetGroup>
+					
+					<!-- Spacer: Creates a margin between these Boxes with buttons -->
+					<WidgetGroup> 				
+					<MinimumSize>8,70</MinimumSize>
+					<SizePolicy>f,f</SizePolicy>
+					<Children></Children>
+					</WidgetGroup>
+					
+					<WidgetGroup> <!-- All the Cues: Flags and Loop button -->	
+					<ObjectName>Box</ObjectName>
+					<MinimumSize>54,70</MinimumSize>
+					<SizePolicy>f,f</SizePolicy>
+					<Children>
+					
+					<PushButton> <!-- Labeled: flag left -->
+					<Pos>0,10</Pos>					
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_loop_in_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_loop_in.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],loop_in</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+					
+					<PushButton> <!-- Labeled: flag right -->
+					<Pos>26,10</Pos>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_loop_out_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_loop_out.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],loop_out</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+					
+					<PushButton> <!-- Labeled: loop -->
+					<Pos>1,36</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_reloop.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_reloop.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_reloop_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_reloop_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],reloop_exit</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],loop_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					</Children>
+					</WidgetGroup>
+					
+					<!-- Spacer: Creates a margin between these Boxes with buttons -->
+					<WidgetGroup> 				
+					<MinimumSize>8,70</MinimumSize>
+					<SizePolicy>f,f</SizePolicy>
+					<Children></Children>
+					</WidgetGroup>			
+
+					<WidgetGroup> <!-- All the Cues: Buttons from 1|8 to 16 -->	
+					<ObjectName>Box</ObjectName>
+					<MinimumSize>152,70</MinimumSize>
+					<SizePolicy>f,f</SizePolicy>
+					<Children>
+
+					<PushButton> <!-- Labeled: - -->
+					<Pos>0,10</Pos>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatloop_halve_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_halve.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],loop_halve</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>					
+					
+					<PushButton> <!-- Labeled: 1|8 -->
+					<Pos>23,10</Pos>					
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatloop_0125.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_0125.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_beatloop_0125.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_0125_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_0.125_toggle</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatlooproll_0.125_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_0.125_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>					
+					
+					<PushButton> <!-- Labeled: 1|4 -->
+					<Pos>49,10</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatloop_0250.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_0250.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_beatloop_0250.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_0250_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_0.25_toggle</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatlooproll_0.25_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_0.25_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					<PushButton> <!-- Labeled: 1|2 -->
+					<Pos>75,10</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatloop_0500.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_0500.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_beatloop_0500.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_0500_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_0.5_toggle</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatlooproll_0.5_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_0.5_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					<PushButton> <!-- Labeled: 1 -->
+					<Pos>101,10</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatloop_1.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_1.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_beatloop_1.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_1_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_1_toggle</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatlooproll_1_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_1_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					<PushButton> <!-- Labeled: 2 -->
+					<Pos>23,36</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatloop_2.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_2.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_beatloop_2.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_2_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_2_toggle</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatlooproll_2_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_2_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					<PushButton> <!-- Labeled: 4 -->
+					<Pos>49,36</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatloop_4.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_4.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_beatloop_4.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_4_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_4_toggle</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatlooproll_4_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_4_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+					
+					<PushButton> <!-- Labeled: 8 -->
+					<Pos>75,36</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatloop_8.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_8.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_beatloop_8.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_8_over.svg</Unpressed>
+						</State>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_8_toggle</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatlooproll_8_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_8_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>
+			
+					<PushButton> <!-- Labeled: 16 -->
+					<Pos>101,36</Pos>
+						<NumberStates>2</NumberStates>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatloop_16.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_16.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>gfx_hifi/btn_beatloop_16.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_16_over.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_16_toggle</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatlooproll_16_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_16_enabled</ConfigKey>
+							<ConnectValueFromWidget>false</ConnectValueFromWidget>
+						</Connection>
+					</PushButton>					
+					
+					<PushButton> <!-- Labeled: + -->
+					<Pos>128,10</Pos>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>gfx_hifi/btn_beatloop_double_over.svg</Pressed>
+							<Unpressed>gfx_hifi/btn_beatloop_double.svg</Unpressed>
+						</State>						
+						<Connection>
+							<ConfigKey>[Channel<Variable name="audiochannel"/>],loop_double</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+
+					</Children>					
+					</WidgetGroup>
+					
+					<!-- Spacer: Creates a margin between these Boxes with buttons -->
+					<WidgetGroup> 				
+					<MinimumSize>8,70</MinimumSize>
+					<SizePolicy>f,f</SizePolicy>
+					<Children></Children>
+					</WidgetGroup>
+				
+			</Children>
+			<Connection><!-- Show/Hide above full row with buttons -->			
+			<ConfigKey>[ButtonsRowDeck<Variable name="audiochannel"/>],show</ConfigKey>            
+            <Transform><Not/></Transform> <!-- Important: INVERSE !!! -->
+			<BindProperty>visible</BindProperty>
+			</Connection>
+			</WidgetGroup>
+
+		</Children>
+		</WidgetGroup>
+		
+		<!--
+		*************************************************************************
+		*************************************************************************
+		ENDS - 2 ROWS with buttons: (But ONLY one will be visible at a time)
+		*************************************************************************
+		*************************************************************************
+		-->			
+		
+
+	</Children>
+	<Connection><!-- Show/Hide the other deck, so this one will be expanded -->
+	<ConfigKey>[Deck<Variable name="audiochannel"/>],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+	
+</Template>
