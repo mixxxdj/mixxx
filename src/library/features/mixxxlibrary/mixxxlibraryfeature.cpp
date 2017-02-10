@@ -142,8 +142,8 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 
 parented_ptr<QWidget> MixxxLibraryFeature::createInnerSidebarWidget(
             KeyboardEventFilter*, QWidget* parent) {
-    auto pSidebaar = createLibrarySidebarWidget(parent);
-    m_pSidebar = pSidebaar.toWeakRef();
+    auto pSidebar = createLibrarySidebarWidget(parent);
+    m_pSidebar = pSidebar.toWeakRef();
     m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());    
     m_pChildModel->reloadTree();
     return std::move(pSidebaar);

@@ -22,6 +22,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     QString getIconPath() override;
     QString getSettingsName() const override;
     bool isSinglePane() const override;
+    TreeItemModel* getChildModel() override;
 
     bool dragMoveAccept(QUrl url);
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
@@ -37,12 +38,14 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistTableRenamed(int playlistId, QString a_strName);
 
  protected:
+    const TreeItemModel* getConstChildModel() const override;
     void buildPlaylistList();
     void decorateChild(TreeItem *pChild, int playlist_id);
     PlaylistTableModel* constructTableModel();
 
   private:
     QString getRootViewHtml() const;
+    std::unique_ptr<TreeItemModel> m_pChildModel;
 };
 
 #endif /* PLAYLISTFEATURE_H */

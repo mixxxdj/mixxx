@@ -24,6 +24,7 @@ public:
     QString getIconPath() override;
     QString getSettingsName() const override;
     void decorateChild(TreeItem *pChild, int playlist_id) override;
+    TreeItemModel* getChildModel() override;
 
   public slots:
     void onRightClick(const QPoint&) override;
@@ -35,6 +36,7 @@ public:
     parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*, 
                                                    QWidget* parent) override;
     
+    const TreeItemModel* getConstChildModel() const override;
     void buildPlaylistList() override;
     QModelIndex constructChildModel(int selected_id);
     PlaylistTableModel* constructTableModel() override;
@@ -54,7 +56,7 @@ public:
     QLinkedList<TrackId> m_recentTracks;
     QAction* m_pJoinWithNextAction;
     QAction* m_pGetNewPlaylist;
-    std::shared_ptr<HistoryTreeModel> m_pHistoryTreeModel;
+    std::unique_ptr<HistoryTreeModel> m_pHistoryTreeModel;
     int m_playlistId;
 };
 
