@@ -1617,13 +1617,11 @@ NumarkMixtrack3.WheelTouch = function(channel, control, value, status, group) {
 
 NumarkMixtrack3.WheelMove = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-
-    // Set jog value
-    var adjustedJog = parseFloat(value);
-    var posNeg = 1;
+    var adjustedJog = parseFloat(value); // set jog value
+    var direction = 1; // 1 = clockwise, -1 = counter-clockwise
 
     if (adjustedJog > 63) { // Counter-clockwise
-        posNeg = -1;
+        direction = -1;
         adjustedJog = value - 128;
     }
 
@@ -1632,13 +1630,9 @@ NumarkMixtrack3.WheelMove = function(channel, control, value, status, group) {
         - fast seek - deck.seekingfast = true
         - iCut = deck.iCutStatus = true
         - Scratching = deck.touch = true */
-
     if (deck.iCutStatus) {
         deck.Jog.iCUT.On();
         deck.Jog.iCUT.FaderCut(adjustedJog, deck.decknum);
-    }
-
-    if (!deck.seekingfast && !deck.iCutStatus && !deck.touch && deck.jogWheelsInScratchMode) {
     }
 
     if (deck.seekingfast) {
@@ -1646,35 +1640,22 @@ NumarkMixtrack3.WheelMove = function(channel, control, value, status, group) {
     }
 
     engine.scratchTick(deck.decknum, adjustedJog);
-    
-    if (PitchBendOnWheelOff) {
-        //Pitch bend when playing - side or platter have same effect        
-        if (engine.getValue(deck.Jog.group, "play")) {
-            var gammaInputRange = 13; // Max jog speed
-            var maxOutFraction = 0.8; // Where on the curve it should peak; 0.5 is half-way
-            var sensitivity = 0.5; // Adjustment gamma
-            var gammaOutputRange = 0.75; // Max rate change
 
-            adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(
-                    adjustedJog) / (gammaInputRange * maxOutFraction),
-                sensitivity);
-            engine.setValue(deck.Jog.group, "jog", adjustedJog);
-        }
-    } else {
-        //Pitch bend when playing - side or platter have same effect        
-        if (deck.jogWheelsInScratchMode) {
-            if (engine.getValue(deck.Jog.group, "play")) {
-                var gammaInputRange = 13; // Max jog speed
-                var maxOutFraction = 0.8; // Where on the curve it should peak; 0.5 is half-way
-                var sensitivity = 0.5; // Adjustment gamma
-                var gammaOutputRange = 0.75; // Max rate change
+    var isPlaying = engine.getValue(deck.Jog.group, "play")
 
-                adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(
-                        adjustedJog) / (gammaInputRange * maxOutFraction),
-                    sensitivity);
-                engine.setValue(deck.Jog.group, "jog", adjustedJog);
-            }
-        } 
+    // pitch bend when playing - side or platter have same effect
+    if (isPlaying && (PitchBenOnWheelOff || deck.jogWheelsInScratchMode)) {
+        var gammaInputRange = 13; // Max jog speed
+        var maxOutFraction = 0.8; // Where on the curve it should peak; 0.5 is half-way
+        var sensitivity = 0.5; // Adjustment gamma
+        var gammaOutputRange = 0.75; // Max rate change
+
+        adjustedJog = direction * gammaOutputRange * Math.pow(
+            Math.abs(adjustedJog) / (gammaInputRange * maxOutFraction),
+            sensitivity
+        );
+
+        engine.setValue(deck.Jog.group, "jog", adjustedJog);
     }
 };
 
