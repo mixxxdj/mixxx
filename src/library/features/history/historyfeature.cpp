@@ -204,7 +204,7 @@ parented_ptr<QWidget> HistoryFeature::createInnerSidebarWidget(
     auto pSidebar = createLibrarySidebarWidget(parent);
     m_pSidebar = pSidebar.toWeakRef();
     m_pSidebar->expandAll();
-    return pSidebar;
+    return std::move(pSidebar);
 }
 
 void HistoryFeature::slotJoinWithNext() {

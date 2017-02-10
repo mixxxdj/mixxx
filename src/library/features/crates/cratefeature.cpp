@@ -268,7 +268,7 @@ parented_ptr<QWidget> CrateFeature::createPaneWidget(KeyboardEventFilter* pKeybo
                                                    pContainer.get());
     m_idTable[paneId] = pContainer->addWidget(pTable.get());
     
-    return pContainer;
+    return std::move(pContainer);
 }
 
 TreeItemModel* CrateFeature::getChildModel() {

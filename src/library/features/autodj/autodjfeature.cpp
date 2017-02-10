@@ -114,7 +114,7 @@ parented_ptr<QWidget> AutoDJFeature::createPaneWidget(KeyboardEventFilter*,
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
 
-    return pTrackTableView;
+    return std::move(pTrackTableView);
 }
 
 parented_ptr<QWidget> AutoDJFeature::createInnerSidebarWidget(
@@ -144,7 +144,7 @@ parented_ptr<QWidget> AutoDJFeature::createInnerSidebarWidget(
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack()));
 
-    return pContainer;
+    return std::move(pContainer);
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {

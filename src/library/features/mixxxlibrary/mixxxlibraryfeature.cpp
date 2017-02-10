@@ -146,7 +146,7 @@ parented_ptr<QWidget> MixxxLibraryFeature::createInnerSidebarWidget(
     m_pSidebar = pSidebaar.toWeakRef();
     m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());    
     m_pChildModel->reloadTree();
-    return pSidebaar;
+    return std::move(pSidebaar);
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {

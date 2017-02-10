@@ -69,7 +69,7 @@ bool LibraryFeature::dragMoveAcceptChild(const QModelIndex &, QUrl) {
 parented_ptr<QWidget> LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                           int paneId, QWidget* parent) {
     Q_UNUSED(pKeyboard);
-    return createTableWidget(paneId, parent);
+    return std::move(createTableWidget(paneId, parent));
 }
 
 parented_ptr<QWidget> LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard, QWidget* parent) {
@@ -99,7 +99,7 @@ parented_ptr<QWidget> LibraryFeature::createSidebarWidget(KeyboardEventFilter* p
     auto pSidebar = createInnerSidebarWidget(pKeyboard, pContainer.get());
     pLayout->addWidget(pSidebar.get());
     
-    return pContainer;
+    return std::move(pContainer);
 }
 
 void LibraryFeature::setFeaturePaneId(int paneId) {
@@ -198,12 +198,12 @@ parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId, QWid
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView.get(), SLOT(setTrackTableRowHeight(int)));
     
-    return pTrackTableView;
+    return std::move(pTrackTableView);
 }
 
 parented_ptr<QWidget> LibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, QWidget* parent) {
     Q_UNUSED(pKeyboard);
-    return createLibrarySidebarWidget(parent);
+    return std::move(createLibrarySidebarWidget(parent));
 }
 
 parented_ptr<WLibrarySidebar> LibraryFeature::createLibrarySidebarWidget(QWidget* parent) {
@@ -239,7 +239,7 @@ parented_ptr<WLibrarySidebar> LibraryFeature::createLibrarySidebarWidget(QWidget
     connect(pSidebar.get(), SIGNAL(focusOut()),
             this, SLOT(slotResetFocusedSidebar()));
 
-    return pSidebar;
+    return std::move(pSidebar);
 }
 
 void LibraryFeature::showTrackModel(QAbstractItemModel *model) {
