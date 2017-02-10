@@ -1243,6 +1243,7 @@ NumarkMixtrack3.shutdown = function() {
 NumarkMixtrack3.channelRegEx = /(\d+)/;
 
 NumarkMixtrack3.deckFromGroup = function(group) { // DFG // for easy find
+    group = NumarkMixtrack3.deckGroup[group];
     var decknum = parseInt(group.substring(8, 9));
     return this.decks["D" + decknum];
 };
