@@ -239,10 +239,6 @@ function toggleValue(group, key) {
     engine.setValue(group, key, !engine.getValue(group, key));
 }
 
-function TrackIsLoaded(group) {
-    return (engine.getValue(group, "track_samples") > 0) ? true : false;
-}
-
 function RealDuration(group) {
     var ts = engine.getValue(group, "track_samples");
     if (ts <= 0) {
@@ -879,7 +875,7 @@ NumarkMixtrack3.sampler = function(decknum) {
 };
 
 NumarkMixtrack3.deck.prototype.TrackIsLoaded = function() {
-    return TrackIsLoaded(this.group);
+    return engine.getValue(this.group, "track_loaded");
 };
 
 NumarkMixtrack3.deck.prototype.StripEffect = function(value, decknum) {
