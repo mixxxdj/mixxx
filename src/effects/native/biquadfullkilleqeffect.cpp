@@ -138,7 +138,11 @@ EffectManifest BiquadFullKillEQEffect::getManifest() {
 }
 
 BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState()
-        : m_oldLowBoost(0),
+        : m_pLowBuf(MAX_BUFFER_LEN),
+          m_pBandBuf(MAX_BUFFER_LEN),
+          m_pHighBuf(MAX_BUFFER_LEN),
+          m_tempBuf(MAX_BUFFER_LEN),
+          m_oldLowBoost(0),
           m_oldMidBoost(0),
           m_oldHighBoost(0),
           m_oldLowKill(0),
@@ -152,11 +156,6 @@ BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState()
           m_rampHoldOff(kRampDone),
           m_groupDelay(0),
           m_oldSampleRate(kStartupSamplerate) {
-
-    m_pLowBuf = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
-    m_pBandBuf = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
-    m_pHighBuf = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
-    m_pTempBuf = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
 
     // Initialize the filters with default parameters
 
@@ -280,21 +279,21 @@ void BiquadFullKillEQEffect::processChannel(
 
     if (activeFilters % 2 == 0) {
         inBuffer.append(pInput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
 
-        inBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
 
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
 
-        inBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
 
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
 
-        inBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
     }
     else
@@ -303,19 +302,19 @@ void BiquadFullKillEQEffect::processChannel(
         outBuffer.append(pOutput);
 
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
 
-        inBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
 
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
 
-        inBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
 
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
     }
 
     int bufIndex = 0;

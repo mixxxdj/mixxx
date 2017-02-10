@@ -8,9 +8,9 @@ EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),
           m_enableState(EffectProcessor::ENABLED),
           m_insertionType(EffectChain::INSERT),
-          m_dMix(0) {
-    m_pBuffer1 = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
-    m_pBuffer2 = std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
+          m_dMix(0),
+          m_buffer1(MAX_BUFFER_LEN),
+          m_buffer2(MAX_BUFFER_LEN) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 }
@@ -197,7 +197,7 @@ void EngineEffectChain::process(const ChannelHandle& handle,
     // for in and output:
     int enabledEffectCount = 0;
     CSAMPLE* pIntermediateInput = pInOut;
-    CSAMPLE* pIntermediateOutput = m_pBuffer1->data();
+    CSAMPLE* pIntermediateOutput = m_buffer1.data();
 
     for (EngineEffect* pEffect: m_effects) {
         if (pEffect == NULL || !pEffect->enabled()) {
@@ -211,11 +211,11 @@ void EngineEffectChain::process(const ChannelHandle& handle,
 
         ++enabledEffectCount;
         if (enabledEffectCount % 2) {
-            pIntermediateInput = m_pBuffer1->data();
-            pIntermediateOutput = m_pBuffer2->data();
+            pIntermediateInput = m_buffer1.data();
+            pIntermediateOutput = m_buffer2.data();
         } else {
-            pIntermediateInput = m_pBuffer2->data();
-            pIntermediateOutput = m_pBuffer1->data();
+            pIntermediateInput = m_buffer2.data();
+            pIntermediateOutput = m_buffer1.data();
         }
     }
 

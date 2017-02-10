@@ -136,7 +136,8 @@ EffectManifest ThreeBandBiquadEQEffect::getManifest() {
 }
 
 ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState()
-        : m_oldLowBoost(0),
+        : m_tempBuf(MAX_BUFFER_LEN),
+          m_oldLowBoost(0),
           m_oldMidBoost(0),
           m_oldHighBoost(0),
           m_oldLowCut(0),
@@ -145,8 +146,6 @@ ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState()
           m_loFreqCorner(0),
           m_highFreqCorner(0),
           m_oldSampleRate(kStartupSamplerate) {
-
-    m_pTempBuf =  std::make_unique<SampleBuffer>(MAX_BUFFER_LEN);
 
     // Initialize the filters with default parameters
 
@@ -267,21 +266,21 @@ void ThreeBandBiquadEQEffect::processChannel(
 
     if (activeFilters % 2 == 0) {
         inBuffer.append(pInput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
 
-        inBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
 
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
 
-        inBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
 
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
 
-        inBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
     }
     else
@@ -290,19 +289,19 @@ void ThreeBandBiquadEQEffect::processChannel(
         outBuffer.append(pOutput);
 
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
 
-        inBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
 
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
 
-        inBuffer.append(pState->m_pTempBuf->data());
+        inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
 
         inBuffer.append(pOutput);
-        outBuffer.append(pState->m_pTempBuf->data());
+        outBuffer.append(pState->m_tempBuf.data());
     }
 
     int bufIndex = 0;
