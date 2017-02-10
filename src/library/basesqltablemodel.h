@@ -101,6 +101,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     TrackId m_previewDeckTrackId;
     QString m_tableOrderBy;
 
+    QString m_tableName;
+
   private slots:
     virtual void tracksChanged(QSet<TrackId> trackIds);
     virtual void trackLoaded(QString group, TrackPointer pTrack);
@@ -143,7 +145,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
 
     QVector<RowInfo> m_rowInfo;
 
-    QString m_tableName;
     QString m_idColumn;
     QSharedPointer<BaseTrackCache> m_trackSource;
     QStringList m_tableColumns;

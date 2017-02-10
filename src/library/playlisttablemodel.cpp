@@ -3,6 +3,7 @@
 #include "library/dao/trackschema.h"
 #include "mixer/playermanager.h"
 
+
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection,
                                        const char* settingsNamespace,
@@ -23,6 +24,15 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     }
 
     m_iPlaylistId = playlistId;
+
+    if (!m_showAll) {
+        // We drop files that have been explicitly deleted from mixxx
+        // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
+        // removed files were not removed from playlists, so some users will have
+        // libraries where this is the case.
+        removeHiddenTracks();
+    }
+
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
     QSqlQuery query(m_database);
     FieldEscaper escaper(m_database);
@@ -36,10 +46,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             // the same value as the cover hash.
             << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
 
-    // We drop files that have been explicitly deleted from mixxx
-    // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
-    // removed files were not removed from playlists, so some users will have
-    // libraries where this is the case.
+
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT %2 FROM PlaylistTracks "
                                   "INNER JOIN library ON library.id = PlaylistTracks.track_id "
@@ -47,9 +54,6 @@ void PlaylistTableModel::setTableModel(int playlistId) {
                           .arg(escaper.escapeString(playlistTableName),
                                columns.join(","),
                                QString::number(playlistId));
-    if (!m_showAll) {
-        queryString.append(" AND library.mixxx_deleted = 0");
-    }
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -136,6 +140,31 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     m_pTrackCollection->getPlaylistDAO().removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
+}
+
+void PlaylistTableModel::removeHiddenTracks() {
+    // This query deletes all tracks marked as deletd and all
+    // phantom track_ids with no match in the library table
+    QString queryString = QString(
+            "DELETE FROM PlaylistTracks "
+            "WHERE PlaylistTracks.id NOT IN ("
+                "SELECT PlaylistTracks.id "
+                "FROM PlaylistTracks "
+                "INNER JOIN library ON library.id = PlaylistTracks.track_id "
+                "WHERE PlaylistTracks.playlist_id = %1 "
+                "AND library.mixxx_deleted = 0 ) "
+            "AND PlaylistTracks.playlist_id = %1")
+            .arg(QString::number(m_iPlaylistId));
+
+    QSqlQuery query(m_database);
+    if (!query.prepare(queryString)) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
