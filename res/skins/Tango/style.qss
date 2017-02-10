@@ -20,10 +20,9 @@ WWidget, QLabel {
   font-weight: normal;
 }
 
-#SamLib {
+#Library_Samplers {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin-top: 3px;	/*
-  margin-top: 3px;
   background-color: #415263;	*/
 }
 
@@ -1112,13 +1111,18 @@ are still drawn full-size.
 
 #SamplerDecks {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop'; 	/*
-  background-color: #316497;	*/
+  background-color: #1e1e1e;	*/
+  padding-bottom: 3px;
 }
   #SamplerDeck {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-    border-bottom: 3px solid #1e1e1e;
+    qproperty-layoutAlignment: 'AlignHCenter | AlignTop'; /*
+    border-bottom: 3px solid #1e1e1e; */
     background-color: #0f0f0f;
   }
+
+#SamplerMain_mini {
+  background-color: #333333;
+}
 
 #SamplersLoadButton {
   background: #333333 url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;
@@ -1128,9 +1132,9 @@ are still drawn full-size.
   background: #333333 url(skin:/buttons/btn_samplers_save.svg) no-repeat center center;
   border-radius: 2px;
 }
-    #SamplersLoadButton:hover, #SamplersSaveButton:hover {
-      background-color: #666666;
-    }
+  #SamplersLoadButton:hover, #SamplersSaveButton:hover {
+    background-color: #666666;
+  }
 
 #SamplerSyncGainPfl, #SamplerVU, #SamplerPitchSlider, #SamplerTitle {
   background-color: #333333;
@@ -1138,16 +1142,30 @@ are still drawn full-size.
 
 #SamplerTitle {
   padding-left: 3px;
-}
-    #SamplerTitle WLabel {
-      font-size: 14px/18px;
-      font-weight: bold;
-      color: #bababa;
-      text-align: left;
-    }
+  }
+  #SamplerTitle WLabel {
+    font-size: 14px/18px;
+    font-weight: bold;
+    color: #bababa;
+    text-align: left;
+  }
 
-#SamplerOverviewRow, #PreviewOverview {
+#SamplerTitle_mini {
+  padding: 0px 1px 0px 2px;
+  }
+  #SamplerTitle_mini WLabel {
+    font-size: 14px/16px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: left;
+  }
+
+#SamplerOverviewRow, #PreviewOverview, #SamplerOverview_mini {
   background-color: #1a1a1a;
+}
+
+#SamplerOverview_mini {
+  margin: 0px 2px 0px 2px;
 }
 
 #SamplerSyncGainPfl {
@@ -1165,28 +1183,25 @@ are still drawn full-size.
   font-weight: bold;
   text-align: center;
   color: #888888;
-}
+} /*
   #SamplerButton[displayValue="0"], #SamplerButton[displayValue="2"] {
     color: #4FB7FF;
-  }
-  #SamplerButton:hover {
+  } */
+  #SamplerButton:hover, #SamplerGainKnob:hover {
     background-color: #0f0f0f;
     border-radius: 2px;
   }
   #SamplerKeylock {
     margin-left: 3px;
   }
-#SamplerGainKnob:hover {
-  background-color: #1a1a1a;
-}
 
 #SamplerVU {
   padding: 4px 3px 4px 3px;
 }
 #SamplerPitchSlider {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';	/*
-  background-color: #876818;	*/
-  margin-left: 1px;
+  background-color: #876818;
+  margin-left: 1px;	*/
   }
   #SamplerPitchSlider:hover {
     background-color: #1a1a1a;
@@ -1194,6 +1209,9 @@ are still drawn full-size.
 
 #SamplerPlay {
   margin: 1px 1px 1px 0px;
+}
+#SamplerPlay_mini {
+  margin-right: 1px;
 }
         
 #SamplerSyncButton {

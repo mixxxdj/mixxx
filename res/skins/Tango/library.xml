@@ -8,7 +8,7 @@ Variables:
 <Template>
   <WidgetGroup>
     <ObjectName>Library</ObjectName>
-    <Size>1010me,0me</Size>
+    <Size>1010me,86min</Size>
     <Layout>horizontal</Layout>
     <Children>
       <Splitter>

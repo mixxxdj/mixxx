@@ -22,6 +22,7 @@ ToDo
   - brighter Gain knob notch (as well Super knob notch)
   		
 * Mixerbar
+  - move on top of Library?
   - Mute button on each SectionLabel
   - VUMeter for each section
   - Mic auto-duck button, ducking strength knob
@@ -37,6 +38,9 @@ ToDo
   - extend group assignment buttons to 4 Mics/4AUX
   - colorize group assignment buttons like other togglers (OFF grey / ON white with bg-color)
  (- FX chain Save & Load buttons)
+
+* Samplers
+  - mini/MAXI button
 
 * Library
   - distinguish focused/unfocused TreeView/Tracks/other?

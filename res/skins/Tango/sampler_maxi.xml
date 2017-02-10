@@ -18,7 +18,7 @@ Variables:
   <WidgetGroup><!-- SamplerDeck -->
     <Layout>horizontal</Layout>
     <ObjectName>SamplerDeck</ObjectName>
-    <Size>180me,82f</Size><!-- 79 + 3bottom -->
+    <Size>180me,79f</Size><!-- 79 + 3bottom -->
     <Children>
 
       <WidgetGroup><!-- SamplerMain -->
@@ -34,7 +34,7 @@ Variables:
             <Children>
               <Text>
                 <TooltipId>text</TooltipId>
-                <Size>1me,18f</Size>y
+                <Size>1me,18f</Size>
                 <Group>[Sampler<Variable name="samplernum"/>]</Group>
                 <Elide>right</Elide>
               </Text>
@@ -104,7 +104,7 @@ Variables:
 
                   <WidgetGroup>
                       <ObjectName>Spacer0f</ObjectName>
-                      <Size>1f,0me</Size>
+                      <Size>1f,0min</Size>
                       <Children/>
                   </WidgetGroup>
 
@@ -113,7 +113,8 @@ Variables:
                     <SizePolicy>min,min</SizePolicy>
                     <ObjectName>SamplerButtonGrid</ObjectName>
                     <Children>
-                      <WidgetGroup>
+                    
+                      <WidgetGroup><!-- Row 1 -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
@@ -136,12 +137,13 @@ Variables:
                             <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
                           </Template>
                         </Children>
-                      </WidgetGroup>
+                      </WidgetGroup><!-- /Row 1 -->
 
-                      <WidgetGroup>
+                      <WidgetGroup><!-- Row 2 -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
+                        
                           <Template src="skin:button_3state.xml">
                             <SetVariable name="ToolTipId">orientation</SetVariable>
                             <SetVariable name="ObjectName">SamplerButton</SetVariable>
@@ -151,6 +153,7 @@ Variables:
                             <SetVariable name="state_2_text">--|</SetVariable>
                             <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
                           </Template>
+                          
                           <Template src="skin:button_2state.xml">
                             <SetVariable name="ToolTipId">keylock</SetVariable>
                             <SetVariable name="ObjectName">SamplerButton</SetVariable>
@@ -161,18 +164,22 @@ Variables:
                             <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
                             <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
                           </Template>
+                          
                         </Children>
-                      </WidgetGroup>
+                      </WidgetGroup><!-- /Row 2 -->
+                      
                     </Children>
                   </WidgetGroup><!-- /SamplerButtonGrid -->
+                  
                 </Children>
               </WidgetGroup><!-- /SamplerOverview -->
+              
             </Children>
           </WidgetGroup><!-- /Play / Overview / Buttons -->
 
           <WidgetGroup><!-- Sync HotCues Gain Pfl -->
             <Layout>horizontal</Layout>
-            <Size>1me,24f</Size>
+            <Size>1min,24f</Size>
             <Children>
 
               <Template src="skin:hotcues.xml"/>
@@ -182,7 +189,9 @@ Variables:
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                    <WidgetGroup><Size>0me,1min</Size><Children/></WidgetGroup>
+                
+                    <WidgetGroup><Size>0min,1min</Size><Children/></WidgetGroup>
+                    
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ToolTipId">beatsync_beatsync_tempo</SetVariable>
                     <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
@@ -191,7 +200,9 @@ Variables:
                     <SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],beatsync</SetVariable>
                     <SetVariable name="ConfigKeyRight">[Sampler<Variable name="samplernum"/>],beatsync_tempo</SetVariable>
                   </Template>
+                  
                     <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                    
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ToolTipID">pfl</SetVariable>
                     <SetVariable name="ObjectName">PflButton</SetVariable>
@@ -202,7 +213,9 @@ Variables:
                     <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
                     <SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],pfl</SetVariable>
                   </Template>
+                  
                     <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                    
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="ToolTipID">pregain</SetVariable>
                     <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
@@ -267,6 +280,7 @@ Variables:
           </SliderComposed>
         </Children>
       </WidgetGroup><!-- /Pitch Control -->
+      
     </Children>
   </WidgetGroup><!-- /SamplerDeck -->
 </Template>

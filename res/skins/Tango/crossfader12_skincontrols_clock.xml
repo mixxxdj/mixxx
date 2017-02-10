@@ -10,6 +10,7 @@
         <ObjectName>SkinControlsRow</ObjectName>
         <Size>104f,21f</Size>
         <Children>
+
           <Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
             <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
@@ -20,7 +21,9 @@
             <SetVariable name="state_1_unpressed">4decks.svg</SetVariable>
             <SetVariable name="ConfigKeyPerm">[Master],show_4decks</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
           <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
@@ -30,7 +33,9 @@
             <SetVariable name="state_1_unpressed">wave_on.svg</SetVariable>
             <SetVariable name="ConfigKeyPerm">[Tango],stacked_waveforms</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
           <Template src="skin:button_3state_persist.xml"><!-- Spinny -->
             <SetVariable name="ToolTipID">show_spinny</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
@@ -43,7 +48,9 @@
             <SetVariable name="state_2_unpressed">cover_off.svg</SetVariable>
             <SetVariable name="ConfigKeyPerm">[Tango],empty_spinny_cover</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
           <Template src="skin:button_3state_persist.xml">
               <SetVariable name="ToolTipID"></SetVariable>
               <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -57,7 +64,9 @@
               <SetVariable name="state_2_pressed">hotcues_on.svg</SetVariable>
               <SetVariable name="ConfigKeyPerm">[Tango],hotcues</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
           <Template src="skin:button_2state_persist.xml"><!-- Mixer -->
             <SetVariable name="ToolTipID">show_mixer</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -68,6 +77,7 @@
             <SetVariable name="state_1_unpressed">mixer_on.svg</SetVariable>
             <SetVariable name="ConfigKeyPerm">[Tango],channel_mixer</SetVariable>
           </Template>
+
         </Children>
       </WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
 
@@ -76,15 +86,7 @@
         <ObjectName>SkinControlsRow</ObjectName>
         <Size>104f,21f</Size>
         <Children>
-          <Template src="skin:button_2state_persist.xml"><!-- Library -->
-            <SetVariable name="ToolTipID">show_library</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">34f,20f</SetVariable>
-            <SetVariable name="state_0_text">LIB</SetVariable>
-            <SetVariable name="state_1_text">LIB</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Library],show_library</SetVariable>
-          </Template>
-            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
           <Template src="skin:button_2state_persist.xml"><!-- FX -->
             <SetVariable name="ToolTipID">show_effects</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -93,7 +95,9 @@
             <SetVariable name="state_1_text">FX</SetVariable>
             <SetVariable name="ConfigKeyPerm">[EffectRack1],show</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
           <Template src="skin:button_3state_persist.xml"><!-- Samplers -->
             <SetVariable name="ToolTipID">show_samplers</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -103,8 +107,20 @@
             <SetVariable name="state_2_text">SAM</SetVariable>
             <SetVariable name="ConfigKeyPerm">[Samplers],show_samplers</SetVariable>
           </Template>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Library -->
+            <SetVariable name="ToolTipID">show_library</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">34f,20f</SetVariable>
+            <SetVariable name="state_0_text">LIB</SetVariable>
+            <SetVariable name="state_1_text">LIB</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Library],show_library</SetVariable>
+          </Template>
+
         </Children>
-      </WidgetGroup><!-- Lib / FX / Sampler-->
+      </WidgetGroup><!-- /Lib / FX / Sampler-->
 
       <Template src="skin:button_3state_display.xml">
         <SetVariable name="ToolTipID">toggle_recording</SetVariable>
@@ -117,7 +133,7 @@
         <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
       </Template>
 
-      <WidgetGroup><!-- Broadcast + Clock Skin Settings -->
+      <WidgetGroup><!-- Broadcast + Clock + Skin Settings -->
         <ObjectName>ClockBox</ObjectName>
         <Layout>horizontal</Layout>
         <Size>104f,30me</Size>
@@ -185,9 +201,10 @@
           </Template>
 
         </Children>
-      </WidgetGroup><!-- /Broadcast + Clock Skin Settings -->
+      </WidgetGroup><!-- /Broadcast + Clock Skin + Settings -->
 
-      <WidgetStack currentpage="[Tango],crossfader_logo" persist="true"><!-- LogoCrossfaderBox 2 Decks-->
+      <!-- LogoCrossfaderBox 2 Decks-->
+      <WidgetStack currentpage="[Tango],crossfader_logo" persist="true">
         <Layout>horizontal</Layout>
         <Size>104f,28max</Size>
         <Children>
@@ -213,6 +230,7 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </SliderComposed>
+
         </Children>
         <Connection>
           <ConfigKey persist="true">[Master],show_4decks</ConfigKey>

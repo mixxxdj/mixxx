@@ -1,0 +1,125 @@
+<!--
+Description:
+  A Sampler container.
+Variables:
+-->
+<Template>
+  <WidgetGroup><!-- 1   4x2 minimized Samplers -->
+    <ObjectName>SamplerDecks_1</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Mini Samplers 1-4 -->
+        <ObjectName>SamplerDecks</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- Mini Samplers 1-2 -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">1</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">2</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- /Mini Samplers 1-2 -->
+
+          <Template src="skin:button_1state.xml">
+            <SetVariable name="ObjectName">SamplersLoadButton</SetVariable>
+            <SetVariable name="Size">22f,26min</SetVariable>
+            <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Mini Samplers 3-4 -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+                
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">3</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">4</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /Mini Samplers 3-4 -->
+
+        </Children>
+      </WidgetGroup><!-- /Mini Samplers 1-4 -->
+
+      <WidgetGroup><!-- Mini Samplers 5-8 -->
+        <ObjectName>SamplerDecks</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- Mini Samplers 5-6 -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">5</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">6</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- /Mini Samplers 5-6 -->
+
+          <Template src="skin:button_1state.xml">
+            <SetVariable name="ObjectName">SamplersSaveButton</SetVariable>
+            <SetVariable name="Size">22f,26min</SetVariable>
+            <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Mini Samplers 7-8 -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">7</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">8</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /Mini Samplers 7-8 -->
+
+        </Children>
+      </WidgetGroup><!-- /Mini Samplers 5-8 -->
+
+    </Children>
+  </WidgetGroup>
+</Template>
