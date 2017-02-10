@@ -31,8 +31,8 @@ class MaintenanceFeature : public LibraryFeature
     void selectAll();
 
   protected:
-
-    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, 
+                                                   QWidget* parent);
 
   private:
 

@@ -140,11 +140,13 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
     return m_pChildModel;
 }
 
-QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    m_pSidebar = createLibrarySidebarWidget(pKeyboard);
+parented_ptr<QWidget> MixxxLibraryFeature::createInnerSidebarWidget(
+            KeyboardEventFilter*, QWidget* parent) {
+    auto pSidebaar = createLibrarySidebarWidget(parent);
+    m_pSidebar = pSidebaar.toWeakRef();
     m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());    
     m_pChildModel->reloadTree();
-    return m_pSidebar;
+    return pSidebaar;
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {

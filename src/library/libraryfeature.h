@@ -65,8 +65,8 @@ class LibraryFeature : public QObject {
     
     // Reimplement this to register custom views with the library widget,
     // at the sidebar expanded pane
-    virtual QWidget* createSidebarWidget(KeyboardEventFilter* pKeyboard,
-                                         QWidget* parent);
+    virtual parented_ptr<QWidget> createSidebarWidget(KeyboardEventFilter* pKeyboard,
+                                                      QWidget* parent);
     
     virtual TreeItemModel* getChildModel() = 0;
     
@@ -146,11 +146,11 @@ class LibraryFeature : public QObject {
     
     // Creates a WLibrarySidebar widget with the getChildModel() function as
     // model
-    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter*);
+    parented_ptr<WLibrarySidebar> createLibrarySidebarWidget(QWidget* parent);
     
     // Override this function to create a custom inner widget for the sidebar,
     // the default widget is a WLibrarySidebar widget
-    virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
+    virtual parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, QWidget* parent);
     
     void showTrackModel(QAbstractItemModel* model);
     void switchToFeature();

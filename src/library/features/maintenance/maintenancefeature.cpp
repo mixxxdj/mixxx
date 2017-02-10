@@ -78,21 +78,25 @@ void MaintenanceFeature::selectAll() {
     }
 }
 
-QWidget* MaintenanceFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
+parented_ptr<QWidget> MaintenanceFeature::createInnerSidebarWidget(
+            KeyboardEventFilter* pKeyboard, QWidget* parent) {
     // The inner widget is a tab with the hidden and the missing controls
-    m_pTab = new QTabWidget(nullptr);
+    auto pTab = make_parented<QTabWidget>(parent);
+    m_pTab = pTab.toWeakRef();
     m_pTab->installEventFilter(pKeyboard);
     connect(m_pTab, SIGNAL(currentChanged(int)),
             this, SLOT(slotTabIndexChanged(int)));
 
-    m_pHiddenView = new DlgHidden(m_pTab);
+    auto pHiddenView = make_parented<DlgHidden>(m_pTab);
+    m_pHiddenView = pHiddenView.toWeakRef();
     m_pHiddenView->setTableModel(getHiddenTableModel());
     m_pHiddenView->installEventFilter(pKeyboard);
     connect(m_pHiddenView, SIGNAL(unhide()), this, SLOT(slotUnhideHidden()));
     connect(m_pHiddenView, SIGNAL(purge()), this, SLOT(slotPurge()));
     connect(m_pHiddenView, SIGNAL(selectAll()), this, SLOT(selectAll()));
 
-    m_pMissingView = new DlgMissing(m_pTab);
+    auto pMissingView = make_parented<DlgMissing>(m_pTab);
+    m_pMissingView = pMissingView.toWeakRef();
     m_pMissingView->setTableModel(getMissingTableModel());
     m_pMissingView->installEventFilter(pKeyboard);
     connect(m_pMissingView, SIGNAL(purge()), this, SLOT(slotPurge()));
@@ -101,7 +105,7 @@ QWidget* MaintenanceFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyb
     m_idExpandedHidden = m_pTab->addTab(m_pHiddenView, kHiddenTitle);
     m_idExpandedMissing = m_pTab->addTab(m_pMissingView, kMissingTitle);
 
-    return m_pTab;
+    return pTab;
 }
 
 void MaintenanceFeature::slotTabIndexChanged(int index) {

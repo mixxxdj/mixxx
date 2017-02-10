@@ -72,7 +72,7 @@ parented_ptr<QWidget> LibraryFeature::createPaneWidget(KeyboardEventFilter* pKey
     return createTableWidget(paneId, parent);
 }
 
-QWidget* LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard, QWidget* parent) {
+parented_ptr<QWidget> LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard, QWidget* parent) {
     //qDebug() << "LibraryFeature::bindSidebarWidget";
     auto pContainer = make_parented<QFrame>(parent);
     pContainer->setContentsMargins(0,0,0,0);
@@ -96,11 +96,10 @@ QWidget* LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard, QWi
                                                 QSizePolicy::Minimum));
     pLayout->addLayout(pLayoutTitle.get());
     
-    QWidget* pSidebar = createInnerSidebarWidget(pKeyboard);
-    pSidebar->setParent(pContainer.get());
-    pLayout->addWidget(pSidebar);
+    auto pSidebar = createInnerSidebarWidget(pKeyboard, pContainer.get());
+    pLayout->addWidget(pSidebar.get());
     
-    return pContainer.get();
+    return pContainer;
 }
 
 void LibraryFeature::setFeaturePaneId(int paneId) {
@@ -177,8 +176,8 @@ QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {
 }
 
 parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId, QWidget* parent) {
-    auto pTrackTableView = make_parented<WTrackTableView>(
-            parent, m_pConfig, m_pTrackCollection, true);
+    auto pTrackTableView = make_parented<WTrackTableView>(parent, m_pConfig, 
+            m_pTrackCollection, true);
     
     m_trackTablesByPaneId[paneId] = pTrackTableView.get();
         
@@ -202,41 +201,42 @@ parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId, QWid
     return pTrackTableView;
 }
 
-QWidget* LibraryFeature::createInnerSidebarWidget(KeyboardEventFilter *pKeyboard) {
-    return createLibrarySidebarWidget(pKeyboard);
+parented_ptr<QWidget> LibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, QWidget* parent) {
+    Q_UNUSED(pKeyboard);
+    return createLibrarySidebarWidget(parent);
 }
 
-WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*) {
-    WLibrarySidebar* pSidebar = new WLibrarySidebar(nullptr);
+parented_ptr<WLibrarySidebar> LibraryFeature::createLibrarySidebarWidget(QWidget* parent) {
+    auto pSidebar = make_parented<WLibrarySidebar>(parent);
     QAbstractItemModel* pModel = getChildModel();
     pSidebar->setModel(pModel);
     
     // Set sidebar mini view
-    WMiniViewScrollBar* pMiniView = new WMiniViewScrollBar(pSidebar);
-    pMiniView->setTreeView(pSidebar);
+    auto pMiniView = make_parented<WMiniViewScrollBar>(pSidebar.get());
+    pMiniView->setTreeView(pSidebar.get());
     pMiniView->setModel(pModel);
-    pSidebar->setVerticalScrollBar(pMiniView);
+    pSidebar->setVerticalScrollBar(pMiniView.get());
     // invalidate probably stored QModelIndex
     invalidateChild();
     
-    connect(pSidebar, SIGNAL(pressed(const QModelIndex&)),
+    connect(pSidebar.get(), SIGNAL(pressed(const QModelIndex&)),
             this, SLOT(activateChild(const QModelIndex&)));
-    connect(pSidebar, SIGNAL(doubleClicked(const QModelIndex&)),
+    connect(pSidebar.get(), SIGNAL(doubleClicked(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
-    connect(pSidebar, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
+    connect(pSidebar.get(), SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
-    connect(pSidebar, SIGNAL(expanded(const QModelIndex&)),
+    connect(pSidebar.get(), SIGNAL(expanded(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
     connect(this, SIGNAL(selectIndex(const QModelIndex&)),
-            pSidebar, SLOT(selectIndex(const QModelIndex&)));
+            pSidebar.get(), SLOT(selectIndex(const QModelIndex&)));
     
-    connect(pSidebar, SIGNAL(hovered()),
+    connect(pSidebar.get(), SIGNAL(hovered()),
             this, SLOT(slotSetHoveredSidebar()));
-    connect(pSidebar, SIGNAL(leaved()),
+    connect(pSidebar.get(), SIGNAL(leaved()),
             this, SLOT(slotResetHoveredSidebar()));
-    connect(pSidebar, SIGNAL(focusIn()),
+    connect(pSidebar.get(), SIGNAL(focusIn()),
             this, SLOT(slotSetFocusedSidebar()));
-    connect(pSidebar, SIGNAL(focusOut()),
+    connect(pSidebar.get(), SIGNAL(focusOut()),
             this, SLOT(slotResetFocusedSidebar()));
 
     return pSidebar;

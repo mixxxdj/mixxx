@@ -73,9 +73,11 @@ parented_ptr<QWidget> AnalysisFeature::createPaneWidget(KeyboardEventFilter*,
     return pTable;
 }
 
-QWidget* AnalysisFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    m_pAnalysisView = new DlgAnalysis(nullptr, this, m_pTrackCollection);
+parented_ptr<QWidget> AnalysisFeature::createInnerSidebarWidget(
+            KeyboardEventFilter* pKeyboard, QWidget* parent) {
+    auto pAnalysisView = make_parented<DlgAnalysis>(parent, this, m_pTrackCollection);
     
+    m_pAnalysisView = pAnalysisView.toWeakRef();
     m_pAnalysisView->setTableModel(&m_analysisLibraryTableModel);
     
     connect(this, SIGNAL(analysisActive(bool)),
@@ -88,9 +90,10 @@ QWidget* AnalysisFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboar
     // Let the DlgAnalysis know whether or not analysis is active.
     bool bAnalysisActive = m_pAnalyzerQueue != nullptr;
     emit(analysisActive(bAnalysisActive));
+    
     m_pAnalysisView->onShow();
     
-    return m_pAnalysisView;
+    return pAnalysisView;
 }
 
 TreeItemModel* AnalysisFeature::getChildModel() {

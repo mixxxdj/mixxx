@@ -32,7 +32,8 @@ public:
     void slotGetNewPlaylist();
 
   protected:
-    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*, 
+                                                   QWidget* parent) override;
     
     void buildPlaylistList() override;
     QModelIndex constructChildModel(int selected_id);

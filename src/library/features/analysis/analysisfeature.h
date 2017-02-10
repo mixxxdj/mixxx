@@ -38,7 +38,8 @@ class AnalysisFeature : public LibraryFeature {
     
     parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*, int paneId, 
                                            QWidget* parent) override;
-    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, 
+                                                   QWidget* parent) override;
     
     TreeItemModel* getChildModel();
     void refreshLibraryModels();

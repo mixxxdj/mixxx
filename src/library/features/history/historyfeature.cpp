@@ -199,10 +199,12 @@ void HistoryFeature::slotGetNewPlaylist() {
     showTrackModel(m_pPlaylistTableModel);
 }
 
-QWidget* HistoryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    m_pSidebar = createLibrarySidebarWidget(pKeyboard);
+parented_ptr<QWidget> HistoryFeature::createInnerSidebarWidget(
+            KeyboardEventFilter*, QWidget* parent) {
+    auto pSidebar = createLibrarySidebarWidget(parent);
+    m_pSidebar = pSidebar.toWeakRef();
     m_pSidebar->expandAll();
-    return m_pSidebar;
+    return pSidebar;
 }
 
 void HistoryFeature::slotJoinWithNext() {
