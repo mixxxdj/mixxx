@@ -105,6 +105,7 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
  *              - Add configuration option for to choose if pitch bend is allowed when wheel is off
  * 2017-02-10 (2.3) - Radu Suciu
  *             - Load sample on sample button press if none is currently loaded
+ *             - Configurable beatjump size
  *
  ***********************************************************************
  *                           GPL v2 licence
@@ -858,6 +859,7 @@ NumarkMixtrack3.deck = function(decknum) {
     // NMTP3 is a "Model A" controller for scratching, it centers on 0.
     // See http://www.mixxx.org/wiki/doku.php/midi_scripting#scratching
     // and see "Jogger" object constructor
+    this.beatJumpSize = 1;
 };
 
 // ******************************************************************
@@ -2275,13 +2277,13 @@ NumarkMixtrack3.OnShiftedPFLButton = function(channel, control, value, status,
     }
 };
 
-NumarkMixtrack3.PitchBendMinusButton = function(channel, control, value,
-    status, group) {
+NumarkMixtrack3.PitchBendMinusButton = function(channel, control, value, status, group) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
+
     if (value === DOWN) {
         if (deck.shiftKey) {
-            engine.setValue("[Channel" + decknum + "]", "beatjump_1_backward", true);
+            engine.setValue("[Channel" + decknum + "]", "beatjump", -deck.beatJumpSize);
         } else {
             engine.setValue("[Channel" + decknum + "]", "rate_temp_down", true);
         }
@@ -2290,15 +2292,13 @@ NumarkMixtrack3.PitchBendMinusButton = function(channel, control, value,
     }
 };
 
-NumarkMixtrack3.PitchBendPlusButton = function(channel, control, value, status,
-    group) {
+NumarkMixtrack3.PitchBendPlusButton = function(channel, control, value, status, group) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
 
     if (value === DOWN) {
-
         if (deck.shiftKey) {
-            engine.setValue("[Channel" + decknum + "]", "beatjump_1_forward", true);
+            engine.setValue("[Channel" + decknum + "]", "beatjump", deck.beatJumpSize);
         } else {
             engine.setValue("[Channel" + decknum + "]", "rate_temp_up", true);
         }
