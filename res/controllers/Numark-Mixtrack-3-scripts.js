@@ -935,140 +935,61 @@ NumarkMixtrack3.samplers.S7 = new NumarkMixtrack3.sampler("7");
 NumarkMixtrack3.samplers.S8 = new NumarkMixtrack3.sampler("8");
 
 NumarkMixtrack3.initLEDsObjects = function() {
-    var i;
-    // Lets create some LEDs
-    NumarkMixtrack3.AllLeds =
-        new LED(0x90 + ledCategories.master, leds.all);
-    NumarkMixtrack3.samplers["S1"].LEDs.PADsampler1 =
-        new LED(0x91, leds.PADsampler1);
-    NumarkMixtrack3.samplers["S2"].LEDs.PADsampler2 =
-        new LED(0x91, leds.PADsampler2);
-    NumarkMixtrack3.samplers["S3"].LEDs.PADsampler3 =
-        new LED(0x91, leds.PADsampler3);
-    NumarkMixtrack3.samplers["S4"].LEDs.PADsampler4 =
-        new LED(0x91, leds.PADsampler4);
-    NumarkMixtrack3.samplers["S5"].LEDs.PADsampler5 =
-        new LED(0x92, leds.PADsampler5);
-    NumarkMixtrack3.samplers["S6"].LEDs.PADsampler6 =
-        new LED(0x92, leds.PADsampler6);
-    NumarkMixtrack3.samplers["S7"].LEDs.PADsampler7 =
-        new LED(0x92, leds.PADsampler7);
-    NumarkMixtrack3.samplers["S8"].LEDs.PADsampler8 =
-        new LED(0x92, leds.PADsampler8);
+    var decks = NumarkMixtrack3.decks;
 
-    for (i = 1; i <= 2; i++) {
-        NumarkMixtrack3.decks["D" + i].LEDs.headphones =
-            new LED(0x90 + ledCategories.master, leds.headphones1 - 1 + i);
-        NumarkMixtrack3.decks["D" + i].LEDs.jogWheelsInScratchMode =
-            new LED(0x90 + i, leds.jogWheelsInScratchMode);
-        NumarkMixtrack3.decks["D" + i].LEDs.loopin =
-            new LED(0x90 + i, leds.loopin);
-        NumarkMixtrack3.decks["D" + i].LEDs.loopout =
-            new LED(0x90 + i, leds.loopout);
-        NumarkMixtrack3.decks["D" + i].LEDs.reloop_exit =
-            new LED(0x90 + i, leds.reloop_exit);
-        NumarkMixtrack3.decks["D" + i].LEDs.loop_halve =
-            new LED(0x90 + i, leds.loop_halve);
-        NumarkMixtrack3.decks["D" + i].LEDs.hotCue1 =
-            new LED(0x90 + i, leds.hotCue1);
-        NumarkMixtrack3.decks["D" + i].LEDs.hotCue2 =
-            new LED(0x90 + i, leds.hotCue2);
-        NumarkMixtrack3.decks["D" + i].LEDs.hotCue3 =
-            new LED(0x90 + i, leds.hotCue3);
-        NumarkMixtrack3.decks["D" + i].LEDs.hotCue4 =
-            new LED(0x90 + i, leds.hotCue4);
-        NumarkMixtrack3.decks["D" + i].LEDs.Cue =
-            new LED(0x90 + i, leds.Cue);
-        NumarkMixtrack3.decks["D" + i].LEDs.sync =
-            new LED(0x90 + i, leds.sync);
-        NumarkMixtrack3.decks["D" + i].LEDs.play =
-            new LED(0x90 + i, leds.play);
-        NumarkMixtrack3.decks["D" + i].LEDs.fx1 =
-            new LED(0x90 + i, leds.fx1);
-        NumarkMixtrack3.decks["D" + i].LEDs.fx2 =
-            new LED(0x90 + i, leds.fx2);
-        NumarkMixtrack3.decks["D" + i].LEDs.fx3 =
-            new LED(0x90 + i, leds.fx3);
-        NumarkMixtrack3.decks["D" + i].LEDs.tap =
-            new LED(0x90 + i, leds.tap);
-        NumarkMixtrack3.decks["D" + i].LEDs.PADloop1 =
-            new LED(0x90 + i, leds.PADloop1);
-        NumarkMixtrack3.decks["D" + i].LEDs.PADloop2 =
-            new LED(0x90 + i, leds.PADloop2);
-        NumarkMixtrack3.decks["D" + i].LEDs.PADloop3 =
-            new LED(0x90 + i, leds.PADloop3);
-        NumarkMixtrack3.decks["D" + i].LEDs.PADloop4 =
-            new LED(0x90 + i, leds.PADloop4);
-        NumarkMixtrack3.decks["D" + i].LEDs.meter =
-            new LED(0x90 + ledCategories.meters, leds.meter1 - 1 + i);
+    NumarkMixtrack3.AllLeds = new LED(0x90 + ledCategories.master, leds.all);
+
+    // sampler LEDs, first 4 are 0x91, next 4 are 0x92
+    for (var i = 1; i <= 8; i++) {
+        NumarkMixtrack3.samplers["S" + i].LEDs["PADsampler" + i] = new LED(
+            0x91 + Math.round(i / 9), leds["PADsampler" + i]
+        );
     }
-    // LEDs for Deck 3 and 4
-    for (i = 1; i <= 2; i++) {
 
-        var j = i + 2;
-        NumarkMixtrack3.decks["D" + j].LEDs.headphones =
-            new LED(0x90 + ledCategories.master, leds.headphones1 - 1 + i);
-        NumarkMixtrack3.decks["D" + j].LEDs.jogWheelsInScratchMode =
-            new LED(0x90 + i, leds.jogWheelsInScratchMode);
-        NumarkMixtrack3.decks["D" + j].LEDs.loopin =
-            new LED(0x90 + i, leds.loopin);
-        NumarkMixtrack3.decks["D" + j].LEDs.loopout =
-            new LED(0x90 + i, leds.loopout);
-        NumarkMixtrack3.decks["D" + j].LEDs.reloop_exit =
-            new LED(0x90 + i, leds.reloop_exit);
-        NumarkMixtrack3.decks["D" + j].LEDs.loop_halve =
-            new LED(0x90 + i, leds.loop_halve);
-        NumarkMixtrack3.decks["D" + j].LEDs.hotCue1 =
-            new LED(0x90 + i, leds.hotCue1);
-        NumarkMixtrack3.decks["D" + j].LEDs.hotCue2 =
-            new LED(0x90 + i, leds.hotCue2);
-        NumarkMixtrack3.decks["D" + j].LEDs.hotCue3 =
-            new LED(0x90 + i, leds.hotCue3);
-        NumarkMixtrack3.decks["D" + j].LEDs.hotCue4 =
-            new LED(0x90 + i, leds.hotCue4);
-        NumarkMixtrack3.decks["D" + j].LEDs.Cue =
-            new LED(0x90 + i, leds.Cue);
-        NumarkMixtrack3.decks["D" + j].LEDs.sync =
-            new LED(0x90 + i, leds.sync);
-        NumarkMixtrack3.decks["D" + j].LEDs.play =
-            new LED(0x90 + i, leds.play);
-        NumarkMixtrack3.decks["D" + j].LEDs.fx1 =
-            new LED(0x90 + i, leds.fx1);
-        NumarkMixtrack3.decks["D" + j].LEDs.fx2 =
-            new LED(0x90 + i, leds.fx2);
-        NumarkMixtrack3.decks["D" + j].LEDs.fx3 =
-            new LED(0x90 + i, leds.fx3);
-        NumarkMixtrack3.decks["D" + j].LEDs.tap =
-            new LED(0x90 + i, leds.tap);
-        NumarkMixtrack3.decks["D" + j].LEDs.PADloop1 =
-            new LED(0x90 + i, leds.PADloop1);
-        NumarkMixtrack3.decks["D" + j].LEDs.PADloop2 =
-            new LED(0x90 + i, leds.PADloop2);
-        NumarkMixtrack3.decks["D" + j].LEDs.PADloop3 =
-            new LED(0x90 + i, leds.PADloop3);
-        NumarkMixtrack3.decks["D" + j].LEDs.PADloop4 =
-            new LED(0x90 + i, leds.PADloop4);
-        NumarkMixtrack3.decks["D" + j].LEDs.meter =
-            new LED(0x90 + ledCategories.meters, leds.meter1 - 1 + i);
+    // all other leds for all decks
+    for (var i = 1; i <= 4; i++) {
+        // only have two physical sets of buttons for our 4 virtual decks
+        var j = (i + 1) % 2 + 1;
+
+        decks["D" + i].LEDs.headphones = new LED(0x90 + ledCategories.master, leds.headphones1 - 1 + j);
+        decks["D" + i].LEDs.jogWheelsInScratchMode = new LED(0x90 + j, leds.jogWheelsInScratchMode);
+        decks["D" + i].LEDs.loopin = new LED(0x90 + j, leds.loopin);
+        decks["D" + i].LEDs.loopout = new LED(0x90 + j, leds.loopout);
+        decks["D" + i].LEDs.reloop_exit = new LED(0x90 + j, leds.reloop_exit);
+        decks["D" + i].LEDs.loop_halve = new LED(0x90 + j, leds.loop_halve);
+        decks["D" + i].LEDs.hotCue1 = new LED(0x90 + j, leds.hotCue1);
+        decks["D" + i].LEDs.hotCue2 = new LED(0x90 + j, leds.hotCue2);
+        decks["D" + i].LEDs.hotCue3 = new LED(0x90 + j, leds.hotCue3);
+        decks["D" + i].LEDs.hotCue4 = new LED(0x90 + j, leds.hotCue4);
+        decks["D" + i].LEDs.Cue = new LED(0x90 + j, leds.Cue);
+        decks["D" + i].LEDs.sync = new LED(0x90 + j, leds.sync);
+        decks["D" + i].LEDs.play = new LED(0x90 + j, leds.play);
+        decks["D" + i].LEDs.fx1 = new LED(0x90 + j, leds.fx1);
+        decks["D" + i].LEDs.fx2 = new LED(0x90 + j, leds.fx2);
+        decks["D" + i].LEDs.fx3 = new LED(0x90 + j, leds.fx3);
+        decks["D" + i].LEDs.tap = new LED(0x90 + j, leds.tap);
+        decks["D" + i].LEDs.PADloop1 = new LED(0x90 + j, leds.PADloop1);
+        decks["D" + i].LEDs.PADloop2 = new LED(0x90 + j, leds.PADloop2);
+        decks["D" + i].LEDs.PADloop3 = new LED(0x90 + j, leds.PADloop3);
+        decks["D" + i].LEDs.PADloop4 = new LED(0x90 + j, leds.PADloop4);
+        decks["D" + i].LEDs.meter = new LED(0x90 + ledCategories.meters, leds.meter1 - 1 + j);
     }
 };
 
 NumarkMixtrack3.initButtonsObjects = function() {
-    var i;
+    var decks = NumarkMixtrack3.decks;
 
-    for (i = 1; i <= 4; i++) {
-        NumarkMixtrack3.decks["D" + i].LoadButtonControl =
-            new LongShortBtn(NumarkMixtrack3.OnLoadButton);
-        NumarkMixtrack3.decks["D" + i].SyncButtonControl =
-            new LongShortDoubleBtn(NumarkMixtrack3.OnSyncButton);
-        NumarkMixtrack3.decks["D" + i].ShiftedPFLButtonControl =
-            new SingleDoubleBtn(NumarkMixtrack3.OnShiftedPFLButton);
-        NumarkMixtrack3.decks["D" + i].PADLoopButtonHold =
-            new LongShortBtn(NumarkMixtrack3.onPADLoopButtonHold);
+    for (var i = 1; i <= 4; i++) {
+        decks["D" + i].LoadButtonControl = new LongShortBtn(NumarkMixtrack3.OnLoadButton);
+        decks["D" + i].SyncButtonControl = new LongShortDoubleBtn(NumarkMixtrack3.OnSyncButton);
+        decks["D" + i].ShiftedPFLButtonControl = new SingleDoubleBtn(NumarkMixtrack3.OnShiftedPFLButton);
+        decks["D" + i].PADLoopButtonHold = new LongShortBtn(NumarkMixtrack3.onPADLoopButtonHold);
     }
-    for (i = 1; i <= 8; i++) {
-            NumarkMixtrack3.samplers["S" + i].PADSampleButtonHold =
-            new LongShortBtn(NumarkMixtrack3.onPADSampleButtonHold);
+
+    for (var i = 1; i <= 8; i++) {
+        NumarkMixtrack3.samplers["S" + i].PADSampleButtonHold = new LongShortBtn(
+            NumarkMixtrack3.onPADSampleButtonHold
+        );
     }
 };
 
