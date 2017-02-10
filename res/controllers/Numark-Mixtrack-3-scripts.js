@@ -1043,34 +1043,17 @@ NumarkMixtrack3.init = function(id, debug) {
 
     // Initialise some others (PAD LEDs)
     for (k = 1; k <= 8; k++) {
-        NumarkMixtrack3.samplers["S" + k].LEDs["PADsampler" + k].onOff(
-            PADcolors.black);
+        NumarkMixtrack3.samplers["S" + k].LEDs["PADsampler" + k].onOff(PADcolors.black);
     }
 
     for (i = 1; i <= 4; i++) {
-        for (j = 1; j <= 4; j++) {
-            NumarkMixtrack3.decks["D" + i].LEDs["PADloop" + j].onOff(
-                PADcolors.black);
+        for (led in NumarkMixtrack3.decks["D" + i]) {
+            led.onOff(OFF);
         }
 
-        NumarkMixtrack3.decks["D" + i].LEDs.jogWheelsInScratchMode.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.headphones.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.loopin.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.loopout.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.reloop_exit.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.loop_halve.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.hotCue1.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.hotCue2.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.hotCue3.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.hotCue4.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.Cue.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.sync.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.play.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.fx1.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.fx2.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.fx3.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.tap.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.meter.onOff(OFF);
+        for (j = 1; j <= 4; j++) {
+            NumarkMixtrack3.decks["D" + i].LEDs["PADloop" + j].onOff(PADcolors.black);
+        }
 
         print("   LEDs state set for deck " + "D" + i);
     }
