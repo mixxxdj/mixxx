@@ -14,9 +14,9 @@
    id="svg4451"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   width="5"
-   height="26"
-   sodipodi:docname="crossfader_handle.svg"
+   width="7"
+   height="28"
+   sodipodi:docname="slider_crossfader_handle.svg"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/volume_slider.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -212,7 +212,7 @@
      id="namedview4453"
      showgrid="false"
      inkscape:zoom="11.313709"
-     inkscape:cx="-3.0800989"
+     inkscape:cx="-13.996059"
      inkscape:cy="8.3618558"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -247,14 +247,14 @@
      id="layer1"
      inkscape:label="Layer"
      style="display:inline"
-     transform="translate(0,-77)">
+     transform="translate(0,-75)">
     <rect
        style="fill:#b50000;fill-opacity:1;fill-rule:nonzero;stroke:#ff4a4a;stroke-width:0.49670237;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
        id="rect3785-3"
        width="4.5032978"
        height="25.503296"
-       x="0.2483512"
-       y="77.248352"
+       x="1.2483511"
+       y="76.248352"
        rx="1.9999999"
        ry="1.9999999" />
   </g>
