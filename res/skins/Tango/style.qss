@@ -569,8 +569,7 @@ are still drawn full-size.
   
 #SpinnyCoverSmall {
 }
-#SpinnyCoverBig {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
+#SpinnyCoverBig {	/*
   margin: 0px 3px 25px 3px;
   background-color: #451278;	*/
 }
