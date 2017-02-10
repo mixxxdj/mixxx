@@ -2339,42 +2339,21 @@ NumarkMixtrack3.OnVuMeterChange = function(value, group, control) {
 NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
 
-    if (deck.loaded) {
+    if (deck.loaded && TrackEndWarning) {
         var timeremaining = RealDuration(group) * (1 - value);
-        var trackwarning = 0;
 
         if (timeremaining <= 30) {
-            trackwarning = 1;
-        }
-        if (timeremaining <= 10) {
-            trackwarning = 2;
-        }
-        if (timeremaining <= 0) {
-            trackwarning = 3;
-        }
-        if (!TrackEndWarning) {
-            trackwarning = 0;
-        }
-
-        switch (trackwarning) {
-            case 0:
-                deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
-                break;
-            case 1: // if less than 30 seconds before end of track : flashing slowly
-                if (deck.LEDs.jogWheelsInScratchMode.getFlashDuration() !== 1000) {
-                    deck.LEDs.jogWheelsInScratchMode.flashOn(1000, ON, 1000);
-                }
-                break;
-            case 2: // if less than 10 seconds before end of track : flashing fast
-                if (deck.LEDs.jogWheelsInScratchMode.getFlashDuration() !== 300) {
-                    deck.LEDs.jogWheelsInScratchMode.flashOn(300, ON, 300);
-                }
-                break;
-            case 3: // end of strack : full ring lit
-                deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
-                break;
-            default:
-                break;
+            // flashing slowly
+            if (deck.LEDs.jogWheelsInScratchMode.getFlashDuration() !== 1000) {
+                deck.LEDs.jogWheelsInScratchMode.flashOn(1000, ON, 1000);
+            }
+        } else if (timeremaining <= 10) {
+            // flashing fast
+            if (deck.LEDs.jogWheelsInScratchMode.getFlashDuration() !== 300) {
+                deck.LEDs.jogWheelsInScratchMode.flashOn(300, ON, 300);
+            }
+        } else {
+            deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
         }
     } else {
         deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
