@@ -60,8 +60,8 @@ class LibraryFeature : public QObject {
     
     // Reimplement this to register custom views with the library widget
     // at the right pane.
-    virtual QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, 
-                                      int paneId, QWidget* parent);
+    virtual parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                                   int paneId, QWidget* parent);
     
     // Reimplement this to register custom views with the library widget,
     // at the sidebar expanded pane
@@ -142,8 +142,7 @@ class LibraryFeature : public QObject {
     }
     
     // Creates a table widget with no model
-    WTrackTableView *createTableWidget(int paneId, 
-            QWidget *parent);
+    parented_ptr<WTrackTableView> createTableWidget(int paneId, QWidget *parent);
     
     // Creates a WLibrarySidebar widget with the getChildModel() function as
     // model

@@ -40,8 +40,8 @@ class BrowseFeature : public LibraryFeature {
     QString getIconPath() override;
     QString getSettingsName() const override;
 
-    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, 
-                              int paneId, QWidget* parent) override;
+    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*pKeyboard, 
+                                           int paneId, QWidget* parent) override;
 
     TreeItemModel* getChildModel();
 

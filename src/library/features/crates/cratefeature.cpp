@@ -250,8 +250,8 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
         Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
-QWidget* CrateFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
-                                        int paneId, QWidget* parent) {
+parented_ptr<QWidget> CrateFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+            int paneId, QWidget* parent) {
     auto pContainer = make_parented<WLibraryStack>(parent);
     m_panes[paneId] = pContainer.toWeakRef();
     
@@ -264,11 +264,11 @@ QWidget* CrateFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     
     m_idBrowse[paneId] = pContainer->addWidget(pEdit.get());
     
-    QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, 
-                                                       pContainer.get());
-    m_idTable[paneId] = pContainer->addWidget(pTable);
+    auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, 
+                                                   pContainer.get());
+    m_idTable[paneId] = pContainer->addWidget(pTable.get());
     
-    return pContainer.get();
+    return pContainer;
 }
 
 TreeItemModel* CrateFeature::getChildModel() {

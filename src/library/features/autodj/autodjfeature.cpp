@@ -104,9 +104,9 @@ QString AutoDJFeature::getSettingsName() const {
     return "AutoDJFeature";
 }
 
-QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter*, 
-                                         int paneId, QWidget* parent) {
-    WTrackTableView* pTrackTableView = createTableWidget(paneId, parent);
+parented_ptr<QWidget> AutoDJFeature::createPaneWidget(KeyboardEventFilter*, 
+            int paneId, QWidget* parent) {
+    auto pTrackTableView = createTableWidget(paneId, parent);
     pTrackTableView->loadTrackModel(m_pAutoDJProcessor->getTableModel());
 
     connect(pTrackTableView->selectionModel(),

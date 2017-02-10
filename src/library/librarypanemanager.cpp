@@ -35,9 +35,9 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pPaneWidget,
         return;
     }
     for (LibraryFeature* f : m_features) {        
-        QWidget* pFeaturePaneWidget = f->createPaneWidget(pKeyboard, m_paneId, 
-                                                          m_pPaneWidget);
-        m_pPaneWidget->registerView(f, pFeaturePaneWidget);
+        auto pFeaturePaneWidget = f->createPaneWidget(pKeyboard, m_paneId, 
+                                                      m_pPaneWidget);
+        m_pPaneWidget->registerView(f, pFeaturePaneWidget.get());
     }
 }
 

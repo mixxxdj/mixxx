@@ -197,8 +197,8 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
-                                         int paneId, QWidget* parent) {
+parented_ptr<QWidget> BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+            int paneId, QWidget* parent) {
     auto pStack = make_parented<WLibraryStack>(parent);
     m_panes[paneId] = pStack.toWeakRef();
     
@@ -207,10 +207,10 @@ QWidget* BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
     pEdit->installEventFilter(pKeyboard);
     m_idBrowse[paneId] = pStack->addWidget(pEdit.get());
     
-    QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, pStack.get());
-    m_idTable[paneId] = pStack->addWidget(pTable);
+    auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, pStack.get());
+    m_idTable[paneId] = pStack->addWidget(pTable.get());
     
-    return pStack.get();
+    return pStack;
 }
 
 void BrowseFeature::activate() {
