@@ -24,9 +24,6 @@ class BasePlaylistFeature : public LibraryFeature {
                         QObject* parent,
                         TrackCollection* pTrackCollection);
     virtual ~BasePlaylistFeature();
-
-    TreeItemModel* getChildModel();
-
     parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*pKeyboard, 
                                            int paneId, QWidget* parent) override;
 
@@ -78,6 +75,8 @@ class BasePlaylistFeature : public LibraryFeature {
         }
     };
     
+    virtual const TreeItemModel* getConstChildModel() const = 0;
+    
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selectedId);
     virtual void buildPlaylistList() = 0;
@@ -116,8 +115,6 @@ class BasePlaylistFeature : public LibraryFeature {
     QList<PlaylistItem> m_playlistList;
     QPersistentModelIndex m_lastRightClickedIndex;
     TrackPointer m_pSelectedTrack;
-    
-    std::shared_ptr<TreeItemModel> m_childModel;
     
     QHash<int, QPersistentModelIndex> m_lastChildClicked;
 

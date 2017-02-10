@@ -22,9 +22,9 @@ PlaylistFeature::PlaylistFeature(UserSettingsPointer pConfig,
                                  TrackCollection* pTrackCollection)
         : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection) {
     //construct child model
-    m_childModel = std::make_shared<TreeItemModel>();
+    m_pChildModel = std::make_unique<TreeItemModel>();
     auto pRootItem = std::make_unique<TreeItem>(this);
-    m_childModel->setRootItem(std::move(pRootItem));
+    m_pChildModel->setRootItem(std::move(pRootItem));
     constructChildModel(-1);
 }
 
@@ -45,6 +45,10 @@ QString PlaylistFeature::getSettingsName() const {
 
 bool PlaylistFeature::isSinglePane() const {
     return false;
+}
+
+TreeItemModel* PlaylistFeature::getChildModel() {
+    return m_pChildModel.get();
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
@@ -259,6 +263,10 @@ void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
             activatePlaylist(playlistId);
         }
     }
+}
+
+const TreeItemModel* PlaylistFeature::getConstChildModel() const {
+    return m_pChildModel.get();
 }
 
 QString PlaylistFeature::getRootViewHtml() const {
